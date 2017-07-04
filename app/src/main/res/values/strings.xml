@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Youtube Scrobbler</string>
+    <string name="blank_text">
+      goddamnit this is so blank
+    </string>
+    <string name="action_settings">Settings</string>
+    <string name="action_reauthorize">Reauthorize</string>
+    <string name="authorize">Authorize</string>
+</resources>

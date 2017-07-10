@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:persistent="true"
+        android:key="master"
+        android:summaryOff="Scrobbler is now disabled"
+        android:summaryOn="Scrobbler is active"
+        android:title="Master switch"/>
+
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:key="show_notifications"
+        android:persistent="true"
+        android:summaryOff="No notifications. You can still check your scrobbbles from the app"
+        android:summaryOn="Will show a notification while scrobbling"
+        android:title="Notifications"/>
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Scrobble from">
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="scrobble_mxmFloatingLyrics"
+            android:icon="@drawable/ic_mxm"
+            android:persistent="true"
+            android:summary="Scrobble from MusixMatch's FloatingLyrics notifications. Useful for scrobbling from uncommon players, which are supported by FloatingLyrics"
+            android:title="FloatingLyrics"/>
+
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="scrobble_youtube"
+            android:icon="@drawable/ic_youtube"
+            android:persistent="true"
+            android:summary="Scrobble from the official youtube app"
+            android:title="Youtube"/>
+
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Scrobble delay (whichever is earliest, is considered)">
+
+        <android.support.v7.preference.DropDownPreference
+            android:defaultValue="30 secs"
+            android:entries="@array/delays_secs"
+            android:entryValues="@array/delays_secs"
+            android:key="delay_secs"
+            android:persistent="true"
+            android:title="Delay in secs"/>
+
+        <android.support.v7.preference.DropDownPreference
+            android:defaultValue="25%%"
+            android:entries="@array/delays_per"
+            android:entryValues="@array/delays_per"
+            android:key="delay_per"
+            android:persistent="true"
+            android:title="Delay in %"/>
+
+        <android.support.v7.preference.Preference
+            android:summary="Note that your Now Playing always gets updated as soon as the song starts playing, regardless of the delay"
+            />
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Logout of last.fm">
+        <android.support.v7.preference.Preference
+            android:title="Logout and Reauthorize"
+            android:key="reauth"
+            />
+    </android.support.v7.preference.PreferenceCategory>
+    <android.support.v7.preference.PreferenceCategory
+        android:title="About">
+        <android.support.v7.preference.Preference
+            android:title="version"
+            android:key="about"
+            />
+    </android.support.v7.preference.PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>

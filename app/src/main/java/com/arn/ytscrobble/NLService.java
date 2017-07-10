@@ -1,46 +1,54 @@
 package com.arn.ytscrobble;
 
 import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.session.MediaSessionManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.support.v7.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import android.os.Handler;
 
 public class NLService extends NotificationListenerService {
 
     public static final String pNLS = "com.arn.ytscrobble.NLS",
         pNOTIFICATION_EVENT = "com.arn.ytscrobble.NOTIFICATION_EVENT",
+        pCANCEL = "com.arn.ytscrobble.CANCEL",
         MXM_PACKAGE = "com.musixmatch.android.lyrify",
         YOUTUBE_PACKAGE = "com.google.android.youtube",
             XIAMI_PACKAGE = "fm.xiami.main",
         NOTI_TEXT[] = new String[]{
                 "Tap to show lyrics", "Tap to hide lyrics"},
         B_TITLE = "title",
-        B_TIME = "time";
-    static final long SCROBBLE_DELAY = 30000;
+        B_TIME = "time",
+        B_ARTIST = "artist";
     ArrayList<Integer> activeIDs = new ArrayList<>();
     private SessListener sessListener;
     private MediaSessionManager sessManager;
     private boolean sessListening = true;
-
+    private SharedPreferences pref=null;
+    NotificationManager nm = null;
     @Override
     public void onCreate() {
         super.onCreate();
         IntentFilter filter = new IntentFilter();
         filter.addAction(pNLS);
+        filter.addAction(pCANCEL);
         registerReceiver(nlservicereciver,filter);
 
+        pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Media session manager leaks/holds the context for too long.
         // Don't let it to leak the activity, better lak the whole app.
@@ -71,12 +79,13 @@ public class NLService extends NotificationListenerService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(nlservicereciver);
     }
 
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        if (sbn == null)
+            return;
         String s = "onNotificationPosted  (" + sbn.getId() +  ") :" + sbn.getPackageName() + "\n";
         Notification n = sbn.getNotification();
 
@@ -86,13 +95,11 @@ public class NLService extends NotificationListenerService {
         CharSequence text = n.extras.getCharSequence(Notification.EXTRA_TEXT),
                 title = n.extras.getCharSequence(Notification.EXTRA_TITLE);
 
-        Intent i = new  Intent(pNOTIFICATION_EVENT);
-        i.putExtra("notification_event", s);
-        sendBroadcast(i);
         if (text != null && title != null){
             boolean found = false;
             String songTitle = null;
-            if (sbn.getPackageName().equals(MXM_PACKAGE) && Arrays.binarySearch(NOTI_TEXT, text) > -1) {
+            if (pref.getBoolean("scrobble_mxmFloatingLyrics", false) &&
+                    sbn.getPackageName().equals(MXM_PACKAGE) && Arrays.binarySearch(NOTI_TEXT, text) > -1) {
                 songTitle = title.toString();
                 found = true;
             }
@@ -104,30 +111,29 @@ public class NLService extends NotificationListenerService {
     }
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
-        int idx = activeIDs.indexOf(sbn.getId());
-        if(idx != -1)
-            activeIDs.remove(idx);
+        if (sbn == null)
+            return;
 
         String s = "onNotificationRemoved (" + sbn.getId() +  ") :" + sbn.getPackageName() + "\n";
         Notification n = sbn.getNotification();
         CharSequence text = n.extras.getCharSequence(Notification.EXTRA_TEXT),
                 title = n.extras.getCharSequence(Notification.EXTRA_TITLE);
 
-        Intent i = new  Intent(pNOTIFICATION_EVENT);
-        i.putExtra("notification_event", s);
-        sendBroadcast(i);
         if (text != null)
-            if (sbn.getPackageName().equals(MXM_PACKAGE) && text.equals(NOTI_TEXT)){
-                handler.removeMessages(text.toString().hashCode());
+            if (pref.getBoolean("scrobble_mxmFloatingLyrics", false) &&
+                    sbn.getPackageName().equals(MXM_PACKAGE) && Arrays.binarySearch(NOTI_TEXT, text) > -1){
+                int idx = activeIDs.indexOf(sbn.getId());
+                if(idx != -1)
+                    activeIDs.remove(idx);
+                handler.removeMessages(title.toString().hashCode());
             }
     }
 
     private BroadcastReceiver nlservicereciver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
-            Stuff.log(getApplicationContext(), "got one");
-            if(intent.getStringExtra("command").equals("clearall")){
-                NLService.this.cancelAllNotifications();
+            if(intent.getAction().equals(pCANCEL)){
+                handler.remove(intent.getIntExtra("id", 0));
             }
             else if(intent.getStringExtra("command").equals("list")){
 
@@ -152,8 +158,11 @@ public class NLService extends NotificationListenerService {
         @Override
         public void handleMessage(Message m) {
             //TODO: handle
-            String title = m.getData().getString(B_TITLE);
-            new Scrobbler(getApplicationContext()).execute(Stuff.SCROBBLE, title);
+            String title = m.getData().getString(B_TITLE),
+                    artist = m.getData().getString(B_ARTIST);
+            new Scrobbler(getApplicationContext()).execute(Stuff.SCROBBLE, artist, title);
+            remove(title.hashCode());
+            notification(artist + " - " + title, title.hashCode(), Stuff.STATE_SCROBBLED, 0);
         }
 
         public void scrobble(String songTitle, int id){
@@ -163,19 +172,62 @@ public class NLService extends NotificationListenerService {
             else
                 removeMessages(hash);
             if (!hasMessages(hash)) {
+                String splits[] = Stuff.sanitizeTitle(songTitle);
+                if (splits.length == 2 && !splits[0].equals("") && !splits[1].equals("")) {
+                    new Scrobbler(getApplicationContext())
+                            .execute(Stuff.NOW_PLAYING, splits[0], splits[1]);
+                    Message m = obtainMessage();
+                    Bundle b = new Bundle();
+                    b.putString(B_ARTIST, splits[0]);
+                    b.putString(B_TITLE, splits[1]);
+                    b.putLong(B_TIME, System.currentTimeMillis());
+                    m.setData(b);
+                    m.what = hash;
+                    int delay = Integer.parseInt(
+                            pref.getString("delay_secs", "30000").split(" ")[0]
+                    ) * 1000;
 
-                new Scrobbler(getApplicationContext()).execute(Stuff.NOW_PLAYING, songTitle);
-                Message m = obtainMessage();
-                Bundle b = new Bundle();
-                b.putString(B_TITLE, songTitle);
-                b.putLong(B_TIME, System.currentTimeMillis());
-                m.setData(b);
-                m.what = hash;
-                sendMessageDelayed(m, SCROBBLE_DELAY);
+                    sendMessageDelayed(m, delay);
+                    notification(splits[0] + " - " + splits[1], songTitle.hashCode(), Stuff.STATE_SCROBBLING, 0);
+                } else {
+                    notification(songTitle, songTitle.hashCode(), Stuff.STATE_PARSE_ERR, android.R.drawable.stat_notify_error);
+                }
             }
         }
 
+        public void notification(String title, int id, String state, int iconId){
+            if (!pref.getBoolean("show_notifications", true))
+                return;
+            if (iconId == 0)
+                iconId = R.drawable.ic_app;
+            Intent intent = new Intent(pCANCEL)
+                    .putExtra("id", id);
+            PendingIntent cancelIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+            intent = new Intent(getApplicationContext(), Main.class);
+            PendingIntent launchIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
+            Notification.Builder nb = new Notification.Builder(getApplicationContext())
+                    .setContentTitle(state)
+                    .setContentText(title)
+                    .setSmallIcon(iconId)
+                    .setContentIntent(launchIntent)
+                    .setAutoCancel(true);
+            if (state.equals(Stuff.STATE_SCROBBLING))
+                    nb.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Cancel", cancelIntent)
+                    .addAction(R.drawable.ic_heart, "Love", launchIntent);
+            if (state.equals(Stuff.STATE_SCROBBLED))
+                nb.addAction(R.drawable.ic_heart, "Love", launchIntent);
+
+            Notification n = nb.build();
+            nm.notify(id, n);
+        }
+
+        public void remove(int id){
+            if (pref.getBoolean("show_notifications", true)) {
+                nm.cancel(id);
+            }
+            removeMessages(id);
+        }
     }
     ScrobbleHandler handler = new ScrobbleHandler();
 }

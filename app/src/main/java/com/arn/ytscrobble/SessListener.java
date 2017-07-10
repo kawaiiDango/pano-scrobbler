@@ -1,12 +1,14 @@
 package com.arn.ytscrobble;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener;
 import android.media.session.PlaybackState;
 import android.support.annotation.NonNull;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Pair;
 
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import java.util.Set;
  */
 
 public class SessListener implements OnActiveSessionsChangedListener{
+    private SharedPreferences pref=null;
     Context c;
     NLService.ScrobbleHandler handler;
     Map<MediaSession.Token, Pair<MediaController, MediaController.Callback>> mControllers = new HashMap<>();
@@ -27,6 +30,7 @@ public class SessListener implements OnActiveSessionsChangedListener{
     public SessListener(Context c, NLService.ScrobbleHandler h){
         this.c = c;
         handler = h;
+        pref = PreferenceManager.getDefaultSharedPreferences(c);
     }
 
     @Override
@@ -35,7 +39,8 @@ public class SessListener implements OnActiveSessionsChangedListener{
         Set<MediaSession.Token> tokens = new HashSet<>(controllerCount);
         for (int i = 0; i < controllerCount; i++) {
             MediaController controller = controllers.get(i);
-            if (controller.getPackageName().equals( NLService.YOUTUBE_PACKAGE)) {
+            if (pref.getBoolean("scrobble_youtube", true) &&
+                    controller.getPackageName().equals( NLService.YOUTUBE_PACKAGE)) {
                 tokens.add(controller.getSessionToken());
                 // Only add tokens that we don't already have.
                 if (!mControllers.containsKey(controller.getSessionToken())) {
@@ -68,24 +73,31 @@ public class SessListener implements OnActiveSessionsChangedListener{
             public void onMetadataChanged(MediaMetadata metadata) {
                 super.onMetadataChanged(metadata);
                 this.metadata = metadata;
-                String title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE);
-                String artist =  metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
-
-                if (!title.equals("")) {
-                    handler.scrobble(title, title.hashCode());
-                }
             }
 
             @Override
             public void onPlaybackStateChanged(@NonNull PlaybackState state) {
                 super.onPlaybackStateChanged(state);
+                if (metadata == null)
+                    return;
+                String title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE);
+                String artist =  metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
+
+                if (title.equals(""))
+                    return;
+
                 if (state.getState()==PlaybackState.STATE_PAUSED || state.getState()==PlaybackState.STATE_STOPPED) {
 //                    cancel scrobbling if within time
-                    String title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE);
+                    Stuff.log(c, "PAUSED/Stopped: " + title);
 
-                    if (!title.equals(""))
-                        handler.removeMessages(title.hashCode());
-                }
+                    handler.remove(title.hashCode());
+                } else if (state.getState()==PlaybackState.STATE_PLAYING){
+                    Stuff.log(c, "playing: " + title);
+                    if (pref.getBoolean("scrobble_youtube", true) && !title.equals(""))
+                        handler.scrobble(title, title.hashCode());
+                } else
+                    Stuff.log(c, "other ("+state.getState()+") : " + title);
+
             }
         };
 }

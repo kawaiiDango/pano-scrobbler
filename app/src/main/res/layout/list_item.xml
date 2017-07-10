@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="horizontal" >
+
+
+    <ImageView
+        android:id="@+id/recents_album_art"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:srcCompat="@android:drawable/ic_menu_gallery"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"/>
+
+    <ImageView
+        android:id="@+id/recents_love"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:srcCompat="@android:drawable/btn_star_big_off"
+        android:layout_marginBottom="13dp"
+        android:layout_alignBottom="@+id/recents_album_art"
+        android:layout_alignParentEnd="true"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="80dp"
+        android:layout_toEndOf="@+id/recents_album_art"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/recents_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dip"
+            android:layout_weight="0.5"
+            android:clickable="false"
+            android:gravity="left"
+            android:longClickable="false"
+            android:paddingBottom="1dip"
+            android:paddingTop="1dip"
+            android:text="tit"
+            android:textColor="#ff7f1d"
+            android:textSize="17dip"
+            android:textStyle="bold"/>
+
+        <ProgressBar
+            android:id="@+id/recents_prog"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"/>
+
+        <TextView
+            android:id="@+id/recents_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dip"
+            android:layout_weight="0.5"
+            android:clickable="false"
+            android:gravity="right"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:paddingBottom="1dip"
+            android:paddingTop="1dip"
+            android:text="subtit"
+            android:textColor="#6d6d6d"
+            android:textSize="17dip"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -2,18 +2,19 @@ package com.arn.ytscrobble;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Message;
-import android.support.v7.preference.PreferenceManager;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.webkit.WebSettings;
 
-import android.os.Handler;
+import java.util.ArrayList;
 
 import de.umass.lastfm.Authenticator;
 import de.umass.lastfm.Caller;
 import de.umass.lastfm.PaginatedResult;
+import de.umass.lastfm.Result;
 import de.umass.lastfm.Session;
 import de.umass.lastfm.Track;
 import de.umass.lastfm.User;
@@ -25,14 +26,20 @@ import de.umass.lastfm.scrobble.ScrobbleResult;
  */
 
 class Scrobbler extends AsyncTask<String, String, Object> {
+    private SharedPreferences prefs = null;
     private Handler handler = null;
     private Context c;
     private static String token  = "";
+    public static ArrayList<Integer> scrobbledHashes= new ArrayList<>();
 
     Scrobbler(Context c){
-        this.c = c;
+        this(c, null);
     }
-
+    Scrobbler(Context c, Handler h){
+        this.c = c;
+        this.handler = h;
+        prefs = PreferenceManager.getDefaultSharedPreferences(c);
+    }
     @Override
     protected Object doInBackground(String... s) {
         boolean reAuthNeeded = false;
@@ -40,30 +47,42 @@ class Scrobbler extends AsyncTask<String, String, Object> {
         Caller.getInstance().setUserAgent(WebSettings.getDefaultUserAgent(c));
         Caller.getInstance().setDebugMode(true);
 
-        String key = PreferenceManager.getDefaultSharedPreferences(c).getString("sesskey","");
+        String key = prefs.getString("sesskey","");
+        String username = prefs.getString("username", null);
 
-        if (key.length() < 5 && token.length() >5)
+        if (key.length() < 5 && token.length() >5) {
             session = Authenticator.getSession(token, Stuff.LAST_KEY, Stuff.LAST_SECRET);
-        else if (key.length() > 5 )
+            if (session != null) {
+                username = session.getUsername();
+                prefs.edit()
+                        .putString("username", username)
+                        .apply();
+            }
+        } else if (key.length() > 5 )
             session = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, key);
         else
             reAuthNeeded = true;
-        if (session == null)
+
+        if (session == null || username == null)
             reAuthNeeded = true;
 
         if(!reAuthNeeded) {
             //publishProgress("sess_key: " + session.getKey());
-            PreferenceManager.getDefaultSharedPreferences(c)
-                    .edit().putString("sesskey", session.getKey()).apply();
+            prefs.edit().putString("sesskey", session.getKey()).apply();
 
             if (s[0].equals(Stuff.CHECKAUTH))
                 return null;
-            else if (s[0].equals(Stuff.GET_RECENTS)){
-                PaginatedResult<Track> recents = User.getRecentTracks(session.getUsername(), 1, 5, token);
-                return recents;
+            else if (s[0].equals(Stuff.GET_RECENTS)) {
+                return User.getRecentTracks(username, Stuff.LAST_KEY);
+            } else if (s[0].equals(Stuff.GET_LOVED)){
+                return User.getLovedTracks(username, Stuff.LAST_KEY);
+            } else if (s[0].equals(Stuff.LOVE)){
+                return Track.love(s[1], s[2], session);
+            } else if (s[0].equals(Stuff.UNLOVE)){
+                return Track.unlove(s[1], s[2], session);
             }
 
-            //for scrobble data: s[0] = tag, s[1] = artist, s[2] = song
+            //for scrobble or love data: s[0] = tag, s[1] = artist, s[2] = song
 
             ScrobbleResult result = null;
             int now = (int) (System.currentTimeMillis() / 1000);
@@ -72,9 +91,12 @@ class Scrobbler extends AsyncTask<String, String, Object> {
             else if (s[0].equals(Stuff.SCROBBLE))
                 result = Track.scrobble(s[1], s[2], now, session);
             try {
-                if (!(result.isSuccessful() && !result.isIgnored()))
-                    ((NLService.ScrobbleHandler)handler)
-                            .notification(s[1], s[1].hashCode(), Stuff.STATE_NETWORK_ERR, android.R.drawable.stat_notify_error);
+                if (result != null && !(result.isSuccessful() && !result.isIgnored())) {
+                    int hash = s[1].hashCode() + s[2].hashCode();
+                    scrobbledHashes.add(hash);
+                    ((NLService.ScrobbleHandler) handler)
+                            .notification(s[1], s[2], hash, Stuff.STATE_NETWORK_ERR, android.R.drawable.stat_notify_error);
+                }
             }catch (NullPointerException e){
                 publishProgress(s[0] + ": NullPointerException");
             }
@@ -108,6 +130,11 @@ class Scrobbler extends AsyncTask<String, String, Object> {
         //do stuff
         if (res instanceof PaginatedResult) {
             RecentsFragment.adapter.populate((PaginatedResult<Track>) res);
+        } else if (res instanceof Result){
+            if (((Result) res).isSuccessful())
+                Stuff.log(c, "ok");
+            else
+                Stuff.log(c, "failed");
         }
     }
 }

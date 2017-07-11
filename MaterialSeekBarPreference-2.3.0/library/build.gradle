@@ -1,0 +1,31 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 23
+        versionCode 13
+        versionName "2.3.0"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:preference-v7:25.3.1'
+}
+
+ext {
+    PUBLISH_GROUP_ID = 'com.pavelsikun'
+    PUBLISH_ARTIFACT_ID = 'material-seekbar-preference'
+    PUBLISH_VERSION = '2.3.0'
+}
+
+apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
+// ./gradlew clean build generateRelease

@@ -15,7 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.support.v7.preference.PreferenceManager;
+import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +25,8 @@ public class NLService extends NotificationListenerService {
     public static final String pNLS = "com.arn.ytscrobble.NLS",
         pNOTIFICATION_EVENT = "com.arn.ytscrobble.NOTIFICATION_EVENT",
         pCANCEL = "com.arn.ytscrobble.CANCEL",
+        pLOVE = "com.arn.ytscrobble.LOVE",
+        pUNLOVE = "com.arn.ytscrobble.UNLOVE",
         MXM_PACKAGE = "com.musixmatch.android.lyrify",
         YOUTUBE_PACKAGE = "com.google.android.youtube",
             XIAMI_PACKAGE = "fm.xiami.main",
@@ -134,7 +136,12 @@ public class NLService extends NotificationListenerService {
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(pCANCEL)){
                 handler.remove(intent.getIntExtra("id", 0));
-            }
+            } else if (intent.getAction().equals(pLOVE))
+                new Scrobbler(getApplicationContext(), handler).execute(Stuff.LOVE,
+                        intent.getStringExtra("artist"), intent.getStringExtra("title"));
+            else if (intent.getAction().equals(pUNLOVE))
+                new Scrobbler(getApplicationContext(), handler).execute(Stuff.UNLOVE,
+                        intent.getStringExtra("artist"), intent.getStringExtra("title"));
             else if(intent.getStringExtra("command").equals("list")){
 
                 Intent i1 = new  Intent(pNOTIFICATION_EVENT);
@@ -160,21 +167,23 @@ public class NLService extends NotificationListenerService {
             //TODO: handle
             String title = m.getData().getString(B_TITLE),
                     artist = m.getData().getString(B_ARTIST);
-            new Scrobbler(getApplicationContext()).execute(Stuff.SCROBBLE, artist, title);
-            remove(title.hashCode());
-            notification(artist + " - " + title, title.hashCode(), Stuff.STATE_SCROBBLED, 0);
+            int hash = title.hashCode() + artist.hashCode();
+            new Scrobbler(getApplicationContext(), handler).execute(Stuff.SCROBBLE, artist, title);
+            remove(hash);
+            notification(artist, title, hash, Stuff.STATE_SCROBBLED, 0);
         }
 
-        public void scrobble(String songTitle, int id){
-            int hash = songTitle.hashCode();
+        public int scrobble(String songTitle, int id){
+            String splits[] = Stuff.sanitizeTitle(songTitle);
+            int hash = splits[0].hashCode() + splits[1].hashCode();
             if (!activeIDs.contains(id))
                 activeIDs.add(id);
             else
                 removeMessages(hash);
             if (!hasMessages(hash)) {
-                String splits[] = Stuff.sanitizeTitle(songTitle);
+
                 if (splits.length == 2 && !splits[0].equals("") && !splits[1].equals("")) {
-                    new Scrobbler(getApplicationContext())
+                    new Scrobbler(getApplicationContext(), handler)
                             .execute(Stuff.NOW_PLAYING, splits[0], splits[1]);
                     Message m = obtainMessage();
                     Bundle b = new Bundle();
@@ -183,19 +192,18 @@ public class NLService extends NotificationListenerService {
                     b.putLong(B_TIME, System.currentTimeMillis());
                     m.setData(b);
                     m.what = hash;
-                    int delay = Integer.parseInt(
-                            pref.getString("delay_secs", "30000").split(" ")[0]
-                    ) * 1000;
+                    int delay = pref.getInt("delay_secs", 30) * 1000;
 
                     sendMessageDelayed(m, delay);
-                    notification(splits[0] + " - " + splits[1], songTitle.hashCode(), Stuff.STATE_SCROBBLING, 0);
+                    notification(splits[0], splits[1], hash, Stuff.STATE_SCROBBLING, 0);
                 } else {
-                    notification(songTitle, songTitle.hashCode(), Stuff.STATE_PARSE_ERR, android.R.drawable.stat_notify_error);
+                    notification(songTitle, hash, Stuff.STATE_PARSE_ERR, android.R.drawable.stat_notify_error);
                 }
             }
+            return hash;
         }
 
-        public void notification(String title, int id, String state, int iconId){
+        public void notification(String title1, String title2, int id, String state, int iconId){
             if (!pref.getBoolean("show_notifications", true))
                 return;
             if (iconId == 0)
@@ -203,29 +211,40 @@ public class NLService extends NotificationListenerService {
             Intent intent = new Intent(pCANCEL)
                     .putExtra("id", id);
             PendingIntent cancelIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+
             intent = new Intent(getApplicationContext(), Main.class);
             PendingIntent launchIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
+            intent = new Intent(pLOVE)
+                    .putExtra("artist", title1)
+                    .putExtra("title", title2);
+            PendingIntent loveIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+
+            String title = title1 + (title2 != null ? " - " + title2 : "");
+
             Notification.Builder nb = new Notification.Builder(getApplicationContext())
                     .setContentTitle(state)
-                    .setContentText(title)
+                    .setContentText(id+" "+title)
                     .setSmallIcon(iconId)
                     .setContentIntent(launchIntent)
                     .setAutoCancel(true);
             if (state.equals(Stuff.STATE_SCROBBLING))
                     nb.addAction(android.R.drawable.ic_menu_close_clear_cancel, "Cancel", cancelIntent)
-                    .addAction(R.drawable.ic_heart, "Love", launchIntent);
+                    .addAction(R.drawable.ic_heart, "Love", loveIntent);
             if (state.equals(Stuff.STATE_SCROBBLED))
-                nb.addAction(R.drawable.ic_heart, "Love", launchIntent);
+                nb.addAction(R.drawable.ic_heart, "Love", loveIntent);
 
             Notification n = nb.build();
             nm.notify(id, n);
         }
 
+        public void notification(String title1, int id, String state, int iconId){
+            notification(title1, null, id, state, iconId);
+        }
+
         public void remove(int id){
-            if (pref.getBoolean("show_notifications", true)) {
-                nm.cancel(id);
-            }
+            Stuff.log(getApplicationContext(), id+" ");
+            nm.cancel(id);
             removeMessages(id);
         }
     }

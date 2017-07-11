@@ -1,0 +1,18 @@
+<resources>
+    <declare-styleable name="SeekBarPreference">
+        <attr name="msbp_minValue" format="reference|integer"/>
+        <attr name="msbp_maxValue" format="reference|integer"/>
+        <attr name="msbp_interval" format="reference|integer"/>
+        <attr name="msbp_measurementUnit" format="reference|string"/>
+        <attr name="msbp_dialogEnabled" format="reference|boolean"/>
+
+        <!--next ones should be used only with view!-->
+        <attr name="msbp_view_title" format="reference|string"/>
+        <attr name="msbp_view_summary" format="reference|string"/>
+        <attr name="msbp_view_defaultValue" format="reference|integer"/>
+        <attr name="msbp_view_enabled" format="reference|boolean"/>
+
+        <!--not implemented yet-->
+        <!--<attr name="msbp_dialogStyle" format="reference"/>-->
+    </declare-styleable>
+</resources>

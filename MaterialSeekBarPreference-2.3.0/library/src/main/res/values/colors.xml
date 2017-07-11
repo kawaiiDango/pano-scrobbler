@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="color_bottom_line_enabled" type="color">#BDBDBD</item>
+    <item name="color_bottom_line_disabled" type="color">#EEEEEE</item>
+
+    <item name="color_dialog" type="color">#607D8B</item>
+
+</resources>

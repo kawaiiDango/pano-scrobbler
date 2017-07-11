@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 
@@ -23,16 +24,17 @@ public class RecentsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        getActivity().setTitle(R.string.app_name);
         return inflater.inflate(R.layout.content_main, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final ListView recentsList = (ListView) getActivity(). findViewById(R.id.content_main);
+        final ListView recentsList = (ListView) getActivity(). findViewById(R.id.recents_list);
         Spinner spinner = new Spinner(getContext());
-        adapter = new RecentsAdapter(getContext(), R.layout.list_item, null);
         recentsList.setEmptyView(spinner);
+        adapter = new RecentsAdapter(getContext(), R.layout.list_item);
         recentsList.setAdapter(adapter);
     }
 
@@ -42,4 +44,5 @@ public class RecentsFragment extends Fragment {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_main, menu);
     }
+
 }

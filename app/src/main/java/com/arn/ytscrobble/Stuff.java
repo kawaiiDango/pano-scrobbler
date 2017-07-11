@@ -20,10 +20,15 @@ class Stuff {
             STATE_PARSE_ERR = "did not scrobble",
             STATE_SCROBBLED = "scrobble submitted...",
             STATE_NETWORK_ERR = "network err while scrobbling";
+    static final String LOVE = "love", UNLOVE = "unlove", GET_LOVED = "loved";
 
     static void log(Context c, String s){
         Log.i(TAG,s);
-        Toast.makeText(c, s, Toast.LENGTH_SHORT).show();
+        try {
+            Toast.makeText(c, s, Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+            Log.i(TAG,"toastErr: "+e.getMessage());
+        }
     }
 
     static void dumpBundle(Context c, Bundle bundle){

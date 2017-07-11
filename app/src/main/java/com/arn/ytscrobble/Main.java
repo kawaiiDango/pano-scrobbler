@@ -1,21 +1,15 @@
 package com.arn.ytscrobble;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.Set;
 
@@ -87,7 +81,8 @@ public class Main extends AppCompatActivity {
         if (id == R.id.action_settings) {
             if (prefFragment == null)
                 prefFragment = new PrefFragment();
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
+
                     .replace(R.id.frame, prefFragment)
                     .addToBackStack(prefFragment.getClass().getName())
                     .commit();
@@ -124,14 +119,4 @@ public class Main extends AppCompatActivity {
         }
 
     }
-/*
-    class NotificationReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String temp = intent.getStringExtra("notification_event") + "\n" + status.getText();
-            status.setText(temp);
-        }
-    }
-    */
 }

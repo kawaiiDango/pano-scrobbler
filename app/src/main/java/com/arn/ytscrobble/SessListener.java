@@ -8,7 +8,7 @@ import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener;
 import android.media.session.PlaybackState;
 import android.support.annotation.NonNull;
-import android.support.v7.preference.PreferenceManager;
+import android.preference.PreferenceManager;
 import android.util.Pair;
 
 import java.util.HashMap;
@@ -26,6 +26,7 @@ public class SessListener implements OnActiveSessionsChangedListener{
     Context c;
     NLService.ScrobbleHandler handler;
     Map<MediaSession.Token, Pair<MediaController, MediaController.Callback>> mControllers = new HashMap<>();
+
 
     public SessListener(Context c, NLService.ScrobbleHandler h){
         this.c = c;
@@ -68,10 +69,12 @@ public class SessListener implements OnActiveSessionsChangedListener{
 
     private final MediaController.Callback mCallback =
         new MediaController.Callback() {
-            MediaMetadata metadata= null;
+            MediaMetadata metadata= null, metadataScrobbled= null;
+            int lastHash = 0;
             @Override
             public void onMetadataChanged(MediaMetadata metadata) {
                 super.onMetadataChanged(metadata);
+                Stuff.log(c, "metadata changed " );
                 this.metadata = metadata;
             }
 
@@ -81,20 +84,19 @@ public class SessListener implements OnActiveSessionsChangedListener{
                 if (metadata == null)
                     return;
                 String title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE);
-                String artist =  metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
+//                String artist =  metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
 
                 if (title.equals(""))
                     return;
-
                 if (state.getState()==PlaybackState.STATE_PAUSED || state.getState()==PlaybackState.STATE_STOPPED) {
 //                    cancel scrobbling if within time
-                    Stuff.log(c, "PAUSED/Stopped: " + title);
+                    Stuff.log(c, "PAUSED/Stopped: " + state.getPosition()+ " " + title);
 
-                    handler.remove(title.hashCode());
+                    handler.remove(lastHash);
                 } else if (state.getState()==PlaybackState.STATE_PLAYING){
-                    Stuff.log(c, "playing: " + title);
-                    if (pref.getBoolean("scrobble_youtube", true) && !title.equals(""))
-                        handler.scrobble(title, title.hashCode());
+                    Stuff.log(c, "playing: "+ state.getPosition()+ " " + title);
+                    if (pref.getBoolean("scrobble_youtube", true) && !Scrobbler.scrobbledHashes.contains(lastHash))
+                       lastHash = handler.scrobble(title, title.hashCode());
                 } else
                     Stuff.log(c, "other ("+state.getState()+") : " + title);
 

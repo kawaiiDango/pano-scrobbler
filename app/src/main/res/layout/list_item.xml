@@ -11,24 +11,27 @@
         android:id="@+id/recents_album_art"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        app:srcCompat="@android:drawable/ic_menu_gallery"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"/>
+        app:srcCompat="@drawable/ic_app"/>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/recents_love"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:srcCompat="@android:drawable/btn_star_big_off"
-        android:layout_marginBottom="13dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignBottom="@+id/recents_album_art"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="13dp"
+        android:layout_marginRight="13dp"
+        android:background="@drawable/btn_heart_disabled"
+        android:elevation="10dp"
+        android:scaleType="centerInside"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="80dp"
+        android:layout_marginRight="50dp"
         android:layout_toEndOf="@+id/recents_album_art"
         android:orientation="vertical"
         >
@@ -47,7 +50,8 @@
             android:text="tit"
             android:textColor="#ff7f1d"
             android:textSize="17dip"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:maxLines="1"/>
 
         <ProgressBar
             android:id="@+id/recents_prog"
@@ -70,7 +74,8 @@
             android:paddingTop="1dip"
             android:text="subtit"
             android:textColor="#6d6d6d"
-            android:textSize="17dip"/>
+            android:textSize="17dip"
+            android:maxLines="1"/>
     </LinearLayout>
 
 </RelativeLayout>

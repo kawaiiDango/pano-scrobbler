@@ -49,7 +49,7 @@ import de.umass.xml.DomElement;
  */
 public class Track extends MusicEntry {
 
-	private enum ScrobbleResultType {
+    private enum ScrobbleResultType {
 		NOW_PLAYING,
 		SINGLE_SCROBBLE,
 		MULTIPLE_SCROBBLES
@@ -70,6 +70,7 @@ public class Track extends MusicEntry {
 
 	private boolean fullTrackAvailable;
 	private boolean nowPlaying;
+    private boolean loved = false;
 
 	private Date playedWhen;
 	protected int duration;		// protected for use in Playlist.playlistFromElement
@@ -91,6 +92,14 @@ public class Track extends MusicEntry {
 		this.fullTrackAvailable = fullTrackAvailable;
 		this.nowPlaying = nowPlaying;
 	}
+
+    public boolean isLoved() {
+        return loved;
+    }
+
+    public void setLoved(boolean loved) {
+        this.loved = loved;
+    }
 
 	/**
 	 * Returns the duration of the song, if available, in seconds. The duration attribute is only available

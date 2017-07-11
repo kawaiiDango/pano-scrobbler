@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MSB_Dialog_Default" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/color_dialog</item>
+        <item name="colorAccent">@color/color_dialog</item>
+    </style>
+</resources>

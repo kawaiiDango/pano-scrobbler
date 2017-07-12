@@ -8,7 +8,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +23,9 @@ public class PrefFragment extends PreferenceFragment implements SharedPreference
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(false);
-        getActivity().setTitle(R.string.action_settings);
+
+        ((CollapsingToolbarLayout)getActivity().findViewById(R.id.toolbar_layout))
+                .setTitle(getString(R.string.action_settings));
         AppBarLayout vg = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
         vg.setExpanded(false, true);
 
@@ -50,14 +52,8 @@ public class PrefFragment extends PreferenceFragment implements SharedPreference
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-//        DropDownPreference delaySecs = (DropDownPreference) findPreference("delay_secs");
-//        delaySecs.setSummary(delaySecs.getEntry());
-//
-//        DropDownPreference delayPer = (DropDownPreference) findPreference("delay_per");
-//        delayPer.setSummary(delayPer.getEntry());
-
     }
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
@@ -74,8 +70,8 @@ public class PrefFragment extends PreferenceFragment implements SharedPreference
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (view != null) {
-            view.setBackgroundColor(getResources().getColor(android.R.color.black));
-            view.setNestedScrollingEnabled(true);
+//            view.setBackgroundColor(getResources().getColor(android.R.color.black));
+//            view.setNestedScrollingEnabled(true);
         }
         return view;
     }

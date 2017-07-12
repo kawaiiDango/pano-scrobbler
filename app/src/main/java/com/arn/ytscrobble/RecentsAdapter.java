@@ -2,7 +2,6 @@ package com.arn.ytscrobble;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +11,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import android.os.Handler;
-
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
 
 import de.umass.lastfm.ImageSize;
 import de.umass.lastfm.PaginatedResult;
@@ -30,7 +25,6 @@ import de.umass.lastfm.Track;
 
 public class RecentsAdapter extends ArrayAdapter<Track> {
 
-        private Context c;
         private int layoutResourceId;
         private static final Integer FILLED = 5;
 //        private ArrayList<Track> tracks;
@@ -38,7 +32,6 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
         public RecentsAdapter(Context c, int layoutResourceId) {
             super(c, layoutResourceId, new ArrayList<Track>());
             this.layoutResourceId = layoutResourceId;
-            this.c = c;
             new Scrobbler(c).execute(Stuff.GET_RECENTS);
         }
 
@@ -53,7 +46,7 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
          */
             if(convertView==null){
                 // inflate the layout
-                LayoutInflater inflater = ((Activity) c).getLayoutInflater();
+                LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
                 convertView = inflater.inflate(layoutResourceId, parent, false);
             }
 
@@ -71,13 +64,14 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
             love.setOnClickListener(loveToggle);
 
             if (t.isLoved()) {
-                love.setBackgroundResource(R.drawable.btn_heart_enabled);
+                love.setImageResource(R.drawable.ic_line_heart_enabled);
                 love.setTag(R.id.recents_love, FILLED);
             } else {
-                love.setBackgroundResource(R.drawable.btn_heart_disabled);
+                love.setImageResource(R.drawable.ic_line_heart_disabled);
                 love.setTag(R.id.recents_love, 0);
             }
 
+            ImageView albumArt =  (ImageView)convertView.findViewById(R.id.recents_album_art);
             String imgUrl = t.getImageURL(ImageSize.LARGE);
 
             if (imgUrl != null && !imgUrl.equals(""))
@@ -87,11 +81,14 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
                         .centerInside()
                         .placeholder(R.drawable.ic_lastfm)
                         .error(R.drawable.ic_placeholder_music)
-                        .into((ImageView) convertView.findViewById(R.id.recents_album_art));
+                        .into(albumArt);
+            else
+                albumArt.setImageResource(R.drawable.ic_placeholder_music);
             return convertView;
         }
 
         void populate(PaginatedResult<Track> res){
+
             clear();
             for (Track t : res) {
                 if (t != null) {
@@ -108,14 +105,11 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
                 if (t != null)
                     loved.add(t);
             }
-            for (int i=0, j=0; i<loved.size() && j < getCount(); ) {
-                if (loved.get(i).getPlayedWhen().before(getItem(j).getPlayedWhen()))
-                    j++;
-                else if (loved.get(i).getPlayedWhen().after(getItem(j).getPlayedWhen()))
-                    i++;
-                else {
+            for (int i=0; i<loved.size(); i++) {
+                for (int j=0; j < getCount(); j++)
+                if (loved.get(i).getName().equals(getItem(j).getName()) &&
+                        loved.get(i).getArtist().equals(getItem(j).getArtist())){
                     getItem(j).setLoved(true);
-                    i++; j++;
                 }
             }
             notifyDataSetChanged();
@@ -124,23 +118,24 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
         ImageButton.OnClickListener loveToggle = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ImageButton ib = (ImageButton)v;
                 View parentRow = (View) v.getParent();
                 ListView listView = (ListView) parentRow.getParent();
                 final int pos = listView.getPositionForView(parentRow);
 
+
                 if (v.getTag(R.id.recents_love) == FILLED){
-                    Stuff.log(getContext(), "FILLED");
-                    new Scrobbler(c).execute(Stuff.UNLOVE,
+                    new Scrobbler(getContext()).execute(Stuff.UNLOVE,
                             getItem(pos).getArtist(), getItem(pos).getName());
-                    v.setBackgroundResource(R.drawable.btn_heart_disabled);
-                    v.setTag(R.id.recents_love, 0);
+                    ib.setImageResource(R.drawable.ic_line_heart_disabled);
+                    ib.setTag(R.id.recents_love, 0);
                 } else {
-                    Stuff.log(getContext(), "0");
-                    new Scrobbler(c).execute(Stuff.LOVE,
+                    new Scrobbler(getContext()).execute(Stuff.LOVE,
                             getItem(pos).getArtist(), getItem(pos).getName());
-                    v.setBackgroundResource(R.drawable.btn_heart_enabled);
-                    v.setTag(R.id.recents_love, FILLED);
+                    ib.setImageResource(R.drawable.ic_line_heart_enabled);
+                    ib.setTag(R.id.recents_love, FILLED);
                 }
+
             }
         };
     }

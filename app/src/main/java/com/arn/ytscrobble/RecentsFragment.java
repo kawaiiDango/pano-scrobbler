@@ -2,7 +2,10 @@ package com.arn.ytscrobble;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,17 +27,17 @@ public class RecentsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        getActivity().setTitle(R.string.app_name);
         return inflater.inflate(R.layout.content_main, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         final ListView recentsList = (ListView) getActivity(). findViewById(R.id.recents_list);
-        Spinner spinner = new Spinner(getContext());
+        Spinner spinner = new Spinner(getActivity());
         recentsList.setEmptyView(spinner);
-        adapter = new RecentsAdapter(getContext(), R.layout.list_item);
+        adapter = new RecentsAdapter(getActivity(), R.layout.list_item);
         recentsList.setAdapter(adapter);
     }
 
@@ -45,4 +48,13 @@ public class RecentsFragment extends Fragment {
         inflater.inflate(R.menu.menu_main, menu);
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(hidden);
+        if (!hidden) {
+            ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout))
+                    .setTitle(getString(R.string.app_name));
+        }
+
+    }
 }

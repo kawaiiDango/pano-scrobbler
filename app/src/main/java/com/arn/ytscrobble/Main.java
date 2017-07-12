@@ -1,10 +1,10 @@
 package com.arn.ytscrobble;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +18,7 @@ public class Main extends AppCompatActivity {
 //    TextView status;
     private Fragment recentsFragment = null;
     private PrefFragment prefFragment = null;
+
 //    private NotificationReceiver nReceiver;
 //    private TrackMetaListener tReceiver;
 
@@ -37,8 +38,8 @@ public class Main extends AppCompatActivity {
             }
         });
         recentsFragment = new RecentsFragment();
-        getSupportFragmentManager().beginTransaction()
-            .replace(R.id.frame, recentsFragment).commit();
+        getFragmentManager().beginTransaction()
+            .add(R.id.frame, recentsFragment).commit();
 
         //status = (TextView) findViewById(R.id.status);
 //        nReceiver = new NotificationReceiver();
@@ -70,21 +71,27 @@ public class Main extends AppCompatActivity {
         registerReceiver(tReceiver, iF);
 */
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             if (prefFragment == null)
                 prefFragment = new PrefFragment();
             getFragmentManager().beginTransaction()
-
-                    .replace(R.id.frame, prefFragment)
-                    .addToBackStack(prefFragment.getClass().getName())
+                    .hide(recentsFragment)
+                    .add(R.id.frame, prefFragment)
+                    .addToBackStack(null)
                     .commit();
 
         }

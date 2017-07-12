@@ -25,7 +25,7 @@ import de.umass.lastfm.scrobble.ScrobbleResult;
  * Created by arn on 18-03-2017.
  */
 
-class Scrobbler extends AsyncTask<String, String, Object> {
+class Scrobbler extends AsyncTask<String, Object, Object> {
     private SharedPreferences prefs = null;
     private Handler handler = null;
     private Context c;
@@ -73,7 +73,8 @@ class Scrobbler extends AsyncTask<String, String, Object> {
             if (s[0].equals(Stuff.CHECKAUTH))
                 return null;
             else if (s[0].equals(Stuff.GET_RECENTS)) {
-                return User.getRecentTracks(username, Stuff.LAST_KEY);
+                publishProgress(User.getRecentTracks(username, Stuff.LAST_KEY));
+                return User.getLovedTracks(username, Stuff.LAST_KEY);
             } else if (s[0].equals(Stuff.GET_LOVED)){
                 return User.getLovedTracks(username, Stuff.LAST_KEY);
             } else if (s[0].equals(Stuff.LOVE)){
@@ -120,16 +121,20 @@ class Scrobbler extends AsyncTask<String, String, Object> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
+    protected void onProgressUpdate(Object... values) {
         super.onProgressUpdate(values);
-        Stuff.log(c, "progress: " + values[0]);
+        Object val = values[0];
+        if (val instanceof PaginatedResult)
+            RecentsFragment.adapter.populate((PaginatedResult<Track>) val);
+        else if (val instanceof String)
+            Stuff.log(c, values[0].toString());
     }
 
     @Override
     protected void onPostExecute(Object res) {
         //do stuff
         if (res instanceof PaginatedResult) {
-            RecentsFragment.adapter.populate((PaginatedResult<Track>) res);
+            RecentsFragment.adapter.markLoved((PaginatedResult<Track>) res);
         } else if (res instanceof Result){
             if (((Result) res).isSuccessful())
                 Stuff.log(c, "ok");

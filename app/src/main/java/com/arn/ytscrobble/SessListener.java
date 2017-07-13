@@ -71,11 +71,14 @@ public class SessListener implements OnActiveSessionsChangedListener{
         new MediaController.Callback() {
             MediaMetadata metadata= null, metadataScrobbled= null;
             int lastHash = 0;
+            long lastPos = 1;
+
             @Override
             public void onMetadataChanged(MediaMetadata metadata) {
                 super.onMetadataChanged(metadata);
                 Stuff.log(c, "metadata changed " );
                 this.metadata = metadata;
+                lastPos = 1;
             }
 
             @Override
@@ -91,12 +94,12 @@ public class SessListener implements OnActiveSessionsChangedListener{
                 if (state.getState()==PlaybackState.STATE_PAUSED || state.getState()==PlaybackState.STATE_STOPPED) {
 //                    cancel scrobbling if within time
                     Stuff.log(c, "PAUSED/Stopped: " + state.getPosition()+ " " + title);
-
+                    lastPos = state.getPosition();
                     handler.remove(lastHash);
-                } else if (state.getState()==PlaybackState.STATE_PLAYING){
+                } else if (state.getState()==PlaybackState.STATE_PLAYING || state.getState()==PlaybackState.STATE_BUFFERING){
                     Stuff.log(c, "playing: "+ state.getPosition()+ " " + title);
-                    if (pref.getBoolean("scrobble_youtube", true) && !Scrobbler.scrobbledHashes.contains(lastHash))
-                       lastHash = handler.scrobble(title, title.hashCode());
+                    if (pref.getBoolean("scrobble_youtube", true) && state.getPosition() < lastPos)
+                       handler.scrobble(title, title.hashCode());
                 } else
                     Stuff.log(c, "other ("+state.getState()+") : " + title);
 

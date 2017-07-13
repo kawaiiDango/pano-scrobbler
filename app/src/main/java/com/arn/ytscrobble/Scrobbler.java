@@ -87,9 +87,17 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
 
             ScrobbleResult result = null;
             int now = (int) (System.currentTimeMillis() / 1000);
-            if (s[0].equals(Stuff.NOW_PLAYING))
-                result = Track.updateNowPlaying(s[1], s[2], session);
-            else if (s[0].equals(Stuff.SCROBBLE))
+            if (s[0].equals(Stuff.NOW_PLAYING)) {
+                int hash = s[1].hashCode() + s[2].hashCode();
+                Track correction = Track.getCorrection(s[1], s[2], Stuff.LAST_KEY);
+                if (correction.getArtist() != null || correction.getName() != null)
+                    result = Track.updateNowPlaying(s[1], s[2], session);
+                else{
+                    publishProgress("not a song");
+                    ((NLService.ScrobbleHandler)handler).remove(hash);
+                }
+
+            } else if (s[0].equals(Stuff.SCROBBLE))
                 result = Track.scrobble(s[1], s[2], now, session);
             try {
                 if (result != null && !(result.isSuccessful() && !result.isIgnored())) {

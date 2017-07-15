@@ -33,7 +33,7 @@ public class Main extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "hit me :(", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -109,9 +109,6 @@ public class Main extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        new Scrobbler(getApplicationContext()).execute(Stuff.CHECKAUTH);
-
-
         boolean hasNotificationAccess = false;
         Set<String> packages = NotificationManagerCompat.getEnabledListenerPackages(getApplicationContext());
         for (String s : packages)
@@ -121,8 +118,11 @@ public class Main extends AppCompatActivity {
             }
 
         if (!hasNotificationAccess) {
+            Stuff.toast(getApplicationContext(), "Need Notification Access");
             Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             startActivity(intent);
+        } else {
+            new Scrobbler(getApplicationContext()).execute(Stuff.CHECKAUTH);
         }
 
     }

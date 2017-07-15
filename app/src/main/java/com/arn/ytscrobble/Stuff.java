@@ -1,6 +1,8 @@
 package com.arn.ytscrobble;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,6 +26,14 @@ class Stuff {
 
     static void log(Context c, String s){
         Log.i(TAG,s);
+//        try {
+//            Toast.makeText(c, s, Toast.LENGTH_SHORT).show();
+//        }catch (Exception e){
+//            Log.i(TAG,"toastErr: "+e.getMessage());
+//        }
+    }
+
+    static void toast(Context c, String s){
         try {
             Toast.makeText(c, s, Toast.LENGTH_SHORT).show();
         }catch (Exception e){
@@ -77,8 +87,7 @@ class Stuff {
         }
 
         if ((musicInfo.length == 1)||(musicInfo[0] == null) || (musicInfo[1] == null)) {
-            musicInfo[0] = "";
-            musicInfo[1] = "";
+            return new String[] {"", ""};
 //            feedback = "notFound";
         }
 
@@ -105,5 +114,20 @@ class Stuff {
         musicInfo[1] = musicInfo[1].replace("^\\s\\s*", "").replace("\\s\\s*$", "");
 
         return musicInfo;
+    }
+
+    static int getMatColor(Context c, String typeColor)
+    {
+        int returnColor = Color.BLACK;
+        int arrayId = c.getResources().getIdentifier("mdcolor_" + typeColor, "array", c.getPackageName());
+
+        if (arrayId != 0)
+        {
+            TypedArray colors = c.getResources().obtainTypedArray(arrayId);
+            int index = (int) (Math.random() * colors.length());
+            returnColor = colors.getColor(index, Color.BLACK);
+            colors.recycle();
+        }
+        return returnColor;
     }
 }

@@ -27,7 +27,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:elevation="4dp"
                 app:layout_collapseMode="pin"
+                app:layout_collapseParallaxMultiplier="1.0"
                 app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -38,9 +40,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        app:elevation="12dp"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@android:drawable/ic_dialog_email"/>
+        app:srcCompat="@android:drawable/ic_media_play"/>
 
     <FrameLayout
         android:layout_width="match_parent"

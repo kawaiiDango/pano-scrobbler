@@ -25,7 +25,7 @@ public class SessListener implements OnActiveSessionsChangedListener{
     private SharedPreferences pref=null;
     Context c;
     NLService.ScrobbleHandler handler;
-    Map<MediaSession.Token, Pair<MediaController, MediaController.Callback>> mControllers = new HashMap<>();
+    private final Map<MediaSession.Token, Pair<MediaController, MediaController.Callback>> mControllers = new HashMap<>();
 
 
     public SessListener(Context c, NLService.ScrobbleHandler h){
@@ -69,7 +69,7 @@ public class SessListener implements OnActiveSessionsChangedListener{
 
     private final MediaController.Callback mCallback =
         new MediaController.Callback() {
-            MediaMetadata metadata= null, metadataScrobbled= null;
+            MediaMetadata metadata= null;
             int lastHash = 0;
             long lastPos = 1;
 
@@ -91,15 +91,21 @@ public class SessListener implements OnActiveSessionsChangedListener{
 
                 if (title.equals(""))
                     return;
-                if (state.getState()==PlaybackState.STATE_PAUSED || state.getState()==PlaybackState.STATE_STOPPED) {
+                if (state.getState()==PlaybackState.STATE_PAUSED) {
 //                    cancel scrobbling if within time
-                    Stuff.log(c, "PAUSED/Stopped: " + state.getPosition()+ " " + title);
                     lastPos = state.getPosition();
                     handler.remove(lastHash);
+                } else if ( state.getState()==PlaybackState.STATE_STOPPED){
+                    // a replay should count as another scrobble
+                    lastPos = 1;
+                    handler.remove(lastHash);
                 } else if (state.getState()==PlaybackState.STATE_PLAYING || state.getState()==PlaybackState.STATE_BUFFERING){
+                    if (state.getState()==PlaybackState.STATE_BUFFERING && state.getPosition() == 0)
+                        return; //dont scrobble first buffering
+
                     Stuff.log(c, "playing: "+ state.getPosition()+ " " + title);
                     if (pref.getBoolean("scrobble_youtube", true) && state.getPosition() < lastPos)
-                       handler.scrobble(title, title.hashCode());
+                        lastHash = handler.scrobble(title);
                 } else
                     Stuff.log(c, "other ("+state.getState()+") : " + title);
 

@@ -2,6 +2,9 @@ package com.arn.ytscrobble;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +35,7 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
         public RecentsAdapter(Context c, int layoutResourceId) {
             super(c, layoutResourceId, new ArrayList<Track>());
             this.layoutResourceId = layoutResourceId;
-            new Scrobbler(c).execute(Stuff.GET_RECENTS);
+            loadURL();
         }
 
         @Override
@@ -74,7 +77,8 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
             ImageView albumArt =  (ImageView)convertView.findViewById(R.id.recents_album_art);
             String imgUrl = t.getImageURL(ImageSize.LARGE);
 
-            if (imgUrl != null && !imgUrl.equals(""))
+            if (imgUrl != null && !imgUrl.equals("")) {
+                albumArt.clearColorFilter();
                 Picasso.with(getContext())
                         .load(imgUrl)
                         .fit()
@@ -82,20 +86,26 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
                         .placeholder(R.drawable.ic_lastfm)
                         .error(R.drawable.ic_placeholder_music)
                         .into(albumArt);
-            else
+            } else {
                 albumArt.setImageResource(R.drawable.ic_placeholder_music);
+                albumArt.setColorFilter(Stuff.getMatColor(getContext(),"500"));
+            }
             return convertView;
         }
 
-        void populate(PaginatedResult<Track> res){
+        void loadURL(){
+            new Scrobbler(getContext()).execute(Stuff.GET_RECENTS);
+        }
 
+        void populate(PaginatedResult<Track> res){
+            SwipeRefreshLayout refresh = (SwipeRefreshLayout)((Activity) getContext()).findViewById(R.id.swiperefresh);
+            refresh.setRefreshing(false);
             clear();
             for (Track t : res) {
                 if (t != null) {
                     add(t);
                 }
             }
-//            new Scrobbler(c).execute(Stuff.GET_LOVED);
             notifyDataSetChanged();
         }
 

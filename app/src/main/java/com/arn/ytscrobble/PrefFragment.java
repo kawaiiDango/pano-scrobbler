@@ -9,9 +9,6 @@ import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 /**
  * Created by arn on 09/07/2017.
@@ -64,16 +61,6 @@ public class PrefFragment extends PreferenceFragment implements SharedPreference
             mxm.setChecked(val);
             yt.setChecked(val);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        if (view != null) {
-//            view.setBackgroundColor(getResources().getColor(android.R.color.black));
-//            view.setNestedScrollingEnabled(true);
-        }
-        return view;
     }
 
     @Override

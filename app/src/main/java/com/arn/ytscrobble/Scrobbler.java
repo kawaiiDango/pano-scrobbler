@@ -3,12 +3,15 @@ package com.arn.ytscrobble;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.webkit.WebSettings;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import de.umass.lastfm.Authenticator;
@@ -42,82 +45,94 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
     }
     @Override
     protected Object doInBackground(String... s) {
-        boolean reAuthNeeded = false;
-        Session session = null;
-        Caller.getInstance().setUserAgent(WebSettings.getDefaultUserAgent(c));
-        Caller.getInstance().setDebugMode(true);
+        if (!isNetworkAvailable()){
+            publishProgress("You are offline");
+            return null;
+        }
+        try {
+            boolean reAuthNeeded = false;
+            Session session = null;
+            Caller.getInstance().setUserAgent(WebSettings.getDefaultUserAgent(c));
+            Caller.getInstance().setDebugMode(true);
 
-        String key = prefs.getString("sesskey","");
-        String username = prefs.getString("username", null);
+            String key = prefs.getString("sesskey", "");
+            String username = prefs.getString("username", null);
 
-        if (key.length() < 5 && token.length() >5) {
-            session = Authenticator.getSession(token, Stuff.LAST_KEY, Stuff.LAST_SECRET);
-            if (session != null) {
-                username = session.getUsername();
-                prefs.edit()
-                        .putString("username", username)
-                        .apply();
-            }
-        } else if (key.length() > 5 )
-            session = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, key);
-        else
-            reAuthNeeded = true;
+            if (key.length() < 5 && token.length() > 5) {
+                session = Authenticator.getSession(token, Stuff.LAST_KEY, Stuff.LAST_SECRET);
+                if (session != null) {
+                    username = session.getUsername();
+                    prefs.edit()
+                            .putString("username", username)
+                            .apply();
+                }
+            } else if (key.length() > 5)
+                session = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, key);
+            else
+                reAuthNeeded = true;
 
-        if (session == null || username == null)
-            reAuthNeeded = true;
+            if (session == null || username == null)
+                reAuthNeeded = true;
 
-        if(!reAuthNeeded) {
-            //publishProgress("sess_key: " + session.getKey());
-            prefs.edit().putString("sesskey", session.getKey()).apply();
+            if (!reAuthNeeded) {
+                //publishProgress("sess_key: " + session.getKey());
+                prefs.edit().putString("sesskey", session.getKey()).apply();
 
-            if (s[0].equals(Stuff.CHECKAUTH))
-                return null;
-            else if (s[0].equals(Stuff.GET_RECENTS)) {
-                publishProgress(User.getRecentTracks(username, Stuff.LAST_KEY));
-                return User.getLovedTracks(username, Stuff.LAST_KEY);
-            } else if (s[0].equals(Stuff.GET_LOVED)){
-                return User.getLovedTracks(username, Stuff.LAST_KEY);
-            } else if (s[0].equals(Stuff.LOVE)){
-                return Track.love(s[1], s[2], session);
-            } else if (s[0].equals(Stuff.UNLOVE)){
-                return Track.unlove(s[1], s[2], session);
-            }
-
-            //for scrobble or love data: s[0] = tag, s[1] = artist, s[2] = song
-
-            ScrobbleResult result = null;
-            int now = (int) (System.currentTimeMillis() / 1000);
-            if (s[0].equals(Stuff.NOW_PLAYING)) {
-                int hash = s[1].hashCode() + s[2].hashCode();
-                Track correction = Track.getCorrection(s[1], s[2], Stuff.LAST_KEY);
-                if (correction.getArtist() != null || correction.getName() != null)
-                    result = Track.updateNowPlaying(s[1], s[2], session);
-                else{
-                    publishProgress("not a song");
-                    ((NLService.ScrobbleHandler)handler).remove(hash);
+                if (s[0].equals(Stuff.CHECKAUTH))
+                    return null;
+                else if (s[0].equals(Stuff.GET_RECENTS)) {
+                    publishProgress(User.getRecentTracks(username, Stuff.LAST_KEY));
+                    return User.getLovedTracks(username, Stuff.LAST_KEY);
+                } else if (s[0].equals(Stuff.GET_LOVED)) {
+                    return User.getLovedTracks(username, Stuff.LAST_KEY);
+                } else if (s[0].equals(Stuff.LOVE)) {
+                    return Track.love(s[1], s[2], session);
+                } else if (s[0].equals(Stuff.UNLOVE)) {
+                    return Track.unlove(s[1], s[2], session);
                 }
 
-            } else if (s[0].equals(Stuff.SCROBBLE))
-                result = Track.scrobble(s[1], s[2], now, session);
-            try {
-                if (result != null && !(result.isSuccessful() && !result.isIgnored())) {
+                //for scrobble or love data: s[0] = tag, s[1] = artist, s[2] = song
+
+                ScrobbleResult result = null;
+                int now = (int) (System.currentTimeMillis() / 1000);
+                if (s[0].equals(Stuff.NOW_PLAYING)) {
                     int hash = s[1].hashCode() + s[2].hashCode();
-                    scrobbledHashes.add(hash);
-                    ((NLService.ScrobbleHandler) handler)
-                            .notification(s[1], s[2], hash, Stuff.STATE_NETWORK_ERR, android.R.drawable.stat_notify_error);
-                }
-            }catch (NullPointerException e){
-                publishProgress(s[0] + ": NullPointerException");
-            }
+                    Track correction = Track.getCorrection(s[1], s[2], Stuff.LAST_KEY);
+                    if (correction.getArtist() != null || correction.getName() != null) {
+//                    if (correction.getArtist() != null)
+//                        s[1] = correction.getArtist();
+//                    if (correction.getName() != null)
+//                        s[2] = correction.getName();
+                        result = Track.updateNowPlaying(s[1], s[2], session);
+                    } else {
+                        publishProgress("not a song");
+                        ((NLService.ScrobbleHandler) handler).remove(hash);
+                    }
 
-        } else
-            reAuth();
+                } else if (s[0].equals(Stuff.SCROBBLE))
+                    result = Track.scrobble(s[1], s[2], now, session);
+                try {
+                    if (result != null && !(result.isSuccessful() && !result.isIgnored())) {
+                        int hash = s[1].hashCode() + s[2].hashCode();
+                        scrobbledHashes.add(hash);
+                        ((NLService.ScrobbleHandler) handler)
+                                .notification(s[1], s[2], Stuff.STATE_NETWORK_ERR, android.R.drawable.stat_notify_error);
+                    }
+                } catch (NullPointerException e) {
+                    publishProgress(s[0] + ": NullPointerException");
+                }
+
+            } else
+                reAuth();
+        } catch (Exception e){
+            publishProgress(e.getMessage());
+        }
         // adb shell am start -W -a android.intent.action.VIEW -d "http://maare.ga:10003/auth" com.arn.ytscrobble
         return null;
     }
 
     private void reAuth() {
-        publishProgress("Deleting key");
+        publishProgress("Authorize LastFM");
         PreferenceManager.getDefaultSharedPreferences(c)
                 .edit()
                 .remove("sesskey")
@@ -128,6 +143,13 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
         c.startActivity(browserIntent);
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     protected void onProgressUpdate(Object... values) {
         super.onProgressUpdate(values);
@@ -135,7 +157,7 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
         if (val instanceof PaginatedResult)
             RecentsFragment.adapter.populate((PaginatedResult<Track>) val);
         else if (val instanceof String)
-            Stuff.log(c, values[0].toString());
+            Stuff.toast(c, values[0].toString());
     }
 
     @Override
@@ -145,9 +167,9 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
             RecentsFragment.adapter.markLoved((PaginatedResult<Track>) res);
         } else if (res instanceof Result){
             if (((Result) res).isSuccessful())
-                Stuff.log(c, "ok");
+                Stuff.toast(c, "ok");
             else
-                Stuff.log(c, "failed");
+                Stuff.toast(c, "failed");
         }
     }
 }

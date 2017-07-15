@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -34,11 +35,23 @@ public class RecentsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        final ListView recentsList = (ListView) getActivity(). findViewById(R.id.recents_list);
+        final ListView recentsList = (ListView) getActivity().findViewById(R.id.recents_list);
         Spinner spinner = new Spinner(getActivity());
         recentsList.setEmptyView(spinner);
         adapter = new RecentsAdapter(getActivity(), R.layout.list_item);
         recentsList.setAdapter(adapter);
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        ViewGroup header = (ViewGroup)inflater.inflate(R.layout.recents_header, recentsList, false);
+        recentsList.addHeaderView(header, null, false);
+
+        SwipeRefreshLayout refresh = (SwipeRefreshLayout) getActivity().findViewById(R.id.swiperefresh);
+        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.loadURL();
+            }
+        });
     }
 
     @Override

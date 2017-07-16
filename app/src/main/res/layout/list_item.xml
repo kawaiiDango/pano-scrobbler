@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="horizontal" >
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingBottom="1dip"
+                android:paddingLeft="1dip"
+                android:paddingRight="1dip">
 
 
     <ImageView
@@ -19,10 +22,11 @@
         android:id="@+id/recents_love"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_alignBottom="@+id/recents_album_art"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="13dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="13dp"
         android:layout_marginRight="13dp"
+        android:layout_marginTop="22dp"
         android:background="@drawable/btn_heart_disabled"
         android:elevation="10dp"
         android:scaleType="centerInside"/>
@@ -31,51 +35,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="7dp"
         android:layout_toEndOf="@+id/recents_album_art"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/recents_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="5dip"
             android:layout_weight="0.5"
             android:clickable="false"
             android:gravity="left"
             android:longClickable="false"
-            android:paddingBottom="1dip"
+            android:maxLines="1"
+            android:paddingLeft="1dip"
+            android:paddingRight="1dip"
             android:paddingTop="1dip"
             android:text="tit"
-            android:textColor="#ff7f1d"
+            android:textColor="@color/colorAccent"
             android:textSize="17dip"
-            android:textStyle="bold"
-            android:maxLines="1"/>
-
-        <ProgressBar
-            android:id="@+id/recents_prog"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/recents_subtitle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="5dip"
             android:layout_weight="0.5"
             android:clickable="false"
             android:gravity="right"
             android:linksClickable="false"
             android:longClickable="false"
+            android:maxLines="1"
             android:paddingBottom="1dip"
-            android:paddingTop="1dip"
             android:text="subtit"
-            android:textColor="#6d6d6d"
-            android:textSize="17dip"
-            android:maxLines="1"/>
+            android:textSize="17dip"/>
+
+        <TextView
+            android:id="@+id/recents_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:paddingBottom="1dip"
+            android:paddingLeft="1dip"
+            android:paddingRight="1dip"
+            android:text="date date yay"/>
+
     </LinearLayout>
 
 </RelativeLayout>

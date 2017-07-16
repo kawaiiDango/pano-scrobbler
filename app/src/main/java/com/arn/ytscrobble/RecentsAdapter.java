@@ -2,9 +2,11 @@ package com.arn.ytscrobble;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,8 @@ import de.umass.lastfm.ImageSize;
 import de.umass.lastfm.PaginatedResult;
 import de.umass.lastfm.Track;
 
+import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
+
 /**
  * Created by arn on 10/07/2017.
  */
@@ -35,7 +39,6 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
         public RecentsAdapter(Context c, int layoutResourceId) {
             super(c, layoutResourceId, new ArrayList<Track>());
             this.layoutResourceId = layoutResourceId;
-            loadURL();
         }
 
         @Override
@@ -54,15 +57,24 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
             }
 
             // object item based on the position
-            Track t = getItem(position);
+            final Track t = getItem(position);
 
             // get the TextView and then set the text (item name) and tag (item ID) values
             TextView title = (TextView) convertView.findViewById(R.id.recents_title),
-                    subtitle = (TextView) convertView.findViewById(R.id.recents_subtitle);
+                    subtitle = (TextView) convertView.findViewById(R.id.recents_subtitle),
+                    date = (TextView) convertView.findViewById(R.id.recents_date);
             String np = t.isNowPlaying() ? "▶️" : "";
+            CharSequence relDate = t.isNowPlaying() ? "playing right now..." : "";
             title.setText(np + t.getName());
             subtitle.setText(t.getArtist());
 
+            if (t.getPlayedWhen() != null) {
+                relDate = DateUtils.getRelativeTimeSpanString(
+                        t.getPlayedWhen().getTime(), System.currentTimeMillis(), MINUTE_IN_MILLIS);
+                if (relDate.charAt(0) == '0')
+                    relDate = "Just now";
+            }
+            date.setText(relDate);
             final ImageButton love = (ImageButton) convertView.findViewById(R.id.recents_love);
             love.setOnClickListener(loveToggle);
 
@@ -75,6 +87,7 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
             }
 
             ImageView albumArt =  (ImageView)convertView.findViewById(R.id.recents_album_art);
+
             String imgUrl = t.getImageURL(ImageSize.LARGE);
 
             if (imgUrl != null && !imgUrl.equals("")) {
@@ -86,6 +99,24 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
                         .placeholder(R.drawable.ic_lastfm)
                         .error(R.drawable.ic_placeholder_music)
                         .into(albumArt);
+                // set app_bar bg
+                if (position == 0){
+                    FloatingActionButton fab = (FloatingActionButton) ((Activity)getContext()).findViewById(R.id.fab);
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(t.getUrl()));
+                            getContext().startActivity(browserIntent);
+                        }
+                    });
+                    ImageView hero =  (ImageView)convertView.findViewById(R.id.img_hero);
+                    Picasso.with(getContext())
+                            .load(imgUrl)
+                            .fit()
+                            .centerCrop()
+                            .into(hero);
+
+                }
             } else {
                 albumArt.setImageResource(R.drawable.ic_placeholder_music);
                 albumArt.setColorFilter(Stuff.getMatColor(getContext(),"500"));

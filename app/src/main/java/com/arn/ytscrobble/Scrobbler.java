@@ -33,7 +33,7 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
     private Handler handler = null;
     private Context c;
     private static String token  = "";
-    public static ArrayList<Integer> scrobbledHashes= new ArrayList<>();
+//    private static ArrayList<Integer> scrobbledHashes= new ArrayList<>();
 
     Scrobbler(Context c){
         this(c, null);
@@ -78,17 +78,18 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
                 //publishProgress("sess_key: " + session.getKey());
                 prefs.edit().putString("sesskey", session.getKey()).apply();
 
-                if (s[0].equals(Stuff.CHECKAUTH))
-                    return null;
-                else if (s[0].equals(Stuff.GET_RECENTS)) {
-                    publishProgress(User.getRecentTracks(username, Stuff.LAST_KEY));
-                    return User.getLovedTracks(username, Stuff.LAST_KEY);
-                } else if (s[0].equals(Stuff.GET_LOVED)) {
-                    return User.getLovedTracks(username, Stuff.LAST_KEY);
-                } else if (s[0].equals(Stuff.LOVE)) {
-                    return Track.love(s[1], s[2], session);
-                } else if (s[0].equals(Stuff.UNLOVE)) {
-                    return Track.unlove(s[1], s[2], session);
+                switch (s[0]) {
+                    case Stuff.CHECKAUTH:
+                        return null;
+                    case Stuff.GET_RECENTS:
+                        publishProgress(User.getRecentTracks(username, Stuff.LAST_KEY));
+                        return User.getLovedTracks(username, Stuff.LAST_KEY);
+                    case Stuff.GET_LOVED:
+                        return User.getLovedTracks(username, Stuff.LAST_KEY);
+                    case Stuff.LOVE:
+                        return Track.love(s[1], s[2], session);
+                    case Stuff.UNLOVE:
+                        return Track.unlove(s[1], s[2], session);
                 }
 
                 //for scrobble or love data: s[0] = tag, s[1] = artist, s[2] = song
@@ -114,7 +115,7 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
                 try {
                     if (result != null && !(result.isSuccessful() && !result.isIgnored())) {
                         int hash = s[1].hashCode() + s[2].hashCode();
-                        scrobbledHashes.add(hash);
+//                        scrobbledHashes.add(hash);
                         ((NLService.ScrobbleHandler) handler)
                                 .notification(s[1], s[2], Stuff.STATE_NETWORK_ERR, android.R.drawable.stat_notify_error);
                     }
@@ -130,7 +131,7 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
         // adb shell am start -W -a android.intent.action.VIEW -d "http://maare.ga:10003/auth" com.arn.ytscrobble
         return null;
     }
-
+//header-expanded-image
     private void reAuth() {
         publishProgress("Authorize LastFM");
         PreferenceManager.getDefaultSharedPreferences(c)

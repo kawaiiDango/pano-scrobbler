@@ -72,7 +72,6 @@ public class NLService extends NotificationListenerService {
             }
             // Media controller needs notification listener service
             // permissions to be granted.
-            return;
         }
     }
 
@@ -193,7 +192,7 @@ public class NLService extends NotificationListenerService {
                     sendMessageDelayed(m, delay);
                     notification(splits[0], splits[1], Stuff.STATE_SCROBBLING, 0);
                 } else {
-                    notification(songTitle, Stuff.STATE_PARSE_ERR, NOTI_ERR_ICON);
+                    notification(splits[0], splits[1], Stuff.STATE_PARSE_ERR, NOTI_ERR_ICON);
                 }
             }
             return hash;
@@ -210,7 +209,7 @@ public class NLService extends NotificationListenerService {
                 hash+= title2.hashCode();
             else
                 title2 = "";
-            String loveText = love ? "❤ Love" : "\uD83D\uDC94 Unlove";
+            String loveText = love ? "❤ Love it" : "\uD83D\uDC94 Unlove it";
             String loveAction = love ? pLOVE : pUNLOVE;
 
             Intent intent = new Intent(getApplicationContext(), Main.class);

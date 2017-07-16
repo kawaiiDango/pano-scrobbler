@@ -23,21 +23,41 @@ class Stuff {
             STATE_SCROBBLED = "scrobble submitted...",
             STATE_NETWORK_ERR = "network err while scrobbling";
     static final String LOVE = "love", UNLOVE = "unlove", GET_LOVED = "loved";
+    static final String seperators[] = { // in priority order
+            "—",
+            " ‎– ",
+            "–",
+            " - ",
+            "-",
+            "「",
+            "『",
+            "ー",
+
+            "【",
+            "〖",
+            ":",
+            " \"",
+            " /"
+    },
+    unwantedSeperators[] = {
+            "』",
+            "」",
+            "\"",
+            "'",
+            "】",
+            "〗"
+    };
 
     static void log(Context c, String s){
         Log.i(TAG,s);
-//        try {
-//            Toast.makeText(c, s, Toast.LENGTH_SHORT).show();
-//        }catch (Exception e){
-//            Log.i(TAG,"toastErr: "+e.getMessage());
-//        }
+        toast(c, s);
     }
 
     static void toast(Context c, String s){
         try {
             Toast.makeText(c, s, Toast.LENGTH_SHORT).show();
         }catch (Exception e){
-            Log.i(TAG,"toastErr: "+e.getMessage());
+//            Log.i(TAG,"toastErr: "+e.getMessage());
         }
     }
 
@@ -67,28 +87,32 @@ class Stuff {
         //get remix info
         Matcher remixInfo = r.matcher(titleContentOriginal);
 
-        String musicInfo[] = titleContent.split(" - ");
-        if (musicInfo.length == 1)
-            musicInfo = titleContent.split("-");
-        if (musicInfo.length == 1)
-            musicInfo = titleContent.split("‎–");
-        if (musicInfo.length == 1)
-            musicInfo = titleContent.split(":");
-        if (musicInfo.length == 1)
-            musicInfo = titleContent.split(" \"");
-        if (musicInfo.length == 1)
-            musicInfo = titleContent.split(" /");
-
-
-        //remove " and ' from musicInfo
-        for (int i=0;i<musicInfo.length;i++) {
-            musicInfo[i] = musicInfo[i].replaceAll("^\\s*\"|\"\\s*$", " ");
-            musicInfo[i] = musicInfo[i].replaceAll("^\\s*'|'\\s*$", " ");
+        String musicInfo[] = null;
+        for (String s:seperators){
+            musicInfo = titleContent.split(s);
+//            log(null ,"********"+s + "|"+musicInfo[0]);
+            if (musicInfo.length > 1) {
+                for (int j=0; j< seperators.length-2; j++){
+                    String splits[] = musicInfo[1].split(seperators[j]);
+                    musicInfo[1] = splits[0];
+//                    log(null, splits[0] + "|" + splits.length);
+                    if (splits.length > 1)
+                        break;
+                }
+                break;
+            }
         }
 
-        if ((musicInfo.length == 1)||(musicInfo[0] == null) || (musicInfo[1] == null)) {
-            return new String[] {"", ""};
+
+        if (musicInfo == null || musicInfo.length == 1 || musicInfo[0] == null ||  musicInfo[1] == null ) {
+            return new String[] {titleContent, ""};
 //            feedback = "notFound";
+        }
+
+        //remove ", ', 」, 』 from musicInfo
+        for (int i=0;i<musicInfo.length;i++) {
+            for (String s:unwantedSeperators)
+                musicInfo[i] = musicInfo[i].replaceAll("^\\s*"+ s +"|"+ s +"\\s*$", " ");
         }
 
         musicInfo[1] = musicInfo[1].replace("\\.(avi|wmv|mp4|mpeg4|mov|3gpp|flv|webm)$", " ")

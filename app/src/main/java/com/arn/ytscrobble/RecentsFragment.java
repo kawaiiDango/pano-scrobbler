@@ -1,18 +1,16 @@
 package com.arn.ytscrobble;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 
@@ -22,7 +20,6 @@ import android.widget.Spinner;
 
 public class RecentsFragment extends Fragment {
 
-//    final String dummy[] = {"ayy", "lmao", "wtf","ayy", "lmao", "wtf","ayy", "lmao", "wtf","ayy", "lmao", "wtf","ayy", "lmao", "wtf"};
     static RecentsAdapter adapter = null;
     @Nullable
     @Override
@@ -68,6 +65,12 @@ public class RecentsFragment extends Fragment {
             ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout))
                     .setTitle(getString(R.string.app_name));
         }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter != null)
+            adapter.loadURL();
     }
 }

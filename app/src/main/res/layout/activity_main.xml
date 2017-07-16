@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    app:layout_collapseMode="parallax"
+    app:layout_collapseParallaxMultiplier="0.6"
     tools:context="com.arn.ytscrobble.Main">
 
     <android.support.design.widget.AppBarLayout
@@ -21,7 +23,20 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <ImageView
+                android:id="@+id/img_hero"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:contentDescription="album art"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_lastfm"
+                android:tint="@color/darkTint"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.5"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -40,14 +55,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorPrimary"
         app:elevation="12dp"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@android:drawable/ic_media_play"/>
+        app:srcCompat="@android:drawable/ic_dialog_info"/>
 
     <FrameLayout
-        android:layout_width="match_parent"
         android:id="@+id/frame"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     <!--android:nestedScrollingEnabled="true"-->

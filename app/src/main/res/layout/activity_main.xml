@@ -23,20 +23,22 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
+            android:background="@drawable/ic_dark_overlay"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <ImageView
                 android:id="@+id/img_hero"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
+                android:foreground="@drawable/ic_dark_overlay"
                 android:contentDescription="album art"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_lastfm"
-                android:tint="@color/darkTint"
+                android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.5"/>
+                app:layout_collapseParallaxMultiplier="0.5"
+                app:srcCompat="@drawable/ic_lastfm"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

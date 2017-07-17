@@ -3,10 +3,18 @@ package com.arn.ytscrobble;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -30,17 +39,20 @@ import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
  * Created by arn on 10/07/2017.
  */
 
-public class RecentsAdapter extends ArrayAdapter<Track> {
+class RecentsAdapter extends ArrayAdapter<Track> {
 
-        private int layoutResourceId;
+    private final ImageView hero;
+    private int layoutResourceId;
         private static final Integer FILLED = 5;
 //        private ArrayList<Track> tracks;
 
-        public RecentsAdapter(Context c, int layoutResourceId) {
+        RecentsAdapter(Context c, int layoutResourceId) {
             super(c, layoutResourceId, new ArrayList<Track>());
             this.layoutResourceId = layoutResourceId;
+            hero =  (ImageView)((Activity)c).findViewById(R.id.img_hero);
         }
 
+        @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -88,7 +100,7 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
 
             ImageView albumArt =  (ImageView)convertView.findViewById(R.id.recents_album_art);
 
-            String imgUrl = t.getImageURL(ImageSize.LARGE);
+            String imgUrl = t.getImageURL(ImageSize.MEDIUM);
 
             if (imgUrl != null && !imgUrl.equals("")) {
                 albumArt.clearColorFilter();
@@ -99,39 +111,83 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
                         .placeholder(R.drawable.ic_lastfm)
                         .error(R.drawable.ic_placeholder_music)
                         .into(albumArt);
-                // set app_bar bg
-                if (position == 0){
-                    FloatingActionButton fab = (FloatingActionButton) ((Activity)getContext()).findViewById(R.id.fab);
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(t.getUrl()));
-                            getContext().startActivity(browserIntent);
-                        }
-                    });
-                    ImageView hero =  (ImageView)convertView.findViewById(R.id.img_hero);
-                    Picasso.with(getContext())
-                            .load(imgUrl)
-                            .fit()
-                            .centerCrop()
-                            .into(hero);
 
-                }
             } else {
                 albumArt.setImageResource(R.drawable.ic_placeholder_music);
                 albumArt.setColorFilter(Stuff.getMatColor(getContext(),"500"));
             }
+
+            if (position == 0 && !t.getUrl().equals(hero.getTag())){
+                FloatingActionButton fab = (FloatingActionButton) ((Activity)getContext()).findViewById(R.id.fab);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(t.getUrl()));
+                        getContext().startActivity(browserIntent);
+                    }
+                });
+                new Scrobbler(getContext()).execute(Stuff.TRACK_HERO, t.getUrl());
+
+                hero.setTag(t.getUrl());
+                if (imgUrl != null && !imgUrl.equals("")) {
+                    setHero(t.getImageURL(ImageSize.MEDIUM)); //better set a blurred one
+                }
+            }
             return convertView;
         }
 
-        void loadURL(){
-            new Scrobbler(getContext()).execute(Stuff.GET_RECENTS);
+        void loadURL(int page){
+            new Scrobbler(getContext()).execute(Stuff.GET_RECENTS, page+"");
         }
 
-        void populate(PaginatedResult<Track> res){
+        void setHero (String imgUrl){
+            if (imgUrl!= null && !imgUrl.equals(""))
+                Picasso.with(getContext())
+                        .load(imgUrl)
+                        .fit()
+                        .centerCrop()
+                        .noFade()
+                        .into(hero, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                final CollapsingToolbarLayout ctl  = (CollapsingToolbarLayout) ((Activity)getContext()).findViewById(R.id.toolbar_layout);
+                                final ListView list = (ListView) ((Activity)getContext()).findViewById(R.id.recents_list);
+                                Bitmap b = ((BitmapDrawable)hero.getDrawable()).getBitmap();
+                                Palette.generateAsync(b, new Palette.PaletteAsyncListener() {
+                                    @Override
+                                    public void onGenerated(Palette palette) {
+                                        int c1 = palette.getDominantColor(getContext().getResources().getColor(R.color.colorPrimary));
+                                        int c2 = palette.getDarkMutedColor(getContext().getResources().getColor(R.color.colorPrimaryDark));
+
+                                        ctl.setContentScrimColor(c1);
+                                        ctl.setStatusBarScrimColor(c2);
+
+                                        list.setBackgroundColor(palette.getDarkMutedColor(getContext().getResources().getColor(android.R.color.background_dark)));
+                                    }
+                                });
+                                /*
+                                BlurTransform bt = new BlurTransform(getContext());
+                                Bitmap b = ((BitmapDrawable)hero.getDrawable()).getBitmap();
+                                b = bt.transform(b, list.getWidth(), list.getHeight());
+                                BitmapDrawable bd = new BitmapDrawable(getContext().getResources(), b);
+                                bd.setGravity(Gravity.CENTER | Gravity.CENTER_VERTICAL);
+                                list.setBackground(bd);
+                                */
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
+        }
+
+        void populate(PaginatedResult<Track> res, int page){
             SwipeRefreshLayout refresh = (SwipeRefreshLayout)((Activity) getContext()).findViewById(R.id.swiperefresh);
-            refresh.setRefreshing(false);
-            clear();
+            if (refresh != null)
+                refresh.setRefreshing(false);
+            if (page == 1)
+                clear();
             for (Track t : res) {
                 if (t != null) {
                     add(t);
@@ -156,7 +212,7 @@ public class RecentsAdapter extends ArrayAdapter<Track> {
             notifyDataSetChanged();
         }
 
-        ImageButton.OnClickListener loveToggle = new View.OnClickListener() {
+        private ImageButton.OnClickListener loveToggle = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ImageButton ib = (ImageButton)v;

@@ -3,5 +3,6 @@
     <color name="colorPrimary">#840f30</color>
     <color name="colorPrimaryDark">#680a24</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="darkTint">#b5000000</color>
+    <color name="lightDivider">#11ffffff</color>
+    <color name="darkBg">#a9000000</color>
 </resources>

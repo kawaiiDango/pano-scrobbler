@@ -108,10 +108,12 @@ class SessListener implements OnActiveSessionsChangedListener{
                     return; //dont scrobble first buffering
 
                 Stuff.log(c, "playing: "+ state.getPosition()+ " < " + lastPos + " " + title);
-                if (pref.getBoolean("scrobble_youtube", true) && state.getPosition() < lastPos)
+                if (pref.getBoolean("scrobble_youtube", true) && state.getPosition() < lastPos || lastPos == 1) {
+//                    lastPos = state.getPosition();
                     lastHash = handler.scrobble(title);
+                }
             } else if (state.getState()==PlaybackState.STATE_CONNECTING){
-                Stuff.log(c, "connecting");
+                Stuff.log(c, "connecting "+ state.getPosition());
             } else
                 Stuff.log(c, "other ("+state.getState()+") : " + title);
 

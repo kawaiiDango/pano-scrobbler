@@ -4,6 +4,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#3000"
                 android:orientation="horizontal"
                 android:paddingBottom="1dip"
                 android:paddingLeft="1dip"
@@ -12,8 +13,8 @@
 
     <ImageView
         android:id="@+id/recents_album_art"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         app:srcCompat="@drawable/ic_app"/>
@@ -25,62 +26,55 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_marginEnd="13dp"
-        android:layout_marginRight="13dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/btn_heart_disabled"
         android:elevation="10dp"
         android:scaleType="centerInside"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/recents_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginEnd="50dp"
-        android:layout_marginStart="7dp"
+        android:layout_marginStart="11dp"
         android:layout_toEndOf="@+id/recents_album_art"
-        android:orientation="vertical">
+        android:layout_toStartOf="@+id/recents_date"
+        android:clickable="false"
+        android:gravity="start"
+        android:longClickable="false"
+        android:maxLines="1"
+        android:padding="1sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/colorAccent"
+        tools:text="Title title"/>
 
-        <TextView
-            android:id="@+id/recents_title"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:clickable="false"
-            android:gravity="left"
-            android:longClickable="false"
-            android:maxLines="1"
-            android:paddingLeft="1dip"
-            android:paddingRight="1dip"
-            android:paddingTop="1dip"
-            android:text="tit"
-            android:textColor="@color/colorAccent"
-            android:textSize="17dip"
-            android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/recents_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/recents_title"
+        android:layout_alignTop="@+id/recents_love"
+        android:layout_marginStart="42dp"
+        android:layout_marginTop="2dip"
+        android:clickable="false"
+        android:gravity="end"
+        android:linksClickable="false"
+        android:longClickable="false"
+        android:maxLines="1"
+        android:padding="1sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="subtit subtit"/>
 
-        <TextView
-            android:id="@+id/recents_subtitle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:clickable="false"
-            android:gravity="right"
-            android:linksClickable="false"
-            android:longClickable="false"
-            android:maxLines="1"
-            android:paddingBottom="1dip"
-            android:text="subtit"
-            android:textSize="17dip"/>
-
-        <TextView
-            android:id="@+id/recents_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:paddingBottom="1dip"
-            android:paddingLeft="1dip"
-            android:paddingRight="1dip"
-            android:text="date date yay"/>
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/recents_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/recents_subtitle"
+        android:layout_alignEnd="@+id/recents_love"
+        android:paddingBottom="5dip"
+        android:paddingLeft="1dip"
+        android:paddingRight="1dip"
+        android:textAppearance="@android:style/TextAppearance.Material.Caption"
+        tools:text="date date yay"/>
 
 </RelativeLayout>

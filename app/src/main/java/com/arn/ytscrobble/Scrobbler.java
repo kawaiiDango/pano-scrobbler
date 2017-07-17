@@ -11,6 +11,13 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.webkit.WebSettings;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -23,6 +30,8 @@ import de.umass.lastfm.Track;
 import de.umass.lastfm.User;
 import de.umass.lastfm.scrobble.ScrobbleResult;
 
+import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
+
 
 /**
  * Created by arn on 18-03-2017.
@@ -33,6 +42,7 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
     private Handler handler = null;
     private Context c;
     private static String token  = "";
+    private String command = null, subCommand = null;
 //    private static ArrayList<Integer> scrobbledHashes= new ArrayList<>();
 
     Scrobbler(Context c){
@@ -45,6 +55,7 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
     }
     @Override
     protected Object doInBackground(String... s) {
+        command = s[0];
         if (!isNetworkAvailable()){
             publishProgress("You are offline");
             return null;
@@ -82,14 +93,46 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
                     case Stuff.CHECKAUTH:
                         return null;
                     case Stuff.GET_RECENTS:
-                        publishProgress(User.getRecentTracks(username, Stuff.LAST_KEY));
-                        return User.getLovedTracks(username, Stuff.LAST_KEY);
+                        subCommand = s[1];
+                        publishProgress(User.getRecentTracks(username, Integer.parseInt(subCommand), 15, Stuff.LAST_KEY));
                     case Stuff.GET_LOVED:
                         return User.getLovedTracks(username, Stuff.LAST_KEY);
                     case Stuff.LOVE:
                         return Track.love(s[1], s[2], session);
                     case Stuff.UNLOVE:
                         return Track.unlove(s[1], s[2], session);
+                    case Stuff.TRACK_HERO:
+                        URL url = new URL(s[1]);
+                        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                        ArrayList<String> scrapped = new ArrayList<>(5);
+                        try {
+                            String resp = slurp(urlConnection.getInputStream(), 1024);
+                            //HTML.fromHtml(String source, Html.ImageGetter imageGetter, Html.TagHandler tagHandler)
+                            //0
+                            int idx = resp.indexOf("cover-art");
+                            int idx2;
+                            if (idx > -1) {
+                                idx = resp.lastIndexOf("src=", idx) + 5;
+                                idx2 = resp.indexOf("\"", idx);
+                                String img = resp.substring(idx, idx2);
+                                if (img.contains("4128a6eb29f94943c9d206c08e625904.png"))
+                                    img =  "";
+                                scrapped.add(img);
+                            } else
+                                scrapped.add(null);
+                            //1
+                            idx = resp.indexOf("charts/sparkline");
+                            if (idx > -1) {
+                                idx = resp.indexOf("[", idx) + 1;
+                                idx2 = resp.indexOf("]", idx);
+                                String chart = resp.substring(idx, idx2);
+                                scrapped.add(chart);
+                            } else
+                                scrapped.add(null);
+                        } finally {
+                            urlConnection.disconnect();
+                        }
+                        return scrapped;
                 }
 
                 //for scrobble or love data: s[0] = tag, s[1] = artist, s[2] = song
@@ -151,13 +194,31 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    private static String slurp(final InputStream is, final int bufferSize) {
+        final char[] buffer = new char[bufferSize];
+        final StringBuilder out = new StringBuilder();
+        try (Reader in = new InputStreamReader(is, "UTF-8")) {
+            for (;;) {
+                int rsz = in.read(buffer, 0, buffer.length);
+                if (rsz < 0)
+                    break;
+                out.append(buffer, 0, rsz);
+            }
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+            return "";
+        }
+        return out.toString();
+    }
+
     @Override
     protected void onProgressUpdate(Object... values) {
         super.onProgressUpdate(values);
         Object val = values[0];
-        if (val instanceof PaginatedResult)
-            RecentsFragment.adapter.populate((PaginatedResult<Track>) val);
-        else if (val instanceof String)
+        if (val instanceof PaginatedResult) {
+            RecentsFragment.adapter.populate((PaginatedResult<Track>) val, Integer.parseInt(subCommand));
+        } else if (val instanceof String)
             Stuff.toast(c, values[0].toString());
     }
 
@@ -168,9 +229,13 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
             RecentsFragment.adapter.markLoved((PaginatedResult<Track>) res);
         } else if (res instanceof Result){
             if (((Result) res).isSuccessful())
-                Stuff.toast(c, "ok");
+                Stuff.toast(c, command);
             else
-                Stuff.toast(c, "failed");
+                Stuff.toast(c, command + " failed!");
+        } else if (command.equals(Stuff.TRACK_HERO)) {
+            ArrayList<String> s = (ArrayList<String>) res;
+            RecentsFragment.adapter.setHero(s.get(0));
+            //make graph
         }
     }
 }

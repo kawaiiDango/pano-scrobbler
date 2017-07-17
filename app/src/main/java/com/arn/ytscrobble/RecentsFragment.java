@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 
@@ -33,20 +34,24 @@ public class RecentsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         final ListView recentsList = (ListView) getActivity().findViewById(R.id.recents_list);
-        Spinner spinner = new Spinner(getActivity());
-        recentsList.setEmptyView(spinner);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        LinearLayout footer = (LinearLayout) inflater.inflate(R.layout.recents_footer, recentsList, false);
+        recentsList.setEmptyView(footer);
+        recentsList.addFooterView(footer, null, false);
+
+        LinearLayout header = (LinearLayout)inflater.inflate(R.layout.recents_header, recentsList, false);
+        recentsList.addHeaderView(footer, null, false);
+
         adapter = new RecentsAdapter(getActivity(), R.layout.list_item);
         recentsList.setAdapter(adapter);
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        ViewGroup header = (ViewGroup)inflater.inflate(R.layout.recents_header, recentsList, false);
-        recentsList.addHeaderView(header, null, false);
+        recentsList.setOnScrollListener(loadMoreListener);
 
         SwipeRefreshLayout refresh = (SwipeRefreshLayout) getActivity().findViewById(R.id.swiperefresh);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                adapter.loadURL();
+                adapter.loadURL(1);
             }
         });
     }
@@ -71,6 +76,17 @@ public class RecentsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (adapter != null)
-            adapter.loadURL();
+            adapter.loadURL(1);
     }
+
+    EndlessScrollListener loadMoreListener = new EndlessScrollListener() {
+        @Override
+        public boolean onLoadMore(int page, int totalItemsCount) {
+            // Triggered only when new data needs to be appended to the list
+            // Add whatever code is needed to append new items to your AdapterView
+            adapter.loadURL(page);
+            // or loadNextDataFromApi(totalItemsCount);
+            return true; // ONLY if more data is actually being loaded; false otherwise.
+        }
+    };
 }

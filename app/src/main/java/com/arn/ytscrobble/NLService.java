@@ -204,11 +204,16 @@ public class NLService extends NotificationListenerService {
             if (iconId == 0)
                 iconId = R.drawable.ic_noti;
             lastNotiIcon = iconId;
+
+            String title = title1;
             int hash = title1.hashCode();
-            if (title2 != null)
-                hash+= title2.hashCode();
-            else
+            if (title2 != null) {
+                hash += title2.hashCode();
+                title += " - " + title2;
+            } else {
                 title2 = "";
+            }
+
             String loveText = love ? "❤ Love it" : "\uD83D\uDC94 Unlove it";
             String loveAction = love ? pLOVE : pUNLOVE;
 
@@ -226,7 +231,7 @@ public class NLService extends NotificationListenerService {
             PendingIntent loveIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
 
-            String title = title1 + " - " + title2;
+
 
             Notification.Builder nb = new Notification.Builder(getApplicationContext())
                     .setContentTitle(state)
@@ -237,8 +242,9 @@ public class NLService extends NotificationListenerService {
                     .setPriority(Notification.PRIORITY_LOW);
 
             if (state.equals(Stuff.STATE_SCROBBLING))
-                    nb.addAction(R.drawable.ic_transparent, "❌ Cancel", cancelIntent)
-                    .addAction(R.drawable.ic_transparent, loveText, loveIntent);
+                    nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)
+                            .addAction(R.drawable.ic_transparent, "❌ Cancel", cancelIntent);
+
             if (state.equals(Stuff.STATE_SCROBBLED))
                 nb.addAction(R.drawable.ic_transparent, loveText, loveIntent);
             Notification n = nb.build();

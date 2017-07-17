@@ -22,7 +22,7 @@ class Stuff {
             STATE_PARSE_ERR = "did not scrobble",
             STATE_SCROBBLED = "scrobble submitted...",
             STATE_NETWORK_ERR = "network err while scrobbling";
-    static final String LOVE = "love", UNLOVE = "unlove", GET_LOVED = "loved";
+    static final String LOVE = "loved", UNLOVE = "hated", GET_LOVED = "getloved", TRACK_HERO = "heroinfo";
     static final String seperators[] = { // in priority order
             "—",
             " ‎– ",
@@ -50,7 +50,7 @@ class Stuff {
 
     static void log(Context c, String s){
         Log.i(TAG,s);
-        toast(c, s);
+//        toast(c, s);
     }
 
     static void toast(Context c, String s){

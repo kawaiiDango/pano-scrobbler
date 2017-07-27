@@ -1,4 +1,4 @@
-package com.arn.ytscrobble;
+package com.arn.ytscrobble.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;

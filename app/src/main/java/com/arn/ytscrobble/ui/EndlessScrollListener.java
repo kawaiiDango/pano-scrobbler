@@ -1,4 +1,4 @@
-package com.arn.ytscrobble;
+package com.arn.ytscrobble.ui;
 
 /**
  * Created by arn on 17/07/2017.

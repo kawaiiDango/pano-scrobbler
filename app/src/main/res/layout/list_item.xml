@@ -4,12 +4,12 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#3000"
+
                 android:orientation="horizontal"
                 android:paddingBottom="1dip"
                 android:paddingLeft="1dip"
                 android:paddingRight="1dip">
-
+    <!--android:background="#3000"-->
 
     <ImageView
         android:id="@+id/recents_album_art"
@@ -19,7 +19,7 @@
         android:layout_alignParentTop="true"
         app:srcCompat="@drawable/ic_app"/>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/recents_love"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -27,11 +27,12 @@
         android:layout_alignParentTop="true"
         android:layout_marginEnd="13dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/btn_heart_disabled"
+        android:clickable="true"
         android:elevation="10dp"
-        android:scaleType="centerInside"/>
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/avd_heart"/>
 
-    <TextView
+    <com.arn.ytscrobble.ui.FixedLineTextView
         android:id="@+id/recents_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,16 +49,17 @@
         android:textColor="@color/colorAccent"
         tools:text="Title title"/>
 
-    <TextView
+    <com.arn.ytscrobble.ui.FixedLineTextView
         android:id="@+id/recents_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/recents_title"
         android:layout_alignTop="@+id/recents_love"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="42dp"
         android:layout_marginTop="2dip"
+        android:layout_toStartOf="@+id/recents_love"
         android:clickable="false"
-        android:gravity="end"
         android:linksClickable="false"
         android:longClickable="false"
         android:maxLines="1"
@@ -76,5 +78,28 @@
         android:paddingRight="1dip"
         android:textAppearance="@android:style/TextAppearance.Material.Caption"
         tools:text="date date yay"/>
+
+    <ImageView
+        android:id="@+id/recents_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/recents_album_art"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/recents_title"
+        android:alpha="0.8"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:padding="15dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_yt_play"/>
+
+    <TextView
+        android:id="@+id/recents_playing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/recents_subtitle"
+        android:layout_toEndOf="@+id/recents_title"
+        tools:text="▶"/>
 
 </RelativeLayout>

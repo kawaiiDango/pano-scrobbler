@@ -3,11 +3,15 @@ package com.arn.ytscrobble;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,6 +22,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -27,6 +33,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import de.umass.lastfm.ImageSize;
@@ -39,11 +47,14 @@ import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
  * Created by arn on 10/07/2017.
  */
 
+@SuppressWarnings("deprecation")
 class RecentsAdapter extends ArrayAdapter<Track> {
 
     private final ImageView hero;
     private int layoutResourceId;
         private static final Integer FILLED = 5;
+    int lastClicked = -1;
+    private boolean gotLoved = false;
 //        private ArrayList<Track> tracks;
 
         RecentsAdapter(Context c, int layoutResourceId) {
@@ -54,7 +65,7 @@ class RecentsAdapter extends ArrayAdapter<Track> {
 
         @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
         /*
          * The convertView argument is essentially a "ScrapView" as described is Lucas post
@@ -71,13 +82,22 @@ class RecentsAdapter extends ArrayAdapter<Track> {
             // object item based on the position
             final Track t = getItem(position);
 
+            if (t == null)
+                return convertView;
+
             // get the TextView and then set the text (item name) and tag (item ID) values
             TextView title = (TextView) convertView.findViewById(R.id.recents_title),
                     subtitle = (TextView) convertView.findViewById(R.id.recents_subtitle),
                     date = (TextView) convertView.findViewById(R.id.recents_date);
-            String np = t.isNowPlaying() ? "▶️" : "";
-            CharSequence relDate = t.isNowPlaying() ? "playing right now..." : "";
-            title.setText(np + t.getName());
+            CharSequence relDate = "";
+            if (t.isNowPlaying()) {
+//                String np = "▶️";
+                relDate = "playing right now..." ;
+                Animation playingAnim = AnimationUtils.loadAnimation(getContext(), R.anim.playing);
+                TextView np = (TextView) convertView.findViewById(R.id.recents_playing);
+                np.startAnimation(playingAnim);
+            }
+            title.setText(t.getName());
             subtitle.setText(t.getArtist());
 
             if (t.getPlayedWhen() != null) {
@@ -87,17 +107,20 @@ class RecentsAdapter extends ArrayAdapter<Track> {
                     relDate = "Just now";
             }
             date.setText(relDate);
-            final ImageButton love = (ImageButton) convertView.findViewById(R.id.recents_love);
+            final ImageView love = (ImageView) convertView.findViewById(R.id.recents_love),
+                play = (ImageView) convertView.findViewById(R.id.recents_play);
+
             love.setOnClickListener(loveToggle);
 
-            if (t.isLoved()) {
-                love.setImageResource(R.drawable.ic_line_heart_enabled);
-                love.setTag(R.id.recents_love, FILLED);
-            } else {
-                love.setImageResource(R.drawable.ic_line_heart_disabled);
-                love.setTag(R.id.recents_love, 0);
+            if (gotLoved) {
+                if (t.isLoved()) {
+                    love.setImageResource(R.drawable.ic_line_heart_enabled);
+                    love.setTag(R.id.recents_love, FILLED);
+                } else {
+                    love.setImageResource(R.drawable.ic_line_heart_disabled);
+                    love.setTag(R.id.recents_love, 0);
+                }
             }
-
             ImageView albumArt =  (ImageView)convertView.findViewById(R.id.recents_album_art);
 
             String imgUrl = t.getImageURL(ImageSize.MEDIUM);
@@ -114,10 +137,10 @@ class RecentsAdapter extends ArrayAdapter<Track> {
 
             } else {
                 albumArt.setImageResource(R.drawable.ic_placeholder_music);
-                albumArt.setColorFilter(Stuff.getMatColor(getContext(),"500"));
+                albumArt.setColorFilter(Stuff.getMatColor(getContext(),"500", t.getName().hashCode()));
             }
 
-            if (position == 0 && !t.getUrl().equals(hero.getTag())){
+            if ((position == 0 && lastClicked == -1 || position == lastClicked) && !t.getUrl().equals(hero.getTag())){
                 FloatingActionButton fab = (FloatingActionButton) ((Activity)getContext()).findViewById(R.id.fab);
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -129,9 +152,14 @@ class RecentsAdapter extends ArrayAdapter<Track> {
                 new Scrobbler(getContext()).execute(Stuff.TRACK_HERO, t.getUrl());
 
                 hero.setTag(t.getUrl());
-                if (imgUrl != null && !imgUrl.equals("")) {
-                    setHero(t.getImageURL(ImageSize.MEDIUM)); //better set a blurred one
-                }
+//                if (imgUrl != null && !imgUrl.equals("")) {
+                    setHero(t); //better set a blurred one
+//                }
+                play.setVisibility(View.VISIBLE);
+                play.setTag(R.id.recents_play, t.getArtist() + " - " + t.getName());
+                play.setOnClickListener(playClickListener);
+            } else if (position != lastClicked){
+                play.setVisibility(View.INVISIBLE);
             }
             return convertView;
         }
@@ -141,16 +169,35 @@ class RecentsAdapter extends ArrayAdapter<Track> {
         }
 
         void setHero (String imgUrl){
+            setHero (null, imgUrl);
+        }
+        void setHero (Track t){
+            setHero (t, null);
+        }
+
+        void setHero (final Track t, String imgUrl){
+            final CollapsingToolbarLayout ctl  = (CollapsingToolbarLayout) ((Activity)getContext()).findViewById(R.id.toolbar_layout);
+
+            if (t != null) {
+                String text = t.getArtist() + " - " + t.getName();
+                if (Main.heroExpanded)
+                    ctl.setTitle(text);
+                ctl.setTag(text);
+            }
+
+            if (imgUrl == null && t!= null)
+                imgUrl = t.getImageURL(ImageSize.MEDIUM);
             if (imgUrl!= null && !imgUrl.equals(""))
                 Picasso.with(getContext())
                         .load(imgUrl)
+                        .error(R.drawable.ic_placeholder_music)
                         .fit()
                         .centerCrop()
                         .noFade()
                         .into(hero, new Callback() {
                             @Override
                             public void onSuccess() {
-                                final CollapsingToolbarLayout ctl  = (CollapsingToolbarLayout) ((Activity)getContext()).findViewById(R.id.toolbar_layout);
+                                final FloatingActionButton fab  = (FloatingActionButton) ((Activity)getContext()).findViewById(R.id.fab);
                                 final ListView list = (ListView) ((Activity)getContext()).findViewById(R.id.recents_list);
                                 Bitmap b = ((BitmapDrawable)hero.getDrawable()).getBitmap();
                                 Palette.generateAsync(b, new Palette.PaletteAsyncListener() {
@@ -161,8 +208,31 @@ class RecentsAdapter extends ArrayAdapter<Track> {
 
                                         ctl.setContentScrimColor(c1);
                                         ctl.setStatusBarScrimColor(c2);
+                                        if (Stuff.isDark(c1)) {
+                                            ctl.setCollapsedTitleTextColor(getContext().getResources().getColor(android.R.color.white));
+                                            fab.setImageTintList(null);
+                                        } else {
+                                            ctl.setCollapsedTitleTextColor(getContext().getResources().getColor(android.R.color.black));
+                                            fab.setImageTintList(ColorStateList.valueOf(0xff000000));
+                                        }
 
+                                        fab.setBackgroundTintList(ColorStateList.valueOf(c1));
                                         list.setBackgroundColor(palette.getDarkMutedColor(getContext().getResources().getColor(android.R.color.background_dark)));
+
+                                        AppBarLayout ab = (AppBarLayout)((Activity) getContext()).findViewById(R.id.app_bar);
+                                        ab.setExpanded(true, true);
+
+                                        list.smoothScrollToPosition(lastClicked);
+                                        if(lastClicked > list.getLastVisiblePosition() -5 )
+                                            list.setSelection(lastClicked);
+//                                        list.post(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//
+//
+//                                            }
+//                                        });
+//
                                     }
                                 });
                                 /*
@@ -177,22 +247,30 @@ class RecentsAdapter extends ArrayAdapter<Track> {
 
                             @Override
                             public void onError() {
-
+                                Stuff.log(getContext(), "onerr");
                             }
                         });
+            else {
+                hero.setImageResource(R.drawable.ic_placeholder_music);
+
+            }
         }
 
         void populate(PaginatedResult<Track> res, int page){
             SwipeRefreshLayout refresh = (SwipeRefreshLayout)((Activity) getContext()).findViewById(R.id.swiperefresh);
             if (refresh != null)
                 refresh.setRefreshing(false);
-            if (page == 1)
+            if (page == 1) {
+//                gotLoved = false;
                 clear();
+            }
             for (Track t : res) {
                 if (t != null) {
                     add(t);
                 }
             }
+            lastClicked = -1;
+            gotLoved = false;
             notifyDataSetChanged();
         }
 
@@ -209,17 +287,17 @@ class RecentsAdapter extends ArrayAdapter<Track> {
                     getItem(j).setLoved(true);
                 }
             }
+            gotLoved = true;
             notifyDataSetChanged();
         }
 
-        private ImageButton.OnClickListener loveToggle = new View.OnClickListener() {
+        private View.OnClickListener loveToggle = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ImageButton ib = (ImageButton)v;
+                ImageView ib = (ImageView)v;
                 View parentRow = (View) v.getParent();
                 ListView listView = (ListView) parentRow.getParent();
-                final int pos = listView.getPositionForView(parentRow);
-
+                final int pos = listView.getPositionForView(parentRow) - 1;
 
                 if (v.getTag(R.id.recents_love) == FILLED){
                     new Scrobbler(getContext()).execute(Stuff.UNLOVE,
@@ -231,8 +309,25 @@ class RecentsAdapter extends ArrayAdapter<Track> {
                             getItem(pos).getArtist(), getItem(pos).getName());
                     ib.setImageResource(R.drawable.ic_line_heart_enabled);
                     ib.setTag(R.id.recents_love, FILLED);
+//                    Animatable anim = (Animatable) ib.getDrawable();
+//                    anim.start();
                 }
-
             }
         };
+
+    private View.OnClickListener playClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String url = (String) v.getTag(R.id.recents_play);
+            try {
+                url = "http://www.youtube.com/results?search_query=" + URLEncoder.encode(url, "UTF-8");
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                getContext().startActivity(browserIntent);
+            } catch (UnsupportedEncodingException e) {
+                Stuff.toast(getContext(), "failed to encode url");
+            }
+
+        }
+    };
+
     }

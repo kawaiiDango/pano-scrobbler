@@ -5,15 +5,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
+
+import com.arn.ytscrobble.ui.EndlessScrollListener;
 
 /**
  * Created by arn on 09/07/2017.
@@ -22,6 +25,7 @@ import android.widget.Spinner;
 public class RecentsFragment extends Fragment {
 
     static RecentsAdapter adapter = null;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -32,7 +36,9 @@ public class RecentsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (ab != null)
+            ab.setDisplayHomeAsUpEnabled(false);
         final ListView recentsList = (ListView) getActivity().findViewById(R.id.recents_list);
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
@@ -41,11 +47,12 @@ public class RecentsFragment extends Fragment {
         recentsList.addFooterView(footer, null, false);
 
         LinearLayout header = (LinearLayout)inflater.inflate(R.layout.recents_header, recentsList, false);
-        recentsList.addHeaderView(footer, null, false);
+        recentsList.addHeaderView(header, null, false);
 
         adapter = new RecentsAdapter(getActivity(), R.layout.list_item);
         recentsList.setAdapter(adapter);
         recentsList.setOnScrollListener(loadMoreListener);
+        recentsList.setOnItemClickListener(itemClickListener);
 
         SwipeRefreshLayout refresh = (SwipeRefreshLayout) getActivity().findViewById(R.id.swiperefresh);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -65,7 +72,9 @@ public class RecentsFragment extends Fragment {
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(hidden);
+        ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (ab != null)
+            ab.setDisplayHomeAsUpEnabled(hidden);
         if (!hidden) {
             ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout))
                     .setTitle(getString(R.string.app_name));
@@ -87,6 +96,14 @@ public class RecentsFragment extends Fragment {
             adapter.loadURL(page);
             // or loadNextDataFromApi(totalItemsCount);
             return true; // ONLY if more data is actually being loaded; false otherwise.
+        }
+    };
+    private ListView.OnItemClickListener itemClickListener = new ListView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
+            adapter.lastClicked = i-1;
+            adapter.notifyDataSetChanged();
         }
     };
 }

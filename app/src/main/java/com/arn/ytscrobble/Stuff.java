@@ -35,7 +35,8 @@ class Stuff {
 
             "【",
             "〖",
-            ":",
+            "〔",
+            // ":",
             " \"",
             " /"
     },
@@ -45,7 +46,8 @@ class Stuff {
             "\"",
             "'",
             "】",
-            "〗"
+            "〗",
+            "〕"
     };
 
     static void log(Context c, String s){
@@ -139,19 +141,32 @@ class Stuff {
 
         return musicInfo;
     }
+    static int getMatColor(Context c, String typeColor){
+        return getMatColor(c, typeColor, 0);
+    }
 
-    static int getMatColor(Context c, String typeColor)
-    {
+    static int getMatColor(Context c, String typeColor, long hash){
         int returnColor = Color.BLACK;
         int arrayId = c.getResources().getIdentifier("mdcolor_" + typeColor, "array", c.getPackageName());
 
         if (arrayId != 0)
         {
             TypedArray colors = c.getResources().obtainTypedArray(arrayId);
-            int index = (int) (Math.random() * colors.length());
+            int index;
+            if (hash < 0)
+                hash = -hash;
+            if (hash == 0)
+                index= (int) (Math.random() * colors.length());
+            else
+                index = (int) (hash % colors.length());
             returnColor = colors.getColor(index, Color.BLACK);
             colors.recycle();
         }
         return returnColor;
+    }
+
+    public static boolean isDark(int color){
+        double darkness = 1-(0.299*Color.red(color) + 0.587*Color.green(color) + 0.114*Color.blue(color))/255;
+        return darkness >= 0.5;
     }
 }

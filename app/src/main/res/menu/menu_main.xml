@@ -8,6 +8,6 @@
         android:icon="@android:drawable/ic_menu_preferences"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="always|collapseActionView"/>
+        app:showAsAction="never|collapseActionView"/>
 
 </menu>

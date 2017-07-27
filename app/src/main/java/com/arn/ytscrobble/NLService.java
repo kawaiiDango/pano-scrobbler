@@ -36,7 +36,7 @@ public class NLService extends NotificationListenerService {
         B_TIME = "time",
         B_ARTIST = "artist";
     public static final int NOTI_ID = 5,
-            NOTI_ERR_ICON = android.R.drawable.stat_notify_error;
+            NOTI_ERR_ICON = R.drawable.ic_transparent;
     ArrayList<Integer> activeIDs = new ArrayList<>();
     private SharedPreferences pref=null;
     NotificationManager nm = null;

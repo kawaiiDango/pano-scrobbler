@@ -239,7 +239,7 @@ public class NLService extends NotificationListenerService {
                     .setSmallIcon(iconId)
                     .setContentIntent(launchIntent)
                     .setAutoCancel(true)
-                    .setPriority(Notification.PRIORITY_LOW);
+                    .setPriority(iconId == NOTI_ERR_ICON ? Notification.PRIORITY_MIN : Notification.PRIORITY_LOW);
 
             if (state.equals(Stuff.STATE_SCROBBLING))
                     nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)

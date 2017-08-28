@@ -142,7 +142,9 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
                 if (s[0].equals(Stuff.NOW_PLAYING)) {
                     int hash = s[1].hashCode() + s[2].hashCode();
                     Track correction = Track.getCorrection(s[1], s[2], Stuff.LAST_KEY);
-                    if (correction.getArtist() != null || correction.getName() != null) {
+                    if (correction != null && ((correction.getArtist() != null && !correction.getArtist().trim().equals("")) ||
+                            (correction.getName() != null && !correction.getName().trim().equals("")))) {
+                        Stuff.log(c, "valid track: " + correction.toString());
 //                    if (correction.getArtist() != null)
 //                        s[1] = correction.getArtist();
 //                    if (correction.getName() != null)
@@ -234,7 +236,8 @@ class Scrobbler extends AsyncTask<String, Object, Object> {
                 Stuff.toast(c, command + " failed!");
         } else if (command.equals(Stuff.TRACK_HERO)) {
             ArrayList<String> s = (ArrayList<String>) res;
-            RecentsFragment.adapter.setHero(s.get(0));
+            if (s != null)
+                RecentsFragment.adapter.setHero(s.get(0));
             //make graph
         }
     }

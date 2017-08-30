@@ -61,8 +61,6 @@ internal class RecentsAdapter
         convertView = convertView!!
         // object item based on the position
         val t = getItem(position) ?: return convertView
-//        if (t== null)
-//            return convertView
 
 // get the TextView and then set the text (item name) and tag (item ID) values
         val title = convertView.findViewById(R.id.recents_title) as TextView
@@ -130,6 +128,7 @@ internal class RecentsAdapter
             hero.tag = t.url
             //                if (imgUrl != null && !imgUrl.equals("")) {
             setHero(t) //better set a blurred one
+
             //                }
             play.visibility = View.VISIBLE
             play.setTag(R.id.recents_play, t.artist + " - " + t.name)
@@ -190,10 +189,6 @@ internal class RecentsAdapter
                                 fab.backgroundTintList = ColorStateList.valueOf(c1)
                                 list.setBackgroundColor(palette.getDarkMutedColor(context.resources.getColor(android.R.color.background_dark)))
 
-                                val ab = (context as Activity).findViewById(R.id.app_bar) as AppBarLayout
-                                ab.setExpanded(true, true)
-
-                                list.smoothScrollToPosition(lastClicked)
                                 if (lastClicked > list.lastVisiblePosition - 5)
                                     list.setSelection(lastClicked)
                                 //                                        list.post(new Runnable() {

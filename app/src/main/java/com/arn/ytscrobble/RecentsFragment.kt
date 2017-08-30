@@ -1,20 +1,16 @@
 package com.arn.ytscrobble
 
+import android.app.Activity
 import android.app.Fragment
 import android.os.Bundle
+import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.LinearLayout
 import android.widget.ListView
-
 import com.arn.ytscrobble.ui.EndlessScrollListener
 
 /**
@@ -23,9 +19,9 @@ import com.arn.ytscrobble.ui.EndlessScrollListener
 
 class RecentsFragment : Fragment() {
 
-    private var adapter: RecentsAdapter? = null
+    lateinit private var adapter: RecentsAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.content_main, container, false)
     }
@@ -52,7 +48,7 @@ class RecentsFragment : Fragment() {
         }
 
         val refresh = activity.findViewById(R.id.swiperefresh) as SwipeRefreshLayout
-        refresh.setOnRefreshListener { adapter!!.loadURL(1) }
+        refresh.setOnRefreshListener { adapter.loadURL(1) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -71,20 +67,25 @@ class RecentsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        adapter?.loadURL(1)
+        adapter.loadURL(1)
     }
 
     private val loadMoreListener: EndlessScrollListener = object : EndlessScrollListener() {
         override fun onLoadMore(page: Int, totalItemsCount: Int): Boolean {
             // Triggered only when new data needs to be appended to the list
             // Add whatever code is needed to append new items to your AdapterView
-            adapter?.loadURL(page)
+            adapter.loadURL(page)
             // or loadNextDataFromApi(totalItemsCount);
             return true // ONLY if more data is actually being loaded; false otherwise.
         }
     }
-    fun itemClickListener(adapterView: AdapterView<*>, v: View, i: Int, l: Long) {
-            adapter?.lastClicked = i - 1
-            adapter?.notifyDataSetChanged()
+    private fun itemClickListener(adapterView: AdapterView<*>, v: View, i: Int, l: Long) {
+        adapter.lastClicked = i - 1
+        adapter.notifyDataSetChanged()
+
+        val ab = activity.findViewById(R.id.app_bar) as AppBarLayout
+        ab.setExpanded(true, true)
+        val list = activity.findViewById(R.id.recents_list) as ListView
+        list.smoothScrollToPosition(adapter.lastClicked)
         }
 }

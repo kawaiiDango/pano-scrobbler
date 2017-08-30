@@ -134,7 +134,7 @@ class NLService : NotificationListenerService() {
         }
     }
 
-    internal inner class ScrobbleHandler : Handler() {
+    inner class ScrobbleHandler : Handler() {
         private var lastNotiIcon = 0
         override fun handleMessage(m: Message) {
             //TODO: handle

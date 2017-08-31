@@ -76,24 +76,25 @@ internal class Scrobbler constructor(private val c: Context, private val handler
                     Stuff.LOVE -> return Track.love(s[1], s[2], session)
                     Stuff.UNLOVE -> return Track.unlove(s[1], s[2], session)
                     Stuff.TRACK_HERO -> {
+                        //s[1] = page url, s[2] = api large image url
                         val url = URL(s[1])
                         val urlConnection = url.openConnection() as HttpURLConnection
                         val scrapped = mutableListOf<String?>()
                         try {
                             val resp = slurp(urlConnection.inputStream, 1024)
-                            //HTML.fromHtml(String source, Html.ImageGetter imageGetter, Html.TagHandler tagHandler)
+
                             //0
                             var idx = resp.indexOf("cover-art")
+                            var img = s[2]
                             var idx2: Int
                             if (idx > -1) {
                                 idx = resp.lastIndexOf("src=", idx) + 5
                                 idx2 = resp.indexOf("\"", idx)
-                                var img = resp.substring(idx, idx2)
+                                img = resp.substring(idx, idx2)
                                 if (img.contains("4128a6eb29f94943c9d206c08e625904"))
-                                    img = ""
-                                scrapped.add(img)
-                            } else
-                                scrapped.add(null)
+                                    img = s[2]
+                            }
+                            scrapped.add(img)
                             //1
                             idx = resp.indexOf("charts/sparkline")
                             if (idx > -1) {
@@ -195,8 +196,8 @@ internal class Scrobbler constructor(private val c: Context, private val handler
             else
                 Stuff.toast(c, command + " failed!")
         } else if (command == Stuff.TRACK_HERO) {
-            val s = res as MutableList<String?>
-            handler?.obtainMessage(0, Pair(command, s[0]))?.sendToTarget()
+//            val s = res as MutableList<String?>
+            handler?.obtainMessage(0, Pair(command, res))?.sendToTarget()
             //make graph
         }
     }

@@ -37,13 +37,12 @@ import java.util.*
  */
 
 internal class RecentsAdapter
-//        private ArrayList<Track> tracks;
 
 (c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, ArrayList()) {
 
     private val hero: ImageView = (c as Activity).findViewById(R.id.img_hero) as ImageView
-    var lastClicked = -1
     private var gotLoved = false
+    var lastClicked = -1
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView : View? = convertView
@@ -108,8 +107,8 @@ internal class RecentsAdapter
                     .load(imgUrl)
                     .fit()
                     .centerInside()
-                    .placeholder(R.drawable.ic_lastfm)
-                    .error(R.drawable.ic_placeholder_music)
+//                    .placeholder(R.drawable.ic_lastfm)
+//                    .error(R.drawable.ic_placeholder_music)
                     .into(albumArt)
 
         } else {
@@ -123,11 +122,11 @@ internal class RecentsAdapter
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(t.url))
                 context.startActivity(browserIntent)
             }
-            Scrobbler(context, handler).execute(Stuff.TRACK_HERO, t.url)
+            Scrobbler(context, handler).execute(Stuff.TRACK_HERO, t.url, t.getImageURL(ImageSize.EXTRALARGE))
 
             hero.tag = t.url
             //                if (imgUrl != null && !imgUrl.equals("")) {
-            setHero(t) //better set a blurred one
+            setHero(t, imgUrl) //better set a blurred one
 
             //                }
             play.visibility = View.VISIBLE
@@ -143,32 +142,34 @@ internal class RecentsAdapter
         Scrobbler(context, handler).execute(Stuff.GET_RECENTS, page.toString() + "")
     }
 
-    fun setHero(imgUrl: String) {
+    fun setHero(imgUrl: String?) {
         setHero(null, imgUrl)
     }
 
     private fun setHero(t: Track?, imgUrl: String? = null) {
-        var imgUrl = imgUrl
         val ctl = (context as Activity).findViewById(R.id.toolbar_layout) as CollapsingToolbarLayout
 
         if (t != null) {
             val text = t.artist + " - " + t.name
-            if (Main.heroExpanded)
+//            if (Main.heroExpanded)
                 ctl.title = text
             ctl.tag = text
         }
 
-        if (imgUrl == null && t != null)
-            imgUrl = t.getImageURL(ImageSize.MEDIUM)
+//        if (imgUrl == null && t != null) //called from getview
+//            imgUrl = t.getImageURL(ImageSize.MEDIUM)
+//        else if (imgUrl == null && t == null) // called from handler
+//            imgUrl = t.getImageURL(ImageSize.LARGE)
         if (imgUrl != null && imgUrl != "")
             Picasso.with(context)
                     .load(imgUrl)
-                    .error(R.drawable.ic_placeholder_music)
+//                    .error(R.drawable.ic_placeholder_music)
                     .fit()
                     .centerCrop()
                     .noFade()
                     .into(hero, object : Callback {
                         override fun onSuccess() {
+                            hero.clearColorFilter()
                             val fab = (context as Activity).findViewById(R.id.fab) as FloatingActionButton
                             val list = (context as Activity).findViewById(R.id.recents_list) as ListView
                             val b = (hero.drawable as BitmapDrawable).bitmap
@@ -215,7 +216,10 @@ internal class RecentsAdapter
                         }
                     })
         else {
+            if (t!= null)
+                hero.setColorFilter(Stuff.getMatColor(context, "500", t.name.hashCode().toLong()))
             hero.setImageResource(R.drawable.ic_placeholder_music)
+
 
         }
     }
@@ -283,10 +287,13 @@ internal class RecentsAdapter
             // obj = command, paginatedresult; arg1 = page num
             val pair = m.obj as Pair<String, Any>
             val command = pair.first
-            val data = pair.second
+            var data = pair.second
             when(command){
                 Stuff.GET_LOVED -> markLoved(data as PaginatedResult<Track>)
-                Stuff.TRACK_HERO -> setHero(data as String)
+                Stuff.TRACK_HERO -> {
+                    data = data as MutableList<String>
+                    setHero(data[0])
+                }
                 Stuff.GET_RECENTS -> populate(data as PaginatedResult<Track>, m.arg1)
 
             }

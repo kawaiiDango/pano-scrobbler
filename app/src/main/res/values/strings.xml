@@ -6,5 +6,6 @@
     <string name="action_settings">Configure</string>
     <string name="action_reauthorize">Reauthorize</string>
     <string name="authorize">Authorize</string>
+    <string name="album_art">album art</string>
 
 </resources>

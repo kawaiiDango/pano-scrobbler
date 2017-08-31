@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.*
 import android.widget.AdapterView
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import com.arn.ytscrobble.ui.EndlessScrollListener
@@ -49,6 +50,9 @@ class RecentsFragment : Fragment() {
 
         val refresh = activity.findViewById(R.id.swiperefresh) as SwipeRefreshLayout
         refresh.setOnRefreshListener { adapter.loadURL(1) }
+
+        val hero = activity.findViewById(R.id.img_hero) as ImageView
+        hero.setImageResource(R.color.material_blue_grey_800)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

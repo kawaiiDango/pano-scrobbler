@@ -33,13 +33,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:contentDescription="album art"
+                android:contentDescription="@string/album_art"
                 android:fitsSystemWindows="true"
                 android:foreground="@drawable/ic_dark_overlay"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5"
-                app:srcCompat="@drawable/ic_lastfm"/>
+                app:srcCompat="@drawable/ic_lastfm"
+                />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

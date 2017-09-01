@@ -26,10 +26,16 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.GridLayoutAnimationController
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.GridLabelRenderer
+import com.jjoe64.graphview.LabelFormatter
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
@@ -234,6 +240,31 @@ internal class RecentsAdapter
         }
     }
 
+    private fun setGraph(points: String?) {
+        if (points == null)
+            return
+
+        val graph = (context as Activity).findViewById(R.id.graph) as GraphView
+        val dps = mutableListOf<DataPoint>()
+        var i: Double = 0.0
+        points.split(", ").forEach({
+                    dps.add(DataPoint(i++, it.toDouble()))
+                })
+
+        Stuff.log(context,"points: $points")
+        val series = graph.series.get(0) as LineGraphSeries<DataPoint>
+        series.resetData(dps.toTypedArray())
+//        graph.removeAllSeries()
+//        graph.addSeries(series)
+
+        graph.alpha = 0f
+        graph.animate()
+                .alpha(0.7f)
+                .setInterpolator(DecelerateInterpolator())
+                .setDuration(500)
+                .start()
+    }
+
     fun populate(res: PaginatedResult<Track>, page: Int = 1) {
         val refresh = (context as Activity).findViewById(R.id.swiperefresh) as SwipeRefreshLayout?
 
@@ -326,8 +357,9 @@ internal class RecentsAdapter
             when(command){
                 Stuff.GET_LOVED -> markLoved(data as PaginatedResult<Track>)
                 Stuff.TRACK_HERO -> {
-                    data = data as MutableList<String?>
-                    setHero(data[0])
+                        data = data as MutableList<String?>
+                        setHero(data[0])
+                        setGraph(data[1])
                 }
                 Stuff.GET_RECENTS -> populate(data as PaginatedResult<Track>, m.arg1)
             }

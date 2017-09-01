@@ -197,7 +197,7 @@ internal class Scrobbler constructor(private val c: Context, private val handler
                 Stuff.toast(c, command)
             else
                 Stuff.toast(c, command + " failed!")
-        } else if (command == Stuff.TRACK_HERO) {
+        } else if (command == Stuff.TRACK_HERO && res is MutableList<*>) {
 //            val s = res as MutableList<String?>
             handler?.obtainMessage(0, Pair(command, res))?.sendToTarget()
             //make graph

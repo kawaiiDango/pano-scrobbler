@@ -13,5 +13,7 @@
     <string name="network_error">Network error</string>
     <string name="state_scrobbling">Now scrobbling…</string>
     <string name="state_scrobbled">Scrobbled…</string>
+    <string name="recently_scrobbled">Recently Scrobbled</string>
+    <string name="graph_info">...last 6 months</string>
 
 </resources>

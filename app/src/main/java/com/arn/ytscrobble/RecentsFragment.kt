@@ -1,18 +1,20 @@
 package com.arn.ytscrobble
 
-import android.app.Activity
 import android.app.Fragment
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
+import android.text.Layout
 import android.view.*
-import android.widget.AdapterView
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ListView
+import android.widget.*
 import com.arn.ytscrobble.ui.EndlessScrollListener
+import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.GridLabelRenderer
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
+
 
 /**
  * Created by arn on 09/07/2017.
@@ -53,7 +55,34 @@ class RecentsFragment : Fragment() {
         refresh.setOnRefreshListener { adapter.loadURL(1) }
 
         val hero = activity.findViewById(R.id.img_hero) as ImageView
-        hero.setImageResource(R.color.material_blue_grey_800)
+        hero.setImageResource(R.color.background_material_dark)
+
+        val graph = activity.findViewById(R.id.graph) as GraphView
+        graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
+        graph.gridLabelRenderer.isHorizontalLabelsVisible = false
+        graph.gridLabelRenderer.isVerticalLabelsVisible = false
+        graph.gridLabelRenderer.numVerticalLabels = 3
+        val series = LineGraphSeries<DataPoint>()
+        series.isDrawDataPoints = true
+        series.thickness = 15
+        series.dataPointsRadius = 20f
+        series.color = resources.getColor(R.color.colorAccent)
+        series.setAnimated(true)
+        graph.addSeries(series)
+        graph.setOnClickListener({
+            if (graph.tag == true) {
+                graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
+                graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.VERTICAL
+                graph.gridLabelRenderer.isVerticalLabelsVisible = true
+                graph.tag = false
+            } else{
+                graph.gridLabelRenderer.horizontalAxisTitle = null
+                graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
+                graph.gridLabelRenderer.isVerticalLabelsVisible = false
+                graph.tag = true
+            }
+            graph.onDataChanged(false, false)
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

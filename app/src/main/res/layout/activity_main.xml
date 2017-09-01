@@ -42,6 +42,15 @@
                 app:srcCompat="@drawable/ic_lastfm"
                 />
 
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/graph"
+                android:layout_width="150dip"
+                android:layout_height="100dip"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="55dip"
+                android:layout_marginStart="30dip"
+                android:alpha="0"/>
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -68,7 +77,7 @@
         android:layout_margin="@dimen/fab_margin"
         app:elevation="12dp"
         app:layout_anchor="@+id/app_bar"
-        app:layout_anchorGravity="bottom|right"
+        app:layout_anchorGravity="left|top"
         app:srcCompat="@android:drawable/ic_dialog_info"/>
     <!--android:nestedScrollingEnabled="true"-->
 

@@ -34,6 +34,7 @@ class RecentsFragment : Fragment() {
         val recentsList = activity.findViewById(R.id.recents_list) as ListView
         val inflater = activity.layoutInflater
 
+        recentsList.background.mutate()
         val footer = inflater.inflate(R.layout.recents_footer, recentsList, false) as LinearLayout
         recentsList.emptyView = footer
         recentsList.addFooterView(footer, null, false)

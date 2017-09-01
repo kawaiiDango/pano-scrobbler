@@ -14,5 +14,7 @@
         android:divider="@color/lightDivider"
         android:dividerHeight="1dp"
         android:nestedScrollingEnabled="true"
+        android:choiceMode="singleChoice"
+        android:background="@android:color/black"
         android:orientation="vertical"/>
 </android.support.v4.widget.SwipeRefreshLayout>

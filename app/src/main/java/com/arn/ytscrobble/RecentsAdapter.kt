@@ -1,11 +1,16 @@
 package com.arn.ytscrobble
 
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ArgbEvaluator
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Handler
 import android.os.Message
@@ -18,7 +23,9 @@ import android.text.format.DateUtils
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
+import android.view.animation.DecelerateInterpolator
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ListView
@@ -174,12 +181,13 @@ internal class RecentsAdapter
                             val list = (context as Activity).findViewById(R.id.recents_list) as ListView
                             val b = (hero.drawable as BitmapDrawable).bitmap
                             Palette.generateAsync(b) { palette ->
-                                val c1 = palette.getDominantColor(context.resources.getColor(R.color.colorPrimary))
-                                val c2 = palette.getDarkMutedColor(context.resources.getColor(R.color.colorPrimaryDark))
+                                val colorDomPrimary = palette.getDominantColor(context.resources.getColor(R.color.colorPrimary))
+                                val colorMutedDark = palette.getDarkMutedColor(context.resources.getColor(R.color.colorPrimaryDark))
+                                val colorMutedBlack = palette.getDarkMutedColor(context.resources.getColor(android.R.color.background_dark))
 
-                                ctl.setContentScrimColor(c1)
-                                ctl.setStatusBarScrimColor(c2)
-                                if (Stuff.isDark(c1)) {
+                                ctl.setContentScrimColor(colorDomPrimary)
+                                ctl.setStatusBarScrimColor(colorMutedDark)
+                                if (Stuff.isDark(colorDomPrimary)) {
                                     ctl.setCollapsedTitleTextColor(context.resources.getColor(android.R.color.white))
                                     fab.imageTintList = null
                                 } else {
@@ -187,11 +195,22 @@ internal class RecentsAdapter
                                     fab.imageTintList = ColorStateList.valueOf(0xff000000.toInt())
                                 }
 
-                                fab.backgroundTintList = ColorStateList.valueOf(c1)
-                                list.setBackgroundColor(palette.getDarkMutedColor(context.resources.getColor(android.R.color.background_dark)))
+//                                fab.backgroundTintList = ColorStateList.valueOf(colorDomPrimary)
+//                                list.setBackgroundColor(colorMutedBlack)
+                                val listBgFrom = (list.background as ColorDrawable).color
+                                val fabBgFrom = fab.contentBackground
 
-                                if (lastClicked > list.lastVisiblePosition - 5)
-                                    list.setSelection(lastClicked)
+                                val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
+                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", colorMutedDark, colorDomPrimary)
+                                Stuff.log(context, "fab bg: "+ fabBgFrom)
+                                val animSet = AnimatorSet()
+                                animSet.playTogether(listBgAnimator, fabBgAnimator)
+                                animSet.interpolator = AccelerateDecelerateInterpolator()
+                                animSet.duration = 1500
+                                animSet.start()
+
+//                                if (lastClicked > list.lastVisiblePosition - 5)
+//                                    list.setSelection(lastClicked)
                                 //                                        list.post(new Runnable() {
                                 //                                            @Override
                                 //                                            public void run() {
@@ -201,14 +220,6 @@ internal class RecentsAdapter
                                 //                                        });
                                 //
                             }
-                            /*
-                                BlurTransform bt = new BlurTransform(getContext());
-                                Bitmap b = ((BitmapDrawable)hero.getDrawable()).getBitmap();
-                                b = bt.transform(b, list.getWidth(), list.getHeight());
-                                BitmapDrawable bd = new BitmapDrawable(getContext().getResources(), b);
-                                bd.setGravity(Gravity.CENTER | Gravity.CENTER_VERTICAL);
-                                list.setBackground(bd);
-                                */
                         }
 
                         override fun onError() {
@@ -249,7 +260,7 @@ internal class RecentsAdapter
     }
 
     private val loveToggle = View.OnClickListener { v ->
-        val ib = v as ImageView
+        val love = v as ImageView
         val parentRow = v.getParent() as View
         val listView = parentRow.parent as ListView
         val pos = listView.getPositionForView(parentRow) - 1
@@ -257,13 +268,39 @@ internal class RecentsAdapter
         if (v.getTag(R.id.recents_love) == FILLED) {
             Scrobbler(context, handler).execute(Stuff.UNLOVE,
                     getItem(pos).artist, getItem(pos).name)
-            ib.setImageResource(R.drawable.ic_line_heart_disabled)
-            ib.setTag(R.id.recents_love, 0)
+            love.setImageResource(R.drawable.ic_line_heart_disabled)
+            love.setTag(R.id.recents_love, 0)
+
+            love.animate()
+                    .alpha(0f)
+                    .scaleX(5f)
+                    .scaleY(5f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(500)
+                    .withEndAction {
+                        love.alpha = 1f
+                        love.scaleX = 1f
+                        love.scaleY = 1f
+//                        love.setImageResource(R.drawable.ic_line_heart_disabled)
+                    }
+                    .start()
         } else {
             Scrobbler(context, handler).execute(Stuff.LOVE,
                     getItem(pos).artist, getItem(pos).name)
-            ib.setImageResource(R.drawable.ic_line_heart_enabled)
-            ib.setTag(R.id.recents_love, FILLED)
+
+            love.setTag(R.id.recents_love, FILLED)
+            love.alpha = 0f
+            love.scaleX = 5f
+            love.scaleY = 5f
+            love.setImageResource(R.drawable.ic_line_heart_enabled)
+            love.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(500)
+                    .start()
+
             //                    Animatable anim = (Animatable) ib.getDrawable();
             //                    anim.start();
         }
@@ -295,7 +332,6 @@ internal class RecentsAdapter
                     setHero(data[0])
                 }
                 Stuff.GET_RECENTS -> populate(data as PaginatedResult<Track>, m.arg1)
-
             }
         }
     }

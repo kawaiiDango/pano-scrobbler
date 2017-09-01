@@ -19,12 +19,8 @@ internal object Stuff {
     const val LAST_KEY = Tokens.LAST_KEY
     const val LAST_SECRET = Tokens.LAST_SECRET
     const val TAG = "ytscrobble"
-    const val STATE_SCROBBLING = "now scrobbling..."
-    const val STATE_PARSE_ERR = "did not scrobble"
-    const val STATE_SCROBBLED = "scrobble submitted..."
-    const val STATE_NETWORK_ERR = "network err while scrobbling"
     const val LOVE = "loved"
-    const val UNLOVE = "hated"
+    const val UNLOVE = "unloved"
     const val GET_LOVED = "getloved"
     const val TRACK_HERO = "heroinfo"
     private val seperators = arrayOf(// in priority order

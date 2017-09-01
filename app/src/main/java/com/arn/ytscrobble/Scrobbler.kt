@@ -128,6 +128,8 @@ internal class Scrobbler constructor(private val c: Context, private val handler
                     } else {
                         publishProgress("not a song")
                         (handler as NLService.ScrobbleHandler).remove(hash)
+                        handler.notification(c.getString(R.string.invalid_artist),s[1]+" "+ s[2], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+
                     }
 
                 } else if (s[0] == Stuff.SCROBBLE)
@@ -137,7 +139,7 @@ internal class Scrobbler constructor(private val c: Context, private val handler
                         val hash = s[1].hashCode() + s[2].hashCode()
                         //                        scrobbledHashes.add(hash);
                         (handler as NLService.ScrobbleHandler)
-                                .notification(s[1], s[2], Stuff.STATE_NETWORK_ERR, android.R.drawable.stat_notify_error)
+                                .notification(c.getString(R.string.network_error),s[1]+" "+ s[2], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
                     }
                 } catch (e: NullPointerException) {
                     publishProgress(s[0] + ": NullPointerException")
@@ -187,7 +189,7 @@ internal class Scrobbler constructor(private val c: Context, private val handler
         if (res is PaginatedResult<*>) {
 //            val b = Bundle()
 //            b.putString("command", command)
-            if (command.equals(Stuff.GET_RECENTS))
+            if (command == Stuff.GET_RECENTS)
                 command = Stuff.GET_LOVED
             handler?.obtainMessage(0, Pair(command,res))?.sendToTarget()
         } else if (res is Result) {

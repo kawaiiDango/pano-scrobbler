@@ -37,7 +37,6 @@ import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
-import java.util.*
 
 /**
  * Created by arn on 10/07/2017.
@@ -236,8 +235,9 @@ internal class RecentsAdapter
     }
 
     fun populate(res: PaginatedResult<Track>, page: Int = 1) {
-        val refresh = (context as Activity).findViewById(R.id.swiperefresh) as SwipeRefreshLayout
-        refresh.isRefreshing = false
+        val refresh = (context as Activity).findViewById(R.id.swiperefresh) as SwipeRefreshLayout?
+
+        refresh?.isRefreshing = false
         if (page == 1) {
             //                gotLoved = false;
             clear()
@@ -301,8 +301,6 @@ internal class RecentsAdapter
                     .setDuration(500)
                     .start()
 
-            //                    Animatable anim = (Animatable) ib.getDrawable();
-            //                    anim.start();
         }
     }
 
@@ -328,7 +326,7 @@ internal class RecentsAdapter
             when(command){
                 Stuff.GET_LOVED -> markLoved(data as PaginatedResult<Track>)
                 Stuff.TRACK_HERO -> {
-                    data = data as MutableList<String>
+                    data = data as MutableList<String?>
                     setHero(data[0])
                 }
                 Stuff.GET_RECENTS -> populate(data as PaginatedResult<Track>, m.arg1)

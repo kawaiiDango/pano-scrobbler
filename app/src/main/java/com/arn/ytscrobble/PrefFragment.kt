@@ -26,6 +26,7 @@ class PrefFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceC
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences)
         val reauth = findPreference("reauth")
+        reauth.title = reauth.title.toString() +": " + preferenceManager.sharedPreferences.getString("username", "nobody")
         reauth.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             //open browser or intent here
             preferenceManager.sharedPreferences

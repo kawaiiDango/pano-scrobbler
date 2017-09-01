@@ -7,5 +7,11 @@
     <string name="action_reauthorize">Reauthorize</string>
     <string name="authorize">Authorize</string>
     <string name="album_art">album art</string>
+    <string name="not_scrobling">Didn\'t scrobble</string>
+    <string name="invalid_artist">No such artist</string>
+    <string name="parse_error">Couldn\'t parse title</string>
+    <string name="network_error">Network error</string>
+    <string name="state_scrobbling">Now scrobbling…</string>
+    <string name="state_scrobbled">Scrobbled…</string>
 
 </resources>

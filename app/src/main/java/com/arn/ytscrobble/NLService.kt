@@ -17,9 +17,6 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.preference.PreferenceManager
 
-import java.util.ArrayList
-import java.util.Arrays
-
 class NLService : NotificationListenerService() {
     private var activeIDs = mutableListOf<Int>()
     lateinit private var pref: SharedPreferences
@@ -80,7 +77,7 @@ class NLService : NotificationListenerService() {
             var found = false
             val songTitle: String
             if (pref.getBoolean("scrobble_mxmFloatingLyrics", false) &&
-                    sbn.packageName == MXM_PACKAGE && Arrays.binarySearch(NOTI_TEXT, text) > -1) {
+                    sbn.packageName == MXM_PACKAGE && NOTI_TEXT.contains(text)) {
                 songTitle = title.toString()
                 found = true
                 handler.scrobble(songTitle)
@@ -99,7 +96,7 @@ class NLService : NotificationListenerService() {
 
         if (text != null)
             if (pref.getBoolean("scrobble_mxmFloatingLyrics", false) &&
-                    sbn.packageName == MXM_PACKAGE && Arrays.binarySearch(NOTI_TEXT, text) > -1) {
+                    sbn.packageName == MXM_PACKAGE && NOTI_TEXT.contains(text)) {
                 val idx = activeIDs.indexOf(sbn.id)
                 if (idx != -1)
                     activeIDs.removeAt(idx)
@@ -117,11 +114,11 @@ class NLService : NotificationListenerService() {
                 Stuff.log(context, "lolo")
                 Scrobbler(applicationContext, handler).execute(Stuff.LOVE,
                         intent.getStringExtra("artist"), intent.getStringExtra("title"))
-                handler.notification(intent.getStringExtra("artist"), intent.getStringExtra("title"), Stuff.STATE_SCROBBLED, 0, false)
+                handler.notification(intent.getStringExtra("artist"), intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0, false)
             } else if (intent.action == pUNLOVE) {
                 Scrobbler(applicationContext, handler).execute(Stuff.UNLOVE,
                         intent.getStringExtra("artist"), intent.getStringExtra("title"))
-                handler.notification(intent.getStringExtra("artist"), intent.getStringExtra("title"), Stuff.STATE_SCROBBLED, 0)
+                handler.notification(intent.getStringExtra("artist"), intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0)
             } else if (intent.getStringExtra("command") == "list") {
 
                 Stuff.log(applicationContext, "notifications list")
@@ -142,7 +139,7 @@ class NLService : NotificationListenerService() {
             val artist = m.data.getString(B_ARTIST)
             //            int hash = title.hashCode() + artist.hashCode();
             Scrobbler(applicationContext, handler).execute(Stuff.SCROBBLE, artist, title)
-            notification(artist, title, Stuff.STATE_SCROBBLED, 0)
+            notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
         fun scrobble(songTitle: String): Int {
@@ -167,16 +164,16 @@ class NLService : NotificationListenerService() {
                     val delay = pref.getInt("delay_secs", 30) * 1000
 
                     sendMessageDelayed(m, delay.toLong())
-                    notification(splits[0], splits[1], Stuff.STATE_SCROBBLING, 0)
+                    notification(splits[0], splits[1], getString(R.string.state_scrobbling), 0)
                 } else {
-                    notification(splits[0], splits[1], Stuff.STATE_PARSE_ERR, NOTI_ERR_ICON)
+                    notification(getString(R.string.parse_error), splits[0] + " " + splits[1], getString(R.string.not_scrobling), NOTI_ERR_ICON)
                 }
             }
             return hash
         }
 
         @JvmOverloads
-        fun notification(title1: String?, title2: String?, state: String, iconId: Int, love: Boolean = true) {
+        fun notification(title1: String, title2: String?, state: String, iconId: Int, love: Boolean = true) {
             var title2 = title2
             var iconId = iconId
             if (!pref.getBoolean("show_notifications", true))
@@ -186,7 +183,7 @@ class NLService : NotificationListenerService() {
             lastNotiIcon = iconId
 
             var title = title1
-            var hash = title1!!.hashCode()
+            var hash = title1.hashCode()
             if (title2 != null) {
                 hash += title2.hashCode()
                 title += " - " + title2
@@ -220,11 +217,11 @@ class NLService : NotificationListenerService() {
                     .setAutoCancel(true)
                     .setPriority(if (iconId == NOTI_ERR_ICON) Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
 
-            if (state == Stuff.STATE_SCROBBLING)
+            if (state == getString(R.string.state_scrobbling))
                 nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)
-                        .addAction(R.drawable.ic_transparent, "❌ Cancel", cancelIntent)
+                        .addAction(R.drawable.ic_transparent, "❌ Unscrobble", cancelIntent)
 
-            if (state == Stuff.STATE_SCROBBLED)
+            if (state == getString(R.string.state_scrobbled))
                 nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)
             val n = nb.build()
             nm.notify(NOTI_ID, n)

@@ -127,7 +127,7 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                     } else {
                         publishProgress("not a song")
                         (handler as NLService.ScrobbleHandler).remove(hash)
-                        handler.notification(c.getString(R.string.invalid_artist),s[1]+" "+ s[2], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                        handler.notification(c.getString(R.string.invalid_artist),s[1], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
 
                     }
 

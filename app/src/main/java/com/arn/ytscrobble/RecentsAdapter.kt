@@ -27,10 +27,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.GridLayoutAnimationController
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.LabelFormatter
@@ -138,8 +135,19 @@ internal class RecentsAdapter
 
         if ((position == 0 && lastClicked == -1 || position == lastClicked) && t.url != hero.tag) {
             val fab = (context as Activity).findViewById(R.id.fab) as FloatingActionButton
+            val heroInfo = (context as Activity).findViewById(R.id.hero_info) as ImageButton
+            val heroYt = (context as Activity).findViewById(R.id.hero_yt) as ImageButton
             fab.setOnClickListener {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(t.url))
+                context.startActivity(browserIntent)
+            }
+            heroInfo.setOnClickListener {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(t.url))
+                context.startActivity(browserIntent)
+            }
+            heroYt.setOnClickListener {
+                val ytUrl = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(t.artist + " - "+ t.album, "UTF-8")
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ytUrl))
                 context.startActivity(browserIntent)
             }
             Scrobbler(context, handler).execute(Stuff.TRACK_HERO, t.url, t.getImageURL(ImageSize.EXTRALARGE))
@@ -190,11 +198,15 @@ internal class RecentsAdapter
                     .into(hero, object : Callback {
                         override fun onSuccess() {
                             hero.clearColorFilter()
-                            val fab = (context as Activity).findViewById(R.id.fab) as FloatingActionButton
-                            val list = (context as Activity).findViewById(R.id.recents_list) as ListView
+                            val list = (context as Activity).findViewById(R.id.recents_list) as ListView? ?: return
+                            val fab = (context as Activity).findViewById(R.id.fab) as FloatingActionButton? ?: return
+                            val heroInfo = (context as Activity).findViewById(R.id.hero_info) as ImageButton
+                            val heroYt = (context as Activity).findViewById(R.id.hero_yt) as ImageButton
+
                             val b = (hero.drawable as BitmapDrawable).bitmap
                             Palette.generateAsync(b) { palette ->
                                 val colorDomPrimary = palette.getDominantColor(context.resources.getColor(R.color.colorPrimary))
+                                val colorLightAccent = palette.getLightMutedColor(context.resources.getColor(R.color.colorAccent))
                                 val colorMutedDark = palette.getDarkMutedColor(context.resources.getColor(R.color.colorPrimaryDark))
                                 val colorMutedBlack = palette.getDarkMutedColor(context.resources.getColor(android.R.color.background_dark))
 
@@ -214,13 +226,20 @@ internal class RecentsAdapter
                                 val fabBgFrom = fab.contentBackground
 
                                 val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
-                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", colorMutedDark, colorDomPrimary)
+                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", lastColorDomPrimary, colorDomPrimary)
+                                val infoBgAnimator = ObjectAnimator.ofObject(heroInfo, "colorFilter", ArgbEvaluator(), lastColorLightAccent, colorLightAccent)
+                                val ytBgAnimator = ObjectAnimator.ofObject(heroYt, "colorFilter", ArgbEvaluator(), lastColorLightAccent, colorLightAccent)
                                 Stuff.log(context, "fab bg: "+ fabBgFrom)
                                 val animSet = AnimatorSet()
-                                animSet.playTogether(listBgAnimator, fabBgAnimator)
+                                animSet.playTogether(listBgAnimator, fabBgAnimator, infoBgAnimator, ytBgAnimator)
                                 animSet.interpolator = AccelerateDecelerateInterpolator()
                                 animSet.duration = 1500
                                 animSet.start()
+
+                                lastColorDomPrimary = colorDomPrimary
+                                lastColorLightAccent = colorLightAccent
+                                lastColorMutedDark = colorMutedDark
+                                lastColorMutedBlack = colorMutedBlack
 
 //                                if (lastClicked > list.lastVisiblePosition - 5)
 //                                    list.setSelection(lastClicked)
@@ -253,6 +272,7 @@ internal class RecentsAdapter
             return
 
         val graph = (context as Activity).findViewById(R.id.graph) as GraphView
+        val series = graph.series.get(0) as LineGraphSeries<DataPoint>
         val dps = mutableListOf<DataPoint>()
         var i: Double = 0.0
         points.split(", ").forEach({
@@ -260,10 +280,8 @@ internal class RecentsAdapter
                 })
 
         Stuff.log(context,"points: $points")
-        val series = graph.series.get(0) as LineGraphSeries<DataPoint>
+
         series.resetData(dps.toTypedArray())
-//        graph.removeAllSeries()
-//        graph.addSeries(series)
 
         graph.alpha = 0f
         graph.animate()
@@ -310,6 +328,7 @@ internal class RecentsAdapter
         if (v.getTag(R.id.recents_love) == FILLED) {
             Scrobbler(context, handler).execute(Stuff.UNLOVE,
                     getItem(pos).artist, getItem(pos).name)
+            getItem(pos).isLoved = false
             love.setImageResource(R.drawable.ic_line_heart_disabled)
             love.setTag(R.id.recents_love, 0)
 
@@ -329,7 +348,7 @@ internal class RecentsAdapter
         } else {
             Scrobbler(context, handler).execute(Stuff.LOVE,
                     getItem(pos).artist, getItem(pos).name)
-
+            getItem(pos).isLoved = true
             love.setTag(R.id.recents_love, FILLED)
             love.alpha = 0f
             love.scaleX = 5f
@@ -349,7 +368,7 @@ internal class RecentsAdapter
     private val playClickListener = View.OnClickListener { v ->
         var url = v.getTag(R.id.recents_play) as String
         try {
-            url = "http://www.youtube.com/results?search_query=" + URLEncoder.encode(url, "UTF-8")
+            url = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(url, "UTF-8")
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             context.startActivity(browserIntent)
         } catch (e: UnsupportedEncodingException) {
@@ -378,6 +397,11 @@ internal class RecentsAdapter
     }
 
     companion object {
+        private var lastColorDomPrimary = 0
+        private var lastColorLightAccent = 0
+        private var lastColorMutedDark = 0
+        private var lastColorMutedBlack = 0
+
         private val FILLED = 5
     }
 

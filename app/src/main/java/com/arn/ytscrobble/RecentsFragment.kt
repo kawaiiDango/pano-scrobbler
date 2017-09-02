@@ -33,8 +33,8 @@ class RecentsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val ab = (activity as AppCompatActivity).supportActionBar
-        ab?.setDisplayHomeAsUpEnabled(false)
+        val ab = (activity as AppCompatActivity).supportActionBar ?: return
+        ab.setDisplayHomeAsUpEnabled(false)
         val recentsList = activity.findViewById(R.id.recents_list) as ListView
         val inflater = activity.layoutInflater
 

@@ -22,9 +22,8 @@ import java.net.URL
  * Created by arn on 18-03-2017.
  */
 
-internal class Scrobbler constructor(private val c: Context, private val handler: Handler? = null) : AsyncTask<String, Any, Any?>() {
+internal class Scrobbler constructor(val c: Context, private val handler: Handler? = null) : AsyncTask<String, Any, Any?>() {
     lateinit private var prefs: SharedPreferences
-//    private val handler: Handler? = null
     lateinit private var command: String
     private var subCommand: String? = null
 

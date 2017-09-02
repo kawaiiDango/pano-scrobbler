@@ -9,14 +9,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.*
 import android.net.Uri
 import android.os.Handler
 import android.os.Message
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.design.widget.FloatingActionButton
+import android.support.graphics.drawable.Animatable2Compat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.graphics.Palette
 import android.text.format.DateUtils
@@ -77,14 +77,22 @@ internal class RecentsAdapter
         val title = convertView.findViewById(R.id.recents_title) as TextView
         val subtitle = convertView.findViewById(R.id.recents_subtitle) as TextView
         val date = convertView.findViewById(R.id.recents_date) as TextView
+        val np = convertView.findViewById(R.id.recents_playing) as ImageView
         var relDate: CharSequence = ""
+
         if (t.isNowPlaying) {
-            //                String np = "▶️";
-            relDate = "playing right now..."
-            val playingAnim = AnimationUtils.loadAnimation(context, R.anim.playing)
-            val np = convertView.findViewById(R.id.recents_playing) as TextView
-            np.startAnimation(playingAnim)
-        }
+            relDate = "   now"
+            np.visibility = View.VISIBLE
+            val anim = np.getDrawable() as AnimatedVectorDrawable
+            anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
+                override fun onAnimationEnd(drawable: Drawable?) {
+                    if (drawable != null && drawable.isVisible)
+                        anim.start()
+                }
+            })
+            anim.start()
+        } else
+            np.visibility = View.GONE
         title.text = t.name
         subtitle.text = t.artist
 
@@ -273,7 +281,10 @@ internal class RecentsAdapter
             //                gotLoved = false;
             clear()
         }
-        res.forEach { add(it) }
+        res.forEach {
+            if (!it.isNowPlaying || page==1)
+                add(it)
+        }
         lastClicked = -1
         gotLoved = false
         notifyDataSetChanged()

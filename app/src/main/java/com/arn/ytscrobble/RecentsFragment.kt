@@ -6,9 +6,11 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
-import android.text.Layout
 import android.view.*
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ListView
 import com.arn.ytscrobble.ui.EndlessScrollListener
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
@@ -69,20 +71,20 @@ class RecentsFragment : Fragment() {
         series.color = resources.getColor(R.color.colorAccent)
         series.setAnimated(true)
         graph.addSeries(series)
-        graph.setOnClickListener({
+        graph.setOnClickListener{
             if (graph.tag == true) {
                 graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
                 graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.VERTICAL
                 graph.gridLabelRenderer.isVerticalLabelsVisible = true
                 graph.tag = false
-            } else{
+            } else {
                 graph.gridLabelRenderer.horizontalAxisTitle = null
                 graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
                 graph.gridLabelRenderer.isVerticalLabelsVisible = false
                 graph.tag = true
             }
             graph.onDataChanged(false, false)
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

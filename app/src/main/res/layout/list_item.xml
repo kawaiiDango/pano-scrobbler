@@ -39,7 +39,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="11dp"
         android:layout_toEndOf="@+id/recents_album_art"
-        android:layout_toStartOf="@+id/recents_date"
+        android:layout_toStartOf="@+id/recents_playing"
         android:clickable="false"
         android:gravity="start"
         android:longClickable="false"
@@ -94,12 +94,12 @@
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/ic_yt_play"/>
 
-    <TextView
+    <ImageView
         android:id="@+id/recents_playing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/recents_subtitle"
-        android:layout_toEndOf="@+id/recents_title"
-        tools:text="▶"/>
+        android:layout_toStartOf="@+id/recents_date"
+        app:srcCompat="@drawable/avd_eq"/>
 
 </RelativeLayout>

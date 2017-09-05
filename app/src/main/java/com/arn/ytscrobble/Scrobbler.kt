@@ -61,7 +61,6 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                 reAuthNeeded = true
 
             if (!reAuthNeeded) {
-                //publishProgress("sess_key: " + session.getKey());
                 prefs.edit().putString("sesskey", session!!.key).apply()
 
                 when (s[0]) {
@@ -125,7 +124,6 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                         //                        s[2] = correction.getName();
                         result = Track.updateNowPlaying(s[1], s[2], session)
                     } else {
-                        publishProgress("not a song")
                         (handler as NLService.ScrobbleHandler).remove(hash)
                         handler.notification(c.getString(R.string.invalid_artist),s[1], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
 
@@ -192,9 +190,7 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                 command = Stuff.GET_LOVED
             handler?.obtainMessage(0, Pair(command,res))?.sendToTarget()
         } else if (res is Result) {
-            if (res.isSuccessful)
-                Stuff.toast(c, command)
-            else
+            if (!res.isSuccessful)
                 Stuff.toast(c, command + " failed!")
         } else if (command == Stuff.TRACK_HERO && res is MutableList<*>) {
 //            val s = res as MutableList<String?>

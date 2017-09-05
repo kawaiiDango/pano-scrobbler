@@ -142,37 +142,39 @@ class NLService : NotificationListenerService() {
             notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
-        fun scrobble(songTitle: String): Int {
-            val splits = Stuff.sanitizeTitle(songTitle)
-            val hash = splits[0].hashCode() + splits[1].hashCode()
+        fun scrobble(artist:String, title: String): Int {
+            val hash = artist.hashCode() + title.hashCode()
             if (!activeIDs.contains(hash))
                 activeIDs.add(hash)
             else
                 removeMessages(hash)
             if (!hasMessages(hash)) {
 
-                if (splits.size == 2 && splits[0] != "" && splits[1] != "") {
+                if (artist != "" && title != "") {
                     Scrobbler(applicationContext, handler)
-                            .execute(Stuff.NOW_PLAYING, splits[0], splits[1])
+                            .execute(Stuff.NOW_PLAYING, artist, title)
                     val m = obtainMessage()
                     val b = Bundle()
-                    b.putString(B_ARTIST, splits[0])
-                    b.putString(B_TITLE, splits[1])
+                    b.putString(B_ARTIST, artist)
+                    b.putString(B_TITLE, title)
                     b.putLong(B_TIME, System.currentTimeMillis())
                     m.data = b
                     m.what = hash
                     val delay = pref.getInt("delay_secs", 30) * 1000
 
                     sendMessageDelayed(m, delay.toLong())
-                    notification(splits[0], splits[1], getString(R.string.state_scrobbling), 0)
+                    notification(artist, title, getString(R.string.state_scrobbling), 0)
                 } else {
-                    notification(getString(R.string.parse_error), splits[0] + " " + splits[1], getString(R.string.not_scrobling), NOTI_ERR_ICON)
+                    notification(getString(R.string.parse_error), artist + " " + title, getString(R.string.not_scrobling), NOTI_ERR_ICON)
                 }
             }
             return hash
         }
+        fun scrobble(songTitle: String): Int {
+            val splits = Stuff.sanitizeTitle(songTitle)
+            return scrobble(splits[0], splits[1])
+        }
 
-        @JvmOverloads
         fun notification(title1: String, title2: String?, state: String, iconId: Int, love: Boolean = true) {
             var title2 = title2
             var iconId = iconId
@@ -244,7 +246,7 @@ class NLService : NotificationListenerService() {
 
     companion object {
 
-        lateinit private var handler : NLService.ScrobbleHandler
+        lateinit var handler : NLService.ScrobbleHandler
 
         val pNLS = "com.arn.ytscrobble.NLS"
         val pCANCEL = "com.arn.ytscrobble.CANCEL"

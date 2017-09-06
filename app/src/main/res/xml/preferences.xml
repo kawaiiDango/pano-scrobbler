@@ -21,22 +21,21 @@
     <PreferenceCategory
         android:title="Scrobble from">
 
-        <SwitchPreference
+        <Preference
             android:defaultValue="true"
-            android:key="scrobble_mxmFloatingLyrics"
-            android:icon="@drawable/ic_mxm"
+            android:key="app_list"
+            android:icon="@drawable/ic_placeholder_music"
             android:persistent="true"
-            android:summary="MusixMatch's FloatingLyrics notifications. Useful for scrobbling uncommon players"
-            android:title="FloatingLyrics"/>
-
+            android:summary="Scrobble from these apps (any app which can play music with metadata is supported)"
+            android:title="Enabled apps"/>
 
         <SwitchPreference
-            android:defaultValue="true"
-            android:key="scrobble_youtube"
-            android:icon="@drawable/ic_youtube"
+            android:defaultValue="false"
+            android:key="scrobble_common_players"
+            android:icon="@drawable/ic_placeholder_music"
             android:persistent="true"
-            android:summary="The official youtube app"
-            android:title="Youtube"/>
+            android:summary="Other common music players"
+            android:title="Others"/>
 
     </PreferenceCategory>
 

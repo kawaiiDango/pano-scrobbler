@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Youtube Scrobbler</string>
+    <string name="app_name">ytScrobbler</string>
     <string name="blank_text">
       goddamnit this is so blank
     </string>
@@ -14,6 +14,9 @@
     <string name="state_scrobbling">Now scrobbling…</string>
     <string name="state_scrobbled">Scrobbled…</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
-    <string name="graph_info">...last 6 months</string>
+    <string name="graph_info">… last 6 months</string>
+    <string name="action_app_list">Enabled Apps</string>
+    <string name="enabled_apps">Enabled Apps for scrobbling</string>
+    <string name="first_things">First things first…</string>
 
 </resources>

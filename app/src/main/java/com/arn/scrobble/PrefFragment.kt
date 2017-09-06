@@ -1,11 +1,9 @@
-package com.arn.ytscrobble
+package com.arn.scrobble
 
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
-import android.preference.SwitchPreference
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 
@@ -13,14 +11,14 @@ import android.support.design.widget.CollapsingToolbarLayout
  * Created by arn on 09/07/2017.
  */
 
-class PrefFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenceChangeListener */{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(false)
 
-        (activity.findViewById(R.id.toolbar_layout) as CollapsingToolbarLayout).title = getString(R.string.action_settings)
-        val vg = activity.findViewById(R.id.app_bar) as AppBarLayout
+        (activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)).title = getString(R.string.action_settings)
+        val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
         vg.setExpanded(false, true)
 
         // Load the preferences from an XML resource
@@ -36,6 +34,17 @@ class PrefFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceC
             Scrobbler(activity).execute(Stuff.CHECKAUTH)
             true
         }
+
+        val appList = findPreference("app_list")
+        appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            fragmentManager.beginTransaction()
+                    .hide(this)
+                    .add(R.id.frame, AppListFragment())
+                    .addToBackStack(null)
+                    .commit()
+            true
+        }
+
         val about = findPreference("about")
         val pName = activity.packageName
         try {
@@ -47,7 +56,7 @@ class PrefFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceC
         }
 
     }
-
+/*
 
     override fun onSharedPreferenceChanged(sp: SharedPreferences, key: String) {
         if (key == "master") {
@@ -58,15 +67,15 @@ class PrefFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceC
             yt.isChecked = `val`
         }
     }
-
+*/
     override fun onResume() {
         super.onResume()
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+//        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
     }
 
     override fun onPause() {
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+//        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onPause()
     }
 

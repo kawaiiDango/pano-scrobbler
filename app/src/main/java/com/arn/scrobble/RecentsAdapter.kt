@@ -1,6 +1,5 @@
-package com.arn.ytscrobble
+package com.arn.scrobble
 
-import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
@@ -13,10 +12,8 @@ import android.graphics.drawable.*
 import android.net.Uri
 import android.os.Handler
 import android.os.Message
-import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.design.widget.FloatingActionButton
-import android.support.graphics.drawable.Animatable2Compat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.graphics.Palette
 import android.text.format.DateUtils
@@ -24,13 +21,9 @@ import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
-import android.view.animation.GridLayoutAnimationController
 import android.widget.*
 import com.jjoe64.graphview.GraphView
-import com.jjoe64.graphview.GridLabelRenderer
-import com.jjoe64.graphview.LabelFormatter
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.squareup.picasso.Callback
@@ -38,20 +31,18 @@ import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
-import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
 /**
  * Created by arn on 10/07/2017.
  */
 
-internal class RecentsAdapter
+class RecentsAdapter
 
-(c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, ArrayList()) {
+(c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, mutableListOf()) {
 
-    private val hero: ImageView = (c as Activity).findViewById(R.id.img_hero) as ImageView
+    private val hero: ImageView = (c as Activity).findViewById<ImageView>(R.id.img_hero)
     private var gotLoved = false
-    var lastClicked = -1
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView : View? = convertView
@@ -64,17 +55,22 @@ internal class RecentsAdapter
         if (convertView == null) {
             // inflate the layout
             val inflater = (context as Activity).layoutInflater
-            convertView = inflater.inflate(layoutResourceId, parent, false)
+            convertView = inflater.inflate(layoutResourceId, parent, false)!!
         }
-        convertView = convertView!!
         // object item based on the position
         val t = getItem(position) ?: return convertView
+        var selectedPos = (parent as ListView).checkedItemPosition -1
+
+        if (selectedPos < 0) { //not checked (INVALID_POSITION is -1)
+            selectedPos = 0
+            parent.setItemChecked(0, true)
+        }
 
 // get the TextView and then set the text (item name) and tag (item ID) values
-        val title = convertView.findViewById(R.id.recents_title) as TextView
-        val subtitle = convertView.findViewById(R.id.recents_subtitle) as TextView
-        val date = convertView.findViewById(R.id.recents_date) as TextView
-        val np = convertView.findViewById(R.id.recents_playing) as ImageView
+        val title = convertView.findViewById<TextView>(R.id.recents_title)
+        val subtitle = convertView.findViewById<TextView>(R.id.recents_subtitle)
+        val date = convertView.findViewById<TextView>(R.id.recents_date)
+        val np = convertView.findViewById<ImageView>(R.id.recents_playing)
         var relDate: CharSequence = ""
 
         if (t.isNowPlaying) {
@@ -100,8 +96,8 @@ internal class RecentsAdapter
                 relDate = "Just now"
         }
         date.text = relDate
-        val love = convertView.findViewById(R.id.recents_love) as ImageView
-        val play = convertView.findViewById(R.id.recents_play) as ImageView
+        val love = convertView.findViewById<ImageView>(R.id.recents_love)
+        val play = convertView.findViewById<ImageView>(R.id.recents_play)
 
         love.setOnClickListener(loveToggle)
 
@@ -114,7 +110,7 @@ internal class RecentsAdapter
                 love.setTag(R.id.recents_love, 0)
             }
         }
-        val albumArt = convertView.findViewById(R.id.recents_album_art) as ImageView
+        val albumArt = convertView.findViewById<ImageView>(R.id.recents_album_art)
 
         val imgUrl = t.getImageURL(ImageSize.MEDIUM)
 
@@ -133,10 +129,10 @@ internal class RecentsAdapter
             albumArt.setColorFilter(Stuff.getMatColor(context, "500", t.name.hashCode().toLong()))
         }
 
-        if ((position == 0 && lastClicked == -1 || position == lastClicked) && t.url != hero.tag) {
-            val fab = (context as Activity).findViewById(R.id.fab) as FloatingActionButton
-            val heroInfo = (context as Activity).findViewById(R.id.hero_info) as ImageButton
-            val heroYt = (context as Activity).findViewById(R.id.hero_yt) as ImageButton
+        if ( position == selectedPos && t.url != hero.tag) {
+            val fab = (context as Activity).findViewById<FloatingActionButton>(R.id.fab)
+            val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
+            val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
             fab.setOnClickListener {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(t.url))
                 context.startActivity(browserIntent)
@@ -146,7 +142,7 @@ internal class RecentsAdapter
                 context.startActivity(browserIntent)
             }
             heroYt.setOnClickListener {
-                val ytUrl = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(t.artist + " - "+ t.album, "UTF-8")
+                val ytUrl = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(t.artist + " - "+ t.name, "UTF-8")
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ytUrl))
                 context.startActivity(browserIntent)
             }
@@ -158,16 +154,18 @@ internal class RecentsAdapter
 
             //                }
             play.visibility = View.VISIBLE
-            play.setTag(R.id.recents_play, t.artist + " - " + t.name)
-            play.setOnClickListener(playClickListener)
-        } else if (position != lastClicked) {
+//            play.setTag(R.id.recents_play, t.artist + " - " + t.name)
+            play.setOnClickListener({heroYt.callOnClick()})
+        } else if (position != selectedPos) {
             play.visibility = View.INVISIBLE
-        }
+        } else
+            play.visibility = View.VISIBLE
+
         return convertView
     }
 
     fun loadURL(page: Int) {
-        Scrobbler(context, handler).execute(Stuff.GET_RECENTS, page.toString() + "")
+        Scrobbler(context, handler).execute(Stuff.GET_RECENTS, page.toString())
     }
 
     fun setHero(imgUrl: String?) {
@@ -175,7 +173,7 @@ internal class RecentsAdapter
     }
 
     private fun setHero(t: Track?, imgUrl: String? = null) {
-        val ctl = (context as Activity).findViewById(R.id.toolbar_layout) as CollapsingToolbarLayout
+        val ctl = (context as Activity).findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
 
         if (t != null) {
             val text = t.artist + " - " + t.name
@@ -198,10 +196,10 @@ internal class RecentsAdapter
                     .into(hero, object : Callback {
                         override fun onSuccess() {
                             hero.clearColorFilter()
-                            val list = (context as Activity).findViewById(R.id.recents_list) as ListView? ?: return
-                            val fab = (context as Activity).findViewById(R.id.fab) as FloatingActionButton? ?: return
-                            val heroInfo = (context as Activity).findViewById(R.id.hero_info) as ImageButton
-                            val heroYt = (context as Activity).findViewById(R.id.hero_yt) as ImageButton
+                            val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
+                            val fab = (context as Activity).findViewById<FloatingActionButton?>(R.id.fab) ?: return
+                            val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
+                            val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
 
                             val b = (hero.drawable as BitmapDrawable).bitmap
                             Palette.generateAsync(b) { palette ->
@@ -223,15 +221,13 @@ internal class RecentsAdapter
 //                                fab.backgroundTintList = ColorStateList.valueOf(colorDomPrimary)
 //                                list.setBackgroundColor(colorMutedBlack)
                                 val listBgFrom = (list.background as ColorDrawable).color
-                                val fabBgFrom = fab.contentBackground
 
                                 val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
-                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", lastColorDomPrimary, colorDomPrimary)
+//                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", lastColorDomPrimary, colorDomPrimary)
                                 val infoBgAnimator = ObjectAnimator.ofObject(heroInfo, "colorFilter", ArgbEvaluator(), lastColorLightAccent, colorLightAccent)
                                 val ytBgAnimator = ObjectAnimator.ofObject(heroYt, "colorFilter", ArgbEvaluator(), lastColorLightAccent, colorLightAccent)
-                                Stuff.log(context, "fab bg: "+ fabBgFrom)
                                 val animSet = AnimatorSet()
-                                animSet.playTogether(listBgAnimator, fabBgAnimator, infoBgAnimator, ytBgAnimator)
+                                animSet.playTogether(listBgAnimator, infoBgAnimator, ytBgAnimator)
                                 animSet.interpolator = AccelerateDecelerateInterpolator()
                                 animSet.duration = 1500
                                 animSet.start()
@@ -271,7 +267,7 @@ internal class RecentsAdapter
         if (points == null)
             return
 
-        val graph = (context as Activity).findViewById(R.id.graph) as GraphView
+        val graph = (context as Activity).findViewById<GraphView>(R.id.graph)
         val series = graph.series.get(0) as LineGraphSeries<DataPoint>
         val dps = mutableListOf<DataPoint>()
         var i: Double = 0.0
@@ -292,7 +288,7 @@ internal class RecentsAdapter
     }
 
     fun populate(res: PaginatedResult<Track>, page: Int = 1) {
-        val refresh = (context as Activity).findViewById(R.id.swiperefresh) as SwipeRefreshLayout?
+        val refresh = (context as Activity).findViewById<SwipeRefreshLayout?>(R.id.swiperefresh)
 
         refresh?.isRefreshing = false
         if (page == 1) {
@@ -303,9 +299,9 @@ internal class RecentsAdapter
             if (!it.isNowPlaying || page==1)
                 add(it)
         }
-        lastClicked = -1
         gotLoved = false
         notifyDataSetChanged()
+
     }
 
     fun markLoved(res: PaginatedResult<Track>) {
@@ -364,7 +360,7 @@ internal class RecentsAdapter
 
         }
     }
-
+/*
     private val playClickListener = View.OnClickListener { v ->
         var url = v.getTag(R.id.recents_play) as String
         try {
@@ -375,7 +371,7 @@ internal class RecentsAdapter
             Stuff.toast(context, "failed to encode url")
         }
     }
-
+*/
     private val handler: Handler = @SuppressLint("HandlerLeak")
     object: Handler(){
         override fun handleMessage(m: Message) {

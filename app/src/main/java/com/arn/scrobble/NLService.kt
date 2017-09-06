@@ -1,4 +1,4 @@
-package com.arn.ytscrobble
+package com.arn.scrobble
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -253,7 +253,6 @@ class NLService : NotificationListenerService() {
         val pLOVE = "com.arn.ytscrobble.LOVE"
         val pUNLOVE = "com.arn.ytscrobble.UNLOVE"
         val MXM_PACKAGE = "com.musixmatch.android.lyrify"
-        val YOUTUBE_PACKAGE = "com.google.android.youtube"
         val XIAMI_PACKAGE = "fm.xiami.main"
         val NOTI_TEXT = arrayOf("Tap to show lyrics", "Tap to hide lyrics")
         val B_TITLE = "title"

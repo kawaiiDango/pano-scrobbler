@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="lightDivider">#11ffffff</color>
     <color name="darkBg">#a9000000</color>
+    <color name="highlight">#1eff4081</color>
 </resources>

@@ -1,22 +1,23 @@
-package com.arn.ytscrobble
+package com.arn.scrobble
 
 import android.app.Fragment
+import android.content.BroadcastReceiver
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.net.http.HttpResponseCache
+import java.io.File
+import java.io.IOException
+
 
 class Main : AppCompatActivity() {
-    //    TextView status;
     lateinit private var recentsFragment: Fragment
-
-    //    private NotificationReceiver nReceiver;
+    private var tReceiver: BroadcastReceiver? = null
     //    private TrackMetaListener tReceiver;
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,18 +25,12 @@ class Main : AppCompatActivity() {
         if (savedInstanceState != null)
             return
         setContentView(R.layout.activity_main)
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        val fab = findViewById(R.id.fab) as FloatingActionButton
-        fab.setOnClickListener {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.last.fm/"))
-            startActivity(browserIntent)
-        }
-
-        val ctl = findViewById(R.id.toolbar_layout) as CollapsingToolbarLayout
+        val ctl = findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
         ctl.tag = " "
-        val abl = findViewById(R.id.app_bar) as AppBarLayout
+        val abl = findViewById<AppBarLayout>(R.id.app_bar)
         abl.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
             internal var scrollRange = -1
 
@@ -44,7 +39,11 @@ class Main : AppCompatActivity() {
                     scrollRange = appBarLayout.totalScrollRange
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    ctl.title = getString(R.string.app_name)
+                    val f: Fragment? = fragmentManager.findFragmentByTag("recents")
+                    if (f != null && f.isVisible) {
+                        ctl.title = getString(R.string.app_name)
+                    }
+//TODO:                    test this
                     heroExpanded = true
                 } else if (heroExpanded) {
                     ctl.title = ctl.tag as CharSequence //careful there should a space between double quote otherwise it wont work
@@ -52,40 +51,22 @@ class Main : AppCompatActivity() {
                 }
             }
         })
+        try {
+            val httpCacheDir = File(cacheDir, "http")
+            val httpCacheSize = (10 * 1024 * 1024).toLong() // 10 MiB
+            HttpResponseCache.install(httpCacheDir, httpCacheSize)
+        } catch (e: IOException) {
+            Stuff.log(applicationContext, "HTTP response cache installation failed:" + e)
+        }
+
 
         recentsFragment = RecentsFragment()
         fragmentManager.beginTransaction()
-                .add(R.id.frame, recentsFragment).commit()
-
-        //status = (TextView) findViewById(R.id.status);
-        //        nReceiver = new NotificationReceiver();
+                .add(R.id.frame, recentsFragment, "recents").commit()
         /*
-        val filter = new IntentFilter();
-        filter.addAction(NLService.pNOTIFICATION_EVENT);
-        registerReceiver(nReceiver,filter);
-
-        val iF = new IntentFilter();
-        iF.addAction("com.android.music.metachanged");
-        iF.addAction("fm.last.android.metachanged");
-        iF.addAction("com.sec.android.app.music.metachanged");
-        iF.addAction("com.real.IMP.metachanged");
-        iF.addAction("com.musixmatch.android.lyrify.metachanged");
-
-        iF.addAction("com.android.music.playstatechanged");
-        iF.addAction("fm.last.android.playstatechanged");
-        iF.addAction("com.sec.android.app.music.playstatechanged");
-        iF.addAction("com.real.IMP.playstatechanged");
-        iF.addAction("com.musixmatch.android.lyrify.playstatechanged");
-
-        iF.addAction("com.android.music.playbackcomplete");
-        iF.addAction("fm.last.android.playbackcomplete");
-        iF.addAction("com.sec.android.app.music.playbackcomplete");
-        iF.addAction("com.real.IMP.playbackcomplete");
-        iF.addAction("com.musixmatch.android.lyrify.playbackcomplete");
-
-        tReceiver = new TrackMetaListener();
-        registerReceiver(tReceiver, iF);
-*/
+        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("scrobble_common_players", false))
+            CommonPlayers.regIntents(this)
+            */
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -105,16 +86,28 @@ class Main : AppCompatActivity() {
                     .add(R.id.frame, PrefFragment())
                     .addToBackStack(null)
                     .commit()
+        } else if (id == R.id.action_app_list) {
+            fragmentManager.beginTransaction()
+                    .hide(recentsFragment)
+                    .add(R.id.frame, AppListFragment())
+                    .addToBackStack(null)
+                    .commit()
         }
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onStop() {
+        super.onStop()
+        val cache = HttpResponseCache.getInstalled()
+        cache?.flush()
+    }
+/*
     override fun onDestroy() {
         super.onDestroy()
-        //        unregisterReceiver(nReceiver);
-        //        unregisterReceiver(tReceiver);
+        if (tReceiver != null)
+            unregisterReceiver(tReceiver)
     }
-
+*/
     override fun onResume() {
         super.onResume()
 

@@ -1,4 +1,4 @@
-package com.arn.ytscrobble
+package com.arn.scrobble
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -20,16 +20,21 @@ import java.util.HashSet
 
 class SessListener internal constructor(private val c: Context, private val handler: NLService.ScrobbleHandler) : OnActiveSessionsChangedListener {
     private var pref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(c)
+    private var appListPref: SharedPreferences = c.getSharedPreferences(Stuff.APP_LIST_PREFS, Context.MODE_PRIVATE)
     private val ytCallback = YtCallback()
 
     private val mControllers = HashMap<MediaSession.Token, Pair<MediaController, Callback>>()
 
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
+        if (!pref.getBoolean("master", false))
+            return
+        //TODO: remove all sessions when turned off
         val controllerCount = controllers?.size ?: 0
         val tokens = HashSet<MediaSession.Token>(controllerCount)
         for (i in 0 until controllerCount) {
             val controller = controllers!![i]
-            if (pref.getBoolean("scrobble_youtube", true) && controller.packageName == NLService.YOUTUBE_PACKAGE) {
+            if (appListPref.getStringSet(Stuff.APP_LIST_PREFS, setOf()).contains(controller.packageName)) {
+//                NLService.YOUTUBE_PACKAGE
                 tokens.add(controller.sessionToken)
                 // Only add tokens that we don't already have.
                 if (!mControllers.containsKey(controller.sessionToken)) {
@@ -52,7 +57,7 @@ class SessListener internal constructor(private val c: Context, private val hand
             }
         }
     }
-
+    //TODO: for youtube, youtube music etc (an array in Stuff) and those without artist, parseTitle, else, pass it raw
     private inner class YtCallback : Callback() {
         internal var metadata: MediaMetadata? = null
         internal var lastHash = 0
@@ -70,6 +75,7 @@ class SessListener internal constructor(private val c: Context, private val hand
             if (metadata == null)
                 return
             val title = metadata!!.getString(MediaMetadata.METADATA_KEY_TITLE)
+
             //                String artist =  metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
 
             if (title == "")

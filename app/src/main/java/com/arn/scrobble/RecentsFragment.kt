@@ -1,4 +1,4 @@
-package com.arn.ytscrobble
+package com.arn.scrobble
 
 import android.app.Fragment
 import android.os.Bundle
@@ -11,7 +11,7 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
-import com.arn.ytscrobble.ui.EndlessScrollListener
+import com.arn.scrobble.ui.EndlessScrollListener
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
@@ -24,7 +24,7 @@ import com.jjoe64.graphview.series.LineGraphSeries
 
 class RecentsFragment : Fragment() {
 
-    lateinit private var adapter: RecentsAdapter
+    private var adapter: RecentsAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
@@ -35,7 +35,7 @@ class RecentsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val ab = (activity as AppCompatActivity).supportActionBar ?: return
         ab.setDisplayHomeAsUpEnabled(false)
-        val recentsList = activity.findViewById(R.id.recents_list) as ListView
+        val recentsList = activity.findViewById<ListView>(R.id.recents_list)
         val inflater = activity.layoutInflater
 
         recentsList.background.mutate()
@@ -43,23 +43,23 @@ class RecentsFragment : Fragment() {
         recentsList.emptyView = footer
         recentsList.addFooterView(footer, null, false)
 
-        val header = inflater.inflate(R.layout.recents_header, recentsList, false) as LinearLayout
+        val header = inflater.inflate(R.layout.list_header, recentsList, false) as LinearLayout
         recentsList.addHeaderView(header, null, false)
 
-        adapter = RecentsAdapter(activity, R.layout.list_item)
+        adapter = RecentsAdapter(activity, R.layout.list_item_recents)
         recentsList.adapter = adapter
         recentsList.setOnScrollListener(loadMoreListener)
         recentsList.setOnItemClickListener{
             adapterView, view, i, l -> itemClickListener(adapterView, view, i, l)
         }
 
-        val refresh = activity.findViewById(R.id.swiperefresh) as SwipeRefreshLayout
-        refresh.setOnRefreshListener { adapter.loadURL(1) }
+        val refresh = activity.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
+        refresh.setOnRefreshListener { adapter?.loadURL(1) }
 
-        val hero = activity.findViewById(R.id.img_hero) as ImageView
+        val hero = activity.findViewById<ImageView>(R.id.img_hero)
         hero.setImageResource(R.color.background_material_dark)
 
-        val graph = activity.findViewById(R.id.graph) as GraphView
+        val graph = activity.findViewById<GraphView>(R.id.graph)
         graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
         graph.gridLabelRenderer.isHorizontalLabelsVisible = false
         graph.gridLabelRenderer.isVerticalLabelsVisible = false
@@ -97,31 +97,35 @@ class RecentsFragment : Fragment() {
         val ab = (activity as AppCompatActivity).supportActionBar
         ab?.setDisplayHomeAsUpEnabled(hidden)
         if (!hidden) {
-            (activity.findViewById(R.id.toolbar_layout) as CollapsingToolbarLayout).title = getString(R.string.app_name)
+            activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = getString(R.string.app_name)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        adapter?.loadURL(1)
     }
 
     override fun onResume() {
         super.onResume()
-        adapter.loadURL(1)
+//        adapter.loadURL(1)
     }
 
     private val loadMoreListener: EndlessScrollListener = object : EndlessScrollListener() {
         override fun onLoadMore(page: Int, totalItemsCount: Int): Boolean {
             // Triggered only when new data needs to be appended to the list
             // Add whatever code is needed to append new items to your AdapterView
-            adapter.loadURL(page)
+            adapter?.loadURL(page)
             // or loadNextDataFromApi(totalItemsCount);
             return true // ONLY if more data is actually being loaded; false otherwise.
         }
     }
     private fun itemClickListener(adapterView: AdapterView<*>, v: View, i: Int, l: Long) {
-        adapter.lastClicked = i - 1
-        adapter.notifyDataSetChanged()
+        adapter?.notifyDataSetChanged()
 
-        val ab = activity.findViewById(R.id.app_bar) as AppBarLayout
+        val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
         ab.setExpanded(true, true)
-        val list = activity.findViewById(R.id.recents_list) as ListView
-        list.smoothScrollToPosition(adapter.lastClicked)
+        val list = activity.findViewById<ListView>(R.id.recents_list)
+        list.smoothScrollToPosition(i-1)
         }
 }

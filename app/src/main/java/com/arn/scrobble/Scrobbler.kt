@@ -1,4 +1,4 @@
-package com.arn.ytscrobble
+package com.arn.scrobble
 
 import android.content.Context
 import android.content.Intent

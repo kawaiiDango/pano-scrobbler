@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
+              android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/app_list_icon"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_weight="5"
+        android:adjustViewBounds="true"
+        android:padding="5dp"
+        android:scaleType="centerInside"
+        app:srcCompat="@android:drawable/btn_star"/>
+
+    <CheckBox
+        android:id="@+id/app_list_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="5dp"
+        android:layout_weight="1"
+        android:button="@null"
+        android:checked="false"
+        android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+        android:focusableInTouchMode="false"
+        android:clickable="false"
+        tools:text="CheckBox"/>
+</LinearLayout>

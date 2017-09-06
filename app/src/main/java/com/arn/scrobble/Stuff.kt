@@ -1,4 +1,4 @@
-package com.arn.ytscrobble
+package com.arn.scrobble
 
 import android.content.Context
 import android.graphics.Color
@@ -23,6 +23,14 @@ internal object Stuff {
     const val UNLOVE = "unloved"
     const val GET_LOVED = "getloved"
     const val TRACK_HERO = "heroinfo"
+    const val APP_LIST_PREFS = "app_list"
+
+    val APPS_IGNORE_ARTIST_META = arrayOf(
+            "com.google.android.youtube",
+            "com.google.android.apps.youtube.mango",
+            "com.google.android.apps.youtube.music"
+    )
+
     private val seperators = arrayOf(// in priority order
             "—", " ‎– ", "–", " - ", "-", "「", "『", "ー",
 

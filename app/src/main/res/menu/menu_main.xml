@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.arn.ytscrobble.Main">
+      tools:context="com.arn.scrobble.Main">
 
     <item
         android:id="@+id/action_settings"
@@ -9,5 +9,11 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never|collapseActionView"/>
+    <item
+        android:id="@+id/action_app_list"
+        android:icon="@android:drawable/ic_menu_set_as"
+        android:orderInCategory="100"
+        android:title="@string/action_app_list"
+        app:showAsAction="always"/>
 
 </menu>

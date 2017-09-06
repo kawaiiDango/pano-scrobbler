@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     app:layout_collapseMode="parallax"
     app:layout_collapseParallaxMultiplier="0.6"
-    tools:context="com.arn.ytscrobble.Main">
+    tools:context="com.arn.scrobble.Main">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"

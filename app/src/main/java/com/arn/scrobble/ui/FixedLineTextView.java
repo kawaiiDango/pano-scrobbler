@@ -1,4 +1,4 @@
-package com.arn.ytscrobble.ui;
+package com.arn.scrobble.ui;
 
 /**
  * Created by arn on 25/07/2017.
@@ -11,13 +11,9 @@ package com.arn.ytscrobble.ui;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.Layout;
-import android.text.Layout.Alignment;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.TextView;
 
 
 public class FixedLineTextView extends android.support.v7.widget.AppCompatTextView {

@@ -7,8 +7,7 @@
     <ListView
         android:id="@+id/app_list"
         android:layout_width="match_parent"
-        android:choiceMode="multipleChoice"
         android:layout_height="match_parent"
-        android:listSelector="@drawable/list_item_selector"
+        android:choiceMode="multipleChoice"
         />
 </LinearLayout>

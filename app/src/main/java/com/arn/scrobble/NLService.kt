@@ -248,10 +248,10 @@ class NLService : NotificationListenerService() {
 
         lateinit var handler : NLService.ScrobbleHandler
 
-        val pNLS = "com.arn.ytscrobble.NLS"
-        val pCANCEL = "com.arn.ytscrobble.CANCEL"
-        val pLOVE = "com.arn.ytscrobble.LOVE"
-        val pUNLOVE = "com.arn.ytscrobble.UNLOVE"
+        val pNLS = "com.arn.scrobble.NLS"
+        val pCANCEL = "com.arn.scrobble.CANCEL"
+        val pLOVE = "com.arn.scrobble.LOVE"
+        val pUNLOVE = "com.arn.scrobble.UNLOVE"
         val MXM_PACKAGE = "com.musixmatch.android.lyrify"
         val XIAMI_PACKAGE = "fm.xiami.main"
         val NOTI_TEXT = arrayOf("Tap to show lyrics", "Tap to hide lyrics")

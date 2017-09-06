@@ -12,18 +12,18 @@ import java.util.regex.Pattern
  */
 
 internal object Stuff {
-    const val NOW_PLAYING = "np"
-    const val SCROBBLE = "scrobble"
-    const val CHECKAUTH = "auth"
-    const val GET_RECENTS = "recents"
-    const val LAST_KEY = Tokens.LAST_KEY
-    const val LAST_SECRET = Tokens.LAST_SECRET
-    const val TAG = "ytscrobble"
-    const val LOVE = "loved"
-    const val UNLOVE = "unloved"
-    const val GET_LOVED = "getloved"
-    const val TRACK_HERO = "heroinfo"
-    const val APP_LIST_PREFS = "app_list"
+    val NOW_PLAYING = "np"
+    val SCROBBLE = "scrobble"
+    val CHECKAUTH = "auth"
+    val GET_RECENTS = "recents"
+    val LAST_KEY = Tokens.LAST_KEY
+    val LAST_SECRET = Tokens.LAST_SECRET
+    val TAG = "scrobbler"
+    val LOVE = "loved"
+    val UNLOVE = "unloved"
+    val GET_LOVED = "getloved"
+    val HERO_INFO = "heroinfo"
+    val APP_LIST_PREFS = "app_list"
 
     val APPS_IGNORE_ARTIST_META = arrayOf(
             "com.google.android.youtube",

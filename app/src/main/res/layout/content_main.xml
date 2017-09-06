@@ -17,7 +17,5 @@
         android:choiceMode="singleChoice"
         android:background="@android:color/black"
         android:orientation="vertical"
-
         />
-    <!--android:listSelector="@drawable/list_item_selector"-->
 </android.support.v4.widget.SwipeRefreshLayout>

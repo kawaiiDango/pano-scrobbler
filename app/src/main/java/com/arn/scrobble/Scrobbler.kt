@@ -73,14 +73,15 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                     Stuff.GET_LOVED -> return User.getLovedTracks(username, Stuff.LAST_KEY)
                     Stuff.LOVE -> return Track.love(s[1], s[2], session)
                     Stuff.UNLOVE -> return Track.unlove(s[1], s[2], session)
-                    Stuff.TRACK_HERO -> {
+                    Stuff.HERO_INFO -> {
                         //s[1] = page url, s[2] = api large image url
                         val url = URL(s[1])
                         val urlConnection = url.openConnection() as HttpURLConnection
                         val scrapped = mutableListOf<String?>()
                         try {
                             val resp = slurp(urlConnection.inputStream, 1024)
-
+                            if (resp == "")
+                                return null
                             //0
                             var idx = resp.indexOf("cover-art")
                             var img = s[2]
@@ -148,7 +149,7 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
             publishProgress(e.message)
         }
 
-        // adb shell am start -W -a android.intent.action.VIEW -d "http://maare.ga:10003/auth" com.arn.ytscrobble
+        // adb shell am start -W -a android.intent.action.VIEW -d "http://maare.ga:10003/auth" com.arn.scrobble
         return null
     }
 
@@ -192,7 +193,7 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
         } else if (res is Result) {
             if (!res.isSuccessful)
                 Stuff.toast(c, command + " failed!")
-        } else if (command == Stuff.TRACK_HERO && res is MutableList<*>) {
+        } else if (command == Stuff.HERO_INFO && res is MutableList<*>) {
 //            val s = res as MutableList<String?>
             handler?.obtainMessage(0, Pair(command, res))?.sendToTarget()
             //make graph
@@ -215,7 +216,7 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                     }
                 }
             } catch (ex: IOException) {
-                ex.printStackTrace()
+//                ex.printStackTrace()
                 return ""
             }
 

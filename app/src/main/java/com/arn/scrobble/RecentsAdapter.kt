@@ -146,7 +146,9 @@ class RecentsAdapter
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ytUrl))
                 context.startActivity(browserIntent)
             }
-            Scrobbler(context, handler).execute(Stuff.TRACK_HERO, t.url, t.getImageURL(ImageSize.EXTRALARGE))
+            heroInfoLoader?.cancel(true)
+            heroInfoLoader = Scrobbler(context, handler)
+            heroInfoLoader?.execute(Stuff.HERO_INFO, t.url, t.getImageURL(ImageSize.EXTRALARGE))
 
             hero.tag = t.url
             //                if (imgUrl != null && !imgUrl.equals("")) {
@@ -189,10 +191,10 @@ class RecentsAdapter
         if (imgUrl != null && imgUrl != "")
             Picasso.with(context)
                     .load(imgUrl)
+                    .noPlaceholder()
 //                    .error(R.drawable.ic_placeholder_music)
                     .fit()
                     .centerCrop()
-                    .noFade()
                     .into(hero, object : Callback {
                         override fun onSuccess() {
                             hero.clearColorFilter()
@@ -382,7 +384,7 @@ class RecentsAdapter
             var data = pair.second
             when(command){
                 Stuff.GET_LOVED -> markLoved(data as PaginatedResult<Track>)
-                Stuff.TRACK_HERO -> {
+                Stuff.HERO_INFO -> {
                         data = data as MutableList<String?>
                         setHero(data[0])
                         setGraph(data[1])
@@ -399,6 +401,8 @@ class RecentsAdapter
         private var lastColorMutedBlack = 0
 
         private val FILLED = 5
+
+        private var heroInfoLoader:Scrobbler? = null
     }
 
 }

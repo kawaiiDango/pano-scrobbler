@@ -7,5 +7,5 @@
 /build
 /captures
 .externalNativeBuild
-/app/src/main/java/com/arn/ytscrobble/Tokens.kt
+/app/src/main/java/com/arn/scrobble/Tokens.kt
 /psd/renders

@@ -35,15 +35,15 @@ class RecentsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val ab = (activity as AppCompatActivity).supportActionBar ?: return
         ab.setDisplayHomeAsUpEnabled(false)
-        val recentsList = activity.findViewById<ListView>(R.id.recents_list)
+        val recentsList = view.findViewById<ListView>(R.id.recents_list)
         val inflater = activity.layoutInflater
 
         recentsList.background.mutate()
-        val footer = inflater.inflate(R.layout.recents_footer, recentsList, false) as LinearLayout
+        val footer = inflater.inflate(R.layout.footer_loading, recentsList, false) as LinearLayout
         recentsList.emptyView = footer
         recentsList.addFooterView(footer, null, false)
 
-        val header = inflater.inflate(R.layout.list_header, recentsList, false) as LinearLayout
+        val header = inflater.inflate(R.layout.header_default, recentsList, false) as LinearLayout
         recentsList.addHeaderView(header, null, false)
 
         adapter = RecentsAdapter(activity, R.layout.list_item_recents)
@@ -97,7 +97,7 @@ class RecentsFragment : Fragment() {
         val ab = (activity as AppCompatActivity).supportActionBar
         ab?.setDisplayHomeAsUpEnabled(hidden)
         if (!hidden) {
-            activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = getString(R.string.app_name)
+            activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)?.title = getString(R.string.app_name)
         }
     }
 
@@ -120,12 +120,14 @@ class RecentsFragment : Fragment() {
             return true // ONLY if more data is actually being loaded; false otherwise.
         }
     }
-    private fun itemClickListener(adapterView: AdapterView<*>, v: View, i: Int, l: Long) {
+    private fun itemClickListener(adapterView: AdapterView<*>, v: View, pos1: Int, l: Long) {
         adapter?.notifyDataSetChanged()
-
+        val i=l.toInt()
         val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
         ab.setExpanded(true, true)
-        val list = activity.findViewById<ListView>(R.id.recents_list)
-        list.smoothScrollToPosition(i-1)
-        }
+
+        adapterView as ListView
+        adapterView.setItemChecked(pos1, true)
+        adapterView.smoothScrollToPosition(i)
+    }
 }

@@ -3,9 +3,11 @@ package com.arn.scrobble
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.squareup.picasso.Picasso
 
 
 /**
@@ -13,44 +15,42 @@ import android.widget.*
  */
 class AppListAdapter
 (private val c: Context, private val itemResourceId:Int, private val headerResourceId:Int) : ArrayAdapter<ApplicationInfo>(c, itemResourceId) {
-    val prefs = c.getSharedPreferences(Stuff.APP_LIST_PREFS, Context.MODE_PRIVATE)
-    val prefsSet = prefs.getStringSet(Stuff.APP_LIST_PREFS, mutableSetOf())
-    val sectionHeaders = mutableMapOf<Int,String>()
-    private fun updatePrefs(){
-        prefs.edit().putStringSet(Stuff.APP_LIST_PREFS, prefsSet).apply()
+    private val sectionHeaders = mutableMapOf<Int,String>()
+    private val prefsSet = c.getSharedPreferences(Stuff.APP_LIST_PREFS, Context.MODE_PRIVATE).getStringSet(Stuff.APP_LIST_PREFS, setOf())
+    var list:ListView? = null
+    init{
+        list = (c as Activity).findViewById(R.id.app_list)
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, list: ViewGroup): View {
         var convertView : View? = convertView
         val type = getItemViewType(position)
+        list as ListView
 
         if (convertView == null) {
             // inflate the layout
             val inflater = (context as Activity).layoutInflater
                 convertView = inflater.inflate(
                         if(type == TYPE_ITEM) itemResourceId else headerResourceId
-                        , parent, false)!!
+                        , list, false)!!
         }
         if (type == TYPE_ITEM) {
             val app = getItem(position) ?: return convertView
             val checkbox = convertView.findViewById<CheckBox>(R.id.app_list_checkbox)
+            val tv = convertView.findViewById<TextView>(R.id.app_list_name)
             val icon = convertView.findViewById<ImageView>(R.id.app_list_icon)
 
-            checkbox.text = app.loadLabel(c.packageManager) ?: return convertView
-            checkbox.tag = app.packageName
+            tv.text = app.loadLabel(c.packageManager) ?: return convertView
+            tv.tag = app.packageName
+            val uri = Uri.parse("android.resource://" + app.packageName + "/" + app.icon)
+            Picasso.with(context)
+                    .load(uri)
+                    .placeholder(R.drawable.ic_transparent)
+                    .into(icon)
 
-            icon.setImageDrawable(app.loadIcon(c.packageManager))
-            checkbox.isChecked = prefsSet.contains(app.packageName)
-            checkbox.setOnCheckedChangeListener { btn, isChecked ->
-                if (isChecked)
-                    prefsSet.add(btn.tag as String)
-                else
-                    prefsSet.remove(btn.tag as String)
-                updatePrefs()
-                //TODO: move updateprefs to sth like onpause or onstop
-                //TODO: make a list bg selector
-                parent as ListView
-                parent.setItemChecked(position, isChecked)
+            checkbox.isChecked = list.isItemChecked(position)
+            checkbox.setOnClickListener { cb ->
+                list.setItemChecked(position, (cb as CheckBox).isChecked)
             }
         } else {
             convertView.findViewById<TextView>(R.id.header_text).text = sectionHeaders[position]
@@ -62,9 +62,14 @@ class AppListAdapter
     fun addSectionHeader(text: String) {
         sectionHeaders[count] = text
         add(ApplicationInfo())
-//        notifyDataSetChanged()
     }
 
+    override fun add(app: ApplicationInfo?) {
+        super.add(app)
+        if (prefsSet.contains(app?.packageName)) {
+            list?.setItemChecked(count - 1, true)
+        }
+    }
     override fun getViewTypeCount(): Int {
         return 2
     }
@@ -74,8 +79,14 @@ class AppListAdapter
         return if (getItem(position).flags != 0) {
             TYPE_ITEM
         } else TYPE_HEADER
+    }
 
+    override fun isEnabled(pos: Int): Boolean {
+        return getItemViewType(pos) == TYPE_ITEM
+    }
 
+    override fun hasStableIds(): Boolean {
+        return true
     }
     companion object {
         private val TYPE_ITEM = 0

@@ -62,7 +62,12 @@ class Main : AppCompatActivity() {
 
         recentsFragment = RecentsFragment()
         fragmentManager.beginTransaction()
-                .add(R.id.frame, recentsFragment, "recents").commit()
+                .add(R.id.frame, recentsFragment, "recents")
+//                .hide(recentsFragment)
+//                .add(R.id.frame, AppListFragment())
+//                .add(R.id.frame,FirstThingsFragment())
+                .commit()
+        //TODO: remove it later
         /*
         if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("scrobble_common_players", false))
             CommonPlayers.regIntents(this)

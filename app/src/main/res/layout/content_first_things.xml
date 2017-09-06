@@ -9,7 +9,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:id="@+id/first_things_1"
+        >
 
         <TextView
             android:layout_width="match_parent"
@@ -19,11 +24,9 @@
             android:text="1."/>
 
         <TextView
-            android:id="@+id/first_things_1"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_weight="1"
-            android:clickable="true"
             android:gravity="center_vertical"
             android:text="TextView"/>
     </LinearLayout>
@@ -31,7 +34,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:id="@+id/first_things_2"
+        >
 
         <TextView
             android:layout_width="match_parent"
@@ -41,11 +49,9 @@
             android:text="2."/>
 
         <TextView
-            android:id="@+id/first_things_2"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_weight="1"
-            android:enabled="true"
             android:gravity="center_vertical"
             android:text="TextView"/>
     </LinearLayout>

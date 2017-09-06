@@ -4,12 +4,11 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
+                android:background="@drawable/selector_recents_list"
                 android:orientation="horizontal"
                 android:paddingBottom="1dip"
                 android:paddingLeft="1dip"
                 android:paddingRight="1dip">
-    <!--android:background="#3000"-->
 
     <ImageView
         android:id="@+id/recents_album_art"
@@ -21,7 +20,7 @@
 
     <ImageView
         android:id="@+id/recents_love"
-        android:layout_width="30dp"
+        android:layout_width="50dp"
         android:layout_height="30dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
@@ -29,6 +28,7 @@
         android:layout_marginTop="24dp"
         android:clickable="true"
         android:elevation="10dp"
+        android:paddingLeft="20dp"
         android:scaleType="centerInside"
         app:srcCompat="@drawable/avd_heart"/>
 

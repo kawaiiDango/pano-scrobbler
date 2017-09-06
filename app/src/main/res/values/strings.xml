@@ -18,5 +18,8 @@
     <string name="action_app_list">Enabled Apps</string>
     <string name="enabled_apps">Enabled Apps for scrobbling</string>
     <string name="first_things">First things first…</string>
+    <string name="music_players">Music Players</string>
+    <string name="video_players">Video Streaming Apps</string>
+    <string name="other_apps">Other Apps</string>
 
 </resources>

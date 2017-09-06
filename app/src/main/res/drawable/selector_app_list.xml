@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="?android:attr/selectableItemBackground" />
+    <!--<item android:state_activated="true" android:drawable="?android:attr/checkMark"/>-->
+    <item>
+        <selector>
+            <!--<item android:state_activated="true">-->
+                <!--<transition>-->
+                    <!--<item android:drawable="@android:color/transparent" />-->
+                    <item android:state_activated="true" android:drawable="@color/highlightGreen" />
+                <!--</transition>-->
+            <!--</item>-->
+        </selector>
+    </item>
+</layer-list>

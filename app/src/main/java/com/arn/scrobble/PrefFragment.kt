@@ -15,11 +15,12 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(false)
+        if (savedInstanceState == null)
+            setHasOptionsMenu(false)
 
-        (activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)).title = getString(R.string.action_settings)
+        (activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout))?.title = getString(R.string.action_settings)
         val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
-        vg.setExpanded(false, true)
+        vg?.setExpanded(false, true)
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences)

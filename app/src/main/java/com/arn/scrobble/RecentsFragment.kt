@@ -27,7 +27,8 @@ class RecentsFragment : Fragment() {
     private var adapter: RecentsAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        setHasOptionsMenu(true)
+        if (savedInstanceState == null)
+            setHasOptionsMenu(true)
         return inflater.inflate(R.layout.content_main, container, false)
     }
 
@@ -92,6 +93,28 @@ class RecentsFragment : Fragment() {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_main, menu)
     }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        val id = item.itemId
+
+        if (id == R.id.action_settings) {
+            Stuff.log(activity, fragmentManager.findFragmentByTag(Stuff.GET_RECENTS).toString() +" rcefnts")
+            fragmentManager.beginTransaction()
+                    .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
+                    .add(R.id.frame, PrefFragment())
+                    .addToBackStack(null)
+                    .commit()
+        } else if (id == R.id.action_app_list) {
+            fragmentManager.beginTransaction()
+                    .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
+                    .add(R.id.frame, AppListFragment())
+                    .addToBackStack(null)
+                    .commit()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onHiddenChanged(hidden: Boolean) {
         val ab = (activity as AppCompatActivity).supportActionBar
@@ -128,6 +151,6 @@ class RecentsFragment : Fragment() {
 
         adapterView as ListView
         adapterView.setItemChecked(pos1, true)
-        adapterView.smoothScrollToPosition(i)
+        adapterView.smoothScrollToPositionFromTop(i, 50)
     }
 }

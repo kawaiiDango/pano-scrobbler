@@ -11,7 +11,7 @@
         app:showAsAction="never|collapseActionView"/>
     <item
         android:id="@+id/action_app_list"
-        android:icon="@android:drawable/ic_menu_set_as"
+        android:icon="@drawable/ic_placeholder_music"
         android:orderInCategory="100"
         android:title="@string/action_app_list"
         app:showAsAction="always"/>

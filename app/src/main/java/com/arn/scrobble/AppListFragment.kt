@@ -31,7 +31,8 @@ class AppListFragment : Fragment() {
         activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)?.title = getString(R.string.action_app_list)
         val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
         vg?.setExpanded(false, true)
-//        setHasOptionsMenu(true)
+        if (savedInstanceState == null)
+            setHasOptionsMenu(false)
         return inflater.inflate(R.layout.content_app_list, container, false)
     }
 

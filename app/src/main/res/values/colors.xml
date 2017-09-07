@@ -2,9 +2,9 @@
 <resources>
     <color name="colorPrimary">#840f30</color>
     <color name="colorPrimaryDark">#680a24</color>
-    <color name="colorAccent">#f06292</color> <!-- pink 300 -->
+    <color name="colorAccent">#ff5891</color> <!-- old one -->
     <color name="lightDivider">#11ffffff</color>
     <color name="darkBg">#a9000000</color>
-    <color name="highlightPink">#12f06292</color> <!-- accent -->
+    <color name="highlightPink">#22ff5891</color> <!-- accent -->
     <color name="highlightGreen">#5aaed581</color> <!-- green 300 -->
 </resources>

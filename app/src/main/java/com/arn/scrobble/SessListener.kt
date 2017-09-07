@@ -11,9 +11,6 @@ import android.media.session.PlaybackState
 import android.preference.PreferenceManager
 import android.util.Pair
 
-import java.util.HashMap
-import java.util.HashSet
-
 /**
  * Created by arn on 04/07/2017.
  */
@@ -25,22 +22,20 @@ class SessListener internal constructor(private val c: Context, private val hand
     private val mControllers = mutableMapOf<MediaSession.Token, Pair<MediaController, YtCallback>>()
 
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
-        if (!pref.getBoolean("master", false))
-            return
-        //TODO: remove all sessions when turned off
-        val controllerCount = controllers?.size ?: 0
         val tokens = mutableSetOf<MediaSession.Token>()
-        for (i in 0 until controllerCount) {
-            val controller = controllers!![i]
-            if (pref.getStringSet(Stuff.APP_LIST_PREFS, setOf()).contains(controller.packageName)) {
-                tokens.add(controller.sessionToken)
-                // Only add tokens that we don't already have.
-                if (!mControllers.containsKey(controller.sessionToken)) {
-                    val cb = YtCallback(controller.packageName)
-                    controller.registerCallback(cb)
-                    val pair = Pair.create(controller, cb)
-                    synchronized(mControllers) {
-                        mControllers.put(controller.sessionToken, pair)
+        if (pref.getBoolean("master", false) && controllers != null) {
+            for (controller in controllers) {
+                val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(controller.packageName)
+                if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, false) &&
+                        !pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(controller.packageName))) {
+                    tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
+                    if (!mControllers.containsKey(controller.sessionToken)) {
+                        val cb = YtCallback(controller.packageName, isWhitelisted)
+                        controller.registerCallback(cb)
+                        val pair = Pair.create(controller, cb)
+                        synchronized(mControllers) {
+                            mControllers.put(controller.sessionToken, pair)
+                        }
                     }
                 }
             }
@@ -59,54 +54,63 @@ class SessListener internal constructor(private val c: Context, private val hand
         }
     }
 
-    private inner class YtCallback(packageName: String) : Callback() {
+    private inner class YtCallback(val packageName: String, val isWhitelisted:Boolean) : Callback() {
         var metadata: MediaMetadata? = null
         var lastHash = 0
         var lastPos: Long = 1
-        var isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
+        val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
-            Stuff.log(c, "metadata changed ")
+            Stuff.log("onMetadataChanged " + metadata?.getString(MediaMetadata.METADATA_KEY_TITLE))
             this.metadata = metadata
             lastPos = 1
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState) {
             super.onPlaybackStateChanged(state)
+            Stuff.log("onPlaybackStateChanged "+ state.state)
             if (metadata == null)
                 return
+
             val title = metadata!!.getString(MediaMetadata.METADATA_KEY_TITLE)
             val artist = metadata!!.getString(MediaMetadata.METADATA_KEY_ARTIST)
 
             if (title == "")
                 return
+
+            val packageNameParam = if (!isWhitelisted) packageName else null
+
             if (state.state == PlaybackState.STATE_PAUSED) {
                 //                    cancel scrobbling if within time
                 lastPos = state.position
                 handler.remove(lastHash)
-                Stuff.log(c, "paused")
+                Stuff.log("paused")
             } else if (state.state == PlaybackState.STATE_STOPPED) {
                 // a replay should count as another scrobble
                 lastPos = 1
                 handler.remove(lastHash)
-                Stuff.log(c, "stopped")
+                Stuff.log("stopped")
             } else if (state.state == PlaybackState.STATE_PLAYING || state.state == PlaybackState.STATE_BUFFERING) {
                 if (state.state == PlaybackState.STATE_BUFFERING && state.position.toInt() == 0)
                     return  //dont scrobble first buffering
 
-                Stuff.log(c, "playing: " + state.position + " < " + lastPos + " " + title)
-                if (pref.getBoolean("scrobble_youtube", true) && state.position < lastPos || lastPos.toInt() == 1) {
+                Stuff.log("playing: " + state.position + " < " + lastPos + " " + title)
+                if (state.position < lastPos || lastPos.toInt() == 1) {
                     //                    lastPos = state.getPosition();
                     if (isIgnoreArtistMeta)
-                        lastHash = handler.scrobble(title)
+                        lastHash = handler.scrobble(title, packageNameParam)
                     else
-                        lastHash = handler.scrobble(artist,title)
+                        lastHash = handler.scrobble(artist,title, packageNameParam)
                 }
             } else if (state.state == PlaybackState.STATE_CONNECTING) {
-                Stuff.log(c, "connecting " + state.position)
-            } else
-                Stuff.log(c, "other (" + state.state + ") : " + title)
+                Stuff.log("connecting " + state.position)
+            } else {
+                //TODO: assume non standard state to scrobble tg. it always gives state 0, and a onMetadataChanged on play/pause
+                //TODO: onMetadataChanged (non null), if state==0, and lastHash (excluding null) was submitted > scrobbleDelay then submit again
+                //TODO: if onMetadataChanged, data becomes null within scrobbleDelay, cancel it
+                Stuff.log("other (" + state.state + ") : " + title)
+            }
         }
     }
 }

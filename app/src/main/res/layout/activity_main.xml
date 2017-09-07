@@ -39,7 +39,7 @@
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5"
-                app:srcCompat="@drawable/ic_lastfm"
+                app:srcCompat="@drawable/img_hero"
                 />
 
             <com.jjoe64.graphview.GraphView

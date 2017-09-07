@@ -24,6 +24,13 @@
             android:title="Currently enabled:"
             android:key="enabled_apps_icons"
             />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="auto_detect"
+            android:persistent="true"
+            android:icon="@android:drawable/btn_star"
+            android:summary="...we will still ask you to confirm or ignore that app"
+            android:title="Auto detect new apps"/>
         <Preference
             android:defaultValue="true"
             android:key="open_app_list"

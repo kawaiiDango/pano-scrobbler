@@ -39,7 +39,7 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
         val enabledApps = findPreference("enabled_apps_icons")
         var listOfApps = ""
         preferenceManager.sharedPreferences
-                .getStringSet(Stuff.APP_LIST_PREFS, setOf())
+                .getStringSet(Stuff.APP_WHITELIST, setOf())
                 .forEach { listOfApps += it+", " }
         enabledApps.summary = listOfApps
 

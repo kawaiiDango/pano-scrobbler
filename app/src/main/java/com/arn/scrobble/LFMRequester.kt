@@ -63,7 +63,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
             if (!reAuthNeeded) {
                 prefs.edit().putString(Stuff.SESS_KEY, session!!.key).apply()
 
-                when (s[0]) {
+                when (command) {
                     Stuff.CHECK_AUTH -> return null
                     Stuff.CHECK_AUTH_SILENT -> return null
                     Stuff.GET_RECENTS -> {
@@ -111,15 +111,15 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                     }
                 }
 
-                //for scrobble or love data: s[0] = tag, s[1] = artist, s[2] = song
+                //for scrobble or love data: command = tag, s[1] = artist, s[2] = song
 
                 var result: ScrobbleResult? = null
                 val now = (System.currentTimeMillis() / 1000).toInt()
-                if (s[0] == Stuff.NOW_PLAYING) {
+                if (command == Stuff.NOW_PLAYING) {
                     val hash = s[1].hashCode() + s[2].hashCode()
                     val correction = Track.getCorrection(s[1], s[2], Stuff.LAST_KEY)
                     if (correction != null && (correction.artist != null && correction.artist.trim { it <= ' ' } != "" || correction.name != null && correction.name.trim { it <= ' ' } != "")) {
-                        Stuff.log(c, "valid track: " + correction.toString())
+                        Stuff.log("valid track: " + correction.toString())
                         //                    if (correction.getArtist() != null)
                         //                        s[1] = correction.getArtist();
                         //                    if (correction.getName() != null)
@@ -131,7 +131,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
 
                     }
 
-                } else if (s[0] == Stuff.SCROBBLE)
+                } else if (command == Stuff.SCROBBLE)
                     result = Track.scrobble(s[1], s[2], now, session)
                 try {
                     if (result != null && !(result.isSuccessful && !result.isIgnored)) {
@@ -141,11 +141,11 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                                 .notification(c.getString(R.string.network_error),s[1]+" "+ s[2], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
                     }
                 } catch (e: NullPointerException) {
-                    publishProgress(s[0] + ": NullPointerException")
+                    publishProgress(command + ": NullPointerException")
                 }
 
             } else if (command != Stuff.CHECK_AUTH_SILENT && command != Stuff.GET_RECENTS ) {
-                Stuff.log(c, "command: $command")
+                Stuff.log("command: $command")
                 reAuth()
             }
         } catch (e: Exception) {

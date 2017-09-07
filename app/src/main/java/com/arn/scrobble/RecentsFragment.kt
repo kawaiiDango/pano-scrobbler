@@ -100,15 +100,15 @@ class RecentsFragment : Fragment() {
         val id = item.itemId
 
         if (id == R.id.action_settings) {
-            Stuff.log(activity, fragmentManager.findFragmentByTag(Stuff.GET_RECENTS).toString() +" rcefnts")
+            Stuff.log(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS).toString() +" rcefnts")
             fragmentManager.beginTransaction()
-                    .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
+                    .hide(this)
                     .add(R.id.frame, PrefFragment())
                     .addToBackStack(null)
                     .commit()
         } else if (id == R.id.action_app_list) {
             fragmentManager.beginTransaction()
-                    .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
+                    .hide(this)
                     .add(R.id.frame, AppListFragment())
                     .addToBackStack(null)
                     .commit()

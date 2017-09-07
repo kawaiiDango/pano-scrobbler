@@ -3,19 +3,14 @@ package com.arn.scrobble
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.SharedPreferences
+import android.content.*
 import android.media.session.MediaSessionManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.service.notification.NotificationListenerService
-import android.service.notification.StatusBarNotification
 import android.preference.PreferenceManager
+import android.service.notification.NotificationListenerService
+
 
 class NLService : NotificationListenerService() {
     private var activeIDs = mutableListOf<Int>()
@@ -45,7 +40,7 @@ class NLService : NotificationListenerService() {
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, NLService::class.java))
         } catch (exception: SecurityException) {
-            Stuff.log(c, "Failed to start media controller: " + exception.message)
+            Stuff.log("Failed to start media controller: " + exception.message)
             // Try to unregister it, just it case.
             try {
                 sessManager.removeOnActiveSessionsChangedListener(sessListener)
@@ -60,7 +55,7 @@ class NLService : NotificationListenerService() {
         super.onDestroy()
     }
 
-
+/*
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (sbn == null)
             return
@@ -103,29 +98,38 @@ class NLService : NotificationListenerService() {
                 handler.removeMessages(title!!.toString().hashCode())
             }
     }
-
+*/
     private val nlservicereciver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Stuff.log(context, "int " + intent.action!!)
-            if (intent.action == pCANCEL) {
-
-                handler.remove(intent.getIntExtra("id", 0))
-            } else if (intent.action == pLOVE) {
-                Stuff.log(context, "lolo")
-                LFMRequester(applicationContext, handler).execute(Stuff.LOVE,
-                        intent.getStringExtra("artist"), intent.getStringExtra("title"))
-                handler.notification(intent.getStringExtra("artist"), intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0, false)
-            } else if (intent.action == pUNLOVE) {
-                LFMRequester(applicationContext, handler).execute(Stuff.UNLOVE,
-                        intent.getStringExtra("artist"), intent.getStringExtra("title"))
-                handler.notification(intent.getStringExtra("artist"), intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0)
-            } else if (intent.getStringExtra("command") == "list") {
-
-                Stuff.log(applicationContext, "notifications list")
-                var i = 1
-                for (sbn in this@NLService.activeNotifications) {
-                    Stuff.log(applicationContext, sbn.packageName)
-                    i++
+            Stuff.log("nlservicereciver intent " + intent.action!!)
+            when (intent.action){
+                 pCANCEL -> handler.remove(intent.getIntExtra("id", 0))
+                pLOVE -> {
+                    LFMRequester(applicationContext, handler).execute(Stuff.LOVE,
+                            intent.getStringExtra("artist"), intent.getStringExtra("title"))
+                    handler.notification(intent.getStringExtra("artist"),
+                            intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0, false)
+                }
+                pUNLOVE -> {
+                    LFMRequester(applicationContext, handler).execute(Stuff.UNLOVE,
+                            intent.getStringExtra("artist"), intent.getStringExtra("title"))
+                    handler.notification(intent.getStringExtra("artist"),
+                            intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0)
+                }
+                pWHITELIST, pBLACKLIST -> {
+                    val wSet = pref.getStringSet(Stuff.APP_WHITELIST, mutableSetOf())
+                    val bSet = pref.getStringSet(Stuff.APP_BLACKLIST, mutableSetOf())
+                    //whitelist takes over blacklist for conflicts
+                    bSet.removeAll(wSet)
+                    if (intent.action == pWHITELIST)
+                        wSet.add(intent.getStringExtra("packageName"))
+                    else
+                        bSet.add(intent.getStringExtra("packageName"))
+                    pref.edit()
+                            .putStringSet(Stuff.APP_WHITELIST, wSet)
+                            .putStringSet(Stuff.APP_BLACKLIST,  bSet)
+                            .apply()
+                    nm.cancel(NOTI_APP_ID)
                 }
             }
         }
@@ -142,7 +146,7 @@ class NLService : NotificationListenerService() {
             notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
-        fun scrobble(artist:String, title: String): Int {
+        fun scrobble(artist:String, title: String, packageName: String? = null): Int {
             val hash = artist.hashCode() + title.hashCode()
             if (!activeIDs.contains(hash))
                 activeIDs.add(hash)
@@ -164,17 +168,52 @@ class NLService : NotificationListenerService() {
 
                     sendMessageDelayed(m, delay.toLong())
                     notification(artist, title, getString(R.string.state_scrobbling), 0)
+                    //display ignore thing only on successful parse
+                    if (packageName != null) {
+                        val n = buildAppNotification(packageName)
+                        if (n != null)
+                            nm.notify(NOTI_APP_ID, n)
+                    }
                 } else {
                     notification(getString(R.string.parse_error), artist + " " + title, getString(R.string.not_scrobling), NOTI_ERR_ICON)
                 }
             }
             return hash
         }
-        fun scrobble(songTitle: String): Int {
+        fun scrobble(songTitle: String, packageName:String? = null): Int {
             val splits = Stuff.sanitizeTitle(songTitle)
-            return scrobble(splits[0], splits[1])
+            return scrobble(splits[0], splits[1], packageName)
         }
+        fun buildAppNotification(packageName:String): Notification?{
+            var appName = ""
+            try {
+                val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
+                appName = packageManager.getApplicationLabel(applicationInfo).toString()
+            } catch (e: Exception) {
+                //eat up all NPEs and stuff
+                return null
+            }
 
+            var intent = Intent(pBLACKLIST)
+                    .putExtra("packageName", packageName)
+            val ignoreIntent = PendingIntent.getBroadcast(applicationContext, 0, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+            intent = Intent(pWHITELIST)
+                    .putExtra("packageName", packageName)
+            val okayIntent = PendingIntent.getBroadcast(applicationContext, 0, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val nb = Notification.Builder(applicationContext)
+                    .setContentTitle("New player: "+ appName)
+                    .setContentText("Continue to scrobble and hide this?")
+                    .setSmallIcon(R.drawable.ic_noti)
+//                    .setColor(resources.getColor(R.color.colorPrimary))
+                    .setContentIntent(okayIntent)
+                    .addAction(R.drawable.ic_transparent, "✔ Looks cool", okayIntent)
+                    .addAction(R.drawable.ic_transparent, "\uD83D\uDEAB Ignore this app", ignoreIntent)
+                    .setAutoCancel(true)
+            return nb.build()
+        }
         fun notification(title1: String, title2: String?, state: String, iconId: Int, love: Boolean = true) {
             var title2 = title2
             var iconId = iconId
@@ -215,6 +254,7 @@ class NLService : NotificationListenerService() {
                     .setContentTitle(state)
                     .setContentText(title)
                     .setSmallIcon(iconId)
+                    .setColor(resources.getColor(R.color.colorPrimary))
                     .setContentIntent(launchIntent)
                     .setAutoCancel(true)
                     .setPriority(if (iconId == NOTI_ERR_ICON) Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
@@ -226,7 +266,7 @@ class NLService : NotificationListenerService() {
             if (state == getString(R.string.state_scrobbled))
                 nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)
             val n = nb.build()
-            nm.notify(NOTI_ID, n)
+            nm.notify(NOTI_SCR_ID, n)
         }
 
         fun notification(title1: String, state: String, iconId: Int) {
@@ -234,10 +274,11 @@ class NLService : NotificationListenerService() {
         }
 
         fun remove(hash: Int) {
-            Stuff.log(applicationContext, hash.toString() + " canceled")
+            //TODO: dont remove and cancel if nothing exists
+            Stuff.log(hash.toString() + " canceled")
             removeMessages(hash)
             if (lastNotiIcon != NOTI_ERR_ICON)
-                nm.cancel(NOTI_ID)
+                nm.cancel(NOTI_SCR_ID)
 
         }
     }
@@ -252,13 +293,13 @@ class NLService : NotificationListenerService() {
         val pCANCEL = "com.arn.scrobble.CANCEL"
         val pLOVE = "com.arn.scrobble.LOVE"
         val pUNLOVE = "com.arn.scrobble.UNLOVE"
-        val MXM_PACKAGE = "com.musixmatch.android.lyrify"
-        val XIAMI_PACKAGE = "fm.xiami.main"
-        val NOTI_TEXT = arrayOf("Tap to show lyrics", "Tap to hide lyrics")
+        val pBLACKLIST = "com.arn.scrobble.BLACKLIST"
+        val pWHITELIST = "com.arn.scrobble.WHITELIST"
         val B_TITLE = "title"
         val B_TIME = "time"
         val B_ARTIST = "artist"
-        val NOTI_ID = 5
+        val NOTI_SCR_ID = 5
+        val NOTI_APP_ID = 6
         val NOTI_ERR_ICON = R.drawable.ic_transparent
     }
 }

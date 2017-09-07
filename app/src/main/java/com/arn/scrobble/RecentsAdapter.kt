@@ -151,10 +151,8 @@ class RecentsAdapter
             heroInfoLoader?.execute(Stuff.HERO_INFO, t.url, t.getImageURL(ImageSize.EXTRALARGE))
 
             hero.tag = t.url
-            //                if (imgUrl != null && !imgUrl.equals("")) {
             setHero(t, imgUrl) //better set a blurred one
 
-            //                }
             play.visibility = View.VISIBLE
 //            play.setTag(R.id.recents_play, t.artist + " - " + t.name)
             play.setOnClickListener({heroYt.callOnClick()})
@@ -239,21 +237,11 @@ class RecentsAdapter
                                 lastColorMutedDark = colorMutedDark
                                 lastColorMutedBlack = colorMutedBlack
 
-//                                if (lastClicked > list.lastVisiblePosition - 5)
-//                                    list.setSelection(lastClicked)
-                                //                                        list.post(new Runnable() {
-                                //                                            @Override
-                                //                                            public void run() {
-                                //
-                                //
-                                //                                            }
-                                //                                        });
-                                //
                             }
                         }
 
                         override fun onError() {
-                            Stuff.log(context, "onerr")
+                            Stuff.log("onerr")
                         }
                     })
         else {
@@ -277,7 +265,7 @@ class RecentsAdapter
                     dps.add(DataPoint(i++, it.toDouble()))
                 })
 
-        Stuff.log(context,"points: $points")
+        Stuff.log("points: $points")
 
         series.resetData(dps.toTypedArray())
 

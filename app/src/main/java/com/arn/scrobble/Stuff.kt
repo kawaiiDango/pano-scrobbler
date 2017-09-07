@@ -24,17 +24,23 @@ internal object Stuff {
     val UNLOVE = "unloved"
     val GET_LOVED = "getloved"
     val HERO_INFO = "heroinfo"
-    val APP_LIST_PREFS = "app_list"
+    val APP_WHITELIST = "app_whitelist"
+    val APP_BLACKLIST = "app_blacklist"
+    val AUTO_DETECT_PREF = "auto_detect"
 
     val SESS_KEY = "sesskey"
     val USERNAME = "username"
 
-    val MAX_APPS = 15
+    val MAX_APPS = 30
+    var timeIt:Long = 0
 
     val APPS_IGNORE_ARTIST_META = arrayOf(
             "com.google.android.youtube",
             "com.google.android.apps.youtube.mango",
-            "com.google.android.apps.youtube.music"
+            "com.google.android.apps.youtube.music",
+            "com.android.chrome",
+            "com.chrome.beta",
+            "com.chrome.dev"
     )
 
     private val seperators = arrayOf(// in priority order
@@ -45,9 +51,14 @@ internal object Stuff {
             " \"", " /")
     private val unwantedSeperators = arrayOf("』", "」", "\"", "'", "】", "〗", "〕")
 
-    fun log(c: Context, s: String) {
+    fun log(s: String) {
         Log.i(TAG, s)
-//        toast(c, s)
+    }
+
+    fun timeIt(s: String) {
+        val now = System.currentTimeMillis()
+        Log.e(TAG+"_time: ", "["+ (now - timeIt) + "] " + s)
+        timeIt = now
     }
 
     fun toast(c: Context, s: String) {

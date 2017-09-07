@@ -24,7 +24,7 @@ class Main : AppCompatActivity() {
                 val httpCacheSize = (10 * 1024 * 1024).toLong() // 10 MiB
                 HttpResponseCache.install(httpCacheDir, httpCacheSize)
             } catch (e: IOException) {
-                Stuff.log(applicationContext, "HTTP cache installation failed:" + e)
+                Stuff.log("HTTP cache installation failed:" + e)
             }
         }
 
@@ -63,17 +63,16 @@ class Main : AppCompatActivity() {
 //                .add(R.id.frame,FirstThingsFragment())
                 .commit()
         //TODO: remove it later
-        /*
-        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("scrobble_common_players", false))
-            CommonPlayers.regIntents(this)
-            */
+
+
         if( !FirstThingsFragment.checkAuthTokenExists(this) ||
                 !FirstThingsFragment.checkNLAccess(this))
             fragmentManager.beginTransaction()
-                    .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
+                    .hide(recentsFragment)
                     .add(R.id.frame, FirstThingsFragment())
                     .addToBackStack(null)
                     .commit()
+
     }
 
     override fun onSupportNavigateUp(): Boolean {

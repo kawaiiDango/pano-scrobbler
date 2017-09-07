@@ -10,7 +10,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 3
-        versionName "0.3"
+        versionName "0.4"
         setProperty("archivesBaseName", "ytScrobbler-$versionName")
     }
     buildTypes {

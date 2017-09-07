@@ -31,11 +31,18 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
                     .edit()
                     .remove("sesskey")
                     .apply()
-            Scrobbler(activity).execute(Stuff.CHECKAUTH)
+            LFMRequester(activity).execute(Stuff.CHECK_AUTH)
             true
         }
 
-        val appList = findPreference("app_list")
+        val enabledApps = findPreference("enabled_apps_icons")
+        var listOfApps = ""
+        preferenceManager.sharedPreferences
+                .getStringSet(Stuff.APP_LIST_PREFS, setOf())
+                .forEach { listOfApps += it+", " }
+        enabledApps.summary = listOfApps
+
+        val appList = findPreference("open_app_list")
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             fragmentManager.beginTransaction()
                     .hide(this)

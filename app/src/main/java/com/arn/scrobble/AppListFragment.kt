@@ -8,6 +8,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
@@ -47,8 +48,12 @@ class AppListFragment : Fragment() {
             adapterView: AdapterView<*>, view1: View, pos1: Int, l: Long ->
             val i=l.toInt()
             adapterView as ListView
-
-            adapterView.setItemChecked(i, adapterView.isItemChecked(i)) //i have no idea why this works
+            if (adapterView.checkedItemCount > Stuff.MAX_APPS){
+                Stuff.toast(activity, getString(R.string.max_apps_exceeded))
+                adapterView.setItemChecked(i, false)
+            } else {
+                adapterView.setItemChecked(i, adapterView.isItemChecked(i)) //i have no idea why this works
+            }
             adapter.notifyDataSetChanged()
         }
     }
@@ -66,7 +71,7 @@ class AppListFragment : Fragment() {
     }
 
     private fun getAppList(adapter: AppListAdapter){
-        prefs = activity.getSharedPreferences(Stuff.APP_LIST_PREFS, Context.MODE_PRIVATE)
+        prefs = PreferenceManager.getDefaultSharedPreferences(activity)
         val pm = activity.packageManager
         val resolveIntent = Intent(Intent.ACTION_VIEW)
         val uri = Uri.withAppendedPath(

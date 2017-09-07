@@ -112,11 +112,11 @@ class NLService : NotificationListenerService() {
                 handler.remove(intent.getIntExtra("id", 0))
             } else if (intent.action == pLOVE) {
                 Stuff.log(context, "lolo")
-                Scrobbler(applicationContext, handler).execute(Stuff.LOVE,
+                LFMRequester(applicationContext, handler).execute(Stuff.LOVE,
                         intent.getStringExtra("artist"), intent.getStringExtra("title"))
                 handler.notification(intent.getStringExtra("artist"), intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0, false)
             } else if (intent.action == pUNLOVE) {
-                Scrobbler(applicationContext, handler).execute(Stuff.UNLOVE,
+                LFMRequester(applicationContext, handler).execute(Stuff.UNLOVE,
                         intent.getStringExtra("artist"), intent.getStringExtra("title"))
                 handler.notification(intent.getStringExtra("artist"), intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0)
             } else if (intent.getStringExtra("command") == "list") {
@@ -138,7 +138,7 @@ class NLService : NotificationListenerService() {
             val title = m.data.getString(B_TITLE)
             val artist = m.data.getString(B_ARTIST)
             //            int hash = title.hashCode() + artist.hashCode();
-            Scrobbler(applicationContext, handler).execute(Stuff.SCROBBLE, artist, title)
+            LFMRequester(applicationContext, handler).execute(Stuff.SCROBBLE, artist, title)
             notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
@@ -151,7 +151,7 @@ class NLService : NotificationListenerService() {
             if (!hasMessages(hash)) {
 
                 if (artist != "" && title != "") {
-                    Scrobbler(applicationContext, handler)
+                    LFMRequester(applicationContext, handler)
                             .execute(Stuff.NOW_PLAYING, artist, title)
                     val m = obtainMessage()
                     val b = Bundle()

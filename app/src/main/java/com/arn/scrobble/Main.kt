@@ -2,15 +2,13 @@ package com.arn.scrobble
 
 import android.app.Fragment
 import android.content.BroadcastReceiver
-import android.content.Intent
+import android.net.http.HttpResponseCache
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
-import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
-import android.net.http.HttpResponseCache
 import java.io.File
 import java.io.IOException
 
@@ -72,6 +70,13 @@ class Main : AppCompatActivity() {
         if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("scrobble_common_players", false))
             CommonPlayers.regIntents(this)
             */
+        if( !FirstThingsFragment.checkAuthTokenExists(this) ||
+                !FirstThingsFragment.checkNLAccess(this))
+            fragmentManager.beginTransaction()
+                    .hide(recentsFragment)
+                    .add(R.id.frame, FirstThingsFragment())
+                    .addToBackStack(null)
+                    .commit()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -115,18 +120,6 @@ class Main : AppCompatActivity() {
 */
     override fun onResume() {
         super.onResume()
-
-        val packages = NotificationManagerCompat.getEnabledListenerPackages(applicationContext)
-        val hasNotificationAccess = packages.any { it == applicationContext.packageName }
-
-        if (!hasNotificationAccess) {
-            Stuff.toast(applicationContext, "Need Notification Access")
-            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-            startActivity(intent)
-        } else {
-            Scrobbler(applicationContext).execute(Stuff.CHECKAUTH)
-        }
-
     }
 
     companion object {

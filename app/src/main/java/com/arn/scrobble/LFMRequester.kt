@@ -22,7 +22,7 @@ import java.net.URL
  * Created by arn on 18-03-2017.
  */
 
-internal class Scrobbler constructor(val c: Context, private val handler: Handler? = null) : AsyncTask<String, Any, Any?>() {
+internal class LFMRequester constructor(val c: Context, private val handler: Handler? = null) : AsyncTask<String, Any, Any?>() {
     lateinit private var prefs: SharedPreferences
     lateinit private var command: String
     private var subCommand: String? = null
@@ -41,15 +41,15 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
             Caller.getInstance().userAgent = WebSettings.getDefaultUserAgent(c)
 //            Caller.getInstance().isDebugMode = true
 
-            val key: String = prefs.getString("sesskey", "")
-            var username: String? = prefs.getString("username", null)
+            val key: String = prefs.getString(Stuff.SESS_KEY, "")
+            var username: String? = prefs.getString(Stuff.USERNAME, null)
 
             if (key.length < 5 && token.length > 5) {
                 session = Authenticator.getSession(token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
                 if (session != null) {
                     username = session.username
                     prefs.edit()
-                            .putString("username", username)
+                            .putString(Stuff.USERNAME, username)
                             .apply()
                 }
             } else if (key.length > 5)
@@ -61,10 +61,11 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                 reAuthNeeded = true
 
             if (!reAuthNeeded) {
-                prefs.edit().putString("sesskey", session!!.key).apply()
+                prefs.edit().putString(Stuff.SESS_KEY, session!!.key).apply()
 
                 when (s[0]) {
-                    Stuff.CHECKAUTH -> return null
+                    Stuff.CHECK_AUTH -> return null
+                    Stuff.CHECK_AUTH_SILENT -> return null
                     Stuff.GET_RECENTS -> {
                         subCommand = s[1]
                         publishProgress(User.getRecentTracks(username, Integer.parseInt(subCommand), 15, Stuff.LAST_KEY))
@@ -143,8 +144,10 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                     publishProgress(s[0] + ": NullPointerException")
                 }
 
-            } else
+            } else if (command != Stuff.CHECK_AUTH_SILENT && command != Stuff.GET_RECENTS ) {
+                Stuff.log(c, "command: $command")
                 reAuth()
+            }
         } catch (e: Exception) {
             publishProgress(e.message)
         }
@@ -155,10 +158,10 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
 
     //header-expanded-image
     private fun reAuth() {
-        publishProgress("Authorize LastFM")
+        publishProgress("Please Authorize LastFM")
         PreferenceManager.getDefaultSharedPreferences(c)
                 .edit()
-                .remove("sesskey")
+                .remove(Stuff.SESS_KEY)
                 .apply()
         token = Authenticator.getToken(Stuff.LAST_KEY)
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.last.fm/api/auth?api_key=" +
@@ -215,8 +218,11 @@ internal class Scrobbler constructor(val c: Context, private val handler: Handle
                         out.append(buffer, 0, rsz)
                     }
                 }
-            } catch (ex: IOException) {
-//                ex.printStackTrace()
+            } catch (ex: InterruptedException){
+                return ""
+            }
+            catch (ex: IOException) {
+                ex.printStackTrace()
                 return ""
             }
 

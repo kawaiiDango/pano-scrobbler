@@ -21,5 +21,8 @@
     <string name="music_players">Music Players</string>
     <string name="video_players">Video Streaming Apps</string>
     <string name="other_apps">Other Apps</string>
+    <string name="choose_apps">Choose Apps to scrobble from</string>
+    <string name="choose_apps_desc">(Any app which plays named music, such as youtube, your browser, your chat app, etc are supported)</string>
+    <string name="max_apps_exceeded">Sorry, you cannot enable more than 15 apps</string>
 
 </resources>

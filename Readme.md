@@ -1,6 +1,6 @@
 ## Youtube Scrobbler [WIP]
 
-####[Download last build](https://www.dropbox.com/s/gn0ue5on6c9rinr/ytScrobbler-0.3-debug.apk?dl=1)
+####[Download last build](https://www.dropbox.com/s/rsgc8xgrtc2s2i6/ytScrobbler-0.4-debug.apk?dl=1)
 \(May not always be stable\)
 
 #### This is intended for:

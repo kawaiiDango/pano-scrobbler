@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:gravity="center_vertical"
@@ -16,19 +17,27 @@
         android:id="@+id/first_things_1"
         >
 
+        <ImageView
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_check"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="4"
+            android:layout_weight="6"
             android:gravity="center_vertical|center"
             android:text="1."/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center_vertical"
-            android:text="TextView"/>
+            android:text="Grant notification access"/>
     </LinearLayout>
 
     <LinearLayout
@@ -41,19 +50,76 @@
         android:id="@+id/first_things_2"
         >
 
+
+        <ImageView
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_check"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="4"
+            android:layout_weight="6"
             android:gravity="center_vertical|center"
             android:text="2."/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center_vertical"
-            android:text="TextView"/>
+            android:text="Authenticate with last.FM"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:id="@+id/first_things_3"
+        >
+
+
+        <ImageView
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_check"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            android:gravity="center_vertical|center"
+            android:text="3."/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/choose_apps"/>
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/choose_apps_desc"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

@@ -147,7 +147,7 @@ class RecentsAdapter
                 context.startActivity(browserIntent)
             }
             heroInfoLoader?.cancel(true)
-            heroInfoLoader = Scrobbler(context, handler)
+            heroInfoLoader = LFMRequester(context, handler)
             heroInfoLoader?.execute(Stuff.HERO_INFO, t.url, t.getImageURL(ImageSize.EXTRALARGE))
 
             hero.tag = t.url
@@ -167,7 +167,7 @@ class RecentsAdapter
     }
 
     fun loadURL(page: Int) {
-        Scrobbler(context, handler).execute(Stuff.GET_RECENTS, page.toString())
+        LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
     }
 
     fun setHero(imgUrl: String?) {
@@ -324,7 +324,7 @@ class RecentsAdapter
         val pos = listView.getPositionForView(parentRow) - 1
 
         if (v.getTag(R.id.recents_love) == FILLED) {
-            Scrobbler(context, handler).execute(Stuff.UNLOVE,
+            LFMRequester(context, handler).execute(Stuff.UNLOVE,
                     getItem(pos).artist, getItem(pos).name)
             getItem(pos).isLoved = false
             love.setImageResource(R.drawable.ic_line_heart_disabled)
@@ -344,7 +344,7 @@ class RecentsAdapter
                     }
                     .start()
         } else {
-            Scrobbler(context, handler).execute(Stuff.LOVE,
+            LFMRequester(context, handler).execute(Stuff.LOVE,
                     getItem(pos).artist, getItem(pos).name)
             getItem(pos).isLoved = true
             love.setTag(R.id.recents_love, FILLED)
@@ -402,7 +402,7 @@ class RecentsAdapter
 
         private val FILLED = 5
 
-        private var heroInfoLoader:Scrobbler? = null
+        private var heroInfoLoader: LFMRequester? = null
     }
 
 }

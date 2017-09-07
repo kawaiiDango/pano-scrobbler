@@ -20,22 +20,16 @@
         android:title="Notifications"/>
     <PreferenceCategory
         android:title="Scrobble from">
-
+        <Preference
+            android:title="Currently enabled:"
+            android:key="enabled_apps_icons"
+            />
         <Preference
             android:defaultValue="true"
-            android:key="app_list"
-            android:icon="@drawable/ic_placeholder_music"
-            android:persistent="true"
-            android:summary="Scrobble from these apps (any app which can play music with metadata is supported)"
-            android:title="Enabled apps"/>
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="scrobble_common_players"
-            android:icon="@drawable/ic_placeholder_music"
-            android:persistent="true"
-            android:summary="Other common music players"
-            android:title="Others"/>
+            android:key="open_app_list"
+            android:icon="@android:drawable/ic_input_add"
+            android:summary="Any app which can play music with metadata is supported"
+            android:title="Choose Enabled apps"/>
 
     </PreferenceCategory>
 
@@ -45,10 +39,10 @@
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="delay_secs"
             android:title="Delay in secs"
-            android:defaultValue="30"
+            android:defaultValue="50"
 
-            sample:msbp_minValue="10"
-            sample:msbp_maxValue="60"
+            sample:msbp_minValue="20"
+            sample:msbp_maxValue="120"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="secs"
             sample:msbp_dialogEnabled="false"/>

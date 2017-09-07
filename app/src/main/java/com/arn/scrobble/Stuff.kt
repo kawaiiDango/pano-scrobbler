@@ -14,7 +14,8 @@ import java.util.regex.Pattern
 internal object Stuff {
     val NOW_PLAYING = "np"
     val SCROBBLE = "scrobble"
-    val CHECKAUTH = "auth"
+    val CHECK_AUTH = "auth"
+    val CHECK_AUTH_SILENT = "authSilent"
     val GET_RECENTS = "recents"
     val LAST_KEY = Tokens.LAST_KEY
     val LAST_SECRET = Tokens.LAST_SECRET
@@ -24,6 +25,11 @@ internal object Stuff {
     val GET_LOVED = "getloved"
     val HERO_INFO = "heroinfo"
     val APP_LIST_PREFS = "app_list"
+
+    val SESS_KEY = "sesskey"
+    val USERNAME = "username"
+
+    val MAX_APPS = 15
 
     val APPS_IGNORE_ARTIST_META = arrayOf(
             "com.google.android.youtube",

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.net.Uri
+import android.preference.PreferenceManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -14,13 +15,10 @@ import com.squareup.picasso.Picasso
  * Created by arn on 05/09/2017.
  */
 class AppListAdapter
-(private val c: Context, private val itemResourceId:Int, private val headerResourceId:Int) : ArrayAdapter<ApplicationInfo>(c, itemResourceId) {
+(c: Context, private val itemResourceId:Int, private val headerResourceId:Int) : ArrayAdapter<ApplicationInfo>(c, itemResourceId) {
     private val sectionHeaders = mutableMapOf<Int,String>()
-    private val prefsSet = c.getSharedPreferences(Stuff.APP_LIST_PREFS, Context.MODE_PRIVATE).getStringSet(Stuff.APP_LIST_PREFS, setOf())
-    var list:ListView? = null
-    init{
-        list = (c as Activity).findViewById(R.id.app_list)
-    }
+    private val prefsSet = PreferenceManager.getDefaultSharedPreferences(context).getStringSet(Stuff.APP_LIST_PREFS, setOf())
+    private var list = (c as Activity).findViewById<ListView>(R.id.app_list)
 
     override fun getView(position: Int, convertView: View?, list: ViewGroup): View {
         var convertView : View? = convertView
@@ -40,7 +38,7 @@ class AppListAdapter
             val tv = convertView.findViewById<TextView>(R.id.app_list_name)
             val icon = convertView.findViewById<ImageView>(R.id.app_list_icon)
 
-            tv.text = app.loadLabel(c.packageManager) ?: return convertView
+            tv.text = app.loadLabel(context.packageManager) ?: return convertView
             tv.tag = app.packageName
             val uri = Uri.parse("android.resource://" + app.packageName + "/" + app.icon)
             Picasso.with(context)

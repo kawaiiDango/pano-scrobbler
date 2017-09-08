@@ -26,6 +26,8 @@
 
 package de.umass.lastfm;
 
+import de.umass.xml.DomElement;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,8 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-
-import de.umass.xml.DomElement;
 
 /**
  * <code>MusicEntry</code> is the abstract superclass for {@link Track}, {@link Artist} and {@link Album}. It encapsulates data and provides
@@ -162,6 +162,14 @@ public abstract class MusicEntry extends ImageHolder {
 				']';
 	}
 
+	static Integer maybeParseInt(String s) {
+		try {
+			return Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * Loads all generic information from an XML <code>DomElement</code> into the given <code>MusicEntry</code> instance, i.e. the following
 	 * tags:<br/> <ul> <li>playcount/plays</li> <li>listeners</li> <li>streamable</li> <li>name</li> <li>url</li> <li>mbid</li> <li>image</li>
@@ -204,7 +212,7 @@ public abstract class MusicEntry extends ImageHolder {
 				.parseInt(listenersString);
 		// streamable
 		String s = element.getChildText("streamable");
-		boolean streamable = s != null && s.length() != 0 && Integer.parseInt(s) == 1;
+		boolean streamable = s != null && s.length() != 0 && Integer.valueOf(1).equals(maybeParseInt(s));
 		// copy
 		entry.name = element.getChildText("name");
 		entry.url = element.getChildText("url");

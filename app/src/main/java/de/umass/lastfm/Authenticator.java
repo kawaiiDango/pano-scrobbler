@@ -39,7 +39,7 @@ import static de.umass.util.StringUtilities.md5;
 
 /**
  * Provides bindings for the authentication methods of the last.fm API.
- * See <a href="http://www.last.fm/api/authentication">http://www.last.fm/api/authentication</a> for
+ * See <a href="https://www.last.fm/api/authentication">https://www.last.fm/api/authentication</a> for
  * authentication methods.
  *
  * @author Janni Kovacs

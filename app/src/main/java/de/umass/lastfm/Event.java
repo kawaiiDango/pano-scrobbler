@@ -115,7 +115,7 @@ public class Event extends ImageHolder {
 	}
 
 	/**
-	 * Returns the last.fm event url, i.e. http://www.last.fm/event/event-id
+	 * Returns the last.fm event url, i.e. https://www.last.fm/event/event-id
 	 *
 	 * @return last.fm url
 	 */

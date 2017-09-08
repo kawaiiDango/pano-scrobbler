@@ -40,7 +40,7 @@ import java.util.List;
  * <li><b>User Playlists:</b> lastfm://playlist/{@literal <playlist_id>}</li>
  * <li><b>Tag Playlists:</b> lastfm://playlist/tag/{@literal <tag_name>}/freetracks</li>
  * </ul>
- * See <a href="http://www.last.fm/api/playlists">http://www.last.fm/api/playlists</a> for more information about playlists.
+ * See <a href="https://www.last.fm/api/playlists">https://www.last.fm/api/playlists</a> for more information about playlists.
  *
  * @author Janni Kovacs
  */

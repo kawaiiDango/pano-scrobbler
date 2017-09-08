@@ -36,7 +36,7 @@ import de.umass.xml.DomElement;
 /**
  * Provides access to the Last.fm radio streaming service.<br/>
  * Note that you have to be a subscriber (or have a special API key) to use this API.
- * Official documentation can be found here: <a href="http://www.last.fm/api/radio">http://www.last.fm/api/radio</a>
+ * Official documentation can be found here: <a href="https://www.last.fm/api/radio">https://www.last.fm/api/radio</a>
  *
  * @author Janni Kovacs
  */
@@ -240,7 +240,7 @@ public class Radio {
 		}
 
 		/**
-		 * @deprecated This station has been deprected as of nov. 2010, see <a href="http://www.last.fm/stationchanges2010">here</a>
+		 * @deprecated This station has been deprected as of nov. 2010, see <a href="https://www.last.fm/stationchanges2010">here</a>
 		 */
 		public static RadioStation lovedTracks(String user) {
 			return new RadioStation("lastfm://user/" + user + "/loved");
@@ -255,14 +255,14 @@ public class Radio {
 		}
 
 		/**
-		 * @deprecated This station has been deprected as of nov. 2010, see <a href="http://www.last.fm/stationchanges2010">here</a>
+		 * @deprecated This station has been deprected as of nov. 2010, see <a href="https://www.last.fm/stationchanges2010">here</a>
 		 */
 		public static RadioStation playlist(String playlistId) {
 			return new RadioStation("lastfm://playlist/" + playlistId);
 		}
 
 		/**
-		 * @deprecated This station has been deprected as of nov. 2010, see <a href="http://www.last.fm/stationchanges2010">here</a>
+		 * @deprecated This station has been deprected as of nov. 2010, see <a href="https://www.last.fm/stationchanges2010">here</a>
 		 */
 		public static RadioStation personalTag(String user, String tag) {
 			return new RadioStation("lastfm://usertags/" + user + "/" + tag);

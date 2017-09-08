@@ -59,7 +59,7 @@ public class Venue extends ImageHolder {
 	}
 
 	/**
-	 * Returns a last.fm URL to this venue, e.g.: http://www.last.fm/venue/&lt;id&gt;-&lt;venue name&gt;
+	 * Returns a last.fm URL to this venue, e.g.: https://www.last.fm/venue/&lt;id&gt;-&lt;venue name&gt;
 	 *
 	 * @return last.fm url
 	 * @see #getWebsite()

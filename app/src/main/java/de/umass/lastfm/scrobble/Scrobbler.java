@@ -49,12 +49,12 @@ import static de.umass.util.StringUtilities.md5;
  * {@link #newScrobbler(String, String, String) newScrobbler}.<br/>
  * It contains methods to perform the handshake, notify Last.fm about a now playing song and submitting songs to a musical profile, aka
  * scrobbling songs.<br/>
- * See <a href="http://www.last.fm/api/submissions">http://www.last.fm/api/submissions</a> for a deeper explanation of the protocol and
+ * See <a href="https://www.last.fm/api/submissions">https://www.last.fm/api/submissions</a> for a deeper explanation of the protocol and
  * various guidelines on how to use the scrobbling service, since this class does not cover error handling or caching.<br/>
  * All methods in this class, which are communicating with the server, return an instance of {@link ResponseStatus} which contains
  * information if the operation was successful or not.<br/>
  * This class respects the <code>proxy</code> property in the {@link Caller} class in all its HTTP calls. If you need the
- * <code>LFMRequester</code> to use a Proxy server, set it with {@link Caller#setProxy(java.net.Proxy)}.
+ * <code>Scrobbler</code> to use a Proxy server, set it with {@link Caller#setProxy(java.net.Proxy)}.
  *
  * @author Janni Kovacs
  * @see de.umass.lastfm.Track#scrobble(ScrobbleData, de.umass.lastfm.Session)
@@ -92,12 +92,12 @@ public class Scrobbler {
 	}
 
 	/**
-	 * Creates a new <code>LFMRequester</code> instance bound to the specified <code>user</code>.
+	 * Creates a new <code>Scrobbler</code> instance bound to the specified <code>user</code>.
 	 *
 	 * @param clientId The client id (or "tst")
 	 * @param clientVersion The client version (or "1.0")
 	 * @param user The last.fm user
-	 * @return a new <code>LFMRequester</code> instance
+	 * @return a new <code>Scrobbler</code> instance
 	 */
 	public static Scrobbler newScrobbler(String clientId, String clientVersion, String user) {
 		return new Scrobbler(clientId, clientVersion, user);

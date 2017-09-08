@@ -62,7 +62,7 @@ public class Caller {
 	private static final String PARAM_API_KEY = "api_key";
 	private static final String PARAM_METHOD = "method";
 
-	private static final String DEFAULT_API_ROOT = "http://ws.audioscrobbler.com/2.0/";
+	private static final String DEFAULT_API_ROOT = "https://ws.audioscrobbler.com/2.0/";
 	private static final Caller instance = new Caller();
 	
 	private final Logger log = Logger.getLogger("de.umass.lastfm.Caller");

@@ -27,7 +27,7 @@
 package de.umass.lastfm.scrobble;
 
 /**
- * The source of the track. See <a href="http://www.last.fm/api/submissions#subs">http://www.last.fm/api/submissions#subs</a> for more
+ * The source of the track. See <a href="https://www.last.fm/api/submissions#subs">https://www.last.fm/api/submissions#subs</a> for more
  * information.
  *
  * @author Janni Kovacs

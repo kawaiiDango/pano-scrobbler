@@ -5,22 +5,39 @@ apply plugin: 'com.github.triplet.play'
 apply from: 'keys.gradle'
 
 android {
+
+    def versionFile = file('build/version.txt')
+    def verCode = 1
+    if (versionFile.canRead()) {
+        def line = (new FileInputStream(versionFile)).readLines()[0]
+        verCode = line.toInteger()
+        List<String> runTasks = gradle.startParameter.getTaskNames()
+        for (String item : runTasks)
+            if ( item.contains("assembleRelease")) {
+                verCode++
+                versionFile.text = verCode.toString()
+            }
+    }
+    else {
+        throw new GradleException("Could not read version.txt!")
+    }
+
     compileSdkVersion 26
     buildToolsVersion '26.0.1'
-
     defaultConfig {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 6
-        versionName "0.6"
-        setProperty("archivesBaseName", "pScrobbler-$versionName")
+        versionCode verCode
+        versionName "0."+versionCode
+        setProperty("archivesBaseName", "pScrobbler")
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        /*
         applicationVariants.all { variant ->
             if (variant.buildType.name == "debug") {
                 variant.outputs.all {
@@ -28,23 +45,24 @@ android {
                 }
             }
         }
+        */
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.0.2'
-    compile 'com.android.support:design:26.0.2'
-    compile 'com.pavelsikun:material-seekbar-preference:2.3.0'
-    compile 'com.jjoe64:graphview:4.2.1'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:palette-v7:26.0.2'
+    implementation 'com.android.support:appcompat-v7:26.0.2'
+    implementation 'com.android.support:design:26.0.2'
+    implementation 'com.pavelsikun:material-seekbar-preference:2.3.0'
+    implementation 'com.jjoe64:graphview:4.2.1'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.android.support:palette-v7:26.0.2'
 
-    testCompile 'junit:junit:4.12'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    testImplementation 'junit:junit:4.12'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 repositories {
     mavenCentral()

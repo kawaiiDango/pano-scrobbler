@@ -18,6 +18,13 @@
         android:summaryOff="Check your scrobbbles from the app only"
         android:summaryOn="...while scrobbling"
         android:title="Notifications"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="offline_scrobble"
+        android:persistent="true"
+        android:summaryOff="Scrobbles will be lost forever if you are offline"
+        android:summaryOn="Scrobbles will be submitted after you go online"
+        android:title="Offline scrobbling"/>
     <PreferenceCategory
         android:title="Scrobble from">
         <Preference

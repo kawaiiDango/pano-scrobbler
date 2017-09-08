@@ -33,6 +33,7 @@ import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
+import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
 /**
@@ -144,7 +145,12 @@ class RecentsAdapter
                 context.startActivity(browserIntent)
             }
             heroYt.setOnClickListener {
-                val ytUrl = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(t.artist + " - "+ t.name, "UTF-8")
+                var ytUrl = "https://www.youtube.com/results?search_query="
+                try {
+                    ytUrl += URLEncoder.encode(t.artist + " - " + t.name, "UTF-8")
+                } catch (e: UnsupportedEncodingException) {
+                    Stuff.toast(context, "failed to encode url")
+                }
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ytUrl))
                 context.startActivity(browserIntent)
             }
@@ -188,70 +194,74 @@ class RecentsAdapter
 //            imgUrl = t.getImageURL(ImageSize.MEDIUM)
 //        else if (imgUrl == null && t == null) // called from handler
 //            imgUrl = t.getImageURL(ImageSize.LARGE)
-        if (imgUrl != null && imgUrl != "")
+        if (imgUrl != null && imgUrl != "") {
             Picasso.with(context)
                     .load(imgUrl)
                     .noPlaceholder()
-//                    .error(R.drawable.ic_placeholder_music)
+                    .error(R.drawable.ic_placeholder_music)
                     .fit()
                     .centerCrop()
                     .into(hero, object : Callback {
                         override fun onSuccess() {
                             hero.clearColorFilter()
-                            val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
-                            val fab = (context as Activity).findViewById<FloatingActionButton?>(R.id.fab) ?: return
-                            val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
-                            val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
-
-                            val b = (hero.drawable as BitmapDrawable).bitmap
-                            Palette.generateAsync(b) { palette ->
-                                val colorDomPrimary = palette.getDominantColor(context.resources.getColor(R.color.colorPrimary))
-                                val colorLightAccent = palette.getLightMutedColor(context.resources.getColor(R.color.colorAccent))
-                                val colorMutedDark = palette.getDarkMutedColor(context.resources.getColor(R.color.colorPrimaryDark))
-                                val colorMutedBlack = palette.getDarkMutedColor(context.resources.getColor(android.R.color.background_dark))
-
-                                ctl.setContentScrimColor(colorDomPrimary)
-                                ctl.setStatusBarScrimColor(colorMutedDark)
-                                if (Stuff.isDark(colorDomPrimary)) {
-                                    ctl.setCollapsedTitleTextColor(context.resources.getColor(android.R.color.white))
-                                    fab.imageTintList = null
-                                } else {
-                                    ctl.setCollapsedTitleTextColor(context.resources.getColor(android.R.color.black))
-                                    fab.imageTintList = ColorStateList.valueOf(0xff000000.toInt())
-                                }
-
-//                                fab.backgroundTintList = ColorStateList.valueOf(colorDomPrimary)
-//                                list.setBackgroundColor(colorMutedBlack)
-                                val listBgFrom = (list.background as ColorDrawable).color
-
-                                val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
-//                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", lastColorDomPrimary, colorDomPrimary)
-                                val infoBgAnimator = ObjectAnimator.ofObject(heroInfo, "colorFilter", ArgbEvaluator(), lastColorLightAccent, colorLightAccent)
-                                val ytBgAnimator = ObjectAnimator.ofObject(heroYt, "colorFilter", ArgbEvaluator(), lastColorLightAccent, colorLightAccent)
-                                val animSet = AnimatorSet()
-                                animSet.playTogether(listBgAnimator, infoBgAnimator, ytBgAnimator)
-                                animSet.interpolator = AccelerateDecelerateInterpolator()
-                                animSet.duration = 1500
-                                animSet.start()
-
-                                lastColorDomPrimary = colorDomPrimary
-                                lastColorLightAccent = colorLightAccent
-                                lastColorMutedDark = colorMutedDark
-                                lastColorMutedBlack = colorMutedBlack
-
-                            }
+                            setPaletteColors()
                         }
 
                         override fun onError() {
                             Stuff.log("onerr")
                         }
                     })
-        else {
+        } else {
             if (t!= null)
                 hero.setColorFilter(Stuff.getMatColor(context, "500", t.name.hashCode().toLong()))
             hero.setImageResource(R.drawable.ic_placeholder_music)
+            setPaletteColors()
 
+        }
+    }
 
+    private fun setPaletteColors(){
+        val ctl = (context as Activity).findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
+        val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
+        val fab = (context as Activity).findViewById<FloatingActionButton?>(R.id.fab) ?: return
+        val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
+        val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
+
+        val b = (hero.drawable as BitmapDrawable).bitmap
+        Palette.generateAsync(b) { palette ->
+            val colorDomPrimary = palette.getDominantColor(context.resources.getColor(R.color.colorPrimary))
+            val colorLightAccent = palette.getLightMutedColor(context.resources.getColor(R.color.colorAccent))
+            val colorMutedDark = palette.getDarkMutedColor(context.resources.getColor(R.color.colorPrimaryDark))
+            val colorMutedBlack = palette.getDarkMutedColor(context.resources.getColor(android.R.color.background_dark))
+
+            ctl.setContentScrimColor(colorDomPrimary)
+            ctl.setStatusBarScrimColor(colorMutedDark)
+            ctl.setExpandedTitleTextColor(ColorStateList.valueOf(colorLightAccent))
+
+            if (Stuff.isDark(colorDomPrimary)) {
+                fab.imageTintList = null
+            } else {
+                ctl.setCollapsedTitleTextColor(context.resources.getColor(android.R.color.black))
+                fab.imageTintList = ColorStateList.valueOf(0xff000000.toInt())
+            }
+
+//                                fab.backgroundTintList = ColorStateList.valueOf(colorDomPrimary)
+            val listBgFrom = (list.background as ColorDrawable).color
+
+            val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
+//                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", lastColorDomPrimary, colorDomPrimary)
+            val infoBgAnimator = ObjectAnimator.ofObject(heroInfo, "colorFilter", ArgbEvaluator(), lastColorLightAccent, colorLightAccent)
+            val ytBgAnimator = ObjectAnimator.ofObject(heroYt, "colorFilter", ArgbEvaluator(), lastColorLightAccent, colorLightAccent)
+            val animSet = AnimatorSet()
+            animSet.playTogether(listBgAnimator, infoBgAnimator, ytBgAnimator)
+            animSet.interpolator = AccelerateDecelerateInterpolator()
+            animSet.duration = 1500
+            animSet.start()
+
+            lastColorDomPrimary = colorDomPrimary
+            lastColorLightAccent = colorLightAccent
+            lastColorMutedDark = colorMutedDark
+            lastColorMutedBlack = colorMutedBlack
         }
     }
 
@@ -352,18 +362,7 @@ class RecentsAdapter
 
         }
     }
-/*
-    private val playClickListener = View.OnClickListener { v ->
-        var url = v.getTag(R.id.recents_play) as String
-        try {
-            url = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(url, "UTF-8")
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            context.startActivity(browserIntent)
-        } catch (e: UnsupportedEncodingException) {
-            Stuff.toast(context, "failed to encode url")
-        }
-    }
-*/
+
     private val handler: Handler = @SuppressLint("HandlerLeak")
     object: Handler(){
         override fun handleMessage(m: Message) {

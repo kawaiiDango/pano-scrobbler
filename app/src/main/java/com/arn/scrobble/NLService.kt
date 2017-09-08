@@ -40,7 +40,7 @@ class NLService : NotificationListenerService() {
         val sessManager = c.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
 
         try {
-            sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, NLService::class.java))
+            sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, this.javaClass))
         } catch (exception: SecurityException) {
             Stuff.log("Failed to start media controller: " + exception.message)
             // Try to unregister it, just it case.
@@ -237,7 +237,7 @@ class NLService : NotificationListenerService() {
             val loveText = if (love) "❤ Love it" else "\uD83D\uDC94 Unlove it"
             val loveAction = if (love) pLOVE else pUNLOVE
 
-            var intent = Intent(applicationContext, Main::class.java)
+            var intent = Intent(applicationContext, Main.javaClass)
             val launchIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
 
             intent = Intent(pCANCEL)

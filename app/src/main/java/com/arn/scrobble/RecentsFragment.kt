@@ -146,11 +146,12 @@ class RecentsFragment : Fragment() {
     private fun itemClickListener(adapterView: AdapterView<*>, v: View, pos1: Int, l: Long) {
         adapter?.notifyDataSetChanged()
         val i=l.toInt()
-        val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
-        ab.setExpanded(true, true)
-
         adapterView as ListView
         adapterView.setItemChecked(pos1, true)
-        adapterView.smoothScrollToPositionFromTop(i, 50)
+        if (Main.heroExpanded)
+            adapterView.smoothScrollToPositionFromTop(i, 40, 500)
+
+        val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
+        ab?.setExpanded(true, true)
     }
 }

@@ -26,11 +26,11 @@ class SessListener internal constructor(private val c: Context, private val hand
         if (pref.getBoolean("master", false) && controllers != null) {
             for (controller in controllers) {
                 val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(controller.packageName)
-                if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, false) &&
-                        !pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(controller.packageName))) {
+                val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(controller.packageName)
+                if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, false) && !isBlacklisted)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!mControllers.containsKey(controller.sessionToken)) {
-                        val cb = YtCallback(controller.packageName, isWhitelisted)
+                        val cb = YtCallback(controller.packageName)
                         controller.registerCallback(cb)
                         val pair = Pair.create(controller, cb)
                         synchronized(mControllers) {
@@ -54,7 +54,7 @@ class SessListener internal constructor(private val c: Context, private val hand
         }
     }
 
-    private inner class YtCallback(val packageName: String, val isWhitelisted:Boolean) : Callback() {
+    private inner class YtCallback(val packageName: String) : Callback() {
         var metadata: MediaMetadata? = null
         var lastHash = 0
         var lastPos: Long = 1
@@ -79,7 +79,9 @@ class SessListener internal constructor(private val c: Context, private val hand
             if (title == "")
                 return
 
-            val packageNameParam = if (!isWhitelisted) packageName else null
+            val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(packageName)
+            val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(packageName)
+            val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
 
             if (state.state == PlaybackState.STATE_PAUSED) {
                 //                    cancel scrobbling if within time

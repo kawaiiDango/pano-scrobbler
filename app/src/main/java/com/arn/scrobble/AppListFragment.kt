@@ -38,14 +38,14 @@ class AppListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val ab = (activity as AppCompatActivity).supportActionBar ?: return
-        ab.setDisplayHomeAsUpEnabled(false)
+        ab.setDisplayHomeAsUpEnabled(true)
         val appList = view.findViewById<ListView>(R.id.app_list)
         val adapter = AppListAdapter(activity, R.layout.list_item_app, R.layout.header_default)
         appList.adapter = adapter
         val otherApps = getAppList(adapter)
         Thread({
             Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity.packageManager))
-            appList.post({adapter.addAll(otherApps)})
+            appList.post({otherApps.forEach {adapter.add(it)}})
         }).start()
 
         appList.setOnItemClickListener{

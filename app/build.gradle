@@ -14,12 +14,19 @@ android {
         targetSdkVersion 26
         versionCode 6
         versionName "0.6"
-        setProperty("archivesBaseName", "ytScrobbler-$versionName")
+        setProperty("archivesBaseName", "pScrobbler-$versionName")
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        applicationVariants.all { variant ->
+            if (variant.buildType.name == "debug") {
+                variant.outputs.all {
+                    outputFileName = "pScrobbler-debug.apk"
+                }
+            }
         }
     }
 }

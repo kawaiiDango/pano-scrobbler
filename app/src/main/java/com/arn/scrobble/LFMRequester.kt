@@ -80,6 +80,8 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                         val urlConnection = url.openConnection() as HttpURLConnection
                         val scrapped = mutableListOf<String?>()
                         try {
+                            if (urlConnection.responseCode != 200)
+                                return null
                             val resp = slurp(urlConnection.inputStream, 1024)
                             if (resp == "")
                                 return null

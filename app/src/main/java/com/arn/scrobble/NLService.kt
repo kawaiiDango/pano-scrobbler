@@ -24,6 +24,8 @@ class NLService : NotificationListenerService() {
         filter.addAction(pCANCEL)
         filter.addAction(pLOVE)
         filter.addAction(pUNLOVE)
+        filter.addAction(pWHITELIST)
+        filter.addAction(pBLACKLIST)
         registerReceiver(nlservicereciver, filter)
 
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
@@ -119,12 +121,12 @@ class NLService : NotificationListenerService() {
                 pWHITELIST, pBLACKLIST -> {
                     val wSet = pref.getStringSet(Stuff.APP_WHITELIST, mutableSetOf())
                     val bSet = pref.getStringSet(Stuff.APP_BLACKLIST, mutableSetOf())
-                    //whitelist takes over blacklist for conflicts
-                    bSet.removeAll(wSet)
+
                     if (intent.action == pWHITELIST)
                         wSet.add(intent.getStringExtra("packageName"))
                     else
                         bSet.add(intent.getStringExtra("packageName"))
+                    bSet.removeAll(wSet) //whitelist takes over blacklist for conflicts
                     pref.edit()
                             .putStringSet(Stuff.APP_WHITELIST, wSet)
                             .putStringSet(Stuff.APP_BLACKLIST,  bSet)
@@ -184,7 +186,7 @@ class NLService : NotificationListenerService() {
             val splits = Stuff.sanitizeTitle(songTitle)
             return scrobble(splits[0], splits[1], packageName)
         }
-        fun buildAppNotification(packageName:String): Notification?{
+        private fun buildAppNotification(packageName:String): Notification?{
             var appName = ""
             try {
                 val applicationInfo = packageManager.getApplicationInfo(packageName, 0)

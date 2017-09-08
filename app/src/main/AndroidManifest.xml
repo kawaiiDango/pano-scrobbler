@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="ytscrobble"
+                <data android:scheme="pscrobble"
                       android:host="auth" />
 
 

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.arn.scrobble
 
 import android.animation.AnimatorSet

@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
+apply from: 'keys.gradle'
 
 android {
     compileSdkVersion 26
@@ -9,8 +12,8 @@ android {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 5
-        versionName "0.5"
+        versionCode 6
+        versionName "0.6"
         setProperty("archivesBaseName", "ytScrobbler-$versionName")
     }
     buildTypes {

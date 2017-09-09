@@ -6,7 +6,7 @@ apply from: 'keys.gradle'
 
 android {
 
-    def versionFile = file('build/version.txt')
+    def versionFile = file('version.txt')
     def verCode = 1
     if (versionFile.canRead()) {
         def line = (new FileInputStream(versionFile)).readLines()[0]

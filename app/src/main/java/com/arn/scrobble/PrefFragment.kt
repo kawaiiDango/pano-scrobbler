@@ -36,12 +36,10 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
             true
         }
 
-        val enabledApps = findPreference("enabled_apps_icons")
         var listOfApps = ""
         preferenceManager.sharedPreferences
                 .getStringSet(Stuff.APP_WHITELIST, setOf())
                 .forEach { listOfApps += it+", " }
-        enabledApps.summary = listOfApps
 
         val appList = findPreference("open_app_list")
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {

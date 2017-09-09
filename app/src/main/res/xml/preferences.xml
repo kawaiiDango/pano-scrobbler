@@ -27,23 +27,23 @@
         android:title="Offline scrobbling"/>
     <PreferenceCategory
         android:title="Scrobble from">
-        <Preference
+        <com.arn.scrobble.AppIconsPref
             android:title="Currently enabled:"
-            android:key="enabled_apps_icons"
-            />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="auto_detect"
-            android:persistent="true"
-            android:icon="@android:drawable/btn_star"
-            android:summary="...we will still ask you to confirm or ignore that app"
-            android:title="Auto detect new apps"/>
+            android:key="app_whitelist"/>
         <Preference
             android:defaultValue="true"
             android:key="open_app_list"
             android:icon="@android:drawable/ic_input_add"
             android:summary="Any app which can play music with metadata is supported"
-            android:title="Choose Enabled apps"/>
+            android:title="Choose apps"/>
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="auto_detect"
+            android:persistent="true"
+            android:summary="...we will still ask you to confirm or ignore that app"
+            android:title="Auto detect new music-like apps"/>
+
 
     </PreferenceCategory>
 
@@ -69,11 +69,12 @@
             sample:msbp_minValue="15"
             sample:msbp_maxValue="75"
             sample:msbp_interval="1"
-            sample:msbp_measurementUnit=" %"
+            sample:msbp_measurementUnit="%"
             sample:msbp_dialogEnabled="false"/>
 
         <Preference
             android:summary="Note that your Now Playing always gets updated as soon as the song starts playing, regardless of the delay"
+            android:selectable="false"
             />
     </PreferenceCategory>
 
@@ -89,6 +90,7 @@
         <Preference
             android:title="version"
             android:key="about"
+            android:selectable="false"
             />
     </PreferenceCategory>
 </PreferenceScreen>

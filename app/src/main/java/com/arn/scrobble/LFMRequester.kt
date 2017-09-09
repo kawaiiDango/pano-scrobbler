@@ -37,7 +37,10 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
             val caller = Caller.getInstance()
             caller.userAgent = WebSettings.getDefaultUserAgent(c)
             val fsCache = FileSystemCache(c.cacheDir)
-            fsCache.expirationPolicy = LFMCachePolicy(isNetworkAvailable)
+            if (command == Stuff.GET_RECENTS_CACHED)
+                fsCache.expirationPolicy = LFMCachePolicy(false)
+            else
+                fsCache.expirationPolicy = LFMCachePolicy(isNetworkAvailable)
             caller.cache = fsCache
 //            caller.isDebugMode = true
 
@@ -65,10 +68,9 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
 
                 when (command) {
                     Stuff.CHECK_AUTH, Stuff.CHECK_AUTH_SILENT -> return null
-                    Stuff.GET_RECENTS -> {
+                    Stuff.GET_RECENTS_CACHED, Stuff.GET_RECENTS -> {
                         subCommand = s[1]
-                        publishProgress(User.getRecentTracks(username, Integer.parseInt(subCommand), 15, Stuff.LAST_KEY))
-                        return User.getLovedTracks(username, Stuff.LAST_KEY)
+                        return User.getRecentTracks(username, Integer.parseInt(subCommand), 15, Stuff.LAST_KEY)
                     }
                     Stuff.GET_LOVED -> return User.getLovedTracks(username, Stuff.LAST_KEY)
                     Stuff.LOVE -> return Track.love(s[1], s[2], session)
@@ -186,19 +188,13 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
     override fun onProgressUpdate(vararg values: Any) {
         super.onProgressUpdate(*values)
         val res = values[0]
-        if (res is PaginatedResult<*>) {
-            handler?.obtainMessage(0, subCommand!!.toInt(), 0, Pair(command,res))?.sendToTarget()
-        } else if (res is String)
+        if (res is String) //usually err msg
             Stuff.toast(c, values[0].toString())
     }
 
     override fun onPostExecute(res: Any?) {
         //do stuff
         if (res is PaginatedResult<*>) {
-//            val b = Bundle()
-//            b.putString("command", command)
-            if (command == Stuff.GET_RECENTS)
-                command = Stuff.GET_LOVED
             handler?.obtainMessage(0, Pair(command,res))?.sendToTarget()
         } else if (res is Result) {
             if (!res.isSuccessful) {

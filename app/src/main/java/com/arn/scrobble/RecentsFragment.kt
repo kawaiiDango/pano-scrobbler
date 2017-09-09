@@ -8,7 +8,6 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.*
 import android.widget.AdapterView
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import com.arn.scrobble.ui.EndlessScrollListener
@@ -49,16 +48,15 @@ class RecentsFragment : Fragment() {
 
         adapter = RecentsAdapter(activity, R.layout.list_item_recents)
         recentsList.adapter = adapter
+        adapter?.firstLoad()
         recentsList.setOnScrollListener(loadMoreListener)
-        recentsList.setOnItemClickListener{
-            adapterView, view, i, l -> itemClickListener(adapterView, view, i, l)
-        }
+        recentsList.onItemClickListener = itemClickListener
 
         val refresh = activity.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
-        refresh.setOnRefreshListener { adapter?.loadURL(1) }
+        refresh.setOnRefreshListener { adapter?.loadRecents(1) }
 
-        val hero = activity.findViewById<ImageView>(R.id.img_hero)
-        hero.setImageResource(R.color.background_material_dark)
+//        val hero = activity.findViewById<ImageView>(R.id.img_hero)
+//        hero.setImageResource(R.color.background_material_dark)
 
         val graph = activity.findViewById<GraphView>(R.id.graph)
         graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
@@ -126,24 +124,24 @@ class RecentsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        adapter?.loadURL(1)
+        adapter?.loadRecents(1)
     }
 
     override fun onResume() {
         super.onResume()
-//        adapter.loadURL(1)
+//        adapter.loadRecents(1)
     }
 
-    private val loadMoreListener: EndlessScrollListener = object : EndlessScrollListener() {
+    private val loadMoreListener = object : EndlessScrollListener() {
         override fun onLoadMore(page: Int, totalItemsCount: Int): Boolean {
             // Triggered only when new data needs to be appended to the list
             // Add whatever code is needed to append new items to your AdapterView
-            adapter?.loadURL(page)
+            adapter?.loadRecents(page)
             // or loadNextDataFromApi(totalItemsCount);
             return true // ONLY if more data is actually being loaded; false otherwise.
         }
     }
-    private fun itemClickListener(adapterView: AdapterView<*>, v: View, pos1: Int, l: Long) {
+    private val itemClickListener = AdapterView.OnItemClickListener { adapterView, v, pos1, l ->
         adapter?.notifyDataSetChanged()
         val i=l.toInt()
         adapterView as ListView

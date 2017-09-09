@@ -17,6 +17,7 @@ internal object Stuff {
     val CHECK_AUTH = "auth"
     val CHECK_AUTH_SILENT = "authSilent"
     val GET_RECENTS = "recents"
+    val GET_RECENTS_CACHED = "recents_cached"
     val LAST_KEY = Tokens.LAST_KEY
     val LAST_SECRET = Tokens.LAST_SECRET
     val TAG = "scrobbler"

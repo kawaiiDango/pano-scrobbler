@@ -59,7 +59,7 @@ class Main : AppCompatActivity() {
         fragmentManager.beginTransaction()
                 .add(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
 //                .hide(recentsFragment)
-//                .add(R.id.frame, AppListFragment())
+//                .add(R.id.frame, PrefFragment())
 //                .add(R.id.frame,FirstThingsFragment())
                 .commit()
         //TODO: remove it later

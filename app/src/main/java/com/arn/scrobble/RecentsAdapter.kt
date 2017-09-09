@@ -45,7 +45,6 @@ class RecentsAdapter
 (c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, mutableListOf()) {
 
     private val hero: ImageView = (c as Activity).findViewById<ImageView>(R.id.img_hero)
-    private var gotLoved = false
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView : View? = convertView
@@ -104,14 +103,12 @@ class RecentsAdapter
 
         love.setOnClickListener(loveToggle)
 
-        if (gotLoved) {
-            if (t.isLoved) {
-                love.setImageResource(R.drawable.ic_line_heart_enabled)
-                love.setTag(R.id.recents_love, FILLED)
-            } else {
-                love.setImageResource(R.drawable.ic_line_heart_disabled)
-                love.setTag(R.id.recents_love, 0)
-            }
+        if (t.isLoved) {
+            love.setImageResource(R.drawable.ic_line_heart_enabled)
+            love.setTag(R.id.recents_love, FILLED)
+        } else {
+            love.setImageResource(R.drawable.ic_line_heart_disabled)
+            love.setTag(R.id.recents_love, 0)
         }
         val albumArt = convertView.findViewById<ImageView>(R.id.recents_album_art)
 
@@ -172,8 +169,13 @@ class RecentsAdapter
         return convertView
     }
 
-    fun loadURL(page: Int) {
+    fun loadRecents(page: Int) {
+        Stuff.log("loadRecents $page")
         LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
+    }
+    fun firstLoad() {
+        Stuff.log("firstLoad")
+        LFMRequester(context, handler).execute(Stuff.GET_RECENTS_CACHED, (1).toString())
     }
 
     fun setHero(imgUrl: String?) {
@@ -301,7 +303,6 @@ class RecentsAdapter
             if (!it.isNowPlaying || page==1)
                 add(it)
         }
-        gotLoved = false
         notifyDataSetChanged()
 
     }
@@ -313,7 +314,6 @@ class RecentsAdapter
                     .filter { loved[i].name == getItem(it).name && loved[i].artist == getItem(it).artist }
                     .forEach { getItem(it).isLoved = true }
         }
-        gotLoved = true
         notifyDataSetChanged()
     }
 
@@ -363,11 +363,11 @@ class RecentsAdapter
         }
     }
 
-    private val handler: Handler = @SuppressLint("HandlerLeak")
+    private val handler = @SuppressLint("HandlerLeak")
     object: Handler(){
         override fun handleMessage(m: Message) {
             //usually:
-            // obj = command, paginatedresult; arg1 = page num
+            // obj = command, paginatedresult;
             val pair = m.obj as Pair<String, Any>
             val command = pair.first
             var data = pair.second
@@ -378,7 +378,11 @@ class RecentsAdapter
                         setHero(data[0])
                         setGraph(data[1])
                 }
-                Stuff.GET_RECENTS -> populate(data as PaginatedResult<Track>, m.arg1)
+                Stuff.GET_RECENTS -> {
+                    populate(data as PaginatedResult<Track>, data.page)
+                    LFMRequester(context, this).execute(Stuff.GET_LOVED)
+                }
+                Stuff.GET_RECENTS_CACHED -> populate(data as PaginatedResult<Track>, data.page)
                 Stuff.IS_ONLINE -> {
                     val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
                     val headerTv = list.findViewById<TextView>(R.id.header_text)

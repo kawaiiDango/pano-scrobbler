@@ -10,6 +10,7 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.webkit.WebSettings
 import de.umass.lastfm.*
+import de.umass.lastfm.cache.FileSystemCache
 import de.umass.lastfm.scrobble.ScrobbleResult
 import java.io.IOException
 import java.io.InputStream
@@ -27,19 +28,18 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
     lateinit private var command: String
     private var subCommand: String? = null
 
-
     override fun doInBackground(vararg s: String): Any? {
         prefs = PreferenceManager.getDefaultSharedPreferences(c)
         command = s[0]
-        if (!isNetworkAvailable) {
-            publishProgress("You are offline")
-            return null
-        }
         try {
             var reAuthNeeded = false
             var session: Session? = null
-            Caller.getInstance().userAgent = WebSettings.getDefaultUserAgent(c)
-//            Caller.getInstance().isDebugMode = true
+            val caller = Caller.getInstance()
+            caller.userAgent = WebSettings.getDefaultUserAgent(c)
+            val fsCache = FileSystemCache(c.cacheDir)
+            fsCache.expirationPolicy = LFMCachePolicy(isNetworkAvailable)
+            caller.cache = fsCache
+//            caller.isDebugMode = true
 
             val key: String = prefs.getString(Stuff.SESS_KEY, "")
             var username: String? = prefs.getString(Stuff.USERNAME, null)
@@ -64,8 +64,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                 prefs.edit().putString(Stuff.SESS_KEY, session!!.key).apply()
 
                 when (command) {
-                    Stuff.CHECK_AUTH -> return null
-                    Stuff.CHECK_AUTH_SILENT -> return null
+                    Stuff.CHECK_AUTH, Stuff.CHECK_AUTH_SILENT -> return null
                     Stuff.GET_RECENTS -> {
                         subCommand = s[1]
                         publishProgress(User.getRecentTracks(username, Integer.parseInt(subCommand), 15, Stuff.LAST_KEY))
@@ -75,11 +74,16 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                     Stuff.LOVE -> return Track.love(s[1], s[2], session)
                     Stuff.UNLOVE -> return Track.unlove(s[1], s[2], session)
                     Stuff.HERO_INFO -> {
+                        handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))
+                                ?.sendToTarget()
+                        if (!isNetworkAvailable)
+                            return null
                         //s[1] = page url, s[2] = api large image url
                         val url = URL(s[1])
-                        val urlConnection = url.openConnection() as HttpURLConnection
+                        var urlConnection:HttpURLConnection? = null
                         val scrapped = mutableListOf<String?>()
                         try {
+                            urlConnection = url.openConnection() as HttpURLConnection
                             if (urlConnection.responseCode != 200)
                                 return null
                             val resp = slurp(urlConnection.inputStream, 1024)
@@ -107,7 +111,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                             } else
                                 scrapped.add(null)
                         } finally {
-                            urlConnection.disconnect()
+                            urlConnection?.disconnect()
                         }
                         return scrapped
                     }
@@ -150,15 +154,16 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                 Stuff.log("command: $command")
                 reAuth()
             }
+        } catch(e: CallException){
+            //ignore
         } catch (e: Exception) {
-            publishProgress(e.message)
+            publishProgress("err: "+ e.cause)
         }
 
-        // adb shell am start -W -a android.intent.action.VIEW -d "http://maare.ga:10003/auth" com.arn.scrobble
+        // adb shell am start -W -a android.intent.action.VIEW -d "https://lastfm.maare.ga/auth" com.arn.scrobble
         return null
     }
 
-    //header-expanded-image
     private fun reAuth() {
         publishProgress("Please Authorize LastFM")
         PreferenceManager.getDefaultSharedPreferences(c)
@@ -196,8 +201,12 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                 command = Stuff.GET_LOVED
             handler?.obtainMessage(0, Pair(command,res))?.sendToTarget()
         } else if (res is Result) {
-            if (!res.isSuccessful)
-                Stuff.toast(c, command + " failed!")
+            if (!res.isSuccessful) {
+                if (res.errorMessage != null)
+                    Stuff.toast(c, command + ": " + res.errorMessage)
+                else
+                    Stuff.toast(c, command+ " failed")
+            }
         } else if (command == Stuff.HERO_INFO && res is MutableList<*>) {
 //            val s = res as MutableList<String?>
             handler?.obtainMessage(0, Pair(command, res))?.sendToTarget()

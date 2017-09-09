@@ -24,6 +24,7 @@ internal object Stuff {
     val UNLOVE = "unloved"
     val GET_LOVED = "getloved"
     val HERO_INFO = "heroinfo"
+    val IS_ONLINE = "online"
     val APP_WHITELIST = "app_whitelist"
     val APP_BLACKLIST = "app_blacklist"
     val AUTO_DETECT_PREF = "auto_detect"

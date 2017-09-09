@@ -221,9 +221,9 @@ class RecentsAdapter
     }
 
     private fun setPaletteColors(){
-        val ctl = (context as Activity).findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
+        val ctl = (context as Activity).findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout) ?: return
         val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
-        val fab = (context as Activity).findViewById<FloatingActionButton?>(R.id.fab) ?: return
+        val fab = (context as Activity).findViewById<FloatingActionButton?>(R.id.fab)
         val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
         val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
 
@@ -239,10 +239,10 @@ class RecentsAdapter
             ctl.setExpandedTitleTextColor(ColorStateList.valueOf(colorLightAccent))
 
             if (Stuff.isDark(colorDomPrimary)) {
-                fab.imageTintList = null
+                fab?.imageTintList = null
             } else {
                 ctl.setCollapsedTitleTextColor(context.resources.getColor(android.R.color.black))
-                fab.imageTintList = ColorStateList.valueOf(0xff000000.toInt())
+                fab?.imageTintList = ColorStateList.valueOf(0xff000000.toInt())
             }
 
 //                                fab.backgroundTintList = ColorStateList.valueOf(colorDomPrimary)
@@ -379,6 +379,14 @@ class RecentsAdapter
                         setGraph(data[1])
                 }
                 Stuff.GET_RECENTS -> populate(data as PaginatedResult<Track>, m.arg1)
+                Stuff.IS_ONLINE -> {
+                    val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
+                    val headerTv = list.findViewById<TextView>(R.id.header_text)
+                    if (data as Boolean)
+                        headerTv.text = context.getString(R.string.recently_scrobbled)
+                    else
+                        headerTv.text = context.getString(R.string.offline)
+                }
             }
         }
     }

@@ -24,7 +24,6 @@ import java.util.*
  * Created by arn on 05/09/2017.
  */
 class AppListFragment : Fragment() {
-    private lateinit var prefs:SharedPreferences
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)?.title = getString(R.string.action_app_list)
@@ -45,7 +44,16 @@ class AppListFragment : Fragment() {
         val otherApps = getAppList(adapter)
         Thread({
             Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity.packageManager))
-            appList.post({otherApps.forEach {adapter.add(it)}})
+            appList.post({
+                val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+                val firstRun = prefs.getBoolean(Stuff.FIRST_RUN_PREF, true)
+                if (firstRun){
+                    for(i in 0 until appList.count)
+                        appList.setItemChecked(i, true)
+                    prefs.edit().putBoolean(Stuff.FIRST_RUN_PREF, false).apply()
+                }
+                otherApps.forEach {adapter.add(it)}
+            })
         }).start()
 
         appList.setOnItemClickListener{
@@ -64,23 +72,24 @@ class AppListFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
         val appList = activity.findViewById<ListView>(R.id.app_list)
         if (appList != null) {
             val wSet = mutableSetOf<String>()
             val bSet = prefs.getStringSet(Stuff.APP_BLACKLIST, mutableSetOf())
             appList.checkedItemIds.forEach {
-                wSet.add((appList.adapter.getItem(it.toInt()) as ApplicationInfo).packageName)
+                val packageName = (appList.adapter.getItem(it.toInt()) as ApplicationInfo).packageName ?: return@forEach
+                wSet.add(packageName)
             }
             bSet.removeAll(wSet)
             prefs.edit()
                     .putStringSet(Stuff.APP_WHITELIST, wSet)
                     .putStringSet(Stuff.APP_BLACKLIST,  bSet)
-                    .apply()
+                    .commit()
         }
     }
 
     private fun getAppList(adapter: AppListAdapter): MutableList<ApplicationInfo> {
-        prefs = PreferenceManager.getDefaultSharedPreferences(activity)
         val pm = activity.packageManager
         val resolveIntent = Intent(Intent.ACTION_VIEW)
         val uri = Uri.withAppendedPath(
@@ -115,6 +124,7 @@ class AppListFragment : Fragment() {
         }
 
         adapter.addSectionHeader(getString(R.string.other_apps))
+
         return otherApps
     }
 }

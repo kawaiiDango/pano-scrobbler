@@ -13,7 +13,6 @@ import android.service.notification.NotificationListenerService
 
 
 class NLService : NotificationListenerService() {
-    private var activeIDs = mutableListOf<Int>()
     lateinit private var pref: SharedPreferences
     lateinit private var nm: NotificationManager
 
@@ -148,12 +147,14 @@ class NLService : NotificationListenerService() {
             notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
-        fun scrobble(artist:String, title: String, packageName: String? = null): Int {
+        fun scrobble(artist:String, title: String, duration:Long, packageName: String? = null): Int {
             val hash = artist.hashCode() + title.hashCode()
-            if (!activeIDs.contains(hash))
-                activeIDs.add(hash)
-            else
-                removeMessages(hash)
+
+//            if (!activeIDs.contains(hash))
+//                activeIDs.add(hash)
+//            else
+//                removeMessages(hash)
+            removeCallbacksAndMessages(null)
             if (!hasMessages(hash)) {
 
                 if (artist != "" && title != "") {
@@ -166,9 +167,14 @@ class NLService : NotificationListenerService() {
                     b.putLong(B_TIME, System.currentTimeMillis())
                     m.data = b
                     m.what = hash
-                    val delay = pref.getInt("delay_secs", 30) * 1000
+                    val delaySecs = pref.getInt("delay_secs", 50).toLong() * 1000
+                    val delayPer = pref.getInt("delay_per", 30).toLong()
+                    var delay = delaySecs
+                    if (duration > 10000 && duration*delayPer/100 < delay){ //dont scrobble <10 sec songs?
+                        delay = duration*delayPer/100
+                    }
 
-                    sendMessageDelayed(m, delay.toLong())
+                    sendMessageDelayed(m, delay)
                     notification(artist, title, getString(R.string.state_scrobbling), 0)
                     //display ignore thing only on successful parse
                     if (packageName != null) {
@@ -182,9 +188,9 @@ class NLService : NotificationListenerService() {
             }
             return hash
         }
-        fun scrobble(songTitle: String, packageName:String? = null): Int {
+        fun scrobble(songTitle: String, duration:Long, packageName:String? = null): Int {
             val splits = Stuff.sanitizeTitle(songTitle)
-            return scrobble(splits[0], splits[1], packageName)
+            return scrobble(splits[0], splits[1], duration, packageName)
         }
         private fun buildAppNotification(packageName:String): Notification?{
             var appName = ""
@@ -207,7 +213,7 @@ class NLService : NotificationListenerService() {
 
             val nb = Notification.Builder(applicationContext)
                     .setContentTitle("New player: "+ appName)
-                    .setContentText("Continue to scrobble and hide this?")
+                    .setContentText("Continue to scrobble and hide this msg?")
                     .setSmallIcon(R.drawable.ic_noti)
 //                    .setColor(resources.getColor(R.color.colorPrimary))
                     .setContentIntent(okayIntent)
@@ -261,9 +267,11 @@ class NLService : NotificationListenerService() {
                     .setAutoCancel(true)
                     .setPriority(if (iconId == NOTI_ERR_ICON) Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
 
-            if (state == getString(R.string.state_scrobbling))
+            if (state == getString(R.string.state_scrobbling)) {
                 nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)
                         .addAction(R.drawable.ic_transparent, "❌ Unscrobble", cancelIntent)
+                nb.setUsesChronometer(true)
+            }
 
             if (state == getString(R.string.state_scrobbled))
                 nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)

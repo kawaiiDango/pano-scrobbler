@@ -37,14 +37,11 @@ class AppIconsPref : Preference{
 
         packageNames = sharedPreferences.getStringSet(key, setOf())
 
-        packageNames.forEachIndexed { index, it ->
-            if (index > 10)
-                return@forEachIndexed
-            val app = context.packageManager.getApplicationInfo(it, 0)
-            val uri = Uri.parse("android.resource://" + it + "/" + app.icon)
+        for (i in 0 until minOf(10, packageNames.count())) {
+            val app = context.packageManager.getApplicationInfo(packageNames.elementAt(i), 0)
+            val uri = Uri.parse("android.resource://" + packageNames.elementAt(i) + "/" + app.icon)
             val icon = ImageView(context)
             icon.scaleType = ImageView.ScaleType.FIT_CENTER
-//        icon.layoutParams =
             icon.setPadding(dp/6, dp/6, dp/6, dp/6)
             Picasso.with(context)
                     .load(uri)

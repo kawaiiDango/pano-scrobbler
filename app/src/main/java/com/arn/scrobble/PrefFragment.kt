@@ -44,7 +44,7 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
         val appList = findPreference("open_app_list")
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             fragmentManager.beginTransaction()
-                    .hide(this)
+                    .remove(this)
                     .add(R.id.frame, AppListFragment())
                     .addToBackStack(null)
                     .commit()

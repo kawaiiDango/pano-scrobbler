@@ -29,6 +29,7 @@ internal object Stuff {
     val APP_WHITELIST = "app_whitelist"
     val APP_BLACKLIST = "app_blacklist"
     val AUTO_DETECT_PREF = "auto_detect"
+    val FIRST_RUN_PREF = "first_run"
 
     val SESS_KEY = "sesskey"
     val USERNAME = "username"

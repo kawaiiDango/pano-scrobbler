@@ -90,7 +90,6 @@
         <Preference
             android:title="version"
             android:key="about"
-            android:selectable="false"
             />
     </PreferenceCategory>
 </PreferenceScreen>

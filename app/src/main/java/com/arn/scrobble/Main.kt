@@ -49,7 +49,7 @@ class Main : AppCompatActivity() {
                     }
                     heroExpanded = true
                 } else if (heroExpanded) {
-                    ctl.title = ctl.tag as CharSequence //careful there should a space between double quote otherwise it wont work
+                    ctl.title = ctl.tag as CharSequence
                     heroExpanded = false
                 }
             }
@@ -57,7 +57,7 @@ class Main : AppCompatActivity() {
 
         val recentsFragment = RecentsFragment()
         fragmentManager.beginTransaction()
-                .add(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
+                .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
 //                .hide(recentsFragment)
 //                .add(R.id.frame, PrefFragment())
 //                .add(R.id.frame,FirstThingsFragment())

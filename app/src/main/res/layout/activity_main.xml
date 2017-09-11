@@ -24,6 +24,7 @@
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="@dimen/fab_margin_right"
+            app:elevation="@dimen/elevation_hero_btn"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Subhead"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
@@ -54,8 +55,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:elevation="5dp"
-                android:translationZ="@dimen/tz_hero_btn"
+                app:elevation="@dimen/elevation_hero_btn"
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="1.0"
                 app:popupTheme="@style/AppTheme.PopupOverlay"/>

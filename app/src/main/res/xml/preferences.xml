@@ -27,7 +27,7 @@
         android:title="Offline scrobbling"/>
     <PreferenceCategory
         android:title="Scrobble from">
-        <com.arn.scrobble.AppIconsPref
+        <com.arn.scrobble.pref.AppIconsPref
             android:title="Currently enabled:"
             android:key="app_whitelist"/>
         <Preference

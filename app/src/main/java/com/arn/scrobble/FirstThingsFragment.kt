@@ -12,6 +12,8 @@ import android.support.v4.app.NotificationManagerCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import com.arn.scrobble.pref.AppListFragment
 
 /**
  * Created by arn on 06/09/2017.
@@ -82,7 +84,9 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
     private fun markAsDone(resId:Int){
         val v= activity.findViewById<ViewGroup>(resId)
         v.isEnabled = false
-        v.getChildAt(0).visibility = View.VISIBLE
+        v.alpha = 0.4f
+        val tv = v.getChildAt(0) as TextView
+        tv.text = "✅ "
         doneCount++
     }
 

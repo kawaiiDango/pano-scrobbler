@@ -3,4 +3,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fab_margin_right">50dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="elevation_hero_btn">7dp</dimen>
+    <dimen name="tz_hero_btn">2dp</dimen>
 </resources>

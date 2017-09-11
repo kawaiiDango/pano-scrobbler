@@ -15,9 +15,19 @@ import android.service.notification.NotificationListenerService
 class NLService : NotificationListenerService() {
     lateinit private var pref: SharedPreferences
     lateinit private var nm: NotificationManager
+    private var sessListener: SessListener? = null
 
     override fun onCreate() {
         super.onCreate()
+        Stuff.log("onCreate")
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return super.onStartCommand(intent, flags, startId)
+    }
+    override fun onListenerConnected() {
+        super.onListenerConnected()
+
         val filter = IntentFilter()
         filter.addAction(pNLS)
         filter.addAction(pCANCEL)
@@ -34,12 +44,13 @@ class NLService : NotificationListenerService() {
         // Media session manager leaks/holds the context for too long.
         // Don't let it to leak the activity, better lak the whole app.
         val c = applicationContext
-        val sessListener = SessListener(c, handler)
+        sessListener = SessListener(c, handler)
 
         val sessManager = c.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
 
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, this.javaClass))
+            Stuff.log("onListenerConnected")
         } catch (exception: SecurityException) {
             Stuff.log("Failed to start media controller: " + exception.message)
             // Try to unregister it, just it case.
@@ -52,7 +63,16 @@ class NLService : NotificationListenerService() {
 
     }
 
+    override fun onListenerDisconnected() {
+        super.onListenerDisconnected()
+        Stuff.log("onListenerDisconnected")
+        unregisterReceiver(nlservicereciver)
+        if (sessListener != null)
+            (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
+                    .removeOnActiveSessionsChangedListener(sessListener)
+    }
     override fun onDestroy() {
+        Stuff.log("onDestroy")
         super.onDestroy()
     }
 

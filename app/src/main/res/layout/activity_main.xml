@@ -21,7 +21,6 @@
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/ic_dark_overlay"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="@dimen/fab_margin_right"
@@ -55,7 +54,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:elevation="4dp"
+                android:elevation="5dp"
+                android:translationZ="@dimen/tz_hero_btn"
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="1.0"
                 app:popupTheme="@style/AppTheme.PopupOverlay"/>

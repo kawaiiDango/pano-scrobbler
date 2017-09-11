@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.pref
 
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -6,6 +6,9 @@ import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
+import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 
 /**
  * Created by arn on 09/07/2017.

@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.pref
 
 import android.content.Context
 import android.net.Uri
@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.*
 import android.util.TypedValue
+import com.arn.scrobble.R
 import com.squareup.picasso.Picasso
 
 

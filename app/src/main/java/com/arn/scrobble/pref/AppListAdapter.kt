@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.pref
 
 import android.app.Activity
 import android.content.Context
@@ -8,6 +8,8 @@ import android.preference.PreferenceManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.squareup.picasso.Picasso
 
 

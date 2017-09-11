@@ -1,8 +1,7 @@
-package com.arn.scrobble
+package com.arn.scrobble.pref
 
 import android.app.Fragment
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -17,6 +16,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ListView
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import java.util.*
 
 

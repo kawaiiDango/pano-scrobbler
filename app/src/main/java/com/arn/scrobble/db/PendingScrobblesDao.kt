@@ -6,21 +6,31 @@ import android.arch.persistence.room.*
 /**
  * Created by arn on 11/09/2017.
  */
+const val tableName = "pendingScrobbles"
 
 @Dao
 interface PendingScrobblesDao {
-    @get:Query("SELECT * FROM PendingScrobbles")
-    val all: List<PendingScrobbles>
+    @get:Query("SELECT * FROM $tableName")
+    val all: List<PendingScrobble>
 
-    @Query("SELECT * FROM PendingScrobbles WHERE uid IN (:userIds)")
-    fun loadAllNotAc(userIds: IntArray): List<PendingScrobbles>
+    @get:Query("SELECT * FROM $tableName WHERE autoCorrected = 0")
+    val allNotAutocorrected: List<PendingScrobble>
 
-    @Query("SELECT * FROM PendingScrobbles WHERE first_name LIKE :first AND " + "last_name LIKE :last LIMIT 1")
-    fun loadAllPending(first: String, last: String): PendingScrobbles
+    @get:Query("SELECT * FROM $tableName WHERE autoCorrected = 1")
+    val allAutocorrected: List<PendingScrobble>
+
+    @get:Query("SELECT * FROM $tableName LIMIT 1")
+    val loadLastPending: PendingScrobble
+
+    @get:Query("SELECT count(*) FROM $tableName")
+    val count: Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg ps: PendingScrobbles)
+    fun insert(vararg ps: PendingScrobble)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun update(ps: PendingScrobble)
 
     @Delete
-    fun delete(ps: PendingScrobbles)
+    fun delete(ps: PendingScrobble)
 }

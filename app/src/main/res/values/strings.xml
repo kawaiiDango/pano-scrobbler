@@ -25,5 +25,6 @@
     <string name="choose_apps_desc">(Any app which plays named music, such as youtube, your browser, your chat app, etc is supported)</string>
     <string name="max_apps_exceeded">Sorry, you cannot enable more than %1$d apps</string>
     <string name="offline">Offline. Data shown is not fresh</string>
+    <string name="share_text">  Shared with goo.gl/ek1Nof</string>
 
 </resources>

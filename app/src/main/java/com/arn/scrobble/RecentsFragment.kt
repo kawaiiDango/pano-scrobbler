@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.app.Activity
 import android.app.Fragment
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
@@ -10,11 +11,19 @@ import android.view.*
 import android.widget.AdapterView
 import android.widget.LinearLayout
 import android.widget.ListView
+import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.ui.EndlessScrollListener
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import android.arch.persistence.room.Room
+import android.widget.ImageView
+import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobblesDb
+import android.content.Intent
+
+
 
 
 /**
@@ -55,8 +64,8 @@ class RecentsFragment : Fragment() {
         val refresh = activity.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
         refresh.setOnRefreshListener { adapter?.loadRecents(1) }
 
-//        val hero = activity.findViewById<ImageView>(R.id.img_hero)
-//        hero.setImageResource(R.color.background_material_dark)
+        val share = activity.findViewById<ImageView>(R.id.hero_share)
+        share.setOnClickListener(shareClickListener)
 
         val graph = activity.findViewById<GraphView>(R.id.graph)
         graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
@@ -98,22 +107,32 @@ class RecentsFragment : Fragment() {
         val id = item.itemId
 
         if (id == R.id.action_settings) {
-            Stuff.log(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS).toString() +" rcefnts")
             fragmentManager.beginTransaction()
                     .hide(this)
                     .add(R.id.frame, PrefFragment())
                     .addToBackStack(null)
                     .commit()
         } else if (id == R.id.action_app_list) {
-            fragmentManager.beginTransaction()
-                    .hide(this)
-                    .add(R.id.frame, AppListFragment())
-                    .addToBackStack(null)
-                    .commit()
+            dbTest()
         }
         return super.onOptionsItemSelected(item)
     }
 
+    fun dbTest(){
+        val dao = PendingScrobblesDb.getDb(activity).getDao()
+        var entry = PendingScrobble()
+        entry.artist = "arrfr"
+        entry.track = "traeckg"
+        entry.autoCorrected = 1
+        entry.timestamp  = System.currentTimeMillis()
+        dao.insert(entry)
+        Stuff.log("count: "+dao.count)
+        entry = dao.loadLastPending
+        Stuff.log(entry.toString())
+        dao.delete(entry)
+        Stuff.log("count: "+dao.count)
+
+    }
     override fun onHiddenChanged(hidden: Boolean) {
         val ab = (activity as AppCompatActivity).supportActionBar
         ab?.setDisplayHomeAsUpEnabled(hidden)
@@ -124,7 +143,7 @@ class RecentsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        adapter?.loadRecents(1)
+//        adapter?.loadRecents(1)
     }
 
     override fun onResume() {
@@ -151,5 +170,17 @@ class RecentsFragment : Fragment() {
 
         val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
         ab?.setExpanded(true, true)
+    }
+    private val shareClickListener = View.OnClickListener {
+        val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
+        var shareText = getString(R.string.share_text)
+        shareText = "I was listening to:\n " +  ctl.title.toString() + "\n" + shareText
+        val i = Intent(Intent.ACTION_SEND)
+        i.type = "text/plain"
+        i.putExtra(Intent.EXTRA_SUBJECT, "I was listening to:")
+        i.putExtra(Intent.EXTRA_TEXT, shareText)
+        startActivity(Intent.createChooser(i, "Share this song"))
+
+
     }
 }

@@ -70,6 +70,16 @@
                 app:layout_collapseMode="parallax">
 
                 <ImageButton
+                    android:id="@+id/hero_share"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="5dp"
+                    android:scaleType="centerInside"
+                    app:srcCompat="?android:attr/actionModeShareDrawable"/>
+
+                <ImageButton
                     android:id="@+id/hero_info"
                     android:layout_width="32dp"
                     android:layout_height="32dp"

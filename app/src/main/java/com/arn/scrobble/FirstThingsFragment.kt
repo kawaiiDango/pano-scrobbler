@@ -9,11 +9,21 @@ import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.app.NotificationManagerCompat
+import android.support.v7.app.AppCompatActivity
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import com.arn.scrobble.pref.AppListFragment
+import org.w3c.dom.Text
+import android.os.AsyncTask.execute
+import android.text.Editable
+import com.arn.scrobble.R.id.textView
+
+
 
 /**
  * Created by arn on 06/09/2017.
@@ -31,6 +41,8 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val ab = (activity as AppCompatActivity).supportActionBar ?: return
+        ab.setDisplayHomeAsUpEnabled(false)
         if (view == null)
             return
         view.findViewById<ViewGroup>(R.id.first_things_1).setOnClickListener {
@@ -48,7 +60,34 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
                     .addToBackStack(null)
                     .commit()
         }
+        //TODO: hide the testing thing
+        val pass = view.findViewById<EditText>(R.id.testing_pass)
+        pass.addTextChangedListener(object : TextWatcher {
 
+            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+
+            }
+
+            override fun afterTextChanged(arg0: Editable) {
+                //            val pass = view.findViewById<TextView>(R.id.testing_pass)
+                val splits = pass.text.split('_')
+                Stuff.log("splits: $splits " + splits.size)
+                if (splits.size == 3) {
+                    PreferenceManager.getDefaultSharedPreferences(activity).edit()
+                            .putString(Stuff.USERNAME, splits[0])
+                            .putString(Stuff.SESS_KEY, splits[1])
+                            .apply()
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frame, RecentsFragment(), Stuff.GET_RECENTS)
+                            .commit()
+                } else
+                    Stuff.log("bad pass")
+            }
+
+        })
     }
 
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
@@ -64,7 +103,9 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         if (checkAppListExists(activity))
             markAsDone(R.id.first_things_3)
         if(doneCount==3) {
-            fragmentManager.popBackStack()
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frame, RecentsFragment(), Stuff.GET_RECENTS)
+                    .commit()
             return
         }
         LFMRequester(activity).execute(Stuff.CHECK_AUTH_SILENT)

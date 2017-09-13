@@ -7,6 +7,24 @@
               android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/testing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.1"
+        android:orientation="horizontal"
+        >
+
+        <EditText
+            android:id="@+id/testing_pass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="1"
+            android:textSize="1sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/first_things_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

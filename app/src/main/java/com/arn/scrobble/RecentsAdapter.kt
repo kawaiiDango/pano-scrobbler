@@ -383,7 +383,10 @@ class RecentsAdapter
                     populate(data as PaginatedResult<Track>, data.page)
                     LFMRequester(context, this).execute(Stuff.GET_LOVED)
                 }
-                Stuff.GET_RECENTS_CACHED -> populate(data as PaginatedResult<Track>, data.page)
+                Stuff.GET_RECENTS_CACHED -> {
+                    populate(data as PaginatedResult<Track>, data.page)
+                    loadRecents(1)
+                }
                 Stuff.IS_ONLINE -> {
                     val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
                     val headerTv = list.findViewById<TextView>(R.id.header_text)

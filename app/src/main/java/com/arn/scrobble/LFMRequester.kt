@@ -68,7 +68,12 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
 
                 when (command) {
                     Stuff.CHECK_AUTH, Stuff.CHECK_AUTH_SILENT -> return null
-                    Stuff.GET_RECENTS_CACHED, Stuff.GET_RECENTS -> {
+                    Stuff.GET_RECENTS_CACHED -> {
+                        return User.getRecentTracks(username, 1, 15, Stuff.LAST_KEY)
+                    }
+                    Stuff.GET_RECENTS -> {
+                        handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))
+                                ?.sendToTarget()
                         subCommand = s[1]
                         return User.getRecentTracks(username, Integer.parseInt(subCommand), 15, Stuff.LAST_KEY)
                     }

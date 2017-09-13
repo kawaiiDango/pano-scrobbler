@@ -55,24 +55,21 @@ class Main : AppCompatActivity() {
             }
         })
 
-        val recentsFragment = RecentsFragment()
-        fragmentManager.beginTransaction()
-                .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
+        if( FirstThingsFragment.checkAuthTokenExists(this) &&
+                FirstThingsFragment.checkNLAccess(this)) {
+            val recentsFragment = RecentsFragment()
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
 //                .hide(recentsFragment)
 //                .add(R.id.frame, PrefFragment())
 //                .add(R.id.frame,FirstThingsFragment())
-                .commit()
-        //TODO: remove it later
-
-
-        if( !FirstThingsFragment.checkAuthTokenExists(this) ||
-                !FirstThingsFragment.checkNLAccess(this))
-            fragmentManager.beginTransaction()
-                    .hide(recentsFragment)
-                    .add(R.id.frame, FirstThingsFragment())
-                    .addToBackStack(null)
                     .commit()
-
+        } else {
+            //TODO: remove it later
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frame, FirstThingsFragment())
+                    .commit()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -44,7 +44,7 @@
 
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/graph"
-                android:layout_width="150dp"
+                android:layout_width="190dp"
                 android:layout_height="100dip"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="55dip"
@@ -75,7 +75,6 @@
                     android:layout_height="32dp"
                     android:layout_marginEnd="4dp"
                     android:background="?attr/selectableItemBackground"
-                    android:padding="5dp"
                     android:scaleType="centerInside"
                     app:srcCompat="?android:attr/actionModeShareDrawable"/>
 
@@ -85,7 +84,7 @@
                     android:layout_height="32dp"
                     android:layout_marginEnd="10dp"
                     android:background="?attr/selectableItemBackground"
-                    android:padding="5dp"
+                    android:padding="3dp"
                     android:scaleType="centerInside"
                     app:srcCompat="@android:drawable/ic_dialog_info"/>
 

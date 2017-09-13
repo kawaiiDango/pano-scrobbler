@@ -226,6 +226,7 @@ class RecentsAdapter
         val ctl = (context as Activity).findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout) ?: return
         val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
 //        val fab = (context as Activity).findViewById<FloatingActionButton?>(R.id.fab)
+        val heroShare = (context as Activity).findViewById<ImageButton>(R.id.hero_share)
         val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
         val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
 
@@ -253,10 +254,11 @@ class RecentsAdapter
 
             val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
 //                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", lastColorDomPrimary, colorDomPrimary)
+            val shareBgAnimator = ObjectAnimator.ofObject(heroShare, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
             val infoBgAnimator = ObjectAnimator.ofObject(heroInfo, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
             val ytBgAnimator = ObjectAnimator.ofObject(heroYt, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
             val animSet = AnimatorSet()
-            animSet.playTogether(listBgAnimator, infoBgAnimator, ytBgAnimator)
+            animSet.playTogether(listBgAnimator, shareBgAnimator, infoBgAnimator, ytBgAnimator)
             animSet.interpolator = AccelerateDecelerateInterpolator()
             animSet.duration = 1500
             animSet.start()

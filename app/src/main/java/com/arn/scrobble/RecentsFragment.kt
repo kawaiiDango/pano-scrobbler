@@ -1,7 +1,7 @@
 package com.arn.scrobble
 
-import android.app.Activity
 import android.app.Fragment
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
@@ -9,21 +9,18 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.*
 import android.widget.AdapterView
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
+import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.ui.EndlessScrollListener
+import com.jjoe64.graphview.DefaultLabelFormatter
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import android.arch.persistence.room.Room
-import android.widget.ImageView
-import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PendingScrobblesDb
-import android.content.Intent
-
-
 
 
 /**
@@ -72,10 +69,11 @@ class RecentsFragment : Fragment() {
         graph.gridLabelRenderer.isHorizontalLabelsVisible = false
         graph.gridLabelRenderer.isVerticalLabelsVisible = false
         graph.gridLabelRenderer.numVerticalLabels = 3
+        graph.gridLabelRenderer.labelsSpace = Stuff.dp2px(10, activity)
         val series = LineGraphSeries<DataPoint>()
         series.isDrawDataPoints = true
-        series.thickness = 15
-        series.dataPointsRadius = 20f
+        series.thickness = Stuff.dp2px(6, activity)
+        series.dataPointsRadius = Stuff.dp2px(7, activity).toFloat()
         series.color = resources.getColor(R.color.colorAccent)
         series.setAnimated(true)
         graph.addSeries(series)
@@ -92,6 +90,15 @@ class RecentsFragment : Fragment() {
                 graph.tag = true
             }
             graph.onDataChanged(false, false)
+        }
+        graph.gridLabelRenderer.labelFormatter = object : DefaultLabelFormatter() {
+            override fun formatLabel(value: Double, isValueX: Boolean): String {
+                return if (isValueX) {
+                    super.formatLabel(value, isValueX)
+                } else {
+                    Stuff.humanReadableNum(value.toLong())
+                }
+            }
         }
     }
 

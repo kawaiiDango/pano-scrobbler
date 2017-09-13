@@ -48,7 +48,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Scrobble delay (whichever is earliest)">
+        android:title="Scrobble delay (whichever is earlier)">
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="delay_secs"

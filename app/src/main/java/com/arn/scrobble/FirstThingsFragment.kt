@@ -10,19 +10,14 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import com.arn.scrobble.pref.AppListFragment
-import org.w3c.dom.Text
-import android.os.AsyncTask.execute
-import android.text.Editable
-import com.arn.scrobble.R.id.textView
-
 
 
 /**
@@ -33,6 +28,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = getString(R.string.first_things)
+        activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).tag = getString(R.string.first_things)
         val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
         vg.setExpanded(false, true)
         setHasOptionsMenu(false)

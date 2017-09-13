@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.widget.*
 import android.util.TypedValue
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.squareup.picasso.Picasso
 
 
@@ -34,7 +35,7 @@ class AppIconsPref : Preference{
         val container = v.findViewById<LinearLayout>(R.id.app_icons_container)
         val title = v.findViewById<TextView>(R.id.app_list_enabled_title)
         title.text = this.title
-        val dp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48f, context.resources.displayMetrics).toInt()
+        val dp = Stuff.dp2px(48, context)
 
         packageNames = sharedPreferences.getStringSet(key, setOf())
 

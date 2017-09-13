@@ -10,7 +10,7 @@
         android:id="@+id/testing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="0.1"
+        android:alpha="0.01"
         android:orientation="horizontal"
         >
 
@@ -45,7 +45,7 @@
             android:layout_height="match_parent"
             android:layout_weight="6"
             android:gravity="center_vertical|center"
-            android:text="1️"
+            android:text="1."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <TextView
@@ -77,7 +77,7 @@
             android:layout_height="match_parent"
             android:layout_weight="6"
             android:gravity="center_vertical|center"
-            android:text="2️"
+            android:text="2."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <TextView
@@ -108,7 +108,7 @@
             android:layout_height="match_parent"
             android:layout_weight="6"
             android:gravity="center_vertical|center"
-            android:text="3️"
+            android:text="3."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <LinearLayout

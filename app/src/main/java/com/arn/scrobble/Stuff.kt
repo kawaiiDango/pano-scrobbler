@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.widget.Toast
 import java.util.regex.Pattern
 
@@ -176,5 +177,17 @@ internal object Stuff {
     fun isDark(color: Int): Boolean {
         val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
         return darkness >= 0.5
+    }
+
+    fun dp2px (dp: Int, c: Context): Int {
+       return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), c.resources.displayMetrics).toInt()
+    }
+
+    fun humanReadableNum(bytes: Long): String {
+        val unit = 1000
+        if (bytes < unit) return bytes.toString()
+        val exp = (Math.log(bytes.toDouble()) / Math.log(unit.toDouble())).toInt()
+        val pre = "KMB"[exp - 1] //kilo, million, bilion
+        return String.format("%.1f%s", bytes / Math.pow(unit.toDouble(), exp.toDouble()), pre)
     }
 }

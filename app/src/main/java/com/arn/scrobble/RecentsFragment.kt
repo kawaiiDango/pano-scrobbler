@@ -30,6 +30,7 @@ import com.jjoe64.graphview.series.LineGraphSeries
 class RecentsFragment : Fragment() {
 
     private var adapter: RecentsAdapter? = null
+    private var footer: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         if (savedInstanceState == null)
@@ -45,8 +46,7 @@ class RecentsFragment : Fragment() {
         val inflater = activity.layoutInflater
 
         recentsList.background.mutate()
-        val footer = inflater.inflate(R.layout.footer_loading, recentsList, false) as LinearLayout
-        recentsList.emptyView = footer
+        footer = inflater.inflate(R.layout.footer_loading, recentsList, false) as LinearLayout
         recentsList.addFooterView(footer, null, false)
 
         val header = inflater.inflate(R.layout.header_default, recentsList, false) as LinearLayout
@@ -148,14 +148,9 @@ class RecentsFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-//        adapter?.loadRecents(1)
-    }
-
     override fun onResume() {
         super.onResume()
-//        adapter.loadRecents(1)
+        adapter?.loadRecents(1)
     }
 
     private val loadMoreListener = object : EndlessScrollListener() {
@@ -169,11 +164,10 @@ class RecentsFragment : Fragment() {
     }
     private val itemClickListener = AdapterView.OnItemClickListener { adapterView, v, pos1, l ->
         adapter?.notifyDataSetChanged()
-        val i=l.toInt()
         adapterView as ListView
         adapterView.setItemChecked(pos1, true)
         if (Main.heroExpanded)
-            adapterView.smoothScrollToPositionFromTop(i, 40, 500)
+            adapterView.smoothScrollToPositionFromTop(pos1, 40, 500)
 
         val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
         ab?.setExpanded(true, true)

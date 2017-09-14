@@ -97,11 +97,11 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                             if (resp == "")
                                 return null
                             //0
-                            var idx = resp.indexOf("cover-art")
+                            var idx = resp.indexOf("id=\"header-expanded-image\"")
                             var img = s[2]
                             var idx2: Int
                             if (idx > -1) {
-                                idx = resp.lastIndexOf("src=", idx) + 5
+                                idx = resp.indexOf("src=", idx) + 5
                                 idx2 = resp.indexOf("\"", idx)
                                 img = resp.substring(idx, idx2)
                                 if (img.contains("4128a6eb29f94943c9d206c08e625904"))

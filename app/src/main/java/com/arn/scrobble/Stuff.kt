@@ -35,6 +35,7 @@ internal object Stuff {
     val SESS_KEY = "sesskey"
     val USERNAME = "username"
 
+    val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
     val MAX_APPS = 30
     var timeIt:Long = 0
 

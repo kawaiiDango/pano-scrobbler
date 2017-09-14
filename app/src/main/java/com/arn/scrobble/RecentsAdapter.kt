@@ -44,6 +44,10 @@ class RecentsAdapter
 
 (c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, mutableListOf()) {
 
+    init {
+        setNotifyOnChange(false)
+    }
+
     private val hero: ImageView = (c as Activity).findViewById<ImageView>(R.id.img_hero)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -61,12 +65,8 @@ class RecentsAdapter
         }
         // object item based on the position
         val t = getItem(position) ?: return convertView
-        var selectedPos = (parent as ListView).checkedItemPosition -1
-
-        if (selectedPos < 0) { //not checked (INVALID_POSITION is -1)
-            selectedPos = 0
-            parent.setItemChecked(0, true)
-        }
+        parent as ListView
+        var selectedId = if (parent.checkedItemIds.size == 0) -5 else parent.checkedItemIds[0]
 
 // get the TextView and then set the text (item name) and tag (item ID) values
         val title = convertView.findViewById<TextView>(R.id.recents_title)
@@ -129,7 +129,7 @@ class RecentsAdapter
             albumArt.setColorFilter(Stuff.getMatColor(context, "500", t.name.hashCode().toLong()))
         }
 
-        if ( position == selectedPos && t.url != hero.tag) {
+        if ( getItemId(position) == selectedId && t.url != hero.tag) {
             val fab = (context as Activity).findViewById<FloatingActionButton>(R.id.fab)
             val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
             val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
@@ -161,12 +161,20 @@ class RecentsAdapter
             play.visibility = View.VISIBLE
 //            play.setTag(R.id.recents_play, t.artist + " - " + t.name)
             play.setOnClickListener({heroYt.callOnClick()})
-        } else if (position != selectedPos) {
+        } else if (getItemId(position) != selectedId) {
             play.visibility = View.INVISIBLE
         } else
             play.visibility = View.VISIBLE
 
         return convertView
+    }
+
+    override fun getItemId(position: Int): Long {
+        return getItem(position)?.playedWhen?.time ?: -5
+    }
+
+    override fun hasStableIds(): Boolean {
+        return true
     }
 
     fun loadRecents(page: Int) {
@@ -229,6 +237,7 @@ class RecentsAdapter
         val heroShare = (context as Activity).findViewById<ImageButton>(R.id.hero_share)
         val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
         val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
+        val graph = (context as Activity).findViewById<GraphView>(R.id.graph)
 
         val b = (hero.drawable as BitmapDrawable).bitmap
         Palette.generateAsync(b) { palette ->
@@ -248,7 +257,9 @@ class RecentsAdapter
                 ctl.setCollapsedTitleTextColor(colorMutedDark)
 //                fab?.imageTintList = ColorStateList.valueOf(0xff000000.toInt())
             }
-
+            (graph.series.get(0) as  LineGraphSeries<*>).color = colorLightWhite
+            graph.gridLabelRenderer.horizontalAxisTitleColor = colorLightWhite
+            graph.gridLabelRenderer.verticalAxisTitleColor = colorLightWhite
 //                                fab.backgroundTintList = ColorStateList.valueOf(colorDomPrimary)
             val listBgFrom = (list.background as ColorDrawable).color
 
@@ -278,15 +289,15 @@ class RecentsAdapter
         val series = graph.series.get(0) as LineGraphSeries<DataPoint>
         val dps = mutableListOf<DataPoint>()
         var i: Double = 0.0
-        points.split(", ").forEach({
+        points.split(", ").forEach{
                     dps.add(DataPoint(i++, it.toDouble()))
-                })
+                }
 
         Stuff.log("points: $points")
-
         series.resetData(dps.toTypedArray())
 
         graph.alpha = 0f
+        graph.onDataChanged(false, false)
         graph.animate()
                 .alpha(0.7f)
                 .setInterpolator(DecelerateInterpolator())
@@ -295,19 +306,25 @@ class RecentsAdapter
     }
 
     fun populate(res: PaginatedResult<Track>, page: Int = 1) {
-        val refresh = (context as Activity).findViewById<SwipeRefreshLayout?>(R.id.swiperefresh)
-
-        refresh?.isRefreshing = false
+        val refresh = (context as Activity).findViewById<SwipeRefreshLayout?>(R.id.swiperefresh) ?: return
+        val list = (context as Activity).findViewById<ListView>(R.id.recents_list)
+        val selectedId = if (list.checkedItemIds.size == 0) -5 else list.checkedItemIds[0]
+        var selectedPos = 1
+        refresh.isRefreshing = false
+        list.removeCallbacks(timedRefresh)
         if (page == 1) {
-            //                gotLoved = false;
             clear()
+            list.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
         }
         res.forEach {
-            if (!it.isNowPlaying || page==1)
+            if (!it.isNowPlaying || page==1) {
                 add(it)
+                if (getItemId(count - 1) == selectedId)
+                    selectedPos = count
+            }
         }
+        list.setItemChecked(selectedPos, true)
         notifyDataSetChanged()
-
     }
 
     fun markLoved(res: PaginatedResult<Track>) {
@@ -401,6 +418,11 @@ class RecentsAdapter
         }
     }
 
+    var timedRefresh = object : Runnable {
+        override fun run() {
+           loadRecents(1)
+        }
+    }
     companion object {
         private var lastColorDomPrimary = 0
         private var lastColorLightWhite = 0

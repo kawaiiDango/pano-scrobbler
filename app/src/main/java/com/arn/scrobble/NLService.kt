@@ -19,7 +19,6 @@ class NLService : NotificationListenerService() {
 
     override fun onCreate() {
         super.onCreate()
-        Stuff.log("onCreate")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -50,7 +49,6 @@ class NLService : NotificationListenerService() {
 
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, this.javaClass))
-            Stuff.log("onListenerConnected")
         } catch (exception: SecurityException) {
             Stuff.log("Failed to start media controller: " + exception.message)
             // Try to unregister it, just it case.

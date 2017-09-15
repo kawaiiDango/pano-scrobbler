@@ -1,8 +1,8 @@
-## Pano Scrobbler [WIP]
+## Pano Scrobbler
 <a href='https://play.google.com/store/apps/details?id=com.arn.scrobble&utm_source=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="200"/></a>
 
 or
-####[Download last debug build](https://www.dropbox.com/s/vy4kae0bovdxd8g/pScrobbler-debug.apk?dl=1)
+#### [Download last debug build](https://www.dropbox.com/s/itxek2r5rkc07z5/pScrobbler-debug.apk?dl=1)
 \(May not always be stable\)
 
 #### This is intended for:
@@ -11,7 +11,8 @@ or
 - View info about a track, such as listener count charts, album art etc
 - View recent scrobbles
 - Work with recent scrobbles (e.g. love a track, cancel a scrobble)
+- Offline scrobbling with job scheduler
+- Offline viewing of cached data
 
 #### This is not intended to:
 - an app to browse lastfm.
-- Scrobble from other players which trigger Musixmatch's FloatingLyrics notification. That app has become an adware and a nagware now.

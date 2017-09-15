@@ -89,6 +89,7 @@
         android:title="About">
         <Preference
             android:title="version"
+            android:summary="https://github.com/kawaiiDango/pScrobbler"
             android:key="about"
             />
     </PreferenceCategory>

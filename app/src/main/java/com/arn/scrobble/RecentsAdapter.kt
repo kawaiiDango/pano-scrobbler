@@ -66,7 +66,7 @@ class RecentsAdapter
         // object item based on the position
         val t = getItem(position) ?: return convertView
         parent as ListView
-        var selectedId = if (parent.checkedItemIds.size == 0) NP_ID else parent.checkedItemIds[0]
+        var selectedId: Long = if (parent.checkedItemIds.size == 0) NP_ID else parent.checkedItemIds[0]
 
 // get the TextView and then set the text (item name) and tag (item ID) values
         val title = convertView.findViewById<TextView>(R.id.recents_title)
@@ -159,7 +159,6 @@ class RecentsAdapter
             setHero(t, imgUrl) //better set a blurred one
 
             play.visibility = View.VISIBLE
-//            play.setTag(R.id.recents_play, t.artist + " - " + t.name)
             play.setOnClickListener({heroYt.callOnClick()})
         } else if (getItemId(position) != selectedId) {
             play.visibility = View.INVISIBLE
@@ -178,8 +177,11 @@ class RecentsAdapter
     }
 
     fun loadRecents(page: Int) {
+        val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
+
         Stuff.log("loadRecents $page")
         LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
+        list.findViewById<View>(R.id.recents_progressbar).visibility = View.VISIBLE
     }
     fun firstLoad() {
         Stuff.log("firstLoad")
@@ -315,6 +317,10 @@ class RecentsAdapter
         if (page == 1) {
             clear()
             list.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
+            if (res.isEmpty){
+                val headerTv = list.findViewById<TextView>(R.id.header_text)
+                headerTv.text = context.getString(R.string.no_scrobbles)
+            }
         }
         res.forEach {
             if (!it.isNowPlaying || page==1) {
@@ -324,6 +330,7 @@ class RecentsAdapter
             }
         }
         list.setItemChecked(selectedPos, true)
+        list.findViewById<View>(R.id.recents_progressbar).visibility = View.INVISIBLE
         notifyDataSetChanged()
     }
 
@@ -360,7 +367,6 @@ class RecentsAdapter
                         love.alpha = 1f
                         love.scaleX = 1f
                         love.scaleY = 1f
-//                        love.setImageResource(R.drawable.ic_line_heart_disabled)
                     }
                     .start()
         } else {
@@ -430,7 +436,7 @@ class RecentsAdapter
         private var lastColorMutedBlack = 0
 
         private val FILLED = 5
-        private val NP_ID = -5
+        private val NP_ID: Long = -5
 
         private var heroInfoLoader: LFMRequester? = null
     }

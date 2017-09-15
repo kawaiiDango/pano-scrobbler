@@ -102,6 +102,8 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
             fragmentManager.beginTransaction()
                     .replace(R.id.frame, RecentsFragment(), Stuff.GET_RECENTS)
                     .commit()
+            val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
+            ab?.setExpanded(true, true)
             return
         }
         LFMRequester(activity).execute(Stuff.CHECK_AUTH_SILENT)

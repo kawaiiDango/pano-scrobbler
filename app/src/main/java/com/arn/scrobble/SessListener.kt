@@ -23,7 +23,7 @@ class SessListener internal constructor(private val c: Context, private val hand
 
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
         val tokens = mutableSetOf<MediaSession.Token>()
-        if (pref.getBoolean("master", false) && controllers != null) {
+        if (pref.getBoolean("master", true) && controllers != null) {
             for (controller in controllers) {
                 val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(controller.packageName)
                 val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(controller.packageName)

@@ -7,8 +7,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
-import android.widget.*
-import android.util.TypedValue
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.squareup.picasso.Picasso

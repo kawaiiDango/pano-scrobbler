@@ -1,6 +1,8 @@
 package com.arn.scrobble.pref
 
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
@@ -60,6 +62,12 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
             val pInfo = activity.packageManager.getPackageInfo(pName, 0)
             val version = pInfo.versionName
             about.title = pName + " v" + version
+            about.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                val browserIntent = Intent(Intent.ACTION_VIEW,
+                        Uri.parse(about.summary.toString()))
+                activity.startActivity(browserIntent)
+                true
+            }
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }

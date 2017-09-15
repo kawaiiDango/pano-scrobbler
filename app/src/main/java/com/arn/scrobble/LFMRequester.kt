@@ -3,7 +3,6 @@ package com.arn.scrobble
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
@@ -18,6 +17,7 @@ import de.umass.lastfm.scrobble.ScrobbleResult
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -184,7 +184,10 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
             }
         } catch(e: CallException){
             //ignore
+        } catch(e: InterruptedIOException){
+            //ignore
         } catch (e: Exception) {
+            e.printStackTrace()
             publishProgress("err: "+ e.cause)
         }
 

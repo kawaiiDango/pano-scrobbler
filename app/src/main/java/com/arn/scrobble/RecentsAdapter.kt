@@ -66,7 +66,7 @@ class RecentsAdapter
         // object item based on the position
         val t = getItem(position) ?: return convertView
         parent as ListView
-        var selectedId = if (parent.checkedItemIds.size == 0) -5 else parent.checkedItemIds[0]
+        var selectedId = if (parent.checkedItemIds.size == 0) NP_ID else parent.checkedItemIds[0]
 
 // get the TextView and then set the text (item name) and tag (item ID) values
         val title = convertView.findViewById<TextView>(R.id.recents_title)
@@ -170,7 +170,7 @@ class RecentsAdapter
     }
 
     override fun getItemId(position: Int): Long {
-        return getItem(position)?.playedWhen?.time ?: -5
+        return getItem(position)?.playedWhen?.time ?: NP_ID.toLong()
     }
 
     override fun hasStableIds(): Boolean {
@@ -259,7 +259,7 @@ class RecentsAdapter
             }
             (graph.series.get(0) as  LineGraphSeries<*>).color = colorLightWhite
             graph.gridLabelRenderer.horizontalAxisTitleColor = colorLightWhite
-            graph.gridLabelRenderer.verticalAxisTitleColor = colorLightWhite
+            graph.gridLabelRenderer.verticalLabelsColor = colorLightWhite
 //                                fab.backgroundTintList = ColorStateList.valueOf(colorDomPrimary)
             val listBgFrom = (list.background as ColorDrawable).color
 
@@ -308,7 +308,7 @@ class RecentsAdapter
     fun populate(res: PaginatedResult<Track>, page: Int = 1) {
         val refresh = (context as Activity).findViewById<SwipeRefreshLayout?>(R.id.swiperefresh) ?: return
         val list = (context as Activity).findViewById<ListView>(R.id.recents_list)
-        val selectedId = if (list.checkedItemIds.size == 0) -5 else list.checkedItemIds[0]
+        val selectedId = if (list.checkedItemIds.size == 0) NP_ID else list.checkedItemIds[0]
         var selectedPos = 1
         refresh.isRefreshing = false
         list.removeCallbacks(timedRefresh)
@@ -430,6 +430,7 @@ class RecentsAdapter
         private var lastColorMutedBlack = 0
 
         private val FILLED = 5
+        private val NP_ID = -5
 
         private var heroInfoLoader: LFMRequester? = null
     }

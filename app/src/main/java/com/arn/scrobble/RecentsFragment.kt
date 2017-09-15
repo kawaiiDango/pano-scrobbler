@@ -2,7 +2,9 @@ package com.arn.scrobble
 
 import android.app.Fragment
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.SwipeRefreshLayout
@@ -12,8 +14,6 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
-import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.ui.EndlessScrollListener
 import com.jjoe64.graphview.DefaultLabelFormatter
@@ -78,19 +78,11 @@ class RecentsFragment : Fragment() {
         series.setAnimated(true)
         graph.addSeries(series)
         graph.setOnClickListener{
-            if (graph.tag == true) {
-                graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
-                graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.VERTICAL
-                graph.gridLabelRenderer.isVerticalLabelsVisible = true
-                graph.tag = false
-            } else {
-                graph.gridLabelRenderer.horizontalAxisTitle = null
-                graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
-                graph.gridLabelRenderer.isVerticalLabelsVisible = false
-                graph.tag = true
-            }
-            graph.onDataChanged(false, false)
+            toggleGraphDetails(graph)
         }
+        graph.tag = PreferenceManager.getDefaultSharedPreferences(activity)
+                .getBoolean(Stuff.GRAPH_DETAILS_PREF,  false)
+        toggleGraphDetails(graph)
         graph.gridLabelRenderer.labelFormatter = object : DefaultLabelFormatter() {
             override fun formatLabel(value: Double, isValueX: Boolean): String {
                 return if (isValueX) {
@@ -100,6 +92,24 @@ class RecentsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun toggleGraphDetails(graph: GraphView){
+        val show = graph.tag as Boolean? ?: false
+        if (show) {
+            graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
+            graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.VERTICAL
+        } else {
+            graph.gridLabelRenderer.horizontalAxisTitle = null
+            graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
+        }
+        graph.gridLabelRenderer.isVerticalLabelsVisible = show
+        graph.tag = !show
+        PreferenceManager.getDefaultSharedPreferences(activity)
+                .edit()
+                .putBoolean(Stuff.GRAPH_DETAILS_PREF, show)
+                .apply()
+        graph.onDataChanged(false, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -119,26 +129,12 @@ class RecentsFragment : Fragment() {
                     .add(R.id.frame, PrefFragment())
                     .addToBackStack(null)
                     .commit()
-        } else if (id == R.id.action_app_list) {
-            dbTest()
         }
         return super.onOptionsItemSelected(item)
     }
 
-    fun dbTest(){
-        val dao = PendingScrobblesDb.getDb(activity).getDao()
-        var entry = PendingScrobble()
-        entry.artist = "arrfr"
-        entry.track = "traeckg"
-        entry.autoCorrected = 1
-        entry.timestamp  = System.currentTimeMillis()
-        dao.insert(entry)
-        Stuff.log("count: "+dao.count)
-        entry = dao.loadLastPending
-        Stuff.log(entry.toString())
-        dao.delete(entry)
-        Stuff.log("count: "+dao.count)
-
+    fun test(){
+        OfflineScrobbleJob.checkAndSchedule(activity)
     }
     override fun onHiddenChanged(hidden: Boolean) {
         val ab = (activity as AppCompatActivity).supportActionBar

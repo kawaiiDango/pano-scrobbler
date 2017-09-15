@@ -55,6 +55,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:contentInsetEnd="120dp"
                 app:elevation="@dimen/elevation_hero_btn"
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="1.0"

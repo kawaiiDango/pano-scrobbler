@@ -13,17 +13,23 @@ interface PendingScrobblesDao {
     @get:Query("SELECT * FROM $tableName")
     val all: List<PendingScrobble>
 
-    @get:Query("SELECT * FROM $tableName WHERE autoCorrected = 0")
-    val allNotAutocorrected: List<PendingScrobble>
+    @Query("SELECT * FROM $tableName WHERE autoCorrected = 1 LIMIT :arg0")
+    fun allAutocorrected(limit: Int): List<PendingScrobble>
 
-    @get:Query("SELECT * FROM $tableName WHERE autoCorrected = 1")
-    val allAutocorrected: List<PendingScrobble>
+    @Query("SELECT * FROM $tableName WHERE autoCorrected = 0 LIMIT :arg0")
+    fun allNotAutocorrected(limit: Int): List<PendingScrobble>
 
-    @get:Query("SELECT * FROM $tableName LIMIT 1")
+    @get:Query("SELECT * FROM $tableName WHERE autoCorrected = 0 LIMIT 1")
     val loadLastPending: PendingScrobble
 
     @get:Query("SELECT count(*) FROM $tableName")
     val count: Int
+
+    @get:Query("SELECT count(*) FROM $tableName WHERE autoCorrected = 1")
+    val allAutocorrectedCount: Int
+
+    @get:Query("SELECT count(*) FROM $tableName WHERE autoCorrected = 0")
+    val allNotAutocorrectedCount: Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg ps: PendingScrobble)

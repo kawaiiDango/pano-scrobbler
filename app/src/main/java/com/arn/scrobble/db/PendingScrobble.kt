@@ -13,13 +13,13 @@ class PendingScrobble {
     @PrimaryKey(autoGenerate = true)
     var _id: Int = 0
 
-    var track: String? = null
-    var artist: String? = null
+    var track: String = ""
+    var artist: String = ""
     var duration: Long = 0
-    var timestamp: Long = 0
+    var timestamp: Long = System.currentTimeMillis()
     var autoCorrected: Int = 0
     var state: Int = 0
-    var state_timestamp: Long = 0
+    var state_timestamp: Long = System.currentTimeMillis()
 
     override fun toString(): String {
         return "PendingScrobble [track=$track, artist=$artist, duration=$duration, timestamp=$timestamp," +

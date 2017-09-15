@@ -87,7 +87,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/recents_title"
-        android:alpha="0.8"
+        android:alpha="0.7"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:padding="15dp"

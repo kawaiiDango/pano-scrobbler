@@ -119,12 +119,14 @@ class SessListener internal constructor(private val c: Context, private val hand
                 Stuff.log(state.state.toString() + " playing: " + state.position + " < " + lastPos + " " + title)
                 if (isAtStart ||
                         (state.position - lastPos < DEBOUNCE_TIME && state.position - lastScrobbleTime < DEBOUNCE_TIME)){
-                    if (isAtStart) //scrobble replays
-                        handler.remove(lastHash)
-                    if (isIgnoreArtistMeta)
-                        lastHash = handler.scrobble(title, duration, packageNameParam)
-                    else
-                        lastHash = handler.scrobble(artist, title, duration, packageNameParam)
+                    if(pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) || Stuff.isNetworkAvailable(c)) {
+                        if (isAtStart) //scrobble replays
+                            handler.remove(lastHash)
+                        if (isIgnoreArtistMeta)
+                            lastHash = handler.scrobble(title, duration, packageNameParam)
+                        else
+                            lastHash = handler.scrobble(artist, title, duration, packageNameParam)
+                    }
                     lastScrobbleTime = state.position
                 }
             } else if (state.state == PlaybackState.STATE_CONNECTING || state.state == PlaybackState.STATE_BUFFERING) {

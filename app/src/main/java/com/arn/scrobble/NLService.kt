@@ -159,11 +159,13 @@ class NLService : NotificationListenerService() {
     inner class ScrobbleHandler : Handler() {
         private var lastNotiIcon = 0
         override fun handleMessage(m: Message) {
-            //TODO: handle
+            //TODO: corrected artist/title
             val title = m.data.getString(B_TITLE)
             val artist = m.data.getString(B_ARTIST)
+            val time = m.data.getLong(B_TIME)
+            val duration = m.data.getLong(B_DURATION)
             //            int hash = title.hashCode() + artist.hashCode();
-            LFMRequester(applicationContext, handler).execute(Stuff.SCROBBLE, artist, title)
+            LFMRequester(applicationContext, handler).execute(Stuff.SCROBBLE, artist, title, time.toString(), duration.toString())
             notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
@@ -178,13 +180,15 @@ class NLService : NotificationListenerService() {
             if (!hasMessages(hash)) {
 
                 if (artist != "" && title != "") {
+                    val now = System.currentTimeMillis()
                     LFMRequester(applicationContext, handler)
-                            .execute(Stuff.NOW_PLAYING, artist, title)
+                            .execute(Stuff.NOW_PLAYING, artist, title, now.toString(), duration.toString())
                     val m = obtainMessage()
                     val b = Bundle()
                     b.putString(B_ARTIST, artist)
                     b.putString(B_TITLE, title)
-                    b.putLong(B_TIME, System.currentTimeMillis())
+                    b.putLong(B_TIME, now)
+                    b.putLong(B_DURATION, duration)
                     m.data = b
                     m.what = hash
                     val delaySecs = pref.getInt("delay_secs", 50).toLong() * 1000
@@ -213,7 +217,7 @@ class NLService : NotificationListenerService() {
             return scrobble(splits[0], splits[1], duration, packageName)
         }
         private fun buildAppNotification(packageName:String): Notification?{
-            var appName = ""
+            var appName: String
             try {
                 val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
                 appName = packageManager.getApplicationLabel(applicationInfo).toString()
@@ -232,8 +236,8 @@ class NLService : NotificationListenerService() {
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
             val nb = Notification.Builder(applicationContext)
-                    .setContentTitle("New player: "+ appName)
-                    .setContentText("Continue to scrobble and hide this msg?")
+                    .setContentTitle(getString(R.string.new_player)+ appName)
+                    .setContentText(getString(R.string.new_player_prompt))
                     .setSmallIcon(R.drawable.ic_noti)
 //                    .setColor(resources.getColor(R.color.colorPrimary))
                     .setContentIntent(okayIntent)
@@ -328,6 +332,7 @@ class NLService : NotificationListenerService() {
         val B_TITLE = "title"
         val B_TIME = "time"
         val B_ARTIST = "artist"
+        val B_DURATION = "duration"
         val NOTI_SCR_ID = 5
         val NOTI_APP_ID = 6
         val NOTI_ERR_ICON = R.drawable.ic_transparent

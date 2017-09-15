@@ -9,8 +9,11 @@ import android.os.AsyncTask
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.webkit.WebSettings
+import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobblesDb
 import de.umass.lastfm.*
 import de.umass.lastfm.cache.FileSystemCache
+import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import java.io.IOException
 import java.io.InputStream
@@ -31,6 +34,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
     override fun doInBackground(vararg s: String): Any? {
         prefs = PreferenceManager.getDefaultSharedPreferences(c)
         command = s[0]
+        val isNetworkAvailable = Stuff.isNetworkAvailable(c)
         try {
             var reAuthNeeded = false
             var session: Session? = null
@@ -78,6 +82,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                         return User.getRecentTracks(username, Integer.parseInt(subCommand), 15, Stuff.LAST_KEY)
                     }
                     Stuff.GET_LOVED -> return User.getLovedTracks(username, Stuff.LAST_KEY)
+                    //for love: command = tag, s[1] = artist, s[2] = song,
                     Stuff.LOVE -> return Track.love(s[1], s[2], session)
                     Stuff.UNLOVE -> return Track.unlove(s[1], s[2], session)
                     Stuff.HERO_INFO -> {
@@ -124,39 +129,55 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                     }
                 }
 
-                //for scrobble or love data: command = tag, s[1] = artist, s[2] = song
+                var scrobbleResult: ScrobbleResult? = null
 
-                var result: ScrobbleResult? = null
-                val now = (System.currentTimeMillis() / 1000).toInt()
-                if (command == Stuff.NOW_PLAYING) {
-                    val hash = s[1].hashCode() + s[2].hashCode()
-                    val correction = Track.getCorrection(s[1], s[2], Stuff.LAST_KEY)
-                    if (correction != null && (correction.artist != null && correction.artist.trim { it <= ' ' } != "" || correction.name != null && correction.name.trim { it <= ' ' } != "")) {
-                        Stuff.log("valid track: " + correction.toString())
-                        //                    if (correction.getArtist() != null)
-                        //                        s[1] = correction.getArtist();
-                        //                    if (correction.getName() != null)
-                        //                        s[2] = correction.getName();
-                        result = Track.updateNowPlaying(s[1], s[2], session)
-                    } else {
-                        (handler as NLService.ScrobbleHandler).remove(hash)
-                        handler.notification(c.getString(R.string.invalid_artist),s[1], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                //for scrobble: command = tag, s[1] = artist, s[2] = song, s[3] = time, s[4] = duration
+                val scrobbleData = ScrobbleData()
+                scrobbleData.artist = s[1]
+                scrobbleData.track = s[2]
+                scrobbleData.timestamp = (s[3].toLong()/1000).toInt() // in secs
+                scrobbleData.duration = (s[4].toLong()/1000).toInt() // in secs
 
+                when(command) {
+                    Stuff.NOW_PLAYING -> {
+                        if (isNetworkAvailable){
+                            val hash = s[1].hashCode() + s[2].hashCode()
+                            val corrected = getCorrectedData(s[1], s[2])
+                            if (corrected != null) {
+                                scrobbleData.artist = corrected.first
+                                scrobbleData.track = corrected.second
+                                scrobbleResult = Track.updateNowPlaying(scrobbleData, session)
+                            } else {
+                                (handler as NLService.ScrobbleHandler).remove(hash)
+                                handler.notification(c.getString(R.string.invalid_artist), s[1], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                            }
+                        }
                     }
-
-                } else if (command == Stuff.SCROBBLE)
-                    result = Track.scrobble(s[1], s[2], now, session)
+                    Stuff.SCROBBLE -> {
+                        if (isNetworkAvailable)
+                            scrobbleResult = Track.scrobble(scrobbleData, session)
+                        else {
+                            val dao = PendingScrobblesDb.getDb(c).getDao()
+                            val entry = PendingScrobble()
+                            entry.artist = scrobbleData.artist
+                            entry.track = scrobbleData.track
+                            entry.timestamp = s[3].toLong()
+                            entry.duration = s[4].toLong()
+                            dao.insert(entry)
+                            OfflineScrobbleJob.checkAndSchedule(c)
+                        }
+                    }
+                }
                 try {
-                    if (result != null && !(result.isSuccessful && !result.isIgnored)) {
-                        val hash = s[1].hashCode() + s[2].hashCode()
+                    if (scrobbleResult != null && !(scrobbleResult.isSuccessful)) {
+//                        val hash = s[1].hashCode() + s[2].hashCode()
                         //                        scrobbledHashes.add(hash);
                         (handler as NLService.ScrobbleHandler)
-                                .notification(c.getString(R.string.network_error),s[1]+" "+ s[2], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                                .notification(c.getString(R.string.network_error), s[1] + " " + s[2], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
                     }
                 } catch (e: NullPointerException) {
                     publishProgress(command + ": NullPointerException")
                 }
-
             } else if (command != Stuff.CHECK_AUTH_SILENT && command != Stuff.GET_RECENTS ) {
                 Stuff.log("command: $command")
                 reAuth()
@@ -182,13 +203,6 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                 Stuff.LAST_KEY + "&token=" + token))
         c.startActivity(browserIntent)
     }
-
-    private val isNetworkAvailable: Boolean
-        get() {
-            val connectivityManager = c.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            return activeNetworkInfo != null && activeNetworkInfo.isConnected
-        }
 
     override fun onProgressUpdate(vararg values: Any) {
         super.onProgressUpdate(*values)
@@ -239,6 +253,22 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
             }
 
             return out.toString()
+        }
+
+        fun getCorrectedData(artist:String, track: String): Pair<String, String>? {
+            val correction = Track.getCorrection(artist, track, Stuff.LAST_KEY)
+            var cArtist = correction?.artist?.trim() ?: ""
+            var cTrack = correction?.name?.trim() ?: ""
+
+            if (cArtist == "" && cTrack == "")
+                return null
+            else {
+                if (cArtist == "")
+                    cArtist = artist
+                if (cTrack == "")
+                    cTrack = artist
+                return Pair(cArtist, cTrack)
+            }
         }
     }
 }//    private static ArrayList<Integer> scrobbledHashes= new ArrayList<>();

@@ -2,6 +2,7 @@ package com.arn.scrobble
 
 import android.content.Context
 import android.graphics.Color
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -31,11 +32,14 @@ internal object Stuff {
     val APP_BLACKLIST = "app_blacklist"
     val AUTO_DETECT_PREF = "auto_detect"
     val FIRST_RUN_PREF = "first_run"
+    val GRAPH_DETAILS_PREF = "show_graph_details"
+    val OFFLINE_SCROBBLE_PREF = "offline_scrobble"
 
     val SESS_KEY = "sesskey"
     val USERNAME = "username"
 
     val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
+    val OFFLINE_SCROBBLE_JOB_DELAY: Long = 15 * 1000
     val MAX_APPS = 30
     var timeIt:Long = 0
 
@@ -190,5 +194,11 @@ internal object Stuff {
         val exp = (Math.log(bytes.toDouble()) / Math.log(unit.toDouble())).toInt()
         val pre = "KMB"[exp - 1] //kilo, million, bilion
         return String.format("%.1f%s", bytes / Math.pow(unit.toDouble(), exp.toDouble()), pre)
+    }
+
+    fun isNetworkAvailable(c: Context): Boolean {
+        val connectivityManager = c.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 }

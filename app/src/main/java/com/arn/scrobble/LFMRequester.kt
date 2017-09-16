@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
 import android.preference.PreferenceManager
-import android.webkit.WebSettings
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.PendingScrobblesDb
 import de.umass.lastfm.*
@@ -39,14 +38,14 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
             var reAuthNeeded = false
             var session: Session? = null
             val caller = Caller.getInstance()
-            caller.userAgent = WebSettings.getDefaultUserAgent(c)
+            caller.userAgent = Stuff.USER_AGENT
             val fsCache = FileSystemCache(c.cacheDir)
             if (command == Stuff.GET_RECENTS_CACHED)
                 fsCache.expirationPolicy = LFMCachePolicy(false)
             else
                 fsCache.expirationPolicy = LFMCachePolicy(isNetworkAvailable)
             caller.cache = fsCache
-//            caller.isDebugMode = true
+//            caller.isDebugMode = false
 
             val key: String = prefs.getString(Stuff.SESS_KEY, "")
             var username: String? = prefs.getString(Stuff.USERNAME, null)

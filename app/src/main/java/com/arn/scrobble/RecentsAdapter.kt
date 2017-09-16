@@ -46,6 +46,11 @@ class RecentsAdapter
 
     init {
         setNotifyOnChange(false)
+        timedRefresh = object : Runnable {
+            override fun run() {
+                loadRecents(1)
+            }
+        }
     }
 
     private val hero: ImageView = (c as Activity).findViewById<ImageView>(R.id.img_hero)
@@ -424,12 +429,8 @@ class RecentsAdapter
         }
     }
 
-    var timedRefresh = object : Runnable {
-        override fun run() {
-           loadRecents(1)
-        }
-    }
     companion object {
+        var timedRefresh: Runnable? = null
         private var lastColorDomPrimary = 0
         private var lastColorLightWhite = 0
         private var lastColorMutedDark = 0

@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.app.Activity
 import android.app.Fragment
 import android.content.Intent
 import android.os.Bundle
@@ -141,6 +142,12 @@ class RecentsFragment : Fragment() {
         if (!hidden) {
             activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)?.title = getString(R.string.app_name)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val list = activity.findViewById<ListView>(R.id.recents_list)
+        list?.removeCallbacks(RecentsAdapter.timedRefresh)
     }
 
     override fun onResume() {

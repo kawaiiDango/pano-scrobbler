@@ -11,5 +11,6 @@
         android:layout_height="wrap_content"
         android:alpha="0.7"
         android:indeterminateBehavior="cycle"
-        android:indeterminateOnly="true"/>
+        android:indeterminateOnly="true"
+        android:visibility="invisible"/>
 </LinearLayout>

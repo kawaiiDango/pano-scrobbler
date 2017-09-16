@@ -18,15 +18,15 @@ class Main : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null){
-            try {
-                val httpCacheDir = File(cacheDir, "http")
-                val httpCacheSize = (10 * 1024 * 1024).toLong() // 10 MiB
-                HttpResponseCache.install(httpCacheDir, httpCacheSize)
-            } catch (e: IOException) {
-                Stuff.log("HTTP cache installation failed:" + e)
-            }
-        }
+//        if (savedInstanceState == null){
+//            try {
+//                val httpCacheDir = File(cacheDir, "http")
+//                val httpCacheSize = (10 * 1024 * 1024).toLong() // 10 MiB
+//                HttpResponseCache.install(httpCacheDir, httpCacheSize)
+//            } catch (e: IOException) {
+//                Stuff.log("HTTP cache installation failed:" + e)
+//            }
+//        }
 
         setContentView(R.layout.activity_main)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)

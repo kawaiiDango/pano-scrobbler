@@ -14,33 +14,35 @@ import java.util.regex.Pattern
  */
 
 internal object Stuff {
-    val NOW_PLAYING = "np"
-    val SCROBBLE = "scrobble"
-    val CHECK_AUTH = "auth"
-    val CHECK_AUTH_SILENT = "authSilent"
-    val GET_RECENTS = "recents"
-    val GET_RECENTS_CACHED = "recents_cached"
-    val LAST_KEY = Tokens.LAST_KEY
-    val LAST_SECRET = Tokens.LAST_SECRET
-    val TAG = "scrobbler"
-    val LOVE = "loved"
-    val UNLOVE = "unloved"
-    val GET_LOVED = "getloved"
-    val HERO_INFO = "heroinfo"
-    val IS_ONLINE = "online"
-    val APP_WHITELIST = "app_whitelist"
-    val APP_BLACKLIST = "app_blacklist"
-    val AUTO_DETECT_PREF = "auto_detect"
-    val FIRST_RUN_PREF = "first_run"
-    val GRAPH_DETAILS_PREF = "show_graph_details"
-    val OFFLINE_SCROBBLE_PREF = "offline_scrobble"
+    const val NOW_PLAYING = "np"
+    const val SCROBBLE = "scrobble"
+    const val CHECK_AUTH = "auth"
+    const val CHECK_AUTH_SILENT = "authSilent"
+    const val GET_RECENTS = "recents"
+    const val GET_RECENTS_CACHED = "recents_cached"
+    const val LAST_KEY = Tokens.LAST_KEY
+    const val LAST_SECRET = Tokens.LAST_SECRET
+    const val TAG = "scrobbler"
+    const val LOVE = "loved"
+    const val UNLOVE = "unloved"
+    const val GET_LOVED = "getloved"
+    const val HERO_INFO = "heroinfo"
+    const val IS_ONLINE = "online"
+    const val APP_WHITELIST = "app_whitelist"
+    const val APP_BLACKLIST = "app_blacklist"
+    const val AUTO_DETECT_PREF = "auto_detect"
+    const val FIRST_RUN_PREF = "first_run"
+    const val GRAPH_DETAILS_PREF = "show_graph_details"
+    const val OFFLINE_SCROBBLE_PREF = "offline_scrobble"
 
-    val SESS_KEY = "sesskey"
-    val USERNAME = "username"
+    const val SESS_KEY = "sesskey"
+    const val USERNAME = "username"
+    const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
-    val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
-    val OFFLINE_SCROBBLE_JOB_DELAY: Long = 15 * 1000
-    val MAX_APPS = 30
+    const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
+    const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 15 * 1000
+    const val META_WAIT: Long = 1500
+    const val MAX_APPS = 30
     var timeIt:Long = 0
 
     val APPS_IGNORE_ARTIST_META = arrayOf(

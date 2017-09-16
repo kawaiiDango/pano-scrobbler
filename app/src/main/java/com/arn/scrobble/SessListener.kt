@@ -8,6 +8,8 @@ import android.media.session.MediaController.Callback
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
+import android.os.Handler
+import android.os.Message
 import android.preference.PreferenceManager
 import android.util.Pair
 
@@ -17,7 +19,6 @@ import android.util.Pair
 
 class SessListener internal constructor(private val c: Context, private val handler: NLService.ScrobbleHandler) : OnActiveSessionsChangedListener {
     private var pref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(c)
-//    private val ytCallback = YtCallback()
 
     private val mControllers = mutableMapOf<MediaSession.Token, Pair<MediaController, YtCallback>>()
 
@@ -64,6 +65,75 @@ class SessListener internal constructor(private val c: Context, private val hand
         var lastState = -1
         val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
 
+        private val stateHandler = object : Handler(){
+            override fun handleMessage(msg: Message?) {
+                val state: Int = msg?.arg1!!
+                val pos: Long = msg.arg2.toLong()
+
+                Stuff.log("onPlaybackStateChanged "+ state + " laststate "+ lastState +
+                        " pos "+ pos +" duration "+
+                        metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION))
+
+                val isAtStart = pos == 0.toLong()
+                if (lastState == state && !(state == PlaybackState.STATE_PLAYING && isAtStart)) // bandcamp does this
+                    return
+
+                val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: return
+                val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: return
+                val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
+
+                if (title == "")
+                    return
+                if (state != PlaybackState.STATE_BUFFERING)
+                    lastState = state
+
+                val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(packageName)
+                val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(packageName)
+                val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
+
+                if (state == PlaybackState.STATE_PAUSED) {
+                    if (duration != 0.toLong() && pos == 0.toLong())
+                        return
+                    //cancel scrobbling if within time
+                    lastPos = pos
+                    handler.remove(lastHash)
+                    Stuff.log("paused")
+                } else if (state == PlaybackState.STATE_STOPPED) {
+                    // a replay should count as another scrobble. Replay (in youtube app) is stop, buffer, then play
+                    lastPos = 1
+                    lastScrobbleTime = 1
+                    handler.remove(lastHash)
+                    Stuff.log("stopped")
+                } else if (state == PlaybackState.STATE_PLAYING ||
+                        //                    state.state == PlaybackState.STATE_BUFFERING ||
+                        state == PlaybackState.STATE_NONE) {
+//                if (state.state == PlaybackState.STATE_BUFFERING && state.position == 0.toLong())
+//                    return  //dont scrobble first buffering
+
+                    Stuff.log(state.toString() + " playing: " + pos + " < " + lastPos + " " + title)
+                    if (isAtStart ||
+                            (pos - lastPos < DEBOUNCE_TIME && pos - lastScrobbleTime < DEBOUNCE_TIME)){
+                        if(pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) || Stuff.isNetworkAvailable(c)) {
+                            if (isAtStart) //scrobble replays
+                                handler.remove(lastHash)
+                            if (isIgnoreArtistMeta)
+                                lastHash = handler.scrobble(title, duration, packageNameParam)
+                            else
+                                lastHash = handler.scrobble(artist, title, duration, packageNameParam)
+                        }
+                        lastScrobbleTime = pos
+                    }
+                } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
+                    Stuff.log(state.toString() +"connecting " + pos)
+                } else {
+                    //TODO: assume non standard state to scrobble tg. it always gives state 0, and a onMetadataChanged on play/pause
+                    //TODO: onMetadataChanged (non null), if state==0, and lastHash (excluding null) was submitted > scrobbleDelay then submit again
+                    //TODO: if onMetadataChanged, data becomes null within scrobbleDelay, cancel it
+                    Stuff.log("other (" + state + ") : " + title)
+                }
+            }
+        }
+
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
             Stuff.log("onMetadataChanged " + metadata?.getString(MediaMetadata.METADATA_KEY_TITLE))
@@ -75,68 +145,9 @@ class SessListener internal constructor(private val c: Context, private val hand
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState) {
-            Stuff.log("onPlaybackStateChanged "+ state.state + " laststate "+ lastState +
-                    " pos "+ state.position + " extras " + state.extras +" duration "+
-                    metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION))
-
-            super.onPlaybackStateChanged(state)
-            val isAtStart = state.position == 0.toLong()
-            if (lastState == state.state && !(state.state == PlaybackState.STATE_PLAYING && isAtStart)) // bandcamp does this
-                return
-
-            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: return
-            val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: return
-            val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
-
-            if (title == "")
-                return
-            if (state.state != PlaybackState.STATE_BUFFERING)
-                lastState = state.state
-
-            val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(packageName)
-            val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(packageName)
-            val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
-
-            if (state.state == PlaybackState.STATE_PAUSED) {
-                if (duration != 0.toLong() && state.position == 0.toLong())
-                    return
-                //cancel scrobbling if within time
-                lastPos = state.position
-                handler.remove(lastHash)
-                Stuff.log("paused")
-            } else if (state.state == PlaybackState.STATE_STOPPED) {
-                // a replay should count as another scrobble. Replay (in youtube app) is stop, buffer, then play
-                lastPos = 1
-                lastScrobbleTime = 1
-                handler.remove(lastHash)
-                Stuff.log("stopped")
-            } else if (state.state == PlaybackState.STATE_PLAYING ||
-//                    state.state == PlaybackState.STATE_BUFFERING ||
-                    state.state == PlaybackState.STATE_NONE) {
-//                if (state.state == PlaybackState.STATE_BUFFERING && state.position == 0.toLong())
-//                    return  //dont scrobble first buffering
-
-                Stuff.log(state.state.toString() + " playing: " + state.position + " < " + lastPos + " " + title)
-                if (isAtStart ||
-                        (state.position - lastPos < DEBOUNCE_TIME && state.position - lastScrobbleTime < DEBOUNCE_TIME)){
-                    if(pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) || Stuff.isNetworkAvailable(c)) {
-                        if (isAtStart) //scrobble replays
-                            handler.remove(lastHash)
-                        if (isIgnoreArtistMeta)
-                            lastHash = handler.scrobble(title, duration, packageNameParam)
-                        else
-                            lastHash = handler.scrobble(artist, title, duration, packageNameParam)
-                    }
-                    lastScrobbleTime = state.position
-                }
-            } else if (state.state == PlaybackState.STATE_CONNECTING || state.state == PlaybackState.STATE_BUFFERING) {
-                Stuff.log(state.state.toString() +"connecting " + state.position)
-            } else {
-                //TODO: assume non standard state to scrobble tg. it always gives state 0, and a onMetadataChanged on play/pause
-                //TODO: onMetadataChanged (non null), if state==0, and lastHash (excluding null) was submitted > scrobbleDelay then submit again
-                //TODO: if onMetadataChanged, data becomes null within scrobbleDelay, cancel it
-                Stuff.log("other (" + state.state + ") : " + title)
-            }
+//            super.onPlaybackStateChanged(state)
+            val msg = stateHandler.obtainMessage(0, state.state, state.position.toInt())
+            stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
         }
     }
 }

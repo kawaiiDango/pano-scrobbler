@@ -21,6 +21,9 @@ class AppListAdapter
     private val sectionHeaders = mutableMapOf<Int,String>()
     private val prefsSet = PreferenceManager.getDefaultSharedPreferences(context).getStringSet(Stuff.APP_WHITELIST, setOf())
     private var list = (c as Activity).findViewById<ListView>(R.id.app_list)
+    private var picasso: Picasso = Picasso.Builder(context)
+            .addRequestHandler(AppIconRequestHandler(context))
+            .build()
 
     override fun getView(position: Int, convertView: View?, list: ViewGroup): View {
         var convertView : View? = convertView
@@ -42,9 +45,8 @@ class AppListAdapter
 
             tv.text = app.loadLabel(context.packageManager) ?: return convertView
             tv.tag = app.packageName
-            val uri = Uri.parse("android.resource://" + app.packageName + "/" + app.icon)
-            Picasso.with(context)
-                    .load(uri)
+            val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME  +":" + app.packageName)
+            picasso.load(uri)
                     .placeholder(R.drawable.ic_transparent)
                     .into(icon)
 

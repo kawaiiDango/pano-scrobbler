@@ -23,7 +23,10 @@ class AppIconsPref : Preference{
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context) : super(context)
-    lateinit var packageNames : MutableSet<String>
+    private lateinit var packageNames : MutableSet<String>
+    private var picasso: Picasso = Picasso.Builder(context)
+            .addRequestHandler(AppIconRequestHandler(context))
+            .build()
 
     override fun onCreateView(parent: ViewGroup): View {
         super.onCreateView(parent)
@@ -41,15 +44,12 @@ class AppIconsPref : Preference{
         packageNames = sharedPreferences.getStringSet(key, setOf())
 
         for (i in 0 until minOf(10, packageNames.count())) {
-            val app = context.packageManager.getApplicationInfo(packageNames.elementAt(i), 0)
-            val uri = Uri.parse("android.resource://" + packageNames.elementAt(i) + "/" + app.icon)
             val icon = ImageView(context)
             icon.scaleType = ImageView.ScaleType.FIT_CENTER
             icon.setPadding(dp/6, dp/6, dp/6, dp/6)
-            Picasso.with(context)
-                    .load(uri)
-                    .resize(dp,dp)
-                    .centerInside()
+            val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME  +":"+ packageNames.elementAt(i))
+            picasso.load(uri)
+                    .resize(dp, dp)
                     .into(icon)
             container.addView(icon)
         }

@@ -7,8 +7,6 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import java.io.File
-import java.io.IOException
 
 
 class Main : AppCompatActivity() {

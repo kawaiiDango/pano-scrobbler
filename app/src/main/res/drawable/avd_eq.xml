@@ -14,8 +14,8 @@
                 <path
                     android:name="path"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="#FF4081"
-                    android:strokeColor="#ffffff"/>
+                    android:fillColor="@color/colorAccentLight"
+                    android:strokeColor="@color/colorPrimary"/>
             </group>
             <group
                 android:name="group_1"
@@ -24,8 +24,8 @@
                 <path
                     android:name="path_1"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="#FF4081"
-                    android:strokeColor="#ffffff"/>
+                    android:fillColor="@color/colorAccentLight"
+                    android:strokeColor="@color/colorPrimary"/>
             </group>
             <group
                 android:name="group_2"
@@ -34,8 +34,8 @@
                 <path
                     android:name="path_2"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="#FF4081"
-                    android:strokeColor="#ffffff"/>
+                    android:fillColor="@color/colorAccentLight"
+                    android:strokeColor="@color/colorPrimary"/>
             </group>
             <group
                 android:name="group_3"
@@ -44,8 +44,8 @@
                 <path
                     android:name="path_3"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="#FF4081"
-                    android:strokeColor="#ffffff"/>
+                    android:fillColor="@color/colorAccentLight"
+                    android:strokeColor="@color/colorPrimary"/>
             </group>
             <group
                 android:name="group_4"
@@ -54,8 +54,8 @@
                 <path
                     android:name="path_4"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="#FF4081"
-                    android:strokeColor="#ffffff"/>
+                    android:fillColor="@color/colorAccentLight"
+                    android:strokeColor="@color/colorPrimary"/>
             </group>
         </vector>
     </aapt:attr>

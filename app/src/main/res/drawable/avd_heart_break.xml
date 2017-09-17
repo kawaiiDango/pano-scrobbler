@@ -1,0 +1,82 @@
+<animated-vector
+    android:name="heartbreak"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector android:name="heartbreak"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:width="56dp"
+            android:height="56dp"
+            android:viewportWidth="56"
+            android:viewportHeight="56">
+            <group
+                android:name="broken_heart_left_group"
+                android:pivotX="28"
+                android:pivotY="37.3">
+                <path
+                    android:name="broken_heart_left"
+                    android:pathData="M 28.031 21.054 C 28.02 21.066 28.01 21.078 28 21.09 C 26.91 19.81 25.24 19 23.5 19 C 20.42 19 18 21.42 18 24.5 C 18 28.28 21.4 31.36 26.55 36.03 L 28 37.35 L 28.002 37.348 L 27.781 36.988 L 28.489 36.073 L 27.506 34.764 L 28.782 33.027 L 26.944 31.008 L 29.149 28.725 L 27.117 27.143 L 29.149 25.018 L 26.488 22.977 L 28.031 21.054 L 28.031 21.054 Z"
+                    android:fillColor="#fff"/>
+            </group>
+            <group
+                android:name="broken_heart_right_group"
+                android:pivotX="28"
+                android:pivotY="37.3">
+                <path
+                    android:name="broken_heart_right"
+                    android:pathData="M 28.031 21.054 C 28.169 20.895 28.316 20.743 28.471 20.599 L 28.915 20.226 C 29.926 19.457 31.193 19 32.5 19 C 35.58 19 38 21.42 38 24.5 C 38 28.28 34.6 31.36 29.45 36.04 L 28.002 37.348 L 27.781 36.988 L 28.489 36.073 L 27.506 34.764 L 28.782 33.027 L 26.944 31.008 L 29.149 28.725 L 27.117 27.143 L 29.149 25.018 L 26.488 22.977 L 28.031 21.054 L 28.031 21.054 Z"
+                    android:fillColor="#fff"/>
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="broken_heart_left_group">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:propertyName="rotation"
+                android:duration="800"
+                android:valueFrom="0"
+                android:valueTo="-30"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/linear_out_slow_in"/>
+        </aapt:attr>
+    </target>
+    <target android:name="broken_heart_right_group">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:propertyName="rotation"
+                android:duration="800"
+                android:valueFrom="0"
+                android:valueTo="30"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/linear_out_slow_in"/>
+        </aapt:attr>
+    </target>
+    <target android:name="broken_heart_left">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:propertyName="fillAlpha"
+                android:startOffset="400"
+                android:duration="800"
+                android:valueFrom="1"
+                android:valueTo="0"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/linear_out_slow_in"/>
+        </aapt:attr>
+    </target>
+    <target android:name="broken_heart_right">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:propertyName="fillAlpha"
+                android:startOffset="400"
+                android:duration="800"
+                android:valueFrom="1"
+                android:valueTo="0"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/linear_out_slow_in"/>
+        </aapt:attr>
+    </target>
+</animated-vector>

@@ -3,6 +3,7 @@
     <color name="colorPrimary">#840f30</color>
     <color name="colorPrimaryDark">#680a24</color>
     <color name="colorAccent">#ff5891</color> <!-- old one -->
+    <color name="colorAccentLight">#ffcadc</color>
     <color name="lightDivider">#11ffffff</color>
     <color name="darkBg">#a9000000</color>
     <color name="highlightPink">#22ff5891</color> <!-- accent -->

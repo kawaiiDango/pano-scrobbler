@@ -30,7 +30,7 @@
         android:elevation="10dp"
         android:paddingLeft="20dp"
         android:scaleType="center"
-        app:srcCompat="@drawable/avd_heart_make"/>
+        tools:srcCompat="@drawable/avd_heart_make"/>
 
     <com.arn.scrobble.ui.FixedLineTextView
         android:id="@+id/recents_title"

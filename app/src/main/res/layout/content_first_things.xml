@@ -16,7 +16,7 @@
 
         <EditText
             android:id="@+id/testing_pass"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="1"
             android:textSize="1sp"/>

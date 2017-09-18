@@ -27,6 +27,7 @@ class AppIconsPref : Preference{
     private var picasso: Picasso = Picasso.Builder(context)
             .addRequestHandler(AppIconRequestHandler(context))
             .build()
+    private val dp = Stuff.dp2px(48, context)
 
     override fun onCreateView(parent: ViewGroup): View {
         super.onCreateView(parent)
@@ -39,7 +40,6 @@ class AppIconsPref : Preference{
         val container = v.findViewById<LinearLayout>(R.id.app_icons_container)
         val title = v.findViewById<TextView>(R.id.app_list_enabled_title)
         title.text = this.title
-        val dp = Stuff.dp2px(48, context)
 
         packageNames = sharedPreferences.getStringSet(key, setOf())
 

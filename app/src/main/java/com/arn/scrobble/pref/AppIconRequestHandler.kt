@@ -1,17 +1,14 @@
 package com.arn.scrobble.pref
 
-import android.graphics.drawable.Drawable
-import android.graphics.Bitmap
-import android.content.pm.PackageManager
-import android.content.pm.ApplicationInfo
-import android.text.TextUtils
-import com.squareup.picasso.Picasso.LoadedFrom
 import android.app.ActivityManager
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.BitmapFactory
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.text.TextUtils
+import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Request
 import com.squareup.picasso.RequestHandler
 import java.io.IOException
@@ -48,24 +45,18 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
     @Throws(PackageManager.NameNotFoundException::class)
     private fun getFullResIcon(packageName: String): Bitmap? {
         val info = pm.getApplicationInfo(packageName, 0)
-        try {
-            return drawableToBitmap(info.loadIcon(pm))!!
-        } catch (ignored: PackageManager.NameNotFoundException) {
-            return null
-        }
+        return drawableToBitmap(info.loadIcon(pm))
     }
 
     companion object {
 
         val SCHEME_PNAME = "pname"
 
-        fun drawableToBitmap(drawable: Drawable): Bitmap? {
-            var bitmap: Bitmap? = null
+        fun drawableToBitmap(drawable: Drawable): Bitmap {
+            val bitmap: Bitmap
 
-            if (drawable is BitmapDrawable) {
-                if (drawable.bitmap != null) {
+            if (drawable is BitmapDrawable && drawable.bitmap != null) {
                     return drawable.bitmap
-                }
             }
 
             if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {

@@ -24,6 +24,7 @@ class AppListAdapter
     private var picasso: Picasso = Picasso.Builder(context)
             .addRequestHandler(AppIconRequestHandler(context))
             .build()
+    private val dp = Stuff.dp2px(48, context)
 
     override fun getView(position: Int, convertView: View?, list: ViewGroup): View {
         var convertView : View? = convertView
@@ -46,8 +47,10 @@ class AppListAdapter
             tv.text = app.loadLabel(context.packageManager) ?: return convertView
             tv.tag = app.packageName
             val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME  +":" + app.packageName)
+
             picasso.load(uri)
-                    .placeholder(R.drawable.ic_transparent)
+                    .placeholder(android.R.color.transparent)
+                    .resize(dp, dp)
                     .into(icon)
 
             checkbox.isChecked = list.isItemChecked(position)

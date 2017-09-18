@@ -11,9 +11,6 @@ import android.support.v7.widget.Toolbar
 
 class Main : AppCompatActivity() {
 
-//    private var tReceiver: BroadcastReceiver? = null
-    //    private TrackMetaListener tReceiver;
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        if (savedInstanceState == null){
@@ -80,13 +77,7 @@ class Main : AppCompatActivity() {
         val cache = HttpResponseCache.getInstalled()
         cache?.flush()
     }
-/*
-    override fun onDestroy() {
-        super.onDestroy()
-        if (tReceiver != null)
-            unregisterReceiver(tReceiver)
-    }
-*/
+
     override fun onResume() {
         super.onResume()
     }

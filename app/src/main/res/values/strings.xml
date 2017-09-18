@@ -31,5 +31,8 @@
     <string name="no_scrobbles">No scrobbled songs yet…  😫 \n\n
     Lets make some noise!
     </string>
+    <string name="channel_scrobbling">Now scrobbling</string>
+    <string name="channel_err">Errors</string>
+    <string name="channel_new_app">New app detected</string>
 
 </resources>

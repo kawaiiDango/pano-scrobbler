@@ -60,7 +60,7 @@ class SessListener internal constructor(private val c: Context, private val hand
         val DEBOUNCE_TIME = 100
         var metadata: MediaMetadata? = null
         var lastHash = 0
-        var lastPos: Long = 1
+//        var lastPos: Long = 1
         var lastScrobbleTime: Long = 1
         var lastState = -1
         val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
@@ -79,7 +79,8 @@ class SessListener internal constructor(private val c: Context, private val hand
                     return
 
                 val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: return
-                val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: return
+                val artist = (metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?:
+                        metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)) ?: return
                 val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
 
                 if (title == "")
@@ -95,12 +96,12 @@ class SessListener internal constructor(private val c: Context, private val hand
                     if (duration != 0.toLong() && pos == 0.toLong())
                         return
                     //cancel scrobbling if within time
-                    lastPos = pos
+//                    lastPos = pos
                     handler.remove(lastHash)
                     Stuff.log("paused")
                 } else if (state == PlaybackState.STATE_STOPPED) {
                     // a replay should count as another scrobble. Replay (in youtube app) is stop, buffer, then play
-                    lastPos = 1
+//                    lastPos = 1
                     lastScrobbleTime = 1
                     handler.remove(lastHash)
                     Stuff.log("stopped")
@@ -110,9 +111,8 @@ class SessListener internal constructor(private val c: Context, private val hand
 //                if (state.state == PlaybackState.STATE_BUFFERING && state.position == 0.toLong())
 //                    return  //dont scrobble first buffering
 
-                    Stuff.log(state.toString() + " playing: " + pos + " < " + lastPos + " " + title)
-                    if (isAtStart ||
-                            (pos - lastPos < DEBOUNCE_TIME && pos - lastScrobbleTime < DEBOUNCE_TIME)){
+                    Stuff.log(state.toString() + " playing: " + pos + " < " + lastScrobbleTime + " " + title)
+                    if (isAtStart || (lastScrobbleTime == 1.toLong())){
                         if(pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) || Stuff.isNetworkAvailable(c)) {
                             if (isAtStart) //scrobble replays
                                 handler.remove(lastHash)
@@ -126,9 +126,6 @@ class SessListener internal constructor(private val c: Context, private val hand
                 } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
                     Stuff.log(state.toString() +"connecting " + pos)
                 } else {
-                    //TODO: assume non standard state to scrobble tg. it always gives state 0, and a onMetadataChanged on play/pause
-                    //TODO: onMetadataChanged (non null), if state==0, and lastHash (excluding null) was submitted > scrobbleDelay then submit again
-                    //TODO: if onMetadataChanged, data becomes null within scrobbleDelay, cancel it
                     Stuff.log("other (" + state + ") : " + title)
                 }
             }
@@ -136,12 +133,19 @@ class SessListener internal constructor(private val c: Context, private val hand
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
-            Stuff.log("onMetadataChanged " + metadata?.getString(MediaMetadata.METADATA_KEY_TITLE))
-            this.metadata = metadata
-            lastPos = 1
-            lastScrobbleTime = 1
-            lastState = -1
-            //TODO: sometimes onMetadataChanged gets called after onPlaybackStateChanged. use settimeout for everything if onMetadataChanged time is far less than onPlaybackStateChanged time
+            val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+            val artist2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
+            val title2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
+            val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
+            val album2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
+            Stuff.log("onMetadataChanged $artist ~ $title ")
+            if (!(artist == artist2 && title == title2 && album == album2)) {
+                this.metadata = metadata
+//            lastPos = 1
+                lastScrobbleTime = 1
+                lastState = -1
+            }
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState) {

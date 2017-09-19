@@ -39,19 +39,23 @@ class AppIconsPref : Preference{
         val v = super.getView(convertView, parent)
         val container = v.findViewById<LinearLayout>(R.id.app_icons_container)
         val title = v.findViewById<TextView>(R.id.app_list_enabled_title)
-        title.text = this.title
 
         packageNames = sharedPreferences.getStringSet(key, setOf())
 
-        for (i in 0 until minOf(10, packageNames.count())) {
-            val icon = ImageView(context)
-            icon.scaleType = ImageView.ScaleType.FIT_CENTER
-            icon.setPadding(dp/6, dp/6, dp/6, dp/6)
-            val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME  +":"+ packageNames.elementAt(i))
-            picasso.load(uri)
-                    .resize(dp, dp)
-                    .into(icon)
-            container.addView(icon)
+        if (packageNames.count() == 0){
+            title.text = context.getString(R.string.no_apps_enabled)
+        } else {
+            title.text = this.title
+            for (i in 0 until minOf(10, packageNames.count())) {
+                val icon = ImageView(context)
+                icon.scaleType = ImageView.ScaleType.FIT_CENTER
+                icon.setPadding(dp / 6, dp / 6, dp / 6, dp / 6)
+                val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME + ":" + packageNames.elementAt(i))
+                picasso.load(uri)
+                        .resize(dp, dp)
+                        .into(icon)
+                container.addView(icon)
+            }
         }
         return v
     }

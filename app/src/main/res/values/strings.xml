@@ -34,5 +34,6 @@
     <string name="channel_scrobbling">Now scrobbling</string>
     <string name="channel_err">Errors</string>
     <string name="channel_new_app">New app detected</string>
+    <string name="no_apps_enabled">No apps are enabled for scrobbling</string>
 
 </resources>

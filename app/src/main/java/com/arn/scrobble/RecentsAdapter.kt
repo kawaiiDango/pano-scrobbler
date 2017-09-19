@@ -329,6 +329,8 @@ class RecentsAdapter
     fun populate(res: PaginatedResult<Track>, page: Int = 1) {
         val refresh = (context as Activity).findViewById<SwipeRefreshLayout?>(R.id.swiperefresh) ?: return
         val list = (context as Activity).findViewById<ListView>(R.id.recents_list)
+        if (list.visibility != View.VISIBLE)
+            return
         val selectedId = if (list.checkedItemIds.size == 0) NP_ID else list.checkedItemIds[0]
         var selectedPos = 1
         refresh.isRefreshing = false

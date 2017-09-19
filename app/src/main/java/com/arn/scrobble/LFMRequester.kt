@@ -108,9 +108,9 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                                 idx = resp.indexOf("src=", idx) + 5
                                 idx2 = resp.indexOf("\"", idx)
                                 img = resp.substring(idx, idx2)
-                                if (img.contains("4128a6eb29f94943c9d206c08e625904"))
-                                    img = s[2]
                             }
+//                            if (img == "")
+                                //TODO: get artist image
                             scrapped.add(img)
                             //1
                             idx = resp.indexOf("charts/sparkline")

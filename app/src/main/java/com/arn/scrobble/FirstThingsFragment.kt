@@ -56,7 +56,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
                     .addToBackStack(null)
                     .commit()
         }
-        //TODO: hide the testing thing
+
         val pass = view.findViewById<EditText>(R.id.testing_pass)
         pass.addTextChangedListener(object : TextWatcher {
 

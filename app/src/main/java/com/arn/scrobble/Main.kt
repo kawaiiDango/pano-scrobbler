@@ -47,10 +47,8 @@ class Main : AppCompatActivity() {
                     .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
 //                .hide(recentsFragment)
 //                .add(R.id.frame, PrefFragment())
-//                .add(R.id.frame,FirstThingsFragment())
                     .commit()
         } else {
-            //TODO: remove it later
             fragmentManager.beginTransaction()
                     .replace(R.id.frame, FirstThingsFragment())
                     .commit()

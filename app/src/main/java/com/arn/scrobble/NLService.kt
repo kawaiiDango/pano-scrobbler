@@ -330,9 +330,8 @@ class NLService : NotificationListenerService() {
         }
 
         fun remove(hash: Int) {
-            //TODO: dont remove and cancel if nothing exists
             Stuff.log(hash.toString() + " canceled")
-            if (hash!= 0) {
+            if (hash!= 0 && hasMessages(hash)) {
                 removeMessages(hash)
                 if (lastNotiIcon != NOTI_ERR_ICON)
                     nm.cancel(NOTI_ID_SCR, 0)

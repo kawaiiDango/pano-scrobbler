@@ -28,7 +28,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode verCode
-        versionName "0."+versionCode
+        versionName "0."+versionCode + " - " + new Date().format('dd.MMM.YY')
         setProperty("archivesBaseName", "pScrobbler")
         vectorDrawables.useSupportLibrary = true
     }

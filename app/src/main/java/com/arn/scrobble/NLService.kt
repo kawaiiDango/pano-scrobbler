@@ -20,7 +20,6 @@ import android.support.v4.app.NotificationCompat
 class NLService : NotificationListenerService() {
     lateinit private var pref: SharedPreferences
     lateinit private var nm: NotificationManager
-    lateinit var handler: ScrobbleHandler
     private var sessListener: SessListener? = null
     private var tReceiver: TrackMetaListener? = null
 
@@ -36,7 +35,14 @@ class NLService : NotificationListenerService() {
     }
     override fun onListenerConnected() {
         super.onListenerConnected()
+        // lollipop and mm bug
+        if (Looper.myLooper() == null){
+            Handler(mainLooper).post{ init() }
+        } else
+            init()
+    }
 
+    private fun init(){
         val filter = IntentFilter()
         filter.addAction(pNLS)
         filter.addAction(pCANCEL)
@@ -49,13 +55,6 @@ class NLService : NotificationListenerService() {
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-//        if (Looper.myLooper() == null){
-//            Looper.prepare()
-//            Looper.loop()
-//        }
-//        handler = ScrobbleHandler()
-
-//        Looper.loop()
         // Media session manager leaks/holds the context for too long.
         // Don't let it to leak the activity, better lak the whole app.
         val c = applicationContext
@@ -261,7 +260,7 @@ class NLService : NotificationListenerService() {
                     .setContentTitle(getString(R.string.new_player)+ appName)
                     .setContentText(getString(R.string.new_player_prompt))
                     .setSmallIcon(R.drawable.ic_noti)
-//                    .setColor(resources.getColor(R.color.colorPrimary))
+                    .setColor(resources.getColor(R.color.colorAccent))
                     .setContentIntent(okayIntent)
                     .addAction(R.drawable.ic_transparent, "✔ Looks cool", okayIntent)
                     .addAction(R.drawable.ic_transparent, "\uD83D\uDEAB Ignore this app", ignoreIntent)
@@ -333,10 +332,11 @@ class NLService : NotificationListenerService() {
         fun remove(hash: Int) {
             //TODO: dont remove and cancel if nothing exists
             Stuff.log(hash.toString() + " canceled")
-            removeMessages(hash)
-            if (lastNotiIcon != NOTI_ERR_ICON)
-                nm.cancel(NOTI_ID_SCR, 0)
-
+            if (hash!= 0) {
+                removeMessages(hash)
+                if (lastNotiIcon != NOTI_ERR_ICON)
+                    nm.cancel(NOTI_ID_SCR, 0)
+            }
         }
     }
 
@@ -354,7 +354,7 @@ class NLService : NotificationListenerService() {
             nm.createNotificationChannel(NotificationChannel(NOTI_ID_APP,
                     context.getString(R.string.channel_new_app), NotificationManager.IMPORTANCE_LOW))
         }
-
+        lateinit var handler: ScrobbleHandler
         val pNLS = "com.arn.scrobble.NLS"
         val pCANCEL = "com.arn.scrobble.CANCEL"
         val pLOVE = "com.arn.scrobble.LOVE"

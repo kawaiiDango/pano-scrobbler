@@ -1,6 +1,5 @@
 package com.arn.scrobble
 
-import android.app.Activity
 import android.app.Fragment
 import android.content.Intent
 import android.os.Bundle
@@ -73,7 +72,7 @@ class RecentsFragment : Fragment() {
         val series = LineGraphSeries<DataPoint>()
         series.isDrawDataPoints = true
         series.thickness = Stuff.dp2px(6, activity)
-        series.dataPointsRadius = Stuff.dp2px(7, activity).toFloat()
+        series.dataPointsRadius = Stuff.dp2px(6, activity).toFloat()
         series.color = resources.getColor(R.color.colorAccent)
         series.setAnimated(true)
         graph.addSeries(series)
@@ -83,6 +82,7 @@ class RecentsFragment : Fragment() {
         graph.tag = PreferenceManager.getDefaultSharedPreferences(activity)
                 .getBoolean(Stuff.GRAPH_DETAILS_PREF,  false)
         toggleGraphDetails(graph)
+        graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
         graph.gridLabelRenderer.labelFormatter = object : DefaultLabelFormatter() {
             override fun formatLabel(value: Double, isValueX: Boolean): String {
                 return if (isValueX) {
@@ -98,10 +98,8 @@ class RecentsFragment : Fragment() {
         val show = graph.tag as Boolean? ?: false
         if (show) {
             graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
-            graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.VERTICAL
         } else {
             graph.gridLabelRenderer.horizontalAxisTitle = null
-            graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
         }
         graph.gridLabelRenderer.isVerticalLabelsVisible = show
         graph.tag = !show

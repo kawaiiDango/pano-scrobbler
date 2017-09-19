@@ -1,7 +1,6 @@
 package com.arn.scrobble
 
 import android.app.Fragment
-import android.net.http.HttpResponseCache
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
@@ -13,15 +12,6 @@ class Main : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        if (savedInstanceState == null){
-//            try {
-//                val httpCacheDir = File(cacheDir, "http")
-//                val httpCacheSize = (10 * 1024 * 1024).toLong() // 10 MiB
-//                HttpResponseCache.install(httpCacheDir, httpCacheSize)
-//            } catch (e: IOException) {
-//                Stuff.log("HTTP cache installation failed:" + e)
-//            }
-//        }
 
         setContentView(R.layout.activity_main)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -31,7 +21,7 @@ class Main : AppCompatActivity() {
         ctl.tag = " "
         val abl = findViewById<AppBarLayout>(R.id.app_bar)
         abl.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
-            internal var scrollRange = -1
+            var scrollRange = -1
 
             override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
                 if (scrollRange == -1) {
@@ -70,12 +60,6 @@ class Main : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        val cache = HttpResponseCache.getInstalled()
-        cache?.flush()
     }
 
     override fun onResume() {

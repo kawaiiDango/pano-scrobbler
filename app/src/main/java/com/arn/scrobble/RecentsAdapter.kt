@@ -16,6 +16,8 @@ import android.os.Handler
 import android.os.Message
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.design.widget.FloatingActionButton
+import android.support.graphics.drawable.Animatable2Compat
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.graphics.Palette
 import android.text.format.DateUtils
@@ -83,14 +85,29 @@ class RecentsAdapter
         if (t.isNowPlaying) {
             relDate = "   now"
             np.visibility = View.VISIBLE
-            val anim = np.getDrawable() as AnimatedVectorDrawable
-            anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
-                override fun onAnimationEnd(drawable: Drawable?) {
-                    if (drawable != null && drawable.isVisible)
-                        anim.start()
-                }
-            })
-            anim.start()
+            val anim = np.drawable
+
+            if(anim is AnimatedVectorDrawableCompat) {
+                anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                    override fun onAnimationEnd(drawable: Drawable?) {
+                        anim.unregisterAnimationCallback(this)
+                        if (drawable != null && drawable.isVisible) {
+                            anim.stop()
+                            anim.start()
+                            Stuff.log("anim ended")
+                        }
+                    }
+                })
+                anim.start()
+            } else if (anim is AnimatedVectorDrawable) {
+                anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
+                    override fun onAnimationEnd(drawable: Drawable?) {
+                        if (drawable != null && drawable.isVisible)
+                            anim.start()
+                    }
+                })
+                anim.start()
+            }
         } else
             np.visibility = View.GONE
         title.text = t.name
@@ -109,12 +126,13 @@ class RecentsAdapter
         love.setOnClickListener(loveToggle)
 
         if (t.isLoved) {
-            love.setImageResource(R.drawable.ic_line_heart_enabled)
+            love.setImageDrawable(context.getDrawable(R.drawable.avd_heart_break))
             love.setTag(R.id.recents_love, FILLED)
         } else {
-            love.setImageResource(R.drawable.ic_line_heart_disabled)
+            love.setImageDrawable(context.getDrawable(R.drawable.avd_heart_make))
             love.setTag(R.id.recents_love, 0)
         }
+
         val albumArt = convertView.findViewById<ImageView>(R.id.recents_album_art)
 
         val imgUrl = t.getImageURL(ImageSize.MEDIUM)
@@ -207,10 +225,6 @@ class RecentsAdapter
             ctl.tag = text
         }
 
-//        if (imgUrl == null && t != null) //called from getview
-//            imgUrl = t.getImageURL(ImageSize.MEDIUM)
-//        else if (imgUrl == null && t == null) // called from handler
-//            imgUrl = t.getImageURL(ImageSize.LARGE)
         if (imgUrl != null && imgUrl != "") {
             Picasso.with(context)
                     .load(imgUrl)
@@ -350,47 +364,41 @@ class RecentsAdapter
     }
 
     private val loveToggle = View.OnClickListener { v ->
-        val love = v as ImageView
         val parentRow = v.getParent() as View
         val listView = parentRow.parent as ListView
         val pos = listView.getPositionForView(parentRow) - 1
+        val anim = (v as ImageView).drawable
+        var nextDrawable: Drawable
 
         if (v.getTag(R.id.recents_love) == FILLED) {
             LFMRequester(context, handler).execute(Stuff.UNLOVE,
                     getItem(pos).artist, getItem(pos).name)
             getItem(pos).isLoved = false
-            love.setImageResource(R.drawable.ic_line_heart_disabled)
-            love.setTag(R.id.recents_love, 0)
-
-            love.animate()
-                    .alpha(0f)
-                    .scaleX(5f)
-                    .scaleY(5f)
-                    .setInterpolator(DecelerateInterpolator())
-                    .setDuration(500)
-                    .withEndAction {
-                        love.alpha = 1f
-                        love.scaleX = 1f
-                        love.scaleY = 1f
-                    }
-                    .start()
+            v.setTag(R.id.recents_love, 0)
+            nextDrawable = context.getDrawable(R.drawable.avd_heart_make)
         } else {
             LFMRequester(context, handler).execute(Stuff.LOVE,
                     getItem(pos).artist, getItem(pos).name)
             getItem(pos).isLoved = true
-            love.setTag(R.id.recents_love, FILLED)
-            love.alpha = 0f
-            love.scaleX = 5f
-            love.scaleY = 5f
-            love.setImageResource(R.drawable.ic_line_heart_enabled)
-            love.animate()
-                    .alpha(1f)
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setInterpolator(DecelerateInterpolator())
-                    .setDuration(500)
-                    .start()
+            v.setTag(R.id.recents_love, FILLED)
+            nextDrawable = context.getDrawable(R.drawable.avd_heart_break)
+        }
 
+        if (anim is AnimatedVectorDrawable) {
+            anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
+                override fun onAnimationEnd(drawable: Drawable?) {
+                    v.setImageDrawable(nextDrawable)
+                }
+            })
+            anim.start()
+        } else if (anim is AnimatedVectorDrawableCompat){
+            anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                override fun onAnimationEnd(drawable: Drawable?) {
+                    anim.unregisterAnimationCallback(this)
+                    v.setImageDrawable(nextDrawable)
+                }
+            })
+            anim.start()
         }
     }
 

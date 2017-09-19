@@ -248,6 +248,8 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                 }
             } catch (ex: InterruptedException){
                 return ""
+            } catch (ex: InterruptedIOException){
+                return ""
             }
             catch (ex: IOException) {
                 ex.printStackTrace()

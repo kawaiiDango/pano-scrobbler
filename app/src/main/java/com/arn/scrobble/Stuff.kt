@@ -41,7 +41,7 @@ internal object Stuff {
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 15 * 1000
-    const val META_WAIT: Long = 1500
+    const val META_WAIT: Long = 1000
     const val MAX_APPS = 30
     var timeIt:Long = 0
 
@@ -79,18 +79,6 @@ internal object Stuff {
             //            Log.i(TAG,"toastErr: "+e.getMessage())
         }
 
-    }
-
-    fun dumpBundle(c: Context, bundle: Bundle?) {
-        if (bundle == null)
-            Log.i(TAG, "Bundle: null")
-        else {
-            for (key in bundle.keySet()) {
-                val value = bundle.get(key) ?: "null"
-                Log.i(TAG, String.format("%s %s (%s)", key,
-                        value.toString(), value.javaClass.name))
-            }
-        }
     }
 
     fun sanitizeTitle(titleContentOriginal: String): Array<String> {

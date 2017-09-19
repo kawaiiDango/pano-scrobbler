@@ -384,17 +384,17 @@ class RecentsAdapter
             nextDrawable = context.getDrawable(R.drawable.avd_heart_break)
         }
 
-        if (anim is AnimatedVectorDrawable) {
-            anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
+        if (anim is AnimatedVectorDrawableCompat) {
+            anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                 override fun onAnimationEnd(drawable: Drawable?) {
+                    anim.unregisterAnimationCallback(this)
                     v.setImageDrawable(nextDrawable)
                 }
             })
             anim.start()
-        } else if (anim is AnimatedVectorDrawableCompat){
-            anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+        } else if (anim is AnimatedVectorDrawable){
+            anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                 override fun onAnimationEnd(drawable: Drawable?) {
-                    anim.unregisterAnimationCallback(this)
                     v.setImageDrawable(nextDrawable)
                 }
             })

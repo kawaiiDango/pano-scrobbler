@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.android.application'
 apply plugin: 'com.github.triplet.play'
 apply from: 'keys.gradle'
 
@@ -31,6 +30,7 @@ android {
         versionCode verCode
         versionName "0."+versionCode
         setProperty("archivesBaseName", "pScrobbler")
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -54,16 +54,16 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'com.android.support:appcompat-v7:26.0.2'
-    implementation 'com.android.support:design:26.0.2'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
     implementation 'com.pavelsikun:material-seekbar-preference:2.3.0'
     implementation 'com.jjoe64:graphview:4.2.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.android.support:palette-v7:26.0.2'
+    implementation 'com.android.support:palette-v7:26.1.0'
 
-    kapt "android.arch.persistence.room:compiler:1.0.0-alpha9"
-    implementation "android.arch.persistence.room:runtime:1.0.0-alpha9"
-    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha9"
+    kapt "android.arch.persistence.room:compiler:1.0.0-alpha9-1"
+    implementation "android.arch.persistence.room:runtime:1.0.0-alpha9-1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha9-1"
 
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

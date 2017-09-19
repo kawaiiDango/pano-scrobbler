@@ -126,10 +126,10 @@ class RecentsAdapter
         love.setOnClickListener(loveToggle)
 
         if (t.isLoved) {
-            love.setImageDrawable(context.getDrawable(R.drawable.avd_heart_break))
+            love.setImageDrawable(AnimatedVectorDrawableCompat.create(context, R.drawable.avd_heart_break))
             love.setTag(R.id.recents_love, FILLED)
         } else {
-            love.setImageDrawable(context.getDrawable(R.drawable.avd_heart_make))
+            love.setImageDrawable(AnimatedVectorDrawableCompat.create(context, R.drawable.avd_heart_make))
             love.setTag(R.id.recents_love, 0)
         }
 
@@ -367,39 +367,29 @@ class RecentsAdapter
         val parentRow = v.getParent() as View
         val listView = parentRow.parent as ListView
         val pos = listView.getPositionForView(parentRow) - 1
-        val anim = (v as ImageView).drawable
-        var nextDrawable: Drawable
+        val anim = (v as ImageView).drawable as AnimatedVectorDrawableCompat
+        var nextDrawable: AnimatedVectorDrawableCompat?
 
         if (v.getTag(R.id.recents_love) == FILLED) {
             LFMRequester(context, handler).execute(Stuff.UNLOVE,
                     getItem(pos).artist, getItem(pos).name)
             getItem(pos).isLoved = false
             v.setTag(R.id.recents_love, 0)
-            nextDrawable = context.getDrawable(R.drawable.avd_heart_make)
+            nextDrawable = AnimatedVectorDrawableCompat.create(context, R.drawable.avd_heart_make)
         } else {
             LFMRequester(context, handler).execute(Stuff.LOVE,
                     getItem(pos).artist, getItem(pos).name)
             getItem(pos).isLoved = true
             v.setTag(R.id.recents_love, FILLED)
-            nextDrawable = context.getDrawable(R.drawable.avd_heart_break)
+            nextDrawable = AnimatedVectorDrawableCompat.create(context, R.drawable.avd_heart_break)
         }
-
-        if (anim is AnimatedVectorDrawableCompat) {
-            anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-                override fun onAnimationEnd(drawable: Drawable?) {
-                    anim.unregisterAnimationCallback(this)
-                    v.setImageDrawable(nextDrawable)
-                }
-            })
-            anim.start()
-        } else if (anim is AnimatedVectorDrawable){
-            anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
-                override fun onAnimationEnd(drawable: Drawable?) {
-                    v.setImageDrawable(nextDrawable)
-                }
-            })
-            anim.start()
-        }
+        anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+            override fun onAnimationEnd(drawable: Drawable?) {
+                anim.unregisterAnimationCallback(this)
+                v.setImageDrawable(nextDrawable)
+            }
+        })
+        anim.start()
     }
 
     private val handler = @SuppressLint("HandlerLeak")

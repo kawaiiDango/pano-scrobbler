@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.arn.scrobble
 
 import android.app.Notification
@@ -262,8 +264,8 @@ class NLService : NotificationListenerService() {
                     .setSmallIcon(R.drawable.ic_noti)
                     .setColor(resources.getColor(R.color.colorAccent))
                     .setContentIntent(okayIntent)
-                    .addAction(R.drawable.ic_transparent, "✔ Looks cool", okayIntent)
-                    .addAction(R.drawable.ic_transparent, "\uD83D\uDEAB Ignore this app", ignoreIntent)
+                    .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
+                    .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
                     .setAutoCancel(true)
             return nb.build()
         }
@@ -285,8 +287,23 @@ class NLService : NotificationListenerService() {
                 title2 = ""
             }
 
-            val loveText = if (love) "❤ Love it" else "\uD83D\uDC94 Unlove it"
-            val loveAction = if (love) pLOVE else pUNLOVE
+            val loveAction: NotificationCompat.Action
+
+            if (love){
+                val i = Intent(pLOVE)
+                        .putExtra("artist", title1)
+                        .putExtra("title", title2)
+                val loveIntent = PendingIntent.getBroadcast(applicationContext, 0, i,
+                        PendingIntent.FLAG_UPDATE_CURRENT)
+                loveAction = getAction(R.drawable.vd_heart, "❤", getString(R.string.love), loveIntent)
+            } else {
+                val i = Intent(pUNLOVE)
+                        .putExtra("artist", title1)
+                        .putExtra("title", title2)
+                val loveIntent = PendingIntent.getBroadcast(applicationContext, 0, i,
+                        PendingIntent.FLAG_UPDATE_CURRENT)
+                loveAction = getAction(R.drawable.vd_heart_break, "\uD83D\uDC94", getString(R.string.unlove), loveIntent)
+            }
 
             var intent = Intent(applicationContext, Main::class.java)
             val launchIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
@@ -295,13 +312,6 @@ class NLService : NotificationListenerService() {
                     .putExtra("id", hash)
             val cancelIntent = PendingIntent.getBroadcast(applicationContext, 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
-
-            intent = Intent(loveAction)
-                    .putExtra("artist", title1)
-                    .putExtra("title", title2)
-            val loveIntent = PendingIntent.getBroadcast(applicationContext, 0, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
-
 
             val nb = NotificationCompat.Builder(applicationContext,
                     if (iconId == NOTI_ERR_ICON) NOTI_ID_ERR else NOTI_ID_SCR)
@@ -314,19 +324,26 @@ class NLService : NotificationListenerService() {
                     .setPriority(if (iconId == NOTI_ERR_ICON) Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
 
             if (state == getString(R.string.state_scrobbling)) {
-                nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)
-                        .addAction(R.drawable.ic_transparent, "❌ Unscrobble", cancelIntent)
+                nb.addAction(loveAction)
+                        .addAction(getAction(R.drawable.vd_cancel, "❌", getString(R.string.unscrobble), cancelIntent))
                 nb.setUsesChronometer(true)
             }
 
             if (state == getString(R.string.state_scrobbled))
-                nb.addAction(R.drawable.ic_transparent, loveText, loveIntent)
+                nb.addAction(loveAction)
             val n = nb.build()
             nm.notify(NOTI_ID_SCR, 0, n)
         }
 
         fun notification(title1: String, state: String, iconId: Int) {
             notification(title1, null, state, iconId, true)
+        }
+
+        private fun getAction(icon:Int, emoji:String, text:String, pIntent:PendingIntent): NotificationCompat.Action {
+            return if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.M)
+                NotificationCompat.Action(icon, text, pIntent)
+            else
+                NotificationCompat.Action(R.drawable.ic_transparent, emoji + " "+ text, pIntent)
         }
 
         fun remove(hash: Int) {

@@ -3,17 +3,20 @@ package com.arn.scrobble
 import android.content.Context
 import android.graphics.Color
 import android.net.ConnectivityManager
-import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.widget.Toast
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
 import java.util.regex.Pattern
+
 
 /**
  * Created by arn on 13-03-2017.
  */
 
-internal object Stuff {
+object Stuff {
     const val NOW_PLAYING = "np"
     const val SCROBBLE = "scrobble"
     const val CHECK_AUTH = "auth"
@@ -55,7 +58,7 @@ internal object Stuff {
     )
 
     private val seperators = arrayOf(// in priority order
-            "—", " ‎– ", "–", " - ", "-", "「", "『", "ー",
+            "—"," ‎– ", "–"," \\| ", " - ", "-", "「", "『", "ー",
 
             "【", "〖", "〔",
             // ":",
@@ -79,6 +82,22 @@ internal object Stuff {
             //            Log.i(TAG,"toastErr: "+e.getMessage())
         }
 
+    }
+
+    fun getLogcat(): String {
+        val log = StringBuilder()
+        try {
+            val process = Runtime.getRuntime().exec("logcat -d")
+            val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+            var line:String? = ""
+            do {
+                log.append(line)
+                line = bufferedReader.readLine()
+            } while (line != null)
+
+        } catch (e: IOException) {
+        }
+        return log.toString()
     }
 
     fun sanitizeTitle(titleContentOriginal: String): Array<String> {

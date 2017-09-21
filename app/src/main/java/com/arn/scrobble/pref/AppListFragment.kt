@@ -18,7 +18,7 @@ import android.widget.AdapterView
 import android.widget.ListView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import java.util.*
+import java.util.Collections
 
 
 /**
@@ -103,8 +103,11 @@ class AppListFragment : Fragment() {
 
         adapter.addSectionHeader(getString(R.string.music_players))
         potentialApps.forEach{
-            adapter.add(it.activityInfo.applicationInfo)
-            excludePackageNames.add(it.activityInfo.packageName)
+            if (!excludePackageNames.contains(it.activityInfo.packageName)) {
+                adapter.add(it.activityInfo.applicationInfo)
+                excludePackageNames.add(it.activityInfo.packageName)
+            }
+
         }
         adapter.addSectionHeader(getString(R.string.video_players))
         otherApps.forEach {

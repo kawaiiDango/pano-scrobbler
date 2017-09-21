@@ -8,6 +8,7 @@ import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -57,11 +58,8 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
         }
 
         val about = findPreference("about")
-        val pName = activity.packageName
         try {
-            val pInfo = activity.packageManager.getPackageInfo(pName, 0)
-            val version = pInfo.versionName
-            about.title = pName + " v" + version
+            about.title = "v " + BuildConfig.VERSION_NAME
             about.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 val browserIntent = Intent(Intent.ACTION_VIEW,
                         Uri.parse(about.summary.toString()))

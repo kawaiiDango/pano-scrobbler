@@ -33,7 +33,7 @@
         <Preference
             android:defaultValue="true"
             android:key="open_app_list"
-            android:icon="@android:drawable/ic_input_add"
+            android:icon="@drawable/vd_add"
             android:summary="Any app which can play music with metadata is supported"
             android:title="Choose apps"/>
 

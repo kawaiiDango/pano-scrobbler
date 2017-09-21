@@ -8,4 +8,5 @@
     <color name="darkBg">#a9000000</color>
     <color name="highlightPink">#22ff5891</color> <!-- accent -->
     <color name="highlightGreen">#5aaed581</color> <!-- green 300 -->
+    <color name="status_bar_scrim">#32000000</color>
 </resources>

@@ -23,10 +23,11 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginEnd="@dimen/fab_margin_right"
             app:elevation="@dimen/elevation_hero_btn"
+            app:expandedTitleMarginEnd="@dimen/fab_margin_right"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Subhead"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:statusBarScrim="@color/status_bar_scrim">
 
             <ImageView
                 android:id="@+id/img_hero"
@@ -86,17 +87,17 @@
                     android:layout_marginEnd="4dp"
                     android:background="?attr/selectableItemBackground"
                     android:scaleType="centerInside"
-                    app:srcCompat="?android:attr/actionModeShareDrawable"/>
+                    app:srcCompat="@drawable/vd_share"/>
 
                 <ImageButton
                     android:id="@+id/hero_info"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="5dp"
                     android:background="?attr/selectableItemBackground"
                     android:padding="4dp"
                     android:scaleType="centerInside"
-                    app:srcCompat="@android:drawable/ic_dialog_info"/>
+                    app:srcCompat="@drawable/vd_info"/>
 
                 <ImageButton
                     android:id="@+id/hero_yt"
@@ -105,7 +106,7 @@
                     android:layout_marginEnd="15dp"
                     android:background="?attr/selectableItemBackground"
                     android:scaleType="centerInside"
-                    app:srcCompat="@drawable/ic_yt_white"/>
+                    app:srcCompat="@drawable/vd_youtube"/>
             </LinearLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

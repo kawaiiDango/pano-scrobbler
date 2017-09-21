@@ -10,4 +10,11 @@
         android:title="@string/action_settings"
         app:showAsAction="never|collapseActionView"/>
 
+    <item
+        android:id="@+id/action_report"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="101"
+        android:title="@string/action_report"
+        app:showAsAction="never|collapseActionView"/>
+
 </menu>

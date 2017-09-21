@@ -1,7 +1,9 @@
 package com.arn.scrobble
 
 import android.app.Fragment
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
@@ -11,7 +13,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ListView
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.ui.EndlessScrollListener
@@ -20,6 +21,7 @@ import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import java.io.File
 
 
 /**
@@ -41,21 +43,24 @@ class RecentsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val ab = (activity as AppCompatActivity).supportActionBar ?: return
         ab.setDisplayHomeAsUpEnabled(false)
-        val recentsList = view.findViewById<ListView>(R.id.recents_list)
+        val list = view.findViewById<ListView>(R.id.recents_list)
         val inflater = activity.layoutInflater
 
-        recentsList.background.mutate()
-        footer = inflater.inflate(R.layout.footer_loading, recentsList, false) as LinearLayout
-        recentsList.addFooterView(footer, null, false)
+        list.background.mutate()
+        footer = inflater.inflate(R.layout.footer_loading, list, false)
+        list.addFooterView(footer, null, false)
 
-        val header = inflater.inflate(R.layout.header_default, recentsList, false) as LinearLayout
-        recentsList.addHeaderView(header, null, false)
+        val pHeader = inflater.inflate(R.layout.header_pending, list, false)
+        list.addHeaderView(pHeader, null, false)
+
+        val header = inflater.inflate(R.layout.header_default, list, false)
+        list.addHeaderView(header, null, false)
 
         adapter = RecentsAdapter(activity, R.layout.list_item_recents)
-        recentsList.adapter = adapter
+        list.adapter = adapter
         adapter?.firstLoad()
-        recentsList.setOnScrollListener(loadMoreListener)
-        recentsList.onItemClickListener = itemClickListener
+        list.setOnScrollListener(loadMoreListener)
+        list.onItemClickListener = itemClickListener
 
         val refresh = activity.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
         refresh.setOnRefreshListener { adapter?.loadRecents(1) }
@@ -127,6 +132,22 @@ class RecentsFragment : Fragment() {
                     .add(R.id.frame, PrefFragment())
                     .addToBackStack(null)
                     .commit()
+        } else if (id == R.id.action_report) {
+            val log = Stuff.getLogcat()
+            val file = File(activity.getExternalFilesDir(null), "log.txt")
+            file.writeText(log)
+
+            val i = Intent(Intent.ACTION_SEND)
+            i.type = "message/rfc822"
+			i.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
+			i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) +" - Bug report")
+			i.putExtra(Intent.EXTRA_TEXT, "[how did this happen?]")
+			i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
+			try {
+			    startActivity(Intent.createChooser(i, "Send bug report"))
+			} catch (ex: ActivityNotFoundException) {
+			    Stuff.toast(activity, "There are no email clients installed.")
+			}
         }
         return super.onOptionsItemSelected(item)
     }
@@ -151,6 +172,7 @@ class RecentsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         adapter?.loadRecents(1)
+        adapter?.loadPending()
     }
 
     private val loadMoreListener = object : EndlessScrollListener() {
@@ -181,7 +203,5 @@ class RecentsFragment : Fragment() {
         i.putExtra(Intent.EXTRA_SUBJECT, "I was listening to:")
         i.putExtra(Intent.EXTRA_TEXT, shareText)
         startActivity(Intent.createChooser(i, "Share this song"))
-
-
     }
 }

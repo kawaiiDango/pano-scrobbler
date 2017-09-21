@@ -20,13 +20,17 @@ import android.support.graphics.drawable.Animatable2Compat
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.graphics.Palette
+import android.text.Html
 import android.text.format.DateUtils
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.*
+import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
@@ -86,24 +90,26 @@ class RecentsAdapter
             relDate = "   now"
             np.visibility = View.VISIBLE
             val anim = np.drawable
-
-            if(anim is AnimatedVectorDrawableCompat) {
+            if (anim is AnimatedVectorDrawableCompat && !anim.isRunning) {
                 anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
-                        anim.unregisterAnimationCallback(this)
+                        drawable as AnimatedVectorDrawableCompat?
+                        drawable?.unregisterAnimationCallback(this)
                         if (drawable != null && drawable.isVisible) {
-                            anim.stop()
-                            anim.start()
-                            Stuff.log("anim ended")
+                            val newAnim = AnimatedVectorDrawableCompat.create(context, R.drawable.avd_eq)
+                            np.setImageDrawable(newAnim)
+                            newAnim?.start()
+                            newAnim?.registerAnimationCallback(this)
+                            Stuff.log("np anim ended ")
                         }
                     }
                 })
                 anim.start()
-            } else if (anim is AnimatedVectorDrawable) {
+            } else if (anim is AnimatedVectorDrawable && !anim.isRunning) {
                 anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
                         if (drawable != null && drawable.isVisible)
-                            anim.start()
+                            (drawable as AnimatedVectorDrawable).start()
                     }
                 })
                 anim.start()
@@ -211,6 +217,52 @@ class RecentsAdapter
         LFMRequester(context, handler).execute(Stuff.GET_RECENTS_CACHED, (1).toString())
     }
 
+    fun loadPending() {
+        Thread{
+            val dao = PendingScrobblesDb.getDb(context).getDao()
+            val count = dao.count
+            val limit = 2
+            var aFew = listOf<PendingScrobble>()
+
+            if (count > 0)
+                aFew = dao.all(limit)
+
+            (context as Activity).runOnUiThread {
+                Stuff.log("loadPending")
+                val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return@runOnUiThread
+                val layout = list.findViewById<LinearLayout>(R.id.header_pending)
+                if (count > 0) {
+                    val pendingItems = layout.findViewById<LinearLayout>(R.id.header_pending_items)
+                    pendingItems.removeAllViews()
+                    val inflater = LayoutInflater.from(context)
+                    aFew.forEach {
+                        val v = inflater.inflate(R.layout.list_item_recents, pendingItems, false)
+                        v.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                        pendingItems.addView(PendingScroblesAdapter.populateItem(v, it))
+                    }
+                    val viewAll = layout.findViewById<TextView>(R.id.pending_more)
+                    val diff = count - aFew.size
+                    if (diff > 0) {
+                        viewAll.text = context.getString(R.string.pending_scrobbles_summary, diff)
+                        layout.findViewById<View>(R.id.pending_summary).setOnClickListener {
+                            val fm = (context as Activity).fragmentManager
+                                    fm.beginTransaction()
+                                    .hide(fm.findFragmentByTag(Stuff.GET_RECENTS))
+                                    .add(R.id.frame, PendingFragment())
+                                    .addToBackStack(null)
+                                    .commit()
+                        }
+                        viewAll.visibility = View.VISIBLE
+                    } else
+                        viewAll.visibility = View.GONE
+                    layout.visibility = View.VISIBLE
+                } else
+                    layout.visibility = View.GONE
+            }
+
+        }.start()
+    }
+
     fun setHero(imgUrl: String?) {
         setHero(null, imgUrl)
     }
@@ -246,6 +298,7 @@ class RecentsAdapter
             if (t!= null)
                 hero.setColorFilter(Stuff.getMatColor(context, "500", t.name.hashCode().toLong()))
             hero.setImageResource(R.drawable.ic_placeholder_music)
+            hero.setBackgroundResource(android.R.color.black)
             setPaletteColors()
 
         }
@@ -268,7 +321,6 @@ class RecentsAdapter
             val colorMutedBlack = palette.getDarkMutedColor(context.resources.getColor(android.R.color.background_dark))
 
             ctl.setContentScrimColor(colorDomPrimary)
-            ctl.setStatusBarScrimColor(colorMutedDark)
             ctl.setExpandedTitleTextColor(ColorStateList.valueOf(colorLightWhite))
 
             if (Stuff.isDark(colorDomPrimary)) {
@@ -394,7 +446,7 @@ class RecentsAdapter
         anim.start()
     }
 
-    private val handler = @SuppressLint("HandlerLeak")
+    private val handler =
     object: Handler(){
         override fun handleMessage(m: Message) {
             //usually:

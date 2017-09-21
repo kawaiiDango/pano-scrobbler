@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+<LinearLayout
+              android:id="@+id/header_pending"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:background="@color/darkBg"
+        android:paddingBottom="10dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/pending_scrobbles"
+        android:textAppearance="@android:style/TextAppearance.Material.Button"/>
+
+    <LinearLayout
+        android:id="@+id/header_pending_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pending_summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/fab_margin"
+        android:paddingRight="@dimen/fab_margin"
+        >
+
+        <TextView
+            android:id="@+id/pending_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="@dimen/elevation_hero_btn"
+            android:text="@string/pending_scrobbles_summary"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:clickable="false"
+            android:text="@string/show_all"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            />
+    </LinearLayout>
+</LinearLayout>
+</LinearLayout>

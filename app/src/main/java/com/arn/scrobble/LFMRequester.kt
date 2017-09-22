@@ -148,7 +148,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                                 scrobbleResult = Track.updateNowPlaying(scrobbleData, session)
                             } else {
                                 (handler as NLService.ScrobbleHandler).remove(hash)
-                                handler.notification(c.getString(R.string.invalid_artist), s[1], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                                handler.notification(c.getString(R.string.invalid_artist), s[1], c.getString(R.string.not_scrobling), NLService.NOTI_ERR_ICON)
                             }
                         }
                     }

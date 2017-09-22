@@ -1,8 +1,9 @@
 package com.arn.scrobble
 
 import android.app.Fragment
-import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.LabeledIntent
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -133,23 +134,39 @@ class RecentsFragment : Fragment() {
                     .addToBackStack(null)
                     .commit()
         } else if (id == R.id.action_report) {
-            val log = Stuff.getLogcat()
-            val file = File(activity.getExternalFilesDir(null), "log.txt")
-            file.writeText(log)
-
-            val i = Intent(Intent.ACTION_SEND)
-            i.type = "message/rfc822"
-			i.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
-			i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) +" - Bug report")
-			i.putExtra(Intent.EXTRA_TEXT, "[how did this happen?]")
-			i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
-			try {
-			    startActivity(Intent.createChooser(i, "Send bug report"))
-			} catch (ex: ActivityNotFoundException) {
-			    Stuff.toast(activity, "There are no email clients installed.")
-			}
+            mailLogs()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun mailLogs(){
+        Stuff.toast(activity, "Generating report...")
+
+        val log = Stuff.getLogcat()
+        val file = File(activity.getExternalFilesDir(null), "log.txt")
+        file.writeText(log)
+        val uri = Uri.fromFile(file)
+
+        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                "mailto", "huh@huh.com", null))
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "huh?")
+        val resolveInfos = activity.packageManager.queryIntentActivities(emailIntent, 0)
+        val intents = arrayListOf<LabeledIntent>()
+        for (info in resolveInfos) {
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.component = ComponentName(info.activityInfo.packageName, info.activityInfo.name)
+            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) +" - Bug report")
+            intent.putExtra(Intent.EXTRA_TEXT, "[how did this happen?]")
+            intent.putExtra(Intent.EXTRA_STREAM, uri)
+            intents.add(LabeledIntent(intent, info.activityInfo.packageName, info.loadLabel(activity.packageManager), info.icon))
+        }
+        if (intents.size > 0) {
+            val chooser = Intent.createChooser(intents.removeAt(intents.size - 1), "Send bug report")
+            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
+            startActivity(chooser)
+        }else
+            Stuff.toast(activity, "There are no email clients installed.")
     }
 
     fun test(){

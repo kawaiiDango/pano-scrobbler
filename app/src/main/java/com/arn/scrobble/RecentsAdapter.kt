@@ -159,13 +159,9 @@ class RecentsAdapter
         }
 
         if ( getItemId(position) == selectedId && t.url != hero.tag) {
-            val fab = (context as Activity).findViewById<FloatingActionButton>(R.id.fab)
             val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
             val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
-            fab.setOnClickListener {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(t.url))
-                context.startActivity(browserIntent)
-            }
+
             heroInfo.setOnClickListener {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(t.url))
                 context.startActivity(browserIntent)
@@ -240,11 +236,11 @@ class RecentsAdapter
                         v.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                         pendingItems.addView(PendingScroblesAdapter.populateItem(v, it))
                     }
-                    val viewAll = layout.findViewById<TextView>(R.id.pending_more)
+                    val pendingSummary = layout.findViewById<LinearLayout>(R.id.pending_summary)
                     val diff = count - aFew.size
                     if (diff > 0) {
-                        viewAll.text = context.getString(R.string.pending_scrobbles_summary, diff)
-                        layout.findViewById<View>(R.id.pending_summary).setOnClickListener {
+                        pendingSummary.findViewById<TextView>(R.id.pending_more).text = context.getString(R.string.pending_scrobbles_summary, diff)
+                        pendingSummary.setOnClickListener {
                             val fm = (context as Activity).fragmentManager
                                     fm.beginTransaction()
                                     .hide(fm.findFragmentByTag(Stuff.GET_RECENTS))
@@ -252,9 +248,9 @@ class RecentsAdapter
                                     .addToBackStack(null)
                                     .commit()
                         }
-                        viewAll.visibility = View.VISIBLE
+                        pendingSummary.visibility = View.VISIBLE
                     } else
-                        viewAll.visibility = View.GONE
+                        pendingSummary.visibility = View.GONE
                     layout.visibility = View.VISIBLE
                 } else
                     layout.visibility = View.GONE
@@ -307,7 +303,6 @@ class RecentsAdapter
     private fun setPaletteColors(){
         val ctl = (context as Activity).findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout) ?: return
         val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
-//        val fab = (context as Activity).findViewById<FloatingActionButton?>(R.id.fab)
         val heroShare = (context as Activity).findViewById<ImageButton>(R.id.hero_share)
         val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
         val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
@@ -325,19 +320,15 @@ class RecentsAdapter
 
             if (Stuff.isDark(colorDomPrimary)) {
                 ctl.setCollapsedTitleTextColor(colorLightWhite)
-//                fab?.imageTintList = null
             } else {
                 ctl.setCollapsedTitleTextColor(colorMutedDark)
-//                fab?.imageTintList = ColorStateList.valueOf(0xff000000.toInt())
             }
             (graph.series.get(0) as  LineGraphSeries<*>).color = colorLightWhite
             graph.gridLabelRenderer.horizontalAxisTitleColor = colorLightWhite
             graph.gridLabelRenderer.verticalLabelsColor = colorLightWhite
-//                                fab.backgroundTintList = ColorStateList.valueOf(colorDomPrimary)
             val listBgFrom = (list.background as ColorDrawable).color
 
             val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
-//                                val fabBgAnimator = ObjectAnimator.ofArgb(fab.contentBackground.mutate(), "tint", lastColorDomPrimary, colorDomPrimary)
             val shareBgAnimator = ObjectAnimator.ofObject(heroShare, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
             val infoBgAnimator = ObjectAnimator.ofObject(heroInfo, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
             val ytBgAnimator = ObjectAnimator.ofObject(heroYt, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)

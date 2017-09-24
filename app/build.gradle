@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.github.triplet.play'
+apply plugin: 'kotlin-kapt'
 apply from: 'keys.gradle'
 
 android {

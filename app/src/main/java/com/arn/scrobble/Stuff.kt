@@ -91,7 +91,7 @@ object Stuff {
             val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
             var line:String? = ""
             do {
-                log.append(line)
+                log.append(line+ "\n")
                 line = bufferedReader.readLine()
             } while (line != null)
 

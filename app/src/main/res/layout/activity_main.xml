@@ -116,17 +116,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:layout_margin="@dimen/fab_margin"
-        android:visibility="invisible"
-        app:elevation="12dp"
-        app:layout_anchor="@+id/app_bar"
-        app:layout_anchorGravity="left|top"
-        app:srcCompat="@android:drawable/ic_dialog_info"/>
-
 </android.support.design.widget.CoordinatorLayout>

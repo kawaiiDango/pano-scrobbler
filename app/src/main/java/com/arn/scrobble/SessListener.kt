@@ -70,8 +70,8 @@ class SessListener internal constructor(private val c: Context, private val hand
                 val state: Int = msg?.arg1!!
                 val pos: Long = msg.arg2.toLong()
 
-                Stuff.log("onPlaybackStateChanged "+ state + " laststate "+ lastState +
-                        " pos "+ pos +" duration "+
+                Stuff.log("onPlaybackStateChanged="+ state + " laststate="+ lastState +
+                        " pos="+ pos +" duration="+
                         metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION))
 
                 val isAtStart = pos == 0.toLong()
@@ -139,8 +139,9 @@ class SessListener internal constructor(private val c: Context, private val hand
             val title2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
             val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
             val album2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
-            Stuff.log("onMetadataChanged $artist ~ $title ")
-            if (!(artist == artist2 && title == title2 && album == album2)) {
+            val sameAsOld = (artist == artist2 && title == title2 && album == album2)
+            Stuff.log("onMetadataChanged $artist ~ $title, sameAsOld=$sameAsOld, package=$packageName")
+            if (!sameAsOld) {
                 this.metadata = metadata
 //            lastPos = 1
                 lastScrobbleTime = 1

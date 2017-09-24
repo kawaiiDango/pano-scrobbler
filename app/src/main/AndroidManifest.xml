@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.Manifest.permission.MEDIA_CONTENT_CONTROL" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
 
     <application
         android:allowBackup="true"
@@ -47,5 +47,15 @@
             android:name=".OfflineScrobbleJob"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="true" />
+        <provider
+            android:authorities="com.arn.scrobble.fileprovider"
+            android:grantUriPermissions="true"
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_path" />
+        </provider>
     </application>
+
 </manifest>

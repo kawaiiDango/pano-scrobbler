@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
+import android.support.v4.content.FileProvider
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.*
@@ -143,9 +144,9 @@ class RecentsFragment : Fragment() {
         Stuff.toast(activity, "Generating report...")
 
         val log = Stuff.getLogcat()
-        val file = File(activity.getExternalFilesDir(null), "log.txt")
+        val file = File(activity.filesDir, "log.txt")
         file.writeText(log)
-        val uri = Uri.fromFile(file)
+        val uri = FileProvider.getUriForFile(activity, activity.packageName+".fileprovider", file)
 
         val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                 "mailto", "huh@huh.com", null))

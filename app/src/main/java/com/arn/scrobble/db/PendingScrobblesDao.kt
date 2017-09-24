@@ -10,13 +10,13 @@ const val tableName = "pendingScrobbles"
 
 @Dao
 interface PendingScrobblesDao {
-    @Query("SELECT * FROM $tableName ORDER BY timestamp DESC LIMIT :arg0")
+    @Query("SELECT * FROM $tableName ORDER BY timestamp DESC LIMIT :limit")
     fun all(limit: Int): List<PendingScrobble>
 
-    @Query("SELECT * FROM $tableName WHERE autoCorrected = 1 LIMIT :arg0")
+    @Query("SELECT * FROM $tableName WHERE autoCorrected = 1 LIMIT :limit")
     fun allAutocorrected(limit: Int): List<PendingScrobble>
 
-    @Query("SELECT * FROM $tableName WHERE autoCorrected = 0 LIMIT :arg0")
+    @Query("SELECT * FROM $tableName WHERE autoCorrected = 0 LIMIT :limit")
     fun allNotAutocorrected(limit: Int): List<PendingScrobble>
 
     @get:Query("SELECT * FROM $tableName WHERE autoCorrected = 0 LIMIT 1")

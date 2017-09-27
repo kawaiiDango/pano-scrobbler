@@ -3,7 +3,6 @@ package com.arn.scrobble
 import android.app.Fragment
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater

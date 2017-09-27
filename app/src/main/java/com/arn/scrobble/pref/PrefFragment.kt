@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CollapsingToolbarLayout
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R

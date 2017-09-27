@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View

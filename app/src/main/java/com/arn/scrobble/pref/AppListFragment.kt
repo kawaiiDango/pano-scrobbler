@@ -27,7 +27,6 @@ import java.util.Collections
 class AppListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)?.title = getString(R.string.action_app_list)
         val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
         vg?.setExpanded(false, true)
         if (savedInstanceState == null)
@@ -71,6 +70,10 @@ class AppListFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        Stuff.setTitle(activity, R.string.action_app_list)
+    }
     override fun onStop() {
         super.onStop()
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)

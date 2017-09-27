@@ -25,6 +25,7 @@ class AppListAdapter
             .addRequestHandler(AppIconRequestHandler(context))
             .build()
     private val dp = Stuff.dp2px(48, context)
+    private var lastCheckedPos = 0
 
     override fun getView(position: Int, convertView: View?, list: ViewGroup): View {
         var convertView : View? = convertView
@@ -67,13 +68,16 @@ class AppListAdapter
     fun addSectionHeader(text: String) {
         sectionHeaders[count] = text
         add(ApplicationInfo())
+        lastCheckedPos = count
     }
 
     override fun add(app: ApplicationInfo?) {
-        super.add(app)
         if (prefsSet.contains(app?.packageName)) {
-            list?.setItemChecked(count - 1, true)
-        }
+            super.insert(app, lastCheckedPos)
+            list?.setItemChecked(lastCheckedPos, true)
+            lastCheckedPos++
+        } else
+            super.add(app)
     }
     override fun getViewTypeCount(): Int {
         return 2

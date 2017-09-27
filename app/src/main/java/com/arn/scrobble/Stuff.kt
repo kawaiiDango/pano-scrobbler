@@ -1,8 +1,11 @@
 package com.arn.scrobble
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.net.ConnectivityManager
+import android.support.design.widget.CollapsingToolbarLayout
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.util.TypedValue
 import android.widget.Toast
@@ -26,6 +29,9 @@ object Stuff {
     const val LAST_KEY = Tokens.LAST_KEY
     const val LAST_SECRET = Tokens.LAST_SECRET
     const val TAG = "scrobbler"
+    const val DL_SETTINGS = 31
+    const val DL_APP_LIST = 32
+    const val DEEP_LINK_KEY = "deeplink"
     const val LOVE = "loved"
     const val UNLOVE = "unloved"
     const val GET_LOVED = "getloved"
@@ -75,13 +81,11 @@ object Stuff {
         timeIt = now
     }
 
-    fun toast(c: Context, s: String) {
+    fun toast(c: Context, s: String, len:Int = Toast.LENGTH_SHORT) {
         try {
-            Toast.makeText(c, s, Toast.LENGTH_SHORT).show()
+            Toast.makeText(c, s, len).show()
         } catch (e: Exception) {
-            //            Log.i(TAG,"toastErr: "+e.getMessage())
         }
-
     }
 
     fun getLogcat(): String {
@@ -109,6 +113,7 @@ object Stuff {
                 //remove HD info
                 .replace("\\W* HD( \\W*)?".toRegex(), " ")
                 .replace("\\W* HQ( \\W*)?".toRegex(), " ")
+                .replace("\\W* Music Video( \\W*)?".toRegex(), " ")
 
         var r = Pattern.compile("\\([^)]*(?:remix|mix|cover|version|edit|booty?leg)\\)")
         //get remix info
@@ -167,6 +172,13 @@ object Stuff {
         return musicInfo
     }
 
+    fun setTitle(activity:Activity, strId: Int){
+        val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
+        ctl.title = activity.getString(strId)
+        ctl.tag = activity.getString(strId)
+        ctl.setContentScrimColor(activity.resources.getColor(R.color.colorPrimary))
+        ctl.setCollapsedTitleTextColor(0xfffffff)
+    }
 
     fun getMatColor(c: Context, typeColor: String, hash: Long = 0): Int {
         var hash = hash

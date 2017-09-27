@@ -20,7 +20,6 @@ class PendingFragment: Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         if (savedInstanceState == null)
             setHasOptionsMenu(false)
-        (activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout))?.title = getString(R.string.pending_scrobbles)
         val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
         vg?.setExpanded(false, true)
 
@@ -51,6 +50,6 @@ class PendingFragment: Fragment(){
                 adapter.addAll(allPending)
             }
         }.start()
-
+        Stuff.setTitle(activity, R.string.pending_scrobbles)
     }
 }

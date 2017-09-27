@@ -27,8 +27,6 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
     var doneCount = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).title = getString(R.string.first_things)
-        activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout).tag = getString(R.string.first_things)
         val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
         vg.setExpanded(false, true)
         setHasOptionsMenu(false)
@@ -113,6 +111,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         super.onResume()
         checkAll()
         PreferenceManager.getDefaultSharedPreferences(activity).registerOnSharedPreferenceChangeListener(this)
+        Stuff.setTitle(activity, R.string.first_things)
     }
 
     override fun onPause() {

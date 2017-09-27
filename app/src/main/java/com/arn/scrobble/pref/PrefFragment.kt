@@ -24,7 +24,6 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
         if (savedInstanceState == null)
             setHasOptionsMenu(false)
 
-        (activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout))?.title = getString(R.string.action_settings)
         val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
         vg?.setExpanded(false, true)
 
@@ -71,27 +70,10 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
         }
 
     }
-/*
 
-    override fun onSharedPreferenceChanged(sp: SharedPreferences, key: String) {
-        if (key == "master") {
-            val `val` = sp.getBoolean("master", true)
-            val mxm = findPreference("scrobble_mxmFloatingLyrics") as SwitchPreference
-            val yt = findPreference("scrobble_youtube") as SwitchPreference
-            mxm.isChecked = `val`
-            yt.isChecked = `val`
-        }
-    }
-*/
     override fun onResume() {
         super.onResume()
-//        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-
-    }
-
-    override fun onPause() {
-//        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        super.onPause()
+        Stuff.setTitle(activity, R.string.action_settings)
     }
 
 }

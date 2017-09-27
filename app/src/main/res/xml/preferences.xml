@@ -53,7 +53,7 @@
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="delay_secs"
             android:title="Delay in secs"
-            android:defaultValue="50"
+            android:defaultValue="60"
 
             sample:msbp_minValue="20"
             sample:msbp_maxValue="120"
@@ -64,9 +64,9 @@
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="delays_per"
             android:title="Delay in percent"
-            android:defaultValue="30"
+            android:defaultValue="40"
 
-            sample:msbp_minValue="15"
+            sample:msbp_minValue="30"
             sample:msbp_maxValue="75"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="%"

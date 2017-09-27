@@ -100,7 +100,6 @@ class RecentsAdapter
                             np.setImageDrawable(newAnim)
                             newAnim?.start()
                             newAnim?.registerAnimationCallback(this)
-                            Stuff.log("np anim ended ")
                         }
                     }
                 })
@@ -287,7 +286,7 @@ class RecentsAdapter
                         }
 
                         override fun onError() {
-                            Stuff.log("onerr")
+                            Stuff.log("Picasso onError")
                         }
                     })
         } else {
@@ -375,7 +374,7 @@ class RecentsAdapter
         if (list.visibility != View.VISIBLE)
             return
         val selectedId = if (list.checkedItemIds.size == 0) NP_ID else list.checkedItemIds[0]
-        var selectedPos = 1
+        var selectedPos = 2
         refresh.isRefreshing = false
         list.removeCallbacks(timedRefresh)
         if (page == 1) {
@@ -390,7 +389,7 @@ class RecentsAdapter
             if (!it.isNowPlaying || page==1) {
                 add(it)
                 if (getItemId(count - 1) == selectedId)
-                    selectedPos = count
+                    selectedPos = count + 1
             }
         }
         list.setItemChecked(selectedPos, true)
@@ -411,7 +410,7 @@ class RecentsAdapter
     private val loveToggle = View.OnClickListener { v ->
         val parentRow = v.getParent() as View
         val listView = parentRow.parent as ListView
-        val pos = listView.getPositionForView(parentRow) - 1
+        val pos = listView.getPositionForView(parentRow) - 2
         val anim = (v as ImageView).drawable as AnimatedVectorDrawableCompat
         var nextDrawable: AnimatedVectorDrawableCompat?
 

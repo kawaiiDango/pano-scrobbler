@@ -3,6 +3,7 @@
 package com.arn.scrobble
 
 import android.app.Notification
+import android.app.Notification.VISIBILITY_SECRET
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.*
@@ -17,6 +18,8 @@ import com.arn.scrobble.receivers.TrackMetaListener
 import android.app.NotificationChannel
 import android.os.Build
 import android.support.v4.app.NotificationCompat
+import android.support.v4.media.app.NotificationCompat.MediaStyle
+import android.widget.Toast
 
 
 class NLService : NotificationListenerService() {
@@ -48,6 +51,7 @@ class NLService : NotificationListenerService() {
         val filter = IntentFilter()
         filter.addAction(pNLS)
         filter.addAction(pCANCEL)
+        filter.addAction(pCANCEL_TOAST)
         filter.addAction(pLOVE)
         filter.addAction(pUNLOVE)
         filter.addAction(pWHITELIST)
@@ -145,6 +149,10 @@ class NLService : NotificationListenerService() {
             Stuff.log("nlservicereciver intent " + intent.action!!)
             when (intent.action){
                  pCANCEL -> handler.remove(intent.getIntExtra("id", 0))
+                 pCANCEL_TOAST -> {
+                     handler.remove(intent.getIntExtra("id", 0))
+                     Stuff.toast(applicationContext, "Un-scrobbled", Toast.LENGTH_LONG)
+                 }
                 pLOVE -> {
                     LFMRequester(applicationContext, handler).execute(Stuff.LOVE,
                             intent.getStringExtra("artist"), intent.getStringExtra("title"))
@@ -257,16 +265,22 @@ class NLService : NotificationListenerService() {
                     .putExtra("packageName", packageName)
             val okayIntent = PendingIntent.getBroadcast(applicationContext, 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
+            intent = Intent(applicationContext, Main::class.java)
+                    .putExtra(Stuff.DEEP_LINK_KEY, Stuff.DL_APP_LIST)
+            val launchIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
 
             val nb = NotificationCompat.Builder(applicationContext, NOTI_ID_SCR)
                     .setContentTitle(getString(R.string.new_player)+ appName)
                     .setContentText(getString(R.string.new_player_prompt))
                     .setSmallIcon(R.drawable.ic_noti)
                     .setColor(resources.getColor(R.color.colorAccent))
-                    .setContentIntent(okayIntent)
-                    .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
+                    .setContentIntent(launchIntent)
                     .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
+                    .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
                     .setAutoCancel(true)
+                    .setStyle(MediaStyle().setShowActionsInCompactView(0,1))
+                    .setCustomBigContentView(null)
+
             return nb.build()
         }
         fun notification(title1: String, title2: String?, state: String, iconId: Int, love: Boolean = true) {
@@ -308,30 +322,46 @@ class NLService : NotificationListenerService() {
             var intent = Intent(applicationContext, Main::class.java)
             val launchIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
 
-            intent = Intent(pCANCEL)
+            intent = Intent(pCANCEL_TOAST)
                     .putExtra("id", hash)
-            val cancelIntent = PendingIntent.getBroadcast(applicationContext, 0, intent,
+            val cancelToastIntent = PendingIntent.getBroadcast(applicationContext, 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
             val nb = NotificationCompat.Builder(applicationContext,
                     if (iconId == NOTI_ERR_ICON) NOTI_ID_ERR else NOTI_ID_SCR)
-                    .setContentTitle(state)
-                    .setContentText(title)
                     .setSmallIcon(iconId)
                     .setColor(resources.getColor(R.color.colorPrimary))
                     .setContentIntent(launchIntent)
+                    .setVisibility(VISIBILITY_SECRET)
                     .setAutoCancel(true)
+                    .setShowWhen(false)
                     .setPriority(if (iconId == NOTI_ERR_ICON) Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
-
-            if (state == getString(R.string.state_scrobbling)) {
-                nb.addAction(loveAction)
-                        .addAction(getAction(R.drawable.vd_cancel, "❌", getString(R.string.unscrobble), cancelIntent))
-                nb.setUsesChronometer(true)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                nb.setContentTitle(title2)
+                        .setContentText(title1)
+                        .setSubText(state)
+            } else {
+                nb.setContentTitle(state)
+                        .setContentText(title2)
+                        .setSubText(state)
+                if (state == getString(R.string.state_scrobbling))
+                    nb.setUsesChronometer(true)
             }
 
-            if (state == getString(R.string.state_scrobbled))
+            if (state == getString(R.string.state_scrobbling) || state == getString(R.string.state_scrobbled)) {
+                val style = MediaStyle()
                 nb.addAction(loveAction)
+                        .setCustomBigContentView(null)
+                if (state == getString(R.string.state_scrobbling)) {
+                    nb.addAction(getAction(R.drawable.vd_cancel, "❌", getString(R.string.unscrobble), cancelToastIntent))
+//                    nb.setDeleteIntent(cancelToastIntent)
+                    style.setShowActionsInCompactView(0, 1)
+                } else
+                    style.setShowActionsInCompactView(0)
+                nb.setStyle(style)
+            }
             val n = nb.build()
+
             nm.notify(NOTI_ID_SCR, 0, n)
         }
 
@@ -340,10 +370,10 @@ class NLService : NotificationListenerService() {
         }
 
         private fun getAction(icon:Int, emoji:String, text:String, pIntent:PendingIntent): NotificationCompat.Action {
-            return if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.M)
-                NotificationCompat.Action(icon, text, pIntent)
-            else
-                NotificationCompat.Action(R.drawable.ic_transparent, emoji + " "+ text, pIntent)
+//            return if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.M)
+                return NotificationCompat.Action(icon, text, pIntent)
+//            else
+//                NotificationCompat.Action(R.drawable.ic_transparent, emoji + " "+ text, pIntent)
         }
 
         fun remove(hash: Int) {
@@ -371,6 +401,7 @@ class NLService : NotificationListenerService() {
         lateinit var handler: ScrobbleHandler
         val pNLS = "com.arn.scrobble.NLS"
         val pCANCEL = "com.arn.scrobble.CANCEL"
+        val pCANCEL_TOAST = "com.arn.scrobble.CANCEL_TOAST"
         val pLOVE = "com.arn.scrobble.LOVE"
         val pUNLOVE = "com.arn.scrobble.UNLOVE"
         val pBLACKLIST = "com.arn.scrobble.BLACKLIST"

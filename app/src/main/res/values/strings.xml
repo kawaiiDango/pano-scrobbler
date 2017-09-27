@@ -29,7 +29,7 @@
     <string name="offline">Offline. Data shown isn\'t fresh</string>
     <string name="share_text">  (Shared with goo.gl/ek1Nof)</string>
     <string name="new_player">Detected:</string>
-    <string name="new_player_prompt">Tap to keep scrobbling and hide this msg.</string>
+    <string name="new_player_prompt">Keep scrobbling and hide this msg?</string>
     <string name="no_scrobbles">No scrobbled songs yet…  😫 \n\n
     Lets make some noise!
     </string>

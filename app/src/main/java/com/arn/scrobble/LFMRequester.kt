@@ -130,18 +130,19 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
 
                 var scrobbleResult: ScrobbleResult? = null
 
-                //for scrobble: command = tag, s[1] = artist, s[2] = song, s[3] = time, s[4] = duration
+                //for scrobble: command = tag, s[1] = artist, s[2] = album, s[3] = song, s[4] = time, s[5] = duration
                 val scrobbleData = ScrobbleData()
                 scrobbleData.artist = s[1]
-                scrobbleData.track = s[2]
-                scrobbleData.timestamp = (s[3].toLong()/1000).toInt() // in secs
-                scrobbleData.duration = (s[4].toLong()/1000).toInt() // in secs
+                scrobbleData.album = s[2]
+                scrobbleData.track = s[3]
+                scrobbleData.timestamp = (s[4].toLong()/1000).toInt() // in secs
+                scrobbleData.duration = (s[5].toLong()/1000).toInt() // in secs
 
                 when(command) {
                     Stuff.NOW_PLAYING -> {
                         if (isNetworkAvailable){
-                            val hash = s[1].hashCode() + s[2].hashCode()
-                            val corrected = getCorrectedData(s[1], s[2])
+                            val hash = s[1].hashCode() + s[3].hashCode()
+                            val corrected = getCorrectedData(s[1], s[3])
                             if (corrected != null) {
                                 scrobbleData.artist = corrected.first
                                 scrobbleData.track = corrected.second
@@ -159,9 +160,10 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                             val dao = PendingScrobblesDb.getDb(c).getDao()
                             val entry = PendingScrobble()
                             entry.artist = scrobbleData.artist
+                            entry.album = scrobbleData.album
                             entry.track = scrobbleData.track
-                            entry.timestamp = s[3].toLong()
-                            entry.duration = s[4].toLong()
+                            entry.timestamp = s[4].toLong()
+                            entry.duration = s[5].toLong()
                             dao.insert(entry)
                             OfflineScrobbleJob.checkAndSchedule(c)
                         }
@@ -172,7 +174,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
 //                        val hash = s[1].hashCode() + s[2].hashCode()
                         //                        scrobbledHashes.add(hash);
                         (handler as NLService.ScrobbleHandler)
-                                .notification(c.getString(R.string.network_error), s[1] + " " + s[2], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                                .notification(c.getString(R.string.network_error), s[1] + " " + s[3], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
                     }
                 } catch (e: NullPointerException) {
                     publishProgress(command + ": NullPointerException")

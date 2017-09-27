@@ -68,6 +68,7 @@ class OfflineScrobbleJob : JobService() {
                 entries.forEach {
                     val scrobbleData = ScrobbleData()
                     scrobbleData.artist = it.artist
+                    scrobbleData.album = it.album
                     scrobbleData.track = it.track
                     scrobbleData.timestamp = (it.timestamp / 1000).toInt() // in secs
                     scrobbleData.duration = (it.duration / 1000).toInt() // in secs

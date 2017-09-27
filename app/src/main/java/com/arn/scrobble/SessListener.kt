@@ -79,6 +79,7 @@ class SessListener internal constructor(private val c: Context, private val hand
                     return
 
                 val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: return
+                val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
                 val artist = (metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?:
                         metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)) ?: return
                 val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
@@ -119,7 +120,7 @@ class SessListener internal constructor(private val c: Context, private val hand
                             if (isIgnoreArtistMeta)
                                 lastHash = handler.scrobble(title, duration, packageNameParam)
                             else
-                                lastHash = handler.scrobble(artist, title, duration, packageNameParam)
+                                lastHash = handler.scrobble(artist, album, title, duration, packageNameParam)
                         }
                         lastScrobbleTime = pos
                     }

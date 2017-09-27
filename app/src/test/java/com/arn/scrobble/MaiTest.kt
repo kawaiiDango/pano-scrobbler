@@ -6,6 +6,7 @@ package com.arn.scrobble
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.net.URL
 
 class MaiTest {
 
@@ -15,8 +16,17 @@ class MaiTest {
 //        val title = "[MV] REOL - ちるちる / ChiruChiru"
         val splits = Stuff.sanitizeTitle(title)
         splits.forEach { print(it + ", ") }
+        println()
 //        assertEquals(8, 8)
     }
+
+    @Test
+    fun testSanitizeAlbum() {
+        val txt = "http://pop/tmpe"
+        val url = URL(txt)
+        println(url.host)
+    }
+
 
 
 }

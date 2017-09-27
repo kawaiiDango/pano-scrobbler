@@ -5,13 +5,14 @@ import android.content.Context
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.support.design.widget.CollapsingToolbarLayout
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.util.TypedValue
 import android.widget.Toast
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.net.MalformedURLException
+import java.net.URL
 import java.util.regex.Pattern
 
 
@@ -70,6 +71,8 @@ object Stuff {
             // ":",
             " \"", " /")
     private val unwantedSeperators = arrayOf("』", "」", "\"", "'", "】", "〗", "〕")
+
+    private val metaSpam = arrayOf("downloaded")
 
     fun log(s: String) {
         Log.i(TAG, s)
@@ -172,12 +175,34 @@ object Stuff {
         return musicInfo
     }
 
+    fun sanitizeAlbum(albumOrig:String): String {
+        //url
+        val splits = albumOrig.split(' ')
+        splits.forEach {
+            try {
+                if (it.contains('.')){
+                    if (it.contains(':'))
+                        URL(it)
+                    else
+                        URL("http://"+it)
+                    return ""
+                }
+            } catch (e: MalformedURLException){
+            }
+        }
+
+        if (metaSpam.any {albumOrig.contains(it)})
+            return ""
+
+        return albumOrig
+    }
+
     fun setTitle(activity:Activity, strId: Int){
         val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
         ctl.title = activity.getString(strId)
-        ctl.tag = activity.getString(strId)
+//        ctl.tag = activity.getString(strId)
         ctl.setContentScrimColor(activity.resources.getColor(R.color.colorPrimary))
-        ctl.setCollapsedTitleTextColor(0xfffffff)
+//        ctl.setCollapsedTitleTextColor(0xfffffff)
     }
 
     fun getMatColor(c: Context, typeColor: String, hash: Long = 0): Int {

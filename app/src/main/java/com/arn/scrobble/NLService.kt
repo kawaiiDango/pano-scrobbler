@@ -14,7 +14,7 @@ import android.os.Looper
 import android.os.Message
 import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
-import com.arn.scrobble.receivers.TrackMetaListener
+import com.arn.scrobble.receivers.LegacyMetaReceiver
 import android.app.NotificationChannel
 import android.os.Build
 import android.support.v4.app.NotificationCompat
@@ -26,7 +26,7 @@ class NLService : NotificationListenerService() {
     lateinit private var pref: SharedPreferences
     lateinit private var nm: NotificationManager
     private var sessListener: SessListener? = null
-    private var tReceiver: TrackMetaListener? = null
+    private var bReceiver: LegacyMetaReceiver? = null
 
 
     override fun onCreate() {
@@ -35,9 +35,6 @@ class NLService : NotificationListenerService() {
 
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return super.onStartCommand(intent, flags, startId)
-    }
     override fun onListenerConnected() {
         super.onListenerConnected()
         // lollipop and mm bug
@@ -81,7 +78,7 @@ class NLService : NotificationListenerService() {
             // Media controller needs notification listener service
             // permissions to be granted.
         }
-//        tReceiver = CommonPlayers.regIntents(applicationContext)
+        bReceiver = LegacyMetaReceiver.regIntents(applicationContext)
         initChannels(applicationContext)
     }
 
@@ -92,8 +89,8 @@ class NLService : NotificationListenerService() {
         if (sessListener != null)
             (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
                     .removeOnActiveSessionsChangedListener(sessListener)
-        if (tReceiver != null)
-            unregisterReceiver(tReceiver)
+        if (bReceiver != null)
+            unregisterReceiver(bReceiver)
     }
     override fun onDestroy() {
         Stuff.log("onDestroy")
@@ -193,14 +190,15 @@ class NLService : NotificationListenerService() {
             //TODO: corrected artist/title
             val title = m.data.getString(B_TITLE)
             val artist = m.data.getString(B_ARTIST)
+            val album = m.data.getString(B_ALBUM)
             val time = m.data.getLong(B_TIME)
             val duration = m.data.getLong(B_DURATION)
             //            int hash = title.hashCode() + artist.hashCode();
-            LFMRequester(applicationContext, this).execute(Stuff.SCROBBLE, artist, title, time.toString(), duration.toString())
+            LFMRequester(applicationContext, this).execute(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString())
             notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
-        fun scrobble(artist:String, title: String, duration:Long, packageName: String? = null): Int {
+        fun scrobble(artist:String, album:String, title: String, duration:Long, packageName: String? = null): Int {
             val hash = artist.hashCode() + title.hashCode()
 
 //            if (!activeIDs.contains(hash))
@@ -211,12 +209,15 @@ class NLService : NotificationListenerService() {
             if (!hasMessages(hash)) {
 
                 if (artist != "" && title != "") {
+                    val album = Stuff.sanitizeAlbum(album)
                     val now = System.currentTimeMillis()
                     LFMRequester(applicationContext, this)
-                            .execute(Stuff.NOW_PLAYING, artist, title, now.toString(), duration.toString())
+                            .execute(Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString())
+
                     val m = obtainMessage()
                     val b = Bundle()
                     b.putString(B_ARTIST, artist)
+                    b.putString(B_ALBUM, album)
                     b.putString(B_TITLE, title)
                     b.putLong(B_TIME, now)
                     b.putLong(B_DURATION, duration)
@@ -245,7 +246,7 @@ class NLService : NotificationListenerService() {
         }
         fun scrobble(songTitle: String, duration:Long, packageName:String? = null): Int {
             val splits = Stuff.sanitizeTitle(songTitle)
-            return scrobble(splits[0], splits[1], duration, packageName)
+            return scrobble(splits[0], "", splits[1], duration, packageName)
         }
         private fun buildAppNotification(packageName:String): Notification?{
             val appName: String
@@ -409,6 +410,7 @@ class NLService : NotificationListenerService() {
         val B_TITLE = "title"
         val B_TIME = "time"
         val B_ARTIST = "artist"
+        val B_ALBUM = "album"
         val B_DURATION = "duration"
         val NOTI_ID_SCR = "scrobble_success"
         val NOTI_ID_ERR = "err"

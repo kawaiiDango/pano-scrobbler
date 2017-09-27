@@ -1,11 +1,14 @@
 package com.arn.scrobble
 
 import android.app.Fragment
+import android.app.Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import com.arn.scrobble.pref.AppListFragment
+import com.arn.scrobble.pref.PrefFragment
 
 
 class Main : AppCompatActivity() {
@@ -42,12 +45,24 @@ class Main : AppCompatActivity() {
 
         if( FirstThingsFragment.checkAuthTokenExists(this) &&
                 FirstThingsFragment.checkNLAccess(this)) {
+            val deepLinkExtra = intent?.getIntExtra(Stuff.DEEP_LINK_KEY, 0) ?: 0
+
             val recentsFragment = RecentsFragment()
             fragmentManager.beginTransaction()
                     .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
-//                .hide(recentsFragment)
-//                .add(R.id.frame, PrefFragment())
                     .commit()
+            if (deepLinkExtra == Stuff.DL_SETTINGS || intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
+                fragmentManager.beginTransaction()
+                        .hide(recentsFragment)
+                        .add(R.id.frame, PrefFragment())
+                        .addToBackStack(null)
+                        .commit()
+            else if (deepLinkExtra == Stuff.DL_APP_LIST)
+                fragmentManager.beginTransaction()
+                        .hide(recentsFragment)
+                        .add(R.id.frame, AppListFragment())
+                        .addToBackStack(null)
+                        .commit()
         } else {
             fragmentManager.beginTransaction()
                     .replace(R.id.frame, FirstThingsFragment())

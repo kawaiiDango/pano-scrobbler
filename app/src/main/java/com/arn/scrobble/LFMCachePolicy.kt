@@ -20,6 +20,6 @@ class LFMCachePolicy(val isNetworkAvailable:Boolean) : DefaultExpirationPolicy()
         return time
     }
     companion object {
-        public val NETWORK_AND_CACHE_CONST = ONE_WEEK + 1
+        val NETWORK_AND_CACHE_CONST = ONE_WEEK + 1
     }
 }

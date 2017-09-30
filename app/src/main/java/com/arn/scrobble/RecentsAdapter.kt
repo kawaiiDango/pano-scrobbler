@@ -12,17 +12,15 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.drawable.*
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.support.design.widget.CollapsingToolbarLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.graphics.drawable.Animatable2Compat
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.graphics.Palette
-import android.text.Html
-import android.text.format.DateUtils
-import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,14 +50,12 @@ class RecentsAdapter
 
     init {
         setNotifyOnChange(false)
-        timedRefresh = object : Runnable {
-            override fun run() {
-                loadRecents(1)
-            }
-        }
+        timedRefresh = Runnable { loadRecents(1) }
     }
 
-    private val hero: ImageView = (c as Activity).findViewById<ImageView>(R.id.img_hero)
+    private val hero = (c as Activity).findViewById<ImageView>(R.id.img_hero)
+    private var heroInfoLoader: LFMRequester? = null
+
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView : View? = convertView
@@ -77,7 +73,7 @@ class RecentsAdapter
         // object item based on the position
         val t = getItem(position) ?: return convertView
         parent as ListView
-        var selectedId: Long = if (parent.checkedItemIds.size == 0) NP_ID else parent.checkedItemIds[0]
+        val selectedId: Long = if (parent.checkedItemIds.isEmpty()) NP_ID else parent.checkedItemIds[0]
 
 // get the TextView and then set the text (item name) and tag (item ID) values
         val title = convertView.findViewById<TextView>(R.id.recents_title)
@@ -104,7 +100,7 @@ class RecentsAdapter
                     }
                 })
                 anim.start()
-            } else if (anim is AnimatedVectorDrawable && !anim.isRunning) {
+            } else if (Build.VERSION.SDK_INT >= 23 && anim is AnimatedVectorDrawable && !anim.isRunning) {
                 anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
                         if (drawable != null && drawable.isVisible)
@@ -119,10 +115,7 @@ class RecentsAdapter
         subtitle.text = t.artist
 
         if (t.playedWhen != null) {
-            relDate = DateUtils.getRelativeTimeSpanString(
-                    t.playedWhen.time, System.currentTimeMillis(), MINUTE_IN_MILLIS)
-            if (relDate[0] == '0')
-                relDate = "Just now"
+            relDate = Stuff.myRelativeTime(t.playedWhen)
         }
         date.text = relDate
         val love = convertView.findViewById<ImageView>(R.id.recents_love)
@@ -193,7 +186,7 @@ class RecentsAdapter
     }
 
     override fun getItemId(position: Int): Long {
-        return getItem(position)?.playedWhen?.time ?: NP_ID.toLong()
+        return getItem(position)?.playedWhen?.time ?: NP_ID
     }
 
     override fun hasStableIds(): Boolean {
@@ -309,10 +302,10 @@ class RecentsAdapter
 
         val b = (hero.drawable as BitmapDrawable).bitmap
         Palette.generateAsync(b) { palette ->
-            val colorDomPrimary = palette.getDominantColor(context.resources.getColor(R.color.colorPrimary))
-            val colorLightWhite = palette.getLightMutedColor(context.resources.getColor(android.R.color.primary_text_dark))
-            val colorMutedDark = palette.getDarkMutedColor(context.resources.getColor(R.color.colorPrimaryDark))
-            val colorMutedBlack = palette.getDarkMutedColor(context.resources.getColor(android.R.color.background_dark))
+            val colorDomPrimary = palette.getDominantColor(ContextCompat.getColor(context, R.color.colorPrimary))
+            val colorLightWhite = palette.getLightMutedColor(ContextCompat.getColor(context, android.R.color.primary_text_dark))
+            val colorMutedDark = palette.getDarkMutedColor(ContextCompat.getColor(context, R.color.colorPrimaryDark))
+            val colorMutedBlack = palette.getDarkMutedColor(ContextCompat.getColor(context, android.R.color.background_dark))
 
             ctl.setContentScrimColor(colorDomPrimary)
             ctl.setExpandedTitleTextColor(ColorStateList.valueOf(colorLightWhite))
@@ -349,9 +342,9 @@ class RecentsAdapter
             return
 
         val graph = (context as Activity).findViewById<GraphView>(R.id.graph)
-        val series = graph.series.get(0) as LineGraphSeries<DataPoint>
+        val series = graph.series[0] as LineGraphSeries<DataPoint>
         val dps = mutableListOf<DataPoint>()
-        var i: Double = 0.0
+        var i = 0.0
         points.split(", ").forEach{
                     dps.add(DataPoint(i++, it.toDouble()))
                 }
@@ -373,7 +366,7 @@ class RecentsAdapter
         val list = (context as Activity).findViewById<ListView>(R.id.recents_list)
         if (list.visibility != View.VISIBLE)
             return
-        val selectedId = if (list.checkedItemIds.size == 0) NP_ID else list.checkedItemIds[0]
+        val selectedId = if (list.checkedItemIds.isEmpty()) NP_ID else list.checkedItemIds[0]
         var selectedPos = 2
         refresh.isRefreshing = false
         list.removeCallbacks(timedRefresh)
@@ -408,11 +401,11 @@ class RecentsAdapter
     }
 
     private val loveToggle = View.OnClickListener { v ->
-        val parentRow = v.getParent() as View
+        val parentRow = v.parent as View
         val listView = parentRow.parent as ListView
         val pos = listView.getPositionForView(parentRow) - 2
         val anim = (v as ImageView).drawable as AnimatedVectorDrawableCompat
-        var nextDrawable: AnimatedVectorDrawableCompat?
+        val nextDrawable: AnimatedVectorDrawableCompat?
 
         if (v.getTag(R.id.recents_love) == FILLED) {
             LFMRequester(context, handler).execute(Stuff.UNLOVE,
@@ -473,15 +466,13 @@ class RecentsAdapter
 
     companion object {
         var timedRefresh: Runnable? = null
-        private var lastColorDomPrimary = 0
+        var lastColorDomPrimary:Int = 0x880e4f
         private var lastColorLightWhite = 0
         private var lastColorMutedDark = 0
         private var lastColorMutedBlack = 0
 
         private val FILLED = 5
         private val NP_ID: Long = -5
-
-        private var heroInfoLoader: LFMRequester? = null
     }
 
 }

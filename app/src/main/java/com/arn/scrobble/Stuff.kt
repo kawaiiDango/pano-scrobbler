@@ -4,7 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.net.ConnectivityManager
+import android.os.Bundle
 import android.support.design.widget.CollapsingToolbarLayout
+import android.support.v4.content.ContextCompat
+import android.text.format.DateUtils
 import android.util.Log
 import android.util.TypedValue
 import android.widget.Toast
@@ -13,6 +16,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.*
 import java.util.regex.Pattern
 
 
@@ -51,9 +55,10 @@ object Stuff {
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 15 * 1000
-    const val META_WAIT: Long = 1000
+    const val META_WAIT: Long = 800
+    const val DEBOUNCE_TIME = 100
     const val MAX_APPS = 30
-    var timeIt:Long = 0
+    private var timeIt:Long = 0
 
     val APPS_IGNORE_ARTIST_META = arrayOf(
             "com.google.android.youtube",
@@ -88,6 +93,19 @@ object Stuff {
         try {
             Toast.makeText(c, s, len).show()
         } catch (e: Exception) {
+        }
+    }
+
+    fun bundleDump(bundle: Bundle?): String {
+        if (bundle == null)
+            return "null"
+        else {
+            var s = ""
+            for (key in bundle.keySet().sortedDescending()) {
+                val value = bundle.get(key) ?: "null"
+                s += String.format("%s= %s, ", key, value.toString())
+            }
+            return s
         }
     }
 
@@ -201,7 +219,7 @@ object Stuff {
         val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
         ctl.title = activity.getString(strId)
 //        ctl.tag = activity.getString(strId)
-        ctl.setContentScrimColor(activity.resources.getColor(R.color.colorPrimary))
+        ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.colorPrimary))
 //        ctl.setCollapsedTitleTextColor(0xfffffff)
     }
 
@@ -234,17 +252,26 @@ object Stuff {
        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), c.resources.displayMetrics).toInt()
     }
 
-    fun humanReadableNum(bytes: Long): String {
+    fun humanReadableNum(n: Long): String {
         val unit = 1000
-        if (bytes < unit) return bytes.toString()
-        val exp = (Math.log(bytes.toDouble()) / Math.log(unit.toDouble())).toInt()
+        if (n < unit) return n.toString()
+        val exp = (Math.log(n.toDouble()) / Math.log(unit.toDouble())).toInt()
         val pre = "KMB"[exp - 1] //kilo, million, bilion
-        return String.format("%.1f%s", bytes / Math.pow(unit.toDouble(), exp.toDouble()), pre)
+        return String.format("%.1f%s", n / Math.pow(unit.toDouble(), exp.toDouble()), pre)
     }
 
     fun isNetworkAvailable(c: Context): Boolean {
         val connectivityManager = c.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+    fun myRelativeTime(date: Date?): CharSequence {
+        var relDate:CharSequence = "just now"
+        if(date != null)
+            relDate = DateUtils.getRelativeTimeSpanString(
+                date.time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)
+        if (relDate[0] == '0')
+            return "just now"
+        return relDate
     }
 }

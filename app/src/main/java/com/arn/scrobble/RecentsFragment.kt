@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
@@ -23,6 +24,7 @@ import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import de.umass.lastfm.Track
 import java.io.File
 
 
@@ -80,7 +82,7 @@ class RecentsFragment : Fragment() {
         series.isDrawDataPoints = true
         series.thickness = Stuff.dp2px(6, activity)
         series.dataPointsRadius = Stuff.dp2px(6, activity).toFloat()
-        series.color = resources.getColor(R.color.colorAccent)
+        series.color = ContextCompat.getColor(activity, R.color.colorAccent)
         series.setAnimated(true)
         graph.addSeries(series)
         graph.setOnClickListener{
@@ -177,7 +179,9 @@ class RecentsFragment : Fragment() {
         val ab = (activity as AppCompatActivity).supportActionBar
         ab?.setDisplayHomeAsUpEnabled(hidden)
         if (!hidden) {
-            activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)?.title = getString(R.string.app_name)
+            val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout) ?: return
+            ctl.title = getString(R.string.app_name)
+            ctl.setContentScrimColor(RecentsAdapter.lastColorDomPrimary)
         }
     }
 
@@ -213,9 +217,13 @@ class RecentsFragment : Fragment() {
         ab?.setExpanded(true, true)
     }
     private val shareClickListener = View.OnClickListener {
-        val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
-        var shareText = getString(R.string.share_text)
-        shareText = "I was listening to:\n " +  ctl.title.toString() + "\n" + shareText
+        val list = activity.findViewById<ListView>(R.id.recents_list)
+        val selectedPos = if (list.checkedItemPosition > 0) list.checkedItemPosition else return@OnClickListener
+        val track = list.getItemAtPosition(selectedPos) as Track
+        Stuff.log("shareClickListener $track")
+
+        val shareText = "I was listening to\n " +  track.artist + " - " + track.name + ",  " +
+                Stuff.myRelativeTime(track.playedWhen) + "\n" + getString(R.string.share_text)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
         i.putExtra(Intent.EXTRA_SUBJECT, "I was listening to:")

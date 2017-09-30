@@ -23,7 +23,7 @@ android {
     }
 
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
@@ -38,23 +38,14 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        /*
-        applicationVariants.all { variant ->
-            if (variant.buildType.name == "debug") {
-                variant.outputs.all {
-                    outputFileName = "pScrobbler-debug.apk"
-                }
-            }
-        }
-        */
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+//    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//    })
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.pavelsikun:material-seekbar-preference:2.3.0'
@@ -64,7 +55,6 @@ dependencies {
 
     kapt "android.arch.persistence.room:compiler:1.0.0-alpha9-1"
     implementation "android.arch.persistence.room:runtime:1.0.0-alpha9-1"
-    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha9-1"
 
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

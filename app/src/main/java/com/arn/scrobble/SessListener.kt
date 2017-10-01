@@ -20,7 +20,7 @@ import android.util.Pair
 class SessListener internal constructor(private val c: Context, private val handler: NLService.ScrobbleHandler) : OnActiveSessionsChangedListener {
     private var pref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(c)
 
-    private val mControllers = mutableMapOf<MediaSession.Token, Pair<MediaController, YtCallback>>()
+    private val mControllers = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
 
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
         val tokens = mutableSetOf<MediaSession.Token>()
@@ -31,8 +31,7 @@ class SessListener internal constructor(private val c: Context, private val hand
                 if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, false) && !isBlacklisted)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!mControllers.containsKey(controller.sessionToken)) {
-//                        controller.m
-                        val cb = YtCallback(controller.packageName)
+                        val cb = MyCallback(controller.packageName)
                         controller.registerCallback(cb)
                         val pair = Pair.create(controller, cb)
                         synchronized(mControllers) {
@@ -43,10 +42,15 @@ class SessListener internal constructor(private val c: Context, private val hand
             }
         }
         // Now remove old sessions that are not longer active.
+        removeSessions(tokens)
+    }
+
+    fun removeSessions(tokens:MutableSet<*>? = null, packageName: String? = null){
         val it = mControllers.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
-            if (!tokens.contains(token)) {
+            if ((tokens != null && !tokens.contains(token)) ||
+                    (packageName != null && pair.first.packageName == packageName)) {
                 pair.first.unregisterCallback(pair.second)
                 synchronized(mControllers) {
                     it.remove()
@@ -54,14 +58,13 @@ class SessListener internal constructor(private val c: Context, private val hand
                 }
             }
         }
+        numSessions = mControllers.size
     }
 
-    private inner class YtCallback(val packageName: String) : Callback() {
-        val DEBOUNCE_TIME = 100
+    private inner class MyCallback(val packageName: String) : Callback() {
         var metadata: MediaMetadata? = null
         var lastHash = 0
-//        var lastPos: Long = 1
-        var lastScrobbleTime: Long = 1
+        var lastScrobblePos: Long = 1
         var lastState = -1
         val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
 
@@ -75,7 +78,8 @@ class SessListener internal constructor(private val c: Context, private val hand
                         metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION))
 
                 val isAtStart = pos == 0.toLong()
-                if (lastState == state && !(state == PlaybackState.STATE_PLAYING && isAtStart)) // bandcamp does this
+                if (lastState == state /* bandcamp does this */ &&
+                        !(state == PlaybackState.STATE_PLAYING && isAtStart))
                     return
 
                 val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: return
@@ -94,16 +98,15 @@ class SessListener internal constructor(private val c: Context, private val hand
                 val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
 
                 if (state == PlaybackState.STATE_PAUSED) {
-                    if (duration != 0.toLong() && pos == 0.toLong())
-                        return
-                    //cancel scrobbling if within time
-//                    lastPos = pos
+//                    if (duration != 0.toLong() && pos == 0.toLong()) //this breaks phonograph
+//                        return
+                    if (handler.hasMessages(lastHash)) //if it wasnt scrobbled, consider scrobling again
+                        lastScrobblePos = 1
                     handler.remove(lastHash)
                     Stuff.log("paused")
                 } else if (state == PlaybackState.STATE_STOPPED) {
                     // a replay should count as another scrobble. Replay (in youtube app) is stop, buffer, then play
-//                    lastPos = 1
-                    lastScrobbleTime = 1
+                    lastScrobblePos = 1
                     handler.remove(lastHash)
                     Stuff.log("stopped")
                 } else if (state == PlaybackState.STATE_PLAYING ||
@@ -112,8 +115,8 @@ class SessListener internal constructor(private val c: Context, private val hand
 //                if (state.state == PlaybackState.STATE_BUFFERING && state.position == 0.toLong())
 //                    return  //dont scrobble first buffering
 
-                    Stuff.log(state.toString() + " playing: " + pos + " < " + lastScrobbleTime + " " + title)
-                    if (isAtStart || (lastScrobbleTime == 1.toLong())){
+                    Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $title")
+                    if (isAtStart || (lastScrobblePos == 1.toLong())){
                         if(pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) || Stuff.isNetworkAvailable(c)) {
                             if (isAtStart) //scrobble replays
                                 handler.remove(lastHash)
@@ -122,12 +125,12 @@ class SessListener internal constructor(private val c: Context, private val hand
                             else
                                 lastHash = handler.scrobble(artist, album, title, duration, packageNameParam)
                         }
-                        lastScrobbleTime = pos
+                        lastScrobblePos = pos
                     }
                 } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
-                    Stuff.log(state.toString() +"connecting " + pos)
+                    Stuff.log("$state connecting $pos")
                 } else {
-                    Stuff.log("other (" + state + ") : " + title)
+                    Stuff.log("other ($state) : $title")
                 }
             }
         }
@@ -144,16 +147,20 @@ class SessListener internal constructor(private val c: Context, private val hand
             Stuff.log("onMetadataChanged $artist ~ $title, sameAsOld=$sameAsOld, package=$packageName")
             if (!sameAsOld) {
                 this.metadata = metadata
-//            lastPos = 1
-                lastScrobbleTime = 1
+                lastScrobblePos = 1
                 lastState = -1
             }
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState) {
 //            super.onPlaybackStateChanged(state)
+            lastStateChangedTime = System.currentTimeMillis()
             val msg = stateHandler.obtainMessage(0, state.state, state.position.toInt())
             stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
         }
+    }
+    companion object {
+        var numSessions = 0
+        var lastStateChangedTime:Long = 0
     }
 }

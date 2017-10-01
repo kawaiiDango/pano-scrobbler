@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.arn.scrobble.NLService
+import com.arn.scrobble.SessListener
 import com.arn.scrobble.Stuff
 
 
@@ -16,16 +18,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
     private var lastHash: Int = 0
 
     override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action
-        val cmd = intent.getStringExtra("command")
-        val artist = intent.getStringExtra("artist")
-        val album = intent.getStringExtra("album")
-        val track = intent.getStringExtra("track")
-        val duration = intent.getLongExtra("duration", 0)
-        Stuff.log( "LegacyMetaReceiver Action $action")
-        Stuff.log( "LegacyMetaReceiver Extras: " + intent.extras)
-        processIntent(intent)
-//        lastHash = NLService.handler.scrobble(artist, track)
+            processIntent(intent)
     }
 
     private fun processIntent(intent: Intent) {
@@ -36,27 +29,49 @@ class LegacyMetaReceiver : BroadcastReceiver() {
         else if (isInitialStickyBroadcast)
             Stuff.log("received cached sticky broadcast, won't process it")
         else {
+            Stuff.log( "LegacyMetaReceiver "+ intent.action +": " + Stuff.bundleDump(intent.extras))
+
             val isPlaying = getBoolOrNumberAsBoolExtra(intent, null, "playing", "playstate", "isPlaying", "isplaying", "is_playing")
             if (isPlaying == null) {
                 Stuff.log("does not contain playing state, ignoring")
             } else {
-                /*
-                handleTrackIntent.putExtra(EXTRA_PLAYING, isPlaying)
-                handleTrackIntent.putExtra(EXTRA_ALBUM_ID, IntentUtil.getLongOrIntExtra(originalIntent, -1, "albumid", "albumId"))
-                handleTrackIntent.putExtra(EXTRA_TRACK, originalIntent.getStringExtra("track"))
-                handleTrackIntent.putExtra(EXTRA_ARTIST, originalIntent.getStringExtra("artist"))
-                handleTrackIntent.putExtra(EXTRA_ALBUM, originalIntent.getStringExtra("album"))
+                val artist = intent.getStringExtra("artist")
+                val album = intent.getStringExtra("album") ?: ""
+                val track = intent.getStringExtra("track")
+//                val positionAny: Any? = intent.extras["position"] // position in blackplayer is a lie
 
-                var duration = IntentUtil.getLongOrIntExtra(originalIntent, -1, "duration")
+                if (artist == null || artist == "" || track == null || track == "" )
+                    return
 
-                if (duration != -1) {
-                    if (duration < 30000) { // it is in seconds, we should convert it to millis
-                        duration *= 1000
-                    }
+                val durationAny: Any? = intent.extras["duration"]
+                var duration: Long = durationAny as? Long ?: if(durationAny is Int)
+                    durationAny.toLong()
+                else
+                    0
+                if (duration in 1..30000) { // it is in seconds, we should convert it to millis
+                    duration *= 1000
                 }
 
-                handleTrackIntent.putExtra(EXTRA_DURATION, duration)
-                */
+                val hash = artist.hashCode() + track.hashCode()
+                try{
+                    NLService.handler.postDelayed({
+                        if (SessListener.numSessions ==0 || System.currentTimeMillis() - SessListener.lastStateChangedTime < Stuff.META_WAIT*2)
+                            return@postDelayed
+
+                        if (isPlaying && !NLService.handler.hasMessages(hash)) {
+                            lastHash = NLService.handler.scrobble(artist, album, track, duration)
+                            Stuff.log( "LegacyMetaReceiver scrobbling $track")
+                            Stuff.log("timeDiff="+ (System.currentTimeMillis() - SessListener.lastStateChangedTime) +
+                            ", numSessions="+SessListener.numSessions)
+
+                        } else if (!isPlaying && NLService.handler.hasMessages(hash)) {
+                            NLService.handler.remove(lastHash)
+                            Stuff.log( "LegacyMetaReceiver cancelled "+ hash)
+                        }
+                    }, Stuff.META_WAIT+200)
+                } catch (e:Exception){
+                    e.printStackTrace()
+                }
             }
         }
     }
@@ -68,21 +83,20 @@ class LegacyMetaReceiver : BroadcastReceiver() {
 
         if (extras == null || extras.isEmpty) return defaultValue
 
-        for (possibleExtraName in possibleExtraNames) {
-            if (extras.containsKey(possibleExtraName)) {
-                val obj = extras.get(possibleExtraName)
-
-                when (obj) {
-                    is Boolean -> return obj
-                    is Int -> return obj > 0
-                    is Long -> return obj > 0
-                    is Short -> return obj > 0
-                    is Byte -> return obj > 0
-                    else -> {
+        possibleExtraNames
+                .filter { extras.containsKey(it) }
+                .map { extras.get(it) }
+                .forEach {
+                    when (it) {
+                        is Boolean -> return it
+                        is Int -> return it > 0
+                        is Long -> return it > 0
+                        is Short -> return it > 0
+                        is Byte -> return it > 0
+                        else -> {
+                        }
                     }
                 }
-            }
-        }
 
         return defaultValue
     }
@@ -99,7 +113,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
             return tReceiver
         }
 
-        val intentStrings = arrayOf(
+        private val intentStrings = arrayOf(
                 "com.android.music.metachanged",
                 "com.android.music.playstatechanged"
         )

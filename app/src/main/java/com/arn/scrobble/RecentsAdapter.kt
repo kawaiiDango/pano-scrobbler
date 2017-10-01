@@ -5,11 +5,11 @@ package com.arn.scrobble
 import android.animation.AnimatorSet
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.*
 import android.net.Uri
 import android.os.Build
@@ -55,7 +55,7 @@ class RecentsAdapter
 
     private val hero = (c as Activity).findViewById<ImageView>(R.id.img_hero)
     private var heroInfoLoader: LFMRequester? = null
-
+    private val handler = ResponseHandler(this)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView : View? = convertView
@@ -429,50 +429,49 @@ class RecentsAdapter
         anim.start()
     }
 
-    private val handler =
-    object: Handler(){
-        override fun handleMessage(m: Message) {
-            //usually:
-            // obj = command, paginatedresult;
-            val pair = m.obj as Pair<String, Any>
-            val command = pair.first
-            var data = pair.second
-            when(command){
-                Stuff.GET_LOVED -> markLoved(data as PaginatedResult<Track>)
-                Stuff.HERO_INFO -> {
-                        data = data as MutableList<String?>
-                        setHero(data[0])
-                        setGraph(data[1])
-                }
-                Stuff.GET_RECENTS -> {
-                    populate(data as PaginatedResult<Track>, data.page)
-                    LFMRequester(context, this).execute(Stuff.GET_LOVED)
-                }
-                Stuff.GET_RECENTS_CACHED -> {
-                    populate(data as PaginatedResult<Track>, data.page)
-                    loadRecents(1)
-                }
-                Stuff.IS_ONLINE -> {
-                    val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
-                    val headerTv = list.findViewById<TextView>(R.id.header_text)
-                    if (data as Boolean)
-                        headerTv.text = context.getString(R.string.recently_scrobbled)
-                    else
-                        headerTv.text = context.getString(R.string.offline)
-                }
-            }
-        }
-    }
-
     companion object {
         var timedRefresh: Runnable? = null
-        var lastColorDomPrimary:Int = 0x880e4f
-        private var lastColorLightWhite = 0
-        private var lastColorMutedDark = 0
-        private var lastColorMutedBlack = 0
+        var lastColorDomPrimary:Int = Color.rgb(0x88, 0x0e, 0x4f)
+        var lastColorLightWhite = Color.WHITE
+        var lastColorMutedDark = Color.BLACK
+        private var lastColorMutedBlack = Color.BLACK
 
         private val FILLED = 5
         private val NP_ID: Long = -5
+
+        class ResponseHandler(private val recentsAdapter:RecentsAdapter):Handler(){
+            override fun handleMessage(m: Message) {
+                //usually:
+                // obj = command, paginatedresult;
+                val pair = m.obj as Pair<String, Any>
+                val command = pair.first
+                var data = pair.second
+                when(command){
+                    Stuff.GET_LOVED -> recentsAdapter.markLoved(data as PaginatedResult<Track>)
+                    Stuff.HERO_INFO -> {
+                        data = data as MutableList<String?>
+                        recentsAdapter.setHero(data[0])
+                        recentsAdapter.setGraph(data[1])
+                    }
+                    Stuff.GET_RECENTS -> {
+                        recentsAdapter.populate(data as PaginatedResult<Track>, data.page)
+                        LFMRequester(recentsAdapter.context, this).execute(Stuff.GET_LOVED)
+                    }
+                    Stuff.GET_RECENTS_CACHED -> {
+                        recentsAdapter.populate(data as PaginatedResult<Track>, data.page)
+                        recentsAdapter.loadRecents(1)
+                    }
+                    Stuff.IS_ONLINE -> {
+                        val list = (recentsAdapter.context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
+                        val headerTv = list.findViewById<TextView>(R.id.header_text)
+                        if (data as Boolean)
+                            headerTv.text = recentsAdapter.context.getString(R.string.recently_scrobbled)
+                        else
+                            headerTv.text = recentsAdapter.context.getString(R.string.offline)
+                    }
+                }
+            }
+        }
     }
 
 }

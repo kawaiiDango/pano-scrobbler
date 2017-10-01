@@ -220,7 +220,7 @@ object Stuff {
         ctl.title = activity.getString(strId)
 //        ctl.tag = activity.getString(strId)
         ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.colorPrimary))
-//        ctl.setCollapsedTitleTextColor(0xfffffff)
+        ctl.setCollapsedTitleTextColor(Color.WHITE)
     }
 
     fun getMatColor(c: Context, typeColor: String, hash: Long = 0): Int {

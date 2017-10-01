@@ -1,10 +1,13 @@
 package com.arn.scrobble
 
+import android.app.ActivityManager
 import android.app.Fragment
 import android.content.ComponentName
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.pm.LabeledIntent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
@@ -144,6 +147,21 @@ class RecentsFragment : Fragment() {
 
     private fun mailLogs(){
         Stuff.toast(activity, "Generating report...")
+        var text = ""
+        text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME+ "\n"
+        text += "Android " + Build.VERSION.RELEASE+ "\n"
+        text += "ROM: " + Build.DISPLAY+ "\n"
+        text += "Device: " + Build.BRAND + " "+ Build.MODEL+ "\n"
+
+        val mi = ActivityManager.MemoryInfo()
+        (activity.getSystemService(ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(mi)
+        val megs = mi.totalMem / 1048576L
+        text += "RAM: " + megs + "M \n"
+
+        val dm = resources.displayMetrics
+
+        text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
+        text += "------------------------\n\n[how did this happen?]"
 
         val log = Stuff.getLogcat()
         val file = File(activity.filesDir, "log.txt")
@@ -160,7 +178,7 @@ class RecentsFragment : Fragment() {
             intent.component = ComponentName(info.activityInfo.packageName, info.activityInfo.name)
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
             intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) +" - Bug report")
-            intent.putExtra(Intent.EXTRA_TEXT, "[how did this happen?]")
+            intent.putExtra(Intent.EXTRA_TEXT, text)
             intent.putExtra(Intent.EXTRA_STREAM, uri)
             intents.add(LabeledIntent(intent, info.activityInfo.packageName, info.loadLabel(activity.packageManager), info.icon))
         }
@@ -182,6 +200,11 @@ class RecentsFragment : Fragment() {
             val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout) ?: return
             ctl.title = getString(R.string.app_name)
             ctl.setContentScrimColor(RecentsAdapter.lastColorDomPrimary)
+            if (Stuff.isDark(RecentsAdapter.lastColorDomPrimary)) {
+                ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorLightWhite)
+            } else {
+                ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorMutedDark)
+            }
         }
     }
 

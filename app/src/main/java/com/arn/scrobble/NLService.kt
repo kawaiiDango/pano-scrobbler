@@ -3,7 +3,6 @@
 package com.arn.scrobble
 
 import android.app.Notification
-import android.app.Notification.VISIBILITY_SECRET
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.*
@@ -16,13 +15,14 @@ import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import com.arn.scrobble.receivers.LegacyMetaReceiver
 import android.app.NotificationChannel
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.media.app.NotificationCompat.MediaStyle
 import android.widget.Toast
-import android.text.style.ForegroundColorSpan
-import android.text.SpannableString
 
 
 class NLService : NotificationListenerService() {
@@ -30,7 +30,6 @@ class NLService : NotificationListenerService() {
     lateinit private var nm: NotificationManager
     private var sessListener: SessListener? = null
     private var bReceiver: LegacyMetaReceiver? = null
-
 
     override fun onCreate() {
         super.onCreate()
@@ -285,13 +284,12 @@ class NLService : NotificationListenerService() {
                     .setSmallIcon(R.drawable.ic_noti)
                     .setColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
                     .setContentIntent(launchIntent)
-                    .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
                     .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
+                    .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
                     .setAutoCancel(true)
                     .setCustomBigContentView(null)
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                nb.setStyle(MediaStyle().setShowActionsInCompactView(0,1))
-            return nb.build()
+                    .setStyle(MediaStyle().setShowActionsInCompactView(0,1))
+            return mediaStyleHack(nb.build())
         }
         fun notification(title1: String, title2: String?, state: String, iconId: Int, love: Boolean = true) {
             var title2 = title2
@@ -311,22 +309,20 @@ class NLService : NotificationListenerService() {
                 title2 = ""
             }
 
-            val loveAction: NotificationCompat.Action
-
-            if (love){
+            val loveAction = if (love){
                 val i = Intent(pLOVE)
                         .putExtra("artist", title1)
                         .putExtra("title", title2)
                 val loveIntent = PendingIntent.getBroadcast(applicationContext, 3, i,
                         PendingIntent.FLAG_UPDATE_CURRENT)
-                loveAction = getAction(R.drawable.vd_heart, "❤", getString(R.string.love), loveIntent)
+                getAction(R.drawable.vd_heart, "❤", getString(R.string.love), loveIntent)
             } else {
                 val i = Intent(pUNLOVE)
                         .putExtra("artist", title1)
                         .putExtra("title", title2)
                 val loveIntent = PendingIntent.getBroadcast(applicationContext, 4, i,
                         PendingIntent.FLAG_UPDATE_CURRENT)
-                loveAction = getAction(R.drawable.vd_heart_break, "\uD83D\uDC94", getString(R.string.unlove), loveIntent)
+                getAction(R.drawable.vd_heart_break, "\uD83D\uDC94", getString(R.string.unlove), loveIntent)
             }
 
             var intent = Intent(applicationContext, Main::class.java)
@@ -343,7 +339,7 @@ class NLService : NotificationListenerService() {
                     .setSmallIcon(iconId)
                     .setColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
                     .setContentIntent(launchIntent)
-                    .setVisibility(VISIBILITY_SECRET)
+                    .setVisibility(Notification.VISIBILITY_SECRET)
                     .setAutoCancel(true)
                     .setShowWhen(false)
                     .setPriority(if (iconId == NOTI_ERR_ICON) Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
@@ -352,10 +348,9 @@ class NLService : NotificationListenerService() {
                         .setContentText(title1)
                         .setSubText(state)
             } else {
-                //TODO: colorHack(txt): decide later
                 nb.setContentTitle(state)
                         .setContentText(title2)
-                        .setSubText(state)
+                        .setSubText(title1)
                 if (state == getString(R.string.state_scrobbling))
                     nb.setUsesChronometer(true)
             }
@@ -369,13 +364,10 @@ class NLService : NotificationListenerService() {
                     style.setShowActionsInCompactView(0, 1)
                 } else
                     style.setShowActionsInCompactView(0)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                    nb.setStyle(style)
-                            .setCustomBigContentView(null)
+                nb.setStyle(style)
+                        .setCustomBigContentView(null)
             }
-            val n = nb.build()
-//            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
-//                n.bigContentView = null
+            val n = mediaStyleHack(nb.build())
 
             nm.notify(NOTI_ID_SCR, 0, n)
         }
@@ -391,13 +383,33 @@ class NLService : NotificationListenerService() {
 //                NotificationCompat.Action(R.drawable.ic_transparent, emoji + " "+ text, pIntent)
         }
 
-        private fun colorHack(s:String): SpannableString {
-            val spanText = SpannableString(s)
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M){
-                spanText.setSpan(ForegroundColorSpan(resources
-                        .getColor(android.R.color.primary_text_light_nodisable)), 0, s.length, 0)
+        private fun mediaStyleHack(n:Notification): Notification {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && n.actions.isNotEmpty()){
+                val res = Resources.getSystem()
+                val attrs = arrayOf(android.R.attr.textColor).toIntArray()
+
+                var sysStyle = res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
+                val titleColorHack = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
+
+                sysStyle = res.getIdentifier("TextAppearance.Material.Notification", "style", "android")
+                val descColorHack = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
+
+                n.bigContentView = null
+                val rv = n.contentView
+                var resId = res.getIdentifier("title", "id", "android")
+                rv.setTextColor(resId, titleColorHack)
+                resId = res.getIdentifier("text", "id", "android")
+                rv.setTextColor(resId, descColorHack)
+                resId = res.getIdentifier("text2", "id", "android")
+                rv.setTextColor(resId, descColorHack)
+
+                resId = res.getIdentifier("action0", "id", "android")
+                val c = Class.forName("android.widget.RemoteViews")
+                val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
+                m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
+                //TODO: try to tint the second button
             }
-            return spanText
+            return n
         }
 
         fun remove(hash: Int) {

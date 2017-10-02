@@ -190,9 +190,6 @@ class RecentsFragment : Fragment() {
             Stuff.toast(activity, "There are no email clients installed.")
     }
 
-    fun test(){
-        OfflineScrobbleJob.checkAndSchedule(activity)
-    }
     override fun onHiddenChanged(hidden: Boolean) {
         val ab = (activity as AppCompatActivity).supportActionBar
         ab?.setDisplayHomeAsUpEnabled(hidden)

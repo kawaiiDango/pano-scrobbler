@@ -31,6 +31,7 @@ class SessListener internal constructor(private val c: Context, private val hand
                 if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, false) && !isBlacklisted)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!mControllers.containsKey(controller.sessionToken)) {
+                        Stuff.log("onActiveSessionsChanged: "+controller.packageName+" #"+controller.sessionToken)
                         val cb = MyCallback(controller.packageName)
                         controller.registerCallback(cb)
                         val pair = Pair.create(controller, cb)

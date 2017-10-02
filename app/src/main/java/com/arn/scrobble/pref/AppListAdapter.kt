@@ -50,7 +50,7 @@ class AppListAdapter
             val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME  +":" + app.packageName)
 
             picasso.load(uri)
-                    .placeholder(android.R.color.transparent)
+//                    .placeholder(android.R.color.transparent)
                     .resize(dp, dp)
                     .into(icon)
 

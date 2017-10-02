@@ -12,6 +12,9 @@ import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Request
 import com.squareup.picasso.RequestHandler
 import java.io.IOException
+import android.graphics.drawable.PictureDrawable
+
+
 
 
 /**
@@ -34,10 +37,10 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
 
     @Throws(IOException::class)
     override fun load(request: Request, networkPolicy: Int): RequestHandler.Result? {
-        try {
-            return RequestHandler.Result(getFullResIcon(request.uri.toString().split(":")[1]), LoadedFrom.DISK)
+        return try {
+            RequestHandler.Result(getFullResIcon(request.uri.toString().split(":")[1]), LoadedFrom.DISK)
         } catch (e: PackageManager.NameNotFoundException) {
-            return null
+            null
         }
 
     }
@@ -53,18 +56,20 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
         val SCHEME_PNAME = "pname"
 
         fun drawableToBitmap(drawable: Drawable): Bitmap {
-            val bitmap: Bitmap
-
-            if (drawable is BitmapDrawable && drawable.bitmap != null) {
-                    return drawable.bitmap
+            if (drawable is BitmapDrawable) {
+                return drawable.bitmap
+            } else if (drawable is PictureDrawable) {
+                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth,
+                        drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                canvas.drawPicture(drawable.picture)
+                return bitmap
             }
-
-            if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
-                bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888) // Single color bitmap will be created of 1x1 pixel
-            } else {
-                bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-            }
-
+            var width = drawable.intrinsicWidth
+            width = if (width > 0) width else 1
+            var height = drawable.intrinsicHeight
+            height = if (height > 0) height else 1
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
             drawable.setBounds(0, 0, canvas.width, canvas.height)
             drawable.draw(canvas)

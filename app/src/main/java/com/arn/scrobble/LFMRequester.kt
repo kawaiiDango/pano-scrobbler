@@ -165,7 +165,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                             entry.timestamp = s[4].toLong()
                             entry.duration = s[5].toLong()
                             dao.insert(entry)
-                            OfflineScrobbleJob.checkAndSchedule(c)
+                            OfflineScrobbleJob.checkAndSchedule(c, true)
                         }
                     }
                 }

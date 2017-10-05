@@ -212,8 +212,10 @@ class RecentsAdapter
             val limit = 2
             var aFew = listOf<PendingScrobble>()
 
-            if (count > 0)
+            if (count > 0) {
                 aFew = dao.all(limit)
+                OfflineScrobbleJob.checkAndSchedule(context, true)
+            }
 
             (context as Activity).runOnUiThread {
                 Stuff.log("loadPending")

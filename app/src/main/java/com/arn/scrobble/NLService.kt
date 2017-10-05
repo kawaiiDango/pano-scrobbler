@@ -15,13 +15,11 @@ import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import com.arn.scrobble.receivers.LegacyMetaReceiver
 import android.app.NotificationChannel
-import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.media.app.NotificationCompat.MediaStyle
+import android.support.v4.media.app.MediaStyleMod
 import android.widget.Toast
 
 
@@ -288,8 +286,8 @@ class NLService : NotificationListenerService() {
                     .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
                     .setAutoCancel(true)
                     .setCustomBigContentView(null)
-                    .setStyle(MediaStyle().setShowActionsInCompactView(0,1))
-            return mediaStyleHack(nb.build())
+                    .setStyle(MediaStyleMod().setShowActionsInCompactView(0,1))
+            return buildMediaStyleMod(nb)
         }
         fun notification(title1: String, title2: String?, state: String, iconId: Int, love: Boolean = true) {
             var title2 = title2
@@ -356,7 +354,7 @@ class NLService : NotificationListenerService() {
             }
 
             if (state == getString(R.string.state_scrobbling) || state == getString(R.string.state_scrobbled)) {
-                val style = MediaStyle()
+                val style = MediaStyleMod()
                 nb.addAction(loveAction)
                 if (state == getString(R.string.state_scrobbling)) {
                     nb.addAction(getAction(R.drawable.vd_cancel, "❌", getString(R.string.unscrobble), cancelToastIntent))
@@ -367,7 +365,7 @@ class NLService : NotificationListenerService() {
                 nb.setStyle(style)
                         .setCustomBigContentView(null)
             }
-            val n = mediaStyleHack(nb.build())
+            val n = buildMediaStyleMod(nb)
 
             nm.notify(NOTI_ID_SCR, 0, n)
         }
@@ -383,8 +381,18 @@ class NLService : NotificationListenerService() {
 //                NotificationCompat.Action(R.drawable.ic_transparent, emoji + " "+ text, pIntent)
         }
 
-        private fun mediaStyleHack(n:Notification): Notification {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && n.actions.isNotEmpty()){
+        private fun buildMediaStyleMod(nb:NotificationCompat.Builder): Notification {
+            val modNeeded = Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && nb.mActions != null && nb.mActions.isNotEmpty()
+            if (modNeeded) {
+                val icon = getDrawable(R.drawable.ic_noti)
+                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
+                nb.setLargeIcon(Stuff.drawableToBitmap(icon,true))
+            }
+            val n = nb.build()
+            if (modNeeded)
+                n.bigContentView = null
+
+                /*
                 val res = Resources.getSystem()
                 val attrs = arrayOf(android.R.attr.textColor).toIntArray()
 
@@ -394,7 +402,7 @@ class NLService : NotificationListenerService() {
                 sysStyle = res.getIdentifier("TextAppearance.Material.Notification", "style", "android")
                 val descColorHack = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
 
-                n.bigContentView = null
+
                 val rv = n.contentView
                 var resId = res.getIdentifier("title", "id", "android")
                 rv.setTextColor(resId, titleColorHack)
@@ -408,7 +416,8 @@ class NLService : NotificationListenerService() {
                 val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
                 m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
                 //TODO: try to tint the second button
-            }
+                */
+
             return n
         }
 

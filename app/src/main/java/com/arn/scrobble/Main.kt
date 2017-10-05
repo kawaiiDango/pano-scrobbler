@@ -15,7 +15,7 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.media.app.LegacyNotiStyle
+import android.support.v4.media.app.MediaStyleMod
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.Spannable
@@ -119,11 +119,14 @@ class Main : AppCompatActivity() {
                 .putExtra(Stuff.DEEP_LINK_KEY, Stuff.DL_APP_LIST),
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val style = LegacyNotiStyle()//android.support.v4.media.app.NotificationCompat.MediaStyle()
+        val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
         style.setShowActionsInCompactView(0, 1)
+        val icon = getDrawable(R.drawable.ic_noti)
+        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
+
         val nb = NotificationCompat.Builder(applicationContext)
                 .setSmallIcon(R.drawable.ic_noti)
-//                .setLargeIcon((getDrawable(R.drawable.ic_noti) as BitmapDrawable).bitmap)
+                .setLargeIcon(Stuff.drawableToBitmap(icon, true))
                 .setVisibility(Notification.VISIBILITY_SECRET)
                 .setAutoCancel(true)
                 .setShowWhen(false)
@@ -132,13 +135,12 @@ class Main : AppCompatActivity() {
                 .addAction(R.drawable.vd_cancel, getString(R.string.unscrobble), launchIntent)
                 .addAction(R.drawable.vd_check, getString(R.string.unscrobble), launchIntent)
                 .setContentTitle("setContentTitle")
-                .setContentText(longDescription)
+                .setContentText("longDescription")
                 .setSubText("setSubText")
                 .setColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
                 .setStyle(style)
 //                .setCustomBigContentView(null)
 //                .setCustomContentView(null)
-//        val style = LegacyNotiStyle()
 
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val n = nb.build()
@@ -151,8 +153,11 @@ class Main : AppCompatActivity() {
         rv.setTextColor(resId, Color.BLACK)
         resId = res.getIdentifier("text2", "id", "android")
         rv.setTextColor(resId, Color.BLACK)
-        resId = res.getIdentifier("action0", "id", "android")
+        resId = res.getIdentifier("status_bar_latest_event_content", "id", "android")
+        Stuff.log("resId $resId")
+        rv.setInt(resId, "setBackgroundColor", R.drawable.notification_bg)
 
+        resId = res.getIdentifier("action0", "id", "android")
         val c = Class.forName("android.widget.RemoteViews")
         val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
         m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)

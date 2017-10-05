@@ -2,7 +2,12 @@ package com.arn.scrobble
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.PictureDrawable
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.CollapsingToolbarLayout
@@ -55,7 +60,7 @@ object Stuff {
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 15 * 1000
-    const val META_WAIT: Long = 800
+    const val META_WAIT: Long = 500
     const val DEBOUNCE_TIME = 100
     const val MAX_APPS = 30
     private var timeIt:Long = 0
@@ -109,20 +114,20 @@ object Stuff {
         }
     }
 
-    fun getLogcat(): String {
-        val log = StringBuilder()
+    fun exec(command:String): String {
+        val resp = StringBuilder()
         try {
-            val process = Runtime.getRuntime().exec("logcat -d")
+            val process = Runtime.getRuntime().exec(command)
             val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
             var line:String? = ""
             do {
-                log.append(line+ "\n")
+                resp.append(line+ "\n")
                 line = bufferedReader.readLine()
             } while (line != null)
 
         } catch (e: IOException) {
         }
-        return log.toString()
+        return resp.toString()
     }
 
     fun sanitizeTitle(titleContentOriginal: String): Array<String> {
@@ -273,5 +278,26 @@ object Stuff {
         if (relDate[0] == '0')
             return "just now"
         return relDate
+    }
+
+    fun drawableToBitmap(drawable: Drawable, forceDraw:Boolean = false): Bitmap {
+        if (!forceDraw && drawable is BitmapDrawable) {
+            return drawable.bitmap
+        } else if (!forceDraw && drawable is PictureDrawable) {
+            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth,
+                    drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            canvas.drawPicture(drawable.picture)
+            return bitmap
+        }
+        var width = drawable.intrinsicWidth
+        width = if (width > 0) width else 1
+        var height = drawable.intrinsicHeight
+        height = if (height > 0) height else 1
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return bitmap
     }
 }

@@ -26,8 +26,6 @@
 
 package de.umass.lastfm;
 
-import com.arn.scrobble.LFMCachePolicy;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,6 +40,7 @@ import java.util.logging.Logger;
 
 import de.umass.lastfm.Result.Status;
 import de.umass.lastfm.cache.Cache;
+import de.umass.lastfm.cache.DefaultExpirationPolicy;
 import de.umass.lastfm.cache.FileSystemCache;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -217,7 +216,7 @@ public class Caller {
 		// try to load from cache
 		String cacheEntryName = Cache.createCacheEntryName(method, params);
 		if (session == null && cache != null &&
-                cache.getExpirationPolicy().getExpirationTime(method, params) != LFMCachePolicy.Companion.getNETWORK_AND_CACHE_CONST()
+                cache.getExpirationPolicy().getExpirationTime(method, params) != DefaultExpirationPolicy.NETWORK_AND_CACHE_CONST
                 ) {
 			inputStream = getStreamFromCache(cacheEntryName);
 		}

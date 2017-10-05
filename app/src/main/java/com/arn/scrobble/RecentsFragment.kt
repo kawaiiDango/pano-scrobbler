@@ -163,10 +163,14 @@ class RecentsFragment : Fragment() {
         text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
         text += "------------------------\n\n[how did this happen?]"
 
-        val log = Stuff.getLogcat()
-        val file = File(activity.filesDir, "log.txt")
-        file.writeText(log)
-        val uri = FileProvider.getUriForFile(activity, activity.packageName+".fileprovider", file)
+        val log = Stuff.exec("logcat -d")
+        val logFile = File(activity.filesDir, "log.txt")
+//        val dbFile = File(activity.filesDir, PendingScrobblesDb.tableName + ".db")
+        logFile.writeText(log)
+        val logUri = FileProvider.getUriForFile(activity, activity.packageName+".fileprovider", logFile)
+//        activity.getDatabasePath(PendingScrobblesDb.tableName)
+//                .copyTo(dbFile, true)
+//        val dbUri = FileProvider.getUriForFile(activity, activity.packageName+".fileprovider", dbFile)
 
         val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                 "mailto", "huh@huh.com", null))
@@ -179,7 +183,7 @@ class RecentsFragment : Fragment() {
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
             intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) +" - Bug report")
             intent.putExtra(Intent.EXTRA_TEXT, text)
-            intent.putExtra(Intent.EXTRA_STREAM, uri)
+            intent.putExtra(Intent.EXTRA_STREAM, logUri)
             intents.add(LabeledIntent(intent, info.activityInfo.packageName, info.loadLabel(activity.packageManager), info.icon))
         }
         if (intents.size > 0) {

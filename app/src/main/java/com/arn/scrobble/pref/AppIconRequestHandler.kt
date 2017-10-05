@@ -13,8 +13,7 @@ import com.squareup.picasso.Request
 import com.squareup.picasso.RequestHandler
 import java.io.IOException
 import android.graphics.drawable.PictureDrawable
-
-
+import com.arn.scrobble.Stuff
 
 
 /**
@@ -48,35 +47,11 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
     @Throws(PackageManager.NameNotFoundException::class)
     private fun getFullResIcon(packageName: String): Bitmap? {
         val info = pm.getApplicationInfo(packageName, 0)
-        return drawableToBitmap(info.loadIcon(pm))
+        return Stuff.drawableToBitmap(info.loadIcon(pm))
     }
 
     companion object {
-
         val SCHEME_PNAME = "pname"
-
-        fun drawableToBitmap(drawable: Drawable): Bitmap {
-            if (drawable is BitmapDrawable) {
-                return drawable.bitmap
-            } else if (drawable is PictureDrawable) {
-                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth,
-                        drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-                val canvas = Canvas(bitmap)
-                canvas.drawPicture(drawable.picture)
-                return bitmap
-            }
-            var width = drawable.intrinsicWidth
-            width = if (width > 0) width else 1
-            var height = drawable.intrinsicHeight
-            height = if (height > 0) height else 1
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            return bitmap
-        }
-
-
     }
 
 }

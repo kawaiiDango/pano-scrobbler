@@ -5,7 +5,7 @@ import de.umass.lastfm.cache.DefaultExpirationPolicy
 /**
  * Created by arn on 09/09/2017.
  */
-class LFMCachePolicy(val isNetworkAvailable:Boolean) : DefaultExpirationPolicy() {
+class LFMCachePolicy(private val isNetworkAvailable:Boolean) : DefaultExpirationPolicy() {
     private val staleDataOffline = setOf("user.getLovedTracks", "user.getRecentTracks")
 
 

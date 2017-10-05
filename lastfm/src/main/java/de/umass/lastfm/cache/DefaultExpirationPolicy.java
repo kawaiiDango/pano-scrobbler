@@ -48,6 +48,7 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 	 * One week in milliseconds
 	 */
 	protected static final long ONE_WEEK = ONE_DAY * 7;
+    public static final long NETWORK_AND_CACHE_CONST = ONE_WEEK + 1;
 
 	/**
 	 * Contains the lower case method names for all requests that should be cached 1 week

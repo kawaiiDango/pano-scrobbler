@@ -10,6 +10,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/lastfm" />
+            <option value="$PROJECT_DIR$/materialSeekbarPref" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

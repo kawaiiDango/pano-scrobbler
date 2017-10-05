@@ -94,10 +94,6 @@ class SessListener internal constructor(private val c: Context, private val hand
                 if (state != PlaybackState.STATE_BUFFERING)
                     lastState = state
 
-                val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(packageName)
-                val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(packageName)
-                val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
-
                 if (state == PlaybackState.STATE_PAUSED) {
 //                    if (duration != 0.toLong() && pos == 0.toLong()) //this breaks phonograph
 //                        return
@@ -119,12 +115,7 @@ class SessListener internal constructor(private val c: Context, private val hand
                     Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $title")
                     if (isAtStart || (lastScrobblePos == 1.toLong())){
                         if(pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) || Stuff.isNetworkAvailable(c)) {
-                            if (isAtStart) //scrobble replays
-                                handler.remove(lastHash)
-                            if (isIgnoreArtistMeta)
-                                lastHash = handler.scrobble(title, duration, packageNameParam)
-                            else
-                                lastHash = handler.scrobble(artist, album, title, duration, packageNameParam)
+                            scrobble(artist, album, title, duration)
                         }
                         lastScrobblePos = pos
                     }
@@ -136,6 +127,17 @@ class SessListener internal constructor(private val c: Context, private val hand
             }
         }
 
+        fun scrobble(artist:String, album:String, title:String, duration:Long){
+            val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(packageName)
+            val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(packageName)
+            val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
+
+            if (isIgnoreArtistMeta)
+                lastHash = handler.scrobble(title, duration, packageNameParam)
+            else
+                lastHash = handler.scrobble(artist, album, title, duration, packageNameParam)
+        }
+
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
             val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
@@ -144,12 +146,17 @@ class SessListener internal constructor(private val c: Context, private val hand
             val title2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
             val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
             val album2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
+            val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
             val sameAsOld = (artist == artist2 && title == title2 && album == album2)
             Stuff.log("onMetadataChanged $artist ~ $title, sameAsOld=$sameAsOld, package=$packageName")
             if (!sameAsOld) {
                 this.metadata = metadata
                 lastScrobblePos = 1
                 lastState = -1
+
+                //for cases when meta is sent after play
+                if (artist != null && album != null && title != null && handler.hasMessages(lastHash))
+                    scrobble(artist, album, title, duration)
             }
         }
 

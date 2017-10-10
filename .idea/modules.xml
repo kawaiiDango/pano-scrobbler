@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/lastfm/lastfm.iml" filepath="$PROJECT_DIR$/lastfm/lastfm.iml" />
-      <module fileurl="file://$PROJECT_DIR$/materialSeekbarPref/materialseekbarpref.iml" filepath="$PROJECT_DIR$/materialSeekbarPref/materialseekbarpref.iml" />
+      <module fileurl="file://$PROJECT_DIR$/materialSeekbarPref/materialSeekbarPref.iml" filepath="$PROJECT_DIR$/materialSeekbarPref/materialSeekbarPref.iml" />
       <module fileurl="file://$PROJECT_DIR$/pScrobbler.iml" filepath="$PROJECT_DIR$/pScrobbler.iml" />
     </modules>
   </component>

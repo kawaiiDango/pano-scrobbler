@@ -2,9 +2,7 @@
 
 package com.arn.scrobble
 
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.*
 import android.media.session.MediaSessionManager
 import android.os.Bundle
@@ -14,13 +12,18 @@ import android.os.Message
 import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import com.arn.scrobble.receivers.LegacyMetaReceiver
-import android.app.NotificationChannel
 import android.graphics.PorterDuff
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.media.app.MediaStyleMod
 import android.widget.Toast
+import android.content.Intent
+import android.os.IBinder
+import android.content.pm.PackageManager
+import android.content.ComponentName
+import android.os.Process
+import android.app.ActivityManager
 
 
 class NLService : NotificationListenerService() {
@@ -35,7 +38,55 @@ class NLService : NotificationListenerService() {
         // lollipop and mm bug
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
             init()
+        ensureServiceRunning()
     }
+
+    //from https://gist.github.com/xinghui/b2ddd8cffe55c4b62f5d8846d5545bf9
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        return Service.START_STICKY
+    }
+
+    private fun ensureServiceRunning() {
+        val serviceComponent = ComponentName(this, this::class.java)
+        Stuff.log("ensureServiceRunning serviceComponent: " + serviceComponent)
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        var serviceRunning = false
+        val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
+        if (runningServices == null) {
+            Stuff.log("ensureServiceRunning() runningServices is NULL")
+            return
+        }
+        for (service in runningServices) {
+            if (service.service == serviceComponent) {
+                Stuff.log("ensureServiceRunning service - pid: " + service.pid + ", currentPID: " +
+                        Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
+                        service.clientCount + ", clientLabel: " +
+                        if (service.clientLabel == 0) "0" else "(" + resources.getString(service.clientLabel) + ")")
+                if (service.pid == Process.myPid() /*&& service.clientCount > 0 && !TextUtils.isEmpty(service.clientPackage)*/) {
+                    serviceRunning = true
+                }
+            }
+        }
+        if (serviceRunning) {
+            Stuff.log("ensureServiceRunning: service is running")
+            return
+        }
+        Stuff.log("ensureServiceRunning: service not running, reviving...")
+        toggleNotificationListenerService()
+    }
+
+    private fun toggleNotificationListenerService() {
+        Stuff.log("toggleNotificationListenerService() called")
+        val thisComponent = ComponentName(this, this::class.java)
+        val pm = packageManager
+        pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+        pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+    }
+
+// this prevents the service from starting on N+
+//    override fun onBind(intent: Intent): IBinder? {
+//        return null
+//    }
 
     override fun onListenerConnected() {
         super.onListenerConnected()
@@ -92,11 +143,15 @@ class NLService : NotificationListenerService() {
         if (sessListener != null)
             (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
                     .removeOnActiveSessionsChangedListener(sessListener)
-        if (bReceiver != null)
+        if (bReceiver != null) {
             unregisterReceiver(bReceiver)
+            bReceiver = null
+        }
     }
     override fun onDestroy() {
         Stuff.log("onDestroy")
+        if (bReceiver != null)
+            onListenerDisconnected()
         super.onDestroy()
     }
 
@@ -423,7 +478,8 @@ class NLService : NotificationListenerService() {
 
         fun remove(hash: Int) {
             Stuff.log(hash.toString() + " canceled")
-            removeMessages(hash)
+            if (hash != 0)
+                removeMessages(hash)
             if (lastNotiIcon != NOTI_ERR_ICON)
                 nm.cancel(NOTI_ID_SCR, 0)
         }

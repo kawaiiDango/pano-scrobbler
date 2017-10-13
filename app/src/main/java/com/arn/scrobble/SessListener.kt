@@ -55,7 +55,7 @@ class SessListener internal constructor(private val c: Context, private val hand
                 pair.first.unregisterCallback(pair.second)
                 synchronized(mControllers) {
                     it.remove()
-                    handler.remove(pair.second.lastHash)
+                    handler.remove(lastHash)
                 }
             }
         }
@@ -64,8 +64,9 @@ class SessListener internal constructor(private val c: Context, private val hand
 
     private inner class MyCallback(val packageName: String) : Callback() {
         var metadata: MediaMetadata? = null
-        var lastHash = 0
+//        var lastHash = 0
         var lastScrobblePos: Long = 1
+        var lastScrobbleTime: Long = 0
         var lastState = -1
         val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
 
@@ -78,16 +79,17 @@ class SessListener internal constructor(private val c: Context, private val hand
                         " pos="+ pos +" duration="+
                         metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION))
 
-                val isAtStart = pos == 0.toLong()
+                val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
+                val isPossiblyAtStart = pos == 0.toLong() ||
+                        (pos < 1500 && System.currentTimeMillis() - lastScrobbleTime >= duration)
                 if (lastState == state /* bandcamp does this */ &&
-                        !(state == PlaybackState.STATE_PLAYING && isAtStart))
+                        !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
                     return
 
                 val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: return
                 val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
                 val artist = (metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?:
                         metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)) ?: return
-                val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
 
                 if (title == "")
                     return
@@ -113,11 +115,12 @@ class SessListener internal constructor(private val c: Context, private val hand
 //                    return  //dont scrobble first buffering
 
                     Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $title")
-                    if (isAtStart || (lastScrobblePos == 1.toLong())){
+                    if (isPossiblyAtStart || (lastScrobblePos == 1.toLong())){
                         if(pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) || Stuff.isNetworkAvailable(c)) {
                             scrobble(artist, album, title, duration)
                         }
                         lastScrobblePos = pos
+                        lastScrobbleTime = System.currentTimeMillis()
                     }
                 } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
                     Stuff.log("$state connecting $pos")
@@ -170,5 +173,6 @@ class SessListener internal constructor(private val c: Context, private val hand
     companion object {
         var numSessions = 0
         var lastStateChangedTime:Long = 0
+        var lastHash = 0
     }
 }

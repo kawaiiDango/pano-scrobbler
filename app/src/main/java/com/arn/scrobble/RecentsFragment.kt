@@ -18,6 +18,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.*
 import android.widget.AdapterView
+import android.widget.HeaderViewListAdapter
 import android.widget.ImageView
 import android.widget.ListView
 import com.arn.scrobble.pref.PrefFragment
@@ -212,7 +213,9 @@ class RecentsFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         val list = activity.findViewById<ListView>(R.id.recents_list)
-        list?.removeCallbacks(RecentsAdapter.timedRefresh)
+        list?.removeCallbacks(
+                ((list.adapter as HeaderViewListAdapter?)
+                        ?.wrappedAdapter as RecentsAdapter).timedRefresh)
     }
 
     override fun onResume() {

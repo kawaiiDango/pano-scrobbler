@@ -48,14 +48,14 @@ class RecentsAdapter
 
 (c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, mutableListOf()) {
 
-    init {
-        setNotifyOnChange(false)
-        timedRefresh = Runnable { loadRecents(1) }
-    }
-
     private val hero = (c as Activity).findViewById<ImageView>(R.id.img_hero)
     private var heroInfoLoader: LFMRequester? = null
     private val handler = ResponseHandler(this)
+    val timedRefresh = Runnable { loadRecents(1) }
+
+    init {
+        setNotifyOnChange(false)
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView : View? = convertView
@@ -432,7 +432,6 @@ class RecentsAdapter
     }
 
     companion object {
-        var timedRefresh: Runnable? = null
         var lastColorDomPrimary:Int = Color.rgb(0x88, 0x0e, 0x4f)
         var lastColorLightWhite = Color.WHITE
         var lastColorMutedDark = Color.BLACK

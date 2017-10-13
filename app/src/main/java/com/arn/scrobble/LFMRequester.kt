@@ -35,6 +35,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
         command = s[0]
         val isNetworkAvailable = Stuff.isNetworkAvailable(c)
         try {
+            Stuff.log("doInBackground $command isNetworkAvailable $isNetworkAvailable")
             var reAuthNeeded = false
             var session: Session? = null
             val caller = Caller.getInstance()
@@ -262,18 +263,26 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
         }
 
         fun getCorrectedData(artist:String, track: String): Pair<String, String>? {
+            val artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)
+            return if (artistInfo != null && artistInfo.name?.trim() != "" && artistInfo.listeners >= Stuff.MIN_LISTENER_COUNT)
+                Pair(artistInfo.name, track)
+            else
+                null
+        }
+
+        fun getCorrectedDataOld(artist:String, track: String): Pair<String, String>? {
             val correction = Track.getCorrection(artist, track, Stuff.LAST_KEY)
             var cArtist = correction?.artist?.trim() ?: ""
             var cTrack = correction?.name?.trim() ?: ""
 
-            if (cArtist == "" && cTrack == "")
-                return null
+            return if (cArtist == "" && cTrack == "")
+                null
             else {
                 if (cArtist == "")
                     cArtist = artist
                 if (cTrack == "")
                     cTrack = artist
-                return Pair(cArtist, cTrack)
+                Pair(cArtist, cTrack)
             }
         }
     }

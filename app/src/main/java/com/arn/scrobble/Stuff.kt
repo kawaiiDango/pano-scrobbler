@@ -63,6 +63,7 @@ object Stuff {
     const val META_WAIT: Long = 500
     const val DEBOUNCE_TIME = 100
     const val MAX_APPS = 30
+    const val MIN_LISTENER_COUNT = 10
     private var timeIt:Long = 0
 
     val APPS_IGNORE_ARTIST_META = arrayOf(

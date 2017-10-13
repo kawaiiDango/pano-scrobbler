@@ -79,7 +79,18 @@ public class Artist extends MusicEntry {
 	 * @return detailed artist info
 	 */
 	public static Artist getInfo(String artistOrMbid, String apiKey) {
-		return getInfo(artistOrMbid, null, null, apiKey);
+		return getInfo(artistOrMbid, null, null, false, apiKey);
+	}
+	/**
+	 * Retrieves detailed artist info for the given artist or mbid entry.
+	 *
+	 * @param artistOrMbid Name of the artist or an mbid
+     * @param autoCorrect The API key
+     * @param apiKey The API key
+	 * @return detailed artist info
+	 */
+	public static Artist getInfo(String artistOrMbid,boolean autoCorrect, String apiKey) {
+		return getInfo(artistOrMbid, null, null, autoCorrect, apiKey);
 	}
 
 	/**
@@ -92,7 +103,7 @@ public class Artist extends MusicEntry {
 	 * @return detailed artist info
 	 */
 	public static Artist getInfo(String artistOrMbid, String username, String apiKey) {
-		return getInfo(artistOrMbid, null, username, apiKey);
+		return getInfo(artistOrMbid, null, username, false, apiKey);
 	}
 
 	/**
@@ -105,7 +116,7 @@ public class Artist extends MusicEntry {
 	 * @param apiKey The API key
 	 * @return detailed artist info
 	 */
-	public static Artist getInfo(String artistOrMbid, Locale locale, String username, String apiKey) {
+	public static Artist getInfo(String artistOrMbid, Locale locale, String username, boolean autoCorrect, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (StringUtilities.isMbid(artistOrMbid)) {
 			params.put("mbid", artistOrMbid);
@@ -115,6 +126,8 @@ public class Artist extends MusicEntry {
 		if (locale != null && locale.getLanguage().length() != 0) {
 			params.put("lang", locale.getLanguage());
 		}
+		if (autoCorrect)
+            params.put("autocorrect", "1");
 		MapUtilities.nullSafePut(params, "username", username);
 		Result result = Caller.getInstance().call("artist.getInfo", apiKey, params);
 		return ResponseBuilder.buildItem(result, Artist.class);

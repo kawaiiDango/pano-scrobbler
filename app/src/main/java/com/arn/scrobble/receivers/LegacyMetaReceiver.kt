@@ -15,9 +15,10 @@ import com.arn.scrobble.Stuff
  */
 
 class LegacyMetaReceiver : BroadcastReceiver() {
-    private var lastHash: Int = 0
+//    private var lastHash: Int = 0
 
     override fun onReceive(context: Context, intent: Intent) {
+            NLService.ensureServiceRunning(context)
             processIntent(intent)
     }
 
@@ -59,13 +60,13 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                             return@postDelayed
 
                         if (isPlaying && !NLService.handler.hasMessages(hash)) {
-                            lastHash = NLService.handler.scrobble(artist, album, track, duration)
+                            SessListener.lastHash = NLService.handler.scrobble(artist, album, track, duration)
                             Stuff.log( "LegacyMetaReceiver scrobbling $track")
                             Stuff.log("timeDiff="+ (System.currentTimeMillis() - SessListener.lastStateChangedTime) +
                             ", numSessions="+SessListener.numSessions)
 
                         } else if (!isPlaying && NLService.handler.hasMessages(hash)) {
-                            NLService.handler.remove(lastHash)
+                            NLService.handler.remove(SessListener.lastHash)
                             Stuff.log( "LegacyMetaReceiver cancelled "+ hash)
                         }
                     }, Stuff.META_WAIT+200)

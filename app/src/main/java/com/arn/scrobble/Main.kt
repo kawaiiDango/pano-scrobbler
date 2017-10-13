@@ -21,13 +21,18 @@ import android.support.v7.widget.Toolbar
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.PrefFragment
+import com.squareup.leakcanary.LeakCanary
 
 
 class Main : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (!LeakCanary.isInAnalyzerProcess(this))
+            LeakCanary.install(application)
+
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
@@ -121,11 +126,11 @@ class Main : AppCompatActivity() {
 
         val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
         style.setShowActionsInCompactView(0, 1)
-        val icon = getDrawable(R.drawable.ic_noti)
+        val icon = getDrawable(R.mipmap.ic_launcher_foreground)
         icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
 
         val nb = NotificationCompat.Builder(applicationContext)
-                .setSmallIcon(R.drawable.ic_noti)
+                .setSmallIcon(R.mipmap.ic_launcher_foreground)
                 .setLargeIcon(Stuff.drawableToBitmap(icon, true))
                 .setVisibility(Notification.VISIBILITY_SECRET)
                 .setAutoCancel(true)
@@ -170,6 +175,11 @@ class Main : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+
+    override fun onDestroy() {
+        PendingScrobblesDb.destroyInstance()
+        super.onDestroy()
     }
 
     companion object {

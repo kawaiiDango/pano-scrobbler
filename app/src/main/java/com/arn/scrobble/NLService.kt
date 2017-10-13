@@ -24,6 +24,7 @@ import android.content.pm.PackageManager
 import android.content.ComponentName
 import android.os.Process
 import android.app.ActivityManager
+import com.squareup.leakcanary.LeakCanary
 
 
 class NLService : NotificationListenerService() {
@@ -33,12 +34,14 @@ class NLService : NotificationListenerService() {
     private var bReceiver: LegacyMetaReceiver? = null
 
     override fun onCreate() {
+        if (!LeakCanary.isInAnalyzerProcess(this))
+            LeakCanary.install(application)
         super.onCreate()
         Stuff.log("onCreate")
         // lollipop and mm bug
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
             init()
-        ensureServiceRunning()
+        ensureServiceRunning(applicationContext)
     }
 
     //from https://gist.github.com/xinghui/b2ddd8cffe55c4b62f5d8846d5545bf9
@@ -46,42 +49,6 @@ class NLService : NotificationListenerService() {
         return Service.START_STICKY
     }
 
-    private fun ensureServiceRunning() {
-        val serviceComponent = ComponentName(this, this::class.java)
-        Stuff.log("ensureServiceRunning serviceComponent: " + serviceComponent)
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        var serviceRunning = false
-        val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
-        if (runningServices == null) {
-            Stuff.log("ensureServiceRunning() runningServices is NULL")
-            return
-        }
-        for (service in runningServices) {
-            if (service.service == serviceComponent) {
-                Stuff.log("ensureServiceRunning service - pid: " + service.pid + ", currentPID: " +
-                        Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
-                        service.clientCount + ", clientLabel: " +
-                        if (service.clientLabel == 0) "0" else "(" + resources.getString(service.clientLabel) + ")")
-                if (service.pid == Process.myPid() /*&& service.clientCount > 0 && !TextUtils.isEmpty(service.clientPackage)*/) {
-                    serviceRunning = true
-                }
-            }
-        }
-        if (serviceRunning) {
-            Stuff.log("ensureServiceRunning: service is running")
-            return
-        }
-        Stuff.log("ensureServiceRunning: service not running, reviving...")
-        toggleNotificationListenerService()
-    }
-
-    private fun toggleNotificationListenerService() {
-        Stuff.log("toggleNotificationListenerService() called")
-        val thisComponent = ComponentName(this, this::class.java)
-        val pm = packageManager
-        pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
-        pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
-    }
 
 // this prevents the service from starting on N+
 //    override fun onBind(intent: Intent): IBinder? {
@@ -132,26 +99,37 @@ class NLService : NotificationListenerService() {
             // Media controller needs notification listener service
             // permissions to be granted.
         }
-        bReceiver = LegacyMetaReceiver.regIntents(applicationContext)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            bReceiver = LegacyMetaReceiver.regIntents(applicationContext)
         initChannels(applicationContext)
     }
 
-    override fun onListenerDisconnected() {
-        super.onListenerDisconnected()
+    private fun destroy() {
         Stuff.log("onListenerDisconnected")
-        unregisterReceiver(nlservicereciver)
-        if (sessListener != null)
+        try {
+            unregisterReceiver(nlservicereciver)
+        } catch(e:IllegalArgumentException) {
+            Stuff.log("nlservicereciver wasn't registered")
+        }
+        if (sessListener != null) {
             (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
                     .removeOnActiveSessionsChangedListener(sessListener)
+            sessListener = null
+        }
         if (bReceiver != null) {
             unregisterReceiver(bReceiver)
             bReceiver = null
         }
     }
+
+    override fun onListenerDisconnected() { //api 24+ only
+        destroy()
+        super.onListenerDisconnected()
+    }
+
     override fun onDestroy() {
-        Stuff.log("onDestroy")
-        if (bReceiver != null)
-            onListenerDisconnected()
+        if (sessListener != null)
+            destroy()
         super.onDestroy()
     }
 
@@ -247,7 +225,7 @@ class NLService : NotificationListenerService() {
 
         private var lastNotiIcon = 0
         override fun handleMessage(m: Message) {
-            //TODO: corrected artist/title
+
             val title = m.data.getString(B_TITLE)
             val artist = m.data.getString(B_ARTIST)
             val album = m.data.getString(B_ALBUM)
@@ -334,7 +312,7 @@ class NLService : NotificationListenerService() {
             val nb = NotificationCompat.Builder(applicationContext, NOTI_ID_SCR)
                     .setContentTitle(getString(R.string.new_player)+ appName)
                     .setContentText(getString(R.string.new_player_prompt))
-                    .setSmallIcon(R.drawable.ic_noti)
+                    .setSmallIcon(R.drawable.vd_appquestion_noti)
                     .setColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
                     .setContentIntent(launchIntent)
                     .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
@@ -350,7 +328,7 @@ class NLService : NotificationListenerService() {
             if (!pref.getBoolean("show_notifications", true))
                 return
             if (iconId == 0)
-                iconId = R.drawable.ic_noti
+                iconId = R.drawable.vd_noti
             lastNotiIcon = iconId
 
             var title = title1
@@ -439,7 +417,7 @@ class NLService : NotificationListenerService() {
         private fun buildMediaStyleMod(nb:NotificationCompat.Builder): Notification {
             val modNeeded = Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && nb.mActions != null && nb.mActions.isNotEmpty()
             if (modNeeded) {
-                val icon = getDrawable(R.drawable.ic_noti)
+                val icon = getDrawable(R.drawable.vd_noti)
                 icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
                 nb.setLargeIcon(Stuff.drawableToBitmap(icon,true))
             }
@@ -470,7 +448,6 @@ class NLService : NotificationListenerService() {
                 val c = Class.forName("android.widget.RemoteViews")
                 val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
                 m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
-                //TODO: try to tint the second button
                 */
 
             return n
@@ -499,6 +476,44 @@ class NLService : NotificationListenerService() {
             nm.createNotificationChannel(NotificationChannel(NOTI_ID_APP,
                     context.getString(R.string.channel_new_app), NotificationManager.IMPORTANCE_LOW))
         }
+
+        fun ensureServiceRunning(context:Context) {
+            val serviceComponent = ComponentName(context, NLService::class.java)
+            Stuff.log("ensureServiceRunning serviceComponent: " + serviceComponent)
+            val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            var serviceRunning = false
+            val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
+            if (runningServices == null) {
+                Stuff.log("ensureServiceRunning() runningServices is NULL")
+                return
+            }
+            for (service in runningServices) {
+                if (service.service == serviceComponent) {
+                    Stuff.log("ensureServiceRunning service - pid: " + service.pid + ", currentPID: " +
+                            Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
+                            service.clientCount + ", clientLabel: " +
+                            if (service.clientLabel == 0) "0" else "(" + context.resources.getString(service.clientLabel) + ")")
+                    if (service.pid == Process.myPid() /*&& service.clientCount > 0 && !TextUtils.isEmpty(service.clientPackage)*/) {
+                        serviceRunning = true
+                    }
+                }
+            }
+            if (serviceRunning) {
+                Stuff.log("ensureServiceRunning: service is running")
+                return
+            }
+            Stuff.log("ensureServiceRunning: service not running, reviving...")
+            toggleNotificationListenerService(context)
+        }
+
+        private fun toggleNotificationListenerService(context:Context) {
+            Stuff.log("toggleNotificationListenerService() called")
+            val thisComponent = ComponentName(context, NLService::class.java)
+            val pm = context.packageManager
+            pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+            pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+        }
+
         lateinit var handler: ScrobbleHandler
         val pNLS = "com.arn.scrobble.NLS"
         val pCANCEL = "com.arn.scrobble.CANCEL"

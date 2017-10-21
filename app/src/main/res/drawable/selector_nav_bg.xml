@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="?android:attr/selectableItemBackground" />
+    <item>
+        <selector android:enterFadeDuration="0" android:exitFadeDuration="@android:integer/config_mediumAnimTime" >
+            <item android:state_activated="true" android:drawable="@color/highlightPink"/>
+        </selector>
+    </item>
+</layer-list>

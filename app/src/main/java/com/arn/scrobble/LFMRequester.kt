@@ -3,6 +3,7 @@ package com.arn.scrobble
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import java.util.Calendar
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
@@ -25,22 +26,22 @@ import java.net.URL
  * Created by arn on 18-03-2017.
  */
 
-internal class LFMRequester constructor(val c: Context, private val handler: Handler? = null) : AsyncTask<String, Any, Any?>() {
+class LFMRequester constructor(val context: Context, private val handler: Handler? = null) : AsyncTask<String, Any, Any?>() {
     lateinit private var prefs: SharedPreferences
     lateinit private var command: String
     private var subCommand: String? = null
 
     override fun doInBackground(vararg s: String): Any? {
-        prefs = PreferenceManager.getDefaultSharedPreferences(c)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
         command = s[0]
-        val isNetworkAvailable = Stuff.isNetworkAvailable(c)
+        val isNetworkAvailable = Stuff.isNetworkAvailable(context)
         try {
             Stuff.log("doInBackground $command isNetworkAvailable $isNetworkAvailable")
             var reAuthNeeded = false
             var session: Session? = null
             val caller = Caller.getInstance()
             caller.userAgent = Stuff.USER_AGENT
-            val fsCache = FileSystemCache(c.cacheDir)
+            val fsCache = FileSystemCache(context.cacheDir)
             if (command == Stuff.GET_RECENTS_CACHED)
                 fsCache.expirationPolicy = LFMCachePolicy(false)
             else
@@ -79,12 +80,26 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                         handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))
                                 ?.sendToTarget()
                         subCommand = s[1]
-                        return User.getRecentTracks(username, Integer.parseInt(subCommand), 15, Stuff.LAST_KEY)
+                        return User.getRecentTracks(username, Integer.parseInt(subCommand), 15, true, Stuff.LAST_KEY)
                     }
-                    Stuff.GET_LOVED -> return User.getLovedTracks(username, Stuff.LAST_KEY)
+//                    Stuff.GET_LOVED -> return User.getLovedTracks(username, Stuff.LAST_KEY)
                     //for love: command = tag, s[1] = artist, s[2] = song,
                     Stuff.LOVE -> return Track.love(s[1], s[2], session)
                     Stuff.UNLOVE -> return Track.unlove(s[1], s[2], session)
+                    Stuff.GET_DRAWER_INFO -> {
+                        val profile = User.getInfo(session)
+                        val cal = Calendar.getInstance()
+                        cal.set(Calendar.HOUR_OF_DAY, 0)
+                        cal.set(Calendar.MINUTE, 0)
+                        cal.set(Calendar.SECOND, 0)
+                        val recents = User.getRecentTracks(username, 1, 1, cal.timeInMillis/1000, 0, Stuff.LAST_KEY)
+
+                        prefs.edit().putInt(Stuff.NUM_SCROBBLES_PREF, recents?.totalPages ?: 0)
+                                .putString(Stuff.PROFILE_PIC_PREF, profile?.getImageURL(ImageSize.EXTRALARGE) ?: "")
+                                .apply()
+                        return null
+                    }
+                    Stuff.GET_FRIENDS -> return User.getFriends(username, true, 1, 20, Stuff.LAST_KEY)
                     Stuff.HERO_INFO -> {
                         handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))
                                 ?.sendToTarget()
@@ -150,7 +165,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                                 scrobbleResult = Track.updateNowPlaying(scrobbleData, session)
                             } else {
                                 (handler as NLService.ScrobbleHandler).remove(hash)
-                                handler.notification(c.getString(R.string.invalid_artist), s[1], c.getString(R.string.not_scrobling), NLService.NOTI_ERR_ICON)
+                                handler.notification(context.getString(R.string.invalid_artist), s[1], context.getString(R.string.not_scrobling), NLService.NOTI_ERR_ICON)
                             }
                         }
                     }
@@ -158,7 +173,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                         if (isNetworkAvailable)
                             scrobbleResult = Track.scrobble(scrobbleData, session)
                         else {
-                            val dao = PendingScrobblesDb.getDb(c).getDao()
+                            val dao = PendingScrobblesDb.getDb(context).getDao()
                             val entry = PendingScrobble()
                             entry.artist = scrobbleData.artist
                             entry.album = scrobbleData.album
@@ -166,7 +181,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
                             entry.timestamp = s[4].toLong()
                             entry.duration = s[5].toLong()
                             dao.insert(entry)
-                            OfflineScrobbleJob.checkAndSchedule(c, true)
+                            OfflineScrobbleJob.checkAndSchedule(context, true)
                         }
                     }
                 }
@@ -175,7 +190,7 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
 //                        val hash = s[1].hashCode() + s[2].hashCode()
                         //                        scrobbledHashes.add(hash);
                         (handler as NLService.ScrobbleHandler)
-                                .notification(c.getString(R.string.network_error), s[1] + " " + s[3], c.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                                .notification(context.getString(R.string.network_error), s[1] + " " + s[3], context.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
                     }
                 } catch (e: NullPointerException) {
                     publishProgress(command + ": NullPointerException")
@@ -199,21 +214,21 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
 
     private fun reAuth() {
         publishProgress("Please Authorize LastFM")
-        PreferenceManager.getDefaultSharedPreferences(c)
+        PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .remove(Stuff.SESS_KEY)
                 .apply()
         token = Authenticator.getToken(Stuff.LAST_KEY)
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.last.fm/api/auth?api_key=" +
                 Stuff.LAST_KEY + "&token=" + token))
-        c.startActivity(browserIntent)
+        context.startActivity(browserIntent)
     }
 
     override fun onProgressUpdate(vararg values: Any) {
         super.onProgressUpdate(*values)
         val res = values[0]
         if (res is String) //usually err msg
-            Stuff.toast(c, values[0].toString())
+            Stuff.toast(context, values[0].toString())
     }
 
     override fun onPostExecute(res: Any?) {
@@ -223,9 +238,9 @@ internal class LFMRequester constructor(val c: Context, private val handler: Han
         } else if (res is Result) {
             if (!res.isSuccessful) {
                 if (res.errorMessage != null)
-                    Stuff.toast(c, command + ": " + res.errorMessage)
+                    Stuff.toast(context, command + ": " + res.errorMessage)
                 else
-                    Stuff.toast(c, command+ " failed")
+                    Stuff.toast(context, command+ " failed")
             }
         } else if (command == Stuff.HERO_INFO && res is MutableList<*>) {
 //            val s = res as MutableList<String?>

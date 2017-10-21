@@ -1,119 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    app:layout_collapseMode="parallax"
-    app:layout_collapseParallaxMultiplier="0.6"
-    tools:context="com.arn.scrobble.Main">
+    tools:openDrawer="start">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
+    <include
+        layout="@layout/coordinator_main"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
-        android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="match_parent"/>
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:elevation="@dimen/elevation_hero_btn"
-            app:expandedTitleMarginEnd="@dimen/fab_margin_right"
-            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Subhead"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:statusBarScrim="@color/status_bar_scrim">
-
-            <ImageView
-                android:id="@+id/img_hero"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/album_art"
-                android:fitsSystemWindows="true"
-                android:scaleType="centerCrop"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.5"
-                app:srcCompat="@drawable/img_hero"
-                />
-
-            <ImageView
-                android:id="@+id/img_dark_overlay"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:scaleType="fitXY"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.5"
-                app:srcCompat="@drawable/ic_dark_overlay"/>
-
-            <com.jjoe64.graphview.GraphView
-                android:id="@+id/graph"
-                android:layout_width="190dp"
-                android:layout_height="100dip"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="55dip"
-                android:layout_marginStart="30dip"
-                android:alpha="0"/>
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:contentInsetEnd="120dp"
-                app:elevation="@dimen/elevation_hero_btn"
-                app:layout_collapseMode="pin"
-                app:layout_collapseParallaxMultiplier="1.0"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="30dp"
-                android:alpha="0.7"
-                android:gravity="bottom|end"
-                android:orientation="horizontal"
-                app:layout_collapseMode="parallax">
-
-                <ImageButton
-                    android:id="@+id/hero_share"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:scaleType="centerInside"
-                    app:srcCompat="@drawable/vd_share"/>
-
-                <ImageButton
-                    android:id="@+id/hero_info"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="5dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="4dp"
-                    android:scaleType="centerInside"
-                    app:srcCompat="@drawable/vd_info"/>
-
-                <ImageButton
-                    android:id="@+id/hero_yt"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:scaleType="centerInside"
-                    app:srcCompat="@drawable/vd_youtube"/>
-            </LinearLayout>
-        </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
-
-    <FrameLayout
-        android:id="@+id/frame"
-        android:layout_width="match_parent"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-</android.support.design.widget.CoordinatorLayout>
+        android:layout_gravity="start"
+        android:background="@color/darkBg"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:itemBackground="@drawable/selector_nav_bg"
+        app:itemIconTint="@color/colorAccent"
+        app:itemTextColor="@drawable/selector_nav_text"
+        app:menu="@menu/activity_main_drawer"/>
+
+</android.support.v4.widget.DrawerLayout>

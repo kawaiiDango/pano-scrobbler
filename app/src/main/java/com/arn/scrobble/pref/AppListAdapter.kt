@@ -8,9 +8,11 @@ import android.preference.PreferenceManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.content_app_list.app_list
+import kotlinx.android.synthetic.main.header_default.view.*
+import kotlinx.android.synthetic.main.list_item_app.view.*
 
 
 /**
@@ -20,49 +22,46 @@ class AppListAdapter
 (c: Context, private val itemResourceId:Int, private val headerResourceId:Int) : ArrayAdapter<ApplicationInfo>(c, itemResourceId) {
     private val sectionHeaders = mutableMapOf<Int,String>()
     private val prefsSet = PreferenceManager.getDefaultSharedPreferences(context).getStringSet(Stuff.APP_WHITELIST, setOf())
-    private var list = (c as Activity).findViewById<ListView>(R.id.app_list)
+    private var list = (c as Activity).app_list
     private var picasso: Picasso = Picasso.Builder(context)
             .addRequestHandler(AppIconRequestHandler(context))
             .build()
     private val dp = Stuff.dp2px(48, context)
     private var lastCheckedPos = 0
 
-    override fun getView(position: Int, convertView: View?, list: ViewGroup): View {
-        var convertView : View? = convertView
+    override fun getView(position: Int, view1: View?, list: ViewGroup): View {
+        var view : View? = view1
         val type = getItemViewType(position)
         list as ListView
 
-        if (convertView == null) {
+        if (view == null) {
             // inflate the layout
             val inflater = (context as Activity).layoutInflater
-                convertView = inflater.inflate(
+                view = inflater.inflate(
                         if(type == TYPE_ITEM) itemResourceId else headerResourceId
                         , list, false)!!
         }
         if (type == TYPE_ITEM) {
-            val app = getItem(position) ?: return convertView
-            val checkbox = convertView.findViewById<CheckBox>(R.id.app_list_checkbox)
-            val tv = convertView.findViewById<TextView>(R.id.app_list_name)
-            val icon = convertView.findViewById<ImageView>(R.id.app_list_icon)
+            val app = getItem(position) ?: return view
 
-            tv.text = app.loadLabel(context.packageManager) ?: return convertView
-            tv.tag = app.packageName
+            view.app_list_name.text = app.loadLabel(context.packageManager) ?: return view
+            view.app_list_name.tag = app.packageName
             val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME  +":" + app.packageName)
 
             picasso.load(uri)
 //                    .placeholder(android.R.color.transparent)
                     .resize(dp, dp)
-                    .into(icon)
+                    .into(view.app_list_icon)
 
-            checkbox.isChecked = list.isItemChecked(position)
-            checkbox.setOnClickListener { cb ->
+            view.app_list_checkbox.isChecked = list.isItemChecked(position)
+            view.app_list_checkbox.setOnClickListener { cb ->
                 list.setItemChecked(position, (cb as CheckBox).isChecked)
             }
         } else {
-            convertView.findViewById<TextView>(R.id.header_text).text = sectionHeaders[position]
+            view.header_text.text = sectionHeaders[position]
 
         }
-        return convertView
+        return view
     }
 
     fun addSectionHeader(text: String) {

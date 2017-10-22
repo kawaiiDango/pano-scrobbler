@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical">
 <LinearLayout
               android:id="@+id/header_pending"
@@ -17,7 +18,7 @@
         android:paddingLeft="40dp"
         android:paddingRight="10dp"
         android:paddingTop="10dp"
-        android:text="@string/pending_scrobbles"
+        tools:text="@string/pending_scrobbles"
         android:textAppearance="@android:style/TextAppearance.Material.Button"/>
 
     <LinearLayout
@@ -46,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingRight="@dimen/elevation_hero_btn"
-            android:text="@string/pending_scrobbles_summary"
+            tools:text="@string/pending_scrobbles_summary"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
         <TextView
@@ -54,7 +55,7 @@
             android:layout_height="wrap_content"
             android:autoLink="all"
             android:clickable="false"
-            android:text="@string/show_all"
+            tools:text="@string/show_all"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             />
     </LinearLayout>

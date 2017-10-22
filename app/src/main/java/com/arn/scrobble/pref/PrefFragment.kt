@@ -1,12 +1,9 @@
 package com.arn.scrobble.pref
 
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
-import android.support.design.widget.AppBarLayout
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
@@ -16,15 +13,10 @@ import com.arn.scrobble.Stuff
  * Created by arn on 09/07/2017.
  */
 
-class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenceChangeListener */{
+class PrefFragment : PreferenceFragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null)
-            setHasOptionsMenu(false)
-
-        val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
-        vg?.setExpanded(false, true)
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences)
@@ -59,9 +51,7 @@ class PrefFragment : PreferenceFragment()/*, SharedPreferences.OnSharedPreferenc
         try {
             about.title = "v " + BuildConfig.VERSION_NAME
             about.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                val browserIntent = Intent(Intent.ACTION_VIEW,
-                        Uri.parse(about.summary.toString()))
-                activity.startActivity(browserIntent)
+                Stuff.openInBrowser(about.summary.toString(), activity)
                 true
             }
         } catch (e: PackageManager.NameNotFoundException) {

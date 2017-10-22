@@ -8,11 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.pref_app_icons.view.*
 
 
 /**
@@ -37,15 +36,13 @@ class AppIconsPref : Preference{
 
     override fun getView(convertView: View?, parent: ViewGroup): View {
         val v = super.getView(convertView, parent)
-        val container = v.findViewById<LinearLayout>(R.id.app_icons_container)
-        val title = v.findViewById<TextView>(R.id.app_list_enabled_title)
 
         packageNames = sharedPreferences.getStringSet(key, setOf())
 
         if (packageNames.count() == 0){
-            title.text = context.getString(R.string.no_apps_enabled)
+            v.app_list_enabled_title.text = context.getString(R.string.no_apps_enabled)
         } else {
-            title.text = this.title
+            v.app_list_enabled_title.text = this.title
             for (i in 0 until minOf(10, packageNames.count())) {
                 val icon = ImageView(context)
                 icon.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -54,7 +51,7 @@ class AppIconsPref : Preference{
                 picasso.load(uri)
                         .resize(dp, dp)
                         .into(icon)
-                container.addView(icon)
+                v.app_icons_container.addView(icon)
             }
         }
         return v

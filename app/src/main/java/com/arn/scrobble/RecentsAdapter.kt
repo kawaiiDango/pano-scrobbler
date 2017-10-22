@@ -7,19 +7,15 @@ import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.*
-import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Message
-import android.support.design.widget.CollapsingToolbarLayout
 import android.support.graphics.drawable.Animatable2Compat
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.graphics.Palette
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +25,6 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.PendingScrobblesDb
-import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.squareup.picasso.Callback
@@ -37,6 +32,12 @@ import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
+import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.coordinator_main.*
+import kotlinx.android.synthetic.main.footer_loading.view.*
+import kotlinx.android.synthetic.main.header_default.view.*
+import kotlinx.android.synthetic.main.header_pending.view.*
+import kotlinx.android.synthetic.main.list_item_recents.view.*
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
@@ -48,38 +49,35 @@ class RecentsAdapter
 
 (c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, mutableListOf()) {
 
-    private val hero = (c as Activity).findViewById<ImageView>(R.id.img_hero)
+    private val hero = (c as Activity).img_hero
     private var heroInfoLoader: LFMRequester? = null
-    private val handler = ResponseHandler(this)
-    val timedRefresh = Runnable { loadRecents(1) }
+    val handler = ResponseHandler(this)
 
     init {
         setNotifyOnChange(false)
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView : View? = convertView
+        var view : View? = convertView
         /*
          * The convertView argument is essentially a "ScrapView" as described is Lucas post
          * http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
          * It will have a non-null value when ListView is asking you recycle the row layout.
          * So, when convertView is not null, you should simply update its contents instead of inflating a new row layout.
          */
-        if (convertView == null) {
+        val activity = context as Activity
+        if (view == null) {
             // inflate the layout
-            val inflater = (context as Activity).layoutInflater
-            convertView = inflater.inflate(layoutResourceId, parent, false)!!
+            val inflater = activity.layoutInflater
+            view = inflater.inflate(layoutResourceId, parent, false)!!
         }
         // object item based on the position
-        val t = getItem(position) ?: return convertView
+        val t = getItem(position) ?: return view
         parent as ListView
         val selectedId: Long = if (parent.checkedItemIds.isEmpty()) NP_ID else parent.checkedItemIds[0]
 
 // get the TextView and then set the text (item name) and tag (item ID) values
-        val title = convertView.findViewById<TextView>(R.id.recents_title)
-        val subtitle = convertView.findViewById<TextView>(R.id.recents_subtitle)
-        val date = convertView.findViewById<TextView>(R.id.recents_date)
-        val np = convertView.findViewById<ImageView>(R.id.recents_playing)
+        val np = view.recents_playing
         var relDate: CharSequence = ""
 
         if (t.isNowPlaying) {
@@ -111,15 +109,16 @@ class RecentsAdapter
             }
         } else
             np.visibility = View.GONE
-        title.text = t.name
-        subtitle.text = t.artist
+        view.recents_title.text = t.name
+        view.recents_subtitle.text = t.artist
 
         if (t.playedWhen != null) {
             relDate = Stuff.myRelativeTime(t.playedWhen)
         }
-        date.text = relDate
-        val love = convertView.findViewById<ImageView>(R.id.recents_love)
-        val play = convertView.findViewById<ImageView>(R.id.recents_play)
+        view.recents_date.text = relDate
+
+        val love = view.recents_love
+        val play = view.recents_play
 
         love.setOnClickListener(loveToggle)
 
@@ -131,7 +130,7 @@ class RecentsAdapter
             love.setTag(R.id.recents_love, 0)
         }
 
-        val albumArt = convertView.findViewById<ImageView>(R.id.recents_album_art)
+        val albumArt = view.recents_album_art
 
         val imgUrl = t.getImageURL(ImageSize.MEDIUM)
 
@@ -151,22 +150,17 @@ class RecentsAdapter
         }
 
         if ( getItemId(position) == selectedId && t.url != hero.tag) {
-            val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
-            val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
-
-            heroInfo.setOnClickListener {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(t.url))
-                context.startActivity(browserIntent)
+            activity.hero_info.setOnClickListener {
+                Stuff.openInBrowser(t.url, context)
             }
-            heroYt.setOnClickListener {
+            activity.hero_yt.setOnClickListener {
                 var ytUrl = "https://www.youtube.com/results?search_query="
                 try {
                     ytUrl += URLEncoder.encode(t.artist + " - " + t.name, "UTF-8")
                 } catch (e: UnsupportedEncodingException) {
                     Stuff.toast(context, "failed to encode url")
                 }
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ytUrl))
-                context.startActivity(browserIntent)
+                Stuff.openInBrowser(ytUrl, context)
             }
             heroInfoLoader?.cancel(true)
             heroInfoLoader = LFMRequester(context, handler)
@@ -176,13 +170,13 @@ class RecentsAdapter
             setHero(t, imgUrl) //better set a blurred one
 
             play.visibility = View.VISIBLE
-            play.setOnClickListener({heroYt.callOnClick()})
+            play.setOnClickListener({activity.hero_yt.callOnClick()})
         } else if (getItemId(position) != selectedId) {
             play.visibility = View.INVISIBLE
         } else
             play.visibility = View.VISIBLE
 
-        return convertView
+        return view
     }
 
     override fun getItemId(position: Int): Long {
@@ -194,11 +188,11 @@ class RecentsAdapter
     }
 
     fun loadRecents(page: Int) {
-        val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
+        val list = (context as Activity).recents_list ?: return
 
         Stuff.log("loadRecents $page")
         LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
-        list.findViewById<View>(R.id.recents_progressbar).visibility = View.VISIBLE
+        list.recents_progressbar.visibility = View.VISIBLE
     }
     fun firstLoad() {
         Stuff.log("firstLoad")
@@ -219,10 +213,11 @@ class RecentsAdapter
 
             (context as Activity).runOnUiThread {
                 Stuff.log("loadPending")
-                val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return@runOnUiThread
-                val layout = list.findViewById<LinearLayout>(R.id.header_pending)
+                val activity = context as Activity
+                val list = activity.recents_list ?: return@runOnUiThread
+                val layout = list.header_pending
                 if (count > 0) {
-                    val pendingItems = layout.findViewById<LinearLayout>(R.id.header_pending_items)
+                    val pendingItems = layout.header_pending_items
                     pendingItems.removeAllViews()
                     val inflater = LayoutInflater.from(context)
                     aFew.forEach {
@@ -230,10 +225,10 @@ class RecentsAdapter
                         v.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                         pendingItems.addView(PendingScroblesAdapter.populateItem(v, it))
                     }
-                    val pendingSummary = layout.findViewById<LinearLayout>(R.id.pending_summary)
+                    val pendingSummary = layout.pending_summary
                     val diff = count - aFew.size
                     if (diff > 0) {
-                        pendingSummary.findViewById<TextView>(R.id.pending_more).text = context.getString(R.string.pending_scrobbles_summary, diff)
+                        pendingSummary.pending_more.text = context.getString(R.string.pending_scrobbles_summary, diff)
                         pendingSummary.setOnClickListener {
                             val fm = (context as Activity).fragmentManager
                                     fm.beginTransaction()
@@ -258,7 +253,7 @@ class RecentsAdapter
     }
 
     private fun setHero(t: Track?, imgUrl: String? = null) {
-        val ctl = (context as Activity).findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
+        val ctl = (context as Activity).ctl
 
         if (t != null) {
             val text = t.artist + " - " + t.name
@@ -295,12 +290,10 @@ class RecentsAdapter
     }
 
     private fun setPaletteColors(){
-        val ctl = (context as Activity).findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout) ?: return
-        val list = (context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
-        val heroShare = (context as Activity).findViewById<ImageButton>(R.id.hero_share)
-        val heroInfo = (context as Activity).findViewById<ImageButton>(R.id.hero_info)
-        val heroYt = (context as Activity).findViewById<ImageButton>(R.id.hero_yt)
-        val graph = (context as Activity).findViewById<GraphView>(R.id.graph)
+        val activity = context as Activity
+        val ctl = activity.ctl ?: return
+        val list = activity.recents_list ?: return
+        val graph = activity.graph
 
         val b = (hero.drawable as BitmapDrawable).bitmap
         Palette.generateAsync(b) { palette ->
@@ -317,15 +310,15 @@ class RecentsAdapter
             } else {
                 ctl.setCollapsedTitleTextColor(colorMutedDark)
             }
-            (graph.series.get(0) as  LineGraphSeries<*>).color = colorLightWhite
+            (graph.series[0] as  LineGraphSeries<*>).color = colorLightWhite
             graph.gridLabelRenderer.horizontalAxisTitleColor = colorLightWhite
             graph.gridLabelRenderer.verticalLabelsColor = colorLightWhite
             val listBgFrom = (list.background as ColorDrawable).color
 
             val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
-            val shareBgAnimator = ObjectAnimator.ofObject(heroShare, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
-            val infoBgAnimator = ObjectAnimator.ofObject(heroInfo, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
-            val ytBgAnimator = ObjectAnimator.ofObject(heroYt, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
+            val shareBgAnimator = ObjectAnimator.ofObject(activity.hero_share, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
+            val infoBgAnimator = ObjectAnimator.ofObject(activity.hero_info, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
+            val ytBgAnimator = ObjectAnimator.ofObject(activity.hero_yt, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
             val animSet = AnimatorSet()
             animSet.playTogether(listBgAnimator, shareBgAnimator, infoBgAnimator, ytBgAnimator)
             animSet.interpolator = AccelerateDecelerateInterpolator()
@@ -343,7 +336,7 @@ class RecentsAdapter
         if (points == null)
             return
 
-        val graph = (context as Activity).findViewById<GraphView>(R.id.graph)
+        val graph = (context as Activity).graph
         val series = graph.series[0] as LineGraphSeries<DataPoint>
         val dps = mutableListOf<DataPoint>()
         var i = 0.0
@@ -364,20 +357,20 @@ class RecentsAdapter
     }
 
     fun populate(res: PaginatedResult<Track>, page: Int = 1) {
-        val refresh = (context as Activity).findViewById<SwipeRefreshLayout?>(R.id.swiperefresh) ?: return
-        val list = (context as Activity).findViewById<ListView>(R.id.recents_list)
+        val refresh = (context as Activity).swipe_refresh ?: return
+        val list = (context as Activity).recents_list
         if (list.visibility != View.VISIBLE)
             return
         val selectedId = if (list.checkedItemIds.isEmpty()) NP_ID else list.checkedItemIds[0]
         var selectedPos = 2
         refresh.isRefreshing = false
-        list.removeCallbacks(timedRefresh)
+        handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
         if (page == 1) {
             clear()
-            list.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
+            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.REFRESH_RECENTS, ""))
+            handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             if (res.isEmpty){
-                val headerTv = list.findViewById<TextView>(R.id.header_text)
-                headerTv.text = context.getString(R.string.no_scrobbles)
+                list.header_text.text = context.getString(R.string.no_scrobbles)
             }
         }
         res.forEach {
@@ -388,17 +381,7 @@ class RecentsAdapter
             }
         }
         list.setItemChecked(selectedPos, true)
-        list.findViewById<View>(R.id.recents_progressbar).visibility = View.INVISIBLE
-        notifyDataSetChanged()
-    }
-
-    fun markLoved(res: PaginatedResult<Track>) {
-        val loved = res.filterNotNullTo(mutableListOf<Track>())
-        for (i in loved.indices) {
-            (0 until count)
-                    .filter { loved[i].name == getItem(it).name && loved[i].artist == getItem(it).artist }
-                    .forEach { getItem(it).isLoved = true }
-        }
+        list.recents_progressbar.visibility = View.INVISIBLE
         notifyDataSetChanged()
     }
 
@@ -431,6 +414,39 @@ class RecentsAdapter
         anim.start()
     }
 
+    class ResponseHandler(private val recentsAdapter:RecentsAdapter):Handler(){
+        override fun handleMessage(m: Message) {
+            //usually:
+            // obj = command, paginatedresult;
+            val pair = m.obj as Pair<String, Any>
+            val command = pair.first
+            var data = pair.second
+            when(command){
+//                Stuff.GET_LOVED -> recentsAdapter.markLoved(data as PaginatedResult<Track>)
+                Stuff.HERO_INFO -> {
+                    data = data as MutableList<String?>
+                    recentsAdapter.setHero(data[0])
+                    recentsAdapter.setGraph(data[1])
+                }
+                Stuff.GET_RECENTS -> {
+                    recentsAdapter.populate(data as PaginatedResult<Track>, data.page)
+//                    LFMRequester(recentsAdapter.context, this).execute(Stuff.GET_LOVED)
+                }
+                Stuff.GET_RECENTS_CACHED -> {
+                    recentsAdapter.populate(data as PaginatedResult<Track>, data.page)
+                    recentsAdapter.loadRecents(1)
+                }
+                Stuff.IS_ONLINE -> {
+                    val list = (recentsAdapter.context as Activity).recents_list ?: return
+                    if (data as Boolean)
+                        list.header_text.text = recentsAdapter.context.getString(R.string.recently_scrobbled)
+                    else
+                        list.header_text.text = recentsAdapter.context.getString(R.string.offline)
+                }
+                Stuff.REFRESH_RECENTS -> recentsAdapter.loadRecents(1)
+            }
+        }
+    }
     companion object {
         var lastColorDomPrimary:Int = Color.rgb(0x88, 0x0e, 0x4f)
         var lastColorLightWhite = Color.WHITE
@@ -439,40 +455,6 @@ class RecentsAdapter
 
         private val FILLED = 5
         private val NP_ID: Long = -5
-
-        class ResponseHandler(private val recentsAdapter:RecentsAdapter):Handler(){
-            override fun handleMessage(m: Message) {
-                //usually:
-                // obj = command, paginatedresult;
-                val pair = m.obj as Pair<String, Any>
-                val command = pair.first
-                var data = pair.second
-                when(command){
-                    Stuff.GET_LOVED -> recentsAdapter.markLoved(data as PaginatedResult<Track>)
-                    Stuff.HERO_INFO -> {
-                        data = data as MutableList<String?>
-                        recentsAdapter.setHero(data[0])
-                        recentsAdapter.setGraph(data[1])
-                    }
-                    Stuff.GET_RECENTS -> {
-                        recentsAdapter.populate(data as PaginatedResult<Track>, data.page)
-                        LFMRequester(recentsAdapter.context, this).execute(Stuff.GET_LOVED)
-                    }
-                    Stuff.GET_RECENTS_CACHED -> {
-                        recentsAdapter.populate(data as PaginatedResult<Track>, data.page)
-                        recentsAdapter.loadRecents(1)
-                    }
-                    Stuff.IS_ONLINE -> {
-                        val list = (recentsAdapter.context as Activity).findViewById<ListView?>(R.id.recents_list) ?: return
-                        val headerTv = list.findViewById<TextView>(R.id.header_text)
-                        if (data as Boolean)
-                            headerTv.text = recentsAdapter.context.getString(R.string.recently_scrobbled)
-                        else
-                            headerTv.text = recentsAdapter.context.getString(R.string.offline)
-                    }
-                }
-            }
-        }
     }
 
 }

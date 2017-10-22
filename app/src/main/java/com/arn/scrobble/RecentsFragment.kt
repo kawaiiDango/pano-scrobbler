@@ -1,27 +1,14 @@
 package com.arn.scrobble
 
-import android.app.ActivityManager
 import android.app.Fragment
-import android.content.ComponentName
-import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
-import android.content.pm.LabeledIntent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.app.AppCompatActivity
 import android.view.*
 import android.widget.AdapterView
 import android.widget.HeaderViewListAdapter
-import android.widget.ImageView
 import android.widget.ListView
-import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.ui.EndlessScrollListener
 import com.jjoe64.graphview.DefaultLabelFormatter
 import com.jjoe64.graphview.GraphView
@@ -29,7 +16,8 @@ import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import de.umass.lastfm.Track
-import java.io.File
+import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.coordinator_main.*
 
 
 /**
@@ -42,41 +30,34 @@ class RecentsFragment : Fragment() {
     private var footer: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        if (savedInstanceState == null)
-            setHasOptionsMenu(true)
         return inflater.inflate(R.layout.content_main, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val ab = (activity as AppCompatActivity).supportActionBar ?: return
-        ab.setDisplayHomeAsUpEnabled(false)
-        val list = view.findViewById<ListView>(R.id.recents_list)
         val inflater = activity.layoutInflater
 
-        list.background.mutate()
-        footer = inflater.inflate(R.layout.footer_loading, list, false)
-        list.addFooterView(footer, null, false)
+        recents_list.background.mutate()
+        footer = inflater.inflate(R.layout.footer_loading, recents_list, false)
+        recents_list.addFooterView(footer, null, false)
 
-        val pHeader = inflater.inflate(R.layout.header_pending, list, false)
-        list.addHeaderView(pHeader, null, false)
+        val pHeader = inflater.inflate(R.layout.header_pending, recents_list, false)
+        recents_list.addHeaderView(pHeader, null, false)
 
-        val header = inflater.inflate(R.layout.header_default, list, false)
-        list.addHeaderView(header, null, false)
+        val header = inflater.inflate(R.layout.header_default, recents_list, false)
+        recents_list.addHeaderView(header, null, false)
 
         adapter = RecentsAdapter(activity, R.layout.list_item_recents)
-        list.adapter = adapter
+        recents_list.adapter = adapter
         adapter?.firstLoad()
-        list.setOnScrollListener(loadMoreListener)
-        list.onItemClickListener = itemClickListener
+        recents_list.setOnScrollListener(loadMoreListener)
+        recents_list.onItemClickListener = itemClickListener
 
-        val refresh = activity.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
-        refresh.setOnRefreshListener { adapter?.loadRecents(1) }
+        activity.swipe_refresh.setOnRefreshListener { adapter?.loadRecents(1) }
 
-        val share = activity.findViewById<ImageView>(R.id.hero_share)
-        share.setOnClickListener(shareClickListener)
+        activity.hero_share.setOnClickListener(shareClickListener)
 
-        val graph = activity.findViewById<GraphView>(R.id.graph)
+        val graph = activity.graph
         graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
         graph.gridLabelRenderer.isHorizontalLabelsVisible = false
         graph.gridLabelRenderer.isVerticalLabelsVisible = false
@@ -108,114 +89,40 @@ class RecentsFragment : Fragment() {
     }
 
     private fun toggleGraphDetails(graph: GraphView){
-        val show = graph.tag as Boolean? ?: false
+        val show = activity.graph.tag as Boolean? ?: false
         if (show) {
-            graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
+            activity.graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
         } else {
-            graph.gridLabelRenderer.horizontalAxisTitle = null
+            activity.graph.gridLabelRenderer.horizontalAxisTitle = null
         }
-        graph.gridLabelRenderer.isVerticalLabelsVisible = show
-        graph.tag = !show
+        activity.graph.gridLabelRenderer.isVerticalLabelsVisible = show
+        activity.graph.tag = !show
         PreferenceManager.getDefaultSharedPreferences(activity)
                 .edit()
                 .putBoolean(Stuff.GRAPH_DETAILS_PREF, show)
                 .apply()
-        graph.onDataChanged(false, false)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_main, menu)
-    }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-
-        if (id == R.id.action_settings) {
-            fragmentManager.beginTransaction()
-                    .hide(this)
-                    .add(R.id.frame, PrefFragment())
-                    .addToBackStack(null)
-                    .commit()
-        } else if (id == R.id.action_report) {
-            mailLogs()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun mailLogs(){
-        Stuff.toast(activity, "Generating report...")
-        var text = ""
-        text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME+ "\n"
-        text += "Android " + Build.VERSION.RELEASE+ "\n"
-        text += "ROM: " + Build.DISPLAY+ "\n"
-        text += "Device: " + Build.BRAND + " "+ Build.MODEL+ "\n"
-
-        val mi = ActivityManager.MemoryInfo()
-        (activity.getSystemService(ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(mi)
-        val megs = mi.totalMem / 1048576L
-        text += "RAM: " + megs + "M \n"
-
-        val dm = resources.displayMetrics
-
-        text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
-        text += "------------------------\n\n[how did this happen?]"
-
-        val log = Stuff.exec("logcat -d")
-        val logFile = File(activity.filesDir, "log.txt")
-//        val dbFile = File(activity.filesDir, PendingScrobblesDb.tableName + ".db")
-        logFile.writeText(log)
-        val logUri = FileProvider.getUriForFile(activity, activity.packageName+".fileprovider", logFile)
-//        activity.getDatabasePath(PendingScrobblesDb.tableName)
-//                .copyTo(dbFile, true)
-//        val dbUri = FileProvider.getUriForFile(activity, activity.packageName+".fileprovider", dbFile)
-
-        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", "huh@huh.com", null))
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "huh?")
-        val resolveInfos = activity.packageManager.queryIntentActivities(emailIntent, 0)
-        val intents = arrayListOf<LabeledIntent>()
-        for (info in resolveInfos) {
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.component = ComponentName(info.activityInfo.packageName, info.activityInfo.name)
-            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
-            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) +" - Bug report")
-            intent.putExtra(Intent.EXTRA_TEXT, text)
-            intent.putExtra(Intent.EXTRA_STREAM, logUri)
-            intents.add(LabeledIntent(intent, info.activityInfo.packageName, info.loadLabel(activity.packageManager), info.icon))
-        }
-        if (intents.size > 0) {
-            val chooser = Intent.createChooser(intents.removeAt(intents.size - 1), "Send bug report")
-            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
-            startActivity(chooser)
-        }else
-            Stuff.toast(activity, "There are no email clients installed.")
+        activity.graph.onDataChanged(false, false)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
-        val ab = (activity as AppCompatActivity).supportActionBar
-        ab?.setDisplayHomeAsUpEnabled(hidden)
+//        val ab = (activity as AppCompatActivity).supportActionBar
+//        ab?.setDisplayHomeAsUpEnabled(hidden)
         if (!hidden) {
-            val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout) ?: return
-            ctl.title = getString(R.string.app_name)
-            ctl.setContentScrimColor(RecentsAdapter.lastColorDomPrimary)
+            activity.ctl.title = getString(R.string.app_name)
+            activity.ctl.setContentScrimColor(RecentsAdapter.lastColorDomPrimary)
             if (Stuff.isDark(RecentsAdapter.lastColorDomPrimary)) {
-                ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorLightWhite)
+                activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorLightWhite)
             } else {
-                ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorMutedDark)
+                activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorMutedDark)
             }
         }
     }
 
     override fun onPause() {
         super.onPause()
-        val list = activity.findViewById<ListView>(R.id.recents_list)
-        list?.removeCallbacks(
-                ((list.adapter as HeaderViewListAdapter?)
-                        ?.wrappedAdapter as RecentsAdapter).timedRefresh)
+        ((recents_list.adapter as HeaderViewListAdapter?)
+                        ?.wrappedAdapter as RecentsAdapter)
+                .handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
     }
 
     override fun onResume() {
@@ -240,21 +147,21 @@ class RecentsFragment : Fragment() {
         if (Main.heroExpanded)
             adapterView.smoothScrollToPositionFromTop(pos1, 40, 500)
 
-        val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
-        ab?.setExpanded(true, true)
+        activity.app_bar?.setExpanded(true, true)
     }
     private val shareClickListener = View.OnClickListener {
-        val list = activity.findViewById<ListView>(R.id.recents_list)
-        val selectedPos = if (list.checkedItemPosition > 0) list.checkedItemPosition else return@OnClickListener
-        val track = list.getItemAtPosition(selectedPos) as Track
-        Stuff.log("shareClickListener $track")
+        val selectedPos = if (recents_list.checkedItemPosition > 0) recents_list.checkedItemPosition else return@OnClickListener
+        val track = recents_list.getItemAtPosition(selectedPos)
+        if (track is Track) {
+            Stuff.log("shareClickListener $track")
 
-        val shareText = "I was listening to\n " +  track.artist + " - " + track.name + ",  " +
-                Stuff.myRelativeTime(track.playedWhen) + "\n" + getString(R.string.share_text)
-        val i = Intent(Intent.ACTION_SEND)
-        i.type = "text/plain"
-        i.putExtra(Intent.EXTRA_SUBJECT, "I was listening to:")
-        i.putExtra(Intent.EXTRA_TEXT, shareText)
-        startActivity(Intent.createChooser(i, "Share this song"))
+            val shareText = "I was listening to\n " + track.artist + " - " + track.name + ",  " +
+                    Stuff.myRelativeTime(track.playedWhen) + "\n" + getString(R.string.share_text)
+            val i = Intent(Intent.ACTION_SEND)
+            i.type = "text/plain"
+            i.putExtra(Intent.EXTRA_SUBJECT, "I was listening to:")
+            i.putExtra(Intent.EXTRA_TEXT, shareText)
+            startActivity(Intent.createChooser(i, "Share this song"))
+        }
     }
 }

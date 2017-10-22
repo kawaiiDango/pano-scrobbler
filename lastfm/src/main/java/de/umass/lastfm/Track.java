@@ -715,7 +715,7 @@ public class Track extends MusicEntry {
 
 	@Override
 	public String toString() {
-		return "Track[name=" + name + ",artist=" + artist + ", album=" + album + ", position=" + position + ", duration=" + duration
+		return "Track[name=" + name + ",artist=" + artist + ", album=" + album + ", loved=" + loved + ", position=" + position + ", duration=" + duration
 				+ ", location=" + location + ", nowPlaying=" + nowPlaying + ", fullTrackAvailable=" + fullTrackAvailable + ", playedWhen="
 				+ playedWhen + ", artistMbId=" + artistMbid + ", albumMbId" + albumMbid + "]";
 	}
@@ -760,6 +760,11 @@ public class Track extends MusicEntry {
 			if (stream != null) {
 				String s = stream.getAttribute("fulltrack");
 				track.fullTrackAvailable = s != null && Integer.parseInt(s) == 1;
+			}
+			DomElement loved = element.getChild("loved");
+			if (loved != null) {
+				String s = loved.getText();
+				track.loved = s != null && Integer.parseInt(s) == 1;
 			}
 			return track;
 		}

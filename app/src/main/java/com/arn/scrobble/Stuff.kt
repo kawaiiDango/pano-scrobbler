@@ -2,6 +2,7 @@ package com.arn.scrobble
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -9,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.PictureDrawable
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.content.ContextCompat
@@ -21,6 +23,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.MalformedURLException
 import java.net.URL
+import java.text.DecimalFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -36,6 +39,10 @@ object Stuff {
     const val CHECK_AUTH_SILENT = "authSilent"
     const val GET_RECENTS = "recents"
     const val GET_RECENTS_CACHED = "recents_cached"
+    const val REFRESH_RECENTS = "recents_refresh"
+    const val PROFILE_PIC_PREF = "profile_cached"
+    const val GET_DRAWER_INFO = "profile"
+    const val GET_FRIENDS = "friends"
     const val LAST_KEY = Tokens.LAST_KEY
     const val LAST_SECRET = Tokens.LAST_SECRET
     const val TAG = "scrobbler"
@@ -44,7 +51,7 @@ object Stuff {
     const val DEEP_LINK_KEY = "deeplink"
     const val LOVE = "loved"
     const val UNLOVE = "unloved"
-    const val GET_LOVED = "getloved"
+//    const val GET_LOVED = "getloved"
     const val HERO_INFO = "heroinfo"
     const val IS_ONLINE = "online"
     const val APP_WHITELIST = "app_whitelist"
@@ -56,6 +63,7 @@ object Stuff {
 
     const val SESS_KEY = "sesskey"
     const val USERNAME = "username"
+    const val NUM_SCROBBLES_PREF = "num_scrobbles_cached"
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
@@ -153,10 +161,11 @@ object Stuff {
             if (musicInfo.size > 1) {
                 for (j in 0 until seperators.size - 2) {
                     val splits = musicInfo[1].split(seperators[j].toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                    musicInfo[1] = splits[0]
-                    //                    log(null, splits[0] + "|" + splits.length);
-                    if (splits.size > 1)
+                    if (splits.size == 1)
+                        musicInfo[1] = splits[0]
+                    else
                         break
+                    //                    log(null, splits[0] + "|" + splits.length);
                 }
                 break
             }
@@ -222,7 +231,7 @@ object Stuff {
     }
 
     fun setTitle(activity:Activity, strId: Int){
-        val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.toolbar_layout)
+        val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.ctl)
         ctl.title = activity.getString(strId)
 //        ctl.tag = activity.getString(strId)
         ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.colorPrimary))
@@ -259,11 +268,14 @@ object Stuff {
     }
 
     fun humanReadableNum(n: Long): String {
-        val unit = 1000
-        if (n < unit) return n.toString()
-        val exp = (Math.log(n.toDouble()) / Math.log(unit.toDouble())).toInt()
-        val pre = "KMB"[exp - 1] //kilo, million, bilion
-        return String.format("%.1f%s", n / Math.pow(unit.toDouble(), exp.toDouble()), pre)
+        val k = 1000
+        if (n < k) return n.toString()
+        val exp = (Math.log(n.toDouble()) / Math.log(k.toDouble())).toInt()
+        val unit = "KMB"[exp - 1] //kilo, million, bilion
+        val dec = n / Math.pow(k.toDouble(), exp.toDouble())
+
+        val decimal = DecimalFormat("#.#").format(dec)
+        return decimal + unit
     }
 
     fun isNetworkAvailable(c: Context): Boolean {
@@ -300,5 +312,10 @@ object Stuff {
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
         return bitmap
+    }
+
+    fun openInBrowser(url:String, context:Context){
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(browserIntent)
     }
 }

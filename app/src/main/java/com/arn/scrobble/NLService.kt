@@ -74,6 +74,7 @@ class NLService : NotificationListenerService() {
         filter.addAction(pUNLOVE)
         filter.addAction(pWHITELIST)
         filter.addAction(pBLACKLIST)
+        filter.addAction(iPREFS_CHANGED)
         registerReceiver(nlservicereciver, filter)
 
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
@@ -84,7 +85,7 @@ class NLService : NotificationListenerService() {
         val c = applicationContext
         handler = ScrobbleHandler()
         val sessManager = c.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        sessListener = SessListener(applicationContext, handler)
+        sessListener = SessListener(PreferenceManager.getDefaultSharedPreferences(c), handler)
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, this::class.java))
             Stuff.log("onListenerConnected")
@@ -212,8 +213,26 @@ class NLService : NotificationListenerService() {
                     pref.edit()
                             .putStringSet(Stuff.APP_WHITELIST, wSet)
                             .putStringSet(Stuff.APP_BLACKLIST,  bSet)
-                            .commit()
+                            .apply()
                     nm.cancel(NOTI_ID_APP, 0)
+                }
+                iPREFS_CHANGED -> {
+                    val key = intent.getStringExtra("key")
+                    val value = intent.extras["value"]
+                    val editor = pref.edit()
+                    when (value) {
+                        is Int -> editor.putInt(key, value)
+                        is Float -> editor.putFloat(key, value)
+                        is Long -> editor.putLong(key, value)
+                        is Boolean -> editor.putBoolean(key, value)
+                        is String -> editor.putString(key, value)
+                        is Array<*> -> editor.putStringSet(key, (value as Array<String>).toSet())
+                        else -> {
+                            Stuff.log("unknown prefs type")
+                            return
+                        }
+                    }
+                    editor.apply()
                 }
             }
         }
@@ -237,6 +256,11 @@ class NLService : NotificationListenerService() {
         }
 
         fun scrobble(artist:String, album:String, title: String, duration:Long, packageName: String? = null): Int {
+            if (!pref.getBoolean("master", true) ||
+                    (!pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) &&
+                            !Stuff.isNetworkAvailable(applicationContext))||
+                    !FirstThingsFragment.checkAuthTokenExists(applicationContext))
+                return 0
             val hash = artist.hashCode() + title.hashCode()
 
 //            if (!activeIDs.contains(hash))
@@ -315,8 +339,8 @@ class NLService : NotificationListenerService() {
                     .setSmallIcon(R.drawable.vd_appquestion_noti)
                     .setColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
                     .setContentIntent(launchIntent)
-                    .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
                     .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
+                    .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
                     .setAutoCancel(true)
                     .setCustomBigContentView(null)
                     .setStyle(MediaStyleMod().setShowActionsInCompactView(0,1))
@@ -445,8 +469,8 @@ class NLService : NotificationListenerService() {
                 rv.setTextColor(resId, descColorHack)
 
                 resId = res.getIdentifier("action0", "id", "android")
-                val c = Class.forName("android.widget.RemoteViews")
-                val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
+                val context = Class.forName("android.widget.RemoteViews")
+                val m = context.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
                 m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
                 */
 
@@ -457,8 +481,8 @@ class NLService : NotificationListenerService() {
             Stuff.log(hash.toString() + " canceled")
             if (hash != 0)
                 removeMessages(hash)
-            if (lastNotiIcon != NOTI_ERR_ICON)
-                nm.cancel(NOTI_ID_SCR, 0)
+//            if (lastNotiIcon != NOTI_ERR_ICON)
+            nm.cancel(NOTI_ID_SCR, 0)
         }
     }
 
@@ -522,6 +546,7 @@ class NLService : NotificationListenerService() {
         val pUNLOVE = "com.arn.scrobble.UNLOVE"
         val pBLACKLIST = "com.arn.scrobble.BLACKLIST"
         val pWHITELIST = "com.arn.scrobble.WHITELIST"
+        val iPREFS_CHANGED = "com.arn.scrobble.PREFS_CHANGED"
         val B_TITLE = "title"
         val B_TIME = "time"
         val B_ARTIST = "artist"

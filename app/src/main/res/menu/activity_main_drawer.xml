@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:showIn="navigation_view">
+<!-- group needs an id to be set for the seperator to show up -->
+    <item android:title="On last.FM:">
+        <menu>
+            <group android:id="@+id/nav_group_top">
+                <item
+                    android:id="@+id/nav_last_week"
+                    android:icon="@drawable/vd_bar_chart"
+                    android:title="Last.week"/>
+                <item
+                    android:id="@+id/nav_friends"
+                    android:icon="@drawable/vd_friends"
+                    android:title="Friends"/>
+                <item
+                    android:id="@+id/nav_loved"
+                    android:icon="@drawable/vd_heart"
+                    android:title="Loved"/>
+            </group>
+        </menu>
+    </item>
+
+    <group android:id="@+id/nav_group_bottom">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/vd_settings"
+            android:title="@string/action_settings"/>
+        <item
+            android:id="@+id/nav_report"
+            android:icon="@drawable/vd_bug"
+            android:title="@string/action_report"/>
+    </group>
+
+</menu>

@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Pano Scrobbler</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="email">kawaiiDango@protonmail.com</string>
     <string name="blank_text">
       goddamnit this is so blank
@@ -24,7 +26,7 @@
     <string name="video_players">Video Streaming Apps</string>
     <string name="other_apps">Other Apps</string>
     <string name="choose_apps">Choose Apps to scrobble</string>
-    <string name="choose_apps_desc">(Any app which plays named music, such as youtube, your browser, your chat app, etc is supported)</string>
+    <string name="choose_apps_desc">(Any app which plays named music, such as youtube, your browser, your chat app, etc, is supported)</string>
     <string name="max_apps_exceeded">Sorry, you cannot enable more than %1$d apps</string>
     <string name="offline">Offline. Data shown isn\'t fresh</string>
     <string name="share_text">  (Shared with goo.gl/ek1Nof)</string>
@@ -45,5 +47,6 @@
     <string name="unlove">Unlove it</string>
     <string name="ok_cool">Looks cool</string>
     <string name="ignore_app">Ignore this app</string>
+    <string name="num_scrobbles">%1$d scrobbles today</string>
 
 </resources>

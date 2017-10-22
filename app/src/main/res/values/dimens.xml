@@ -1,8 +1,11 @@
 <resources>
     <dimen name="app_bar_height">350dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="fab_margin_right">50dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
+    <dimen name="title_margin_right">50dp</dimen>
+    <dimen name="fab_done_margin">24dp</dimen>
     <dimen name="elevation_hero_btn">7dp</dimen>
     <dimen name="tz_hero_btn">2dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">196dp</dimen>
+    <dimen name="hero_overlay_height">176dp</dimen>
 </resources>

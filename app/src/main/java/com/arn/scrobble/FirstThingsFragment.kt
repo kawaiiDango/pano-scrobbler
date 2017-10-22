@@ -6,17 +6,15 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.AppBarLayout
 import android.support.v4.app.NotificationManagerCompat
-import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
 import com.arn.scrobble.pref.AppListFragment
+import kotlinx.android.synthetic.main.content_first_things.*
 
 
 /**
@@ -26,27 +24,22 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
     var doneCount = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
-        vg.setExpanded(false, true)
-        setHasOptionsMenu(false)
         return inflater.inflate(R.layout.content_first_things, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val ab = (activity as AppCompatActivity).supportActionBar ?: return
-        ab.setDisplayHomeAsUpEnabled(false)
         if (view == null)
             return
-        view.findViewById<ViewGroup>(R.id.first_things_1).setOnClickListener {
+        first_things_1.setOnClickListener {
             Stuff.toast(activity, "Check "+ getString(R.string.app_name))
             val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
             startActivity(intent)
         }
-        view.findViewById<ViewGroup>(R.id.first_things_2).setOnClickListener {
+        first_things_2.setOnClickListener {
             LFMRequester(activity).execute(Stuff.CHECK_AUTH)
         }
-        view.findViewById<ViewGroup>(R.id.first_things_3).setOnClickListener {
+        first_things_3.setOnClickListener {
             fragmentManager.beginTransaction()
                     .hide(this)
                     .add(R.id.frame, AppListFragment())
@@ -54,8 +47,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
                     .commit()
         }
 
-        val pass = view.findViewById<EditText>(R.id.testing_pass)
-        pass.addTextChangedListener(object : TextWatcher {
+        testing_pass.addTextChangedListener(object : TextWatcher {
 
             override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
             }
@@ -65,17 +57,14 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
             }
 
             override fun afterTextChanged(arg0: Editable) {
-                //            val pass = view.findViewById<TextView>(R.id.testing_pass)
-                val splits = pass.text.split('_')
+                val splits = testing_pass.text.split('_')
                 Stuff.log("splits: $splits " + splits.size)
                 if (splits.size == 3) {
                     PreferenceManager.getDefaultSharedPreferences(activity).edit()
                             .putString(Stuff.USERNAME, splits[0])
                             .putString(Stuff.SESS_KEY, splits[1])
                             .apply()
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.frame, RecentsFragment(), Stuff.GET_RECENTS)
-                            .commit()
+                    checkAll(true)
                 } else
                     Stuff.log("bad pass")
             }
@@ -87,7 +76,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         checkAll()
     }
 
-    private fun checkAll(){
+    private fun checkAll(skipChecks:Boolean = false){
         doneCount = 0
         if (checkNLAccess(activity))
             markAsDone(R.id.first_things_1)
@@ -95,12 +84,13 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
             markAsDone(R.id.first_things_2)
         if (checkAppListExists(activity))
             markAsDone(R.id.first_things_3)
-        if(doneCount==3) {
+
+        if(doneCount==3 || skipChecks) {
             fragmentManager.beginTransaction()
                     .replace(R.id.frame, RecentsFragment(), Stuff.GET_RECENTS)
                     .commit()
-            val ab = activity.findViewById<AppBarLayout>(R.id.app_bar)
-            ab?.setExpanded(true, true)
+            fragmentManager.addOnBackStackChangedListener(activity as Main)
+            Main.checkBackStack(activity as Main)
             return
         }
         LFMRequester(activity).execute(Stuff.CHECK_AUTH_SILENT)

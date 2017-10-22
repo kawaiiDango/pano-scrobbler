@@ -17,8 +17,7 @@ import android.util.Pair
  * Created by arn on 04/07/2017.
  */
 
-class SessListener internal constructor(private val c: Context, private val handler: NLService.ScrobbleHandler) : OnActiveSessionsChangedListener {
-    private var pref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(c)
+class SessListener internal constructor(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler) : OnActiveSessionsChangedListener {
 
     private val mControllers = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
 
@@ -31,8 +30,9 @@ class SessListener internal constructor(private val c: Context, private val hand
                 if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, false) && !isBlacklisted)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!mControllers.containsKey(controller.sessionToken)) {
-                        Stuff.log("onActiveSessionsChanged: "+controller.packageName+" #"+controller.sessionToken)
-                        val cb = MyCallback(controller.packageName)
+                        Stuff.log("onActiveSessionsChanged: " + controller.packageName +
+                                " #" + controller.sessionToken.describeContents())
+                        val cb = MyCallback(pref, handler, controller.packageName)
                         controller.registerCallback(cb)
                         val pair = Pair.create(controller, cb)
                         synchronized(mControllers) {
@@ -46,7 +46,7 @@ class SessListener internal constructor(private val c: Context, private val hand
         removeSessions(tokens)
     }
 
-    fun removeSessions(tokens:MutableSet<*>? = null, packageName: String? = null){
+    fun removeSessions(tokens: MutableSet<*>? = null, packageName: String? = null) {
         val it = mControllers.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
@@ -62,21 +62,21 @@ class SessListener internal constructor(private val c: Context, private val hand
         numSessions = mControllers.size
     }
 
-    private inner class MyCallback(val packageName: String) : Callback() {
+    class MyCallback(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler, private val packageName: String) : Callback() {
         var metadata: MediaMetadata? = null
-//        var lastHash = 0
+        //        var lastHash = 0
         var lastScrobblePos: Long = 1
         var lastScrobbleTime: Long = 0
         var lastState = -1
         val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
 
-        private val stateHandler = object : Handler(){
+        private val stateHandler = object : Handler() {
             override fun handleMessage(msg: Message?) {
                 val state: Int = msg?.arg1!!
                 val pos: Long = msg.arg2.toLong()
 
-                Stuff.log("onPlaybackStateChanged="+ state + " laststate="+ lastState +
-                        " pos="+ pos +" duration="+
+                Stuff.log("onPlaybackStateChanged=" + state + " laststate=" + lastState +
+                        " pos=" + pos + " duration=" +
                         metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION))
 
                 val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
@@ -115,10 +115,8 @@ class SessListener internal constructor(private val c: Context, private val hand
 //                    return  //dont scrobble first buffering
 
                     Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $title")
-                    if (isPossiblyAtStart || (lastScrobblePos == 1.toLong())){
-                        if(pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) || Stuff.isNetworkAvailable(c)) {
-                            scrobble(artist, album, title, duration)
-                        }
+                    if (isPossiblyAtStart || (lastScrobblePos == 1.toLong())) {
+                        scrobble(artist, album, title, duration)
                         lastScrobblePos = pos
                         lastScrobbleTime = System.currentTimeMillis()
                     }
@@ -130,7 +128,7 @@ class SessListener internal constructor(private val c: Context, private val hand
             }
         }
 
-        fun scrobble(artist:String, album:String, title:String, duration:Long){
+        fun scrobble(artist: String, album: String, title: String, duration: Long) {
             val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(packageName)
             val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(packageName)
             val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
@@ -151,7 +149,7 @@ class SessListener internal constructor(private val c: Context, private val hand
             val album2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
             val sameAsOld = (artist == artist2 && title == title2 && album == album2)
-            Stuff.log("onMetadataChanged $artist ~ $title, sameAsOld=$sameAsOld, package=$packageName")
+            Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld, package=$packageName")
             if (!sameAsOld) {
                 this.metadata = metadata
                 lastScrobblePos = 1

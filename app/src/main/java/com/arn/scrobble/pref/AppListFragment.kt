@@ -8,8 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
-import android.support.design.widget.AppBarLayout
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +15,9 @@ import android.widget.AdapterView
 import android.widget.ListView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import kotlinx.android.synthetic.main.content_app_list.*
 import java.util.Collections
+import android.widget.AbsListView
 
 
 /**
@@ -26,36 +26,59 @@ import java.util.Collections
 class AppListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val vg = activity.findViewById<AppBarLayout>(R.id.app_bar)
-        vg?.setExpanded(false, true)
-        if (savedInstanceState == null)
-            setHasOptionsMenu(false)
         return inflater.inflate(R.layout.content_app_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val ab = (activity as AppCompatActivity).supportActionBar ?: return
-        ab.setDisplayHomeAsUpEnabled(true)
-        val appList = view.findViewById<ListView>(R.id.app_list)
+
         val adapter = AppListAdapter(activity, R.layout.list_item_app, R.layout.header_default)
-        appList.adapter = adapter
+        app_list.adapter = adapter
+        app_list.setOnScrollListener(object : AbsListView.OnScrollListener {
+            var lastFirstVisibleItem:Int = 0
+
+            override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {
+                if(scrollState == 0) { //scrolling stopped
+
+                } else //scrolling
+                    app_list_done.hide()
+
+                if (view.id == app_list.id) {
+                    val currentFirstVisibleItem = app_list.firstVisiblePosition
+                    if (currentFirstVisibleItem > lastFirstVisibleItem) { //scrolling down
+                        app_list_done.hide()
+                    } else if (currentFirstVisibleItem < lastFirstVisibleItem) {//scrolling up
+                        app_list_done.show()
+                    }
+
+                    lastFirstVisibleItem = currentFirstVisibleItem
+                }
+
+            }
+
+            override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+            }
+        })
+
+        app_list_done.setOnClickListener {
+            fragmentManager.popBackStack()
+        }
         val otherApps = getAppList(adapter)
         Thread({
             Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity.packageManager))
-            appList.post({
+            app_list?.post({
                 val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
                 val firstRun = prefs.getBoolean(Stuff.FIRST_RUN_PREF, true)
                 if (firstRun){
-                    for(i in 0 until appList.count)
-                        appList.setItemChecked(i, true)
+                    for(i in 0 until app_list.count)
+                        app_list.setItemChecked(i, true)
                     prefs.edit().putBoolean(Stuff.FIRST_RUN_PREF, false).apply()
                 }
                 otherApps.forEach {adapter.add(it)}
             })
         }).start()
 
-        appList.setOnItemClickListener{
+        app_list.setOnItemClickListener{
             adapterView: AdapterView<*>, view1: View, pos1: Int, l: Long ->
             val i=l.toInt()
             adapterView as ListView
@@ -76,19 +99,18 @@ class AppListFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
-        val appList = activity.findViewById<ListView>(R.id.app_list)
-        if (appList != null) {
+        if (app_list != null) {
             val wSet = mutableSetOf<String>()
             val bSet = prefs.getStringSet(Stuff.APP_BLACKLIST, mutableSetOf())
-            appList.checkedItemIds.forEach {
-                val packageName = (appList.adapter.getItem(it.toInt()) as ApplicationInfo).packageName ?: return@forEach
+            app_list.checkedItemIds.forEach {
+                val packageName = (app_list.adapter.getItem(it.toInt()) as ApplicationInfo).packageName ?: return@forEach
                 wSet.add(packageName)
             }
             bSet.removeAll(wSet)
             prefs.edit()
                     .putStringSet(Stuff.APP_WHITELIST, wSet)
                     .putStringSet(Stuff.APP_BLACKLIST,  bSet)
-                    .commit()
+                    .apply()
         }
     }
 

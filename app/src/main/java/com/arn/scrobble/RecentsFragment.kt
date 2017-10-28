@@ -53,7 +53,7 @@ class RecentsFragment : Fragment() {
         recents_list.setOnScrollListener(loadMoreListener)
         recents_list.onItemClickListener = itemClickListener
 
-        activity.swipe_refresh.setOnRefreshListener { adapter?.loadRecents(1) }
+        recents_swipe_refresh.setOnRefreshListener { adapter?.loadRecents(1) }
 
         activity.hero_share.setOnClickListener(shareClickListener)
 
@@ -105,8 +105,6 @@ class RecentsFragment : Fragment() {
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
-//        val ab = (activity as AppCompatActivity).supportActionBar
-//        ab?.setDisplayHomeAsUpEnabled(hidden)
         if (!hidden) {
             activity.ctl.title = getString(R.string.app_name)
             activity.ctl.setContentScrimColor(RecentsAdapter.lastColorDomPrimary)
@@ -133,11 +131,8 @@ class RecentsFragment : Fragment() {
 
     private val loadMoreListener = object : EndlessScrollListener() {
         override fun onLoadMore(page: Int, totalItemsCount: Int): Boolean {
-            // Triggered only when new data needs to be appended to the list
-            // Add whatever code is needed to append new items to your AdapterView
-            adapter?.loadRecents(page)
-            // or loadNextDataFromApi(totalItemsCount);
-            return true // ONLY if more data is actually being loaded; false otherwise.
+            return adapter?.loadRecents(page) ?: false
+            //true ONLY if more data is actually being loaded; false otherwise.
         }
     }
     private val itemClickListener = AdapterView.OnItemClickListener { adapterView, v, pos1, l ->

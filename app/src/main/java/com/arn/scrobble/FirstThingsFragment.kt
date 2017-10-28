@@ -37,7 +37,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
             startActivity(intent)
         }
         first_things_2.setOnClickListener {
-            LFMRequester(activity).execute(Stuff.CHECK_AUTH)
+            Stuff.openInBrowser(Stuff.AUTH_CB_URL, activity)
         }
         first_things_3.setOnClickListener {
             fragmentManager.beginTransaction()
@@ -93,7 +93,6 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
             Main.checkBackStack(activity as Main)
             return
         }
-        LFMRequester(activity).execute(Stuff.CHECK_AUTH_SILENT)
     }
 
     override fun onResume() {

@@ -108,6 +108,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             fragmentManager.beginTransaction()
                     .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
                     .commit()
+//            fragmentManager.beginTransaction()
+//                    .hide(recentsFragment)
+//                    .add(R.id.frame, FriendsFragment())
+//                    .addToBackStack(null)
+//                    .commit()
             if (deepLinkExtra == Stuff.DL_SETTINGS || intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
                 fragmentManager.beginTransaction()
                         .hide(recentsFragment)
@@ -261,11 +266,15 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             R.id.nav_last_week -> {
                 Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this)
             }
-            R.id.nav_friends -> {
-                Stuff.openInBrowser("https://www.last.fm/user/$username/following", this)
-            }
             R.id.nav_loved -> {
                 Stuff.openInBrowser("https://www.last.fm/user/$username/loved", this)
+            }
+            R.id.nav_friends -> {
+                fragmentManager.beginTransaction()
+                        .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
+                        .add(R.id.frame, FriendsFragment())
+                        .addToBackStack(null)
+                        .commit()
             }
             R.id.nav_settings -> {
                 fragmentManager.beginTransaction()
@@ -370,6 +379,17 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         else
             drawer_layout.openDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.data?.isHierarchical == true) {
+            val token = intent.data.getQueryParameter("token")
+            if (token != null){
+                Stuff.log("onNewIntent got token")
+                LFMRequester(this).execute(Stuff.AUTH_FROM_TOKEN, token)
+            }
+        }
     }
 
     public override fun onResume() {

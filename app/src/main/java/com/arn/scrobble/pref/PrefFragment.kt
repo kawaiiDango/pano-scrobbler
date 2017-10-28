@@ -28,7 +28,7 @@ class PrefFragment : PreferenceFragment(){
                     .edit()
                     .remove("sesskey")
                     .apply()
-            LFMRequester(activity).execute(Stuff.CHECK_AUTH)
+            Stuff.openInBrowser(Stuff.AUTH_CB_URL, activity)
             true
         }
 

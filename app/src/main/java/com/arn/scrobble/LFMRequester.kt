@@ -1,10 +1,8 @@
 package com.arn.scrobble
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import java.util.Calendar
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
 import android.preference.PreferenceManager
@@ -52,15 +50,7 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
             val key: String = prefs.getString(Stuff.SESS_KEY, "")
             var username: String? = prefs.getString(Stuff.USERNAME, null)
 
-            if (key.length < 5 && token.length > 5) {
-                session = Authenticator.getSession(token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
-                if (session != null) {
-                    username = session.username
-                    prefs.edit()
-                            .putString(Stuff.USERNAME, username)
-                            .apply()
-                }
-            } else if (key.length > 5)
+            if (key.length > 5)
                 session = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, key)
             else
                 reAuthNeeded = true
@@ -69,12 +59,10 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                 reAuthNeeded = true
 
             if (!reAuthNeeded) {
-                prefs.edit().putString(Stuff.SESS_KEY, session!!.key).apply()
-
                 when (command) {
-                    Stuff.CHECK_AUTH, Stuff.CHECK_AUTH_SILENT -> return null
+                    Stuff.AUTH_FROM_TOKEN -> return null
                     Stuff.GET_RECENTS_CACHED -> {
-                        return User.getRecentTracks(username, 1, 15, Stuff.LAST_KEY)
+                        return User.getRecentTracks(username, 1, 15, true, Stuff.LAST_KEY)
                     }
                     Stuff.GET_RECENTS -> {
                         handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))
@@ -99,7 +87,10 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                                 .apply()
                         return null
                     }
-                    Stuff.GET_FRIENDS -> return User.getFriends(username, true, 1, 20, Stuff.LAST_KEY)
+                    Stuff.GET_FRIENDS -> {
+                        subCommand = s[1]
+                        return User.getFriends(username, true, Integer.parseInt(subCommand), 20, Stuff.LAST_KEY)
+                    }
                     Stuff.HERO_INFO -> {
                         handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))
                                 ?.sendToTarget()
@@ -187,15 +178,34 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                 }
                 try {
                     if (scrobbleResult != null && !(scrobbleResult.isSuccessful)) {
-//                        val hash = s[1].hashCode() + s[2].hashCode()
-                        //                        scrobbledHashes.add(hash);
+
                         (handler as NLService.ScrobbleHandler)
                                 .notification(context.getString(R.string.network_error), s[1] + " " + s[3], context.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                    } else {
+                        val hash = s[1].hashCode() + s[3].hashCode()
+                        val handler = handler as NLService.ScrobbleHandler
+                        handler.remove(hash)
+                        val artistTrunc = if (s[1].length > 16) s[1].substring(0, 12) else s[1]
+                        handler.notification(context.getString(R.string.scrobble_ignored, artistTrunc), s[3], context.getString(R.string.not_scrobling), R.drawable.ic_transparent)
+
                     }
                 } catch (e: NullPointerException) {
                     publishProgress(command + ": NullPointerException")
                 }
-            } else if (command != Stuff.CHECK_AUTH_SILENT && command != Stuff.GET_RECENTS ) {
+            } else if (command == Stuff.AUTH_FROM_TOKEN){
+                subCommand = if (s.size == 2) s[1] else null
+                val token = subCommand
+                if (token != null && token.length > 5) {
+                    session = Authenticator.getSession(token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
+                    if (session != null) {
+                        username = session.username
+                        prefs.edit()
+                                .putString(Stuff.USERNAME, username)
+                                .putString(Stuff.SESS_KEY, session.key)
+                                .apply()
+                    }
+                }
+            } else if (command != Stuff.GET_RECENTS ) {
                 Stuff.log("command: $command")
                 reAuth()
             }
@@ -208,20 +218,18 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
             publishProgress("err: "+ e.cause)
         }
 
-        // adb shell am start -W -a android.intent.action.VIEW -d "https://lastfm.maare.ga/auth" com.arn.scrobble
+        // adb shell am start -W -a android.intent.action.VIEW -d "pscrobble://auth?token=hohoho" com.arn.scrobble
         return null
     }
 
     private fun reAuth() {
-        publishProgress("Please Authorize LastFM")
+//        token = Authenticator.getToken(Stuff.LAST_KEY)
+        publishProgress(context.getString(R.string.please_authorize))
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .remove(Stuff.SESS_KEY)
                 .apply()
-        token = Authenticator.getToken(Stuff.LAST_KEY)
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.last.fm/api/auth?api_key=" +
-                Stuff.LAST_KEY + "&token=" + token))
-        context.startActivity(browserIntent)
+        Stuff.openInBrowser(Stuff.AUTH_CB_URL, context)
     }
 
     override fun onProgressUpdate(vararg values: Any) {
@@ -245,13 +253,10 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
         } else if (command == Stuff.HERO_INFO && res is MutableList<*>) {
 //            val s = res as MutableList<String?>
             handler?.obtainMessage(0, Pair(command, res))?.sendToTarget()
-            //make graph
         }
     }
 
     companion object {
-        private var token = ""
-
         private fun slurp(`is`: InputStream, bufferSize: Int): String {
             val buffer = CharArray(bufferSize)
             val out = StringBuilder()

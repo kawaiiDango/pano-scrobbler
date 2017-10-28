@@ -52,6 +52,7 @@ class RecentsAdapter
     private val hero = (c as Activity).img_hero
     private var heroInfoLoader: LFMRequester? = null
     val handler = ResponseHandler(this)
+    private var totalPages:Int = 1
 
     init {
         setNotifyOnChange(false)
@@ -59,12 +60,6 @@ class RecentsAdapter
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view : View? = convertView
-        /*
-         * The convertView argument is essentially a "ScrapView" as described is Lucas post
-         * http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
-         * It will have a non-null value when ListView is asking you recycle the row layout.
-         * So, when convertView is not null, you should simply update its contents instead of inflating a new row layout.
-         */
         val activity = context as Activity
         if (view == null) {
             // inflate the layout
@@ -78,10 +73,8 @@ class RecentsAdapter
 
 // get the TextView and then set the text (item name) and tag (item ID) values
         val np = view.recents_playing
-        var relDate: CharSequence = ""
 
         if (t.isNowPlaying) {
-            relDate = "   now"
             np.visibility = View.VISIBLE
             val anim = np.drawable
             if (anim is AnimatedVectorDrawableCompat && !anim.isRunning) {
@@ -111,11 +104,7 @@ class RecentsAdapter
             np.visibility = View.GONE
         view.recents_title.text = t.name
         view.recents_subtitle.text = t.artist
-
-        if (t.playedWhen != null) {
-            relDate = Stuff.myRelativeTime(t.playedWhen)
-        }
-        view.recents_date.text = relDate
+        view.recents_date.text = Stuff.myRelativeTime(t.playedWhen)
 
         val love = view.recents_love
         val play = view.recents_play
@@ -187,12 +176,17 @@ class RecentsAdapter
         return true
     }
 
-    fun loadRecents(page: Int) {
-        val list = (context as Activity).recents_list ?: return
+    fun loadRecents(page: Int):Boolean {
+        val list = (context as Activity).recents_list ?: return false
 
-        Stuff.log("loadRecents $page")
-        LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
-        list.recents_progressbar.visibility = View.VISIBLE
+        if (page <= totalPages) {
+            Stuff.log("loadRecents $page")
+            LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
+            if (count == 0 || page > 1)
+                list.footer_progressbar.visibility = View.VISIBLE
+            return true
+        } else
+            return false
     }
     fun firstLoad() {
         Stuff.log("firstLoad")
@@ -256,7 +250,7 @@ class RecentsAdapter
         val ctl = (context as Activity).ctl
 
         if (t != null) {
-            val text = t.artist + " - " + t.name
+            val text = t.name
 //            if (Main.heroExpanded)
                 ctl.title = text
             ctl.tag = text
@@ -333,37 +327,41 @@ class RecentsAdapter
     }
 
     private fun setGraph(points: String?) {
-        if (points == null)
-            return
-
         val graph = (context as Activity).graph
-        val series = graph.series[0] as LineGraphSeries<DataPoint>
-        val dps = mutableListOf<DataPoint>()
-        var i = 0.0
-        points.split(", ").forEach{
-                    dps.add(DataPoint(i++, it.toDouble()))
-                }
+        if (points == null) {
+            graph.visibility = View.INVISIBLE
+        } else {
+            graph.visibility = View.VISIBLE
 
-        Stuff.log("points: $points")
-        series.resetData(dps.toTypedArray())
+            val series = graph.series[0] as LineGraphSeries<DataPoint>
+            val dps = mutableListOf<DataPoint>()
+            var i = 0.0
+            points.split(", ").forEach {
+                dps.add(DataPoint(i++, it.toDouble()))
+            }
 
-        graph.alpha = 0f
-        graph.onDataChanged(false, false)
-        graph.animate()
-                .alpha(0.7f)
-                .setInterpolator(DecelerateInterpolator())
-                .setDuration(500)
-                .start()
+            Stuff.log("points: $points")
+            series.resetData(dps.toTypedArray())
+
+            graph.alpha = 0f
+            graph.onDataChanged(false, false)
+            graph.animate()
+                    .alpha(0.7f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(500)
+                    .start()
+        }
     }
 
     fun populate(res: PaginatedResult<Track>, page: Int = 1) {
-        val refresh = (context as Activity).swipe_refresh ?: return
+        val refresh = (context as Activity).recents_swipe_refresh ?: return
         val list = (context as Activity).recents_list
         if (list.visibility != View.VISIBLE)
             return
         val selectedId = if (list.checkedItemIds.isEmpty()) NP_ID else list.checkedItemIds[0]
         var selectedPos = 2
         refresh.isRefreshing = false
+        totalPages = res.totalPages
         handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
         if (page == 1) {
             clear()
@@ -381,7 +379,7 @@ class RecentsAdapter
             }
         }
         list.setItemChecked(selectedPos, true)
-        list.recents_progressbar.visibility = View.INVISIBLE
+        list.footer_progressbar.visibility = View.INVISIBLE
         notifyDataSetChanged()
     }
 

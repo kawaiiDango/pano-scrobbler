@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
-
-    <ProgressBar
-        android:id="@+id/recents_progressbar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:alpha="0.7"
-        android:indeterminateBehavior="cycle"
-        android:indeterminateOnly="true"
-        android:visibility="invisible"/>
-</LinearLayout>
+<ProgressBar android:id="@+id/footer_progressbar"
+             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+             xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginEnd="100dp"
+             android:layout_marginStart="100dp"
+             android:alpha="0.7"
+             android:indeterminateBehavior="cycle"
+             android:indeterminateOnly="true"
+             tools:visibility="visible"
+             android:visibility="invisible"
+             />

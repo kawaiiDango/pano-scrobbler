@@ -24,7 +24,7 @@
         android:fitsSystemWindows="true"
         app:srcCompat="@drawable/ic_placeholder_music"/>
 
-    <ImageView
+    <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignBottom="@+id/nav_profile_pic"
@@ -32,7 +32,7 @@
         android:layout_alignStart="@+id/nav_profile_pic"
         android:layout_marginTop="45dp"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/gradient_dark_overlay_nav"/>
+        android:background="@drawable/gradient_dark_overlay_nav"/>
 
     <TextView
         android:id="@+id/nav_name"

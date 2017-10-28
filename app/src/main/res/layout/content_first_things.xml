@@ -52,7 +52,7 @@
             android:layout_height="80dp"
             android:layout_weight="2"
             android:gravity="center_vertical"
-            android:text="Grant notification access"
+            android:text="@string/grant_notification_access"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
     </LinearLayout>
 
@@ -84,7 +84,7 @@
             android:layout_height="80dp"
             android:layout_weight="2"
             android:gravity="center_vertical"
-            android:text="Authenticate with last.FM"
+            android:text="@string/authenticate_with_lastfm"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
     </LinearLayout>
 

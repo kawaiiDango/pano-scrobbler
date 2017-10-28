@@ -39,10 +39,10 @@ class AppListFragment : Fragment() {
 
             override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {
                 if(scrollState == 0) { //scrolling stopped
-
+                    app_list_done.show()
                 } else //scrolling
                     app_list_done.hide()
-
+/*
                 if (view.id == app_list.id) {
                     val currentFirstVisibleItem = app_list.firstVisiblePosition
                     if (currentFirstVisibleItem > lastFirstVisibleItem) { //scrolling down
@@ -53,7 +53,7 @@ class AppListFragment : Fragment() {
 
                     lastFirstVisibleItem = currentFirstVisibleItem
                 }
-
+*/
             }
 
             override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {

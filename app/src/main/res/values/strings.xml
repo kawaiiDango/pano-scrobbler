@@ -15,13 +15,14 @@
     <string name="invalid_artist">No such artist</string>
     <string name="parse_error">Couldn\'t parse title</string>
     <string name="network_error">Network error</string>
+    <string name="scrobble_ignored">Artist "%S" was ignored</string>
     <string name="state_scrobbling">Now scrobbling…</string>
     <string name="state_scrobbled">Scrobbled…</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
     <string name="graph_info">… last 6 months</string>
     <string name="action_app_list">Enabled Apps</string>
     <string name="enabled_apps">Enabled Apps for scrobbling</string>
-    <string name="first_things">First things first…</string>
+    <string name="first_things">Almost there…</string>
     <string name="music_players">Music Players</string>
     <string name="video_players">Video Streaming Apps</string>
     <string name="other_apps">Other Apps</string>
@@ -35,6 +36,7 @@
     <string name="no_scrobbles">No scrobbled songs yet…  😫 \n\n
     Lets make some noise!
     </string>
+    <string name="no_friends">No lastFM friends yet…  😫</string>
     <string name="channel_scrobbling">Now scrobbling</string>
     <string name="channel_err">Errors</string>
     <string name="channel_new_app">New app detected</string>
@@ -48,5 +50,9 @@
     <string name="ok_cool">Looks cool</string>
     <string name="ignore_app">Ignore this app</string>
     <string name="num_scrobbles">%1$d scrobbles today</string>
+    <string name="please_authorize">Please Authorize LastFM</string>
+    <string name="friends">Friends</string>
+    <string name="grant_notification_access">Grant notification access</string>
+    <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
 
 </resources>

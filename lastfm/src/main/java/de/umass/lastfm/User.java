@@ -55,6 +55,7 @@ public class User extends ImageHolder {
 	private int numPlaylists;
 	private int playcount;
 	private Date registeredDate;
+	private Track recentTrack;
 
 	private User(String name, String url) {
 		this.name = name;
@@ -111,6 +112,10 @@ public class User extends ImageHolder {
 
 	public Date getRegisteredDate() {
 		return registeredDate;
+	}
+
+	public Track getRecentTrack() {
+		return recentTrack;
 	}
 
 	/**
@@ -657,6 +662,22 @@ public class User extends ImageHolder {
 					user.registeredDate = new Date(Long.parseLong(unixtime) * 1000);
 				} catch (NumberFormatException e) {
 					// no registered date
+				}
+			}
+			if (element.hasChild("recenttrack")) {
+				try {
+//TODO:					track
+                    DomElement trackElem = element.getChild("recenttrack");
+                    Track.TrackFactory trackFactory = new Track.TrackFactory();
+                    user.recentTrack = trackFactory.createItemFromElement(trackElem);
+
+                    //date is only available as an attribute
+                    String uts = trackElem.getAttribute("uts");
+                    long utsTime = Long.parseLong(uts);
+                    user.recentTrack.setPlayedWhen(new Date(utsTime * 1000));
+
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			return user;

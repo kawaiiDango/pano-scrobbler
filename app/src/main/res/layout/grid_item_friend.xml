@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp">
+
+    <View
+        android:id="@+id/friends_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="#00000000"/>
+
+    <com.arn.scrobble.ui.FixedLineTextView
+        android:id="@+id/friends_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:singleLine="true"
+        tools:text="name"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/friends_pic"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_below="@+id/friends_name"
+        android:layout_centerHorizontal="true"
+        android:elevation="20dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_placeholder_user"/>
+
+    <FrameLayout
+        android:id="@+id/friends_track"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/friends_pic"
+        android:background="?attr/selectableItemBackground">
+
+        <View
+            android:id="@+id/friends_arrow"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="right"
+            android:alpha="0.5"
+            android:background="@drawable/shape_triangle_corner"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/gradient_dark_overlay_nav"
+            android:orientation="vertical"
+            android:paddingBottom="4dp"
+            android:paddingEnd="4dp"
+            android:paddingStart="28dp">
+
+            <com.arn.scrobble.ui.FixedLineTextView
+                android:id="@+id/friends_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/colorAccentLight"
+                tools:text="tit"/>
+
+            <com.arn.scrobble.ui.FixedLineTextView
+                android:id="@+id/friends_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                tools:text="subtit"/>
+
+            <TextView
+                android:id="@+id/friends_date"
+                android:layout_width="346dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="11dp"
+                android:singleLine="true"
+                android:textAppearance="@android:style/TextAppearance.Material.Caption"
+                tools:text="date"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/friends_music_icon"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_marginLeft="4dp"
+            android:alpha="0.7"
+            app:srcCompat="@drawable/vd_music_circle"/>
+    </FrameLayout>
+</RelativeLayout>

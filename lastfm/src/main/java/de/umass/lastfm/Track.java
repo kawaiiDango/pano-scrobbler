@@ -179,6 +179,10 @@ public class Track extends MusicEntry {
 		return playedWhen;
 	}
 
+	public void setPlayedWhen(Date playedWhen) {
+		this.playedWhen = playedWhen;
+	}
+
 	/**
 	 * Returns the position of this track in its associated album, or -1 if not available.
 	 *
@@ -720,7 +724,7 @@ public class Track extends MusicEntry {
 				+ playedWhen + ", artistMbId=" + artistMbid + ", albumMbId" + albumMbid + "]";
 	}
 
-	private static class TrackFactory implements ItemFactory<Track> {
+	static class TrackFactory implements ItemFactory<Track> {
 		public Track createItemFromElement(DomElement element) {
 			Track track = new Track(null, null, null);
 			MusicEntry.loadStandardInfo(track, element);

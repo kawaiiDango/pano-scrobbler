@@ -11,10 +11,6 @@
                     android:icon="@drawable/vd_bar_chart"
                     android:title="Last.week"/>
                 <item
-                    android:id="@+id/nav_friends"
-                    android:icon="@drawable/vd_friends"
-                    android:title="Friends"/>
-                <item
                     android:id="@+id/nav_loved"
                     android:icon="@drawable/vd_heart"
                     android:title="Loved"/>
@@ -23,6 +19,10 @@
     </item>
 
     <group android:id="@+id/nav_group_bottom">
+        <item
+            android:id="@+id/nav_friends"
+            android:icon="@drawable/vd_friends"
+            android:title="@string/friends"/>
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/vd_settings"

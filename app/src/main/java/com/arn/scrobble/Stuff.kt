@@ -35,8 +35,7 @@ import java.util.regex.Pattern
 object Stuff {
     const val NOW_PLAYING = "np"
     const val SCROBBLE = "scrobble"
-    const val CHECK_AUTH = "auth"
-    const val CHECK_AUTH_SILENT = "authSilent"
+    const val AUTH_FROM_TOKEN = "auth"
     const val GET_RECENTS = "recents"
     const val GET_RECENTS_CACHED = "recents_cached"
     const val REFRESH_RECENTS = "recents_refresh"
@@ -71,7 +70,10 @@ object Stuff {
     const val META_WAIT: Long = 500
     const val DEBOUNCE_TIME = 100
     const val MAX_APPS = 30
-    const val MIN_LISTENER_COUNT = 10
+    const val MIN_LISTENER_COUNT = 7
+
+    val AUTH_CB_URL = "https://www.last.fm/api/auth?api_key=${Stuff.LAST_KEY}&cb=pscrobble://auth"
+
     private var timeIt:Long = 0
 
     val APPS_IGNORE_ARTIST_META = arrayOf(
@@ -284,7 +286,7 @@ object Stuff {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
     fun myRelativeTime(date: Date?): CharSequence {
-        var relDate:CharSequence = "just now"
+        var relDate:CharSequence = "   now"
         if(date != null)
             relDate = DateUtils.getRelativeTimeSpanString(
                 date.time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)
@@ -294,9 +296,9 @@ object Stuff {
     }
 
     fun drawableToBitmap(drawable: Drawable, forceDraw:Boolean = false): Bitmap {
-        if (!forceDraw && drawable is BitmapDrawable) {
+        if (!forceDraw && drawable is BitmapDrawable && !drawable.bitmap.isRecycled) {
             return drawable.bitmap
-        } else if (!forceDraw && drawable is PictureDrawable) {
+        } else if (drawable is PictureDrawable) {
             val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth,
                     drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)

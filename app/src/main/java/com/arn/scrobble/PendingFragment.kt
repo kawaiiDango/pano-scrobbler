@@ -21,7 +21,7 @@ class PendingFragment: Fragment(){
         view.recents_list.isNestedScrollingEnabled = false
         val adapter = PendingScroblesAdapter(activity, R.layout.list_item_recents)
         view.recents_list.adapter = adapter
-        recents_swipe_refresh.isEnabled = false
+        view.recents_swipe_refresh.isEnabled = false
 
         return view
     }

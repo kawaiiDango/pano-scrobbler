@@ -15,6 +15,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
+import de.umass.lastfm.Track
 import de.umass.lastfm.User
 import kotlinx.android.synthetic.main.content_friends.*
 import kotlinx.android.synthetic.main.content_friends.view.*
@@ -59,6 +60,12 @@ class FriendsAdapter
             view.friends_subtitle.text = track.artist
             view.friends_date.text = Stuff.myRelativeTime(track.playedWhen)
 
+            if (track.isNowPlaying)
+                view.friends_music_icon.visibility = View.INVISIBLE
+            else
+                view.friends_music_icon.visibility = View.VISIBLE
+            Stuff.nowPlayingAnim(view.friends_music_icon_playing, track.isNowPlaying)
+
             view.friends_track.setOnClickListener {
                 var ytUrl = "https://www.youtube.com/results?search_query="
                 try {
@@ -70,7 +77,8 @@ class FriendsAdapter
             }
         } else {
             view.friends_track.visibility = View.INVISIBLE
-            Stuff.log(user.name +" doesnt have a track")
+            val msg = handler.obtainMessage(0, Pair(Stuff.NEED_FRIENDS_RECENTS, position))
+            handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
         }
 
         val userImg = user.getImageURL(ImageSize.MEDIUM)
@@ -101,15 +109,7 @@ class FriendsAdapter
             view.friends_pic.setImageResource(R.drawable.ic_placeholder_user)
         return view
     }
-/*
-    override fun getItemId(position: Int): Long {
-        return getItem(position)?.playedWhen?.time ?: NP_ID
-    }
 
-    override fun hasStableIds(): Boolean {
-        return true
-    }
-*/
     fun loadFriends(page: Int):Boolean {
         if (page <= totalPages) {
             Stuff.log("loadFriends $page")
@@ -131,21 +131,26 @@ class FriendsAdapter
         handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
         if (page == 1) {
             clear()
-            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.REFRESH_RECENTS, ""))
+            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.RELOAD_LIST_DATA, ""))
             handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             val header = layout.header_text
             if (res.isEmpty){
                 header.visibility = View.VISIBLE
                 header.text = context.getString(R.string.no_friends)
-            } else
-                header.visibility = View.GONE
+            }
         }
         addAll(res.pageResults)
 
         notifyDataSetChanged()
     }
+    fun populateFriendsRecent(res: PaginatedResult<Track>, pos: Int) {
+        if(!res.isEmpty) {
+            getItem(pos).recentTrack = res.pageResults.first()
+            notifyDataSetChanged()
+        }
+    }
 
-    class ResponseHandler(private val recentsAdapter: FriendsAdapter): Handler(){
+    class ResponseHandler(private val friendsAdapter: FriendsAdapter): Handler(){
         override fun handleMessage(m: Message) {
             //usually:
             // obj = command, paginatedresult;
@@ -154,16 +159,30 @@ class FriendsAdapter
             val data = pair.second
             when(command){
                 Stuff.GET_FRIENDS -> {
-                    recentsAdapter.populate(data as PaginatedResult<User>, data.page)
+                    friendsAdapter.populate(data as PaginatedResult<User>, data.page)
                 }
-//                Stuff.IS_ONLINE -> {
-//                    val list = (recentsAdapter.context as Activity).friends_grid ?: return
-//                    if (data as Boolean)
-//                        list.header_text.text = recentsAdapter.context.getString(R.string.recently_scrobbled)
-//                    else
-//                        list.header_text.text = recentsAdapter.context.getString(R.string.offline)
-//                }
-//                Stuff.REFRESH_RECENTS -> recentsAdapter.loadRecents(1)
+                Stuff.NEED_FRIENDS_RECENTS -> {
+                    val pos = data as Int
+                    val grid = (friendsAdapter.context as Activity).friends_grid ?: return
+                    if (pos >= grid.firstVisiblePosition && pos <= grid.lastVisiblePosition)
+                        LFMRequester(friendsAdapter.context, this).execute(Stuff.GET_FRIENDS_RECENTS,
+                                friendsAdapter.getItem(pos).name, pos.toString())
+                }
+                Stuff.GET_FRIENDS_RECENTS -> {
+                    val pos = (data as Pair<String,PaginatedResult<Track>>).first.toInt()
+                    val res = data.second
+                    friendsAdapter.populateFriendsRecent(res, pos)
+                }
+                Stuff.IS_ONLINE -> {
+                    val layout = (friendsAdapter.context as Activity).friends_linear_layout ?: return
+                    if (data as Boolean)
+                        layout.header_text.visibility = View.GONE
+                    else {
+                        layout.header_text.visibility = View.VISIBLE
+                        layout.header_text.text = friendsAdapter.context.getString(R.string.offline)
+                    }
+                }
+                Stuff.RELOAD_LIST_DATA -> friendsAdapter.loadFriends(1)
             }
         }
     }

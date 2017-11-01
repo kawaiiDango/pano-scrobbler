@@ -117,6 +117,9 @@ public class User extends ImageHolder {
 	public Track getRecentTrack() {
 		return recentTrack;
 	}
+	public void setRecentTrack(Track recentTrack) {
+		this.recentTrack = recentTrack;
+	}
 
 	/**
 	 * Get a list of tracks by a given artist scrobbled by this user, including scrobble time. Can be limited to specific timeranges, defaults

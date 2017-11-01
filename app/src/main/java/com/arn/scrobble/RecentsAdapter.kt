@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.*
-import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.support.graphics.drawable.Animatable2Compat
@@ -74,34 +73,7 @@ class RecentsAdapter
 // get the TextView and then set the text (item name) and tag (item ID) values
         val np = view.recents_playing
 
-        if (t.isNowPlaying) {
-            np.visibility = View.VISIBLE
-            val anim = np.drawable
-            if (anim is AnimatedVectorDrawableCompat && !anim.isRunning) {
-                anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-                    override fun onAnimationEnd(drawable: Drawable?) {
-                        drawable as AnimatedVectorDrawableCompat?
-                        drawable?.unregisterAnimationCallback(this)
-                        if (drawable != null && drawable.isVisible) {
-                            val newAnim = AnimatedVectorDrawableCompat.create(context, R.drawable.avd_eq)
-                            np.setImageDrawable(newAnim)
-                            newAnim?.start()
-                            newAnim?.registerAnimationCallback(this)
-                        }
-                    }
-                })
-                anim.start()
-            } else if (Build.VERSION.SDK_INT >= 23 && anim is AnimatedVectorDrawable && !anim.isRunning) {
-                anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
-                    override fun onAnimationEnd(drawable: Drawable?) {
-                        if (drawable != null && drawable.isVisible)
-                            (drawable as AnimatedVectorDrawable).start()
-                    }
-                })
-                anim.start()
-            }
-        } else
-            np.visibility = View.GONE
+        Stuff.nowPlayingAnim(np, t.isNowPlaying)
         view.recents_title.text = t.name
         view.recents_subtitle.text = t.artist
         view.recents_date.text = Stuff.myRelativeTime(t.playedWhen)
@@ -365,7 +337,7 @@ class RecentsAdapter
         handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
         if (page == 1) {
             clear()
-            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.REFRESH_RECENTS, ""))
+            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.RELOAD_LIST_DATA, ""))
             handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             if (res.isEmpty){
                 list.header_text.text = context.getString(R.string.no_scrobbles)
@@ -441,7 +413,7 @@ class RecentsAdapter
                     else
                         list.header_text.text = recentsAdapter.context.getString(R.string.offline)
                 }
-                Stuff.REFRESH_RECENTS -> recentsAdapter.loadRecents(1)
+                Stuff.RELOAD_LIST_DATA -> recentsAdapter.loadRecents(1)
             }
         }
     }

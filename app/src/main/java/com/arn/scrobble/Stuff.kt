@@ -9,14 +9,21 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.PictureDrawable
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Animatable2
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.CollapsingToolbarLayout
+import android.support.graphics.drawable.Animatable2Compat
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.content.ContextCompat
 import android.text.format.DateUtils
 import android.util.Log
 import android.util.TypedValue
+import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import java.io.BufferedReader
 import java.io.IOException
@@ -38,7 +45,7 @@ object Stuff {
     const val AUTH_FROM_TOKEN = "auth"
     const val GET_RECENTS = "recents"
     const val GET_RECENTS_CACHED = "recents_cached"
-    const val REFRESH_RECENTS = "recents_refresh"
+    const val RELOAD_LIST_DATA = "list_refresh"
     const val PROFILE_PIC_PREF = "profile_cached"
     const val GET_DRAWER_INFO = "profile"
     const val GET_FRIENDS = "friends"
@@ -50,7 +57,9 @@ object Stuff {
     const val DEEP_LINK_KEY = "deeplink"
     const val LOVE = "loved"
     const val UNLOVE = "unloved"
-//    const val GET_LOVED = "getloved"
+    const val GET_FRIENDS_RECENTS = "get_friends_recent"
+    const val NEED_FRIENDS_RECENTS = "need_friends_recent"
+    const val FRIENDS_RECENTS_DELAY:Long = 1500
     const val HERO_INFO = "heroinfo"
     const val IS_ONLINE = "online"
     const val APP_WHITELIST = "app_whitelist"
@@ -86,7 +95,7 @@ object Stuff {
     )
 
     private val seperators = arrayOf(// in priority order
-            "—"," ‎– ", "–"," \\| ", " - ", "-", "「", "『", "ー",
+            "—"," ‎– ", "–"," \\| ", " - ", "-", "「", "『", "ー", " • ",
 
             "【", "〖", "〔",
             // ":",
@@ -314,6 +323,37 @@ object Stuff {
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
         return bitmap
+    }
+
+    fun nowPlayingAnim(np: ImageView, isNowPlaying:Boolean){
+        if (isNowPlaying) {
+            np.visibility = View.VISIBLE
+            val anim = np.drawable
+            if (anim is AnimatedVectorDrawableCompat && !anim.isRunning) {
+                anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                    override fun onAnimationEnd(drawable: Drawable?) {
+                        drawable as AnimatedVectorDrawableCompat?
+                        drawable?.unregisterAnimationCallback(this)
+                        if (drawable != null && drawable.isVisible) {
+                            val newAnim = AnimatedVectorDrawableCompat.create(np.context, R.drawable.avd_eq)
+                            np.setImageDrawable(newAnim)
+                            newAnim?.start()
+                            newAnim?.registerAnimationCallback(this)
+                        }
+                    }
+                })
+                anim.start()
+            } else if (Build.VERSION.SDK_INT >= 23 && anim is AnimatedVectorDrawable && !anim.isRunning) {
+                anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
+                    override fun onAnimationEnd(drawable: Drawable?) {
+                        if (drawable != null && drawable.isVisible)
+                            (drawable as AnimatedVectorDrawable).start()
+                    }
+                })
+                anim.start()
+            }
+        } else
+            np.visibility = View.GONE
     }
 
     fun openInBrowser(url:String, context:Context){

@@ -70,7 +70,10 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                         subCommand = s[1]
                         return User.getRecentTracks(username, Integer.parseInt(subCommand), 15, true, Stuff.LAST_KEY)
                     }
-//                    Stuff.GET_LOVED -> return User.getLovedTracks(username, Stuff.LAST_KEY)
+                    Stuff.GET_FRIENDS_RECENTS -> {
+                        subCommand = s[2]
+                        return User.getRecentTracks(s[1], 1, 1, false, Stuff.LAST_KEY)
+                    }
                     //for love: command = tag, s[1] = artist, s[2] = song,
                     Stuff.LOVE -> return Track.love(s[1], s[2], session)
                     Stuff.UNLOVE -> return Track.unlove(s[1], s[2], session)
@@ -88,6 +91,8 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                         return null
                     }
                     Stuff.GET_FRIENDS -> {
+                        handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))
+                                ?.sendToTarget()
                         subCommand = s[1]
                         return User.getFriends(username, true, Integer.parseInt(subCommand), 20, Stuff.LAST_KEY)
                     }
@@ -177,16 +182,16 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                     }
                 }
                 try {
-                    if (scrobbleResult != null && !(scrobbleResult.isSuccessful)) {
+                    if (scrobbleResult?.isSuccessful == false) {
 
                         (handler as NLService.ScrobbleHandler)
                                 .notification(context.getString(R.string.network_error), s[1] + " " + s[3], context.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
-                    } else {
+                    } else if(scrobbleResult?.isSuccessful == true && scrobbleResult.isIgnored) {
                         val hash = s[1].hashCode() + s[3].hashCode()
                         val handler = handler as NLService.ScrobbleHandler
                         handler.remove(hash)
-                        val artistTrunc = if (s[1].length > 16) s[1].substring(0, 12) else s[1]
-                        handler.notification(context.getString(R.string.scrobble_ignored, artistTrunc), s[3], context.getString(R.string.not_scrobling), R.drawable.ic_transparent)
+                        val artistTrunc = if (s[1].length > 12) s[1].substring(0, 12) else s[1]
+                        handler.notification(s[3], context.getString(R.string.scrobble_ignored, artistTrunc), context.getString(R.string.not_scrobling), R.drawable.ic_transparent)
 
                     }
                 } catch (e: NullPointerException) {
@@ -242,7 +247,10 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
     override fun onPostExecute(res: Any?) {
         //do stuff
         if (res is PaginatedResult<*>) {
-            handler?.obtainMessage(0, Pair(command,res))?.sendToTarget()
+            if (command == Stuff.GET_FRIENDS_RECENTS)
+                handler?.obtainMessage(0, Pair(command,Pair(subCommand, res)))?.sendToTarget() //subCommand = grid position
+            else
+                handler?.obtainMessage(0, Pair(command,res))?.sendToTarget()
         } else if (res is Result) {
             if (!res.isSuccessful) {
                 if (res.errorMessage != null)

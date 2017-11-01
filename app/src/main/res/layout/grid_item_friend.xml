@@ -96,7 +96,16 @@
             android:layout_width="20sp"
             android:layout_height="20sp"
             android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
             android:alpha="0.7"
             app:srcCompat="@drawable/vd_music_circle"/>
+        <ImageView
+            android:id="@+id/friends_music_icon_playing"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:visibility="invisible"
+            app:srcCompat="@drawable/avd_eq"/>
     </FrameLayout>
 </RelativeLayout>

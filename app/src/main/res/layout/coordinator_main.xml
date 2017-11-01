@@ -57,14 +57,14 @@
                 android:layout_height="100dip"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="55dip"
-                android:layout_marginStart="30dip"
+                android:layout_marginStart="30sp"
                 android:alpha="0"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:contentInsetEnd="120dp"
+                app:contentInsetEnd="70sp"
                 app:elevation="@dimen/elevation_hero_btn"
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="1.0"

@@ -62,7 +62,7 @@
             sample:msbp_dialogEnabled="false"/>
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="delays_per"
+            android:key="delay_per"
             android:title="Delay in percent"
             android:defaultValue="40"
 

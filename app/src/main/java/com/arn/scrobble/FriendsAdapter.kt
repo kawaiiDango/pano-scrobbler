@@ -111,9 +111,16 @@ class FriendsAdapter
     }
 
     fun loadFriends(page: Int):Boolean {
-        if (page <= totalPages) {
+        if (page <= totalPages || totalPages == 0) {
             Stuff.log("loadFriends $page")
-            LFMRequester(context, handler).execute(Stuff.GET_FRIENDS, page.toString())
+            val grid = (context as Activity).friends_grid
+
+            if ((page == 1 && grid.firstVisiblePosition < 15) || page > 1)
+                LFMRequester(context, handler).execute(Stuff.GET_FRIENDS, page.toString())
+            else {
+                val msg = handler.obtainMessage(0, Pair(Stuff.RELOAD_LIST_DATA, ""))
+                handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
+            }
             if (count == 0 || page > 1)
                 (context as Activity).friends_linear_layout.friends_swipe_refresh.isRefreshing = true
             return true
@@ -129,6 +136,25 @@ class FriendsAdapter
         refresh.isRefreshing = false
         totalPages = res.totalPages
         handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
+
+        val sortedRes = res.pageResults.sortedByDescending {
+            if (it?.playcount == null || it.playcount == 0) //put users with 0 plays at the end
+                0L
+            else
+                it.recentTrack?.playedWhen?.time ?: System.currentTimeMillis()
+        }
+        val grid = (context as Activity).friends_grid
+        //get old now playing data to prevent flicker
+        for (i in 0 until count)
+            for (j in i until sortedRes.size){
+                if (getItem(i).name == sortedRes[j].name &&
+                        sortedRes[j].recentTrack == null && getItem(i).recentTrack != null &&
+                        (i >= grid.firstVisiblePosition && i <= grid.lastVisiblePosition)) {
+                    handler.obtainMessage(0, Pair(Stuff.NEED_FRIENDS_RECENTS, i)).sendToTarget()
+                    sortedRes[j].recentTrack = getItem(i).recentTrack
+                }
+            }
+
         if (page == 1) {
             clear()
             val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.RELOAD_LIST_DATA, ""))
@@ -139,10 +165,10 @@ class FriendsAdapter
                 header.text = context.getString(R.string.no_friends)
             }
         }
-        addAll(res.pageResults)
-
+        addAll(sortedRes)
         notifyDataSetChanged()
     }
+
     fun populateFriendsRecent(res: PaginatedResult<Track>, pos: Int) {
         if(!res.isEmpty) {
             getItem(pos).recentTrack = res.pageResults.first()

@@ -94,7 +94,12 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                         handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))
                                 ?.sendToTarget()
                         subCommand = s[1]
-                        return User.getFriends(username, true, Integer.parseInt(subCommand), 20, Stuff.LAST_KEY)
+                        val limit = if (s.size > 2) s[2].toInt() else 30
+                        return try {
+                            User.getFriends(username, true, Integer.parseInt(subCommand), limit, Stuff.LAST_KEY)
+                        } catch (e:NullPointerException){
+                            PaginatedResult<User>(1,0, listOf())
+                        }
                     }
                     Stuff.HERO_INFO -> {
                         handler?.obtainMessage(0, Pair(Stuff.IS_ONLINE, isNetworkAvailable))

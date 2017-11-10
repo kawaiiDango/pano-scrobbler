@@ -42,7 +42,7 @@ public class PaginatedResult<T> implements Iterable<T> {
 	private int totalPages;
 	private Collection<T> pageResults;
 
-	PaginatedResult(int page, int totalPages, Collection<T> pageResults) {
+	public PaginatedResult(int page, int totalPages, Collection<T> pageResults) {
 		this.page = page;
 		this.totalPages = totalPages;
 		this.pageResults = pageResults;

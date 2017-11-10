@@ -32,7 +32,6 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.text.DecimalFormat
 import java.util.*
-import java.util.regex.Pattern
 
 
 /**
@@ -98,9 +97,10 @@ object Stuff {
             "—"," ‎– ", "–"," \\| ", " - ", "-", "「", "『", "ー", " • ",
 
             "【", "〖", "〔",
+            "】", "〗","』", "」",
             // ":",
             " \"", " /")
-    private val unwantedSeperators = arrayOf("』", "」", "\"", "'", "】", "〗", "〕")
+    private val unwantedSeperators = arrayOf("『", "』","「", "」", "\"", "'", "【", "】", "〖", "〗", "〕")
 
     private val metaSpam = arrayOf("downloaded")
 
@@ -157,26 +157,36 @@ object Stuff {
                 .replace(" *\\[[^)]*] *".toRegex(), " ")
 
                 //remove HD info
-                .replace("\\W* HD( \\W*)?".toRegex(), " ")
-                .replace("\\W* HQ( \\W*)?".toRegex(), " ")
-                .replace("\\W* Music Video( \\W*)?".toRegex(), " ")
+                .replace("\\W* " +
+                        "HD|" +
+                        "HQ|" +
+                        "4K|" +
+                        "MV|" +
+                        "Official Music Video|" +
+                        "Music Video|" +
+                        "Official Audio" +
+                        "( \\W*)?"
+                                .toRegex(RegexOption.IGNORE_CASE)
+                , " ")
 
-        var r = Pattern.compile("\\([^)]*(?:remix|mix|cover|version|edit|booty?leg)\\)")
-        //get remix info
-        val remixInfo = r.matcher(titleContentOriginal)
+//        get remix info
+        val remixInfo = "\\([^)]*(?:remix|mix|cover|version|edit|booty?leg)\\)".toRegex(RegexOption.IGNORE_CASE).find(titleContentOriginal)
 
         var musicInfo: Array<String>? = null
         for (s in seperators) {
+            //parsing artist - title
             musicInfo = titleContent.split(s.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            //            log(null ,"********"+s + "|"+musicInfo[0]);
-            if (musicInfo.size > 1) {
+
+//            println("musicInfo= "+musicInfo[0] + (if (musicInfo.size >1) "," + musicInfo[1] else "") + "|" + musicInfo.size)
+            //got artist, parsing title - audio (cover) [blah]
+            if (musicInfo.size > 1 && musicInfo[0] != "") {
                 for (j in 0 until seperators.size - 2) {
                     val splits = musicInfo[1].split(seperators[j].toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+//                    println("splits= "+splits[0] + (if (splits.size >1) "," + splits[1] else "") + "|" + splits.size)
                     if (splits.size == 1)
                         musicInfo[1] = splits[0]
                     else
                         break
-                    //                    log(null, splits[0] + "|" + splits.length);
                 }
                 break
             }
@@ -185,7 +195,6 @@ object Stuff {
 
         if (musicInfo == null || musicInfo.size == 1) {
             return arrayOf(titleContent, "")
-            //            feedback = "notFound";
         }
 
         //remove ", ', 」, 』 from musicInfo
@@ -194,22 +203,21 @@ object Stuff {
                 musicInfo[i] = musicInfo[i].replace("^\\s*$s|$s\\s*$".toRegex(), " ")
         }
 
-        musicInfo[1] = musicInfo[1].replace("\\.(avi|wmv|mp4|mpeg4|mov|3gpp|flv|webm)$", " ")
-                .replace("Full Album".toRegex(), "")
+        musicInfo[1] = musicInfo[1].replace("\\.(avi|wmv|mp4|mpeg4|mov|3gpp|flv|webm)$".toRegex(RegexOption.IGNORE_CASE), " ")
+                .replace("Full Album".toRegex(RegexOption.IGNORE_CASE), "")
         //Full Album Video
 
         //move feat. info from artist to
         musicInfo[0] = musicInfo[0].replace(" (ft\\.?) ".toRegex(), " feat. ")
-        if (musicInfo[0].matches(" feat.* .*".toRegex())) {
-            r = Pattern.compile(" feat.* .*")
-            val m = r.matcher(musicInfo[0])
-            musicInfo[1] = musicInfo[1] + m.group()
-            musicInfo[0] = musicInfo[0].replace(" feat.* .*".toRegex(), "")
+        if (musicInfo[0].contains(" feat.* .*".toRegex(RegexOption.IGNORE_CASE))) {
+            val m = " feat.* .*".toRegex(RegexOption.IGNORE_CASE).find(musicInfo[0])
+            musicInfo[1] = musicInfo[1] + (m!!.groups[0]?.value ?: "").trim()
+            musicInfo[0] = musicInfo[0].replace(" feat.* .*".toRegex(RegexOption.IGNORE_CASE), "")
         }
 
         //add remix info
-        if (remixInfo.find()) {
-            musicInfo[1] += " " + remixInfo.group(0)
+        if (remixInfo?.groups?.isNotEmpty() == true) {
+            musicInfo[1] = musicInfo[1].trim() + " " + remixInfo.groups[0]?.value
         }
 
         //delete spaces
@@ -298,7 +306,7 @@ object Stuff {
         var relDate:CharSequence = "   now"
         if(date != null)
             relDate = DateUtils.getRelativeTimeSpanString(
-                date.time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)
+                date.time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL)
         if (relDate[0] == '0')
             return "just now"
         return relDate

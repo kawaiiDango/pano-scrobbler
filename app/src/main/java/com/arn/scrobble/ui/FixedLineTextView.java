@@ -22,6 +22,7 @@ public class FixedLineTextView extends android.support.v7.widget.AppCompatTextVi
      * Original textSize in PX
      */
     protected Float mOriginalSize;
+    protected int mOriginalHeight = 0;
     // Minimum text size for this text view
     public static final float MIN_TEXT_SIZE = 30;
 
@@ -55,6 +56,9 @@ public class FixedLineTextView extends android.support.v7.widget.AppCompatTextVi
                     if (mOriginalSize == null) {
                         mOriginalSize = textSize;
                     }
+                    if (mOriginalHeight == 0) {
+                        mOriginalHeight = getMeasuredHeight();
+                    }
 
                     float before = mOriginalSize;
 
@@ -65,6 +69,7 @@ public class FixedLineTextView extends android.support.v7.widget.AppCompatTextVi
 
                     // recursion
                     measure(widthMeasureSpec, heightMeasureSpec);
+                    setHeight(mOriginalHeight);
                 }
             }
         }

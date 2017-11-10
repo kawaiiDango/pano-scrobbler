@@ -60,10 +60,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-//        supportActionBar?.setDisplayShowHomeEnabled(true)
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//        supportActionBar?.setHomeButtonEnabled(true)
-
         ctl.tag = " "
         pref = PreferenceManager.getDefaultSharedPreferences(this)
         app_bar.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
@@ -271,8 +267,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             }
             R.id.nav_friends -> {
                 fragmentManager.beginTransaction()
-                        .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
-                        .add(R.id.frame, FriendsFragment())
+                        .replace(R.id.frame, FriendsFragment())
+//                        .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
+//                        .add(R.id.frame, FriendsFragment())
                         .addToBackStack(null)
                         .commit()
             }

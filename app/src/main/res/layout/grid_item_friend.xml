@@ -37,7 +37,7 @@
 
     <FrameLayout
         android:id="@+id/friends_track"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@id/friends_pic"
@@ -67,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
+                android:gravity="center_vertical"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/colorAccentLight"
@@ -77,15 +78,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
+                android:gravity="center_vertical"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 tools:text="subtit"/>
 
             <TextView
                 android:id="@+id/friends_date"
-                android:layout_width="346dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="11dp"
+                android:gravity="bottom|right"
                 android:singleLine="true"
                 android:textAppearance="@android:style/TextAppearance.Material.Caption"
                 tools:text="date"/>
@@ -99,6 +102,7 @@
             android:layout_marginTop="4dp"
             android:alpha="0.7"
             app:srcCompat="@drawable/vd_music_circle"/>
+
         <ImageView
             android:id="@+id/friends_music_icon_playing"
             android:layout_width="20sp"

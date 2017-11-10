@@ -30,7 +30,7 @@
             app:statusBarScrim="@color/status_bar_scrim">
 
             <ImageView
-                android:id="@+id/img_hero"
+                android:id="@+id/hero_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
@@ -43,7 +43,7 @@
                 />
 
             <View
-                android:id="@+id/img_dark_overlay"
+                android:id="@+id/hero_dark_overlay"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/hero_overlay_height"
                 android:layout_gravity="bottom"

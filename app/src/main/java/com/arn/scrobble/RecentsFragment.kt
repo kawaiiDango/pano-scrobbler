@@ -145,8 +145,7 @@ class RecentsFragment : Fragment() {
         activity.app_bar?.setExpanded(true, true)
     }
     private val shareClickListener = View.OnClickListener {
-        val selectedPos = if (recents_list.checkedItemPosition > 0) recents_list.checkedItemPosition else return@OnClickListener
-        val track = recents_list.getItemAtPosition(selectedPos)
+        val track = activity.hero_img?.tag
         if (track is Track) {
             Stuff.log("shareClickListener $track")
 

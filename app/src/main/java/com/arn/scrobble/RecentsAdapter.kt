@@ -48,7 +48,7 @@ class RecentsAdapter
 
 (c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, mutableListOf()) {
 
-    private val hero = (c as Activity).img_hero
+    private val hero = (c as Activity).hero_img
     private var heroInfoLoader: LFMRequester? = null
     val handler = ResponseHandler(this)
     private var totalPages:Int = 1
@@ -109,8 +109,8 @@ class RecentsAdapter
             albumArt.setImageResource(R.drawable.ic_placeholder_music)
             albumArt.setColorFilter(Stuff.getMatColor(context, "500", t.name.hashCode().toLong()))
         }
-
-        if ( getItemId(position) == selectedId && t.url != hero.tag) {
+        val heroTag = if (hero.tag is Track) hero.tag as Track else null
+        if ( getItemId(position) == selectedId && heroTag?.playedWhen != t.playedWhen) {
             activity.hero_info.setOnClickListener {
                 Stuff.openInBrowser(t.url, context)
             }
@@ -123,12 +123,19 @@ class RecentsAdapter
                 }
                 Stuff.openInBrowser(ytUrl, context)
             }
+            if (heroTag?.getImageURL(ImageSize.MEDIUM) != imgUrl) {
+                setHero(t, imgUrl) //better set a blurred one
+            }
+
             heroInfoLoader?.cancel(true)
             heroInfoLoader = LFMRequester(context, handler)
             heroInfoLoader?.execute(Stuff.HERO_INFO, t.url, t.getImageURL(ImageSize.EXTRALARGE))
 
-            hero.tag = t.url
-            setHero(t, imgUrl) //better set a blurred one
+            val ctl = (context as Activity).ctl
+            ctl.title = t.name
+            ctl.tag = t.name
+
+            hero.tag = t
 
             play.visibility = View.VISIBLE
             play.setOnClickListener({activity.hero_yt.callOnClick()})
@@ -153,7 +160,12 @@ class RecentsAdapter
 
         if (page <= totalPages) {
             Stuff.log("loadRecents $page")
-            LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
+            if ((page == 1 && list.firstVisiblePosition < 5) || page > 1)
+                LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
+            else {
+                val msg = handler.obtainMessage(0, Pair(Stuff.RELOAD_LIST_DATA, ""))
+                handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
+            }
             if (count == 0 || page > 1)
                 list.footer_progressbar.visibility = View.VISIBLE
             return true
@@ -219,15 +231,6 @@ class RecentsAdapter
     }
 
     private fun setHero(t: Track?, imgUrl: String? = null) {
-        val ctl = (context as Activity).ctl
-
-        if (t != null) {
-            val text = t.name
-//            if (Main.heroExpanded)
-                ctl.title = text
-            ctl.tag = text
-        }
-
         if (imgUrl != null && imgUrl != "") {
             Picasso.with(context)
                     .load(imgUrl)
@@ -279,6 +282,8 @@ class RecentsAdapter
             (graph.series[0] as  LineGraphSeries<*>).color = colorLightWhite
             graph.gridLabelRenderer.horizontalAxisTitleColor = colorLightWhite
             graph.gridLabelRenderer.verticalLabelsColor = colorLightWhite
+            graph.onDataChanged(false, false)
+
             val listBgFrom = (list.background as ColorDrawable).color
 
             val listBgAnimator = ObjectAnimator.ofObject(list, "backgroundColor", ArgbEvaluator(), listBgFrom, colorMutedBlack)
@@ -316,7 +321,7 @@ class RecentsAdapter
             series.resetData(dps.toTypedArray())
 
             graph.alpha = 0f
-            graph.onDataChanged(false, false)
+//            graph.onDataChanged(false, false)
             graph.animate()
                     .alpha(0.7f)
                     .setInterpolator(DecelerateInterpolator())
@@ -337,7 +342,7 @@ class RecentsAdapter
         handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
         if (page == 1) {
             clear()
-            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.RELOAD_LIST_DATA, ""))
+            val msg = handler.obtainMessage(0, Pair(Stuff.RELOAD_LIST_DATA, ""))
             handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             if (res.isEmpty){
                 list.header_text.text = context.getString(R.string.no_scrobbles)
@@ -392,7 +397,6 @@ class RecentsAdapter
             val command = pair.first
             var data = pair.second
             when(command){
-//                Stuff.GET_LOVED -> recentsAdapter.markLoved(data as PaginatedResult<Track>)
                 Stuff.HERO_INFO -> {
                     data = data as MutableList<String?>
                     recentsAdapter.setHero(data[0])
@@ -400,7 +404,6 @@ class RecentsAdapter
                 }
                 Stuff.GET_RECENTS -> {
                     recentsAdapter.populate(data as PaginatedResult<Track>, data.page)
-//                    LFMRequester(recentsAdapter.context, this).execute(Stuff.GET_LOVED)
                 }
                 Stuff.GET_RECENTS_CACHED -> {
                     recentsAdapter.populate(data as PaginatedResult<Track>, data.page)

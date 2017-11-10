@@ -18,7 +18,7 @@
         android:paddingLeft="40dp"
         android:paddingRight="10dp"
         android:paddingTop="10dp"
-        tools:text="@string/pending_scrobbles"
+        android:text="@string/pending_scrobbles"
         android:textAppearance="@android:style/TextAppearance.Material.Button"/>
 
     <LinearLayout

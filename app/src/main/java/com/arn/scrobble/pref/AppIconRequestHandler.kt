@@ -4,16 +4,12 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.text.TextUtils
+import com.arn.scrobble.Stuff
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Request
 import com.squareup.picasso.RequestHandler
 import java.io.IOException
-import android.graphics.drawable.PictureDrawable
-import com.arn.scrobble.Stuff
 
 
 /**
@@ -23,11 +19,19 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
 
     private val pm: PackageManager
     private val dpi: Int
+    private val isMIUI:Boolean
 
     init {
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         dpi = am.launcherLargeIconDensity
         pm = context.packageManager
+        isMIUI = try {
+            (Class.forName("android.os.SystemProperties")
+                    .getMethod("get", String::class.java)
+                    .invoke(null, "ro.miui.ui.version.code") as String? ?: "") != ""
+        } catch (e:ClassNotFoundException){
+            false
+        }
     }
 
     override fun canHandleRequest(data: Request): Boolean {
@@ -47,7 +51,7 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
     @Throws(PackageManager.NameNotFoundException::class)
     private fun getFullResIcon(packageName: String): Bitmap? {
         val info = pm.getApplicationInfo(packageName, 0)
-        return Stuff.drawableToBitmap(info.loadIcon(pm))
+        return Stuff.drawableToBitmap(info.loadIcon(pm), isMIUI)
     }
 
     companion object {

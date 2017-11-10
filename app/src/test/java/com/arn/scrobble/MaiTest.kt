@@ -12,8 +12,14 @@ class MaiTest {
 
     @Test
     fun testParseTitle() {
-        val title = "Lauren Aquilina | Sinners - Official Music Video (Download 'Sinners' EP on iTunes now!) "
-//        val title = "[MV] REOL - ちるちる / ChiruChiru"
+        val title =
+//                "Lauren Aquilina | Sinners - Official MUsic Video (Download 'Sinners' EP on iTunes now!) "
+//                 "[MV] REOL - ちるちる HQ / ChiruChiru HD"
+//                "REOL -「mede:mede」 "
+//                "Sia - Cheap Thrills Ft. Sean Paul (Remix)"
+                "【kradness×reol】Jitter Doll"
+//                "kradness - 零の位相 [Official Music Video]"
+//                "Lindsey Stirling Feat. Becky G - Christmas c' mon (official audio) .avi"
         val splits = Stuff.sanitizeTitle(title)
         splits.forEach { print(it + ", ") }
         println()

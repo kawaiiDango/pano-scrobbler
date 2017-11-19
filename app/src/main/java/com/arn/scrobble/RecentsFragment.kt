@@ -16,7 +16,7 @@ import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import de.umass.lastfm.Track
-import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_recents.*
 import kotlinx.android.synthetic.main.coordinator_main.*
 
 
@@ -30,7 +30,7 @@ class RecentsFragment : Fragment() {
     private var footer: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.content_main, container, false)
+        return inflater.inflate(R.layout.content_recents, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,6 +53,7 @@ class RecentsFragment : Fragment() {
         recents_list.setOnScrollListener(loadMoreListener)
         recents_list.onItemClickListener = itemClickListener
 
+        Stuff.setProgressCircleColor(recents_swipe_refresh)
         recents_swipe_refresh.setOnRefreshListener { adapter?.loadRecents(1) }
 
         activity.hero_share.setOnClickListener(shareClickListener)
@@ -62,7 +63,7 @@ class RecentsFragment : Fragment() {
         graph.gridLabelRenderer.isHorizontalLabelsVisible = false
         graph.gridLabelRenderer.isVerticalLabelsVisible = false
         graph.gridLabelRenderer.numVerticalLabels = 3
-        graph.gridLabelRenderer.labelsSpace = Stuff.dp2px(10, activity)
+        graph.gridLabelRenderer.labelsSpace = Stuff.sp2px(10, activity)
         val series = LineGraphSeries<DataPoint>()
         series.isDrawDataPoints = true
         series.thickness = Stuff.dp2px(6, activity)
@@ -89,19 +90,19 @@ class RecentsFragment : Fragment() {
     }
 
     private fun toggleGraphDetails(graph: GraphView){
-        val show = activity.graph.tag as Boolean? ?: false
+        val show = graph.tag as Boolean? ?: false
         if (show) {
-            activity.graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
+            graph.gridLabelRenderer.horizontalAxisTitle = getString(R.string.graph_info)
         } else {
-            activity.graph.gridLabelRenderer.horizontalAxisTitle = null
+            graph.gridLabelRenderer.horizontalAxisTitle = null
         }
-        activity.graph.gridLabelRenderer.isVerticalLabelsVisible = show
-        activity.graph.tag = !show
+        graph.gridLabelRenderer.isVerticalLabelsVisible = show
+        graph.tag = !show
         PreferenceManager.getDefaultSharedPreferences(activity)
                 .edit()
                 .putBoolean(Stuff.GRAPH_DETAILS_PREF, show)
                 .apply()
-        activity.graph.onDataChanged(false, false)
+        graph.onDataChanged(false, false)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {

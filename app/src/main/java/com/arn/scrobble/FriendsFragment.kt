@@ -26,7 +26,7 @@ class FriendsFragment : Fragment() {
         adapter = FriendsAdapter(activity, R.layout.grid_item_friend)
         friends_grid.adapter = adapter
         friends_grid.setOnScrollListener(loadMoreListener)
-
+        Stuff.setProgressCircleColor(friends_swipe_refresh)
         friends_swipe_refresh.setOnRefreshListener { adapter?.loadFriends(1) }
     }
 

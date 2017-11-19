@@ -19,6 +19,7 @@ import android.support.design.widget.CollapsingToolbarLayout
 import android.support.graphics.drawable.Animatable2Compat
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.SwipeRefreshLayout
 import android.text.format.DateUtils
 import android.util.Log
 import android.util.TypedValue
@@ -285,6 +286,9 @@ object Stuff {
     fun dp2px (dp: Int, c: Context): Int {
        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), c.resources.displayMetrics).toInt()
     }
+    fun sp2px (sp: Int, c: Context): Int {
+       return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), c.resources.displayMetrics).toInt()
+    }
 
     fun humanReadableNum(n: Long): String {
         val k = 1000
@@ -362,6 +366,11 @@ object Stuff {
             }
         } else
             np.visibility = View.GONE
+    }
+
+    fun setProgressCircleColor(swl: SwipeRefreshLayout){
+        swl.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary)
+        swl.setProgressBackgroundColorSchemeResource(R.color.darkBg)
     }
 
     fun openInBrowser(url:String, context:Context){

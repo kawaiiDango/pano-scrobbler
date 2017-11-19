@@ -43,7 +43,6 @@
         android:clickable="false"
         android:gravity="start"
         android:longClickable="false"
-        android:maxLines="1"
         android:padding="1sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/colorAccentLight"
@@ -62,7 +61,6 @@
         android:clickable="false"
         android:linksClickable="false"
         android:longClickable="false"
-        android:maxLines="1"
         android:padding="1sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         tools:text="subtit subtit"/>

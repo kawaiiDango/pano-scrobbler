@@ -29,6 +29,7 @@ public class FixedLineTextView extends android.support.v7.widget.AppCompatTextVi
     public FixedLineTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setEllipsize(TextUtils.TruncateAt.END);
+        setSingleLine();
     }
 
     public FixedLineTextView(Context context, AttributeSet attrs) {

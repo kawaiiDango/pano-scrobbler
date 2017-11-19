@@ -66,6 +66,7 @@
                 android:id="@+id/friends_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="-4sp"
                 android:ellipsize="marquee"
                 android:gravity="center_vertical"
                 android:singleLine="true"

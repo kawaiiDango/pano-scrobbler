@@ -31,7 +31,7 @@ import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
-import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_recents.*
 import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.footer_loading.view.*
 import kotlinx.android.synthetic.main.header_default.view.*
@@ -70,7 +70,6 @@ class RecentsAdapter
         parent as ListView
         val selectedId: Long = if (parent.checkedItemIds.isEmpty()) NP_ID else parent.checkedItemIds[0]
 
-// get the TextView and then set the text (item name) and tag (item ID) values
         val np = view.recents_playing
 
         Stuff.nowPlayingAnim(np, t.isNowPlaying)
@@ -231,6 +230,7 @@ class RecentsAdapter
     }
 
     private fun setHero(t: Track?, imgUrl: String? = null) {
+//        Stuff.log("setHero "+t.toString())
         if (imgUrl != null && imgUrl != "") {
             Picasso.with(context)
                     .load(imgUrl)
@@ -342,7 +342,7 @@ class RecentsAdapter
         handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
         if (page == 1) {
             clear()
-            val msg = handler.obtainMessage(0, Pair(Stuff.RELOAD_LIST_DATA, ""))
+            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.RELOAD_LIST_DATA, ""))
             handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             if (res.isEmpty){
                 list.header_text.text = context.getString(R.string.no_scrobbles)

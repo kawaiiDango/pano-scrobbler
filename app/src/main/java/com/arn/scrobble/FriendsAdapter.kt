@@ -113,7 +113,7 @@ class FriendsAdapter
     fun loadFriends(page: Int):Boolean {
         if (page <= totalPages || totalPages == 0) {
             Stuff.log("loadFriends $page")
-            val grid = (context as Activity).friends_grid
+            val grid = (context as Activity).friends_grid ?: return false
 
             if ((page == 1 && grid.firstVisiblePosition < 15) || page > 1)
                 LFMRequester(context, handler).execute(Stuff.GET_FRIENDS, page.toString())

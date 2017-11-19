@@ -54,5 +54,7 @@
     <string name="friends">Friends</string>
     <string name="grant_notification_access">Grant notification access</string>
     <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
+    <string name="rate_msg">Enjoying this app?</string>
+    <string name="rate_link">Rate it</string>
 
 </resources>

@@ -41,6 +41,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
+import org.codechimp.apprater.AppRater
 import java.io.File
 
 class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -121,6 +122,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         .add(R.id.frame, AppListFragment())
                         .addToBackStack(null)
                         .commit()
+            else
+                AppRater.app_launched(this)
             onBackStackChanged()
             fragmentManager.addOnBackStackChangedListener(this)
         } else {
@@ -135,7 +138,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     fun test (){
-
+        AppRater.showRateSnackbar(this)
         val res = Resources.getSystem()
         val attrs = arrayOf(android.R.attr.textColor).toIntArray()
 
@@ -170,18 +173,18 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
         style.setShowActionsInCompactView(0, 1)
-        val icon = getDrawable(R.mipmap.ic_launcher_foreground)
-        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
+        val icon = getDrawable(R.mipmap.ic_launcher)
+//        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
 
         val nb = NotificationCompat.Builder(applicationContext)
-                .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                .setLargeIcon(Stuff.drawableToBitmap(icon, true))
+                .setSmallIcon(R.drawable.ic_noti)
+                .setLargeIcon(Stuff.drawableToBitmap(icon))
                 .setVisibility(Notification.VISIBILITY_SECRET)
                 .setAutoCancel(true)
                 .setShowWhen(false)
                 .setUsesChronometer(true)
                 .setPriority(Notification.PRIORITY_LOW)
-                .addAction(R.drawable.vd_cancel, getString(R.string.unscrobble), launchIntent)
+                .addAction(R.drawable.vd_undo, getString(R.string.unscrobble), launchIntent)
                 .addAction(R.drawable.vd_check, getString(R.string.unscrobble), launchIntent)
                 .setContentTitle("setContentTitle")
                 .setContentText("longDescription")
@@ -195,7 +198,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val n = nb.build()
         n.bigContentView = null
         val rv = n.contentView
-
+/*
         var resId = res.getIdentifier("title", "id", "android")
         rv.setTextColor(resId, Color.BLACK)
         resId = res.getIdentifier("text", "id", "android")
@@ -211,7 +214,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
         m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
 //        rv.setImageViewResource(resId, R.drawable.vd_cancel)
-
+*/
         nm.notify(9, n)
 
     }

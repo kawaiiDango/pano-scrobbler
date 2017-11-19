@@ -19,11 +19,11 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.media.app.MediaStyleMod
 import android.widget.Toast
 import android.content.Intent
-import android.os.IBinder
 import android.content.pm.PackageManager
 import android.content.ComponentName
 import android.os.Process
 import android.app.ActivityManager
+import android.util.LruCache
 import com.squareup.leakcanary.LeakCanary
 
 
@@ -76,6 +76,8 @@ class NLService : NotificationListenerService() {
         filter.addAction(pBLACKLIST)
         filter.addAction(iPREFS_CHANGED)
         registerReceiver(nlservicereciver, filter)
+
+        corrrectedDataCache = LruCache(10)
 
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -352,7 +354,7 @@ class NLService : NotificationListenerService() {
             if (!pref.getBoolean("show_notifications", true))
                 return
             if (iconId == 0)
-                iconId = R.drawable.vd_noti
+                iconId = R.drawable.ic_noti
             lastNotiIcon = iconId
 
             var title = title1
@@ -414,7 +416,7 @@ class NLService : NotificationListenerService() {
                 val style = MediaStyleMod()
                 nb.addAction(loveAction)
                 if (state == getString(R.string.state_scrobbling)) {
-                    nb.addAction(getAction(R.drawable.vd_cancel, "❌", getString(R.string.unscrobble), cancelToastIntent))
+                    nb.addAction(getAction(R.drawable.vd_undo, "❌", getString(R.string.unscrobble), cancelToastIntent))
 //                    nb.setDeleteIntent(cancelToastIntent)
                     style.setShowActionsInCompactView(0, 1)
                 } else
@@ -441,9 +443,9 @@ class NLService : NotificationListenerService() {
         private fun buildMediaStyleMod(nb:NotificationCompat.Builder): Notification {
             val modNeeded = Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && nb.mActions != null && nb.mActions.isNotEmpty()
             if (modNeeded) {
-                val icon = getDrawable(R.drawable.vd_noti)
-                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
-                nb.setLargeIcon(Stuff.drawableToBitmap(icon,true))
+                val icon = getDrawable(R.mipmap.ic_launcher)
+//                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
+                nb.setLargeIcon(Stuff.drawableToBitmap(icon))
             }
             val n = nb.build()
             if (modNeeded)
@@ -537,6 +539,8 @@ class NLService : NotificationListenerService() {
             pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
             pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
         }
+
+        lateinit var corrrectedDataCache: LruCache<Int, Bundle>
 
         lateinit var handler: ScrobbleHandler
         val pNLS = "com.arn.scrobble.NLS"

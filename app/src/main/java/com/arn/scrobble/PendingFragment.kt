@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import com.arn.scrobble.db.PendingScrobblesDb
-import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.content_main.view.*
+import kotlinx.android.synthetic.main.content_recents.*
+import kotlinx.android.synthetic.main.content_recents.view.*
 
 /**
  * Created by arn on 21/09/2017.
@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.content_main.view.*
 class PendingFragment: Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
-        val view = inflater.inflate(R.layout.content_main, container, false)
+        val view = inflater.inflate(R.layout.content_recents, container, false)
         view.recents_list.choiceMode = ListView.CHOICE_MODE_NONE
         view.recents_list.isNestedScrollingEnabled = false
         val adapter = PendingScroblesAdapter(activity, R.layout.list_item_recents)

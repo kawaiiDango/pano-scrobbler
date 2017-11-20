@@ -12,3 +12,4 @@
 /app/src/main/play
 /app/keys.gradle
 /app/version.txt
+/app/*.json

@@ -27,7 +27,7 @@ class SessListener internal constructor(private val pref: SharedPreferences, pri
             for (controller in controllers) {
                 val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(controller.packageName)
                 val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(controller.packageName)
-                if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, false) && !isBlacklisted)) {
+                if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, true) && !isBlacklisted)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!mControllers.containsKey(controller.sessionToken)) {
                         Stuff.log("onActiveSessionsChanged: " + controller.packageName +

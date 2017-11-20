@@ -109,7 +109,8 @@ class RecentsAdapter
             albumArt.setColorFilter(Stuff.getMatColor(context, "500", t.name.hashCode().toLong()))
         }
         val heroTag = if (hero.tag is Track) hero.tag as Track else null
-        if ( getItemId(position) == selectedId && heroTag?.playedWhen != t.playedWhen) {
+        if ( getItemId(position) == selectedId &&
+                (heroTag?.playedWhen != t.playedWhen || t.playedWhen == null )) {
             activity.hero_info.setOnClickListener {
                 Stuff.openInBrowser(t.url, context)
             }
@@ -230,7 +231,6 @@ class RecentsAdapter
     }
 
     private fun setHero(t: Track?, imgUrl: String? = null) {
-//        Stuff.log("setHero "+t.toString())
         if (imgUrl != null && imgUrl != "") {
             Picasso.with(context)
                     .load(imgUrl)

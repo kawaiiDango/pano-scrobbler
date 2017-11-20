@@ -8,15 +8,15 @@
     android:background="?attr/selectableItemBackground" >
 
     <TextView android:id="@android:id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:maxLines="1"
-        android:textSize="16sp"
-        android:textColor="?android:attr/textColorPrimary"
-        android:ellipsize="marquee"
-        android:fadingEdge="horizontal"/>
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="16dp"
+              android:layout_marginTop="16dp"
+              android:textSize="16sp"
+              android:textColor="?android:attr/textColorPrimary"
+              android:ellipsize="marquee"
+              android:fadingEdge="horizontal"
+              android:singleLine="true"/>
 
     <TextView
         android:id="@android:id/summary"
@@ -74,9 +74,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        android:maxLines="1"
                         android:ellipsize="marquee"
-                        android:textColor="?android:attr/textColorSecondary"/>
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:singleLine="true"/>
                 </LinearLayout>
 
                 <FrameLayout

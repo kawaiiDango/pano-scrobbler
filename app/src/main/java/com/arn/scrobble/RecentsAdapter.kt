@@ -75,7 +75,7 @@ class RecentsAdapter
         Stuff.nowPlayingAnim(np, t.isNowPlaying)
         view.recents_title.text = t.name
         view.recents_subtitle.text = t.artist
-        view.recents_date.text = Stuff.myRelativeTime(t.playedWhen)
+        view.recents_date.text = Stuff.myRelativeTime(context, t.playedWhen)
 
         val love = view.recents_love
         val play = view.recents_play
@@ -119,7 +119,7 @@ class RecentsAdapter
                 try {
                     ytUrl += URLEncoder.encode(t.artist + " - " + t.name, "UTF-8")
                 } catch (e: UnsupportedEncodingException) {
-                    Stuff.toast(context, "failed to encode url")
+                    Stuff.toast(context, context.getString(R.string.failed_encode_url))
                 }
                 Stuff.openInBrowser(ytUrl, context)
             }
@@ -201,7 +201,7 @@ class RecentsAdapter
                     aFew.forEach {
                         val v = inflater.inflate(R.layout.list_item_recents, pendingItems, false)
                         v.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                        pendingItems.addView(PendingScroblesAdapter.populateItem(v, it))
+                        pendingItems.addView(PendingScroblesAdapter.populateItem(context, v, it))
                     }
                     val pendingSummary = layout.pending_summary
                     val diff = count - aFew.size

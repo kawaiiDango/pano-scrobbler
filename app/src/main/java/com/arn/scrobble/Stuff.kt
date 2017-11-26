@@ -98,10 +98,10 @@ object Stuff {
             "—"," ‎– ", "–"," \\| ", " - ", "-", "「", "『", "ー", " • ",
 
             "【", "〖", "〔",
-            "】", "〗","』", "」",
+            "】", "〗","』", "」", "〕",
             // ":",
             " \"", " /")
-    private val unwantedSeperators = arrayOf("『", "』","「", "」", "\"", "'", "【", "】", "〖", "〗", "〕")
+    private val unwantedSeperators = arrayOf("『", "』","「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕")
 
     private val metaSpam = arrayOf("downloaded")
 
@@ -283,12 +283,11 @@ object Stuff {
         return darkness >= 0.5
     }
 
-    fun dp2px (dp: Int, c: Context): Int {
-       return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), c.resources.displayMetrics).toInt()
-    }
-    fun sp2px (sp: Int, c: Context): Int {
-       return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), c.resources.displayMetrics).toInt()
-    }
+    fun dp2px (dp: Int, c: Context): Int =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), c.resources.displayMetrics).toInt()
+
+    fun sp2px (sp: Int, c: Context): Int =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), c.resources.displayMetrics).toInt()
 
     fun humanReadableNum(n: Long): String {
         val k = 1000
@@ -306,13 +305,17 @@ object Stuff {
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
-    fun myRelativeTime(date: Date?): CharSequence {
-        var relDate:CharSequence = "   now"
-        if(date != null)
+
+    fun myRelativeTime(context:Context, date: Date?): CharSequence =
+            myRelativeTime(context, date?.time ?: 0)
+
+    fun myRelativeTime(context:Context, millis:Long): CharSequence {
+        var relDate:CharSequence = "   " + context.getString(R.string.time_now)
+        if(millis != 0L)
             relDate = DateUtils.getRelativeTimeSpanString(
-                date.time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL)
+                millis, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL)
         if (relDate[0] == '0')
-            return "just now"
+            return context.getString(R.string.time_now_long)
         return relDate
     }
 

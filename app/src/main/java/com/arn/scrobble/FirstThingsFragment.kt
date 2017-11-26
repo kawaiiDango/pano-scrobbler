@@ -32,7 +32,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         if (view == null)
             return
         first_things_1.setOnClickListener {
-            Stuff.toast(activity, "Check "+ getString(R.string.app_name))
+            Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
             val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
             startActivity(intent)
         }
@@ -123,7 +123,10 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         }
         fun checkAuthTokenExists(c:Context): Boolean {
             val pref = PreferenceManager.getDefaultSharedPreferences(c)
-            return !( pref.getString(Stuff.SESS_KEY, null)== null ||
+            return if (BuildConfig.DEBUG)
+                true //TODO: remove this
+            else
+                !( pref.getString(Stuff.SESS_KEY, null)== null ||
                     pref.getString(Stuff.USERNAME, null)== null)
         }
         fun checkAppListExists(c:Context): Boolean {

@@ -2,7 +2,6 @@ package com.arn.scrobble
 
 import android.app.Activity
 import android.content.Context
-import android.text.format.DateUtils
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -23,22 +22,18 @@ class PendingScroblesAdapter
             convertView = inflater.inflate(layoutResourceId, parent, false)!!
         }
         val ps = getItem(position)
-        populateItem(convertView, ps)
+        populateItem(context, convertView, ps)
 
         return convertView
     }
     companion object {
-        fun populateItem(view:View, data:PendingScrobble): View{
+        fun populateItem(context: Context, view:View, data:PendingScrobble): View{
             view.recents_love.visibility = View.INVISIBLE
             view.recents_playing.visibility = View.GONE
 
             view.recents_title.text = data.track
             view.recents_subtitle.text = data.artist
-            var relDate = DateUtils.getRelativeTimeSpanString(
-                    data.timestamp, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)
-            if (relDate[0] == '0')
-                relDate = "Just now"
-            view.recents_date.text = relDate
+            view.recents_date.text = Stuff.myRelativeTime(context, data.timestamp)
             view.recents_play.setImageResource(R.drawable.vd_hourglass)
             return view
         }

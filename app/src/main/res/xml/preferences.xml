@@ -7,52 +7,52 @@
         android:defaultValue="true"
         android:persistent="true"
         android:key="master"
-        android:summaryOff="Scrobbler is now disabled"
-        android:summaryOn="Scrobbler is active"
-        android:title="Master switch"/>
+        android:summaryOff="@string/pref_master_off"
+        android:summaryOn="@string/pref_master_on"
+        android:title="@string/pref_master"/>
 
     <SwitchPreference
         android:defaultValue="true"
         android:key="show_notifications"
         android:persistent="true"
-        android:summaryOff="Check your scrobbbles from the app only"
-        android:summaryOn="...while scrobbling"
-        android:title="Notifications"/>
+        android:summaryOff="@string/pref_noti_off"
+        android:summaryOn="@string/pref_noti_on"
+        android:title="@string/pref_noti"/>
     <SwitchPreference
         android:defaultValue="true"
         android:key="offline_scrobble"
         android:persistent="true"
-        android:summaryOff="Scrobbles will be lost forever if you are offline"
-        android:summaryOn="Scrobbles will be submitted after you go online"
-        android:title="Offline scrobbling"/>
+        android:summaryOff="@string/pref_offline_off"
+        android:summaryOn="@string/pref_offline_on"
+        android:title="@string/pref_offline"/>
     <PreferenceCategory
-        android:title="Scrobble from">
+        android:title="@string/pref_scrobble_from">
         <com.arn.scrobble.pref.AppIconsPref
-            android:title="Currently enabled:"
+            android:title="@string/pref_enabled_apps"
             android:key="app_whitelist"/>
         <Preference
             android:defaultValue="true"
             android:key="open_app_list"
             android:icon="@drawable/vd_add"
-            android:summary="Any app which can play music with metadata is supported"
-            android:title="Choose apps"/>
+            android:summary="@string/pref_enabled_apps_summary"
+            android:title="@string/pref_enabled_apps_title"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="auto_detect"
             android:persistent="true"
-            android:summary="...we will still ask you to confirm or ignore that app"
-            android:title="Auto detect new music-like apps"/>
+            android:summary="@string/pref_auto_detect_summary"
+            android:title="@string/pref_auto_detect"/>
 
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Scrobble delay (whichever is earlier)">
+        android:title="@string/pref_delay">
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="delay_secs"
-            android:title="Delay in secs"
+            android:title="@string/pref_delay_secs"
             android:defaultValue="60"
 
             sample:msbp_minValue="20"
@@ -63,7 +63,7 @@
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="delay_per"
-            android:title="Delay in percent"
+            android:title="@string/pref_delay_per"
             android:defaultValue="40"
 
             sample:msbp_minValue="30"
@@ -73,22 +73,22 @@
             sample:msbp_dialogEnabled="false"/>
 
         <Preference
-            android:summary="Note that your Now Playing always gets updated as soon as the song starts playing, regardless of the delay"
+            android:summary="@string/pref_delay_note"
             android:selectable="false"
             />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Logout of last.fm">
+        android:title="@string/pref_logout">
         <Preference
-            android:title="Logout and Reauthorize"
+            android:title="@string/pref_logout_title"
             android:key="reauth"
             />
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="About">
+        android:title="@string/pref_about">
         <Preference
-            android:title="version"
+            android:title="@string/pref_about_title"
             android:summary="https://github.com/kawaiiDango/pScrobbler"
             android:key="about"
             />

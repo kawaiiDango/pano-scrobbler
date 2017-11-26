@@ -150,13 +150,13 @@ class RecentsFragment : Fragment() {
         if (track is Track) {
             Stuff.log("shareClickListener $track")
 
-            val shareText = "I was listening to\n " + track.artist + " - " + track.name + ",  " +
-                    Stuff.myRelativeTime(track.playedWhen) + "\n" + getString(R.string.share_text)
+            val shareText = getString(R.string.share_text,
+                    track.artist + " - " + track.name, Stuff.myRelativeTime(activity, track.playedWhen))
             val i = Intent(Intent.ACTION_SEND)
             i.type = "text/plain"
-            i.putExtra(Intent.EXTRA_SUBJECT, "I was listening to:")
-            i.putExtra(Intent.EXTRA_TEXT, shareText)
-            startActivity(Intent.createChooser(i, "Share this song"))
+            i.putExtra(Intent.EXTRA_SUBJECT, shareText)
+            i.putExtra(Intent.EXTRA_TEXT, shareText + "\n" + getString(R.string.share_sig))
+            startActivity(Intent.createChooser(i, getString(R.string.share_this_song)))
         }
     }
 }

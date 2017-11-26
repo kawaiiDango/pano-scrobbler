@@ -9,7 +9,6 @@ import android.content.SharedPreferences
 import android.content.pm.LabeledIntent
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
@@ -226,7 +225,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val username = if (BuildConfig.DEBUG) "nobody" else pref.getString(Stuff.USERNAME,"nobody")
         nav_name.text = username
-        nav_num_scrobbles.text = getString(R.string.num_scrobbles, pref.getInt(Stuff.NUM_SCROBBLES_PREF, 0))
+        val num = pref.getInt(Stuff.NUM_SCROBBLES_PREF, 0)
+        nav_num_scrobbles.text = resources.getQuantityString(R.plurals.num_scrobbles, num, num)
 
         nav_profile_link.setOnClickListener {
             Stuff.openInBrowser("https://www.last.fm/user/$username", this)
@@ -325,7 +325,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun mailLogs(){
-        Stuff.toast(this, "Generating report...")
+        Stuff.toast(this, getString(R.string.generating_report))
         var text = ""
         text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME+ "\n"
         text += "Android " + Build.VERSION.RELEASE+ "\n"
@@ -341,6 +341,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
         text += "------------------------\n\n[how did this happen?]\n"
+        //keep the email in english
 
         val log = Stuff.exec("logcat -d")
         val logFile = File(filesDir, "log.txt")
@@ -366,11 +367,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             intents.add(LabeledIntent(intent, info.activityInfo.packageName, info.loadLabel(packageManager), info.icon))
         }
         if (intents.size > 0) {
-            val chooser = Intent.createChooser(intents.removeAt(intents.size - 1), "Send bug report")
+            val chooser = Intent.createChooser(intents.removeAt(intents.size - 1), getString(R.string.action_report))
             chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
             startActivity(chooser)
         }else
-            Stuff.toast(this, "There are no email clients installed.")
+            Stuff.toast(this, getString(R.string.no_mail_apps))
     }
 
     override fun onSupportNavigateUp(): Boolean {

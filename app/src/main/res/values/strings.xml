@@ -1,16 +1,8 @@
 <resources>
-    <string name="app_name">Pano Scrobbler</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="email">kawaiiDango@protonmail.com</string>
-    <string name="blank_text">
-      goddamnit this is so blank
-    </string>
     <string name="action_settings">Configure</string>
-    <string name="action_reauthorize">Reauthorize</string>
     <string name="action_report">Bug report</string>
     <string name="authorize">Authorize</string>
-    <string name="album_art">album art</string>
+    <string name="album_art">Album art</string>
     <string name="not_scrobling">Didn\'t scrobble</string>
     <string name="invalid_artist">No such artist</string>
     <string name="parse_error">Couldn\'t parse title</string>
@@ -30,31 +22,63 @@
     <string name="choose_apps_desc">(Any app which plays named music, such as youtube, your browser, your chat app, etc, is supported)</string>
     <string name="max_apps_exceeded">Sorry, you cannot enable more than %1$d apps</string>
     <string name="offline">Offline. Data shown isn\'t fresh</string>
-    <string name="share_text">  (Shared with goo.gl/ek1Nof)</string>
-    <string name="new_player">Detected:</string>
+    <string name="share_text">I was listening to\n %1$S, %2$S</string> <!-- %1= artist - track, %2= relative time, -->
+    <string name="share_sig">(Shared with %1$S)</string>
+    <string name="share_this_song">Share this song</string>
+    <string name="new_player">%s detected</string>
     <string name="new_player_prompt">Keep scrobbling and hide this msg?</string>
     <string name="no_scrobbles">No scrobbled songs yet…  😫 \n\n
     Lets make some noise!
     </string>
     <string name="no_friends">No lastFM friends yet…  😫</string>
     <string name="channel_scrobbling">Now scrobbling</string>
-    <string name="channel_err">Errors</string>
+    <string name="channel_err">Scrobble errors</string>
     <string name="channel_new_app">New app detected</string>
     <string name="no_apps_enabled">No apps are enabled for scrobbling</string>
     <string name="pending_scrobbles_summary">%1$d more. </string>
     <string name="show_all"> <a href="http://dummy.link">Show all</a> </string>
     <string name="pending_scrobbles">Pending Scrobbles</string>
-    <string name="unscrobble">Unscrobble</string>
-    <string name="love">Love it</string>
-    <string name="unlove">Unlove it</string>
-    <string name="ok_cool">Looks cool</string>
-    <string name="ignore_app">Ignore this app</string>
-    <string name="num_scrobbles">%1$d scrobbles today</string>
+    <plurals name="num_scrobbles">
+        <item quantity="one">%1$d scrobble today</item>
+        <item quantity="other">%1$d scrobbles today</item>
+    </plurals>
     <string name="please_authorize">Please Authorize LastFM</string>
     <string name="friends">Friends</string>
     <string name="grant_notification_access">Grant notification access</string>
     <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
     <string name="rate_msg">Enjoying this app?</string>
     <string name="rate_link">Rate it</string>
+    <string name="time_now">now</string>
+    <string name="time_now_long">just now</string>
+    <string name="no_mail_apps">There are no email clients installed.</string>
+    <string name="generating_report">Generating report…</string>
+    <string name="loved">Loved</string>
+    <string name="on_last_fm">On last.FM:</string>
+
+    <string name="pref_master_off">Scrobbler is now disabled</string>
+    <string name="pref_master_on">Scrobbler is active</string>
+    <string name="pref_master">Master switch</string>
+    <string name="pref_noti_off">Check your scrobbbles from the app only</string>
+    <string name="pref_noti_on">…while scrobbling</string>
+    <string name="pref_noti">Notifications</string>
+    <string name="pref_offline_off">Scrobbles will be lost forever if you are offline</string>
+    <string name="pref_offline_on">Scrobbles will be submitted after you go online</string>
+    <string name="pref_offline">Offline scrobbling</string>
+    <string name="pref_scrobble_from">Scrobble from</string>
+    <string name="pref_enabled_apps">Currently enabled:</string>
+    <string name="pref_enabled_apps_summary">Any app which can play music with metadata is supported</string>
+    <string name="pref_enabled_apps_title">Choose apps</string>
+    <string name="pref_auto_detect_summary">…we will still ask you to confirm or ignore that app</string>
+    <string name="pref_auto_detect">Auto detect new music-like apps</string>
+    <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
+    <string name="pref_delay_secs">Delay in secs</string>
+    <string name="pref_delay_per">Delay in percent</string>
+    <string name="pref_delay_note">Note that your Now Playing always gets updated as soon as the song starts playing, regardless of the delay</string>
+    <string name="pref_logout">Logout of last.fm</string>
+    <string name="pref_logout_title">Logout and Reauthorize</string>
+    <string name="pref_about">About</string>
+    <string name="pref_about_title">version</string>
+    <string name="failed_encode_url">failed to encode URL</string>
+    <string name="check_nls">Check %s</string>
 
 </resources>

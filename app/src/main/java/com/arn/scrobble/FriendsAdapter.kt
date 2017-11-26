@@ -58,7 +58,7 @@ class FriendsAdapter
             view.friends_track.visibility = View.VISIBLE
             view.friends_title.text = track.name
             view.friends_subtitle.text = track.artist
-            view.friends_date.text = Stuff.myRelativeTime(track.playedWhen)
+            view.friends_date.text = Stuff.myRelativeTime(context, track.playedWhen)
 
             if (track.isNowPlaying)
                 view.friends_music_icon.visibility = View.INVISIBLE
@@ -71,7 +71,7 @@ class FriendsAdapter
                 try {
                     ytUrl += URLEncoder.encode(track.artist + " - " + track.name, "UTF-8")
                 } catch (e: UnsupportedEncodingException) {
-                    Stuff.toast(context, "failed to encode url")
+                    Stuff.toast(context, context.getString(R.string.failed_encode_url))
                 }
                 Stuff.openInBrowser(ytUrl, context)
             }

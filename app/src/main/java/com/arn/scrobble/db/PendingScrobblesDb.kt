@@ -32,6 +32,8 @@ abstract class PendingScrobblesDb : RoomDatabase() {
         }
 
         fun destroyInstance() {
+            if (INSTANCE?.isOpen == true)
+                INSTANCE?.close()
             INSTANCE = null
         }
 

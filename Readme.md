@@ -17,6 +17,7 @@ or
 
 #### This is not intended to be:
 - an app to browse lastfm.
+- to contain any webviews. Links would rather open in the browser
 
 ## Thanks to:
 

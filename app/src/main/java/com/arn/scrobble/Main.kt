@@ -121,8 +121,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         .add(R.id.frame, AppListFragment())
                         .addToBackStack(null)
                         .commit()
-            else
+            else {
                 AppRater.app_launched(this)
+                NLService.ensureServiceRunning(this)
+            }
             onBackStackChanged()
             fragmentManager.addOnBackStackChangedListener(this)
         } else {

@@ -2,7 +2,7 @@ package com.arn.scrobble
 
 import android.app.Fragment
 import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.content_first_things.*
  * Created by arn on 06/09/2017.
  */
 class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChangeListener  {
-    var doneCount = 0
+    private var stepsNeeded = 3
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.content_first_things, container, false)
@@ -31,6 +31,19 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         super.onViewCreated(view, savedInstanceState)
         if (view == null)
             return
+        if (Stuff.isMiui) {
+            first_things_0.setOnClickListener {
+                Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
+                val intent = Intent()
+                intent.component = ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
+                try {
+                    startActivity(intent)
+                } catch (e: ActivityNotFoundException){
+                    Stuff.log("ActivityNotFoundException")
+                }
+            }
+            first_things_0.visibility = View.VISIBLE
+        }
         first_things_1.setOnClickListener {
             Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
             val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
@@ -77,15 +90,19 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
     }
 
     private fun checkAll(skipChecks:Boolean = false){
-        doneCount = 0
-        if (checkNLAccess(activity))
+        stepsNeeded = if (Stuff.isMiui) 4 else 3
+        if (checkNLAccess(activity)) {
             markAsDone(R.id.first_things_1)
+            Stuff.log("hehe "+NLService.ensureServiceRunning(activity))
+            if(NLService.ensureServiceRunning(activity)) // needed for cases when a miui user enables autostart AFTER granting NLS permission
+                markAsDone(R.id.first_things_0)
+        }
         if (checkAuthTokenExists(activity))
             markAsDone(R.id.first_things_2)
         if (checkAppListExists(activity))
             markAsDone(R.id.first_things_3)
 
-        if(doneCount==3 || skipChecks) {
+        if(stepsNeeded == 0 || skipChecks) {
             fragmentManager.beginTransaction()
                     .replace(R.id.frame, RecentsFragment(), Stuff.GET_RECENTS)
                     .commit()
@@ -113,7 +130,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         v.alpha = 0.4f
         val tv = v.getChildAt(0) as TextView
         tv.text = "✅ "
-        doneCount++
+        stepsNeeded --
     }
 
     companion object {
@@ -123,10 +140,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         }
         fun checkAuthTokenExists(c:Context): Boolean {
             val pref = PreferenceManager.getDefaultSharedPreferences(c)
-            return if (BuildConfig.DEBUG)
-                true //TODO: remove this
-            else
-                !( pref.getString(Stuff.SESS_KEY, null)== null ||
+            return !( pref.getString(Stuff.SESS_KEY, null)== null ||
                     pref.getString(Stuff.USERNAME, null)== null)
         }
         fun checkAppListExists(c:Context): Boolean {

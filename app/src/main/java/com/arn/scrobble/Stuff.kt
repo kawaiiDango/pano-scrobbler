@@ -340,6 +340,17 @@ object Stuff {
         return bitmap
     }
 
+    val isMiui: Boolean
+        get() {
+            return try {
+                (Class.forName("android.os.SystemProperties")
+                        .getMethod("get", String::class.java)
+                        .invoke(null, "ro.miui.ui.version.code") as String? ?: "") != ""
+            } catch (e: ClassNotFoundException) {
+                false
+            }
+        }
+
     fun nowPlayingAnim(np: ImageView, isNowPlaying:Boolean){
         if (isNowPlaying) {
             np.visibility = View.VISIBLE

@@ -507,7 +507,7 @@ class NLService : NotificationListenerService() {
                     context.getString(R.string.channel_new_app), NotificationManager.IMPORTANCE_LOW))
         }
 
-        fun ensureServiceRunning(context:Context) {
+        fun ensureServiceRunning(context:Context):Boolean {
             val serviceComponent = ComponentName(context, NLService::class.java)
             Stuff.log("ensureServiceRunning serviceComponent: " + serviceComponent)
             val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -515,28 +515,30 @@ class NLService : NotificationListenerService() {
             val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
             if (runningServices == null) {
                 Stuff.log("ensureServiceRunning() runningServices is NULL")
-                return
+                return true //just assume true for now. this throws SecurityException, might not work in future
             }
             for (service in runningServices) {
                 if (service.service == serviceComponent) {
                     Stuff.log("ensureServiceRunning service - pid: " + service.pid + ", currentPID: " +
                             Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
-                            service.clientCount + ", clientLabel: " +
+                            service.clientCount + " process:" + service.process + ", clientLabel: " +
                             if (service.clientLabel == 0) "0" else "(" + context.resources.getString(service.clientLabel) + ")")
-                    if (service.pid == Process.myPid() /*&& service.clientCount > 0 && !TextUtils.isEmpty(service.clientPackage)*/) {
+                    if (service.process == BuildConfig.APPLICATION_ID + ":bgScrobbler" /*&& service.clientCount > 0 */) {
                         serviceRunning = true
+                        break
                     }
                 }
             }
             if (serviceRunning) {
                 Stuff.log("ensureServiceRunning: service is running")
-                return
+                return true
             }
             Stuff.log("ensureServiceRunning: service not running, reviving...")
-            toggleNotificationListenerService(context)
+            toggleNLS(context)
+            return false
         }
 
-        private fun toggleNotificationListenerService(context:Context) {
+        private fun toggleNLS(context:Context) {
             Stuff.log("toggleNotificationListenerService() called")
             val thisComponent = ComponentName(context, NLService::class.java)
             val pm = context.packageManager

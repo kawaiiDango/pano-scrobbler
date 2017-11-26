@@ -25,13 +25,7 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         dpi = am.launcherLargeIconDensity
         pm = context.packageManager
-        isMIUI = try {
-            (Class.forName("android.os.SystemProperties")
-                    .getMethod("get", String::class.java)
-                    .invoke(null, "ro.miui.ui.version.code") as String? ?: "") != ""
-        } catch (e:ClassNotFoundException){
-            false
-        }
+        isMIUI = Stuff.isMiui
     }
 
     override fun canHandleRequest(data: Request): Boolean {

@@ -44,6 +44,8 @@
     </plurals>
     <string name="please_authorize">Please Authorize LastFM</string>
     <string name="friends">Friends</string>
+    <string name="grant_autostart">Enable autostart</string>
+    <string name="grant_autostart_desc">Needed on MIUI devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>
     <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
     <string name="rate_msg">Enjoying this app?</string>

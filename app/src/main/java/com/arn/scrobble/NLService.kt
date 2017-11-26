@@ -12,7 +12,6 @@ import android.os.Message
 import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import com.arn.scrobble.receivers.LegacyMetaReceiver
-import android.graphics.PorterDuff
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
@@ -25,6 +24,7 @@ import android.os.Process
 import android.app.ActivityManager
 import android.util.LruCache
 import com.squareup.leakcanary.LeakCanary
+import org.codechimp.apprater.AppRater
 
 
 class NLService : NotificationListenerService() {
@@ -34,8 +34,10 @@ class NLService : NotificationListenerService() {
     private var bReceiver: LegacyMetaReceiver? = null
 
     override fun onCreate() {
-        if (!LeakCanary.isInAnalyzerProcess(this))
-            LeakCanary.install(application)
+        if (BuildConfig.DEBUG)
+            Stuff.toast(applicationContext,getString(R.string.pref_master_on))
+//        if (!LeakCanary.isInAnalyzerProcess(this))
+//            LeakCanary.install(application)
         super.onCreate()
         Stuff.log("onCreate")
         // lollipop and mm bug
@@ -302,6 +304,8 @@ class NLService : NotificationListenerService() {
                         if (n != null)
                             nm.notify(NOTI_ID_APP, 0, n)
                     }
+                    //for rating
+                    AppRater.incrementScrobbleCount(applicationContext)
                 } else {
                     notification(getString(R.string.parse_error), artist + " " + title, getString(R.string.not_scrobling), NOTI_ERR_ICON)
                 }
@@ -336,7 +340,7 @@ class NLService : NotificationListenerService() {
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
             val nb = NotificationCompat.Builder(applicationContext, NOTI_ID_SCR)
-                    .setContentTitle(getString(R.string.new_player)+ appName)
+                    .setContentTitle(getString(R.string.new_player, appName))
                     .setContentText(getString(R.string.new_player_prompt))
                     .setSmallIcon(R.drawable.vd_appquestion_noti)
                     .setColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))

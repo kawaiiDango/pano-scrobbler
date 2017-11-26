@@ -5,15 +5,17 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.util.Log
 import android.view.View
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 
 object AppRater {
     // Preference Constants
-    private val PREF_NAME = "apprater"
-    private val PREF_LAUNCH_COUNT = "launch_count"
+    val PREF_NAME = "apprater"
+    val SCROBBLE_COUNT = "scrobble_count"
     private val PREF_FIRST_LAUNCHED = "date_firstlaunch"
     private val PREF_DONT_SHOW_AGAIN = "dontshowagain"
     private val PREF_REMIND_LATER = "remindmelater"
@@ -21,9 +23,9 @@ object AppRater {
     private val PREF_APP_VERSION_CODE = "app_version_code"
 
     private val DAYS_UNTIL_PROMPT = 3
-    private val LAUNCHES_UNTIL_PROMPT = 7
+    val MIN_SCROBBLES_UNTIL_PROMPT = 15
     private var DAYS_UNTIL_PROMPT_FOR_REMIND_LATER = 3
-    private var LAUNCHES_UNTIL_PROMPT_FOR_REMIND_LATER = 7
+    private var LAUNCHES_UNTIL_PROMPT_FOR_REMIND_LATER = 15
     private var hideNoButton: Boolean = false
     private var isVersionNameCheckEnabled: Boolean = false
     private var isVersionCodeCheckEnabled: Boolean = false
@@ -122,25 +124,24 @@ object AppRater {
      *
      * @param context
      * @param daysUntilPrompt
-     * @param launchesUntilPrompt
+     * @param scrobblesUntilPrompt
      */
-    @JvmOverloads
-    fun app_launched(context: Context, daysUntilPrompt: Int = DAYS_UNTIL_PROMPT, launchesUntilPrompt: Int = LAUNCHES_UNTIL_PROMPT) {
+    fun app_launched(context: Context, daysUntilPrompt: Int = DAYS_UNTIL_PROMPT,
+                     scrobblesUntilPrompt: Int = MIN_SCROBBLES_UNTIL_PROMPT) {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         val editor = prefs.edit()
-        val ratingInfo = ApplicationRatingInfo.createApplicationInfo(context)
         val days: Int
-        val launches: Int
+        val scrobbles: Int
         if (isVersionNameCheckEnabled) {
-            if (ratingInfo.applicationVersionName != prefs.getString(PREF_APP_VERSION_NAME, "none")) {
-                editor.putString(PREF_APP_VERSION_NAME, ratingInfo.applicationVersionName)
+            if (BuildConfig.VERSION_NAME != prefs.getString(PREF_APP_VERSION_NAME, "none")) {
+                editor.putString(PREF_APP_VERSION_NAME, BuildConfig.VERSION_NAME)
                 resetData(context)
                 commitOrApply(editor)
             }
         }
         if (isVersionCodeCheckEnabled) {
-            if (ratingInfo.applicationVersionCode != prefs.getInt(PREF_APP_VERSION_CODE, -1)) {
-                editor.putInt(PREF_APP_VERSION_CODE, ratingInfo.applicationVersionCode)
+            if (BuildConfig.VERSION_CODE != prefs.getInt(PREF_APP_VERSION_CODE, -1)) {
+                editor.putInt(PREF_APP_VERSION_CODE, BuildConfig.VERSION_CODE)
                 resetData(context)
                 commitOrApply(editor)
             }
@@ -149,24 +150,23 @@ object AppRater {
             return
         } else if (prefs.getBoolean(PREF_REMIND_LATER, false)) {
             days = DAYS_UNTIL_PROMPT_FOR_REMIND_LATER
-            launches = LAUNCHES_UNTIL_PROMPT_FOR_REMIND_LATER
+            scrobbles = LAUNCHES_UNTIL_PROMPT_FOR_REMIND_LATER
         } else {
             days = daysUntilPrompt
-            launches = launchesUntilPrompt
+            scrobbles = scrobblesUntilPrompt
         }
 
-        // Increment launch counter
-        val launch_count = prefs.getLong(PREF_LAUNCH_COUNT, 0) + 1
-        editor.putLong(PREF_LAUNCH_COUNT, launch_count)
+        val scrobble_count = PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt(SCROBBLE_COUNT, 0)
         // Get date of first launch
         var date_firstLaunch: Long? = prefs.getLong(PREF_FIRST_LAUNCHED, 0)
-        if (date_firstLaunch == 0.toLong()) {
+        if (date_firstLaunch == 0L) {
             date_firstLaunch = System.currentTimeMillis()
             editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch)
         }
-        // Wait for at least the number of launches or the number of days used
+        // Wait for at least the number of scrobbles && the number of days used
         // until prompt
-        if (launch_count >= launches || System.currentTimeMillis() >= date_firstLaunch!! + days * 24 * 60 * 60 * 1000) {
+        if (scrobble_count >= scrobbles && System.currentTimeMillis() >= date_firstLaunch!! + days * 24 * 60 * 60 * 1000) {
             showRateSnackbar(context, editor)
         }
         commitOrApply(editor)
@@ -221,7 +221,6 @@ object AppRater {
                             if (editor != null) {
                                 val date_firstLaunch = System.currentTimeMillis()
                                 editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch)
-                                editor.putLong(PREF_LAUNCH_COUNT, 0)
                                 editor.putBoolean(PREF_REMIND_LATER, true)
                                 editor.putBoolean(PREF_DONT_SHOW_AGAIN, false)
                                 commitOrApply(editor)
@@ -251,10 +250,20 @@ object AppRater {
         val editor = prefs.edit()
         editor.putBoolean(PREF_DONT_SHOW_AGAIN, false)
         editor.putBoolean(PREF_REMIND_LATER, false)
-        editor.putLong(PREF_LAUNCH_COUNT, 0)
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putLong(SCROBBLE_COUNT, 0)
+                .apply()
         val date_firstLaunch = System.currentTimeMillis()
         editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch)
         commitOrApply(editor)
+    }
+
+    fun incrementScrobbleCount(context: Context) {
+        val defPref = PreferenceManager.getDefaultSharedPreferences(context)
+        val scrobbles = defPref.getInt(SCROBBLE_COUNT, 0)
+        if (scrobbles < AppRater.MIN_SCROBBLES_UNTIL_PROMPT)
+            defPref.edit().putInt(SCROBBLE_COUNT, scrobbles + 1).apply()
     }
 }
 /**

@@ -21,10 +21,10 @@ public class FixedLineTextView extends android.support.v7.widget.AppCompatTextVi
     /**
      * Original textSize in PX
      */
-    protected Float mOriginalSize;
-    protected int mOriginalHeight = 0;
+    private Float mOriginalSize;
+    private int mOriginalHeight = 0;
     // Minimum text size for this text view
-    public static final float MIN_TEXT_SIZE = 30;
+    private static final float MIN_TEXT_SIZE = 30;
 
     public FixedLineTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);

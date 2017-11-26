@@ -62,7 +62,8 @@
         </provider>
 
         <receiver android:name=".receivers.LegacyMetaReceiver" android:exported="true"
-            android:process=":bgScrobbler">
+                  android:process=":bgScrobbler"
+                  android:permission="">
             <!--only for N (25) and below-->
             <intent-filter>
                 <action android:name="com.android.music.metachanged"/>

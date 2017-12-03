@@ -5,7 +5,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp">
-
+<!--
     <View
         android:id="@+id/friends_bg"
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="#00000000"/>
-
+-->
     <com.arn.scrobble.ui.FixedLineTextView
         android:id="@+id/friends_name"
         android:layout_width="wrap_content"
@@ -30,18 +30,46 @@
         android:layout_below="@+id/friends_name"
         android:layout_centerHorizontal="true"
         android:elevation="20dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_placeholder_user"/>
+
+    <LinearLayout
+        android:id="@+id/friends_links"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/friends_pic"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <Button
+            android:id="@+id/friends_profile"
+            style="@style/friendsLinks"
+            android:drawableTop="@drawable/vd_open_in_new"
+            android:text="@string/user_profile"/>
+
+        <Button
+            android:id="@+id/friends_loved"
+            style="@style/friendsLinks"
+            android:drawableTop="@drawable/vd_heart"
+            android:text="@string/loved"/>
+
+        <Button
+            android:id="@+id/friends_chart"
+            style="@style/friendsLinks"
+            android:drawableTop="@drawable/vd_bar_chart"
+            android:text="@string/last_week"/>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/friends_track"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/friends_pic"
-        android:background="?attr/selectableItemBackground">
+        android:layout_below="@id/friends_links"
+        android:background="?android:attr/selectableItemBackground">
 
         <View
             android:id="@+id/friends_arrow"
@@ -51,7 +79,7 @@
             android:alpha="0.5"
             android:background="@drawable/shape_triangle_corner"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="false"/>
 
         <LinearLayout
             android:layout_width="match_parent"

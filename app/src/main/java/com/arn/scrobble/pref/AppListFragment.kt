@@ -67,7 +67,7 @@ class AppListFragment : Fragment() {
         Thread({
             Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity.packageManager))
             app_list?.post({
-                val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+                val prefs = PreferenceManager.getDefaultSharedPreferences(activity?: return@post)
                 val firstRun = prefs.getBoolean(Stuff.FIRST_RUN_PREF, true)
                 if (firstRun){
                     for(i in 0 until app_list.count)
@@ -101,12 +101,16 @@ class AppListFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
         if (app_list != null) {
             val wSet = mutableSetOf<String>()
-            val bSet = prefs.getStringSet(Stuff.APP_BLACKLIST, mutableSetOf())
+
             app_list.checkedItemIds.forEach {
                 val packageName = (app_list.adapter.getItem(it.toInt()) as ApplicationInfo).packageName ?: return@forEach
                 wSet.add(packageName)
             }
-            bSet.removeAll(wSet)
+
+            //BL = old WL - new WL
+            val bSet = prefs.getStringSet(Stuff.APP_BLACKLIST, mutableSetOf()) +
+                    prefs.getStringSet(Stuff.APP_WHITELIST, mutableSetOf()).minus(wSet) -
+                    wSet
             prefs.edit()
                     .putStringSet(Stuff.APP_WHITELIST, wSet)
                     .putStringSet(Stuff.APP_BLACKLIST,  bSet)

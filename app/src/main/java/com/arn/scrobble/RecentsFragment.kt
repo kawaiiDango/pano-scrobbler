@@ -121,7 +121,7 @@ class RecentsFragment : Fragment() {
         super.onPause()
         ((recents_list.adapter as HeaderViewListAdapter?)
                         ?.wrappedAdapter as RecentsAdapter)
-                .handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
+                .handler.removeMessages(Stuff.CANCELLABLE_MSG)
     }
 
     override fun onResume() {
@@ -155,7 +155,7 @@ class RecentsFragment : Fragment() {
             val i = Intent(Intent.ACTION_SEND)
             i.type = "text/plain"
             i.putExtra(Intent.EXTRA_SUBJECT, shareText)
-            i.putExtra(Intent.EXTRA_TEXT, shareText + "\n" + getString(R.string.share_sig))
+            i.putExtra(Intent.EXTRA_TEXT, shareText + "\n" + getString(R.string.share_sig, getString(R.string.share_link)))
             startActivity(Intent.createChooser(i, getString(R.string.share_this_song)))
         }
     }

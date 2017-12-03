@@ -19,12 +19,15 @@
     <string name="video_players">Video Streaming Apps</string>
     <string name="other_apps">Other Apps</string>
     <string name="choose_apps">Choose Apps to scrobble</string>
-    <string name="choose_apps_desc">(Any app which plays named music, such as youtube, your browser, your chat app, etc, is supported)</string>
+    <string name="choose_apps_desc">(Any app which plays named music is supported)</string>
     <string name="max_apps_exceeded">Sorry, you cannot enable more than %1$d apps</string>
     <string name="offline">Offline. Data shown isn\'t fresh</string>
-    <string name="share_text">I was listening to\n %1$S, %2$S</string> <!-- %1= artist - track, %2= relative time, -->
-    <string name="share_sig">(Shared with %1$S)</string>
+    <string name="share_text">I was listening to\n %1$s, %2$s</string> <!-- %1= artist - track, %2= relative time, -->
+    <string name="share_sig">(Shared with %1$s )</string>
     <string name="share_this_song">Share this song</string>
+    <string name="hero_info">More info</string>
+    <string name="hero_youtube">Youtube</string>
+    <string name="user_profile">Profile</string>
     <string name="new_player">%s detected</string>
     <string name="new_player_prompt">Keep scrobbling and hide this msg?</string>
     <string name="no_scrobbles">No scrobbled songs yet…  😫 \n\n
@@ -47,6 +50,7 @@
     <string name="grant_autostart">Enable autostart</string>
     <string name="grant_autostart_desc">Needed on MIUI devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>
+    <string name="grant_notification_access_desc">Needed to retrieve music metadata even from non-music apps, such as youtube, your browser, your chat app</string>
     <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
     <string name="rate_msg">Enjoying this app?</string>
     <string name="rate_link">Rate it</string>

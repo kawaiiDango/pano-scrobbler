@@ -75,6 +75,7 @@ object Stuff {
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
+    const val CANCELLABLE_MSG = 9
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 15 * 1000
     const val META_WAIT: Long = 500
     const val DEBOUNCE_TIME = 100

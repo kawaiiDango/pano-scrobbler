@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="?android:attr/colorPrimary"
             app:elevation="@dimen/elevation_hero_btn"
             app:expandedTitleMarginEnd="@dimen/title_margin_right"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -63,7 +63,7 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
                 app:contentInsetEnd="70sp"
                 app:elevation="@dimen/elevation_hero_btn"
                 app:layout_collapseMode="pin"
@@ -84,8 +84,9 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="4dp"
-                    android:background="?attr/selectableItemBackground"
+                    android:background="?android:attr/selectableItemBackground"
                     android:scaleType="centerInside"
+                    android:tooltipText="@string/share_this_song"
                     app:srcCompat="@drawable/vd_share"/>
 
                 <ImageButton
@@ -93,9 +94,10 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="5dp"
-                    android:background="?attr/selectableItemBackground"
+                    android:background="?android:attr/selectableItemBackground"
                     android:padding="4dp"
                     android:scaleType="centerInside"
+                    android:tooltipText="@string/hero_info"
                     app:srcCompat="@drawable/vd_info"/>
 
                 <ImageButton
@@ -103,8 +105,9 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="15dp"
-                    android:background="?attr/selectableItemBackground"
+                    android:background="?android:attr/selectableItemBackground"
                     android:scaleType="centerInside"
+                    android:tooltipText="@string/hero_youtube"
                     app:srcCompat="@drawable/vd_youtube"/>
             </LinearLayout>
         </android.support.design.widget.CollapsingToolbarLayout>

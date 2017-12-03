@@ -9,7 +9,7 @@
                 <item
                     android:id="@+id/nav_last_week"
                     android:icon="@drawable/vd_bar_chart"
-                    android:title="Last.week"/>
+                    android:title="@string/last_week"/>
                 <item
                     android:id="@+id/nav_loved"
                     android:icon="@drawable/vd_heart"

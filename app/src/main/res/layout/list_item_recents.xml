@@ -86,7 +86,7 @@
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/recents_title"
         android:alpha="0.6"
-        android:background="?attr/selectableItemBackground"
+        android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:padding="15dp"
         app:srcCompat="@drawable/vd_play"/>

@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowContentTransitions">true</item>
         <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
     </style>
 
@@ -21,5 +22,33 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="friendsDialog">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <style name="firstThings">
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:background">@drawable/selector_first_things</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:elevation">@dimen/elevation_hero_btn</item>
+        <item name="android:outlineProvider">bounds</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:translationZ">@dimen/tz_hero_btn</item>
+    </style>
+
+    <style name="friendsLinks">
+        <item name="android:textSize">@dimen/button_caption</item>
+        <item name="android:drawableTint">@color/colorAccentLight</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 
 </resources>

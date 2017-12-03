@@ -26,18 +26,8 @@
 
     <LinearLayout
         android:id="@+id/first_things_0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@drawable/selector_first_things"
-        android:clickable="true"
-        android:clipToPadding="false"
-        android:elevation="@dimen/elevation_hero_btn"
-        android:focusable="true"
+        style="@style/firstThings"
         android:orientation="horizontal"
-        android:outlineProvider="bounds"
-        android:stateListAnimator="@null"
-        android:translationZ="@dimen/tz_hero_btn"
         android:visibility="gone"
         tools:visibility="visible">
         <!--android:background="?attr/selectableItemBackground"-->
@@ -72,22 +62,11 @@
                 android:text="@string/grant_autostart_desc"/>
         </LinearLayout>
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/first_things_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@drawable/selector_first_things"
-        android:clickable="true"
-        android:clipToPadding="false"
-        android:elevation="@dimen/elevation_hero_btn"
-        android:focusable="true"
-        android:orientation="horizontal"
-        android:outlineProvider="bounds"
-        android:stateListAnimator="@null"
-        android:translationZ="@dimen/tz_hero_btn">
-        <!--android:background="?attr/selectableItemBackground"-->
+        style="@style/firstThings"
+        android:orientation="horizontal">
+
 
         <TextView
             android:layout_width="match_parent"
@@ -97,28 +76,35 @@
             android:text="1."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="match_parent"
             android:layout_weight="2"
-            android:gravity="center_vertical"
-            android:text="@string/grant_notification_access"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/grant_notification_access"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:layout_weight="1"
+                android:text="@string/grant_notification_access_desc"/>
+        </LinearLayout>
+
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/first_things_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@drawable/selector_first_things"
-        android:clickable="true"
-        android:clipToPadding="false"
-        android:elevation="@dimen/elevation_hero_btn"
-        android:focusable="true"
-        android:orientation="horizontal"
-        android:outlineProvider="bounds"
-        android:translationZ="@dimen/tz_hero_btn">
+        style="@style/firstThings"
+        android:orientation="horizontal">
 
 
         <TextView
@@ -140,17 +126,9 @@
 
     <LinearLayout
         android:id="@+id/first_things_3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@drawable/selector_first_things"
-        android:clickable="true"
-        android:elevation="@dimen/elevation_hero_btn"
-        android:focusable="true"
-        android:orientation="horizontal"
-        android:outlineProvider="bounds"
-        android:translationZ="@dimen/tz_hero_btn">
-
+        style="@style/firstThings"
+        android:orientation="horizontal">
+        <!--android:background="?attr/selectableItemBackground"-->
 
         <TextView
             android:layout_width="match_parent"
@@ -160,28 +138,13 @@
             android:text="3."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="80dp"
             android:layout_weight="2"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="@string/choose_apps"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
-                android:layout_weight="1"
-                android:text="@string/choose_apps_desc"/>
-        </LinearLayout>
-
+            android:gravity="center_vertical"
+            android:text="@string/choose_apps"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
     </LinearLayout>
 
 </LinearLayout>

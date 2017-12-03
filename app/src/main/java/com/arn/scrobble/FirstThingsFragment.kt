@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.content_first_things.*
  * Created by arn on 06/09/2017.
  */
 class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChangeListener  {
-    private var stepsNeeded = 3
+    private var stepsNeeded = 4
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.content_first_things, container, false)
@@ -90,12 +90,14 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
     }
 
     private fun checkAll(skipChecks:Boolean = false){
-        stepsNeeded = if (Stuff.isMiui) 4 else 3
+        stepsNeeded = 4
         if (checkNLAccess(activity)) {
             markAsDone(R.id.first_things_1)
-            Stuff.log("hehe "+NLService.ensureServiceRunning(activity))
-            if(NLService.ensureServiceRunning(activity)) // needed for cases when a miui user enables autostart AFTER granting NLS permission
+            if(Stuff.isMiui && NLService.ensureServiceRunning(activity))
+                // needed for cases when a miui user enables autostart AFTER granting NLS permission
                 markAsDone(R.id.first_things_0)
+            else
+                stepsNeeded --
         }
         if (checkAuthTokenExists(activity))
             markAsDone(R.id.first_things_2)

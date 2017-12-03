@@ -163,7 +163,7 @@ class RecentsAdapter
             if ((page == 1 && list.firstVisiblePosition < 5) || page > 1)
                 LFMRequester(context, handler).execute(Stuff.GET_RECENTS, page.toString())
             else {
-                val msg = handler.obtainMessage(0, Pair(Stuff.RELOAD_LIST_DATA, ""))
+                val msg = handler.obtainMessage(Stuff.CANCELLABLE_MSG, Pair(Stuff.RELOAD_LIST_DATA, ""))
                 handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             }
             if (count == 0 || page > 1)
@@ -339,10 +339,10 @@ class RecentsAdapter
         var selectedPos = 2
         refresh.isRefreshing = false
         totalPages = res.totalPages
-        handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
+        handler.removeMessages(Stuff.CANCELLABLE_MSG)
         if (page == 1) {
             clear()
-            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.RELOAD_LIST_DATA, ""))
+            val msg = handler.obtainMessage(Stuff.CANCELLABLE_MSG, Pair(Stuff.RELOAD_LIST_DATA, ""))
             handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             if (res.isEmpty){
                 list.header_text.text = context.getString(R.string.no_scrobbles)

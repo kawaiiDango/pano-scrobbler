@@ -10,7 +10,6 @@ import android.support.v7.graphics.Palette
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.GridView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
@@ -39,7 +38,7 @@ class FriendsAdapter
         setNotifyOnChange(false)
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var view : View? = convertView
         val activity = context as Activity
         if (view == null) {
@@ -49,7 +48,7 @@ class FriendsAdapter
         }
         // object item based on the position
         val user = getItem(position) ?: return view
-        parent as GridView
+//        parent as GridView
 
         view.friends_name.text = user.realname ?: user.name
 
@@ -77,7 +76,7 @@ class FriendsAdapter
             }
         } else {
             view.friends_track.visibility = View.INVISIBLE
-            val msg = handler.obtainMessage(0, Pair(Stuff.NEED_FRIENDS_RECENTS, position))
+            val msg = handler.obtainMessage(Stuff.CANCELLABLE_MSG, Pair(Stuff.NEED_FRIENDS_RECENTS, position))
             handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
         }
 
@@ -118,7 +117,7 @@ class FriendsAdapter
             if ((page == 1 && grid.firstVisiblePosition < 15) || page > 1)
                 LFMRequester(context, handler).execute(Stuff.GET_FRIENDS, page.toString())
             else {
-                val msg = handler.obtainMessage(0, Pair(Stuff.RELOAD_LIST_DATA, ""))
+                val msg = handler.obtainMessage(Stuff.CANCELLABLE_MSG, Pair(Stuff.RELOAD_LIST_DATA, ""))
                 handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             }
             if (count == 0 || page > 1)
@@ -135,7 +134,7 @@ class FriendsAdapter
             return
         refresh.isRefreshing = false
         totalPages = res.totalPages
-        handler.removeMessages(Stuff.RECENTS_REFRESH_INTERVAL.toInt())
+        handler.removeMessages(Stuff.CANCELLABLE_MSG)
 
         val sortedRes = res.pageResults.sortedByDescending {
             if (it?.playcount == null || it.playcount == 0) //put users with 0 plays at the end
@@ -150,14 +149,14 @@ class FriendsAdapter
                 if (getItem(i).name == sortedRes[j].name &&
                         sortedRes[j].recentTrack == null && getItem(i).recentTrack != null &&
                         (i >= grid.firstVisiblePosition && i <= grid.lastVisiblePosition)) {
-                    handler.obtainMessage(0, Pair(Stuff.NEED_FRIENDS_RECENTS, i)).sendToTarget()
+                    handler.obtainMessage(Stuff.CANCELLABLE_MSG, Pair(Stuff.NEED_FRIENDS_RECENTS, i)).sendToTarget()
                     sortedRes[j].recentTrack = getItem(i).recentTrack
                 }
             }
 
         if (page == 1) {
             clear()
-            val msg = handler.obtainMessage(Stuff.RECENTS_REFRESH_INTERVAL.toInt(), Pair(Stuff.RELOAD_LIST_DATA, ""))
+            val msg = handler.obtainMessage(Stuff.CANCELLABLE_MSG, Pair(Stuff.RELOAD_LIST_DATA, ""))
             handler.sendMessageDelayed(msg, Stuff.RECENTS_REFRESH_INTERVAL)
             val header = layout.header_text
             if (res.isEmpty){

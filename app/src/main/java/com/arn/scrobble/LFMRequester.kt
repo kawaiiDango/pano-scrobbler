@@ -166,7 +166,7 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                                 scrobbleResult = Track.updateNowPlaying(scrobbleData, session)
                             } else {
                                 (handler as NLService.ScrobbleHandler).remove(hash)
-                                handler.notification(context.getString(R.string.invalid_artist), s[1], context.getString(R.string.not_scrobling), NLService.NOTI_ERR_ICON)
+                                handler.notification(s[1], context.getString(R.string.invalid_artist), context.getString(R.string.not_scrobling), NLService.NOTI_ERR_ICON)
                             }
                         }
                     }
@@ -190,13 +190,13 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                     if (scrobbleResult?.isSuccessful == false) {
 
                         (handler as NLService.ScrobbleHandler)
-                                .notification(context.getString(R.string.network_error), s[1] + " " + s[3], context.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
+                                .notification(s[1] + " " + s[3], context.getString(R.string.network_error), context.getString(R.string.not_scrobling), android.R.drawable.stat_notify_error)
                     } else if(scrobbleResult?.isSuccessful == true && scrobbleResult.isIgnored) {
                         val hash = s[1].hashCode() + s[3].hashCode()
                         val handler = handler as NLService.ScrobbleHandler
                         handler.remove(hash)
                         val artistTrunc = if (s[1].length > 12) s[1].substring(0, 12) else s[1]
-                        handler.notification(s[3], context.getString(R.string.scrobble_ignored, artistTrunc), context.getString(R.string.not_scrobling), R.drawable.ic_transparent)
+                        handler.notification(s[3], context.getString(R.string.scrobble_ignored, artistTrunc), context.getString(R.string.not_scrobling), NLService.NOTI_ERR_ICON)
 
                     }
                 } catch (e: NullPointerException) {

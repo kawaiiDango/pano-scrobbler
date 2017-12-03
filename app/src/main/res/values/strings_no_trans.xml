@@ -11,4 +11,5 @@
     <string name="unscrobble">Unscrobble</string>
     <string name="love">Love it</string>
     <string name="unlove">Unlove it</string>
+    <string name="last_week">Last.week</string>
 </resources>

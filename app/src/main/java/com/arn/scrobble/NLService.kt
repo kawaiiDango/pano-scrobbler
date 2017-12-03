@@ -104,7 +104,7 @@ class NLService : NotificationListenerService() {
             // Media controller needs notification listener service
             // permissions to be granted.
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) //ok this works
             bReceiver = LegacyMetaReceiver.regIntents(applicationContext)
         initChannels(applicationContext)
     }
@@ -117,13 +117,17 @@ class NLService : NotificationListenerService() {
             Stuff.log("nlservicereciver wasn't registered")
         }
         if (sessListener != null) {
-            (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
+            (getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
                     .removeOnActiveSessionsChangedListener(sessListener)
             sessListener = null
         }
         if (bReceiver != null) {
-            unregisterReceiver(bReceiver)
-            bReceiver = null
+            try {
+                unregisterReceiver(bReceiver)
+                bReceiver = null
+            } catch(e:IllegalArgumentException) {
+                Stuff.log("LegacyMetaReceiver wasn't registered")
+            }
         }
     }
 
@@ -307,7 +311,7 @@ class NLService : NotificationListenerService() {
                     //for rating
                     AppRater.incrementScrobbleCount(applicationContext)
                 } else {
-                    notification(getString(R.string.parse_error), artist + " " + title, getString(R.string.not_scrobling), NOTI_ERR_ICON)
+                    notification(artist + " " + title, getString(R.string.parse_error), getString(R.string.not_scrobling), NOTI_ERR_ICON)
                 }
             }
             return hash
@@ -352,7 +356,7 @@ class NLService : NotificationListenerService() {
                     .setStyle(MediaStyleMod().setShowActionsInCompactView(0,1))
             return buildMediaStyleMod(nb)
         }
-        fun notification(title1: String, title2: String?, state: String, iconId: Int, love: Boolean = true) {
+        fun notification(title1: String, title2: String?, state: String, iconId: Int, lovable: Boolean = true) {
             var title2 = title2
             var iconId = iconId
             if (!pref.getBoolean("show_notifications", true))
@@ -370,7 +374,7 @@ class NLService : NotificationListenerService() {
                 title2 = ""
             }
 
-            val loveAction = if (love){
+            val loveAction = if (lovable){
                 val i = Intent(pLOVE)
                         .putExtra("artist", title1)
                         .putExtra("title", title2)
@@ -404,10 +408,12 @@ class NLService : NotificationListenerService() {
                     .setAutoCancel(true)
                     .setShowWhen(false)
                     .setPriority(if (iconId == NOTI_ERR_ICON) Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || state == getString(R.string.not_scrobling)){
                 nb.setContentTitle(title2)
                         .setContentText(title1)
-                        .setSubText(state)
+                if (state != getString(R.string.not_scrobling))
+                    nb.setSubText(state)
             } else {
                 nb.setContentTitle(state)
                         .setContentText(title2)

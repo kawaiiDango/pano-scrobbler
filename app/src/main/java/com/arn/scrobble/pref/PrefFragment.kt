@@ -17,9 +17,19 @@ class PrefFragment : PreferenceFragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences)
+
+        val appList = findPreference("app_whitelist")
+        appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            fragmentManager.beginTransaction()
+                    .remove(this)
+                    .add(R.id.frame, AppListFragment())
+                    .addToBackStack(null)
+                    .commit()
+            true
+        }
+//                appList.onPreferenceClickListener
+
         val reauth = findPreference("reauth")
         reauth.title = reauth.title.toString() +": " + preferenceManager.sharedPreferences.getString("username", "nobody")
         reauth.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -29,21 +39,6 @@ class PrefFragment : PreferenceFragment(){
                     .remove("sesskey")
                     .apply()
             Stuff.openInBrowser(Stuff.AUTH_CB_URL, activity)
-            true
-        }
-
-        var listOfApps = ""
-        preferenceManager.sharedPreferences
-                .getStringSet(Stuff.APP_WHITELIST, setOf())
-                .forEach { listOfApps += it+", " }
-
-        val appList = findPreference("open_app_list")
-        appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            fragmentManager.beginTransaction()
-                    .remove(this)
-                    .add(R.id.frame, AppListFragment())
-                    .addToBackStack(null)
-                    .commit()
             true
         }
 

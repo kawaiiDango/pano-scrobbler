@@ -31,11 +31,9 @@
             android:title="@string/pref_enabled_apps"
             android:key="app_whitelist"/>
         <Preference
-            android:defaultValue="true"
-            android:key="open_app_list"
-            android:icon="@drawable/vd_add"
+            android:selectable="false"
             android:summary="@string/pref_enabled_apps_summary"
-            android:title="@string/pref_enabled_apps_title"/>
+            />
 
         <SwitchPreference
             android:defaultValue="true"

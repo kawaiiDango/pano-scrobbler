@@ -56,8 +56,10 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                 val hash = artist.hashCode() + track.hashCode()
                 try{
                     NLService.handler.postDelayed({
-                        if (SessListener.numSessions ==0 || System.currentTimeMillis() - SessListener.lastStateChangedTime < Stuff.META_WAIT*2)
+                        if (SessListener.numSessions == 0 || System.currentTimeMillis() - SessListener.lastStateChangedTime < Stuff.META_WAIT*4)
                             return@postDelayed
+
+//                        Stuff.log("numSessions: "+SessListener.numSessions+ " timeDiff: "+ (System.currentTimeMillis() - SessListener.lastStateChangedTime))
 
                         if (isPlaying && !NLService.handler.hasMessages(hash)) {
                             SessListener.lastHash = NLService.handler.scrobble(artist, album, track, duration)

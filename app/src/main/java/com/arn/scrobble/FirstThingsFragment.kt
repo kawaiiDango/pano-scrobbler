@@ -147,7 +147,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         }
         fun checkAppListExists(c:Context): Boolean {
             val set = PreferenceManager.getDefaultSharedPreferences(c)
-                    .getStringSet(Stuff.APP_WHITELIST, setOf())
+                    .getStringSet(Stuff.PREF_WHITELIST, setOf())
             return set.size > 0
         }
     }

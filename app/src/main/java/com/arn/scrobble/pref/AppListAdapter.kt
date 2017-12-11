@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.list_item_app.view.*
 class AppListAdapter
 (c: Context, private val itemResourceId:Int, private val headerResourceId:Int) : ArrayAdapter<ApplicationInfo>(c, itemResourceId) {
     private val sectionHeaders = mutableMapOf<Int,String>()
-    private val prefsSet = PreferenceManager.getDefaultSharedPreferences(context).getStringSet(Stuff.APP_WHITELIST, setOf())
+    private val prefsSet = PreferenceManager.getDefaultSharedPreferences(context).getStringSet(Stuff.PREF_WHITELIST, setOf())
     private var list = (c as Activity).app_list
     private var picasso: Picasso = Picasso.Builder(context)
             .addRequestHandler(AppIconRequestHandler(context))

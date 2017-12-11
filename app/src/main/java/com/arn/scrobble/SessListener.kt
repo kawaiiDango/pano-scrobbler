@@ -1,6 +1,5 @@
 package com.arn.scrobble
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -10,7 +9,6 @@ import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Handler
 import android.os.Message
-import android.preference.PreferenceManager
 import android.util.Pair
 
 /**
@@ -25,8 +23,8 @@ class SessListener internal constructor(private val pref: SharedPreferences, pri
         val tokens = mutableSetOf<MediaSession.Token>()
         if (pref.getBoolean("master", true) && controllers != null) {
             for (controller in controllers) {
-                val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(controller.packageName)
-                val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(controller.packageName)
+                val isWhitelisted = pref.getStringSet(Stuff.PREF_WHITELIST, setOf()).contains(controller.packageName)
+                val isBlacklisted = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf()).contains(controller.packageName)
                 if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, true) && !isBlacklisted)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!mControllers.containsKey(controller.sessionToken)) {
@@ -129,8 +127,8 @@ class SessListener internal constructor(private val pref: SharedPreferences, pri
         }
 
         fun scrobble(artist: String, album: String, title: String, duration: Long) {
-            val isWhitelisted = pref.getStringSet(Stuff.APP_WHITELIST, setOf()).contains(packageName)
-            val isBlacklisted = pref.getStringSet(Stuff.APP_BLACKLIST, setOf()).contains(packageName)
+            val isWhitelisted = pref.getStringSet(Stuff.PREF_WHITELIST, setOf()).contains(packageName)
+            val isBlacklisted = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf()).contains(packageName)
             val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
 
             if (isIgnoreArtistMeta)

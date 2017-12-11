@@ -63,6 +63,12 @@ class AppListFragment : Fragment() {
         app_list_done.setOnClickListener {
             fragmentManager.popBackStack()
         }
+        app_list_done.setOnLongClickListener {
+            PreferenceManager.getDefaultSharedPreferences(activity?: return@setOnLongClickListener false )
+                    .edit().putStringSet(Stuff.PREF_BLACKLIST, setOf()).apply()
+            Stuff.toast(activity, "Cleared blacklist")
+            true
+        }
         val otherApps = getAppList(adapter)
         Thread({
             Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity.packageManager))
@@ -108,12 +114,12 @@ class AppListFragment : Fragment() {
             }
 
             //BL = old WL - new WL
-            val bSet = prefs.getStringSet(Stuff.APP_BLACKLIST, mutableSetOf()) +
-                    prefs.getStringSet(Stuff.APP_WHITELIST, mutableSetOf()).minus(wSet) -
+            val bSet = prefs.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf()) +
+                    prefs.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf()).minus(wSet) -
                     wSet
             prefs.edit()
-                    .putStringSet(Stuff.APP_WHITELIST, wSet)
-                    .putStringSet(Stuff.APP_BLACKLIST,  bSet)
+                    .putStringSet(Stuff.PREF_WHITELIST, wSet)
+                    .putStringSet(Stuff.PREF_BLACKLIST,  bSet)
                     .apply()
         }
     }

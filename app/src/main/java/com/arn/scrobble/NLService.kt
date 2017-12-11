@@ -23,7 +23,6 @@ import android.content.ComponentName
 import android.os.Process
 import android.app.ActivityManager
 import android.util.LruCache
-import com.squareup.leakcanary.LeakCanary
 import org.codechimp.apprater.AppRater
 
 
@@ -208,8 +207,8 @@ class NLService : NotificationListenerService() {
                             intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0)
                 }
                 pWHITELIST, pBLACKLIST -> {
-                    val wSet = pref.getStringSet(Stuff.APP_WHITELIST, mutableSetOf())
-                    val bSet = pref.getStringSet(Stuff.APP_BLACKLIST, mutableSetOf())
+                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())
+                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())
 
                     if (intent.action == pWHITELIST)
                         wSet.add(intent.getStringExtra("packageName"))
@@ -219,8 +218,8 @@ class NLService : NotificationListenerService() {
                     }
                     bSet.removeAll(wSet) //whitelist takes over blacklist for conflicts
                     pref.edit()
-                            .putStringSet(Stuff.APP_WHITELIST, wSet)
-                            .putStringSet(Stuff.APP_BLACKLIST,  bSet)
+                            .putStringSet(Stuff.PREF_WHITELIST, wSet)
+                            .putStringSet(Stuff.PREF_BLACKLIST,  bSet)
                             .apply()
                     nm.cancel(NOTI_ID_APP, 0)
                 }

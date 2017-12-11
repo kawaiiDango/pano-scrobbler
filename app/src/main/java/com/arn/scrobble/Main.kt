@@ -29,6 +29,7 @@ import android.support.v7.graphics.Palette
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
+import android.transition.Fade
 import android.view.MenuItem
 import android.view.View
 import com.arn.scrobble.db.PendingScrobblesDb
@@ -61,6 +62,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         setSupportActionBar(toolbar)
 
         ctl.tag = " "
+
         pref = PreferenceManager.getDefaultSharedPreferences(this)
         app_bar.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
             var scrollRange = -1
@@ -85,7 +87,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         toggle = object: ActionBarDrawerToggle(
                 this, drawer_layout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
-            override fun onDrawerOpened(drawerView: View?) {
+            override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
                 this@Main.onDrawerOpened()
             }
@@ -136,6 +138,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         }
 //        test()
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+
     }
 
     fun test (){
@@ -230,8 +237,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val num = pref.getInt(Stuff.NUM_SCROBBLES_PREF, 0)
         nav_num_scrobbles.text = resources.getQuantityString(R.plurals.num_scrobbles, num, num)
 
-        nav_profile_link.setOnClickListener {
-            Stuff.openInBrowser("https://www.last.fm/user/$username", this)
+        nav_profile_link.setOnClickListener { v:View ->
+            Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
         }
         val picUrl = pref.getString(Stuff.PROFILE_PIC_PREF,"")
         if (picUrl != "")
@@ -265,23 +272,24 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val username = pref.getString(Stuff.USERNAME,"nobody")
         when (item.itemId) {
             R.id.nav_last_week -> {
-                Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this)
+                Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, frame, 10, 200)
             }
             R.id.nav_loved -> {
-                Stuff.openInBrowser("https://www.last.fm/user/$username/loved", this)
+                Stuff.openInBrowser("https://www.last.fm/user/$username/loved", this, frame, 10, 200)
             }
             R.id.nav_friends -> {
                 fragmentManager.beginTransaction()
-                        .replace(R.id.frame, FriendsFragment())
+                        .replace(R.id.frame, FriendsFragment(), Stuff.GET_FRIENDS)
 //                        .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
 //                        .add(R.id.frame, FriendsFragment())
                         .addToBackStack(null)
                         .commit()
             }
             R.id.nav_settings -> {
+                val prefFragment = PrefFragment()
+                prefFragment.enterTransition = Fade()
                 fragmentManager.beginTransaction()
-                        .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
-                        .add(R.id.frame, PrefFragment())
+                        .replace(R.id.frame, prefFragment)
                         .addToBackStack(null)
                         .commit()
             }
@@ -377,10 +385,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if(fragmentManager.backStackEntryCount >0 )
-            fragmentManager.popBackStack()
-        else
+        if(toggle.isDrawerIndicatorEnabled)
             drawer_layout.openDrawer(GravityCompat.START)
+        else
+            fragmentManager.popBackStack()
         return true
     }
 

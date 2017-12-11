@@ -111,17 +111,17 @@ class RecentsAdapter
         val heroTag = if (hero.tag is Track) hero.tag as Track else null
         if ( getItemId(position) == selectedId &&
                 (heroTag?.playedWhen != t.playedWhen || t.playedWhen == null )) {
-            activity.hero_info.setOnClickListener {
-                Stuff.openInBrowser(t.url, context)
+            activity.hero_info.setOnClickListener { v:View ->
+                Stuff.openInBrowser(t.url, context, v)
             }
-            activity.hero_yt.setOnClickListener {
+            activity.hero_yt.setOnClickListener { v:View ->
                 var ytUrl = "https://www.youtube.com/results?search_query="
                 try {
                     ytUrl += URLEncoder.encode(t.artist + " - " + t.name, "UTF-8")
                 } catch (e: UnsupportedEncodingException) {
                     Stuff.toast(context, context.getString(R.string.failed_encode_url))
                 }
-                Stuff.openInBrowser(ytUrl, context)
+                Stuff.openInBrowser(ytUrl, context, v)
             }
             if (heroTag?.getImageURL(ImageSize.MEDIUM) != imgUrl) {
                 setHero(t, imgUrl) //better set a blurred one
@@ -274,11 +274,11 @@ class RecentsAdapter
             ctl.setContentScrimColor(colorDomPrimary)
             ctl.setExpandedTitleTextColor(ColorStateList.valueOf(colorLightWhite))
 
-            if (Stuff.isDark(colorDomPrimary)) {
+            if (Stuff.isDark(colorDomPrimary))
                 ctl.setCollapsedTitleTextColor(colorLightWhite)
-            } else {
+            else
                 ctl.setCollapsedTitleTextColor(colorMutedDark)
-            }
+
             (graph.series[0] as  LineGraphSeries<*>).color = colorLightWhite
             graph.gridLabelRenderer.horizontalAxisTitleColor = colorLightWhite
             graph.gridLabelRenderer.verticalLabelsColor = colorLightWhite

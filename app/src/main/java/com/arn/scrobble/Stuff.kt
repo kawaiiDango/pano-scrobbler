@@ -1,6 +1,7 @@
 package com.arn.scrobble
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -62,12 +63,13 @@ object Stuff {
     const val FRIENDS_RECENTS_DELAY:Long = 1500
     const val HERO_INFO = "heroinfo"
     const val IS_ONLINE = "online"
-    const val APP_WHITELIST = "app_whitelist"
-    const val APP_BLACKLIST = "app_blacklist"
+    const val PREF_WHITELIST = "app_whitelist"
+    const val PREF_BLACKLIST = "app_blacklist"
     const val AUTO_DETECT_PREF = "auto_detect"
     const val FIRST_RUN_PREF = "first_run"
     const val GRAPH_DETAILS_PREF = "show_graph_details"
     const val OFFLINE_SCROBBLE_PREF = "offline_scrobble"
+    const val ARGS_SUMMARY_VIEW = "summary"
 
     const val SESS_KEY = "sesskey"
     const val USERNAME = "username"
@@ -96,13 +98,13 @@ object Stuff {
     )
 
     private val seperators = arrayOf(// in priority order
-            "—"," ‎– ", "–"," \\| ", " - ", "-", "「", "『", "ー", " • ",
+            "—"," ‎– ", "–", " - "," \\| ", "-", "「", "『", "ー", " • ",
 
             "【", "〖", "〔",
             "】", "〗","』", "」", "〕",
             // ":",
             " \"", " /")
-    private val unwantedSeperators = arrayOf("『", "』","「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕")
+    private val unwantedSeperators = arrayOf("『", "』","「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
 
     private val metaSpam = arrayOf("downloaded")
 
@@ -159,15 +161,7 @@ object Stuff {
                 .replace(" *\\[[^)]*] *".toRegex(), " ")
 
                 //remove HD info
-                .replace("\\W* " +
-                        "HD|" +
-                        "HQ|" +
-                        "4K|" +
-                        "MV|" +
-                        "Official Music Video|" +
-                        "Music Video|" +
-                        "Official Audio" +
-                        "( \\W*)?"
+                .replace("\\W* HD|HQ|4K|MV|Official Music Video|Music Video|Lyric Video|Official Audio( \\W*)?"
                                 .toRegex(RegexOption.IGNORE_CASE)
                 , " ")
 
@@ -253,10 +247,14 @@ object Stuff {
 
     fun setTitle(activity:Activity, strId: Int){
         val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.ctl)
-        ctl.title = activity.getString(strId)
+        if (strId == 0) { // = clear title
+            ctl.title = null
+        } else {
+            ctl.title = activity.getString(strId)
 //        ctl.tag = activity.getString(strId)
-        ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.colorPrimary))
-        ctl.setCollapsedTitleTextColor(Color.WHITE)
+            ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.colorPrimary))
+            ctl.setCollapsedTitleTextColor(Color.WHITE)
+        }
     }
 
     fun getMatColor(c: Context, typeColor: String, hash: Long = 0): Int {
@@ -370,7 +368,7 @@ object Stuff {
                     }
                 })
                 anim.start()
-            } else if (Build.VERSION.SDK_INT >= 23 && anim is AnimatedVectorDrawable && !anim.isRunning) {
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && anim is AnimatedVectorDrawable && !anim.isRunning) {
                 anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
                         if (drawable != null && drawable.isVisible)
@@ -388,8 +386,17 @@ object Stuff {
         swl.setProgressBackgroundColorSchemeResource(R.color.darkBg)
     }
 
-    fun openInBrowser(url:String, context:Context){
+    fun openInBrowser(url:String, context:Context, source:View? = null, startX:Int = 10, startY:Int = 10){
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        context.startActivity(browserIntent)
+        var bundle:Bundle? = null
+        if (source != null){
+            bundle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                ActivityOptions.makeClipRevealAnimation(source, startX,startY, 10, 10)
+                        .toBundle()
+            } else
+                ActivityOptions.makeScaleUpAnimation(source, startX, startY, 100, 100)
+                        .toBundle()
+        }
+        context.startActivity(browserIntent, bundle)
     }
 }

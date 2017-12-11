@@ -4,8 +4,8 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
+import android.transition.Fade
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 
@@ -20,10 +20,12 @@ class PrefFragment : PreferenceFragment(){
         addPreferencesFromResource(R.xml.preferences)
 
         val appList = findPreference("app_whitelist")
+        val appListFragment = AppListFragment()
+        appListFragment.enterTransition = Fade()
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             fragmentManager.beginTransaction()
                     .remove(this)
-                    .add(R.id.frame, AppListFragment())
+                    .add(R.id.frame, appListFragment)
                     .addToBackStack(null)
                     .commit()
             true

@@ -65,14 +65,14 @@ class FriendsAdapter
                 view.friends_music_icon.visibility = View.VISIBLE
             Stuff.nowPlayingAnim(view.friends_music_icon_playing, track.isNowPlaying)
 
-            view.friends_track.setOnClickListener {
+            view.friends_track.setOnClickListener { v:View ->
                 var ytUrl = "https://www.youtube.com/results?search_query="
                 try {
                     ytUrl += URLEncoder.encode(track.artist + " - " + track.name, "UTF-8")
                 } catch (e: UnsupportedEncodingException) {
                     Stuff.toast(context, context.getString(R.string.failed_encode_url))
                 }
-                Stuff.openInBrowser(ytUrl, context)
+                Stuff.openInBrowser(ytUrl, context, v)
             }
         } else {
             view.friends_track.visibility = View.INVISIBLE
@@ -86,7 +86,8 @@ class FriendsAdapter
                     .load(userImg)
                     .fit()
                     .centerInside()
-                    .placeholder(R.drawable.ic_placeholder_user)
+                    .noPlaceholder()
+//                        .placeholder(R.drawable.ic_placeholder_user)
                     .error(R.drawable.ic_placeholder_user)
                     .into(view.friends_pic, object : Callback {
                         override fun onSuccess() {
@@ -106,6 +107,7 @@ class FriendsAdapter
                     })
         else
             view.friends_pic.setImageResource(R.drawable.ic_placeholder_user)
+
         return view
     }
 

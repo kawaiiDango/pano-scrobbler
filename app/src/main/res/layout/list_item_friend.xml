@@ -10,57 +10,41 @@
         android:id="@+id/friends_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_alignTop="@+id/friends_pic"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="13dp"
+        android:layout_toEndOf="@+id/friends_pic"
         android:singleLine="true"
         tools:text="name"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/friends_pic"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_below="@+id/friends_name"
-        android:layout_centerHorizontal="true"
-        android:elevation="20dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:elevation="20dp"
         android:src="@drawable/ic_placeholder_user"/>
 
-    <LinearLayout
-        android:id="@+id/friends_links"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/friends_date"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/friends_pic"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <Button
-            android:id="@+id/friends_profile"
-            style="@style/friendsLinks"
-            android:drawableTop="@drawable/vd_open_in_new"
-            android:text="@string/user_profile"/>
-
-        <Button
-            android:id="@+id/friends_loved"
-            style="@style/friendsLinks"
-            android:drawableTop="@drawable/vd_heart"
-            android:text="@string/loved"/>
-
-        <Button
-            android:id="@+id/friends_chart"
-            style="@style/friendsLinks"
-            android:drawableTop="@drawable/vd_bar_chart"
-            android:text="@string/last_week"/>
-    </LinearLayout>
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/friends_name"
+        android:gravity="bottom|right"
+        android:paddingEnd="4dp"
+        android:singleLine="true"
+        android:textAppearance="@android:style/TextAppearance.Material.Caption"
+        tools:text="date"/>
 
     <FrameLayout
         android:id="@+id/friends_track"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/friends_links"
+        android:layout_below="@id/friends_pic"
         android:background="?android:attr/selectableItemBackground">
 
         <View
@@ -102,15 +86,6 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 tools:text="subtit"/>
 
-            <TextView
-                android:id="@+id/friends_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="11dp"
-                android:gravity="bottom|right"
-                android:singleLine="true"
-                android:textAppearance="@android:style/TextAppearance.Material.Caption"
-                tools:text="date"/>
         </LinearLayout>
 
         <ImageView

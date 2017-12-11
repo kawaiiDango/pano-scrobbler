@@ -7,6 +7,8 @@
 <LinearLayout
               android:id="@+id/header_pending"
               android:orientation="vertical"
+              android:visibility="gone"
+              tools:visibility="visible"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
     <TextView

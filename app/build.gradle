@@ -23,12 +23,12 @@ android {
         throw new GradleException("Could not read version.txt!")
     }
 
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.2'
     defaultConfig {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode verCode
         versionName "0."+versionCode + " - " + new Date().format('dd.MMM.YY')
         setProperty("archivesBaseName", "pScrobbler")
@@ -47,11 +47,11 @@ dependencies {
 //    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
 //        exclude group: 'com.android.support', module: 'support-annotations'
 //    })
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    implementation 'com.android.support:design:27.0.2'
     implementation 'com.jjoe64:graphview:4.2.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.android.support:palette-v7:26.1.0'
+    implementation 'com.android.support:palette-v7:27.0.2'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'

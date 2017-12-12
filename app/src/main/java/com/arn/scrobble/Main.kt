@@ -29,7 +29,6 @@ import android.support.v7.graphics.Palette
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
-import android.transition.Fade
 import android.view.MenuItem
 import android.view.View
 import com.arn.scrobble.db.PendingScrobblesDb
@@ -96,43 +95,45 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
 
-        val recentsFragment = RecentsFragment()
-
         if (FirstThingsFragment.checkAuthTokenExists(this) &&
                 FirstThingsFragment.checkNLAccess(this)) {
-            val deepLinkExtra = intent?.getIntExtra(Stuff.DEEP_LINK_KEY, 0) ?: 0
+            if (savedInstanceState == null) {
+                val deepLinkExtra = intent?.getIntExtra(Stuff.DEEP_LINK_KEY, 0) ?: 0
+                val recentsFragment = RecentsFragment()
 
-
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
-                    .commit()
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
+                        .commit()
 //            fragmentManager.beginTransaction()
 //                    .hide(recentsFragment)
 //                    .add(R.id.frame, FriendsFragment())
 //                    .addToBackStack(null)
 //                    .commit()
-            if (deepLinkExtra == Stuff.DL_SETTINGS || intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
-                fragmentManager.beginTransaction()
-                        .hide(recentsFragment)
-                        .add(R.id.frame, PrefFragment())
-                        .addToBackStack(null)
-                        .commit()
-            else if (deepLinkExtra == Stuff.DL_APP_LIST)
-                fragmentManager.beginTransaction()
-                        .hide(recentsFragment)
-                        .add(R.id.frame, AppListFragment())
-                        .addToBackStack(null)
-                        .commit()
-            else {
-                AppRater.app_launched(this)
-                NLService.ensureServiceRunning(this)
+                if (deepLinkExtra == Stuff.DL_SETTINGS || intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
+                    fragmentManager.beginTransaction()
+                            .hide(recentsFragment)
+                            .add(R.id.frame, PrefFragment())
+                            .addToBackStack(null)
+                            .commit()
+                else if (deepLinkExtra == Stuff.DL_APP_LIST)
+                    fragmentManager.beginTransaction()
+                            .hide(recentsFragment)
+                            .add(R.id.frame, AppListFragment())
+                            .addToBackStack(null)
+                            .commit()
+                else {
+                    AppRater.app_launched(this)
+                    NLService.ensureServiceRunning(this)
+                }
             }
             onBackStackChanged()
             fragmentManager.addOnBackStackChangedListener(this)
         } else {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frame, FirstThingsFragment())
-                    .commit()
+            if (savedInstanceState == null) {
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frame, FirstThingsFragment())
+                        .commit()
+            }
             app_bar.setExpanded(false, true)
             supportActionBar?.setDisplayHomeAsUpEnabled(false)
             drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)

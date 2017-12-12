@@ -17,15 +17,14 @@ class PrefFragment : PreferenceFragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        reenterTransition = Fade()
         addPreferencesFromResource(R.xml.preferences)
 
         val appList = findPreference("app_whitelist")
-        val appListFragment = AppListFragment()
-        appListFragment.enterTransition = Fade()
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             fragmentManager.beginTransaction()
                     .remove(this)
-                    .add(R.id.frame, appListFragment)
+                    .add(R.id.frame, AppListFragment())
                     .addToBackStack(null)
                     .commit()
             true

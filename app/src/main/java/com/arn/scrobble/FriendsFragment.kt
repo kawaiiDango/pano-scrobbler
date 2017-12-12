@@ -17,6 +17,8 @@ import com.arn.scrobble.ui.EndlessScrollListener
 import de.umass.lastfm.User
 import kotlinx.android.synthetic.main.content_friends.*
 import kotlinx.android.synthetic.main.grid_item_friend.view.*
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Created by arn on 09/07/2017.
@@ -114,18 +116,24 @@ class FriendsFragment : Fragment() {
     private fun revealShow(view: View, xAbs:Int, yAbs:Int, reveal: Boolean, dialog: AlertDialog) {
         val w = view.width
         val h = view.height
+        val dPos = intArrayOf(0,0)
+
+        view.getLocationOnScreen(dPos)
+
+        val x = max(dPos[0], min(dPos[0]+w, xAbs)) - dPos[0]
+        val y = max(dPos[1], min(dPos[1]+h, yAbs)) - dPos[1]
         val maxRadius = Math.sqrt((w * w / 4 + h * h / 4).toDouble()).toFloat()
 
         if (reveal) {
             val revealAnimator = ViewAnimationUtils.createCircularReveal(view,
-                    xAbs, yAbs, 0f, maxRadius)
+                    x, y, 0f, maxRadius)
 
             view.visibility = View.VISIBLE
             revealAnimator.start()
 
         } else {
 
-            val anim = ViewAnimationUtils.createCircularReveal(view, xAbs, yAbs, maxRadius, 0f)
+            val anim = ViewAnimationUtils.createCircularReveal(view, x, y, maxRadius, 0f)
 /*
             anim.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {

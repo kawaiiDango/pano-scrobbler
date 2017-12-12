@@ -286,10 +286,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         .commit()
             }
             R.id.nav_settings -> {
-                val prefFragment = PrefFragment()
-                prefFragment.enterTransition = Fade()
                 fragmentManager.beginTransaction()
-                        .replace(R.id.frame, prefFragment)
+                        .replace(R.id.frame, PrefFragment())
                         .addToBackStack(null)
                         .commit()
             }

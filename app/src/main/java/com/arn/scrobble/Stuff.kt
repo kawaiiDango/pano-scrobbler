@@ -27,9 +27,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
 import java.net.MalformedURLException
 import java.net.URL
 import java.text.DecimalFormat
@@ -139,19 +137,13 @@ object Stuff {
     }
 
     fun exec(command:String): String {
-        val resp = StringBuilder()
+        var resp = ""
         try {
             val process = Runtime.getRuntime().exec(command)
-            val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
-            var line:String? = ""
-            do {
-                resp.append(line+ "\n")
-                line = bufferedReader.readLine()
-            } while (line != null)
-
+            resp = process.inputStream.bufferedReader().use { it.readText() }
         } catch (e: IOException) {
         }
-        return resp.toString()
+        return resp
     }
 
     fun sanitizeTitle(titleContentOriginal: String): Array<String> {

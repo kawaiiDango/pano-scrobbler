@@ -42,7 +42,7 @@
     <string name="channel_new_app">New app detected</string>
     <string name="no_apps_enabled">No apps are enabled for scrobbling</string>
     <string name="pending_scrobbles_summary">%1$d more. </string>
-    <string name="show_all"> <a href="http://dummy.link">Show all</a> </string>
+    <string name="show_all"><u>Show all</u></string>
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <plurals name="num_scrobbles">
         <item quantity="one">%1$d scrobble today</item>

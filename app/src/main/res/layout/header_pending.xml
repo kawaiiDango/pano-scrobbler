@@ -53,13 +53,13 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
         <TextView
+            android:id="@+id/pending_expand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autoLink="all"
             android:clickable="false"
             android:text="@string/show_all"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            />
+            android:textColor="@color/colorAccent"/>
     </LinearLayout>
 </LinearLayout>
 </LinearLayout>

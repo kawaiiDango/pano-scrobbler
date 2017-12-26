@@ -7,7 +7,10 @@
     <string name="invalid_artist">No such artist</string>
     <string name="parse_error">Couldn\'t parse title</string>
     <string name="network_error">Network error</string>
-    <string name="scrobble_ignored">Artist "%S" was ignored</string>
+    <string name="scrobble_ignored">LastFM ignored "%s"</string>
+    <string name="artist_ignored">artist ignored </string>
+    <string name="track_ignored">track ignored</string>
+    <string name="limit_exceeded_ignored">daily scrobble limit exceeded</string>
     <string name="state_scrobbling">Now scrobbling…</string>
     <string name="state_scrobbled">Scrobbled…</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
@@ -29,7 +32,7 @@
     <string name="hero_youtube">Youtube</string>
     <string name="user_profile">Profile</string>
     <string name="new_player">%s detected</string>
-    <string name="new_player_prompt">Keep scrobbling and hide this msg?</string>
+    <string name="new_player_prompt">Scrobble this app?</string>
     <string name="no_scrobbles">No scrobbled songs yet…  😫 \n\n
     Lets make some noise!
     </string>

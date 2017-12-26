@@ -345,6 +345,7 @@ class NLService : NotificationListenerService() {
             val nb = NotificationCompat.Builder(applicationContext, NOTI_ID_SCR)
                     .setContentTitle(getString(R.string.new_player, appName))
                     .setContentText(getString(R.string.new_player_prompt))
+                    .setShowWhen(false)
                     .setSmallIcon(R.drawable.vd_appquestion_noti)
                     .setColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
                     .setContentIntent(launchIntent)

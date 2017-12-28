@@ -87,6 +87,7 @@ class RecentsFragment : Fragment() {
                 }
             }
         }
+        activity.ctl.tag = getString(R.string.recently_scrobbled)
     }
 
     private fun toggleGraphDetails(graph: GraphView){
@@ -107,7 +108,6 @@ class RecentsFragment : Fragment() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         if (!hidden) {
-            activity.ctl.title = getString(R.string.app_name)
             activity.ctl.setContentScrimColor(RecentsAdapter.lastColorDomPrimary)
             if (Stuff.isDark(RecentsAdapter.lastColorDomPrimary)) {
                 activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorLightWhite)

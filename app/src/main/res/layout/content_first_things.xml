@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:alpha="0.01"
         android:orientation="horizontal"
+        android:focusableInTouchMode="true"
         >
 
         <EditText

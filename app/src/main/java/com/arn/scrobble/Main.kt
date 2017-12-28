@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.LabeledIntent
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -61,6 +62,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         setSupportActionBar(toolbar)
 
         ctl.tag = " "
+        ctl.title = " "
 
         pref = PreferenceManager.getDefaultSharedPreferences(this)
         app_bar.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
@@ -73,10 +75,13 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 val f: Fragment? = fragmentManager.findFragmentByTag(Stuff.GET_RECENTS)
                 if (f?.isVisible == true) {
                     if (scrollRange + verticalOffset == 0) {
-                        ctl.title = getString(R.string.app_name)
+                        ctl.title = ctl.tag as CharSequence //getString(R.string.app_name)
+//                        f.recents_list?.header_text?.visibility = View.GONE
                         heroExpanded = true
                     } else if (heroExpanded) {
-                        ctl.title = ctl.tag as CharSequence
+                        ctl.tag = ctl.title
+                        ctl.title = " " //ctl.tag as CharSequence
+//                        f.recents_list?.header_text?.visibility = View.VISIBLE
                         heroExpanded = false
                     }
                 }
@@ -143,7 +148,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-
+        setAppBarHeight()
     }
 
     fun test (){
@@ -400,6 +405,22 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 LFMRequester(this).execute(Stuff.AUTH_FROM_TOKEN, token)
             }
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        setAppBarHeight()
+    }
+
+    private fun setAppBarHeight(){
+        val heightDp = resources.configuration.screenHeightDp
+        val abHeightDp = resources.getDimension(R.dimen.app_bar_height) / resources.displayMetrics.density
+        val lp = app_bar.layoutParams
+        if (heightDp < abHeightDp + 50)
+            lp.height = resources.getDimensionPixelSize(R.dimen.app_bar_summary_height)
+        else
+            lp.height = resources.getDimensionPixelSize(R.dimen.app_bar_height)
+        app_bar.layoutParams = lp
     }
 
     public override fun onResume() {

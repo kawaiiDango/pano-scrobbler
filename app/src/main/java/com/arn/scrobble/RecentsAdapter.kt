@@ -33,6 +33,7 @@ import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.content_recents.*
 import kotlinx.android.synthetic.main.coordinator_main.*
+import kotlinx.android.synthetic.main.coordinator_main.view.*
 import kotlinx.android.synthetic.main.footer_loading.view.*
 import kotlinx.android.synthetic.main.header_default.view.*
 import kotlinx.android.synthetic.main.header_pending.view.*
@@ -132,8 +133,7 @@ class RecentsAdapter
             heroInfoLoader?.execute(Stuff.HERO_INFO, t.url, t.getImageURL(ImageSize.EXTRALARGE))
 
             val ctl = (context as Activity).ctl
-            ctl.title = t.name
-            ctl.tag = t.name
+            ctl.hero_title.text = t.name
 
             hero.tag = t
 
@@ -272,7 +272,7 @@ class RecentsAdapter
             val colorMutedBlack = palette.getDarkMutedColor(ContextCompat.getColor(context, android.R.color.background_dark))
 
             ctl.setContentScrimColor(colorDomPrimary)
-            ctl.setExpandedTitleTextColor(ColorStateList.valueOf(colorLightWhite))
+            ctl.hero_title.setTextColor(colorLightWhite)
 
             if (Stuff.isDark(colorDomPrimary))
                 ctl.setCollapsedTitleTextColor(colorLightWhite)

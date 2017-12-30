@@ -77,6 +77,9 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                     //for love: command = tag, s[1] = artist, s[2] = song,
                     Stuff.LOVE -> return Track.love(s[1], s[2], session)
                     Stuff.UNLOVE -> return Track.unlove(s[1], s[2], session)
+                    Stuff.GET_SIMILAR -> {
+                        return Track.getSimilar(s[1], s[2], Stuff.LAST_KEY, 6)
+                    }
                     Stuff.GET_DRAWER_INFO -> {
                         val profile = User.getInfo(session)
                         val cal = Calendar.getInstance()
@@ -265,7 +268,8 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                 else
                     Stuff.toast(context, command+ " failed")
             }
-        } else if (command == Stuff.HERO_INFO && res is MutableList<*>) {
+        } else if (command == Stuff.HERO_INFO && res is MutableList<*> ||
+                command == Stuff.GET_SIMILAR && res is ArrayList<*>) {
 //            val s = res as MutableList<String?>
             handler?.obtainMessage(0, Pair(command, res))?.sendToTarget()
         }

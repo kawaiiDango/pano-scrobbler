@@ -205,7 +205,7 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
 
                     }
                 } catch (e: NullPointerException) {
-                    publishProgress(command + ": NullPointerException")
+                    return command + ": NullPointerException"
                 }
             } else if (command == Stuff.AUTH_FROM_TOKEN){
                 subCommand = if (s.size == 2) s[1] else null
@@ -223,6 +223,7 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
             } else if (command != Stuff.GET_RECENTS ) {
                 Stuff.log("command: $command")
                 reAuth()
+                return context.getString(R.string.please_authorize)
             }
         } catch(e: CallException){
             //ignore
@@ -230,7 +231,7 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
             //ignore
         } catch (e: Exception) {
             e.printStackTrace()
-            publishProgress("err: "+ e.cause)
+            return "err: "+ e.cause
         }
 
         // adb shell am start -W -a android.intent.action.VIEW -d "pscrobble://auth?token=hohoho" com.arn.scrobble
@@ -238,20 +239,11 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
     }
 
     private fun reAuth() {
-//        token = Authenticator.getToken(Stuff.LAST_KEY)
-        publishProgress(context.getString(R.string.please_authorize))
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .remove(Stuff.SESS_KEY)
                 .apply()
         Stuff.openInBrowser(Stuff.AUTH_CB_URL, context)
-    }
-
-    override fun onProgressUpdate(vararg values: Any) {
-        super.onProgressUpdate(*values)
-        val res = values[0]
-        if (res is String) //usually err msg
-            Stuff.toast(context, values[0].toString())
     }
 
     override fun onPostExecute(res: Any?) {
@@ -272,6 +264,8 @@ class LFMRequester constructor(val context: Context, private val handler: Handle
                 command == Stuff.GET_SIMILAR && res is ArrayList<*>) {
 //            val s = res as MutableList<String?>
             handler?.obtainMessage(0, Pair(command, res))?.sendToTarget()
+        } else if (res is String){ // error msg
+            Stuff.toast(context, res)
         }
     }
 

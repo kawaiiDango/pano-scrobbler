@@ -80,11 +80,11 @@ class AppListFragment : Fragment() {
             Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity.packageManager))
             app_list?.post({
                 val prefs = PreferenceManager.getDefaultSharedPreferences(activity?: return@post)
-                val firstRun = prefs.getBoolean(Stuff.FIRST_RUN_PREF, true)
+                val firstRun = prefs.getBoolean(Stuff.PREF_FIRST_RUN, true)
                 if (firstRun){
                     for(i in 0 until app_list.count)
                         app_list.setItemChecked(i, true)
-                    prefs.edit().putBoolean(Stuff.FIRST_RUN_PREF, false).apply()
+                    prefs.edit().putBoolean(Stuff.PREF_FIRST_RUN, false).apply()
                 }
                 otherApps.forEach {adapter.add(it)}
             })
@@ -104,8 +104,8 @@ class AppListFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         Stuff.setTitle(activity, R.string.action_app_list)
     }
     override fun onStop() {

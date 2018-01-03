@@ -77,7 +77,7 @@
         android:textAppearance="@android:style/TextAppearance.Material.Caption"
         tools:text="date date yay"/>
 
-    <ImageView
+    <View
         android:id="@+id/recents_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -85,11 +85,10 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/recents_title"
-        android:alpha="0.6"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
+        android:alpha="0.7"
+        android:background="@color/thumbnailHighlight"
         android:padding="15dp"
-        app:srcCompat="@drawable/vd_play"/>
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/recents_playing"

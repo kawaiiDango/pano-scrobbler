@@ -54,8 +54,8 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.android.support:palette-v7:27.0.2'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4' //increases launch time by just 1ms
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4' //still adds permissions to the manifest
 
     implementation project(':lastfm')
     implementation project(':materialSeekbarPref')

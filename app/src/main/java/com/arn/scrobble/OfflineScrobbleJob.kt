@@ -39,7 +39,7 @@ class OfflineScrobbleJob : JobService() {
                 val entry = dao.loadLastPending
                 Stuff.log("db count: " + count)
                 Stuff.log(entry.toString())
-                var corrected: Pair<String,String>? = null
+                var corrected: Pair<String,String>?
                 try {
                     corrected = LFMRequester.getCorrectedData(entry.artist, entry.track)
                 } catch (e: Exception){

@@ -10,7 +10,7 @@
     app:layout_collapseParallaxMultiplier="0.6"
     tools:context="com.arn.scrobble.Main">
 
-    <android.support.design.widget.AppBarLayout
+    <com.arn.scrobble.ui.MyAppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
@@ -52,22 +52,17 @@
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5"/>
 
-            <TextView
-                android:id="@+id/hero_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|right"
-                android:layout_marginEnd="15dp"
-                android:layout_marginTop="32dp"
-                android:layout_weight="1"
-                android:gravity="center|end"
-                android:shadowColor="#777"
-                android:shadowDx="2"
-                android:shadowDy="1"
-                android:shadowRadius="5"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/colorAccentLight"
-                tools:text="title expanded"/>
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/graph"
+                android:layout_width="200dp"
+                android:layout_height="100dip"
+                android:layout_gravity="bottom|start"
+                android:layout_marginBottom="30dp"
+                android:layout_marginStart="10dp"
+                android:alpha="0"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.6"
+                tools:alpha="1"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,25 +71,43 @@
                 android:alpha="0.7"
                 android:gravity="bottom|end"
                 android:orientation="horizontal"
+                android:animateLayoutChanges="false"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.1"
+                app:layout_collapseParallaxMultiplier="0.8"
                 >
 
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/graph"
-                    android:layout_width="190dp"
-                    android:layout_height="100dip"
+                <TextView
+                    android:id="@+id/hero_title"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
                     android:layout_gravity="bottom|start"
                     android:layout_marginStart="10dp"
-                    android:alpha="0"
-                    app:layout_collapseMode="parallax"
-                    app:layout_collapseParallaxMultiplier="0.1"
-                    tools:alpha="1"/>
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="2sp"
+                    android:shadowColor="#777"
+                    android:shadowDx="2"
+                    android:shadowDy="1"
+                    android:shadowRadius="5"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="@color/colorAccentLight"
+                    android:visibility="gone"
+                    tools:background="@color/darkBg"
+                    tools:text="title expanded title expanded "
+                    tools:visibility="visible"/>
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                <Button
+                    android:id="@+id/hero_similar"
+                    android:layout_width="80sp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="bottom|center"
+                    android:background="?android:attr/selectableItemBackground"
+
+                    android:singleLine="true"
+                    android:text="Similar"
+                    android:textColor="@color/colorAccentLight"
+                    android:tooltipText="@string/similar_tracks"/>
 
                 <ImageButton
                     android:id="@+id/hero_share"
@@ -118,14 +131,14 @@
                     app:srcCompat="@drawable/vd_info"/>
 
                 <ImageButton
-                    android:id="@+id/hero_yt"
+                    android:id="@+id/hero_play"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="15dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:scaleType="centerInside"
-                    android:tooltipText="@string/hero_youtube"
-                    app:srcCompat="@drawable/vd_youtube"/>
+                    android:tooltipText="@string/hero_search"
+                    app:srcCompat="@drawable/vd_search"/>
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar
@@ -139,11 +152,10 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
+    </com.arn.scrobble.ui.MyAppBarLayout>
 
     <FrameLayout
         android:id="@+id/frame"
-        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

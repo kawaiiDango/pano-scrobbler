@@ -29,7 +29,7 @@
     <string name="share_sig">(Shared with %1$s )</string>
     <string name="share_this_song">Share this song</string>
     <string name="hero_info">More info</string>
-    <string name="hero_youtube">Youtube</string>
+    <string name="hero_search">Search</string>
     <string name="user_profile">Profile</string>
     <string name="new_player">%s detected</string>
     <string name="new_player_prompt">Scrobble this app?</string>
@@ -87,7 +87,11 @@
     <string name="pref_logout_title">Logout and Reauthorize</string>
     <string name="pref_about">About</string>
     <string name="pref_about_title">version</string>
+    <string name="pref_search_title">Song search service</string>
+    <string name="pref_search">Choose a site</string>
     <string name="failed_encode_url">failed to encode URL</string>
     <string name="check_nls">Check %s</string>
+    <string name="similar_tracks">Similar songs</string>
+    <string name="no_similar_tracks">No similar tracks found</string>
 
 </resources>

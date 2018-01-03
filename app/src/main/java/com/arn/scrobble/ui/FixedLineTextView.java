@@ -15,6 +15,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
+import com.arn.scrobble.Stuff;
+
 
 public class FixedLineTextView extends android.support.v7.widget.AppCompatTextView {
 
@@ -24,10 +26,11 @@ public class FixedLineTextView extends android.support.v7.widget.AppCompatTextVi
     private Float mOriginalSize;
     private int mOriginalHeight = 0;
     // Minimum text size for this text view
-    private static final float MIN_TEXT_SIZE = 30;
+    private float MIN_TEXT_SIZE;
 
     public FixedLineTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        MIN_TEXT_SIZE = Stuff.INSTANCE.sp2px(11, context);
         setEllipsize(TextUtils.TruncateAt.END);
         setSingleLine();
     }

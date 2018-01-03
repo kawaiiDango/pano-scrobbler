@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.arn.scrobble.pref.AppListFragment
 import kotlinx.android.synthetic.main.content_first_things.*
+import kotlinx.android.synthetic.main.content_first_things.view.*
 
 
 /**
@@ -24,15 +25,10 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
     private var stepsNeeded = 4
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.content_first_things, container, false)
-    }
+        val view = inflater.inflate(R.layout.content_first_things, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        if (view == null)
-            return
         if (Stuff.isMiui) {
-            first_things_0.setOnClickListener {
+            view.first_things_0.setOnClickListener {
                 Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
                 val intent = Intent()
                 intent.component = ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
@@ -42,17 +38,17 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
                     Stuff.log("ActivityNotFoundException")
                 }
             }
-            first_things_0.visibility = View.VISIBLE
+            view.first_things_0.visibility = View.VISIBLE
         }
-        first_things_1.setOnClickListener {
+        view.first_things_1.setOnClickListener {
             Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
             val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
             startActivity(intent)
         }
-        first_things_2.setOnClickListener {
+        view.first_things_2.setOnClickListener {
             Stuff.openInBrowser(Stuff.AUTH_CB_URL, activity)
         }
-        first_things_3.setOnClickListener {
+        view.first_things_3.setOnClickListener {
             fragmentManager.beginTransaction()
                     .hide(this)
                     .add(R.id.frame, AppListFragment())
@@ -60,7 +56,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
                     .commit()
         }
 
-        testing_pass.addTextChangedListener(object : TextWatcher {
+        view.testing_pass.addTextChangedListener(object : TextWatcher {
 
             override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
             }
@@ -83,6 +79,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
             }
 
         })
+        return view
     }
 
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
@@ -114,16 +111,20 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        checkAll()
+    override fun onStart() {
+        super.onStart()
         PreferenceManager.getDefaultSharedPreferences(activity).registerOnSharedPreferenceChangeListener(this)
         Stuff.setTitle(activity, R.string.first_things)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onResume() {
+        super.onResume()
+        checkAll()
+    }
+
+    override fun onStop() {
         PreferenceManager.getDefaultSharedPreferences(activity).unregisterOnSharedPreferenceChangeListener(this)
+        super.onStop()
     }
 
     private fun markAsDone(resId:Int){

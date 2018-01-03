@@ -15,26 +15,36 @@ import android.util.Pair
  * Created by arn on 04/07/2017.
  */
 
-class SessListener internal constructor(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler) : OnActiveSessionsChangedListener {
+class SessListener constructor(private val pref: SharedPreferences,
+                               private val handler: NLService.ScrobbleHandler) :
+        OnActiveSessionsChangedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val mControllers = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
+    private val controllersMap = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
+    private var controllers : List<MediaController>? = null
+
+    private var blackList = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())
+    private var whiteList = pref.getStringSet(Stuff.PREF_WHITELIST, setOf())
+    private var autoDetectApps = pref.getBoolean(Stuff.PREF_AUTO_DETECT, true)
+
+    init {
+        pref.registerOnSharedPreferenceChangeListener(this)
+    }
 
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
+        this.controllers = controllers
         val tokens = mutableSetOf<MediaSession.Token>()
-        if (pref.getBoolean("master", true) && controllers != null) {
+        if (pref.getBoolean(Stuff.PREF_MASTER, true) && controllers != null) {
             for (controller in controllers) {
-                val isWhitelisted = pref.getStringSet(Stuff.PREF_WHITELIST, setOf()).contains(controller.packageName)
-                val isBlacklisted = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf()).contains(controller.packageName)
-                if (isWhitelisted || (pref.getBoolean(Stuff.AUTO_DETECT_PREF, true) && !isBlacklisted)) {
+                if (shouldScrobble(controller.packageName)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
-                    if (!mControllers.containsKey(controller.sessionToken)) {
+                    if (!controllersMap.containsKey(controller.sessionToken)) {
                         Stuff.log("onActiveSessionsChanged: " + controller.packageName +
                                 " #" + controller.sessionToken.describeContents())
                         val cb = MyCallback(pref, handler, controller.packageName)
                         controller.registerCallback(cb)
                         val pair = Pair.create(controller, cb)
-                        synchronized(mControllers) {
-                            mControllers.put(controller.sessionToken, pair)
+                        synchronized(controllersMap) {
+                            controllersMap.put(controller.sessionToken, pair)
                         }
                     }
                 }
@@ -44,23 +54,24 @@ class SessListener internal constructor(private val pref: SharedPreferences, pri
         removeSessions(tokens)
     }
 
-    fun removeSessions(tokens: MutableSet<*>? = null, packageName: String? = null) {
-        val it = mControllers.iterator()
+    fun removeSessions(tokens: MutableSet<*>? = null, packageNames: Set<String>? = null) {
+        val it = controllersMap.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
             if ((tokens != null && !tokens.contains(token)) ||
-                    (packageName != null && pair.first.packageName == packageName)) {
+                    (packageNames != null && packageNames.contains(pair.first.packageName))) {
                 pair.first.unregisterCallback(pair.second)
-                synchronized(mControllers) {
+                synchronized(controllersMap) {
                     it.remove()
                     handler.remove(lastHash)
                 }
             }
         }
-        numSessions = mControllers.size
+        numSessions = controllersMap.size
     }
 
-    class MyCallback(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler, private val packageName: String) : Callback() {
+    class MyCallback(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler,
+                     private val packageName: String) : Callback() {
         var metadata: MediaMetadata? = null
         //        var lastHash = 0
         var lastScrobblePos: Long = 1
@@ -128,8 +139,8 @@ class SessListener internal constructor(private val pref: SharedPreferences, pri
 
         fun scrobble(artist: String, album: String, title: String, duration: Long) {
             val isWhitelisted = pref.getStringSet(Stuff.PREF_WHITELIST, setOf()).contains(packageName)
-            val isBlacklisted = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf()).contains(packageName)
-            val packageNameParam = if (!(isWhitelisted || isBlacklisted)) packageName else null
+//            val isBlacklisted = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf()).contains(packageName)
+            val packageNameParam = if (!isWhitelisted) packageName else null
 
             if (isIgnoreArtistMeta)
                 lastHash = handler.scrobble(title, duration, packageNameParam)
@@ -166,6 +177,29 @@ class SessListener internal constructor(private val pref: SharedPreferences, pri
             stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
         }
     }
+
+    fun shouldScrobble(packageName: String): Boolean {
+        val shouldScrobble = whiteList.contains(packageName) ||
+                (autoDetectApps && !blackList.contains(packageName))
+
+        return shouldScrobble
+    }
+
+    override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {
+        when (key){
+            Stuff.PREF_WHITELIST -> whiteList = pref.getStringSet(key, setOf())
+            Stuff.PREF_BLACKLIST -> blackList = pref.getStringSet(key, setOf())
+            Stuff.PREF_AUTO_DETECT -> autoDetectApps = pref.getBoolean(key, true)
+        }
+        if (key == Stuff.PREF_WHITELIST ||
+                key == Stuff.PREF_BLACKLIST ||
+                key == Stuff.PREF_AUTO_DETECT ||
+                key == Stuff.PREF_MASTER) {
+            onActiveSessionsChanged(controllers)
+            Stuff.log("SessListener prefs changed: $key")
+        }
+    }
+
     companion object {
         var numSessions = 0
         var lastStateChangedTime:Long = 0

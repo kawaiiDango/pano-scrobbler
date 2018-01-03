@@ -2,6 +2,8 @@ package com.arn.scrobble
 
 import android.app.AlertDialog
 import android.app.Fragment
+import android.app.LoaderManager
+import android.content.Loader
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
@@ -14,9 +16,13 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.TextView
 import com.arn.scrobble.ui.EndlessScrollListener
+import de.umass.lastfm.PaginatedResult
+import de.umass.lastfm.Track
 import de.umass.lastfm.User
 import kotlinx.android.synthetic.main.content_friends.*
+import kotlinx.android.synthetic.main.content_friends.view.*
 import kotlinx.android.synthetic.main.grid_item_friend.view.*
+import kotlinx.android.synthetic.main.header_default.view.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -24,60 +30,118 @@ import kotlin.math.min
  * Created by arn on 09/07/2017.
  */
 
-class FriendsFragment : Fragment() {
+class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
 
-    private var adapter: FriendsAdapter? = null
+    lateinit private var adapter: FriendsAdapter
+    private var runnable = Stuff.TimedRefresh(this, Stuff.GET_FRIENDS.hashCode())
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.content_friends, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        val view = inflater.inflate(R.layout.content_friends, container, false)
 
         adapter = FriendsAdapter(activity, R.layout.grid_item_friend)
-        friends_grid.adapter = adapter
-        friends_grid.setOnScrollListener(loadMoreListener)
-        friends_grid.onItemClickListener = profileClickListener
-        Stuff.setProgressCircleColor(friends_swipe_refresh)
-        friends_swipe_refresh.setOnRefreshListener { adapter?.loadFriends(1) }
+        loaderManager.initLoader(Stuff.GET_FRIENDS.hashCode(), arrayOf("1").toArgsBundle(), this).startLoading()
+        adapter.friendsRecentsLoader = loaderManager.initLoader(Stuff.GET_FRIENDS_RECENTS.hashCode(), arrayOf("", "").toArgsBundle(), this) as LFMRequester
+        adapter.friendsRecentsLoader
+        view.friends_grid.adapter = adapter
+        view.friends_grid.setOnScrollListener(loadMoreListener)
+        view.friends_grid.onItemClickListener = profileClickListener
+        Stuff.setProgressCircleColor(view.friends_swipe_refresh)
+        view.friends_swipe_refresh.setOnRefreshListener { loadFriends(1) }
+
+        return view
     }
 
-    override fun onPause() {
-        super.onPause()
-        (friends_grid.adapter as FriendsAdapter?)
-                ?.handler?.removeMessages(Stuff.CANCELLABLE_MSG)
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }
+    override fun onCreateLoader(id: Int, b: Bundle?): Loader<Any?>? {
+        b ?: return null
+        val args = b.getStringArray("args")
+        return when(id){
+            Stuff.GET_FRIENDS.hashCode() -> LFMRequester(activity, Stuff.GET_FRIENDS, *args)
+            // user.getFriendsListeningNow never worked properly
+            Stuff.GET_FRIENDS_RECENTS.hashCode() -> LFMRequester(activity, Stuff.GET_FRIENDS_RECENTS, *args)
+//            Stuff.NEED_FRIENDS_RECENTS.hashCode() -> LFMRequester(activity, Stuff.NEED_FRIENDS_RECENTS, *args)
+            else -> null
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun loadFriends(page: Int):Boolean {
+        friends_grid ?: return false
+        if (page <= adapter.totalPages || adapter.totalPages == 0) {
+            if ((page == 1 && friends_grid.firstVisiblePosition < 15) || page > 1) {
+                val getFriends = loaderManager.getLoader<Any>(Stuff.GET_FRIENDS.hashCode()) as LFMRequester
+                getFriends.args[0] = page.toString()
+                getFriends.forceLoad()
+//                loaderManager.initLoader(Stuff.GET_FRIENDS.hashCode(), arrayOf(page.toString()).toArgsBundle(), this)
+            } else {
+                friends_grid?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+            }
+            if (adapter.count == 0 || page > 1)
+                friends_linear_layout.friends_swipe_refresh.isRefreshing = true
+            return true
+        } else
+            return false
+    }
+
+    override fun onLoadFinished(loader: Loader<Any?>, data: Any?) {
+        data ?: return
+        if (Main.isOnline) {
+            friends_linear_layout.header_text.visibility = View.GONE
+        } else {
+            friends_linear_layout.header_text.text = getString(R.string.offline)
+            friends_linear_layout.header_text.visibility = View.VISIBLE
+        }
+        when(loader.id) {
+            Stuff.GET_FRIENDS_RECENTS.hashCode() -> {
+                val res = data as PaginatedResult<Track>
+                loader as LFMRequester
+                adapter.populateFriendsRecent(res, loader.args[1].toInt())
+            }
+            Stuff.GET_FRIENDS.hashCode() -> {
+                data as PaginatedResult<User>
+                adapter.populate(data, data.page)
+                if (data.page == 1)
+                    friends_grid?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+            }
+        }
+    }
+
+    override fun onLoaderReset(loader: Loader<Any?>) {
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onStart() {
+        super.onStart()
         Stuff.setTitle(activity, R.string.friends)
-        adapter?.loadFriends(1)
+        loadFriends(1)
     }
+
 
     private val profileClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-        val gridItem = adapter?.getView(position, null, null) // force inflate
-        if (gridItem != null){
-            gridItem.friends_links.visibility = View.VISIBLE
-            gridItem.friends_pic.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-            gridItem.friends_pic.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            val userLink = (friends_grid.getItemAtPosition(position) as User?)?.url ?: return@OnItemClickListener
-            gridItem.friends_profile.setOnClickListener { v:View ->
-                Stuff.openInBrowser(userLink, activity, v)
-            }
-            gridItem.friends_profile.compoundDrawables
-            gridItem.friends_loved.setOnClickListener { v:View ->
-                Stuff.openInBrowser(userLink + "/loved", activity, v)
-            }
-            gridItem.friends_chart.setOnClickListener { v:View ->
-                Stuff.openInBrowser(userLink + "/listening-report/week", activity, v)
-            }
-            drawableTintCompat(gridItem.friends_profile)
-            drawableTintCompat(gridItem.friends_loved)
-            drawableTintCompat(gridItem.friends_chart)
-            gridItem.background = view.background
-        } else
-            return@OnItemClickListener
+        val gridItem = adapter.getView(position, null, null) // force inflate
+        gridItem.friends_links.visibility = View.VISIBLE
+        gridItem.friends_pic.layoutParams.width = Stuff.dp2px(100, activity)
+        gridItem.friends_pic.layoutParams.height = Stuff.dp2px(100, activity)
+        val userLink = (friends_grid.getItemAtPosition(position) as User?)?.url ?: return@OnItemClickListener
+        gridItem.friends_profile.setOnClickListener { v:View ->
+            Stuff.openInBrowser(userLink, activity, v)
+        }
+        gridItem.friends_profile.compoundDrawables
+        gridItem.friends_loved.setOnClickListener { v:View ->
+            Stuff.openInBrowser(userLink + "/loved", activity, v)
+        }
+        gridItem.friends_chart.setOnClickListener { v:View ->
+            Stuff.openInBrowser(userLink + "/listening-report/week", activity, v)
+        }
+        drawableTintCompat(gridItem.friends_profile)
+        drawableTintCompat(gridItem.friends_loved)
+        drawableTintCompat(gridItem.friends_chart)
+        gridItem.background = view.background
 
 
         val dialog = AlertDialog.Builder(activity)
@@ -132,9 +196,9 @@ class FriendsFragment : Fragment() {
             revealAnimator.start()
 
         } else {
-
-            val anim = ViewAnimationUtils.createCircularReveal(view, x, y, maxRadius, 0f)
 /*
+            val anim = ViewAnimationUtils.createCircularReveal(view, x, y, maxRadius, 0f)
+
             anim.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     super.onAnimationEnd(animation)
@@ -160,7 +224,7 @@ class FriendsFragment : Fragment() {
 
     private val loadMoreListener = object : EndlessScrollListener() {
         override fun onLoadMore(page: Int, totalItemsCount: Int): Boolean {
-            return adapter?.loadFriends(page) ?: false
+            return loadFriends(page)
             // true ONLY if more data is actually being loaded; false otherwise.
         }
     }

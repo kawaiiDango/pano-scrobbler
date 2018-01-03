@@ -2,6 +2,7 @@ package com.arn.scrobble
 
 import android.app.Activity
 import android.app.ActivityOptions
+import android.app.Fragment
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -16,20 +17,26 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.graphics.drawable.Animatable2Compat
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.text.format.DateUtils
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import kotlinx.android.synthetic.main.coordinator_main.*
 import java.io.IOException
+import java.io.UnsupportedEncodingException
+import java.lang.ref.WeakReference
 import java.net.MalformedURLException
 import java.net.URL
+import java.net.URLEncoder
 import java.text.DecimalFormat
 import java.util.*
 
@@ -43,9 +50,9 @@ object Stuff {
     const val SCROBBLE = "scrobble"
     const val AUTH_FROM_TOKEN = "auth"
     const val GET_RECENTS = "recents"
+    const val GET_SIMILAR = "similar"
     const val GET_RECENTS_CACHED = "recents_cached"
     const val RELOAD_LIST_DATA = "list_refresh"
-    const val PROFILE_PIC_PREF = "profile_cached"
     const val GET_DRAWER_INFO = "profile"
     const val GET_FRIENDS = "friends"
     const val LAST_KEY = Tokens.LAST_KEY
@@ -58,20 +65,22 @@ object Stuff {
     const val UNLOVE = "unloved"
     const val GET_FRIENDS_RECENTS = "get_friends_recent"
     const val NEED_FRIENDS_RECENTS = "need_friends_recent"
-    const val FRIENDS_RECENTS_DELAY:Long = 1500
+    const val FRIENDS_RECENTS_DELAY:Long = 800
     const val HERO_INFO = "heroinfo"
-    const val IS_ONLINE = "online"
+    const val PREF_MASTER = "master"
     const val PREF_WHITELIST = "app_whitelist"
     const val PREF_BLACKLIST = "app_blacklist"
-    const val AUTO_DETECT_PREF = "auto_detect"
-    const val FIRST_RUN_PREF = "first_run"
-    const val GRAPH_DETAILS_PREF = "show_graph_details"
-    const val OFFLINE_SCROBBLE_PREF = "offline_scrobble"
+    const val PREF_SEARCH_URL = "search_url"
+    const val PREF_AUTO_DETECT = "auto_detect"
+    const val PREF_FIRST_RUN = "first_run"
+    const val PREF_GRAPH_DETAILS = "show_graph_details"
+    const val PREF_OFFLINE_SCROBBLE = "offline_scrobble"
+    const val PREF_NUM_SCROBBLES = "num_scrobbles_cached"
+    const val PREF_PROFILE_PIC = "profile_cached"
     const val ARGS_SUMMARY_VIEW = "summary"
 
     const val SESS_KEY = "sesskey"
     const val USERNAME = "username"
-    const val NUM_SCROBBLES_PREF = "num_scrobbles_cached"
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
@@ -112,7 +121,7 @@ object Stuff {
 
     fun timeIt(s: String) {
         val now = System.currentTimeMillis()
-        Log.e(TAG+"_time: ", "["+ (now - timeIt) + "] " + s)
+        Log.w(TAG+"_time: ", "["+ (now - timeIt) + "] " + s)
         timeIt = now
     }
 
@@ -124,16 +133,13 @@ object Stuff {
     }
 
     fun bundleDump(bundle: Bundle?): String {
-        if (bundle == null)
-            return "null"
-        else {
-            var s = ""
-            for (key in bundle.keySet().sortedDescending()) {
-                val value = bundle.get(key) ?: "null"
-                s += String.format("%s= %s, ", key, value.toString())
-            }
-            return s
+        bundle ?: return "null"
+        var s = ""
+        for (key in bundle.keySet().sortedDescending()) {
+            val value = bundle.get(key) ?: "null"
+            s += String.format("%s= %s, ", key, value.toString())
         }
+        return s
     }
 
     fun exec(command:String): String {
@@ -220,7 +226,7 @@ object Stuff {
         val splits = albumOrig.split(' ')
         splits.forEach {
             try {
-                if (it.contains('.')){
+                if (it.matches(".*\\w+\\.\\w+.*".toRegex())){
                     if (it.contains(':'))
                         URL(it)
                     else
@@ -237,6 +243,11 @@ object Stuff {
         return albumOrig
     }
 
+    fun sanitizeArtist(artistOrig: String): String{
+        val splits = artistOrig.split('|')
+        return splits[0]
+    }
+
     fun setTitle(activity:Activity, strId: Int){
         val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.ctl)
         if (strId == 0) { // = clear title
@@ -247,6 +258,23 @@ object Stuff {
             ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.colorPrimary))
             ctl.setCollapsedTitleTextColor(Color.WHITE)
         }
+    }
+
+    fun setAppBarHeight(activity: Activity, additionalHeight: Int = 0){
+        val sHeightPx: Int
+        val dm = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getMetrics(dm)
+        sHeightPx = dm.heightPixels
+
+        val abHeightPx = activity.resources.getDimension(R.dimen.app_bar_height)
+        val lp = activity.app_bar.layoutParams
+
+        if (sHeightPx < abHeightPx + additionalHeight + Stuff.dp2px(40, activity))
+            lp.height = activity.resources.getDimensionPixelSize(R.dimen.app_bar_summary_height)
+        else
+            lp.height = activity.resources.getDimensionPixelSize(R.dimen.app_bar_height)
+        if (activity.app_bar.isCollapsed)
+            activity.app_bar.setExpanded(false, false)
     }
 
     fun getMatColor(c: Context, typeColor: String, hash: Long = 0): Int {
@@ -291,10 +319,11 @@ object Stuff {
         return decimal + unit
     }
 
-    fun isNetworkAvailable(c: Context): Boolean {
-        val connectivityManager = c.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    fun getOnlineStatus(context: Context): Boolean{
+        //directly using context creates leaks in MM
+        val manager = context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val ni = manager.activeNetworkInfo
+        return ni?.isConnected == true
     }
 
     fun myRelativeTime(context:Context, date: Date?): CharSequence =
@@ -377,6 +406,19 @@ object Stuff {
         swl.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary)
         swl.setProgressBackgroundColorSchemeResource(R.color.darkBg)
     }
+//
+    fun openSearchURL(query:String, view: View, context: Context) {
+        var url =
+                PreferenceManager.getDefaultSharedPreferences(context)
+                        .getString(PREF_SEARCH_URL, context.getString(R.string.search_site_default))
+
+        try {
+            url += URLEncoder.encode(query, "UTF-8")
+        } catch (e: UnsupportedEncodingException) {
+            Stuff.toast(context, context.getString(R.string.failed_encode_url))
+        }
+        openInBrowser(url, context, view)
+    }
 
     fun openInBrowser(url:String, context:Context, source:View? = null, startX:Int = 10, startY:Int = 10){
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -391,4 +433,20 @@ object Stuff {
         }
         context.startActivity(browserIntent, bundle)
     }
+
+    class TimedRefresh(fragment: Fragment, private val loaderId: Int): Runnable{
+        private val fragmentWr: WeakReference<Fragment> = WeakReference(fragment)
+
+        override fun run() {
+            val fragment = fragmentWr.get()
+            if (fragment != null && fragment.isAdded)
+                fragment.loaderManager.getLoader<Any>(loaderId)?.forceLoad()
+        }
+    }
+}
+
+fun Array<String>.toArgsBundle(key: String = "args"): Bundle {
+    val b = Bundle()
+    b.putStringArray(key, this)
+    return b
 }

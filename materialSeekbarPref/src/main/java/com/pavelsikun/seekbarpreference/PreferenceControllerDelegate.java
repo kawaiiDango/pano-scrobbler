@@ -93,7 +93,6 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
                 measurementUnit = a.getString(R.styleable.SeekBarPreference_msbp_measurementUnit);
                 currentValue = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "defaultValue", DEFAULT_CURRENT_VALUE);
 
-//                TODO make it work:
 //                dialogStyle = a.getInt(R.styleable.SeekBarPreference_msbp_interval, DEFAULT_DIALOG_STYLE);
 
                 dialogStyle = DEFAULT_DIALOG_STYLE;

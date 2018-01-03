@@ -1,22 +1,20 @@
 package com.arn.scrobble
 
+import android.animation.ValueAnimator
 import android.app.*
 import android.app.Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.LabeledIntent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
+import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.AppBarLayout
 import android.support.design.widget.NavigationView
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
@@ -32,10 +30,11 @@ import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.PrefFragment
-import com.squareup.leakcanary.LeakCanary
+import com.arn.scrobble.ui.MyAppBarLayout
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
@@ -51,43 +50,35 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var pref: SharedPreferences
     private var lastDrawerOpenTime:Long = 0
+    private var backArrowShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (!LeakCanary.isInAnalyzerProcess(this))
-            LeakCanary.install(application)
-
+        DebugOnly.installLeakCanary(application)
+        Stuff.timeIt("onCreate start")
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+        Stuff.timeIt("onCreate setContentView")
         setSupportActionBar(toolbar)
 
-        ctl.tag = " "
+        ctl.tag = getString(R.string.app_name)
         ctl.title = " "
 
         pref = PreferenceManager.getDefaultSharedPreferences(this)
-        app_bar.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
-            var scrollRange = -1
-
-            override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.totalScrollRange
-                }
-                val f: Fragment? = fragmentManager.findFragmentByTag(Stuff.GET_RECENTS)
-                if (f?.isVisible == true) {
-                    if (scrollRange + verticalOffset == 0) {
-                        ctl.title = ctl.tag as CharSequence //getString(R.string.app_name)
-//                        f.recents_list?.header_text?.visibility = View.GONE
-                        heroExpanded = true
-                    } else if (heroExpanded) {
-                        ctl.tag = ctl.title
+        app_bar.setOnStateChangeListener { state ->
+            val f: Fragment? = fragmentManager.findFragmentByTag(Stuff.GET_RECENTS)
+            if (f?.isVisible == true) {
+                when (state) {
+                    MyAppBarLayout.State.EXPANDED, MyAppBarLayout.State.IDLE -> {
                         ctl.title = " " //ctl.tag as CharSequence
 //                        f.recents_list?.header_text?.visibility = View.VISIBLE
-                        heroExpanded = false
+                    }
+                    MyAppBarLayout.State.COLLAPSED -> {
+                        ctl.title = ctl.tag as CharSequence
                     }
                 }
             }
-        })
-
+        }
 
         toggle = object: ActionBarDrawerToggle(
                 this, drawer_layout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
@@ -97,7 +88,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
         drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
 
         if (FirstThingsFragment.checkAuthTokenExists(this) &&
@@ -148,7 +138,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        setAppBarHeight()
+        toggle.syncState()
+        Stuff.setAppBarHeight(this)
+        Stuff.timeIt("onPostCreate")
     }
 
     fun test (){
@@ -240,13 +232,13 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val username = if (BuildConfig.DEBUG) "nobody" else pref.getString(Stuff.USERNAME,"nobody")
         nav_name.text = username
-        val num = pref.getInt(Stuff.NUM_SCROBBLES_PREF, 0)
+        val num = pref.getInt(Stuff.PREF_NUM_SCROBBLES, 0)
         nav_num_scrobbles.text = resources.getQuantityString(R.plurals.num_scrobbles, num, num)
 
         nav_profile_link.setOnClickListener { v:View ->
             Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
         }
-        val picUrl = pref.getString(Stuff.PROFILE_PIC_PREF,"")
+        val picUrl = pref.getString(Stuff.PREF_PROFILE_PIC,"")
         if (picUrl != "")
             Picasso.with(this@Main)
                     .load(picUrl)
@@ -268,7 +260,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         }
                     })
 
-        LFMRequester(applicationContext, null).execute(Stuff.GET_DRAWER_INFO)
+        LFMRequester(applicationContext, Stuff.GET_DRAWER_INFO).inAsyncTask()
         lastDrawerOpenTime = System.currentTimeMillis()
     }
 
@@ -308,8 +300,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onSharedPreferenceChanged(sp: SharedPreferences, key: String) {
         when(key){
-            Stuff.PROFILE_PIC_PREF,
-            Stuff.NUM_SCROBBLES_PREF -> {
+            Stuff.PREF_PROFILE_PIC,
+            Stuff.PREF_NUM_SCROBBLES -> {
                 lastDrawerOpenTime = 0
                 onDrawerOpened()
             }
@@ -389,10 +381,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if(toggle.isDrawerIndicatorEnabled)
-            drawer_layout.openDrawer(GravityCompat.START)
-        else
+        if (backArrowShown)
             fragmentManager.popBackStack()
+        else
+            drawer_layout.openDrawer(GravityCompat.START)
         return true
     }
 
@@ -402,35 +394,70 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             val token = intent.data.getQueryParameter("token")
             if (token != null){
                 Stuff.log("onNewIntent got token")
-                LFMRequester(this).execute(Stuff.AUTH_FROM_TOKEN, token)
+                LFMRequester(this, Stuff.AUTH_FROM_TOKEN, token).inAsyncTask()
             }
         }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
-        setAppBarHeight()
+        Stuff.setAppBarHeight(this)
     }
 
-    private fun setAppBarHeight(){
-        val heightDp = resources.configuration.screenHeightDp
-        val abHeightDp = resources.getDimension(R.dimen.app_bar_height) / resources.displayMetrics.density
-        val lp = app_bar.layoutParams
-        if (heightDp < abHeightDp + 50)
-            lp.height = resources.getDimensionPixelSize(R.dimen.app_bar_summary_height)
-        else
-            lp.height = resources.getDimensionPixelSize(R.dimen.app_bar_height)
-        app_bar.layoutParams = lp
+    fun showBackArrow(show: Boolean = true){
+        if (backArrowShown != show) {
+            val start = if (show) 0f else 1f
+            val anim = ValueAnimator.ofFloat(start, 1 - start)
+            anim.addUpdateListener { valueAnimator ->
+                val slideOffset = valueAnimator.animatedValue as Float
+                toggle.onDrawerSlide(drawer_layout, slideOffset)
+            }
+            anim.interpolator = DecelerateInterpolator()
+            anim.startDelay = 200
+            anim.duration = 1000
+            anim.start()
+            backArrowShown = show
+        }
     }
 
-    public override fun onResume() {
-        super.onResume()
+    private val mainReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                CONNECTIVITY_ACTION -> isOnline = Stuff.getOnlineStatus(context)
+                NLService.pWHITELIST, NLService.pBLACKLIST -> {
+                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())
+                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())
+
+                    if (intent.action == NLService.pWHITELIST)
+                        wSet.add(intent.getStringExtra("packageName"))
+                    else {
+                        bSet.add(intent.getStringExtra("packageName"))
+                    }
+                    bSet.removeAll(wSet) //whitelist takes over blacklist for conflicts
+                    pref.edit()
+                            .putStringSet(Stuff.PREF_WHITELIST, wSet)
+                            .putStringSet(Stuff.PREF_BLACKLIST,  bSet)
+                            .apply()
+                }
+            }
+        }
+    }
+
+    public override fun onStart() {
+        super.onStart()
         pref.registerOnSharedPreferenceChangeListener(this)
+        val iF = IntentFilter()
+        iF.addAction(CONNECTIVITY_ACTION)
+        iF.addAction(NLService.pBLACKLIST)
+        iF.addAction(NLService.pWHITELIST)
+        registerReceiver(mainReceiver, iF)
+        isOnline = Stuff.getOnlineStatus(this)
     }
 
-    public override fun onPause() {
+    public override fun onStop() {
         pref.unregisterOnSharedPreferenceChangeListener(this)
-        super.onPause()
+        unregisterReceiver(mainReceiver)
+        super.onStop()
     }
 
     override fun onDestroy() {
@@ -440,7 +467,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     companion object {
-        var heroExpanded = false
+        var isOnline = true
 
         fun checkBackStack(activity: Main){
             if (activity.app_bar != null) {
@@ -448,13 +475,13 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 if (activity.fragmentManager.backStackEntryCount == 0) {
                     activity.app_bar.setExpanded(true, true)
                     activity.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-                    activity.toggle.isDrawerIndicatorEnabled = true
+                    activity.showBackArrow(false)
                 } else {
-                    activity.app_bar.setExpanded(false, true)
+                    if (activity.fragmentManager.findFragmentByTag(Stuff.GET_SIMILAR)?.isVisible != true)
+                        activity.app_bar.setExpanded(false, true)
                     activity.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-                    activity.toggle.isDrawerIndicatorEnabled = false
+                    activity.showBackArrow(true)
                 }
-
             }
         }
     }

@@ -2,6 +2,7 @@ package com.arn.scrobble.pref
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.transition.Fade
@@ -29,7 +30,14 @@ class PrefFragment : PreferenceFragment(){
                     .commit()
             true
         }
-//                appList.onPreferenceClickListener
+
+        val searchSite = findPreference(Stuff.PREF_SEARCH_URL) as ListPreference
+        searchSite.summary = searchSite.entry
+        searchSite.onPreferenceChangeListener = Preference.OnPreferenceChangeListener{ pref: Preference, newVal: Any ->
+            val idx = searchSite.findIndexOfValue(newVal as String)
+            searchSite.summary = searchSite.entries[idx]
+            true
+        }
 
         val reauth = findPreference("reauth")
         reauth.title = reauth.title.toString() +": " + preferenceManager.sharedPreferences.getString("username", "nobody")
@@ -53,11 +61,10 @@ class PrefFragment : PreferenceFragment(){
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         Stuff.setTitle(activity, R.string.action_settings)
     }
 

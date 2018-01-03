@@ -34,7 +34,8 @@ class PendingScroblesAdapter
             view.recents_title.text = data.track
             view.recents_subtitle.text = data.artist
             view.recents_date.text = Stuff.myRelativeTime(context, data.timestamp)
-            view.recents_play.setImageResource(R.drawable.vd_hourglass)
+            view.recents_play.background = context.getDrawable(R.drawable.vd_hourglass)
+            view.recents_play.visibility = View.VISIBLE
             return view
         }
     }

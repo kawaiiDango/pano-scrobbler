@@ -25,6 +25,14 @@
         android:summaryOff="@string/pref_offline_off"
         android:summaryOn="@string/pref_offline_on"
         android:title="@string/pref_offline"/>
+
+    <ListPreference
+        android:title="@string/pref_search_title"
+        android:entries="@array/search_sites_title"
+        android:entryValues="@array/search_sites_url"
+        android:defaultValue="@string/search_site_default"
+        android:key="search_url"
+    />
     <PreferenceCategory
         android:title="@string/pref_scrobble_from">
         <com.arn.scrobble.pref.AppIconsPref

@@ -12,4 +12,16 @@
     <string name="love">Love it</string>
     <string name="unlove">Unlove it</string>
     <string name="last_week">Last.week</string>
+
+    <string name="search_site_default">https://www.youtube.com/results?search_query=</string>
+    <string-array name="search_sites_title">
+        <item>YouTube</item>
+        <item>Spotify</item>
+        <item>Google Play</item>
+    </string-array>
+    <string-array name="search_sites_url">
+        <item>@string/search_site_default</item>
+        <item>https://open.spotify.com/search/results/</item>
+        <item>https://play.google.com/store/search?c=music&amp;q=</item>
+    </string-array>
 </resources>

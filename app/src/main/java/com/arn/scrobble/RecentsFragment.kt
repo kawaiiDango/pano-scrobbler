@@ -1,13 +1,15 @@
 package com.arn.scrobble
 
 import android.app.Fragment
+import android.app.LoaderManager
 import android.content.Intent
+import android.content.Loader
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.view.*
+import android.view.animation.DecelerateInterpolator
 import android.widget.AdapterView
-import android.widget.HeaderViewListAdapter
 import android.widget.ListView
 import com.arn.scrobble.ui.EndlessScrollListener
 import com.jjoe64.graphview.DefaultLabelFormatter
@@ -15,19 +17,23 @@ import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.GridLabelRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.content_recents.*
 import kotlinx.android.synthetic.main.coordinator_main.*
+import kotlinx.android.synthetic.main.footer_loading.view.*
+import kotlinx.android.synthetic.main.header_default.view.*
 
 
 /**
  * Created by arn on 09/07/2017.
  */
 
-class RecentsFragment : Fragment() {
-
-    private var adapter: RecentsAdapter? = null
+class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
+    lateinit private var adapter: RecentsAdapter
     private var footer: View? = null
+    private var firstLoad = true
+    private var runnable = Stuff.TimedRefresh(this, Stuff.GET_RECENTS.hashCode())
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.content_recents, container, false)
@@ -48,13 +54,15 @@ class RecentsFragment : Fragment() {
         recents_list.addHeaderView(header, null, false)
 
         adapter = RecentsAdapter(activity, R.layout.list_item_recents)
+        adapter.heroInfoLoader = loaderManager.initLoader(Stuff.HERO_INFO.hashCode(), arrayOf("","").toArgsBundle(), this) as LFMRequester
         recents_list.adapter = adapter
-        adapter?.firstLoad()
+        loaderManager.initLoader(Stuff.GET_RECENTS.hashCode(), arrayOf("1").toArgsBundle(), this).startLoading()
+
         recents_list.setOnScrollListener(loadMoreListener)
         recents_list.onItemClickListener = itemClickListener
 
         Stuff.setProgressCircleColor(recents_swipe_refresh)
-        recents_swipe_refresh.setOnRefreshListener { adapter?.loadRecents(1) }
+        recents_swipe_refresh.setOnRefreshListener { loadRecents(1) }
 
         activity.hero_share.setOnClickListener(shareClickListener)
 
@@ -75,7 +83,7 @@ class RecentsFragment : Fragment() {
             toggleGraphDetails(graph)
         }
         graph.tag = PreferenceManager.getDefaultSharedPreferences(activity)
-                .getBoolean(Stuff.GRAPH_DETAILS_PREF,  false)
+                .getBoolean(Stuff.PREF_GRAPH_DETAILS,  false)
         toggleGraphDetails(graph)
         graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
         graph.gridLabelRenderer.labelFormatter = object : DefaultLabelFormatter() {
@@ -87,7 +95,60 @@ class RecentsFragment : Fragment() {
                 }
             }
         }
-        activity.ctl.tag = getString(R.string.recently_scrobbled)
+
+        activity.hero_info.setOnClickListener { v:View ->
+            val t = activity.hero_img.tag
+            if (t is Track)
+                Stuff.openInBrowser(t.url, activity, v)
+        }
+        activity.hero_play.setOnClickListener { v:View ->
+            val t = activity.hero_img.tag
+            if (t is Track)
+                Stuff.openSearchURL(t.artist + " - " + t.name, v, activity)
+        }
+        activity.hero_similar.setOnClickListener { v:View ->
+            v.isEnabled = false
+            val t = activity.hero_img.tag
+            if (t is Track) {
+                val simFragment = SimilarTracksFragment()
+                val b = Bundle()
+                b.putString("artist", t.artist)
+                b.putString("track", t.name)
+                simFragment.arguments = b
+
+                fragmentManager.beginTransaction()
+                        .hide(this)
+                        .add(R.id.frame, simFragment, Stuff.GET_SIMILAR)
+                        .addToBackStack(null)
+                        .commit()
+            }
+        }
+    }
+    private fun setGraph(points: String?) {
+        val graph = activity.graph
+        if (points == null) {
+            graph.visibility = View.INVISIBLE
+        } else {
+            graph.visibility = View.VISIBLE
+
+            val series = graph.series[0] as LineGraphSeries<DataPoint>
+            val dps = mutableListOf<DataPoint>()
+            var i = 0.0
+            points.split(", ").forEach {
+                dps.add(DataPoint(i++, it.toDouble()))
+            }
+
+            Stuff.log("points: $points")
+            series.resetData(dps.toTypedArray())
+
+            graph.alpha = 0f
+//            graph.onDataChanged(false, false)
+            graph.animate()
+                    .alpha(0.7f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(500)
+                    .start()
+        }
     }
 
     private fun toggleGraphDetails(graph: GraphView){
@@ -101,9 +162,66 @@ class RecentsFragment : Fragment() {
         graph.tag = !show
         PreferenceManager.getDefaultSharedPreferences(activity)
                 .edit()
-                .putBoolean(Stuff.GRAPH_DETAILS_PREF, show)
+                .putBoolean(Stuff.PREF_GRAPH_DETAILS, show)
                 .apply()
         graph.onDataChanged(false, false)
+    }
+
+    override fun onCreateLoader(id: Int, b: Bundle?): Loader<Any?>? {
+        b ?: return null
+        val args = b.getStringArray("args")
+        return when(id){
+            Stuff.HERO_INFO.hashCode() -> LFMRequester(activity, Stuff.HERO_INFO, *args)
+            Stuff.GET_RECENTS.hashCode() -> LFMRequester(activity, Stuff.GET_RECENTS_CACHED, *args)
+            else -> null
+        }
+    }
+
+    private fun loadRecents(page: Int):Boolean {
+        recents_list ?: return false
+        if (page <= adapter.totalPages) {
+            if ((page == 1 && recents_list.firstVisiblePosition < 5) || page > 1) {
+                val getRecents = loaderManager.getLoader<Any>(Stuff.GET_RECENTS.hashCode()) as LFMRequester?
+                getRecents ?: return false
+                getRecents.args[0] = page.toString()
+                getRecents.forceLoad()
+                Stuff.log("loadRecents $page")
+            } else {
+                recents_list?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+            }
+            if (adapter.count == 0 || page > 1)
+                recents_list.footer_progressbar.visibility = View.VISIBLE
+            return true
+        } else
+            return false
+    }
+
+    override fun onLoadFinished(loader: Loader<Any?>, data: Any?) {
+        data ?: return
+        if (Main.isOnline)
+            recents_list.header_text.text = getString(R.string.recently_scrobbled)
+        else
+            recents_list.header_text.text = getString(R.string.offline)
+        Stuff.log("onLoadFinished " + (loader as LFMRequester).command)
+        when(loader.id) {
+            Stuff.HERO_INFO.hashCode() -> {
+                data as MutableList<String?>
+                adapter.setHero(data[0])
+                setGraph(data[1])
+            }
+            Stuff.GET_RECENTS.hashCode() -> {
+                data as PaginatedResult<Track>
+                adapter.populate(data, data.page)
+                if (firstLoad) {
+                    loadRecents(1)
+                    firstLoad = false
+                } else
+                    recents_list?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+            }
+        }
+    }
+
+    override fun onLoaderReset(loader: Loader<Any?>?) {
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -117,34 +235,39 @@ class RecentsFragment : Fragment() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        ((recents_list.adapter as HeaderViewListAdapter?)
-                        ?.wrappedAdapter as RecentsAdapter)
-                .handler.removeMessages(Stuff.CANCELLABLE_MSG)
+    override fun onStart() {
+        super.onStart()
+        activity.ctl.tag = getString(R.string.recently_scrobbled)
+    }
+
+    override fun onStop() {
+        recents_list.removeCallbacks(runnable)
+        super.onStop()
     }
 
     override fun onResume() {
         super.onResume()
-        adapter?.loadRecents(1)
-        adapter?.loadPending()
+        loadRecents(1)
+        adapter.loadPending()
     }
 
     private val loadMoreListener = object : EndlessScrollListener() {
         override fun onLoadMore(page: Int, totalItemsCount: Int): Boolean {
-            return adapter?.loadRecents(page) ?: false
+            return loadRecents(page)
             //true ONLY if more data is actually being loaded; false otherwise.
         }
     }
+
     private val itemClickListener = AdapterView.OnItemClickListener { adapterView, v, pos1, l ->
-        adapter?.notifyDataSetChanged()
         adapterView as ListView
         adapterView.setItemChecked(pos1, true)
-        if (Main.heroExpanded)
-            adapterView.smoothScrollToPositionFromTop(pos1, 40, 500)
+        if (!activity.app_bar.isExpanded)
+            adapterView.smoothScrollToPositionFromTop(pos1, Stuff.dp2px(5, activity), 500)
 
         activity.app_bar?.setExpanded(true, true)
+        adapter.notifyDataSetChanged()
     }
+
     private val shareClickListener = View.OnClickListener {
         val track = activity.hero_img?.tag
         if (track is Track) {

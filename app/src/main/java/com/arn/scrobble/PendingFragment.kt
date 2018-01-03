@@ -15,8 +15,8 @@ import kotlinx.android.synthetic.main.content_recents.view.*
  */
 class PendingFragment: Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-
         val view = inflater.inflate(R.layout.content_recents, container, false)
+
         view.recents_list.choiceMode = ListView.CHOICE_MODE_NONE
         view.recents_list.isNestedScrollingEnabled = false
         val adapter = PendingScroblesAdapter(activity, R.layout.list_item_recents)
@@ -24,6 +24,11 @@ class PendingFragment: Fragment(){
         view.recents_swipe_refresh.isEnabled = false
 
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Stuff.setTitle(activity, R.string.pending_scrobbles)
     }
 
     override fun onResume() {
@@ -37,6 +42,5 @@ class PendingFragment: Fragment(){
                 adapter.addAll(allPending)
             }
         }.start()
-        Stuff.setTitle(activity, R.string.pending_scrobbles)
     }
 }

@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.content.ComponentName
 import android.os.Process
 import android.app.ActivityManager
+import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.util.LruCache
 import org.codechimp.apprater.AppRater
 
@@ -76,6 +77,8 @@ class NLService : NotificationListenerService() {
         filter.addAction(pWHITELIST)
         filter.addAction(pBLACKLIST)
         filter.addAction(iPREFS_CHANGED)
+        filter.addAction(iNOTIFY_FAILED)
+        filter.addAction(CONNECTIVITY_ACTION)
         registerReceiver(nlservicereciver, filter)
 
         corrrectedDataCache = LruCache(10)
@@ -88,7 +91,7 @@ class NLService : NotificationListenerService() {
         val c = applicationContext
         handler = ScrobbleHandler()
         val sessManager = c.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        sessListener = SessListener(PreferenceManager.getDefaultSharedPreferences(c), handler)
+        sessListener = SessListener(pref, handler)
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, this::class.java))
             Stuff.log("onListenerConnected")
@@ -106,6 +109,7 @@ class NLService : NotificationListenerService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) //ok this works
             bReceiver = LegacyMetaReceiver.regIntents(applicationContext)
         initChannels(applicationContext)
+        isOnline = Stuff.getOnlineStatus(this)
     }
 
     private fun destroy() {
@@ -118,6 +122,7 @@ class NLService : NotificationListenerService() {
         if (sessListener != null) {
             (getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
                     .removeOnActiveSessionsChangedListener(sessListener)
+            pref.unregisterOnSharedPreferenceChangeListener(sessListener)
             sessListener = null
         }
         if (bReceiver != null) {
@@ -195,14 +200,14 @@ class NLService : NotificationListenerService() {
                      Stuff.toast(applicationContext, "Un-scrobbled", Toast.LENGTH_LONG)
                  }
                 pLOVE -> {
-                    LFMRequester(applicationContext, handler).execute(Stuff.LOVE,
-                            intent.getStringExtra("artist"), intent.getStringExtra("title"))
+                    LFMRequester(applicationContext,Stuff.LOVE,
+                            intent.getStringExtra("artist"), intent.getStringExtra("title")).inAsyncTask()
                     handler.notification(intent.getStringExtra("artist"),
                             intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0, false)
                 }
                 pUNLOVE -> {
-                    LFMRequester(applicationContext, handler).execute(Stuff.UNLOVE,
-                            intent.getStringExtra("artist"), intent.getStringExtra("title"))
+                    LFMRequester(applicationContext, Stuff.UNLOVE,
+                            intent.getStringExtra("artist"), intent.getStringExtra("title")).inAsyncTask()
                     handler.notification(intent.getStringExtra("artist"),
                             intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0)
                 }
@@ -214,13 +219,17 @@ class NLService : NotificationListenerService() {
                         wSet.add(intent.getStringExtra("packageName"))
                     else {
                         bSet.add(intent.getStringExtra("packageName"))
-                        sessListener?.removeSessions(packageName= intent.getStringExtra("packageName"))
                     }
                     bSet.removeAll(wSet) //whitelist takes over blacklist for conflicts
                     pref.edit()
                             .putStringSet(Stuff.PREF_WHITELIST, wSet)
                             .putStringSet(Stuff.PREF_BLACKLIST,  bSet)
                             .apply()
+                    val key = if (intent.action == pBLACKLIST)
+                        Stuff.PREF_BLACKLIST
+                    else
+                        Stuff.PREF_WHITELIST
+                    sessListener?.onSharedPreferenceChanged(pref, key) //it doesnt fire
                     nm.cancel(NOTI_ID_APP, 0)
                 }
                 iPREFS_CHANGED -> {
@@ -241,6 +250,14 @@ class NLService : NotificationListenerService() {
                     }
                     editor.apply()
                 }
+                iNOTIFY_FAILED -> {
+                    handler.remove(intent.getIntExtra("hash", 0))
+                    handler.notification(intent.getStringExtra("title1"),
+                            intent.getStringExtra("title2"),
+                            intent.getStringExtra("state"),
+                            intent.getIntExtra("iconId", NOTI_ERR_ICON))
+                }
+                CONNECTIVITY_ACTION -> isOnline = Stuff.getOnlineStatus(context)
             }
         }
     }
@@ -258,14 +275,14 @@ class NLService : NotificationListenerService() {
             val time = m.data.getLong(B_TIME)
             val duration = m.data.getLong(B_DURATION)
             //            int hash = title.hashCode() + artist.hashCode();
-            LFMRequester(applicationContext, this).execute(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString())
+            LFMRequester(applicationContext, Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString()).inAsyncTask()
             notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
         fun scrobble(artist:String, album:String, title: String, duration:Long, packageName: String? = null): Int {
             if (!pref.getBoolean("master", true) ||
-                    (!pref.getBoolean(Stuff.OFFLINE_SCROBBLE_PREF, true) &&
-                            !Stuff.isNetworkAvailable(applicationContext))||
+                    (!pref.getBoolean(Stuff.PREF_OFFLINE_SCROBBLE, true) &&
+                            !isOnline)||
                     !FirstThingsFragment.checkAuthTokenExists(applicationContext))
                 return 0
             val hash = artist.hashCode() + title.hashCode()
@@ -279,9 +296,9 @@ class NLService : NotificationListenerService() {
 
                 if (artist != "" && title != "") {
                     val album = Stuff.sanitizeAlbum(album)
+                    val artist = Stuff.sanitizeArtist(artist)
                     val now = System.currentTimeMillis()
-                    LFMRequester(applicationContext, this)
-                            .execute(Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString())
+                    LFMRequester(applicationContext, Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString()).inAsyncTask()
 
                     val m = obtainMessage()
                     val b = Bundle()
@@ -553,6 +570,7 @@ class NLService : NotificationListenerService() {
         }
 
         lateinit var corrrectedDataCache: LruCache<Int, Bundle>
+        var isOnline = true
 
         lateinit var handler: ScrobbleHandler
         val pNLS = "com.arn.scrobble.NLS"
@@ -563,6 +581,7 @@ class NLService : NotificationListenerService() {
         val pBLACKLIST = "com.arn.scrobble.BLACKLIST"
         val pWHITELIST = "com.arn.scrobble.WHITELIST"
         val iPREFS_CHANGED = "com.arn.scrobble.PREFS_CHANGED"
+        val iNOTIFY_FAILED = "com.arn.scrobble.NOTIFY_FAILED"
         val B_TITLE = "title"
         val B_TIME = "time"
         val B_ARTIST = "artist"

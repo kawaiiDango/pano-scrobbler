@@ -32,7 +32,9 @@ class MaiTest {
 
     @Test
     fun testSanitizeAlbum() {
-        val txt = "http://pop/tmpe"
+        val txt = "op.i:"
+        val matches = txt.matches(".*\\w+\\.\\w+.*".toRegex())
+        println("regex: " + matches)
         val url = URL(txt)
         println(url.host)
     }

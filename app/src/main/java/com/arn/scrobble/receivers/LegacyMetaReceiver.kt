@@ -19,10 +19,10 @@ class LegacyMetaReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
             NLService.ensureServiceRunning(context)
-            processIntent(intent)
+            processIntent(intent, context)
     }
 
-    private fun processIntent(intent: Intent) {
+    private fun processIntent(intent: Intent, context: Context) {
         if (intent.action.indexOf('.') == -1)
             Stuff.log("intent action is corrupted: " + intent.action)
         else if (intent.extras == null || intent.extras.size() == 0)
@@ -43,7 +43,20 @@ class LegacyMetaReceiver : BroadcastReceiver() {
 
                 if (artist == null || artist == "" || track == null || track == "" )
                     return
-
+/*
+                val packageName =
+                        intent.getStringExtra("package") ?:
+                                intent.getStringExtra("packageName") ?:
+                                intent.getStringExtra("app-package") ?:
+                                intent.getStringExtra("scrobbling_source")
+                if (packageName != null){
+                    val pref = PreferenceManager.getDefaultSharedPreferences(context)
+                    val isWhitelisted = pref.getStringSet(Stuff.PREF_WHITELIST, setOf()).contains(packageName)
+//                    val isBlacklisted = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf()).contains(packageName)
+                    if (!isWhitelisted)
+                        return
+                }
+*/
                 val durationAny: Any? = intent.extras["duration"]
                 var duration: Long = durationAny as? Long ?: if(durationAny is Int)
                     durationAny.toLong()
@@ -56,16 +69,17 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                 val hash = artist.hashCode() + track.hashCode()
                 try{
                     NLService.handler.postDelayed({
-                        if (SessListener.numSessions == 0 || System.currentTimeMillis() - SessListener.lastStateChangedTime < Stuff.META_WAIT*4)
+                        val timeDiff = System.currentTimeMillis() - SessListener.lastStateChangedTime
+
+                        if (SessListener.numSessions == 0 || timeDiff > Stuff.META_WAIT * 3 )
                             return@postDelayed
 
-//                        Stuff.log("numSessions: "+SessListener.numSessions+ " timeDiff: "+ (System.currentTimeMillis() - SessListener.lastStateChangedTime))
+                        Stuff.log("numSessions: " + SessListener.numSessions + " timeDiff: " + timeDiff)
 
                         if (isPlaying && !NLService.handler.hasMessages(hash)) {
                             SessListener.lastHash = NLService.handler.scrobble(artist, album, track, duration)
                             Stuff.log( "LegacyMetaReceiver scrobbling $track")
-                            Stuff.log("timeDiff="+ (System.currentTimeMillis() - SessListener.lastStateChangedTime) +
-                            ", numSessions="+SessListener.numSessions)
+                            Stuff.log("timeDiff=" + timeDiff + ", numSessions=" + SessListener.numSessions)
 
                         } else if (!isPlaying && NLService.handler.hasMessages(hash)) {
                             NLService.handler.remove(SessListener.lastHash)

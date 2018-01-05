@@ -101,8 +101,15 @@ class SimilarTracksFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
             similar_grid_container.header_text.text = getString(R.string.offline)
         when(loader.id) {
             Stuff.GET_SIMILAR.hashCode() -> {
-                data as ArrayList<Track>
-                (similar_grid.adapter as SimilarTracksAdapter).populate(data)
+                var pdata: ArrayList<Track>
+                try {
+                    pdata = data as ArrayList<Track>
+
+                } catch (e: ClassCastException){
+                    pdata = arrayListOf()
+                }
+
+                (similar_grid.adapter as SimilarTracksAdapter).populate(pdata)
             }
         }
     }

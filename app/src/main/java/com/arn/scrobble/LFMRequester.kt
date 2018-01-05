@@ -79,9 +79,7 @@ class LFMRequester constructor(context: Context, var command: String, vararg arg
                     //for love: command = tag, args[1] = artist, args[2] = song,
                     Stuff.LOVE -> return Track.love(args[0], args[1], session)
                     Stuff.UNLOVE -> return Track.unlove(args[0], args[1], session)
-                    Stuff.GET_SIMILAR -> {
-                        return Track.getSimilar(args[0], args[1], Stuff.LAST_KEY, 6)
-                    }
+                    Stuff.GET_SIMILAR -> return Track.getSimilar(args[0], args[1], Stuff.LAST_KEY, 6)
                     Stuff.GET_DRAWER_INFO -> {
                         val profile = User.getInfo(session)
                         val cal = Calendar.getInstance()

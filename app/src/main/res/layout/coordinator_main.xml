@@ -66,21 +66,21 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="30dp"
-                android:alpha="0.7"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
                 android:gravity="bottom|end"
-                android:orientation="horizontal"
+                android:layout_marginBottom="5dp"
+                android:alpha="0.7"
                 android:animateLayoutChanges="false"
+                android:orientation="horizontal"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.8"
-                >
+                app:layout_collapseParallaxMultiplier="0.8">
+<!-- layout_height="match_parent" in this makes it go out of screen on a device -->
 
                 <TextView
                     android:id="@+id/hero_title"
                     android:layout_width="0dp"
                     android:layout_height="32dp"
-                    android:layout_gravity="bottom|start"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
@@ -101,9 +101,8 @@
                     android:id="@+id/hero_similar"
                     android:layout_width="80sp"
                     android:layout_height="32dp"
-                    android:layout_gravity="bottom|center"
+                    android:gravity="center"
                     android:background="?android:attr/selectableItemBackground"
-
                     android:singleLine="true"
                     android:text="Similar"
                     android:textColor="@color/colorAccentLight"

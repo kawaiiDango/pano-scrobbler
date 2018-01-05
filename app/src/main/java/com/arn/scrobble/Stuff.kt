@@ -1,8 +1,10 @@
 package com.arn.scrobble
 
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Fragment
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -28,6 +30,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.coordinator_main.*
@@ -261,20 +264,37 @@ object Stuff {
     }
 
     fun setAppBarHeight(activity: Activity, additionalHeight: Int = 0){
+
         val sHeightPx: Int
         val dm = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(dm)
         sHeightPx = dm.heightPixels
 
         val abHeightPx = activity.resources.getDimension(R.dimen.app_bar_height)
+        val targetAbHeight: Int
         val lp = activity.app_bar.layoutParams
 
         if (sHeightPx < abHeightPx + additionalHeight + Stuff.dp2px(40, activity))
-            lp.height = activity.resources.getDimensionPixelSize(R.dimen.app_bar_summary_height)
+            targetAbHeight = activity.resources.getDimensionPixelSize(R.dimen.app_bar_summary_height)
         else
-            lp.height = activity.resources.getDimensionPixelSize(R.dimen.app_bar_height)
-        if (activity.app_bar.isCollapsed)
-            activity.app_bar.setExpanded(false, false)
+            targetAbHeight = activity.resources.getDimensionPixelSize(R.dimen.app_bar_height)
+        if (targetAbHeight != lp.height) {
+            if (activity.app_bar.isCollapsed) {
+                lp.height = targetAbHeight
+                activity.app_bar.setExpanded(false, false)
+            } else {
+                val start = lp.height
+                val anim = ValueAnimator.ofInt(start, targetAbHeight)
+                anim.addUpdateListener { valueAnimator ->
+                    lp.height = valueAnimator.animatedValue as Int
+                    activity.app_bar.layoutParams = lp
+                }
+                anim.interpolator = DecelerateInterpolator()
+                anim.duration = 300
+                anim.start()
+
+            }
+        }
     }
 
     fun getMatColor(c: Context, typeColor: String, hash: Long = 0): Int {
@@ -431,7 +451,11 @@ object Stuff {
                 ActivityOptions.makeScaleUpAnimation(source, startX, startY, 100, 100)
                         .toBundle()
         }
-        context.startActivity(browserIntent, bundle)
+        try {
+            context.startActivity(browserIntent, bundle)
+        } catch (e: ActivityNotFoundException) {
+            toast(context, context.getString(R.string.no_browser))
+        }
     }
 
     class TimedRefresh(fragment: Fragment, private val loaderId: Int): Runnable{

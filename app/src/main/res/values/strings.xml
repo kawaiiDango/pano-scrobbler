@@ -93,5 +93,6 @@
     <string name="check_nls">Check %s</string>
     <string name="similar_tracks">Similar songs</string>
     <string name="no_similar_tracks">No similar tracks found</string>
+    <string name="no_browser">No browser is installed.</string>
 
 </resources>

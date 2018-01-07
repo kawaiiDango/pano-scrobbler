@@ -148,12 +148,13 @@ class LFMRequester constructor(context: Context, var command: String, vararg arg
                 //for scrobble: command = tag, args[1] = artist, args[2] = album, args[3] = song, args[4] = time, args[5] = duration
                 val scrobbleData = ScrobbleData()
                 scrobbleData.artist = args[0]
+                scrobbleData.album = args[1]
                 scrobbleData.track = args[2]
                 scrobbleData.timestamp = (args[3].toLong()/1000).toInt() // in secs
                 scrobbleData.duration = (args[4].toLong()/1000).toInt() // in secs
 
-                if (!(args[1].contains("unknown", true) && args[1].length <= "unknown".length + 4 ))
-                    scrobbleData.album = args[1]
+                if (scrobbleData.duration < 5)
+                    scrobbleData.duration = -1 //default
 
                 when(command) {
                     Stuff.NOW_PLAYING -> {

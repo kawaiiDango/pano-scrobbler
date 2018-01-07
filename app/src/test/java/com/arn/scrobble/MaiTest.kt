@@ -45,13 +45,15 @@ class MaiTest {
         val session = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, key)
 
         val scrobbleData = ScrobbleData()
-        scrobbleData.artist = "Ben Macklin & Yota"
+        scrobbleData.artist = "Tycho"
 //        scrobbleData.album = "Unknown"
-        scrobbleData.track = "Controller (Cassette Club Night Remix)"
+        scrobbleData.track = "Spectre"
         scrobbleData.timestamp = (System.currentTimeMillis()/1000).toInt() // in secs
-        scrobbleData.duration = 0 // in secs
+        scrobbleData.duration = 10 // in secs
 
-        val scrobbleResult = Track.updateNowPlaying(scrobbleData, session)
+        val npResult = Track.updateNowPlaying(scrobbleData, session)
+        println(npResult)
+        val scrobbleResult = Track.scrobble(scrobbleData, session)
         println(scrobbleResult)
     }
 

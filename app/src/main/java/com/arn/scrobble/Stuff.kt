@@ -225,6 +225,9 @@ object Stuff {
     }
 
     fun sanitizeAlbum(albumOrig:String): String {
+        if (albumOrig.contains("unknown", true) &&
+                albumOrig.length <= "unknown".length + 4)
+            return ""
         //url
         val splits = albumOrig.split(' ')
         splits.forEach {

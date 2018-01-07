@@ -7,6 +7,7 @@ import android.media.session.MediaController.Callback
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
+import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.util.Pair
@@ -91,9 +92,13 @@ class SessListener constructor(private val pref: SharedPreferences,
                 val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
                 val isPossiblyAtStart = pos == 0.toLong() ||
                         (pos < 1500 && System.currentTimeMillis() - lastScrobbleTime >= duration)
+
                 if (lastState == state /* bandcamp does this */ &&
                         !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
                     return
+
+                if (state != PlaybackState.STATE_BUFFERING)
+                    lastState = state
 
                 val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: return
                 val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
@@ -102,8 +107,6 @@ class SessListener constructor(private val pref: SharedPreferences,
 
                 if (title == "")
                     return
-                if (state != PlaybackState.STATE_BUFFERING)
-                    lastState = state
 
                 if (state == PlaybackState.STATE_PAUSED) {
 //                    if (duration != 0.toLong() && pos == 0.toLong()) //this breaks phonograph
@@ -117,9 +120,9 @@ class SessListener constructor(private val pref: SharedPreferences,
                     lastScrobblePos = 1
                     handler.remove(lastHash)
                     Stuff.log("stopped")
-                } else if (state == PlaybackState.STATE_PLAYING ||
-                        //                    state.state == PlaybackState.STATE_BUFFERING ||
-                        state == PlaybackState.STATE_NONE) {
+                } else if (state == PlaybackState.STATE_PLAYING
+                        // state.state == PlaybackState.STATE_BUFFERING || state == PlaybackState.STATE_NONE
+                        ) {
 //                if (state.state == PlaybackState.STATE_BUFFERING && state.position == 0.toLong())
 //                    return  //dont scrobble first buffering
 
@@ -150,22 +153,25 @@ class SessListener constructor(private val pref: SharedPreferences,
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
-            val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+            val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""
             val artist2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
-            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
+            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
             val title2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
-            val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
+            val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
             val album2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
             val sameAsOld = (artist == artist2 && title == title2 && album == album2)
-            Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld, package=$packageName")
+            Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld,"+
+                    "lastState=$lastState, package=$packageName")
             if (!sameAsOld) {
                 this.metadata = metadata
-                lastScrobblePos = 1
-                lastState = -1
 
-                //for cases when meta is sent after play
-                if (artist != null && album != null && title != null && handler.hasMessages(lastHash))
+                // for cases:
+                // - meta is sent after play
+                // - "gapless playback", where playback state never changes
+                if (artist != "" && title != "" &&
+                        !handler.hasMessages(artist.hashCode() + title.hashCode()) &&
+                        lastState == PlaybackState.STATE_PLAYING)
                     scrobble(artist, album, title, duration)
             }
         }

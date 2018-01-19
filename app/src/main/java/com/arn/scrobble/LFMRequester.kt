@@ -172,9 +172,16 @@ class LFMRequester constructor(context: Context, var command: String, vararg arg
                         }
                     }
                     Stuff.SCROBBLE -> {
-                        if (NLService.isOnline)
-                            scrobbleResult = Track.scrobble(scrobbleData, session)
-                        else {
+                        var couldntConnect = false
+                        if (NLService.isOnline) {
+                            try {
+                                scrobbleResult = Track.scrobble(scrobbleData, session)
+                            } catch (e: CallException){
+                                Stuff.log("CallException: $e")
+                                couldntConnect = true
+                            }
+                        }
+                        if (couldntConnect || !NLService.isOnline){
                             val dao = PendingScrobblesDb.getDb(context).getDao()
                             val entry = PendingScrobble()
                             entry.artist = scrobbleData.artist

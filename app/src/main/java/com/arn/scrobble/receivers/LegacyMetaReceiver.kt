@@ -18,8 +18,10 @@ class LegacyMetaReceiver : BroadcastReceiver() {
 //    private var lastHash: Int = 0
 
     override fun onReceive(context: Context, intent: Intent) {
-            NLService.ensureServiceRunning(context)
-            processIntent(intent, context)
+        if (intent.extras?.containsKey(Stuff.IGNORE_LEGAGY_META[0] + ".source") == true)
+            return
+        NLService.ensureServiceRunning(context)
+        processIntent(intent, context)
     }
 
     private fun processIntent(intent: Intent, context: Context) {

@@ -107,6 +107,10 @@ object Stuff {
             "com.chrome.dev"
     )
 
+    val IGNORE_LEGAGY_META = arrayOf(
+            "com.n7mobile.nplayer"
+    )
+
     private val seperators = arrayOf(// in priority order
             "—"," ‎– ", "–", " - "," \\| ", "-", "「", "『", "ー", " • ",
 

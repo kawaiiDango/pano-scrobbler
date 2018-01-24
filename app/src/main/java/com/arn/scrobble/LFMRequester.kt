@@ -27,7 +27,7 @@ import java.net.URL
  */
 
 class LFMRequester constructor(context: Context, var command: String, vararg args: String) : AsyncTaskLoader<Any?>(context) {
-    lateinit private var prefs: SharedPreferences
+    private lateinit var prefs: SharedPreferences
     var args = arrayListOf<String>()
     var isLoading = false
 

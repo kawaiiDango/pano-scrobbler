@@ -248,10 +248,14 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     .into(nav_profile_pic, object : Callback {
                         override fun onSuccess() {
                             Palette.generateAsync((nav_profile_pic.drawable as BitmapDrawable).bitmap) { palette ->
-                                val colorDomPrimary = palette.getDominantColor(
-                                        ContextCompat.getColor(applicationContext, R.color.colorPrimary))
-                                (nav_header.background.mutate() as GradientDrawable)
-                                        .colors = arrayOf(colorDomPrimary, Color.BLACK).toIntArray()
+                                try {
+                                    val colorDomPrimary = palette.getDominantColor(
+                                            ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+                                    (nav_header.background.mutate() as GradientDrawable)
+                                            .colors = arrayOf(colorDomPrimary, Color.BLACK).toIntArray()
+                                } catch (e: IllegalStateException){
+
+                                }
                             }
                         }
 
@@ -353,7 +357,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val logFile = File(filesDir, "log.txt")
 //        val dbFile = File(activity.filesDir, PendingScrobblesDb.tableName + ".db")
         logFile.writeText(log)
-        val logUri = FileProvider.getUriForFile(this, packageName+".fileprovider", logFile)
+        val logUri = FileProvider.getUriForFile(this, "com.arn.scrobble.fileprovider", logFile)
 //        activity.getDatabasePath(PendingScrobblesDb.tableName)
 //                .copyTo(dbFile, true)
 //        val dbUri = FileProvider.getUriForFile(activity, activity.packageName+".fileprovider", dbFile)

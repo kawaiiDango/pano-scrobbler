@@ -32,7 +32,7 @@ import kotlin.math.min
 
 class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
 
-    lateinit private var adapter: FriendsAdapter
+    private lateinit var adapter: FriendsAdapter
     private var runnable = Stuff.TimedRefresh(this, Stuff.GET_FRIENDS.hashCode())
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

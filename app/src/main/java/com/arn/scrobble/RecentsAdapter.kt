@@ -155,7 +155,6 @@ class RecentsAdapter
             }
 
             (context as Activity).runOnUiThread {
-                Stuff.log("loadPending")
                 val activity = context as Activity
                 val list = activity.recents_list ?: return@runOnUiThread
                 val layout = list.header_pending

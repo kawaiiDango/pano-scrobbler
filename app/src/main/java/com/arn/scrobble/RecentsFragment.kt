@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.header_default.view.*
  */
 
 class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
-    lateinit private var adapter: RecentsAdapter
+    private lateinit var adapter: RecentsAdapter
     private var footer: View? = null
     private var firstLoad = true
     private var runnable = Stuff.TimedRefresh(this, Stuff.GET_RECENTS.hashCode())
@@ -185,7 +185,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
                 getRecents ?: return false
                 getRecents.args[0] = page.toString()
                 getRecents.forceLoad()
-                Stuff.log("loadRecents $page")
+                adapter.loadPending()
             } else {
                 recents_list?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
             }
@@ -248,7 +248,6 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
     override fun onResume() {
         super.onResume()
         loadRecents(1)
-        adapter.loadPending()
     }
 
     private val loadMoreListener = object : EndlessScrollListener() {

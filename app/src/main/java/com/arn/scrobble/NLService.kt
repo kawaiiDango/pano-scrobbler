@@ -28,8 +28,8 @@ import org.codechimp.apprater.AppRater
 
 
 class NLService : NotificationListenerService() {
-    lateinit private var pref: SharedPreferences
-    lateinit private var nm: NotificationManager
+    private lateinit var pref: SharedPreferences
+    private lateinit var nm: NotificationManager
     private var sessListener: SessListener? = null
     private var bReceiver: LegacyMetaReceiver? = null
 
@@ -94,6 +94,8 @@ class NLService : NotificationListenerService() {
         sessListener = SessListener(pref, handler)
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, this::class.java))
+            //scrobble after the app is updated
+            sessListener?.onActiveSessionsChanged(sessManager.getActiveSessions(ComponentName(this, this::class.java)))
             Stuff.log("onListenerConnected")
         } catch (exception: SecurityException) {
             Stuff.log("Failed to start media controller: " + exception.message)

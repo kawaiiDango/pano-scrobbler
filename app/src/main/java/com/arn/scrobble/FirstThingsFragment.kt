@@ -27,7 +27,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.content_first_things, container, false)
 
-        if (Stuff.isMiui) {
+        if (Stuff.isMiui(activity)) {
             view.first_things_0.setOnClickListener {
                 Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
                 val intent = Intent()
@@ -90,7 +90,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         stepsNeeded = 4
         if (checkNLAccess(activity)) {
             markAsDone(R.id.first_things_1)
-            if(Stuff.isMiui && NLService.ensureServiceRunning(activity))
+            if(Stuff.isMiui(activity) && NLService.ensureServiceRunning(activity))
                 // needed for cases when a miui user enables autostart AFTER granting NLS permission
                 markAsDone(R.id.first_things_0)
             else

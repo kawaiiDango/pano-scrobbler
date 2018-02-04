@@ -7,6 +7,7 @@ import android.app.Fragment
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -387,16 +388,18 @@ object Stuff {
         return bitmap
     }
 
-    val isMiui: Boolean
-        get() {
-            return try {
-                (Class.forName("android.os.SystemProperties")
-                        .getMethod("get", String::class.java)
-                        .invoke(null, "ro.miui.ui.version.code") as String? ?: "") != ""
-            } catch (e: ClassNotFoundException) {
-                false
-            }
+    fun isMiui(context: Context): Boolean {
+        return try {
+            val pm = context.packageManager
+            pm.getPackageInfo("com.miui.securitycenter", PackageManager.GET_META_DATA)
+            true
+//                (Class.forName("android.os.SystemProperties")
+//                        .getMethod("get", String::class.java)
+//                        .invoke(null, "ro.miui.ui.version.code") as String? ?: "") != ""
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
         }
+    }
 
     fun nowPlayingAnim(np: ImageView, isNowPlaying:Boolean){
         if (isNowPlaying) {

@@ -25,7 +25,7 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         dpi = am.launcherLargeIconDensity
         pm = context.packageManager
-        isMIUI = Stuff.isMiui
+        isMIUI = Stuff.isMiui(context)
     }
 
     override fun canHandleRequest(data: Request): Boolean {

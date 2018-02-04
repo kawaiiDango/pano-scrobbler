@@ -105,7 +105,15 @@ object Stuff {
             "com.google.android.apps.youtube.music",
             "com.android.chrome",
             "com.chrome.beta",
-            "com.chrome.dev"
+            "com.chrome.dev",
+            "com.opera.browser",
+            "com.opera.browser.beta",
+            "com.microsoft.emmx",
+
+            "tugapower.codeaurora.browser",
+            "com.rsbrowser.browser",
+            "com.brave.browser",
+            "net.scweeny.CS.browser.dev"
     )
 
     val IGNORE_LEGAGY_META = arrayOf(

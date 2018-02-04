@@ -91,7 +91,7 @@ class SessListener constructor(private val pref: SharedPreferences,
 
                 val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
                 val isPossiblyAtStart = pos == 0.toLong() ||
-                        (pos < 1500 && System.currentTimeMillis() - lastScrobbleTime >= duration)
+                        (pos < 1500 && duration > 0 && System.currentTimeMillis() - lastScrobbleTime >= duration)
 
                 if (lastState == state /* bandcamp does this */ &&
                         !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
@@ -152,13 +152,13 @@ class SessListener constructor(private val pref: SharedPreferences,
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
-            super.onMetadataChanged(metadata)
+//            super.onMetadataChanged(metadata)
             val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""
-            val artist2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+            val artist2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
-            val title2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
+            val title2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
             val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
-            val album2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
+            val album2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
             val sameAsOld = (artist == artist2 && title == title2 && album == album2)
             Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld,"+

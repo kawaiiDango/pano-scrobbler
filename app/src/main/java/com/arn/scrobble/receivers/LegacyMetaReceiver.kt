@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.BadParcelableException
 import com.arn.scrobble.NLService
 import com.arn.scrobble.SessListener
 import com.arn.scrobble.Stuff
@@ -16,11 +17,19 @@ import com.arn.scrobble.Stuff
 
 class LegacyMetaReceiver : BroadcastReceiver() {
 //    private var lastHash: Int = 0
+    private var serviceRunningCheckTime = 0L
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.extras?.containsKey(Stuff.IGNORE_LEGAGY_META[0] + ".source") == true)
+        try {
+            if (intent.hasExtra(Stuff.IGNORE_LEGAGY_META[0] + ".source"))
+                return
+        } catch (e: BadParcelableException) {
             return
-        NLService.ensureServiceRunning(context)
+        }
+        if (System.currentTimeMillis() - serviceRunningCheckTime > Stuff.RECENTS_REFRESH_INTERVAL) {
+            NLService.ensureServiceRunning(context)
+            serviceRunningCheckTime = System.currentTimeMillis()
+        }
         processIntent(intent, context)
     }
 

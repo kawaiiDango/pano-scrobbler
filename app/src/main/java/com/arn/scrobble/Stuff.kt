@@ -481,8 +481,11 @@ object Stuff {
 
         override fun run() {
             val fragment = fragmentWr.get()
-            if (fragment != null && fragment.isAdded)
-                fragment.loaderManager.getLoader<Any>(loaderId)?.forceLoad()
+            if (fragment?.isAdded == true) {
+                val loader = fragment.loaderManager.getLoader<Any>(loaderId) ?: return
+                if ((loader as LFMRequester.Loader).args[0] == "1" && !loader.isLoading) //refresh only on page 1
+                    loader.forceLoad()
+            }
         }
     }
 }

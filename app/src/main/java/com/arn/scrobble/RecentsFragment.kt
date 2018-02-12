@@ -216,7 +216,9 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
                     loadRecents(1)
                     firstLoad = false
                 } else
+                } else if (data.page == 1){
                     recents_list?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+                }
             }
         }
     }

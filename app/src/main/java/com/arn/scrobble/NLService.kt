@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.content.ComponentName
 import android.os.Process
 import android.app.ActivityManager
+import android.graphics.Bitmap
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.util.LruCache
 import org.codechimp.apprater.AppRater
@@ -454,8 +455,14 @@ class NLService : NotificationListenerService() {
                         .setCustomBigContentView(null)
             }
             val n = buildMediaStyleMod(nb)
-
-            nm.notify(NOTI_ID_SCR, 0, n)
+            try {
+                nm.notify(NOTI_ID_SCR, 0, n)
+            } catch (e: RuntimeException){
+                val nExpandable =  nb.setLargeIcon(null)
+                        .setStyle(null)
+                        .build()
+                nm.notify(NOTI_ID_SCR, 0, nExpandable)
+            }
         }
 
         fun notification(title1: String, state: String, iconId: Int) {
@@ -469,12 +476,16 @@ class NLService : NotificationListenerService() {
 //                NotificationCompat.Action(R.drawable.ic_transparent, emoji + " "+ text, pIntent)
         }
 
+        private var notiIconBitmap: Bitmap? = null
         private fun buildMediaStyleMod(nb:NotificationCompat.Builder): Notification {
             val modNeeded = Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && nb.mActions != null && nb.mActions.isNotEmpty()
             if (modNeeded) {
-                val icon = getDrawable(R.mipmap.ic_launcher)
+                if (notiIconBitmap == null || notiIconBitmap?.isRecycled == true){
+                    val icon = getDrawable(R.mipmap.ic_launcher)
+                    notiIconBitmap = Stuff.drawableToBitmap(icon)
+                }
 //                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
-                nb.setLargeIcon(Stuff.drawableToBitmap(icon))
+                nb.setLargeIcon(notiIconBitmap)
             }
             val n = nb.build()
             if (modNeeded)

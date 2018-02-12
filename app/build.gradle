@@ -30,7 +30,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 27
         versionCode verCode
-        versionName "0."+versionCode + " - " + new Date().format('dd.MMM.YY')
+        versionName ((int)(versionCode/100) + "." + (versionCode%100) +  " - " + new Date().format('dd.MMM.YY'))
         setProperty("archivesBaseName", "pScrobbler")
         vectorDrawables.useSupportLibrary = true
     }
@@ -64,8 +64,8 @@ dependencies {
     implementation project(':lastfm')
     implementation project(':materialSeekbarPref')
 
-    kapt "android.arch.persistence.room:compiler:1.0.0"
-    implementation "android.arch.persistence.room:runtime:1.0.0"
+    kapt "android.arch.persistence.room:compiler:1.1.0-alpha1"
+    implementation "android.arch.persistence.room:runtime:1.1.0-alpha1"
 
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

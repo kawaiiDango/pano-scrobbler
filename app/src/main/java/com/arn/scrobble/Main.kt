@@ -120,6 +120,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 else {
                     AppRater.app_launched(this)
                     NLService.ensureServiceRunning(this)
+                    //TODO: if not running after 2 sec (handler), show a primary color snackbar. ignore apprater
                 }
             }
             onBackStackChanged()
@@ -337,6 +338,14 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     private fun mailLogs(){
         Stuff.toast(this, getString(R.string.generating_report))
+        val activeSessions = try {
+            val sessManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+            sessManager.getActiveSessions(ComponentName(this, NLService::class.java))
+                    ?.fold("") { str, session -> str +  ", "  + session.packageName}
+        } catch (e: SecurityException) {
+            "SecurityException"
+        }
+
         var text = ""
         text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME+ "\n"
         text += "Android " + Build.VERSION.RELEASE+ "\n"
@@ -351,6 +360,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val dm = resources.displayMetrics
 
         text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
+
+        if (!NLService.ensureServiceRunning(this))
+            text += "Background service isn't running\n"
+        text += "Active Sessions: " + activeSessions + "\n"
+
         text += "------------------------\n\n[how did this happen?]\n"
         //keep the email in english
 

@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.RelativeLayout
 import com.arn.scrobble.db.PendingScrobble
 import kotlinx.android.synthetic.main.list_item_recents.view.*
 
@@ -35,6 +36,8 @@ class PendingScroblesAdapter
             view.recents_subtitle.text = data.artist
             view.recents_date.text = Stuff.myRelativeTime(context, data.timestamp)
             view.recents_play.background = context.getDrawable(R.drawable.vd_hourglass)
+            val margin = Stuff.dp2px(12, context)
+            (view.recents_play.layoutParams as RelativeLayout.LayoutParams).setMargins(margin, margin, margin, margin)
             view.recents_play.visibility = View.VISIBLE
             return view
         }

@@ -40,7 +40,7 @@ class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
 
         adapter = FriendsAdapter(activity, R.layout.grid_item_friend)
         loaderManager.initLoader(Stuff.GET_FRIENDS.hashCode(), arrayOf("1").toArgsBundle(), this).startLoading()
-        adapter.friendsRecentsLoader = loaderManager.initLoader(Stuff.GET_FRIENDS_RECENTS.hashCode(), arrayOf("", "").toArgsBundle(), this) as LFMRequester
+        adapter.friendsRecentsLoader = loaderManager.initLoader(Stuff.GET_FRIENDS_RECENTS.hashCode(), arrayOf("", "").toArgsBundle(), this) as LFMRequester.Loader
         adapter.friendsRecentsLoader
         view.friends_grid.adapter = adapter
         view.friends_grid.setOnScrollListener(loadMoreListener)
@@ -51,17 +51,13 @@ class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
         return view
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
     override fun onCreateLoader(id: Int, b: Bundle?): Loader<Any?>? {
         b ?: return null
         val args = b.getStringArray("args")
         return when(id){
-            Stuff.GET_FRIENDS.hashCode() -> LFMRequester(activity, Stuff.GET_FRIENDS, *args)
+            Stuff.GET_FRIENDS.hashCode() -> LFMRequester(Stuff.GET_FRIENDS, *args).asLoader(activity)
             // user.getFriendsListeningNow never worked properly
-            Stuff.GET_FRIENDS_RECENTS.hashCode() -> LFMRequester(activity, Stuff.GET_FRIENDS_RECENTS, *args)
+            Stuff.GET_FRIENDS_RECENTS.hashCode() -> LFMRequester(Stuff.GET_FRIENDS_RECENTS, *args).asLoader(activity)
 //            Stuff.NEED_FRIENDS_RECENTS.hashCode() -> LFMRequester(activity, Stuff.NEED_FRIENDS_RECENTS, *args)
             else -> null
         }
@@ -71,7 +67,7 @@ class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
         friends_grid ?: return false
         if (page <= adapter.totalPages || adapter.totalPages == 0) {
             if ((page == 1 && friends_grid.firstVisiblePosition < 15) || page > 1) {
-                val getFriends = loaderManager.getLoader<Any>(Stuff.GET_FRIENDS.hashCode()) as LFMRequester
+                val getFriends = loaderManager.getLoader<Any>(Stuff.GET_FRIENDS.hashCode()) as LFMRequester.Loader
                 getFriends.args[0] = page.toString()
                 getFriends.forceLoad()
 //                loaderManager.initLoader(Stuff.GET_FRIENDS.hashCode(), arrayOf(page.toString()).toArgsBundle(), this)
@@ -96,7 +92,7 @@ class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
         when(loader.id) {
             Stuff.GET_FRIENDS_RECENTS.hashCode() -> {
                 val res = data as PaginatedResult<Track>
-                loader as LFMRequester
+                loader as LFMRequester.Loader
                 adapter.populateFriendsRecent(res, loader.args[1].toInt())
             }
             Stuff.GET_FRIENDS.hashCode() -> {

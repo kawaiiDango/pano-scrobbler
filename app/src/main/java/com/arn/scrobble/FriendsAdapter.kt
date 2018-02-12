@@ -31,7 +31,7 @@ class FriendsAdapter
 (c: Context, private val layoutResourceId: Int) : ArrayAdapter<User>(c, layoutResourceId, mutableListOf()) {
 
     var totalPages: Int = 1
-    lateinit var friendsRecentsLoader: LFMRequester
+    lateinit var friendsRecentsLoader: LFMRequester.Loader
     private val handler = DelayHandler(WeakReference(this))
     private val recentsLoadQ = mutableListOf<Int>()
 

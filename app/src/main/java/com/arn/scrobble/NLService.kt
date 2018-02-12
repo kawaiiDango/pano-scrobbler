@@ -202,14 +202,14 @@ class NLService : NotificationListenerService() {
                      Stuff.toast(applicationContext, "Un-scrobbled", Toast.LENGTH_LONG)
                  }
                 pLOVE -> {
-                    LFMRequester(applicationContext,Stuff.LOVE,
-                            intent.getStringExtra("artist"), intent.getStringExtra("title")).inAsyncTask()
+                    LFMRequester(Stuff.LOVE, intent.getStringExtra("artist"),
+                            intent.getStringExtra("title")).asAsyncTask(applicationContext)
                     handler.notification(intent.getStringExtra("artist"),
                             intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0, false)
                 }
                 pUNLOVE -> {
-                    LFMRequester(applicationContext, Stuff.UNLOVE,
-                            intent.getStringExtra("artist"), intent.getStringExtra("title")).inAsyncTask()
+                    LFMRequester(Stuff.UNLOVE, intent.getStringExtra("artist"),
+                            intent.getStringExtra("title")).asAsyncTask(applicationContext)
                     handler.notification(intent.getStringExtra("artist"),
                             intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0)
                 }
@@ -277,7 +277,7 @@ class NLService : NotificationListenerService() {
             val time = m.data.getLong(B_TIME)
             val duration = m.data.getLong(B_DURATION)
             //            int hash = title.hashCode() + artist.hashCode();
-            LFMRequester(applicationContext, Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString()).inAsyncTask()
+            LFMRequester(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString()).asAsyncTask(applicationContext)
             notification(artist, title, getString(R.string.state_scrobbled), 0)
         }
 
@@ -300,7 +300,7 @@ class NLService : NotificationListenerService() {
                     val album = Stuff.sanitizeAlbum(album)
                     val artist = Stuff.sanitizeArtist(artist)
                     val now = System.currentTimeMillis()
-                    LFMRequester(applicationContext, Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString()).inAsyncTask()
+                    LFMRequester(Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString()).asAsyncTask(applicationContext)
 
                     val m = obtainMessage()
                     val b = Bundle()
@@ -534,7 +534,6 @@ class NLService : NotificationListenerService() {
 
         fun ensureServiceRunning(context:Context):Boolean {
             val serviceComponent = ComponentName(context, NLService::class.java)
-            Stuff.log("ensureServiceRunning serviceComponent: " + serviceComponent)
             val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             var serviceRunning = false
             val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
@@ -564,7 +563,6 @@ class NLService : NotificationListenerService() {
         }
 
         private fun toggleNLS(context:Context) {
-            Stuff.log("toggleNotificationListenerService() called")
             val thisComponent = ComponentName(context, NLService::class.java)
             val pm = context.packageManager
             pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)

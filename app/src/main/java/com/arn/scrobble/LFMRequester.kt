@@ -26,7 +26,7 @@ import java.net.URL
  * Created by arn on 18-03-2017.
  */
 
-class LFMRequester constructor(context: Context, var command: String, vararg args: String) : AsyncTaskLoader<Any?>(context) {
+class LFMRequester constructor(var command: String, vararg args: String) {
     private lateinit var prefs: SharedPreferences
     var args = arrayListOf<String>()
     var isLoading = false
@@ -35,7 +35,26 @@ class LFMRequester constructor(context: Context, var command: String, vararg arg
         args.forEach { this.args.add(it) }
     }
 
-    override fun loadInBackground(): Any? {
+    fun inBackground(context: Context?): Any? {
+        context ?: return null
+
+        fun notifyFailed(title1: String, title2: String?, state: String, iconId: Int, hash: Int){
+            val i = Intent(NLService.iNOTIFY_FAILED)
+            i.putExtra("title1", title1)
+            i.putExtra("title2", title2)
+            i.putExtra("state", state)
+            i.putExtra("iconId", iconId)
+            i.putExtra("hash", hash)
+            context.sendBroadcast(i)
+        }
+
+        fun reAuth() {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .edit()
+                    .remove(Stuff.SESS_KEY)
+                    .apply()
+            Stuff.openInBrowser(Stuff.AUTH_CB_URL, context)
+        }
         isLoading = true
 //        Stuff.timeIt("loadInBackground "+ command)
         Stuff.log("loadInBackground $command $args")
@@ -236,48 +255,41 @@ class LFMRequester constructor(context: Context, var command: String, vararg arg
         return null
     }
 
-    override fun deliverResult(data: Any?) {
-        isLoading = false
-        if (data is String) {
-            Stuff.toast(context, data.toString()) //error msgs
-            super.deliverResult(null)
-        } else {
-            super.deliverResult(data)
-//            Stuff.timeIt("deliverResult")
-        }
-    }
+    fun asAsyncTask(context: Context): AsyncTask<Unit, Unit, Any?>? = MyAsyncTask(context, this).execute()
 
-    private fun notifyFailed(title1: String, title2: String?, state: String, iconId: Int, hash: Int){
-        val i = Intent(NLService.iNOTIFY_FAILED)
-        i.putExtra("title1", title1)
-        i.putExtra("title2", title2)
-        i.putExtra("state", state)
-        i.putExtra("iconId", iconId)
-        i.putExtra("hash", hash)
-        context.sendBroadcast(i)
-    }
+    fun asLoader(context: Context): AsyncTaskLoader<Any?> = Loader(context, this)
 
-    fun inAsyncTask(){
-        MyAsyncTask(this).execute()
-    }
-    
-    private fun reAuth() {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .remove(Stuff.SESS_KEY)
-                .apply()
-        Stuff.openInBrowser(Stuff.AUTH_CB_URL, context)
-    }
+    class MyAsyncTask(context: Context, private val requester: LFMRequester): AsyncTask<Unit, Unit, Any?>() {
+        private var contextWr = WeakReference(context)
 
-    class MyAsyncTask(loader: LFMRequester): AsyncTask<Unit, Unit, Any?>() {
-        private var loaderWr: WeakReference<LFMRequester> = WeakReference(loader)
-
-        override fun doInBackground(vararg p0: Unit?): Any? = loaderWr.get()?.loadInBackground()
+        override fun doInBackground(vararg p0: Unit?): Any? = requester.inBackground(contextWr.get())
 
         override fun onPostExecute(res: Any?) {
-            val loader = loaderWr.get()
-            if (loader!= null && res is String)
-                Stuff.toast(loader.context, res)
+            requester.isLoading = false
+            val context = contextWr.get()
+            if (context!= null && res is String)
+                Stuff.toast(context, res)
+        }
+    }
+    class Loader(context: Context, private val requester: LFMRequester): AsyncTaskLoader<Any?>(context) {
+        val command
+            get() = requester.command
+        val args
+            get() = requester.args
+        val isLoading
+            get() = requester.isLoading
+
+        override fun loadInBackground(): Any? = requester.inBackground(context)
+
+        override fun deliverResult(data: Any?) {
+            requester.isLoading = false
+            if (data is String) {
+                Stuff.toast(context, data.toString()) //error msgs
+                super.deliverResult(null)
+            } else {
+                super.deliverResult(data)
+//            Stuff.timeIt("deliverResult")
+            }
         }
     }
 /*
@@ -326,7 +338,7 @@ class LFMRequester constructor(context: Context, var command: String, vararg arg
                 ex.printStackTrace()
                 return ""
             }
-
+            `is`.close()
             return out.toString()
         }
 

@@ -88,7 +88,7 @@ class SimilarTracksFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
         b ?: return null
         val args = b.getStringArray("args")
         return when(id){
-            Stuff.GET_SIMILAR.hashCode() -> LFMRequester(activity, Stuff.GET_SIMILAR, *args)
+            Stuff.GET_SIMILAR.hashCode() -> LFMRequester(Stuff.GET_SIMILAR, *args).asLoader(activity)
             else -> null
         }
     }
@@ -101,12 +101,11 @@ class SimilarTracksFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
             similar_grid_container.header_text.text = getString(R.string.offline)
         when(loader.id) {
             Stuff.GET_SIMILAR.hashCode() -> {
-                var pdata: ArrayList<Track>
-                try {
-                    pdata = data as ArrayList<Track>
+                val pdata: ArrayList<Track> = try {
+                    data as ArrayList<Track>
 
                 } catch (e: ClassCastException){
-                    pdata = arrayListOf()
+                    arrayListOf()
                 }
 
                 (similar_grid.adapter as SimilarTracksAdapter).populate(pdata)

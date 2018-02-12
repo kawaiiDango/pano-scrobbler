@@ -10,6 +10,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
+import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.net.Uri
 import android.os.Build
@@ -182,7 +183,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val icon = getDrawable(R.mipmap.ic_launcher)
 //        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
 
-        val nb = NotificationCompat.Builder(applicationContext)
+        val nb = NotificationCompat.Builder(applicationContext, NLService.NOTI_ID_SCR)
                 .setSmallIcon(R.drawable.ic_noti)
                 .setLargeIcon(Stuff.drawableToBitmap(icon))
                 .setVisibility(Notification.VISIBILITY_SECRET)
@@ -264,7 +265,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         }
                     })
 
-        LFMRequester(applicationContext, Stuff.GET_DRAWER_INFO).inAsyncTask()
+        LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(applicationContext)
         lastDrawerOpenTime = System.currentTimeMillis()
     }
 
@@ -398,7 +399,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             val token = intent.data.getQueryParameter("token")
             if (token != null){
                 Stuff.log("onNewIntent got token")
-                LFMRequester(this, Stuff.AUTH_FROM_TOKEN, token).inAsyncTask()
+                LFMRequester(Stuff.AUTH_FROM_TOKEN, token).asAsyncTask(applicationContext)
             }
         }
     }

@@ -54,7 +54,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
         recents_list.addHeaderView(header, null, false)
 
         adapter = RecentsAdapter(activity, R.layout.list_item_recents)
-        adapter.heroInfoLoader = loaderManager.initLoader(Stuff.HERO_INFO.hashCode(), arrayOf("","").toArgsBundle(), this) as LFMRequester
+        adapter.heroInfoLoader = loaderManager.initLoader(Stuff.HERO_INFO.hashCode(), arrayOf("","").toArgsBundle(), this) as LFMRequester.Loader
         recents_list.adapter = adapter
         loaderManager.initLoader(Stuff.GET_RECENTS.hashCode(), arrayOf("1").toArgsBundle(), this).startLoading()
 
@@ -171,8 +171,8 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
         b ?: return null
         val args = b.getStringArray("args")
         return when(id){
-            Stuff.HERO_INFO.hashCode() -> LFMRequester(activity, Stuff.HERO_INFO, *args)
-            Stuff.GET_RECENTS.hashCode() -> LFMRequester(activity, Stuff.GET_RECENTS_CACHED, *args)
+            Stuff.HERO_INFO.hashCode() -> LFMRequester(Stuff.HERO_INFO, *args).asLoader(activity)
+            Stuff.GET_RECENTS.hashCode() -> LFMRequester(Stuff.GET_RECENTS_CACHED, *args).asLoader(activity)
             else -> null
         }
     }
@@ -181,7 +181,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
         recents_list ?: return false
         if (page <= adapter.totalPages) {
             if ((page == 1 && recents_list.firstVisiblePosition < 5) || page > 1) {
-                val getRecents = loaderManager.getLoader<Any>(Stuff.GET_RECENTS.hashCode()) as LFMRequester?
+                val getRecents = loaderManager.getLoader<Any>(Stuff.GET_RECENTS.hashCode()) as LFMRequester.Loader?
                 getRecents ?: return false
                 getRecents.args[0] = page.toString()
                 getRecents.forceLoad()
@@ -202,7 +202,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
             recents_list.header_text.text = getString(R.string.recently_scrobbled)
         else
             recents_list.header_text.text = getString(R.string.offline)
-        Stuff.log("onLoadFinished " + (loader as LFMRequester).command)
+        Stuff.log("onLoadFinished " + (loader as LFMRequester.Loader).command)
         when(loader.id) {
             Stuff.HERO_INFO.hashCode() -> {
                 data as MutableList<String?>
@@ -215,7 +215,6 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
                 if (firstLoad) {
                     loadRecents(1)
                     firstLoad = false
-                } else
                 } else if (data.page == 1){
                     recents_list?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
                 }

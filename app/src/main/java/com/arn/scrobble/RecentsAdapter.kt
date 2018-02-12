@@ -48,7 +48,7 @@ class RecentsAdapter
 (c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, mutableListOf()) {
 
     private val hero = (c as Activity).hero_img
-    lateinit var heroInfoLoader: LFMRequester
+    lateinit var heroInfoLoader: LFMRequester.Loader
     var totalPages:Int = 1
 
     init {
@@ -305,14 +305,12 @@ class RecentsAdapter
         val nextDrawable: AnimatedVectorDrawableCompat?
 
         if (v.getTag(R.id.recents_love) == FILLED) {
-            LFMRequester(context, Stuff.UNLOVE,
-                    getItem(pos).artist, getItem(pos).name).inAsyncTask()
+            LFMRequester(Stuff.UNLOVE, getItem(pos).artist, getItem(pos).name).asAsyncTask(context)
             getItem(pos).isLoved = false
             v.setTag(R.id.recents_love, 0)
             nextDrawable = AnimatedVectorDrawableCompat.create(context, R.drawable.avd_heart_make)
         } else {
-            LFMRequester(context, Stuff.LOVE,
-                    getItem(pos).artist, getItem(pos).name).inAsyncTask()
+            LFMRequester(Stuff.LOVE, getItem(pos).artist, getItem(pos).name).asAsyncTask(context)
             getItem(pos).isLoved = true
             v.setTag(R.id.recents_love, FILLED)
             nextDrawable = AnimatedVectorDrawableCompat.create(context, R.drawable.avd_heart_break)

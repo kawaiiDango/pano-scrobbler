@@ -18,10 +18,12 @@
         <item>YouTube</item>
         <item>Spotify</item>
         <item>Google Play</item>
+        <item>SoundCloud</item>
     </string-array>
     <string-array name="search_sites_url">
         <item>@string/search_site_default</item>
-        <item>https://open.spotify.com/search/results/</item>
+        <item>https://open.spotify.com/search/</item>
         <item>https://play.google.com/store/search?c=music&amp;q=</item>
+        <item>https://soundcloud.com/search?q=</item>
     </string-array>
 </resources>

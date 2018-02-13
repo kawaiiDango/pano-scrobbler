@@ -74,9 +74,9 @@ class SessListener constructor(private val pref: SharedPreferences,
     class MyCallback(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler,
                      private val packageName: String) : Callback() {
         var metadata: MediaMetadata? = null
-        //        var lastHash = 0
-        var lastScrobblePos: Long = 1
-        var lastScrobbleTime: Long = 0
+        var currHash = 0
+        var lastScrobblePos = 1L
+        var lastScrobbleTime = 0L
         var lastState = -1
         val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
 
@@ -127,10 +127,12 @@ class SessListener constructor(private val pref: SharedPreferences,
 //                    return  //dont scrobble first buffering
 
                     Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $title")
-                    if (isPossiblyAtStart || (lastScrobblePos == 1.toLong())) {
+                    if ((isPossiblyAtStart || lastScrobblePos == 1.toLong()) &&
+                            (!handler.hasMessages(currHash) ||
+                            System.currentTimeMillis() - lastScrobbleTime > 2000)) {
+
                         scrobble(artist, album, title, duration)
                         lastScrobblePos = pos
-                        lastScrobbleTime = System.currentTimeMillis()
                     }
                 } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
                     Stuff.log("$state connecting $pos")
@@ -149,6 +151,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                 lastHash = handler.scrobble(title, duration, packageNameParam)
             else
                 lastHash = handler.scrobble(artist, album, title, duration, packageNameParam)
+            lastScrobbleTime = System.currentTimeMillis()
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
@@ -165,12 +168,12 @@ class SessListener constructor(private val pref: SharedPreferences,
                     "lastState=$lastState, package=$packageName")
             if (!sameAsOld) {
                 this.metadata = metadata
-
+                currHash = artist.hashCode() + title.hashCode()
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
                 if (artist != "" && title != "" &&
-                        !handler.hasMessages(artist.hashCode() + title.hashCode()) &&
+                        !handler.hasMessages(currHash) &&
                         lastState == PlaybackState.STATE_PLAYING)
                     scrobble(artist, album, title, duration)
             }

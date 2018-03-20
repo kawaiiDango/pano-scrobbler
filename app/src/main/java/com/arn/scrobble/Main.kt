@@ -15,8 +15,10 @@ import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
@@ -32,6 +34,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.widget.TextView
 import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.PrefFragment
@@ -122,8 +125,15 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             .commit()
                 else {
                     AppRater.app_launched(this)
-                    NLService.ensureServiceRunning(this)
-                    //TODO: if not running after 2 sec (handler), show a primary color snackbar. ignore apprater
+                    val handler = Handler()
+                    handler.post {
+                        if (!NLService.ensureServiceRunning(this))
+                            handler.postDelayed({
+                                if (!NLService.ensureServiceRunning(this))
+                                    showNotRunning()
+                            },2000)
+                    } //TODO: ignore apprater
+
                 }
             }
             onBackStackChanged()
@@ -339,6 +349,29 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         checkBackStack(this)
     }
 
+    private fun showNotRunning(){
+        val snackbar = Snackbar
+                .make(frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.not_running_fix_action, {
+                    val snackbar2 = Snackbar
+                            .make(frame, getString(R.string.not_running_fix, getString(R.string.app_name)),
+                                    Snackbar.LENGTH_INDEFINITE)
+                            .setAction(android.R.string.ok, {
+                                val intent = Intent(Stuff.NLS_SETTINGS)
+                                startActivity(intent)
+                            })
+                            .setActionTextColor(Color.YELLOW)
+
+                    snackbar2.view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+                    snackbar2.view
+                            .findViewById<TextView>(android.support.design.R.id.snackbar_text).maxLines = 5
+                    snackbar2.show()
+                })
+                .setActionTextColor(Color.YELLOW)
+        snackbar.view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        snackbar.show()
+
+    }
     private fun mailLogs(){
         Stuff.toast(this, getString(R.string.generating_report))
         val activeSessions = try {

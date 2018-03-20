@@ -95,5 +95,9 @@
     <string name="similar_tracks">Similar songs</string>
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="no_browser">No browser is installed.</string>
+    <string name="not_running">The scrobbler service has died.</string>
+    <string name="not_running_fix_action">Fix it</string>
+    <string name="not_running_fix">Uncheck and recheck %1$s in the next screen.
+        \n\nIf songs still don\'t scrobble, you may need to reboot your phone.</string>
 
 </resources>

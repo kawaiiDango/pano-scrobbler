@@ -184,7 +184,7 @@ class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
         val y = max(dPos[1], min(dPos[1]+h, yAbs)) - dPos[1]
         val maxRadius = Math.sqrt((w * w / 4 + h * h / 4).toDouble()).toFloat()
 
-        if (reveal) {
+        if (reveal && view.isAttachedToWindow) {
             val revealAnimator = ViewAnimationUtils.createCircularReveal(view,
                     x, y, 0f, maxRadius)
 

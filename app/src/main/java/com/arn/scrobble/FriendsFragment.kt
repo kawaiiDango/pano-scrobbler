@@ -72,7 +72,7 @@ class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
                 getFriends.forceLoad()
 //                loaderManager.initLoader(Stuff.GET_FRIENDS.hashCode(), arrayOf(page.toString()).toArgsBundle(), this)
             } else {
-                friends_grid?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+                adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
             }
             if (adapter.count == 0 || page > 1)
                 friends_linear_layout.friends_swipe_refresh.isRefreshing = true
@@ -99,7 +99,7 @@ class FriendsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?> {
                 data as PaginatedResult<User>
                 adapter.populate(data, data.page)
                 if (data.page == 1)
-                    friends_grid?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+                    adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
             }
         }
     }

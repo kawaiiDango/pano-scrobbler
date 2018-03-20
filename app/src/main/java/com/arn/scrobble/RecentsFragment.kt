@@ -5,6 +5,7 @@ import android.app.LoaderManager
 import android.content.Intent
 import android.content.Loader
 import android.os.Bundle
+import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.view.*
@@ -34,6 +35,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
     private var footer: View? = null
     private var firstLoad = true
     private var runnable = Stuff.TimedRefresh(this, Stuff.GET_RECENTS.hashCode())
+    private var refreshHandler = Handler()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.content_recents, container, false)
@@ -138,7 +140,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
                 dps.add(DataPoint(i++, it.toDouble()))
             }
 
-            Stuff.log("points: $points")
+//            Stuff.log("points: $points")
             series.resetData(dps.toTypedArray())
 
             graph.alpha = 0f
@@ -187,7 +189,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
                 getRecents.forceLoad()
                 adapter.loadPending()
             } else {
-                recents_list?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+                refreshHandler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
             }
             if (adapter.count == 0 || page > 1)
                 recents_list.footer_progressbar.visibility = View.VISIBLE
@@ -216,7 +218,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
                     loadRecents(1)
                     firstLoad = false
                 } else if (data.page == 1){
-                    recents_list?.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
+                    refreshHandler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
                 }
             }
         }

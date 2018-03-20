@@ -32,7 +32,7 @@ class FriendsAdapter
 
     var totalPages: Int = 1
     lateinit var friendsRecentsLoader: LFMRequester.Loader
-    private val handler = DelayHandler(WeakReference(this))
+    val handler = DelayHandler(WeakReference(this))
     private val recentsLoadQ = mutableListOf<Int>()
 
     init {

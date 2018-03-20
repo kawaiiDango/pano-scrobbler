@@ -109,14 +109,16 @@ class AppListFragment : Fragment() {
         Stuff.setTitle(activity, R.string.action_app_list)
     }
     override fun onStop() {
-        super.onStop()
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
         if (app_list != null) {
             val wSet = mutableSetOf<String>()
 
             app_list.checkedItemIds.forEach {
-                val packageName = (app_list.adapter.getItem(it.toInt()) as ApplicationInfo).packageName ?: return@forEach
-                wSet.add(packageName)
+                try {
+                    val packageName = (app_list.adapter.getItem(it.toInt()) as ApplicationInfo).packageName
+                            ?: return@forEach
+                    wSet.add(packageName)
+                } catch (e: IndexOutOfBoundsException) {}
             }
 
             //BL = old WL - new WL
@@ -128,6 +130,7 @@ class AppListFragment : Fragment() {
                     .putStringSet(Stuff.PREF_BLACKLIST,  bSet)
                     .apply()
         }
+        super.onStop()
     }
 
     private fun getAppList(adapter: AppListAdapter): MutableList<ApplicationInfo> {

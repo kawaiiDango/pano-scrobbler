@@ -80,6 +80,10 @@ class SessListener constructor(private val pref: SharedPreferences,
         var lastState = -1
         val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
 
+        init {
+            lastSessEventTime = System.currentTimeMillis()
+        }
+
         private val stateHandler = object : Handler() {
             override fun handleMessage(msg: Message?) {
                 val state: Int = msg?.arg1!!
@@ -87,7 +91,8 @@ class SessListener constructor(private val pref: SharedPreferences,
 
                 Stuff.log("onPlaybackStateChanged=" + state + " laststate=" + lastState +
                         " pos=" + pos + " duration=" +
-                        metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION))
+                        metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
+                        +" this="+ hashCode())
 
                 val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
                 val isPossiblyAtStart = pos == 0.toLong() ||
@@ -143,6 +148,7 @@ class SessListener constructor(private val pref: SharedPreferences,
         }
 
         fun scrobble(artist: String, album: String, title: String, duration: Long) {
+            lastScrobbleTime = System.currentTimeMillis()
             val isWhitelisted = pref.getStringSet(Stuff.PREF_WHITELIST, setOf()).contains(packageName)
 //            val isBlacklisted = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf()).contains(packageName)
             val packageNameParam = if (!isWhitelisted) packageName else null
@@ -151,7 +157,6 @@ class SessListener constructor(private val pref: SharedPreferences,
                 lastHash = handler.scrobble(title, duration, packageNameParam)
             else
                 lastHash = handler.scrobble(artist, album, title, duration, packageNameParam)
-            lastScrobbleTime = System.currentTimeMillis()
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
@@ -165,9 +170,11 @@ class SessListener constructor(private val pref: SharedPreferences,
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
             val sameAsOld = (artist == artist2 && title == title2 && album == album2)
             Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld,"+
-                    "lastState=$lastState, package=$packageName")
+                    "lastState=$lastState, package=$packageName"
+                    +" this="+ hashCode())
             if (!sameAsOld) {
                 this.metadata = metadata
+//                lastSessEventTime = System.currentTimeMillis()
                 currHash = artist.hashCode() + title.hashCode()
                 // for cases:
                 // - meta is sent after play
@@ -181,7 +188,7 @@ class SessListener constructor(private val pref: SharedPreferences,
 
         override fun onPlaybackStateChanged(state: PlaybackState) {
 //            super.onPlaybackStateChanged(state)
-            lastStateChangedTime = System.currentTimeMillis()
+            lastSessEventTime = System.currentTimeMillis()
             val msg = stateHandler.obtainMessage(0, state.state, state.position.toInt())
             stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
         }
@@ -211,7 +218,7 @@ class SessListener constructor(private val pref: SharedPreferences,
 
     companion object {
         var numSessions = 0
-        var lastStateChangedTime:Long = 0
+        var lastSessEventTime:Long = 0
         var lastHash = 0
     }
 }

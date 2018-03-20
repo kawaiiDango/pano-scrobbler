@@ -80,7 +80,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                 val hash = artist.hashCode() + track.hashCode()
                 try{
                     NLService.handler.postDelayed({
-                        val timeDiff = System.currentTimeMillis() - SessListener.lastStateChangedTime
+                        val timeDiff = System.currentTimeMillis() - SessListener.lastSessEventTime
 
                         if (SessListener.numSessions == 0 || timeDiff > Stuff.META_WAIT * 3 )
                             return@postDelayed

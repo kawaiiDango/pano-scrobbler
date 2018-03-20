@@ -172,7 +172,7 @@ class LFMRequester constructor(var command: String, vararg args: String) {
                 scrobbleData.timestamp = (args[3].toLong()/1000).toInt() // in secs
                 scrobbleData.duration = (args[4].toLong()/1000).toInt() // in secs
 
-                if (scrobbleData.duration < 5)
+                if (scrobbleData.duration < 30)
                     scrobbleData.duration = -1 //default
 
                 when(command) {

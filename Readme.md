@@ -1,8 +1,8 @@
 ## Pano Scrobbler
 <a href='https://play.google.com/store/apps/details?id=com.arn.scrobble&utm_source=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="200"/></a>
 
-###### GIF of a much older version:
-<img alt='Get it on Google Play' src='https://thumbs.gfycat.com/IncredibleFriendlyFlatfish-max-1mb.gif' height="480"/>
+<img alt='GIF' src='https://media.giphy.com/media/1jZuP04WB8Mxtj9CP1/giphy.gif' width="240"/>
+###### Thats the GIF of a much older version.
 
 #### This is intended for:
 - Scrobbling to lastfm from anything which produces audio with metadata, including the official youtube app, a chat app or some less known chinese player

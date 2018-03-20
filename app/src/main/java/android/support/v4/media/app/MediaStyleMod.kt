@@ -3,7 +3,6 @@ package android.support.v4.media.app
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
-import android.support.compat.BuildConfig
 import android.support.v4.app.NotificationBuilderWithBuilderAccessor
 import android.widget.RemoteViews
 import android.support.compat.R

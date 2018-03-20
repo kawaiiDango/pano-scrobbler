@@ -19,7 +19,7 @@ abstract class EndlessScrollListener : AbsListView.OnScrollListener {
     // Sets the starting page index
     private var startingPageIndex = 1
 
-    constructor() {}
+    constructor()
 
     constructor(visibleThreshold: Int) {
         this.visibleThreshold = visibleThreshold

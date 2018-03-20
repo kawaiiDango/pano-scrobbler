@@ -91,6 +91,7 @@
     <string name="pref_search">Choose a site</string>
     <string name="failed_encode_url">failed to encode URL</string>
     <string name="check_nls">Check %s</string>
+    <string name="similar_tracks_button">Similar</string>
     <string name="similar_tracks">Similar songs</string>
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="no_browser">No browser is installed.</string>

@@ -95,6 +95,7 @@ object Stuff {
     const val MAX_APPS = 30
     const val MIN_LISTENER_COUNT = 7
 
+    val NLS_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
     val AUTH_CB_URL = "https://www.last.fm/api/auth?api_key=${Stuff.LAST_KEY}&cb=pscrobble://auth"
 
     private var timeIt:Long = 0
@@ -417,13 +418,8 @@ object Stuff {
                 anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
                         drawable as AnimatedVectorDrawableCompat?
-                        drawable?.unregisterAnimationCallback(this)
-                        if (drawable != null && drawable.isVisible) {
-                            val newAnim = AnimatedVectorDrawableCompat.create(np.context, R.drawable.avd_eq)
-                            np.setImageDrawable(newAnim)
-                            newAnim?.start()
-                            newAnim?.registerAnimationCallback(this)
-                        }
+                        if (drawable != null && drawable.isVisible)
+                            np.post{ anim.start() }
                     }
                 })
                 anim.start()

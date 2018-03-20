@@ -210,7 +210,7 @@ object AppRater {
                 .setAction("\uD83C\uDF1F " + context.getString(R.string.rate_link), {
                     rateNow(context)
                     if (editor != null) {
-                        editor.putBoolean(PREF_DONT_SHOW_AGAIN, true);
+                        editor.putBoolean(PREF_DONT_SHOW_AGAIN, true)
                         commitOrApply(editor)
                     }
                 })

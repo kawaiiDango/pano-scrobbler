@@ -42,7 +42,7 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
         }
         view.first_things_1.setOnClickListener {
             Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
-            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+            val intent = Intent(Stuff.NLS_SETTINGS)
             startActivity(intent)
         }
         view.first_things_2.setOnClickListener {

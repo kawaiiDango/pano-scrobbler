@@ -94,7 +94,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
 
                         } else if (!isPlaying && NLService.handler.hasMessages(hash)) {
                             NLService.handler.remove(SessListener.lastHash)
-                            Stuff.log( "LegacyMetaReceiver cancelled "+ hash)
+                            Stuff.log("LegacyMetaReceiver cancelled $hash")
                         }
                     }, Stuff.META_WAIT+200)
                 } catch (e:Exception){

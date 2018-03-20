@@ -2,9 +2,6 @@ package com.arn.scrobble.ui;
 
 /**
  * Created by arn on 25/07/2017.
- */
-
-/**
  *   https://gist.github.com/Kevinrob/09742d9069e4e4e4ab66
  *   */
 

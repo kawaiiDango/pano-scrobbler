@@ -94,7 +94,7 @@ class RecentsAdapter
 
         if (imgUrl != null && imgUrl != "") {
             albumArt.clearColorFilter()
-            Picasso.with(context)
+            Picasso.get()
                     .load(imgUrl)
                     .fit()
                     .centerInside()
@@ -196,7 +196,7 @@ class RecentsAdapter
 
     private fun setHero(t: Track?, imgUrl: String? = null) {
         if (imgUrl != null && imgUrl != "") {
-            Picasso.with(context)
+            Picasso.get()
                     .load(imgUrl)
                     .noPlaceholder()
                     .error(R.drawable.ic_placeholder_music)
@@ -208,8 +208,8 @@ class RecentsAdapter
                             setPaletteColors()
                         }
 
-                        override fun onError() {
-                            Stuff.log("Picasso onError")
+                        override fun onError(e: Exception) {
+                            Stuff.log("Picasso err: $e")
                         }
                     })
         } else {

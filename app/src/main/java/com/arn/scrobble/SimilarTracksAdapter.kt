@@ -45,7 +45,7 @@ class SimilarTracksAdapter
 
         if (imgUrl != null && imgUrl != "") {
             convertView.recents_album_art.clearColorFilter()
-            Picasso.with(context)
+            Picasso.get()
                     .load(imgUrl)
                     .fit()
                     .centerCrop()

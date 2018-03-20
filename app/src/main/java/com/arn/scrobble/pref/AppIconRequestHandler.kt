@@ -43,7 +43,7 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
     }
 
     @Throws(PackageManager.NameNotFoundException::class)
-    private fun getFullResIcon(packageName: String): Bitmap? {
+    private fun getFullResIcon(packageName: String): Bitmap {
         val info = pm.getApplicationInfo(packageName, 0)
         return Stuff.drawableToBitmap(info.loadIcon(pm), isMIUI)
     }

@@ -81,7 +81,7 @@ class FriendsAdapter
         if (userImg != view.friends_pic.tag) {
             view.friends_pic.tag = userImg
             if (userImg != null && userImg != "")
-                Picasso.with(context)
+                Picasso.get()
                         .load(userImg)
                         .fit()
                         .centerInside()
@@ -100,8 +100,8 @@ class FriendsAdapter
                                 }
                             }
 
-                            override fun onError() {
-                                Stuff.log("Picasso onError")
+                            override fun onError(e: Exception) {
+                                Stuff.log("Picasso err: $e")
                             }
                         })
             else

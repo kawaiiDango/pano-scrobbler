@@ -242,7 +242,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         }
         val picUrl = pref.getString(Stuff.PREF_PROFILE_PIC,"")
         if (picUrl != "")
-            Picasso.with(this@Main)
+            Picasso.get()
                     .load(picUrl)
                     .placeholder(R.drawable.ic_placeholder_music)
                     .centerCrop()
@@ -261,8 +261,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             }
                         }
 
-                        override fun onError() {
-                            Stuff.log("Picasso onError drawer")
+                        override fun onError(e: Exception) {
+                            Stuff.log("Picasso drawer err: $e")
                         }
                     })
 

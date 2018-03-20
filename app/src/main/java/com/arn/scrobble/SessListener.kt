@@ -159,7 +159,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                 lastHash = handler.scrobble(artist, album, title, duration, packageNameParam)
         }
 
-        override fun onMetadataChanged(metadata: MediaMetadata?) {
+        @Synchronized override fun onMetadataChanged(metadata: MediaMetadata?) {
 //            super.onMetadataChanged(metadata)
             val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""
             val artist2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""

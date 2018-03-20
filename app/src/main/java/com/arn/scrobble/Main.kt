@@ -55,6 +55,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DebugOnly.installLeakCanary(application)
+        DebugOnly.strictMode()
+
         Stuff.timeIt("onCreate start")
         super.onCreate(savedInstanceState)
 
@@ -77,6 +79,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     MyAppBarLayout.State.COLLAPSED -> {
                         ctl.title = ctl.tag as CharSequence
                     }
+                    else -> {}
                 }
             }
         }

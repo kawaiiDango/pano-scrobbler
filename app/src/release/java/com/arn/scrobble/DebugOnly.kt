@@ -7,4 +7,5 @@ import android.app.Application
 
 object DebugOnly {
     fun installLeakCanary(app: Application){}
+    fun strictMode(){}
 }

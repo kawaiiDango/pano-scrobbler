@@ -277,24 +277,25 @@ class NLService : NotificationListenerService() {
             val album = m.data.getString(B_ALBUM)
             val time = m.data.getLong(B_TIME)
             val duration = m.data.getLong(B_DURATION)
-            //            int hash = title.hashCode() + artist.hashCode();
-            LFMRequester(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString()).asAsyncTask(applicationContext)
-            notification(artist, title, getString(R.string.state_scrobbled), 0)
+            val packageName = m.data.getString(B_PACKAGE)
+
+            val method = m.data.getInt(B_METHOD)
+
+            if (method == B_NOW_PLAYING) {
+                nowPlaying(artist, album, title, duration, m.what, packageName)
+            } else if (method == B_SCROBBLE) {
+                submitScrobble(artist, album, title, time, duration)
+            }
+
         }
 
-        fun scrobble(artist:String, album:String, title: String, duration:Long, packageName: String? = null): Int {
+        private fun nowPlaying(artist:String, album:String, title: String, duration:Long, hash:Int, packageName: String?) {
             if (!pref.getBoolean("master", true) ||
                     (!pref.getBoolean(Stuff.PREF_OFFLINE_SCROBBLE, true) &&
                             !isOnline)||
                     !FirstThingsFragment.checkAuthTokenExists(applicationContext))
-                return 0
-            val hash = artist.hashCode() + title.hashCode()
+                return
 
-//            if (!activeIDs.contains(hash))
-//                activeIDs.add(hash)
-//            else
-//                removeMessages(hash)
-            removeCallbacksAndMessages(null)
             if (!hasMessages(hash)) {
 
                 if (artist != "" && title != "") {
@@ -310,14 +311,15 @@ class NLService : NotificationListenerService() {
                     b.putString(B_TITLE, title)
                     b.putLong(B_TIME, now)
                     b.putLong(B_DURATION, duration)
+                    b.putInt(B_METHOD, B_SCROBBLE)
                     m.data = b
                     m.what = hash
                     val delaySecs = pref.getInt("delay_secs", 50).toLong() * 1000
                     val delayPer = pref.getInt("delay_per", 30).toLong()
-                    var delay = delaySecs
-                    if (duration > 10000 && duration*delayPer/100 < delay){ //dont scrobble <10 sec songs?
-                        delay = duration*delayPer/100
-                    }
+                    val delay = if (duration > 10000 && duration*delayPer/100 < delaySecs) //dont scrobble <10 sec songs?
+                        duration*delayPer/100
+                    else
+                        delaySecs
 
                     sendMessageDelayed(m, delay)
                     notification(artist, title, getString(R.string.state_scrobbling), 0)
@@ -330,15 +332,40 @@ class NLService : NotificationListenerService() {
                     //for rating
                     AppRater.incrementScrobbleCount(applicationContext)
                 } else {
-                    notification(artist + " " + title, getString(R.string.parse_error), getString(R.string.not_scrobling), NOTI_ERR_ICON)
+                    notification("$artist $title", getString(R.string.parse_error), getString(R.string.not_scrobling), NOTI_ERR_ICON)
                 }
             }
+        }
+
+        private fun submitScrobble(artist:String, album:String, title: String, time:Long, duration:Long) {
+            LFMRequester(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString()).asAsyncTask(applicationContext)
+            notification(artist, title, getString(R.string.state_scrobbled), 0)
+        }
+
+        fun scrobble(artist:String, album:String, title: String, duration:Long, packageName: String? = null): Int {
+            val m = obtainMessage()
+            val b = Bundle()
+            val hash = artist.hashCode() + title.hashCode()
+
+            b.putString(B_ARTIST, artist)
+            b.putString(B_ALBUM, album)
+            b.putString(B_TITLE, title)
+            b.putLong(B_DURATION, duration)
+            b.putString(B_PACKAGE, packageName)
+            b.putInt(B_METHOD, B_NOW_PLAYING)
+            m.data = b
+            m.what = hash
+            removeMessages(SessListener.lastHash)
+            sendMessage(m)
+
             return hash
         }
+
         fun scrobble(songTitle: String, duration:Long, packageName:String? = null): Int {
             val splits = Stuff.sanitizeTitle(songTitle)
             return scrobble(splits[0], "", splits[1], duration, packageName)
         }
+
         private fun buildAppNotification(packageName:String): Notification?{
             val appName: String
             try {
@@ -389,7 +416,7 @@ class NLService : NotificationListenerService() {
             var hash = title1.hashCode()
             if (title2 != null) {
                 hash += title2.hashCode()
-                title += " - " + title2
+                title += " - $title2"
             } else {
                 title2 = ""
             }
@@ -598,6 +625,10 @@ class NLService : NotificationListenerService() {
         val B_ARTIST = "artist"
         val B_ALBUM = "album"
         val B_DURATION = "duration"
+        val B_METHOD = "method"
+        val B_PACKAGE = "package"
+        val B_NOW_PLAYING = 1
+        val B_SCROBBLE = 2
         val NOTI_ID_SCR = "scrobble_success"
         val NOTI_ID_ERR = "err"
         val NOTI_ID_APP = "new_app"

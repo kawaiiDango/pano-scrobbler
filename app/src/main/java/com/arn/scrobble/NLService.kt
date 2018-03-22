@@ -23,6 +23,7 @@ import android.content.ComponentName
 import android.os.Process
 import android.app.ActivityManager
 import android.graphics.Bitmap
+import android.media.session.MediaSession
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.util.LruCache
 import org.codechimp.apprater.AppRater
@@ -80,7 +81,7 @@ class NLService : NotificationListenerService() {
         filter.addAction(iPREFS_CHANGED)
         filter.addAction(iNOTIFY_FAILED)
         filter.addAction(CONNECTIVITY_ACTION)
-        registerReceiver(nlservicereciver, filter)
+        applicationContext.registerReceiver(nlservicereciver, filter)
 
         corrrectedDataCache = LruCache(10)
 
@@ -89,9 +90,8 @@ class NLService : NotificationListenerService() {
 
         // Media session manager leaks/holds the context for too long.
         // Don't let it to leak the activity, better lak the whole app.
-        val c = applicationContext
         handler = ScrobbleHandler()
-        val sessManager = c.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+        val sessManager = applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         sessListener = SessListener(pref, handler)
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, this::class.java))
@@ -118,19 +118,21 @@ class NLService : NotificationListenerService() {
     private fun destroy() {
         Stuff.log("onListenerDisconnected")
         try {
-            unregisterReceiver(nlservicereciver)
+            applicationContext.unregisterReceiver(nlservicereciver)
         } catch(e:IllegalArgumentException) {
             Stuff.log("nlservicereciver wasn't registered")
         }
         if (sessListener != null) {
-            (getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
+            sessListener?.removeSessions(mutableSetOf<MediaSession.Token>())
+            (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
                     .removeOnActiveSessionsChangedListener(sessListener)
             pref.unregisterOnSharedPreferenceChangeListener(sessListener)
             sessListener = null
+            handler.removeCallbacksAndMessages(null)
         }
         if (bReceiver != null) {
             try {
-                unregisterReceiver(bReceiver)
+                applicationContext.unregisterReceiver(bReceiver)
                 bReceiver = null
             } catch(e:IllegalArgumentException) {
                 Stuff.log("LegacyMetaReceiver wasn't registered")

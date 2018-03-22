@@ -41,7 +41,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                     if (!controllersMap.containsKey(controller.sessionToken)) {
                         Stuff.log("onActiveSessionsChanged: " + controller.packageName +
                                 " #" + controller.sessionToken.describeContents())
-                        val cb = MyCallback(pref, handler, controller.packageName)
+                        val cb = MyCallback(pref, handler, controller.packageName, controller.sessionToken.toString() + ", " + hashCode())
                         controller.registerCallback(cb)
                         val pair = Pair.create(controller, cb)
                         synchronized(controllersMap) {
@@ -61,10 +61,10 @@ class SessListener constructor(private val pref: SharedPreferences,
             val (token, pair) = it.next()
             if ((tokens != null && !tokens.contains(token)) ||
                     (packageNames != null && packageNames.contains(pair.first.packageName))) {
+                pair.second.stop()
                 pair.first.unregisterCallback(pair.second)
                 synchronized(controllersMap) {
                     it.remove()
-                    handler.remove(lastHash)
                 }
             }
         }
@@ -72,7 +72,7 @@ class SessListener constructor(private val pref: SharedPreferences,
     }
 
     class MyCallback(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler,
-                     private val packageName: String) : Callback() {
+                     private val packageName: String, private val who: String) : Callback() {
         var metadata: MediaMetadata? = null
         var currHash = 0
         var lastScrobblePos = 1L
@@ -92,7 +92,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                 Stuff.log("onPlaybackStateChanged=" + state + " laststate=" + lastState +
                         " pos=" + pos + " duration=" +
                         metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
-                        +" this="+ hashCode())
+                        +" who=$who")
 
                 val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
                 val isPossiblyAtStart = pos == 0.toLong() ||
@@ -171,7 +171,7 @@ class SessListener constructor(private val pref: SharedPreferences,
             val sameAsOld = (artist == artist2 && title == title2 && album == album2)
             Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld,"+
                     "lastState=$lastState, package=$packageName"
-                    +" this="+ hashCode())
+                    +" who=$who")
             if (!sameAsOld) {
                 this.metadata = metadata
 //                lastSessEventTime = System.currentTimeMillis()
@@ -191,6 +191,17 @@ class SessListener constructor(private val pref: SharedPreferences,
             lastSessEventTime = System.currentTimeMillis()
             val msg = stateHandler.obtainMessage(0, state.state, state.position.toInt())
             stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
+        }
+
+        override fun onSessionDestroyed() {
+            Stuff.log("onSessionDestroyed")
+            stop()
+            super.onSessionDestroyed()
+        }
+
+        fun stop() {
+            stateHandler.removeCallbacksAndMessages(null)
+            handler.remove(lastHash)
         }
     }
 

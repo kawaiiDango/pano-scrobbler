@@ -52,11 +52,11 @@ dependencies {
 //    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
 //        exclude group: 'com.android.support', module: 'support-annotations'
 //    })
-    implementation 'com.android.support:appcompat-v7:27.1.0'
-    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
     implementation 'com.jjoe64:graphview:4.2.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.android.support:palette-v7:27.1.0'
+    implementation 'com.android.support:palette-v7:27.1.1'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4' //increases launch time by just 1ms
 //    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4' //still adds permissions to the manifest
@@ -64,8 +64,8 @@ dependencies {
     implementation project(':lastfm')
     implementation project(':materialSeekbarPref')
 
-    kapt "android.arch.persistence.room:compiler:1.1.0-alpha3"
-    implementation "android.arch.persistence.room:runtime:1.1.0-alpha3"
+    kapt "android.arch.persistence.room:compiler:1.1.0-beta2"
+    implementation "android.arch.persistence.room:runtime:1.1.0-beta2"
 
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

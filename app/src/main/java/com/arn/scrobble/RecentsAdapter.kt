@@ -19,10 +19,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ListView
+import android.widget.*
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.PendingScrobblesDb
 import com.jjoe64.graphview.series.LineGraphSeries
@@ -255,8 +252,19 @@ class RecentsAdapter
             val similarColorAnimator = ObjectAnimator.ofObject(activity.hero_similar, "textColor", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
             val infoBgAnimator = ObjectAnimator.ofObject(activity.hero_info, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
             val searchBgAnimator = ObjectAnimator.ofObject(activity.hero_play, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
+
+            val animSetList = mutableListOf<ObjectAnimator>(listBgAnimator, similarColorAnimator, shareBgAnimator, infoBgAnimator, searchBgAnimator)
+
+            for (i in 0..ctl.toolbar.childCount){
+                val child = ctl.toolbar.getChildAt(i)
+                if (child is ImageButton){
+                    val menuIconAnimator = ObjectAnimator.ofObject(child, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
+                    animSetList.add(menuIconAnimator)
+                    break
+                }
+            }
             val animSet = AnimatorSet()
-            animSet.playTogether(listBgAnimator, similarColorAnimator, shareBgAnimator, infoBgAnimator, searchBgAnimator)
+            animSet.playTogether(animSetList.toList())
             animSet.interpolator = AccelerateDecelerateInterpolator()
             animSet.duration = 1500
             animSet.start()

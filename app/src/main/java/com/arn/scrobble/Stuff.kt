@@ -32,9 +32,11 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.coordinator_main.*
+import kotlinx.android.synthetic.main.coordinator_main.view.*
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.lang.ref.WeakReference
@@ -277,6 +279,13 @@ object Stuff {
 //        ctl.tag = activity.getString(strId)
             ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.colorPrimary))
             ctl.setCollapsedTitleTextColor(Color.WHITE)
+            for (i in 0..ctl.toolbar.childCount){
+                val child = ctl.toolbar.getChildAt(i)
+                if (child is ImageButton){
+                    child.colorFilter = null
+                    break
+                }
+            }
         }
     }
 

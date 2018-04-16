@@ -52,18 +52,6 @@
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5"/>
 
-            <com.jjoe64.graphview.GraphView
-                android:id="@+id/graph"
-                android:layout_width="200dp"
-                android:layout_height="100dip"
-                android:layout_gravity="bottom|start"
-                android:layout_marginBottom="30dp"
-                android:layout_marginStart="10dp"
-                android:alpha="0"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.6"
-                tools:alpha="1"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,14 +63,29 @@
                 android:orientation="horizontal"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.8">
-<!-- layout_height="match_parent" in this makes it go out of screen on a device -->
+                <!-- layout_height="match_parent" in this makes it go out of screen on a device -->
+
+                <com.jjoe64.graphview.GraphView
+                    android:id="@+id/graph"
+                    android:layout_width="200dp"
+                    android:minWidth="200dp"
+                    android:layout_height="100dip"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="@dimen/graph_margin_end"
+                    android:layout_weight="2"
+                    android:alpha="0"
+                    android:gravity="center_vertical"
+                    app:layout_collapseMode="parallax"
+                    app:layout_collapseParallaxMultiplier="0.6"
+                    tools:alpha="1"/>
 
                 <TextView
                     android:id="@+id/hero_title"
                     android:layout_width="0dp"
                     android:layout_height="32dp"
                     android:layout_marginStart="10dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:gravity="center_vertical"
                     android:paddingEnd="2sp"
                     android:shadowColor="#777"
@@ -97,9 +100,13 @@
                     tools:text="title expanded title expanded "
                     tools:visibility="visible"/>
 
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
                 <Button
                     android:id="@+id/hero_similar"
-                    android:layout_width="80sp"
+                    android:layout_width="@dimen/similar_width"
                     android:layout_height="32dp"
                     android:gravity="center"
                     android:background="?android:attr/selectableItemBackground"
@@ -112,7 +119,7 @@
                     android:id="@+id/hero_share"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="@dimen/hero_button_margin_end"
                     android:background="?android:attr/selectableItemBackground"
                     android:scaleType="centerInside"
                     android:tooltipText="@string/share_this_song"
@@ -122,7 +129,7 @@
                     android:id="@+id/hero_info"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginEnd="5dp"
+                    android:layout_marginEnd="@dimen/hero_button_margin_end"
                     android:background="?android:attr/selectableItemBackground"
                     android:padding="4dp"
                     android:scaleType="centerInside"
@@ -133,7 +140,7 @@
                     android:id="@+id/hero_play"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginEnd="15dp"
+                    android:layout_marginEnd="@dimen/hero_button_margin_last"
                     android:background="?android:attr/selectableItemBackground"
                     android:scaleType="centerInside"
                     android:tooltipText="@string/hero_search"

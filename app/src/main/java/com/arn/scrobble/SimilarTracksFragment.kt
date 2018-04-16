@@ -1,5 +1,8 @@
 package com.arn.scrobble
 
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.Fragment
 import android.app.LoaderManager
 import android.content.Loader
@@ -12,6 +15,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -40,18 +44,36 @@ class SimilarTracksFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
         view.similar_grid.adapter = adapter
         view.similar_grid.onItemClickListener = itemClickListener
         view.header_text.text = getString(R.string.similar_tracks)
-        activity.app_bar.hero_similar
-                .animate()
-                .translationYBy(Stuff.dp2px(50, activity).toFloat())
-                .setInterpolator(DecelerateInterpolator())
-                .setDuration(400)
-                .withEndAction {
-                    Stuff.setAppBarHeight(activity, view.measuredHeight)
-                    activity.app_bar.hero_similar.isEnabled = true
-                    activity.ctl.hero_similar.visibility = View.GONE
-                    activity.ctl.hero_title.visibility = View.VISIBLE
+
+        val similarAnimator = ObjectAnimator.ofFloat(activity.hero_similar, View.Y, activity.hero_similar.y, activity.hero_similar.y + Stuff.dp2px(50, activity).toFloat())
+        val graphAnimator = ObjectAnimator.ofFloat(activity.graph, View.Y, activity.graph.y, activity.graph.y + Stuff.dp2px(150, activity).toFloat())
+        val animSet = AnimatorSet()
+        animSet.playTogether(similarAnimator, graphAnimator)
+        animSet.interpolator = AccelerateInterpolator()
+        animSet.duration = 400
+        animSet.addListener(
+                object : Animator.AnimatorListener {
+                    override fun onAnimationRepeat(p0: Animator?) {
+                    }
+
+                    override fun onAnimationCancel(p0: Animator?) {
+                    }
+
+                    override fun onAnimationStart(p0: Animator?) {
+                    }
+
+                    override fun onAnimationEnd(p0: Animator?) {
+                        Stuff.setAppBarHeight(activity, view.measuredHeight)
+                        activity.app_bar.hero_similar.isEnabled = true
+                        activity.ctl.hero_similar.visibility = View.GONE
+                        activity.ctl.graph.visibility = View.GONE
+                        activity.ctl.hero_title.visibility = View.VISIBLE
+                    }
+
                 }
-                .start()
+        )
+        animSet.start()
+
         return view
     }
 
@@ -74,14 +96,18 @@ class SimilarTracksFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
     override fun onDestroyView() {
         activity.ctl.hero_similar.visibility = View.VISIBLE
         activity.ctl.hero_title.visibility = View.GONE
+        activity.ctl.graph.visibility = View.VISIBLE
         Stuff.setAppBarHeight(activity)
-        activity.app_bar.hero_similar.animate()
-                .translationYBy(-Stuff.dp2px(50, activity).toFloat())
-                .setInterpolator(DecelerateInterpolator())
-                .setDuration(400)
-                .start()
+
+        val similarAnimator = ObjectAnimator.ofFloat(activity.hero_similar, View.Y, activity.hero_similar.y, activity.hero_similar.y - Stuff.dp2px(50, activity).toFloat())
+        val graphAnimator = ObjectAnimator.ofFloat(activity.graph, View.Y, activity.graph.y, activity.graph.y - Stuff.dp2px(150, activity).toFloat())
+        val animSet = AnimatorSet()
+        animSet.playTogether(similarAnimator, graphAnimator)
+        animSet.interpolator = DecelerateInterpolator()
+        animSet.duration = 400
+        animSet.start()
+
         super.onDestroyView()
-//        activity.app_bar.hero_similar.visibility = View.VISIBLE
     }
 
     override fun onCreateLoader(id: Int, b: Bundle?): Loader<Any?>? {

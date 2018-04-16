@@ -70,8 +70,9 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
 
         val graph = activity.graph
         graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
-        graph.gridLabelRenderer.isHorizontalLabelsVisible = false
-        graph.gridLabelRenderer.isVerticalLabelsVisible = false
+        graph.gridLabelRenderer.isHorizontalLabelsVisible = true //otherwise horizontalAxisTitle overlaps y=0 line
+        graph.gridLabelRenderer.labelHorizontalHeight = Stuff.dp2px(-2, activity)
+        graph.gridLabelRenderer.horizontalLabelsColor = 0
         graph.gridLabelRenderer.numVerticalLabels = 3
         graph.gridLabelRenderer.labelsSpace = Stuff.sp2px(10, activity)
         val series = LineGraphSeries<DataPoint>()
@@ -87,7 +88,7 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
         graph.tag = PreferenceManager.getDefaultSharedPreferences(activity)
                 .getBoolean(Stuff.PREF_GRAPH_DETAILS,  false)
         toggleGraphDetails(graph)
-        graph.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.NONE
+
         graph.gridLabelRenderer.labelFormatter = object : DefaultLabelFormatter() {
             override fun formatLabel(value: Double, isValueX: Boolean): String {
                 return if (isValueX) {
@@ -135,12 +136,14 @@ class RecentsFragment : Fragment(), LoaderManager.LoaderCallbacks<Any?>{
 
             val series = graph.series[0] as LineGraphSeries<DataPoint>
             val dps = mutableListOf<DataPoint>()
-            var i = 0.0
-            points.split(", ").forEach {
-                dps.add(DataPoint(i++, it.toDouble()))
+            val pointsStr = points.split(", ").toMutableList()
+            while (pointsStr.size in 4..5)
+                pointsStr.add(0, "0")
+
+            pointsStr.forEachIndexed { i, str ->
+                dps.add(DataPoint(i.toDouble(), str.toDouble()))
             }
 
-//            Stuff.log("points: $points")
             series.resetData(dps.toTypedArray())
 
             graph.alpha = 0f

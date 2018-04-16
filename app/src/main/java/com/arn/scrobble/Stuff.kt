@@ -107,8 +107,9 @@ object Stuff {
 
     val IGNORE_ARTIST_META = arrayOf(
             "com.google.android.youtube",
+            "com.vanced.android.youtube",
+            "com.google.android.ogyoutube",
             "com.google.android.apps.youtube.mango",
-            "com.google.android.apps.youtube.music",
             "com.android.chrome",
             "com.chrome.beta",
             "com.chrome.dev",

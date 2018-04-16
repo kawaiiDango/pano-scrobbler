@@ -39,10 +39,14 @@ class SessListener constructor(private val pref: SharedPreferences,
                 if (shouldScrobble(controller.packageName)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!controllersMap.containsKey(controller.sessionToken)) {
-                        Stuff.log("onActiveSessionsChanged: " + controller.packageName +
-                                " #" + controller.sessionToken.describeContents())
+                        Stuff.log("onActiveSessionsChanged [" + controllers.size + "] : " + controller.packageName)
                         val cb = MyCallback(pref, handler, controller.packageName, controller.sessionToken.toString() + ", " + hashCode())
                         controller.registerCallback(cb)
+                        if (controller.playbackState != null)
+                            cb.onPlaybackStateChanged(controller.playbackState) //Melody needs this
+                        if (controller.metadata != null)
+                            cb.onMetadataChanged(controller.metadata)
+
                         val pair = Pair.create(controller, cb)
                         synchronized(controllersMap) {
                             controllersMap.put(controller.sessionToken, pair)

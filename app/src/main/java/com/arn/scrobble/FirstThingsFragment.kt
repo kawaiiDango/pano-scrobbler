@@ -67,7 +67,6 @@ class FirstThingsFragment: Fragment(), SharedPreferences.OnSharedPreferenceChang
 
             override fun afterTextChanged(arg0: Editable) {
                 val splits = testing_pass.text.split('_')
-                Stuff.log("splits: $splits " + splits.size)
                 if (splits.size == 3) {
                     PreferenceManager.getDefaultSharedPreferences(activity).edit()
                             .putString(Stuff.USERNAME, splits[0])

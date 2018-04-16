@@ -154,7 +154,7 @@ class AppListFragment : Fragment() {
         }
         adapter.addSectionHeader(getString(R.string.video_players))
         otherApps.forEach {
-            if(Stuff.APPS_IGNORE_ARTIST_META.contains(it.packageName)) {
+            if(Stuff.IGNORE_ARTIST_META.contains(it.packageName)) {
                 adapter.add(it)
                 excludePackageNames.add(it.packageName)
             }

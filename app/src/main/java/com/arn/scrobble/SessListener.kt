@@ -78,7 +78,7 @@ class SessListener constructor(private val pref: SharedPreferences,
         var lastScrobblePos = 1L
         var lastScrobbleTime = 0L
         var lastState = -1
-        val isIgnoreArtistMeta = Stuff.APPS_IGNORE_ARTIST_META.contains(packageName)
+        val isIgnoreArtistMeta = Stuff.IGNORE_ARTIST_META.contains(packageName)
 
         init {
             lastSessEventTime = System.currentTimeMillis()

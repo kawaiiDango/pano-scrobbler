@@ -153,7 +153,11 @@ class FriendsAdapter
 
     fun populateFriendsRecent(res: PaginatedResult<Track>, pos: Int) {
         if (!res.isEmpty) {
-            getItem(pos).recentTrack = res.pageResults.first()
+            try {
+                getItem(pos).recentTrack = res.pageResults.first()
+            } catch (e: IndexOutOfBoundsException){
+                return
+            }
             notifyDataSetChanged()
         }
         if (recentsLoadQ.isNotEmpty()) {

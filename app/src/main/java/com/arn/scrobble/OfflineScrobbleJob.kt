@@ -127,7 +127,7 @@ class OfflineScrobbleJob : JobService() {
 
             val job = JobInfo.Builder(OfflineScrobbleJob.JOB_ID, ComponentName(context, OfflineScrobbleJob::class.java))
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setMinimumLatency(20*1000)
+                    .setMinimumLatency(Stuff.OFFLINE_SCROBBLE_JOB_DELAY)
                     .setPersisted(true)
                     .build()
             val jsRet = js.schedule(job)

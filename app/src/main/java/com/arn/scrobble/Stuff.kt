@@ -21,6 +21,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.graphics.drawable.Animatable2Compat
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat
@@ -91,18 +92,20 @@ object Stuff {
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
     const val CANCELLABLE_MSG = 9
-    const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 15 * 1000
+    const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
     const val META_WAIT: Long = 500
     const val DEBOUNCE_TIME = 100
     const val MAX_APPS = 30
     const val MIN_LISTENER_COUNT = 7
 
-    val NLS_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
+    val NLS_SETTINGS = if (Build.VERSION.SDK_INT > 21)
+            ACTION_NOTIFICATION_LISTENER_SETTINGS
+        else "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
     val AUTH_CB_URL = "https://www.last.fm/api/auth?api_key=${Stuff.LAST_KEY}&cb=pscrobble://auth"
 
     private var timeIt:Long = 0
 
-    val APPS_IGNORE_ARTIST_META = arrayOf(
+    val IGNORE_ARTIST_META = arrayOf(
             "com.google.android.youtube",
             "com.google.android.apps.youtube.mango",
             "com.google.android.apps.youtube.music",
@@ -300,10 +303,10 @@ object Stuff {
         val targetAbHeight: Int
         val lp = activity.app_bar.layoutParams
 
-        if (sHeightPx < abHeightPx + additionalHeight + Stuff.dp2px(40, activity))
-            targetAbHeight = activity.resources.getDimensionPixelSize(R.dimen.app_bar_summary_height)
+        targetAbHeight = if (sHeightPx < abHeightPx + additionalHeight + Stuff.dp2px(40, activity))
+            activity.resources.getDimensionPixelSize(R.dimen.app_bar_summary_height)
         else
-            targetAbHeight = activity.resources.getDimensionPixelSize(R.dimen.app_bar_height)
+            activity.resources.getDimensionPixelSize(R.dimen.app_bar_height)
         if (targetAbHeight != lp.height) {
             if (activity.app_bar.isCollapsed) {
                 lp.height = targetAbHeight

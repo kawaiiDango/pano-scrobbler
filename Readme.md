@@ -24,10 +24,11 @@
 - Musixmatch's FloatingLyrics for the idea and inspiration
 - https://github.com/jkovacs/lastfm-java (I added many missing lastfm api methods in a messy way, might make a pull request some time)
 - https://github.com/codechimp-org/AppRater (Made it into a snackbar version)
+- http://materialdesignicons.com
 - Other dependencies in build.gradle
 
 - **Kaycee da Ghost** for putting up with me while i tried to fix miui specific bugs
-- **memeko ヾ(*・ω・)ノ** for the ui design
+- **memeko ヾ(\*・ω・)ノ** for the ui design
 - **My username is true** as a long time dedicated tester and spotting lots of bugs
 - **nabz** for ui and graphics design ideas
 - **nomad** for ui and graphics design ideas and fixes

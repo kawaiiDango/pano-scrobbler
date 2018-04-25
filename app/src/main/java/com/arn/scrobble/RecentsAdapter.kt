@@ -22,6 +22,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.*
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -258,8 +259,14 @@ class RecentsAdapter
             for (i in 0..ctl.toolbar.childCount){
                 val child = ctl.toolbar.getChildAt(i)
                 if (child is ImageButton){
-                    val menuIconAnimator = ObjectAnimator.ofObject(child, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
-                    animSetList.add(menuIconAnimator)
+                    val bgColor = if (colorDomPrimary != colorLightWhite)
+                        colorDomPrimary
+                    else
+                        colorMutedDark
+                    (child.drawable as ShadowDrawerArrowDrawable).setColors(colorLightWhite, bgColor)
+
+//                    val menuIconAnimator = ObjectAnimator.ofObject(child, "colorFilter", ArgbEvaluator(), lastColorLightWhite, colorLightWhite)
+//                    animSetList.add(menuIconAnimator)
                     break
                 }
             }

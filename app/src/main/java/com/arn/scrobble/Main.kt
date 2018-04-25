@@ -39,6 +39,7 @@ import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.ui.MyAppBarLayout
+import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
@@ -94,6 +95,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 this@Main.onDrawerOpened()
             }
         }
+        toggle.drawerArrowDrawable = ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
+
         drawer_layout.addDrawerListener(toggle)
         nav_view.setNavigationItemSelectedListener(this)
 

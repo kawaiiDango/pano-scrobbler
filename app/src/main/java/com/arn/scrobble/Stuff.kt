@@ -36,6 +36,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
+import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.coordinator_main.view.*
 import java.io.IOException
@@ -286,7 +287,7 @@ object Stuff {
             for (i in 0..ctl.toolbar.childCount){
                 val child = ctl.toolbar.getChildAt(i)
                 if (child is ImageButton){
-                    child.colorFilter = null
+                    (child.drawable as ShadowDrawerArrowDrawable).setColors(Color.WHITE, Color.TRANSPARENT)
                     break
                 }
             }

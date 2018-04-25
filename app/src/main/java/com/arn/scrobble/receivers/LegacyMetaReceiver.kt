@@ -47,9 +47,9 @@ class LegacyMetaReceiver : BroadcastReceiver() {
             if (isPlaying == null) {
                 Stuff.log("does not contain playing state, ignoring")
             } else {
-                val artist = intent.getStringExtra("artist")
-                val album = intent.getStringExtra("album") ?: ""
-                val track = intent.getStringExtra("track")
+                val artist = intent.getStringExtra("artist")?.trim()
+                val album = intent.getStringExtra("album")?.trim() ?: ""
+                val track = intent.getStringExtra("track")?.trim()
 //                val positionAny: Any? = intent.extras["position"] // position in blackplayer is a lie
 
                 if (artist == null || artist == "" || track == null || track == "" )

@@ -77,12 +77,16 @@ class SessListener constructor(private val pref: SharedPreferences,
 
     class MyCallback(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler,
                      private val packageName: String, private val who: String) : Callback() {
-        var metadata: MediaMetadata? = null
         var currHash = 0
         var lastScrobblePos = 1L
         var lastScrobbleTime = 0L
         var lastState = -1
         val isIgnoreArtistMeta = Stuff.IGNORE_ARTIST_META.contains(packageName)
+
+        var artist = ""
+        var album = ""
+        var title = ""
+        var duration = -1L
 
         init {
             lastSessEventTime = System.currentTimeMillis()
@@ -93,12 +97,8 @@ class SessListener constructor(private val pref: SharedPreferences,
                 val state: Int = msg?.arg1!!
                 val pos: Long = msg.arg2.toLong()
 
-                Stuff.log("onPlaybackStateChanged=" + state + " laststate=" + lastState +
-                        " pos=" + pos + " duration=" +
-                        metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
-                        +" who=$who")
+                Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos duration=$duration who=$who")
 
-                val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
                 val isPossiblyAtStart = pos == 0.toLong() ||
                         (pos < 1500 && duration > 0 && System.currentTimeMillis() - lastScrobbleTime >= duration)
 
@@ -109,12 +109,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                 if (state != PlaybackState.STATE_BUFFERING)
                     lastState = state
 
-                val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: return
-                val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
-                val artist = (metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?:
-                        metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)) ?: return
-
-                if (title == "")
+                if (title == "" || artist == "")
                     return
 
                 if (state == PlaybackState.STATE_PAUSED) {
@@ -165,19 +160,21 @@ class SessListener constructor(private val pref: SharedPreferences,
 
         @Synchronized override fun onMetadataChanged(metadata: MediaMetadata?) {
 //            super.onMetadataChanged(metadata)
-            val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""
-            val artist2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""
-            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
-            val title2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
-            val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
-            val album2 = this.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""
+            val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
+                    metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
+            val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
+            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
-            val sameAsOld = (artist == artist2 && title == title2 && album == album2)
+            val sameAsOld = (artist == this.artist && title == this.title && album == this.album)
+
             Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld,"+
-                    "lastState=$lastState, package=$packageName"
-                    +" who=$who")
+                    "lastState=$lastState, package=$packageName who=$who")
             if (!sameAsOld) {
-                this.metadata = metadata
+                this.artist = artist
+                this.album = album
+                this.title = title
+                this.duration = duration
+
 //                lastSessEventTime = System.currentTimeMillis()
                 currHash = artist.hashCode() + title.hashCode()
                 // for cases:

@@ -1,70 +1,95 @@
 package com.arn.scrobble
 
-import android.app.Activity
-import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.GridView
+import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.ui.ItemClickListener
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
-import kotlinx.android.synthetic.main.content_similar.*
+import kotlinx.android.synthetic.main.grid_item_recents.view.*
 import kotlinx.android.synthetic.main.header_default.view.*
-import kotlinx.android.synthetic.main.list_item_recents.view.*
 
 /**
  * Created by arn on 29/12/2017.
  */
-class SimilarTracksAdapter
+class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Adapter<SimilarTracksAdapter.VHItem>() {
 
-(c: Context, private val layoutResourceId: Int) : ArrayAdapter<Track>(c, layoutResourceId, mutableListOf()) {
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView: View? = convertView
-        if (convertView == null) {
-            // inflate the layout
-            val inflater = (context as Activity).layoutInflater
-            convertView = inflater.inflate(layoutResourceId, parent, false)!!
-            (convertView as ViewGroup).layoutTransition?.setDuration(100)
-        }
-        val t = getItem(position) ?: return convertView
+    private var clickListener: ItemClickListener? = null
+    private val tracks = mutableListOf<Track>()
+    var itemSizeDp = 150
 
-        convertView.recents_love.visibility = View.GONE
-        convertView.recents_playing.visibility = View.GONE
-        convertView.recents_date.visibility = View.GONE
-
-        convertView.recents_title.text = t.name
-        convertView.recents_subtitle.text = t.artist
-
-        if ((parent as GridView).isItemChecked(position)){
-            convertView.recents_play.visibility = View.VISIBLE
-        } else
-            convertView.recents_play.visibility = View.GONE
-
-        val imgUrl = t.getImageURL(ImageSize.LARGE)
-
-        if (imgUrl != null && imgUrl != "") {
-            convertView.recents_album_art.clearColorFilter()
-            Picasso.get()
-                    .load(imgUrl)
-                    .fit()
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_placeholder_music)
-                    .error(R.drawable.ic_placeholder_music)
-                    .into(convertView.recents_album_art)
-
-        } else {
-            convertView.recents_album_art.setImageResource(R.drawable.ic_placeholder_music)
-            convertView.recents_album_art.setColorFilter(Stuff.getMatColor(context, "500", t.name.hashCode().toLong()))
-        }
-
-        return convertView
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHItem{
+        val inflater = LayoutInflater.from(parent.context)
+        val view = inflater.inflate(R.layout.grid_item_recents, parent, false)
+        return VHItem(view, itemSizeDp, clickListener)
     }
 
-    fun populate(res: ArrayList<Track>){
-        if (res.size == 0)
-            (context as Activity).similar_grid_container?.header_text?.text = context.getString(R.string.no_similar_tracks)
-        else
-            addAll(res)
+    fun getItem(id: Int): Track {
+        return tracks[id]
+    }
+
+    override fun getItemCount() = tracks.size
+
+    override fun onBindViewHolder(holder:VHItem, position: Int) {
+        holder.setItemData(tracks[position])
+    }
+
+    fun setClickListener(itemClickListener: ItemClickListener) {
+        clickListener = itemClickListener
+    }
+
+    class VHItem(view: View, sizeDp: Int, private val clickListener: ItemClickListener?) : RecyclerView.ViewHolder(view), View.OnClickListener {
+        private val vFrame = view.recents_track_container
+        private val vDate = view.recents_date
+        private val vTitle = view.recents_title
+        private val vSubtitle = view.recents_subtitle
+        private val vImg = view.recents_img
+
+        init {
+            vFrame.setOnClickListener(this)
+            vDate.visibility = View.GONE
+            val dp = Stuff.dp2px(sizeDp, view.context)
+            view.minimumWidth = dp
+            view.minimumHeight = dp
+        }
+
+        override fun onClick(view: View) {
+            clickListener?.onItemClick(view, adapterPosition)
+        }
+
+        fun setItemData(track: Track) {
+            vTitle.text = track.name
+            vSubtitle.text = track.artist
+
+
+            val imgUrl = track.getImageURL(ImageSize.LARGE)
+
+            if (imgUrl != null && imgUrl != "") {
+                vImg.clearColorFilter()
+                Picasso.get()
+                        .load(imgUrl)
+                        .fit()
+                        .centerCrop()
+                        .placeholder(R.drawable.vd_wave_simple)
+                        .error(R.drawable.vd_wave_simple)
+                        .into(vImg)
+
+            } else {
+                vImg.setImageResource(R.drawable.vd_wave_simple)
+                vImg.setColorFilter(Stuff.getMatColor(itemView.context, "500", track.name.hashCode().toLong()))
+            }
+        }
+    }
+
+    fun populate(res: List<Track>){
+        if (res.isEmpty())
+            fragmentContent.header_text?.text = fragmentContent.context.getString(R.string.no_similar_tracks)
+        else {
+            tracks.clear()
+            tracks.addAll(res)
+            notifyDataSetChanged()
+        }
     }
 }

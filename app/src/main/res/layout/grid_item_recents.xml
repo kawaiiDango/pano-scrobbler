@@ -3,72 +3,73 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:foreground="?android:attr/selectableItemBackground"
+                android:layout_height="125dp"
+                android:foreground="?attr/selectableItemBackground"
                 android:orientation="horizontal"
                 android:paddingBottom="1dip"
                 android:paddingLeft="1dip"
-                android:paddingRight="1dip"
-                android:animateLayoutChanges="true">
+                android:paddingRight="1dip">
 
     <ImageView
-        android:id="@+id/recents_album_art"
+        android:id="@+id/recents_img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
         tools:srcCompat="@mipmap/ic_launcher"/>
 
-    <ImageView
-        android:id="@+id/recents_love"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_above="@+id/grid_recents_caption"
-        android:layout_alignParentEnd="true"
-        android:clickable="true"
-        android:elevation="10dp"
-        android:scaleType="fitCenter"
-        tools:srcCompat="@drawable/avd_heart_make"/>
-
     <LinearLayout
+        android:id="@+id/recents_track_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/gradient_dark_overlay_grid"
-        android:orientation="vertical"
-        android:id="@+id/grid_recents_caption">
+        android:background="@drawable/selector_track_container"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="#30000000"
+        android:orientation="vertical">
 
-        <com.arn.scrobble.ui.FixedLineTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/recents_subtitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="2dip"
+            android:layout_height="18dp"
             android:clickable="false"
+            android:drawableEnd="@drawable/shape_triangle_corner"
+            android:ellipsize="end"
             android:linksClickable="false"
             android:longClickable="false"
-            android:paddingEnd="1sp"
-            android:paddingStart="1sp"
+            android:maxLines="1"
+            android:paddingStart="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="13sp"
+            android:textSize="24sp"
+            app:autoSizeMaxTextSize="24sp"
+            app:autoSizeMinTextSize="14sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+
             tools:text="subtit subtit"/>
 
-        <com.arn.scrobble.ui.FixedLineTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/recents_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="22dp"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="-3dp"
             android:clickable="false"
+            android:ellipsize="end"
             android:gravity="bottom"
             android:longClickable="false"
-            android:paddingEnd="1sp"
-            android:paddingStart="1sp"
+            android:maxLines="1"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/colorAccentLight"
-            android:textSize="16sp"
-            android:layout_gravity="bottom"
+            android:textSize="20sp"
+            app:autoSizeMaxTextSize="20sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
             tools:text="Title title"/>
 
     </LinearLayout>
@@ -77,34 +78,36 @@
         android:id="@+id/recents_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/grid_recents_caption"
+        android:layout_above="@+id/recents_track_container"
+        android:layout_alignParentEnd="true"
         android:layout_marginEnd="39dp"
-        android:layout_toStartOf="@+id/recents_love"
         android:paddingStart="10dp"
         android:textAppearance="@android:style/TextAppearance.Material.Caption"
         tools:text="date date yay"/>
 
-    <ImageView
-        android:id="@+id/recents_play"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/grid_recents_caption"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+    <View
+        android:id="@+id/recents_img_overlay"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_above="@+id/recents_track_container"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="1dp"
         android:alpha="0.8"
-        android:background="@drawable/gradient_dark_overlay_search"
         android:padding="10dp"
-        android:scaleType="fitCenter"
-        app:srcCompat="@drawable/vd_search"
+        android:visibility="gone"
+        tools:background="@tools:sample/avatars"
         tools:visibility="visible"/>
-<!-- android:visibility="gone" -->
+
     <ImageView
         android:id="@+id/recents_playing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/grid_recents_caption"
+        android:layout_above="@+id/recents_track_container"
         android:layout_toStartOf="@+id/recents_date"
-        app:srcCompat="@drawable/avd_eq"/>
+        android:visibility="gone"
+        tools:srcCompat="@drawable/avd_eq"/>
 
 </RelativeLayout>

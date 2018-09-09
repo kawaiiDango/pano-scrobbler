@@ -71,6 +71,7 @@ public class Track extends MusicEntry {
 	private boolean fullTrackAvailable;
 	private boolean nowPlaying;
     private boolean loved = false;
+    private Artist artistExtended; // using it only for getRecents(extended=1)
 
 	private Date playedWhen;
 	protected int duration;		// protected for use in Playlist.playlistFromElement
@@ -79,7 +80,7 @@ public class Track extends MusicEntry {
 	protected Map<String, String> lastFmExtensionInfos = new HashMap<String, String>();		// protected for use in Playlist.playlistFromElement
 
 
-	protected Track(String name, String url, String artist) {
+	public Track(String name, String url, String artist) {
 		super(name, url);
 		this.artist = artist;
 	}
@@ -99,6 +100,14 @@ public class Track extends MusicEntry {
 
     public void setLoved(boolean loved) {
         this.loved = loved;
+    }
+
+    public void setNowPlaying(boolean nowPlaying) {
+        this.nowPlaying = nowPlaying;
+    }
+
+    public Artist getArtistExtended() {
+        return artistExtended;
     }
 
 	/**
@@ -750,6 +759,10 @@ public class Track extends MusicEntry {
 			if (artist.getChild("name") != null) {
 				track.artist = artist.getChildText("name");
 				track.artistMbid = artist.getChildText("mbid");
+
+				// for extended = 1
+                if (artist.getChild("image") != null)
+                    track.artistExtended = Artist.FACTORY.createItemFromElement(artist);
 			} else {
 				track.artist = artist.getText();
 				track.artistMbid = artist.getAttribute("mbid");

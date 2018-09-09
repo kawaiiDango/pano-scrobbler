@@ -4,28 +4,21 @@ package com.arn.scrobble
 
 import android.app.*
 import android.content.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
+import android.os.*
 import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
-import com.arn.scrobble.receivers.LegacyMetaReceiver
-import android.os.Build
-import android.support.v4.app.NotificationCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.media.app.MediaStyleMod
-import android.widget.Toast
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.ComponentName
-import android.os.Process
-import android.app.ActivityManager
-import android.graphics.Bitmap
-import android.media.session.MediaSession
-import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.util.LruCache
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.media.app.MediaStyleMod
+import com.arn.scrobble.receivers.LegacyMetaReceiver
 import org.codechimp.apprater.AppRater
 
 
@@ -34,6 +27,7 @@ class NLService : NotificationListenerService() {
     private lateinit var nm: NotificationManager
     private var sessListener: SessListener? = null
     private var bReceiver: LegacyMetaReceiver? = null
+    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
         if (BuildConfig.DEBUG)
@@ -45,7 +39,7 @@ class NLService : NotificationListenerService() {
         // lollipop and mm bug
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
             init()
-        ensureServiceRunning(applicationContext)
+//        KeepNLSAliveJob.ensureServiceRunning(applicationContext)
     }
 
     //from https://gist.github.com/xinghui/b2ddd8cffe55c4b62f5d8846d5545bf9
@@ -73,36 +67,33 @@ class NLService : NotificationListenerService() {
         val filter = IntentFilter()
         filter.addAction(pNLS)
         filter.addAction(pCANCEL)
-        filter.addAction(pCANCEL_TOAST)
         filter.addAction(pLOVE)
         filter.addAction(pUNLOVE)
         filter.addAction(pWHITELIST)
         filter.addAction(pBLACKLIST)
-        filter.addAction(iPREFS_CHANGED)
-        filter.addAction(iNOTIFY_FAILED)
-        filter.addAction(CONNECTIVITY_ACTION)
+        filter.addAction(iBAD_META)
+        filter.addAction(iOTHER_ERR)
         applicationContext.registerReceiver(nlservicereciver, filter)
 
         corrrectedDataCache = LruCache(10)
 
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        migratePrefs(pref)
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Media session manager leaks/holds the context for too long.
-        // Don't let it to leak the activity, better lak the whole app.
         handler = ScrobbleHandler()
         val sessManager = applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         sessListener = SessListener(pref, handler)
         try {
-            sessManager.addOnActiveSessionsChangedListener(sessListener, ComponentName(this, this::class.java))
+            sessManager.addOnActiveSessionsChangedListener(sessListener!!, ComponentName(this, this::class.java))
             //scrobble after the app is updated
             sessListener?.onActiveSessionsChanged(sessManager.getActiveSessions(ComponentName(this, this::class.java)))
             Stuff.log("onListenerConnected")
         } catch (exception: SecurityException) {
             Stuff.log("Failed to start media controller: " + exception.message)
-            // Try to unregister it, just it case.
+            // Try to unregister it, just in case.
             try {
-                sessManager.removeOnActiveSessionsChangedListener(sessListener)
+                sessManager.removeOnActiveSessionsChangedListener(sessListener!!)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -112,20 +103,45 @@ class NLService : NotificationListenerService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) //ok this works
             bReceiver = LegacyMetaReceiver.regIntents(applicationContext)
         initChannels(applicationContext)
-        isOnline = Stuff.getOnlineStatus(this)
+        KeepNLSAliveJob.checkAndSchedule(applicationContext)
+
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val builder = NetworkRequest.Builder()
+        connectivityCb = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network?) {
+                isOnline = true
+            }
+
+            override fun onLost(network: Network?) {
+//                isOnline = false
+            }
+
+            override fun onUnavailable() {
+                isOnline = false
+            }
+        }
+
+        cm.registerNetworkCallback(builder.build(), connectivityCb)
+
+        val ni = cm.activeNetworkInfo
+        isOnline = ni?.isConnected == true
+
+        sendBroadcast(Intent(iNLS_STARTED))
     }
 
     private fun destroy() {
         Stuff.log("onListenerDisconnected")
         try {
             applicationContext.unregisterReceiver(nlservicereciver)
+            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            cm.unregisterNetworkCallback(connectivityCb)
         } catch(e:IllegalArgumentException) {
             Stuff.log("nlservicereciver wasn't registered")
         }
         if (sessListener != null) {
             sessListener?.removeSessions(mutableSetOf<MediaSession.Token>())
             (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
-                    .removeOnActiveSessionsChangedListener(sessListener)
+                    .removeOnActiveSessionsChangedListener(sessListener!!)
             pref.unregisterOnSharedPreferenceChangeListener(sessListener)
             sessListener = null
             handler.removeCallbacksAndMessages(null)
@@ -151,74 +167,33 @@ class NLService : NotificationListenerService() {
         super.onDestroy()
     }
 
-/*
-    override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        if (sbn == null)
-            return
-        var s = "onNotificationPosted  (" + sbn.id + ") :" + sbn.packageName + "\n"
-        val n = sbn.notification
-
-        for (key in n.extras.keySet())
-            s += "\nBundle: " + key + " = " + n.extras.get(key)
-
-        val text = n.extras.getCharSequence(Notification.EXTRA_TEXT)
-        val title = n.extras.getCharSequence(Notification.EXTRA_TITLE)
-
-        if (text != null && title != null) {
-            var found = false
-            val songTitle: String
-            if (pref.getBoolean("scrobble_mxmFloatingLyrics", false) &&
-                    sbn.packageName == MXM_PACKAGE && NOTI_TEXT.contains(text)) {
-                songTitle = title.toString()
-                found = true
-                handler.scrobble(songTitle)
-            }
-        }
-    }
-
-    override fun onNotificationRemoved(sbn: StatusBarNotification?) {
-        if (sbn == null)
-            return
-
-        val s = "onNotificationRemoved (" + sbn.id + ") :" + sbn.packageName + "\n"
-        val n = sbn.notification
-        val text = n.extras.getCharSequence(Notification.EXTRA_TEXT)
-        val title = n.extras.getCharSequence(Notification.EXTRA_TITLE)
-
-        if (text != null)
-            if (pref.getBoolean("scrobble_mxmFloatingLyrics", false) &&
-                    sbn.packageName == MXM_PACKAGE && NOTI_TEXT.contains(text)) {
-                val idx = activeIDs.indexOf(sbn.id)
-                if (idx != -1)
-                    activeIDs.removeAt(idx)
-                handler.removeMessages(title!!.toString().hashCode())
-            }
-    }
-*/
     private val nlservicereciver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Stuff.log("nlservicereciver intent " + intent.action!!)
             when (intent.action){
-                 pCANCEL -> handler.remove(intent.getIntExtra("id", 0))
-                 pCANCEL_TOAST -> {
-                     handler.remove(intent.getIntExtra("id", 0))
-                     Stuff.toast(applicationContext, "Un-scrobbled", Toast.LENGTH_LONG)
+                 pCANCEL -> {
+                     handler.removeMessages(intent.getIntExtra(B_HASH, 0))
+                     handler.notifyOtherError(getString(R.string.state_unscrobbled), false)
+                     handler.postDelayed({
+                         if(!handler.hasMessages(SessListener.lastHash)) //dont dismiss if it started showing another np
+                            handler.remove(0)
+                     }, 1000)
                  }
-                pLOVE -> {
-                    LFMRequester(Stuff.LOVE, intent.getStringExtra("artist"),
-                            intent.getStringExtra("title")).asAsyncTask(applicationContext)
-                    handler.notification(intent.getStringExtra("artist"),
-                            intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0, false)
-                }
-                pUNLOVE -> {
-                    LFMRequester(Stuff.UNLOVE, intent.getStringExtra("artist"),
-                            intent.getStringExtra("title")).asAsyncTask(applicationContext)
-                    handler.notification(intent.getStringExtra("artist"),
-                            intent.getStringExtra("title"), getString(R.string.state_scrobbled), 0)
+                pLOVE, pUNLOVE -> {
+                    val loved = intent.action == pLOVE
+                    LFMRequester(if (loved) Stuff.LOVE else Stuff.UNLOVE,
+                            intent.getStringExtra("artist"),
+                            intent.getStringExtra("title"))
+                            .skipContentProvider()
+                            .asAsyncTask(applicationContext)
+                    val artist = intent.getStringExtra("artist")
+                    val title = intent.getStringExtra("title")
+                    val np = handler.hasMessages(artist.hashCode() + title.hashCode())
+                    handler.notifyScrobble(intent.getStringExtra("artist"),
+                            intent.getStringExtra("title"), np, loved)
                 }
                 pWHITELIST, pBLACKLIST -> {
-                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())
-                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())
+                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())!!
+                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())!!
 
                     if (intent.action == pWHITELIST)
                         wSet.add(intent.getStringExtra("packageName"))
@@ -237,32 +212,19 @@ class NLService : NotificationListenerService() {
                     sessListener?.onSharedPreferenceChanged(pref, key) //it doesnt fire
                     nm.cancel(NOTI_ID_APP, 0)
                 }
-                iPREFS_CHANGED -> {
-                    val key = intent.getStringExtra("key")
-                    val value = intent.extras["value"]
-                    val editor = pref.edit()
-                    when (value) {
-                        is Int -> editor.putInt(key, value)
-                        is Float -> editor.putFloat(key, value)
-                        is Long -> editor.putLong(key, value)
-                        is Boolean -> editor.putBoolean(key, value)
-                        is String -> editor.putString(key, value)
-                        is Array<*> -> editor.putStringSet(key, (value as Array<String>).toSet())
-                        else -> {
-                            Stuff.log("unknown prefs type")
-                            return
-                        }
-                    }
-                    editor.apply()
+                iOTHER_ERR -> {
+                    handler.remove(intent.getIntExtra(B_HASH, 0))
+                    handler.notifyOtherError(intent.getStringExtra(B_ERR_MSG))
                 }
-                iNOTIFY_FAILED -> {
-                    handler.remove(intent.getIntExtra("hash", 0))
-                    handler.notification(intent.getStringExtra("title1"),
-                            intent.getStringExtra("title2"),
-                            intent.getStringExtra("state"),
-                            intent.getIntExtra("iconId", NOTI_ERR_ICON))
+                iBAD_META -> {
+                    handler.remove(intent.getIntExtra(B_HASH, 0))
+                    handler.notifyBadMeta(intent.getStringExtra(B_ARTIST),
+                            intent.getStringExtra(B_ALBUM),
+                            intent.getStringExtra(B_TITLE),
+                            intent.getLongExtra(B_TIME, System.currentTimeMillis()),
+                            intent.getStringExtra(B_ERR_MSG)
+                            )
                 }
-                CONNECTIVITY_ACTION -> isOnline = Stuff.getOnlineStatus(context)
             }
         }
     }
@@ -271,12 +233,11 @@ class NLService : NotificationListenerService() {
         constructor() : super()
         constructor(looper: Looper) : super(looper)
 
-        private var lastNotiIcon = 0
         override fun handleMessage(m: Message) {
 
-            val title = m.data.getString(B_TITLE)
-            val artist = m.data.getString(B_ARTIST)
-            val album = m.data.getString(B_ALBUM)
+            val title = m.data.getString(B_TITLE)!!
+            val artist = m.data.getString(B_ARTIST)!!
+            val album = m.data.getString(B_ALBUM)!!
             val time = m.data.getLong(B_TIME)
             val duration = m.data.getLong(B_DURATION)
             val packageName = m.data.getString(B_PACKAGE)
@@ -292,19 +253,14 @@ class NLService : NotificationListenerService() {
         }
 
         private fun nowPlaying(artist:String, album:String, title: String, duration:Long, hash:Int, packageName: String?) {
-            if (!pref.getBoolean("master", true) ||
-                    (!pref.getBoolean(Stuff.PREF_OFFLINE_SCROBBLE, true) &&
-                            !isOnline)||
-                    !FirstThingsFragment.checkAuthTokenExists(applicationContext))
-                return
-
             if (!hasMessages(hash)) {
-
+                val now = System.currentTimeMillis()
                 if (artist != "" && title != "") {
                     val album = Stuff.sanitizeAlbum(album)
                     val artist = Stuff.sanitizeArtist(artist)
-                    val now = System.currentTimeMillis()
-                    LFMRequester(Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString()).asAsyncTask(applicationContext)
+                    LFMRequester(Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString())
+                            .skipContentProvider()
+                            .asAsyncTask(applicationContext)
 
                     val m = obtainMessage()
                     val b = Bundle()
@@ -316,32 +272,32 @@ class NLService : NotificationListenerService() {
                     b.putInt(B_METHOD, B_SCROBBLE)
                     m.data = b
                     m.what = hash
-                    val delaySecs = pref.getInt("delay_secs", 50).toLong() * 1000
-                    val delayPer = pref.getInt("delay_per", 30).toLong()
+                    val delaySecs = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
+                    val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
                     val delay = if (duration > 10000 && duration*delayPer/100 < delaySecs) //dont scrobble <10 sec songs?
                         duration*delayPer/100
                     else
                         delaySecs
 
                     sendMessageDelayed(m, delay)
-                    notification(artist, title, getString(R.string.state_scrobbling), 0)
+                    notifyScrobble(artist, title, true, false)
                     //display ignore thing only on successful parse
                     if (packageName != null) {
-                        val n = buildAppNotification(packageName)
-                        if (n != null)
-                            nm.notify(NOTI_ID_APP, 0, n)
+                        notifyApp(packageName)
                     }
                     //for rating
                     AppRater.incrementScrobbleCount(applicationContext)
                 } else {
-                    notification("$artist $title", getString(R.string.parse_error), getString(R.string.not_scrobling), NOTI_ERR_ICON)
+                    notifyBadMeta(artist, album, title, now, getString(R.string.parse_error))
                 }
             }
         }
 
         private fun submitScrobble(artist:String, album:String, title: String, time:Long, duration:Long) {
-            LFMRequester(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString()).asAsyncTask(applicationContext)
-            notification(artist, title, getString(R.string.state_scrobbled), 0)
+            LFMRequester(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString())
+                    .skipContentProvider()
+                    .asAsyncTask(applicationContext)
+            notifyScrobble(artist, title, false, false)
         }
 
         fun scrobble(artist:String, album:String, title: String, duration:Long, packageName: String? = null): Int {
@@ -368,14 +324,133 @@ class NLService : NotificationListenerService() {
             return scrobble(splits[0], "", splits[1], duration, packageName)
         }
 
-        private fun buildAppNotification(packageName:String): Notification?{
+        private fun buildNotification(): NotificationCompat.Builder {
+            return NotificationCompat.Builder(applicationContext)
+                    .setShowWhen(false)
+                    .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))
+                    .setAutoCancel(true)
+                    .setCustomBigContentView(null)
+                    .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+        }
+
+        fun notifyScrobble(artist: String, title: String, nowPlaying: Boolean, loved: Boolean = false) {
+            if (!pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
+                return
+            var i = Intent()
+                    .putExtra("artist", artist)
+                    .putExtra("title", title)
+            val loveAction = if (loved) {
+                i.action = pUNLOVE
+                val loveIntent = PendingIntent.getBroadcast(applicationContext, 4, i,
+                        PendingIntent.FLAG_UPDATE_CURRENT)
+                getAction(R.drawable.vd_heart_break, "\uD83D\uDC94", getString(R.string.unlove), loveIntent)
+            } else {
+                i.action = pLOVE
+                val loveIntent = PendingIntent.getBroadcast(applicationContext, 3, i,
+                        PendingIntent.FLAG_UPDATE_CURRENT)
+                getAction(R.drawable.vd_heart, "❤", getString(R.string.love), loveIntent)
+            }
+
+            i = Intent(applicationContext, Main::class.java)
+                    .putExtra(Stuff.DEEP_LINK_KEY, Stuff.DL_NOW_PLAYING)
+            val launchIntent = PendingIntent.getActivity(applicationContext, 8, i,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+
+            i = Intent(pCANCEL)
+                    .putExtra(B_HASH, artist.hashCode() + title.hashCode())
+            val cancelToastIntent = PendingIntent.getBroadcast(applicationContext, 5, i,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val style= MediaStyleMod()
+            val nb = buildNotification()
+                    .setChannelId(NOTI_ID_SCR)
+                    .setSmallIcon(R.drawable.ic_noti)
+                    .setContentIntent(launchIntent)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setStyle(style)
+                    .addAction(loveAction)
+                    .setContentTitle(title)
+                    .setContentText(artist)
+
+            if (nowPlaying) {
+                nb.setSubText(getString(R.string.state_scrobbling))
+                nb.addAction(getAction(R.drawable.vd_undo, "❌", getString(R.string.unscrobble), cancelToastIntent))
+                style.setShowActionsInCompactView(0, 1)
+            } else {
+                nb.setSubText(getString(R.string.state_scrobbled))
+                style.setShowActionsInCompactView(0)
+            }
+
+            try {
+                nm.notify(NOTI_ID_SCR, 0, nb.buildMediaStyleMod())
+            } catch (e: RuntimeException){
+                val nExpandable =  nb.setLargeIcon(null)
+                        .setStyle(null)
+                        .build()
+                nm.notify(NOTI_ID_SCR, 0, nExpandable)
+            }
+        }
+
+        fun notifyBadMeta(artist: String, album: String, title: String, timeMillis: Long, stateText: String?) {
+            if (!pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
+                return
+            val i = Intent(applicationContext, EditActivity::class.java)
+            i.putExtra(B_ARTIST, artist)
+            i.putExtra(B_ALBUM, album)
+            i.putExtra(B_TITLE, title)
+            i.putExtra(B_TIME, timeMillis)
+            i.putExtra(B_STANDALONE, true)
+
+            val editIntent = PendingIntent.getActivity(applicationContext, 9, i,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val nb = buildNotification()
+                    .setChannelId(NOTI_ID_ERR)
+                    .setSmallIcon(R.drawable.ic_noti_err)
+                    .setContentIntent(editIntent)
+                    .setContentText(artist)
+                    .setContentTitle(
+                            (stateText ?: getString(R.string.state_invalid_artist)) + " " + getString(R.string.edit_tags_noti)
+                        )
+                    .setPriority(
+                        if (stateText == null )
+                            NotificationCompat.PRIORITY_LOW
+                        else
+                            NotificationCompat.PRIORITY_MIN
+                    )
+            nm.notify(NOTI_ID_ERR, 0, nb.build())
+        }
+
+        fun notifyOtherError(errMsg: String, showState: Boolean = true) {
+            val intent = Intent(applicationContext, Main::class.java)
+            val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val nb = buildNotification()
+                    .setChannelId(NOTI_ID_SCR)
+                    .setSmallIcon(R.drawable.ic_noti_err)
+                    .setContentIntent(launchIntent)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setContentTitle(errMsg)
+            if (showState) {
+                nb.setSubtextCompat(getString(R.string.state_didnt_scrobble))
+                if (errMsg.contains('\n'))
+                    nb.setStyle(NotificationCompat.BigTextStyle()
+                            .setBigContentTitle(getString(R.string.state_didnt_scrobble))
+                            .bigText(errMsg)
+                            .setSummaryText(null))
+            }
+            nm.notify(NOTI_ID_SCR, 0, nb.build())
+        }
+
+        fun notifyApp(packageName:String) {
             val appName: String
             try {
                 val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
                 appName = packageManager.getApplicationLabel(applicationInfo).toString()
             } catch (e: Exception) {
                 //eat up all NPEs and stuff
-                return null
+                return
             }
 
             var intent = Intent(pBLACKLIST)
@@ -388,27 +463,26 @@ class NLService : NotificationListenerService() {
                     PendingIntent.FLAG_UPDATE_CURRENT)
             intent = Intent(applicationContext, Main::class.java)
                     .putExtra(Stuff.DEEP_LINK_KEY, Stuff.DL_APP_LIST)
-            val launchIntent = PendingIntent.getActivity(applicationContext, 9, intent,
+            val launchIntent = PendingIntent.getActivity(applicationContext, 7, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
-            val nb = NotificationCompat.Builder(applicationContext, NOTI_ID_SCR)
+            val n = buildNotification()
                     .setContentTitle(getString(R.string.new_player, appName))
                     .setContentText(getString(R.string.new_player_prompt))
-                    .setShowWhen(false)
+                    .setChannelId(NOTI_ID_APP)
                     .setSmallIcon(R.drawable.vd_appquestion_noti)
-                    .setColor(ContextCompat.getColor(applicationContext, R.color.colorAccent))
                     .setContentIntent(launchIntent)
                     .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
                     .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
-                    .setAutoCancel(true)
-                    .setCustomBigContentView(null)
                     .setStyle(MediaStyleMod().setShowActionsInCompactView(0,1))
-            return buildMediaStyleMod(nb)
+                    .buildMediaStyleMod()
+            nm.notify(NOTI_ID_APP, 0, n)
         }
-        fun notification(title1: String, title2: String?, state: String, iconId: Int, lovable: Boolean = true) {
+/*
+        fun notification(title1: String, title2: String?, state: String, iconId: Int, loved: Boolean = true) {
             var title2 = title2
             var iconId = iconId
-            if (!pref.getBoolean("show_notifications", true))
+            if (!pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
                 return
             if (iconId == 0)
                 iconId = R.drawable.ic_noti
@@ -423,7 +497,7 @@ class NLService : NotificationListenerService() {
                 title2 = ""
             }
 
-            val loveAction = if (lovable){
+            val loveAction = if (loved){
                 val i = Intent(pLOVE)
                         .putExtra("artist", title1)
                         .putExtra("title", title2)
@@ -440,28 +514,29 @@ class NLService : NotificationListenerService() {
             }
 
             var intent = Intent(applicationContext, Main::class.java)
+                    .putExtra(Stuff.DEEP_LINK_KEY, Stuff.DL_NOW_PLAYING)
             val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent, 
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
             intent = Intent(pCANCEL_TOAST)
-                    .putExtra("id", hash)
+                    .putExtra(B_HASH, hash)
             val cancelToastIntent = PendingIntent.getBroadcast(applicationContext, 5, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
             val nb = NotificationCompat.Builder(applicationContext,
                     if (iconId == NOTI_ERR_ICON) NOTI_ID_ERR else NOTI_ID_SCR)
                     .setSmallIcon(iconId)
-                    .setColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+                    .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))
                     .setContentIntent(launchIntent)
-                    .setVisibility(Notification.VISIBILITY_SECRET)
+                    .setVisibility(NotificationCompat.VISIBILITY_SECRET)
                     .setAutoCancel(true)
                     .setShowWhen(false)
                     .setPriority(if (iconId == NOTI_ERR_ICON) Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
             
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || state == getString(R.string.not_scrobling)){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || state == getString(R.string.state_didnt_scrobble)){
                 nb.setContentTitle(title2)
                         .setContentText(title1)
-                if (state != getString(R.string.not_scrobling))
+                if (state != getString(R.string.state_didnt_scrobble))
                     nb.setSubText(state)
             } else {
                 nb.setContentTitle(state)
@@ -483,7 +558,7 @@ class NLService : NotificationListenerService() {
                 nb.setStyle(style)
                         .setCustomBigContentView(null)
             }
-            val n = buildMediaStyleMod(nb)
+            val n = nb.buildMediaStyleMod()
             try {
                 nm.notify(NOTI_ID_SCR, 0, n)
             } catch (e: RuntimeException){
@@ -493,10 +568,7 @@ class NLService : NotificationListenerService() {
                 nm.notify(NOTI_ID_SCR, 0, nExpandable)
             }
         }
-
-        fun notification(title1: String, state: String, iconId: Int) {
-            notification(title1, null, state, iconId, true)
-        }
+        */
 
         private fun getAction(icon:Int, emoji:String, text:String, pIntent:PendingIntent): NotificationCompat.Action {
 //            return if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.M)
@@ -506,17 +578,26 @@ class NLService : NotificationListenerService() {
         }
 
         private var notiIconBitmap: Bitmap? = null
-        private fun buildMediaStyleMod(nb:NotificationCompat.Builder): Notification {
-            val modNeeded = Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && nb.mActions != null && nb.mActions.isNotEmpty()
+
+        private fun NotificationCompat.Builder.setSubtextCompat(state:String): NotificationCompat.Builder {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                setSubText(state)
+            } else {
+                setContentInfo(state)
+            }
+            return this
+        }
+
+        private fun NotificationCompat.Builder.buildMediaStyleMod(): Notification {
+            val modNeeded = Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && mActions != null && mActions.isNotEmpty()
             if (modNeeded) {
                 if (notiIconBitmap == null || notiIconBitmap?.isRecycled == true){
-                    val icon = getDrawable(R.mipmap.ic_launcher)
-                    notiIconBitmap = Stuff.drawableToBitmap(icon)
+                    notiIconBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
                 }
 //                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
-                nb.setLargeIcon(notiIconBitmap)
+                this.setLargeIcon(notiIconBitmap)
             }
-            val n = nb.build()
+            val n = build()
             if (modNeeded)
                 n.bigContentView = null
 
@@ -549,10 +630,9 @@ class NLService : NotificationListenerService() {
         }
 
         fun remove(hash: Int) {
-            Stuff.log(hash.toString() + " canceled")
+            Stuff.log(hash.toString() + " cancelled")
             if (hash != 0)
                 removeMessages(hash)
-//            if (lastNotiIcon != NOTI_ERR_ICON)
             nm.cancel(NOTI_ID_SCR, 0)
         }
     }
@@ -570,70 +650,55 @@ class NLService : NotificationListenerService() {
                     context.getString(R.string.channel_err), NotificationManager.IMPORTANCE_MIN))
             nm.createNotificationChannel(NotificationChannel(NOTI_ID_APP,
                     context.getString(R.string.channel_new_app), NotificationManager.IMPORTANCE_LOW))
+            nm.createNotificationChannel(NotificationChannel(NOTI_ID_FG,
+                    context.getString(R.string.channel_fg), NotificationManager.IMPORTANCE_MIN))
         }
 
-        fun ensureServiceRunning(context:Context):Boolean {
-            val serviceComponent = ComponentName(context, NLService::class.java)
-            val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            var serviceRunning = false
-            val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
-            if (runningServices == null) {
-                Stuff.log("ensureServiceRunning() runningServices is NULL")
-                return true //just assume true for now. this throws SecurityException, might not work in future
-            }
-            for (service in runningServices) {
-                if (service.service == serviceComponent) {
-                    Stuff.log("ensureServiceRunning service - pid: " + service.pid + ", currentPID: " +
-                            Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
-                            service.clientCount + " process:" + service.process + ", clientLabel: " +
-                            if (service.clientLabel == 0) "0" else "(" + context.resources.getString(service.clientLabel) + ")")
-                    if (service.process == BuildConfig.APPLICATION_ID + ":bgScrobbler" /*&& service.clientCount > 0 */) {
-                        serviceRunning = true
-                        break
-                    }
-                }
-            }
-            if (serviceRunning) {
-                Stuff.log("ensureServiceRunning: service is running")
-                return true
-            }
-            Stuff.log("ensureServiceRunning: service not running, reviving...")
-            toggleNLS(context)
-            return false
-        }
-
-        private fun toggleNLS(context:Context) {
-            val thisComponent = ComponentName(context, NLService::class.java)
-            val pm = context.packageManager
-            pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
-            pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+        fun migratePrefs(pref: SharedPreferences) {
+            if (pref.contains("username") || pref.contains("sesskey") )
+                pref.edit()
+                        .putString(Stuff.PREF_LASTFM_USERNAME, pref.getString("username", ""))
+                        .putString(Stuff.PREF_LASTFM_SESS_KEY, pref.getString("sesskey", ""))
+                        .remove("username")
+                        .remove("sesskey")
+                        .remove("offline_scrobble")
+                        .remove("search_url")
+                        .remove(Stuff.PREF_ACTIVITY_NUM_SCROBBLES)
+                        .remove(Stuff.PREF_ACTIVITY_PROFILE_PIC)
+                        .apply()
         }
 
         lateinit var corrrectedDataCache: LruCache<Int, Bundle>
         var isOnline = true
 
         lateinit var handler: ScrobbleHandler
-        val pNLS = "com.arn.scrobble.NLS"
-        val pCANCEL = "com.arn.scrobble.CANCEL"
-        val pCANCEL_TOAST = "com.arn.scrobble.CANCEL_TOAST"
-        val pLOVE = "com.arn.scrobble.LOVE"
-        val pUNLOVE = "com.arn.scrobble.UNLOVE"
-        val pBLACKLIST = "com.arn.scrobble.BLACKLIST"
-        val pWHITELIST = "com.arn.scrobble.WHITELIST"
-        val iPREFS_CHANGED = "com.arn.scrobble.PREFS_CHANGED"
-        val iNOTIFY_FAILED = "com.arn.scrobble.NOTIFY_FAILED"
-        val B_TITLE = "title"
-        val B_TIME = "time"
-        val B_ARTIST = "artist"
-        val B_ALBUM = "album"
-        val B_DURATION = "duration"
-        val B_METHOD = "method"
-        val B_PACKAGE = "package"
-        val B_NOW_PLAYING = 1
-        val B_SCROBBLE = 2
-        val NOTI_ID_SCR = "scrobble_success"
-        val NOTI_ID_ERR = "err"
-        val NOTI_ID_APP = "new_app"
-        val NOTI_ERR_ICON = R.drawable.ic_transparent
+        const val pNLS = "com.arn.scrobble.NLS"
+        const val pCANCEL = "com.arn.scrobble.CANCEL"
+        const val pLOVE = "com.arn.scrobble.LOVE"
+        const val pUNLOVE = "com.arn.scrobble.UNLOVE"
+        const val pBLACKLIST = "com.arn.scrobble.BLACKLIST"
+        const val pWHITELIST = "com.arn.scrobble.WHITELIST"
+        const val iNLS_STARTED = "com.arn.scrobble.NLS_STARTED"
+        const val iSESS_CHANGED = "com.arn.scrobble.SESS_CHANGED"
+        const val iEDITED = "com.arn.scrobble.EDITED"
+        const val iDRAWER_UPDATE = "com.arn.scrobble.DRAWER_UPDATE"
+        const val iOTHER_ERR = "com.arn.scrobble.OTHER_ERR"
+        const val iBAD_META = "com.arn.scrobble.BAD_META"
+        const val B_TITLE = "title"
+        const val B_TIME = "time"
+        const val B_ARTIST = "artist"
+        const val B_ALBUM = "album"
+        const val B_DURATION = "duration"
+        const val B_METHOD = "method"
+        const val B_PACKAGE = "package"
+        const val B_HASH = "hash"
+        const val B_ERR_MSG = "err"
+        const val B_STANDALONE = "alone"
+        const val B_NOW_PLAYING = 1
+        const val B_SCROBBLE = 2
+        const val NOTI_ID_SCR = "scrobble_success"
+        const val NOTI_ID_ERR = "err"
+        const val NOTI_ID_APP = "new_app"
+        const val NOTI_ID_FG = "fg"
     }
 }

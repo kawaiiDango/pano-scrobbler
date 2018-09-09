@@ -6,7 +6,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp">
 
-    <com.arn.scrobble.ui.FixedLineTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/friends_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,7 +14,8 @@
         android:layout_marginStart="11dp"
         android:layout_marginTop="13dp"
         android:layout_toEndOf="@+id/friends_pic"
-        android:singleLine="true"
+        app:autoSizeTextType="uniform"
+        android:maxLines="1"
         tools:text="name"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -24,7 +25,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_marginStart="4dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:elevation="20dp"
         android:src="@drawable/ic_placeholder_user"/>
 
@@ -41,11 +42,11 @@
         tools:text="date"/>
 
     <FrameLayout
-        android:id="@+id/friends_track"
+        android:id="@+id/friends_track_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/friends_pic"
-        android:background="?android:attr/selectableItemBackground">
+        android:background="?attr/selectableItemBackground">
 
         <View
             android:id="@+id/friends_arrow"
@@ -64,25 +65,27 @@
             android:paddingEnd="4dp"
             android:paddingStart="28dp">
 
-            <com.arn.scrobble.ui.FixedLineTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/friends_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="-4sp"
-                android:ellipsize="marquee"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
-                android:singleLine="true"
+                app:autoSizeTextType="uniform"
+                android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/colorAccentLight"
                 tools:text="tit"/>
 
-            <com.arn.scrobble.ui.FixedLineTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/friends_subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="marquee"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
-                android:singleLine="true"
+                app:autoSizeTextType="uniform"
+                android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 tools:text="subtit"/>
 

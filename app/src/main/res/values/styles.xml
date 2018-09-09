@@ -8,7 +8,28 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowContentTransitions">true</item>
         <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
+
+    <style name="AppTheme.Transparent" parent="Base.Theme.AppCompat.Dialog">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowMinWidthMajor">60%</item>
+        <item name="android:windowMinWidthMinor">95%</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowEnterTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/fade</item>
+        <item name="android:windowActivityTransitions">true</item>
+
+        <!--<item name="android:windowIsTranslucent">true</item>-->
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+        <!--<item name="android:windowContentOverlay">@null</item>-->
+        <!--<item name="android:windowNoTitle">true</item>-->
+        <!--<item name="android:windowIsFloating">false</item>-->
+        <!--<item name="android:backgroundDimEnabled">true</item>-->
+    </style>
+
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -22,10 +43,6 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
-
-    <style name="TransFadeScale">
-        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
-    </style>
 
     <style name="firstThings">
         <item name="android:layout_margin">@dimen/fab_margin</item>
@@ -46,8 +63,14 @@
         <item name="android:drawableTint">@color/colorAccentLight</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <!--<item name="android:background">?attr/selectableItemBackground</item>-->
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="bottomSheetContent">
+        <item name="android:paddingStart">@dimen/elevation_hero_btn</item>
+        <item name="android:paddingBottom">@dimen/fab_margin</item>
     </style>
 
 </resources>

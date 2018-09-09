@@ -6,11 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import android.support.design.widget.Snackbar
 import android.util.Log
 import android.view.View
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
+import com.google.android.material.snackbar.Snackbar
 
 object AppRater {
     // Preference Constants
@@ -207,13 +207,13 @@ object AppRater {
         val coordinatorLayout = (context as Activity).findViewById<View>(R.id.frame)
         val snackbar = Snackbar
                 .make(coordinatorLayout, R.string.rate_msg, Snackbar.LENGTH_INDEFINITE)
-                .setAction("\uD83C\uDF1F " + context.getString(R.string.rate_link), {
+                .setAction("\uD83C\uDF1F " + context.getString(R.string.rate_link)) {
                     rateNow(context)
                     if (editor != null) {
                         editor.putBoolean(PREF_DONT_SHOW_AGAIN, true)
                         commitOrApply(editor)
                     }
-                })
+                }
                 .addCallback(object : Snackbar.Callback() {
                     override fun onDismissed(transientBottomBar: Snackbar?, @DismissEvent event: Int) {
                         super.onDismissed(transientBottomBar, event)

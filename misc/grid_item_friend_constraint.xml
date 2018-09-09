@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/friends_track_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:background="?attr/selectableItemBackground">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/friends_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            app:layout_constraintStart_toEndOf="@+id/friends_title"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="name"
+            android:layout_marginStart="116dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/friends_pic"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="80dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:elevation="20dp"
+        android:src="@drawable/ic_placeholder_user"
+        app:layout_constraintStart_toEndOf="@+id/friends_subtitle"
+        app:layout_constraintTop_toBottomOf="@+id/friends_name"/>
+
+    <View
+        android:id="@+id/friends_arrow"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="84dp"
+        android:alpha="0.5"
+        android:background="@drawable/shape_triangle_corner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/friends_title"
+        android:layout_width="0dp"
+        android:layout_height="15sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/colorAccentLight"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintStart_toEndOf="@+id/friends_music_icon_playing"
+        app:layout_constraintTop_toBottomOf="@+id/friends_pic"
+        tools:text="tit"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/friends_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="14sp"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintStart_toEndOf="@+id/friends_music_icon_playing"
+            app:layout_constraintTop_toBottomOf="@+id/friends_title"
+            tools:text="subtit"/>
+
+        <TextView
+            android:id="@+id/friends_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginEnd="16dp"
+            android:gravity="bottom"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/friends_subtitle"
+            tools:text="date"/>
+
+    <View
+        android:id="@+id/friends_music_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:alpha="0.7"
+        android:background="@drawable/vd_music_circle"
+        app:layout_constraintBottom_toBottomOf="@+id/friends_music_icon_playing"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:id="@+id/friends_music_icon_playing"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/avd_eq"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>

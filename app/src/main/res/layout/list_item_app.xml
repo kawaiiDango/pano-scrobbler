@@ -8,9 +8,8 @@
 
     <ImageView
         android:id="@+id/app_list_icon"
-        android:layout_width="match_parent"
+        android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_weight="6"
         android:adjustViewBounds="true"
         android:padding="5dp"
         android:scaleType="centerInside"
@@ -18,19 +17,21 @@
 
     <TextView
         android:id="@+id/app_list_name"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="5dp"
-        android:layout_weight="2"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
         tools:text="app"/>
 
     <CheckBox
         android:id="@+id/app_list_checkbox"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:layout_weight="6"
-        android:duplicateParentState="true"
+        android:layout_marginEnd="5dp"
+        android:clickable="false"
+        android:duplicateParentState="false"
         android:focusable="false"
         android:gravity="center_vertical"/>
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/friends_links"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/nav_header_vertical_spacing">
+
+    <Button
+        android:id="@+id/friends_profile"
+        style="@style/friendsLinks"
+        android:drawableTop="@drawable/vd_open_in_new"
+        android:text="@string/user_profile"/>
+
+    <Button
+        android:id="@+id/friends_loved"
+        style="@style/friendsLinks"
+        android:drawableTop="@drawable/vd_heart"
+        android:text="@string/loved"/>
+
+    <Button
+        android:id="@+id/friends_chart"
+        style="@style/friendsLinks"
+        android:drawableTop="@drawable/vd_bar_chart"
+        android:text="@string/last_week"/>
+</LinearLayout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_header"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:background="@drawable/gradient_nav_side"
+    android:orientation="vertical"
+    >
+
+
+    <ImageView
+        android:id="@+id/nav_profile_pic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:srcCompat="@drawable/vd_wave"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp"
+        android:background="@drawable/gradient_dark_overlay_nav"
+        />
+
+    <TextView
+        android:id="@+id/nav_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/nav_num_scrobbles"
+        android:layout_toStartOf="@+id/nav_profile_link"
+        android:gravity="end"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        tools:text="nav_name"/>
+
+    <TextView
+        android:id="@+id/nav_num_scrobbles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/nav_header_vertical_spacing"
+        android:layout_toStartOf="@+id/nav_profile_link"
+        android:gravity="end"
+        tools:text="nav_num_scrobbles"/>
+
+    <ImageButton
+        android:id="@+id/nav_profile_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="@dimen/fab_margin"
+        android:tooltipText="@string/user_profile"
+        app:srcCompat="@drawable/vd_open_in_new"/>
+
+</RelativeLayout>

@@ -8,22 +8,16 @@
     android:orientation="vertical">
     <include android:visibility="gone"
         layout="@layout/header_default"/>
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/friends_swipe_refresh"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <GridView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/friends_grid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:columnWidth="150dp"
-            android:gravity="center"
-            android:horizontalSpacing="2dp"
-            android:numColumns="auto_fit"
-            android:stretchMode="columnWidth"
-            android:verticalSpacing="2dp"
             tools:listitem="@layout/grid_item_friend"
             />
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

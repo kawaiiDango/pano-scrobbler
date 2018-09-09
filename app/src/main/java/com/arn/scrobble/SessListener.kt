@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.util.Pair
+import com.arn.scrobble.receivers.LegacyMetaReceiver
 
 /**
  * Created by arn on 04/07/2017.
@@ -23,27 +24,30 @@ class SessListener constructor(private val pref: SharedPreferences,
     private val controllersMap = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
     private var controllers : List<MediaController>? = null
 
-    private var blackList = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())
-    private var whiteList = pref.getStringSet(Stuff.PREF_WHITELIST, setOf())
+    private var blackList = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!
+    private val whiteList = mutableSetOf<String>()
     private var autoDetectApps = pref.getBoolean(Stuff.PREF_AUTO_DETECT, true)
+    private var scrobblingEnabled = pref.getBoolean(Stuff.PREF_MASTER, true)
+    private var loggedIn = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null) != null
 
     init {
         pref.registerOnSharedPreferenceChangeListener(this)
+        whiteList.addAll(pref.getStringSet(Stuff.PREF_WHITELIST, setOf())!!)
     }
 
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
         this.controllers = controllers
         val tokens = mutableSetOf<MediaSession.Token>()
-        if (pref.getBoolean(Stuff.PREF_MASTER, true) && controllers != null) {
+        if (scrobblingEnabled && controllers != null) {
             for (controller in controllers) {
                 if (shouldScrobble(controller.packageName)) {
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!controllersMap.containsKey(controller.sessionToken)) {
                         Stuff.log("onActiveSessionsChanged [" + controllers.size + "] : " + controller.packageName)
-                        val cb = MyCallback(pref, handler, controller.packageName, controller.sessionToken.toString() + ", " + hashCode())
+                        val cb = MyCallback(whiteList, handler, controller.packageName, controller.sessionToken.toString() + ", " + hashCode())
                         controller.registerCallback(cb)
                         if (controller.playbackState != null)
-                            cb.onPlaybackStateChanged(controller.playbackState) //Melody needs this
+                            cb.onPlaybackStateChanged(controller.playbackState!!) //Melody needs this
                         if (controller.metadata != null)
                             cb.onMetadataChanged(controller.metadata)
 
@@ -75,7 +79,7 @@ class SessListener constructor(private val pref: SharedPreferences,
         numSessions = controllersMap.size
     }
 
-    class MyCallback(private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler,
+    class MyCallback(private val whiteList: MutableSet<String>, private val handler: NLService.ScrobbleHandler,
                      private val packageName: String, private val who: String) : Callback() {
         var currHash = 0
         var lastScrobblePos = 1L
@@ -100,7 +104,8 @@ class SessListener constructor(private val pref: SharedPreferences,
                 Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos duration=$duration who=$who")
 
                 val isPossiblyAtStart = pos == 0.toLong() ||
-                        (pos < 1500 && duration > 0 && System.currentTimeMillis() - lastScrobbleTime >= duration)
+                        (pos < Stuff.START_POS_LIMIT && duration > 0 &&
+                        System.currentTimeMillis() - lastScrobbleTime - Stuff.START_POS_LIMIT >= duration)
 
                 if (lastState == state /* bandcamp does this */ &&
                         !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
@@ -117,6 +122,10 @@ class SessListener constructor(private val pref: SharedPreferences,
 //                        return
                     if (handler.hasMessages(lastHash)) //if it wasnt scrobbled, consider scrobling again
                         lastScrobblePos = 1
+                    else if (pos > Stuff.START_POS_LIMIT){
+                        lastScrobblePos = pos
+                        //save pos, to use it later in resume
+                    }
                     handler.remove(lastHash)
                     Stuff.log("paused")
                 } else if (state == PlaybackState.STATE_STOPPED) {
@@ -130,14 +139,15 @@ class SessListener constructor(private val pref: SharedPreferences,
 //                if (state.state == PlaybackState.STATE_BUFFERING && state.position == 0.toLong())
 //                    return  //dont scrobble first buffering
 
-                    Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $title")
+                    Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $isPossiblyAtStart $title")
                     if ((isPossiblyAtStart || lastScrobblePos == 1.toLong()) &&
                             (!handler.hasMessages(currHash) ||
                             System.currentTimeMillis() - lastScrobbleTime > 2000)) {
-
+                        Stuff.log("scrobbleit")
                         scrobble(artist, album, title, duration)
                         lastScrobblePos = pos
-                    }
+                    } else
+                        handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN)
                 } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
                     Stuff.log("$state connecting $pos")
                 } else {
@@ -148,10 +158,9 @@ class SessListener constructor(private val pref: SharedPreferences,
 
         fun scrobble(artist: String, album: String, title: String, duration: Long) {
             lastScrobbleTime = System.currentTimeMillis()
-            val isWhitelisted = pref.getStringSet(Stuff.PREF_WHITELIST, setOf()).contains(packageName)
-//            val isBlacklisted = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf()).contains(packageName)
+            val isWhitelisted = whiteList.contains(packageName)
             val packageNameParam = if (!isWhitelisted) packageName else null
-
+            handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN) //remove all from legacy receiver, to prevent duplicates
             if (isIgnoreArtistMeta)
                 lastHash = handler.scrobble(title, duration, packageNameParam)
             else
@@ -159,7 +168,6 @@ class SessListener constructor(private val pref: SharedPreferences,
         }
 
         @Synchronized override fun onMetadataChanged(metadata: MediaMetadata?) {
-//            super.onMetadataChanged(metadata)
             val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
                     metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
             val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
@@ -188,7 +196,6 @@ class SessListener constructor(private val pref: SharedPreferences,
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState) {
-//            super.onPlaybackStateChanged(state)
             lastSessEventTime = System.currentTimeMillis()
             val msg = stateHandler.obtainMessage(0, state.state, state.position.toInt())
             stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
@@ -197,7 +204,6 @@ class SessListener constructor(private val pref: SharedPreferences,
         override fun onSessionDestroyed() {
             Stuff.log("onSessionDestroyed")
             stop()
-            super.onSessionDestroyed()
         }
 
         fun stop() {
@@ -207,17 +213,23 @@ class SessListener constructor(private val pref: SharedPreferences,
     }
 
     fun shouldScrobble(packageName: String): Boolean {
-        val shouldScrobble = whiteList.contains(packageName) ||
-                (autoDetectApps && !blackList.contains(packageName))
+        val shouldScrobble = scrobblingEnabled && loggedIn &&
+                (whiteList.contains(packageName) ||
+                (autoDetectApps && !blackList.contains(packageName)))
 
         return shouldScrobble
     }
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {
         when (key){
-            Stuff.PREF_WHITELIST -> whiteList = pref.getStringSet(key, setOf())
-            Stuff.PREF_BLACKLIST -> blackList = pref.getStringSet(key, setOf())
+            Stuff.PREF_WHITELIST -> {
+                whiteList.clear()
+                whiteList.addAll(pref.getStringSet(key, setOf())!!)
+            }
+            Stuff.PREF_BLACKLIST -> blackList = pref.getStringSet(key, setOf())!!
             Stuff.PREF_AUTO_DETECT -> autoDetectApps = pref.getBoolean(key, true)
+            Stuff.PREF_MASTER -> scrobblingEnabled = pref.getBoolean(key, true)
+            Stuff.PREF_LASTFM_SESS_KEY -> loggedIn = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null) != null
         }
         if (key == Stuff.PREF_WHITELIST ||
                 key == Stuff.PREF_BLACKLIST ||

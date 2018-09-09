@@ -6,8 +6,8 @@
         android:alpha="0.7"
         android:background="@color/darkBg"
         android:paddingBottom="10dp"
-        android:paddingLeft="40dp"
-        android:paddingRight="10dp"
+        android:paddingStart="40dp"
+        android:paddingEnd="10dp"
         android:paddingTop="10dp"
         android:text="@string/recently_scrobbled"
         android:textAppearance="@android:style/TextAppearance.Material.Button"/>

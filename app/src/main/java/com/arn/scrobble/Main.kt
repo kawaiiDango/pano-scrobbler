@@ -1,61 +1,62 @@
 package com.arn.scrobble
 
 import android.animation.ValueAnimator
-import android.app.*
+import android.app.ActivityManager
+import android.app.Notification
 import android.app.Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.*
 import android.content.pm.LabeledIntent
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.GradientDrawable
 import android.media.session.MediaSessionManager
-import android.net.ConnectivityManager.CONNECTIVITY_ACTION
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.preference.PreferenceManager
-import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
-import android.support.v4.app.NotificationCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
-import android.support.v4.media.app.MediaStyleMod
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.graphics.Palette
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import android.widget.TextView
-import com.arn.scrobble.db.PendingScrobblesDb
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.media.app.MediaStyleMod
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentManager
+import androidx.viewpager.widget.ViewPager
 import com.arn.scrobble.pref.AppListFragment
+import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.pref.PrefFragment
-import com.arn.scrobble.ui.MyAppBarLayout
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
-import com.squareup.picasso.Callback
+import com.arn.scrobble.ui.StatefulAppBar
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.coordinator_main.*
-import kotlinx.android.synthetic.main.nav_header_main.*
+import kotlinx.android.synthetic.main.header_nav.*
 import org.codechimp.apprater.AppRater
 import java.io.File
 
 class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-        FragmentManager.OnBackStackChangedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener{
+        FragmentManager.OnBackStackChangedListener{
 
     private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var pref: SharedPreferences
+    private lateinit var pref: MultiPreferences
+    private lateinit var actPref: SharedPreferences
     private var lastDrawerOpenTime:Long = 0
     private var backArrowShown = false
+    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DebugOnly.installLeakCanary(application)
@@ -67,23 +68,30 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         setContentView(R.layout.activity_main)
         Stuff.timeIt("onCreate setContentView")
         setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        ctl.tag = getString(R.string.app_name)
-        ctl.title = " "
+        pref = MultiPreferences(applicationContext)
+        actPref = getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+//        NLService.migratePrefs(pref)
+//        app_bar.onStateChangeListener?.invoke(app_bar.state)
+//        tab_bar.visibility = View.GONE
+        app_bar.onStateChangeListener = { state ->
 
-        pref = PreferenceManager.getDefaultSharedPreferences(this)
-        app_bar.setOnStateChangeListener { state ->
-            val f: Fragment? = fragmentManager.findFragmentByTag(Stuff.GET_RECENTS)
-            if (f?.isVisible == true) {
-                when (state) {
-                    MyAppBarLayout.State.EXPANDED, MyAppBarLayout.State.IDLE -> {
-                        ctl.title = " " //ctl.tag as CharSequence
-//                        f.recents_list?.header_text?.visibility = View.VISIBLE
+            when (state) {
+                StatefulAppBar.EXPANDED -> {
+                    toolbar.title = " "
+                    tab_bar.visibility = View.GONE
+                }
+                StatefulAppBar.IDLE -> {
+                    tab_bar.visibility = View.GONE
+                }
+                StatefulAppBar.COLLAPSED -> {
+                    if (supportFragmentManager.findFragmentByTag(Stuff.TAG_PAGER)?.isVisible == true &&
+                            supportFragmentManager.findFragmentByTag(Stuff.TAG_SIMILAR) == null) {
+                        tab_bar.visibility = View.VISIBLE
+                    } else {
+                        tab_bar.visibility = View.GONE
                     }
-                    MyAppBarLayout.State.COLLAPSED -> {
-                        ctl.title = ctl.tag as CharSequence
-                    }
-                    else -> {}
                 }
             }
         }
@@ -100,14 +108,15 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         drawer_layout.addDrawerListener(toggle)
         nav_view.setNavigationItemSelectedListener(this)
 
-        if (FirstThingsFragment.checkAuthTokenExists(this) &&
+        if (savedInstanceState == null) {
+            if (FirstThingsFragment.checkAuthTokenExists(pref) &&
                 FirstThingsFragment.checkNLAccess(this)) {
-            if (savedInstanceState == null) {
-                val deepLinkExtra = intent?.getIntExtra(Stuff.DEEP_LINK_KEY, 0) ?: 0
-                val recentsFragment = RecentsFragment()
 
-                fragmentManager.beginTransaction()
-                        .replace(R.id.frame, recentsFragment, Stuff.GET_RECENTS)
+                val deepLinkExtra = intent?.getIntExtra(Stuff.DEEP_LINK_KEY, 0) ?: 0
+                val pagerFragment = PagerFragment()
+
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, pagerFragment, Stuff.TAG_PAGER)//, Stuff.GET_RECENTS)
                         .commit()
 //            fragmentManager.beginTransaction()
 //                    .hide(recentsFragment)
@@ -115,53 +124,58 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 //                    .addToBackStack(null)
 //                    .commit()
                 if (deepLinkExtra == Stuff.DL_SETTINGS || intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
-                    fragmentManager.beginTransaction()
-                            .hide(recentsFragment)
-                            .add(R.id.frame, PrefFragment())
+                    supportFragmentManager.beginTransaction()
+//                            .hide(recentsFragment)
+//                            .add(R.id.frame, PrefFragment())
+                            .replace(R.id.frame, PrefFragment())
                             .addToBackStack(null)
                             .commit()
                 else if (deepLinkExtra == Stuff.DL_APP_LIST)
-                    fragmentManager.beginTransaction()
-                            .hide(recentsFragment)
-                            .add(R.id.frame, AppListFragment())
+                    supportFragmentManager.beginTransaction()
+//                            .hide(recentsFragment)
+//                            .add(R.id.frame, AppListFragment())
+                            .replace(R.id.frame, AppListFragment())
                             .addToBackStack(null)
                             .commit()
                 else {
-                    AppRater.app_launched(this)
                     val handler = Handler()
                     handler.post {
-                        if (!NLService.ensureServiceRunning(this))
+                        if (!KeepNLSAliveJob.ensureServiceRunning(this))
                             handler.postDelayed({
-                                if (!NLService.ensureServiceRunning(this))
+                                if (!KeepNLSAliveJob.ensureServiceRunning(this))
                                     showNotRunning()
                             },2000)
-                    } //TODO: ignore apprater
-
+                        else
+                            AppRater.app_launched(this)
+                    }
                 }
-            }
-            onBackStackChanged()
-            fragmentManager.addOnBackStackChangedListener(this)
-        } else {
-            if (savedInstanceState == null) {
-                fragmentManager.beginTransaction()
+            } else {
+                supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, FirstThingsFragment())
                         .commit()
+                app_bar.setExpanded(false, true)
+                drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
-            app_bar.setExpanded(false, true)
-            supportActionBar?.setDisplayHomeAsUpEnabled(false)
-            drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        } else {
+            tab_bar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
         }
+        supportFragmentManager.addOnBackStackChangedListener(this)
+//        showNotRunning()
 //        test()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         toggle.syncState()
-        Stuff.setAppBarHeight(this)
+        val lockMode = drawer_layout.getDrawerLockMode(GravityCompat.START)
+        backArrowShown = lockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+        toggle.onDrawerSlide(drawer_layout, if (backArrowShown) 1f else 0f)
+
         Stuff.timeIt("onPostCreate")
+//        test()
     }
 
-    fun test (){
+    fun testNoti (){
         AppRater.showRateSnackbar(this)
         val res = Resources.getSystem()
         val attrs = arrayOf(android.R.attr.textColor).toIntArray()
@@ -202,18 +216,18 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val nb = NotificationCompat.Builder(applicationContext, NLService.NOTI_ID_SCR)
                 .setSmallIcon(R.drawable.ic_noti)
-                .setLargeIcon(Stuff.drawableToBitmap(icon))
-                .setVisibility(Notification.VISIBILITY_SECRET)
+//                .setLargeIcon(Stuff.drawableToBitmap(icon))
+                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
                 .setAutoCancel(true)
                 .setShowWhen(false)
                 .setUsesChronometer(true)
-                .setPriority(Notification.PRIORITY_LOW)
+                .setPriority(Notification.PRIORITY_HIGH)
                 .addAction(R.drawable.vd_undo, getString(R.string.unscrobble), launchIntent)
                 .addAction(R.drawable.vd_check, getString(R.string.unscrobble), launchIntent)
                 .setContentTitle("setContentTitle")
                 .setContentText("longDescription")
                 .setSubText("setSubText")
-                .setColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+                .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))
                 .setStyle(style)
 //                .setCustomBigContentView(null)
 //                .setCustomContentView(null)
@@ -237,59 +251,41 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val c = Class.forName("android.widget.RemoteViews")
         val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
         m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
-//        rv.setImageViewResource(resId, R.drawable.vd_cancel)
+        rv.setImageViewResource(resId, R.drawable.vd_ban)
 */
         nm.notify(9, n)
 
     }
 
-    private fun onDrawerOpened(){
+    private fun onDrawerOpened(forceUpdate: Boolean = false){
         if (drawer_layout?.isDrawerVisible(GravityCompat.START) != true ||
                 System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL)
             return
 
-        val username = if (BuildConfig.DEBUG) "nobody" else pref.getString(Stuff.USERNAME,"nobody")
+        val username = if (BuildConfig.DEBUG) "nobody" else pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
         nav_name.text = username
-        val num = pref.getInt(Stuff.PREF_NUM_SCROBBLES, 0)
+        val num = actPref.getInt(Stuff.PREF_ACTIVITY_NUM_SCROBBLES, 0)
         nav_num_scrobbles.text = resources.getQuantityString(R.plurals.num_scrobbles, num, num)
 
         nav_profile_link.setOnClickListener { v:View ->
             Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
         }
-        val picUrl = pref.getString(Stuff.PREF_PROFILE_PIC,"")
+        val picUrl = actPref.getString(Stuff.PREF_ACTIVITY_PROFILE_PIC,"")
         if (picUrl != "")
             Picasso.get()
                     .load(picUrl)
-                    .placeholder(R.drawable.ic_placeholder_music)
+                    .placeholder(R.drawable.vd_wave)
+                    .error(R.drawable.vd_wave)
                     .centerCrop()
                     .fit()
-                    .into(nav_profile_pic, object : Callback {
-                        override fun onSuccess() {
-                            Palette.generateAsync((nav_profile_pic.drawable as BitmapDrawable).bitmap) { palette ->
-                                try {
-                                    val colorDomPrimary = palette.getDominantColor(
-                                            ContextCompat.getColor(applicationContext, R.color.colorPrimary))
-                                    (nav_header.background.mutate() as GradientDrawable)
-                                            .colors = arrayOf(colorDomPrimary, Color.BLACK).toIntArray()
-                                } catch (e: IllegalStateException){
-
-                                }
-                            }
-                        }
-
-                        override fun onError(e: Exception) {
-                            Stuff.log("Picasso drawer err: $e")
-                        }
-                    })
-
-        LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(applicationContext)
+                    .into(nav_profile_pic)
+        if (!forceUpdate)
+            LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(applicationContext)
         lastDrawerOpenTime = System.currentTimeMillis()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val username = pref.getString(Stuff.USERNAME,"nobody")
+        val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
         when (item.itemId) {
             R.id.nav_last_week -> {
                 Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, frame, 10, 200)
@@ -298,15 +294,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 Stuff.openInBrowser("https://www.last.fm/user/$username/loved", this, frame, 10, 200)
             }
             R.id.nav_friends -> {
-                fragmentManager.beginTransaction()
-                        .replace(R.id.frame, FriendsFragment(), Stuff.GET_FRIENDS)
-//                        .hide(fragmentManager.findFragmentByTag(Stuff.GET_RECENTS))
-//                        .add(R.id.frame, FriendsFragment())
-                        .addToBackStack(null)
-                        .commit()
+                tab_bar.getTabAt(1)?.select()
             }
             R.id.nav_settings -> {
-                fragmentManager.beginTransaction()
+                supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, PrefFragment())
                         .addToBackStack(null)
                         .commit()
@@ -320,34 +311,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         return true
     }
 
-    override fun onSharedPreferenceChanged(sp: SharedPreferences, key: String) {
-        when(key){
-            Stuff.PREF_PROFILE_PIC,
-            Stuff.PREF_NUM_SCROBBLES -> {
-                lastDrawerOpenTime = 0
-                onDrawerOpened()
-            }
-            else -> {
-                val intent = Intent(NLService.iPREFS_CHANGED)
-                        .putExtra("key", key)
-                val value = sp.all[key]
-                when (value) {
-                    is Int -> intent.putExtra("value", value)
-                    is Float -> intent.putExtra("value", value)
-                    is Long -> intent.putExtra("value", value)
-                    is Boolean -> intent.putExtra("value", value)
-                    is String -> intent.putExtra("value", value)
-                    is Set<*> -> intent.putExtra("value", (value as Set<String>).toTypedArray())
-                    else -> {
-                        Stuff.log("unknown prefs type")
-                        return
-                    }
-                }
-                sendBroadcast(intent)
-            }
-        }
-    }
-
     override fun onBackStackChanged() {
         checkBackStack(this)
     }
@@ -355,21 +318,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private fun showNotRunning(){
         val snackbar = Snackbar
                 .make(frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.not_running_fix_action, {
-                    val snackbar2 = Snackbar
-                            .make(frame, getString(R.string.not_running_fix, getString(R.string.app_name)),
-                                    Snackbar.LENGTH_INDEFINITE)
-                            .setAction(android.R.string.ok, {
-                                val intent = Intent(Stuff.NLS_SETTINGS)
-                                startActivity(intent)
-                            })
-                            .setActionTextColor(Color.YELLOW)
-
-                    snackbar2.view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-                    snackbar2.view
-                            .findViewById<TextView>(android.support.design.R.id.snackbar_text).maxLines = 5
-                    snackbar2.show()
-                })
+                .setAction(R.string.not_running_fix_action) {
+                    FixItFragment().show(supportFragmentManager, null)
+                }
                 .setActionTextColor(Color.YELLOW)
         snackbar.view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
         snackbar.show()
@@ -380,10 +331,21 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val activeSessions = try {
             val sessManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
             sessManager.getActiveSessions(ComponentName(this, NLService::class.java))
-                    ?.fold("") { str, session -> str +  ", "  + session.packageName}
+                    .fold("") { str, session -> str +  ", "  + session.packageName}
         } catch (e: SecurityException) {
             "SecurityException"
         }
+        var bgRam = -1
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (proc in manager.runningAppProcesses){
+            if (proc?.processName?.contains("bgScrobbler") == true){
+                // https://stackoverflow.com/questions/2298208/how-do-i-discover-memory-usage-of-my-application-in-android
+                val memInfo = manager.getProcessMemoryInfo(intArrayOf(proc.pid)).first()
+                bgRam = memInfo.totalPss / 1024
+                break
+            }
+        }
+
 
         var text = ""
         text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME+ "\n"
@@ -392,17 +354,18 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         text += "Device: " + Build.BRAND + " "+ Build.MODEL+ "\n"
 
         val mi = ActivityManager.MemoryInfo()
-        (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(mi)
+        manager.getMemoryInfo(mi)
         val megs = mi.totalMem / 1048576L
         text += "RAM: " + megs + "M \n"
+        text += "Background RAM usage: " + bgRam + "M \n"
 
         val dm = resources.displayMetrics
 
         text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
 
-        if (!NLService.ensureServiceRunning(this))
+        if (!KeepNLSAliveJob.ensureServiceRunning(this))
             text += "Background service isn't running\n"
-        text += "Active Sessions: " + activeSessions + "\n"
+        text += "Active Sessions: $activeSessions\n"
 
         text += "------------------------\n\n[how did this happen?]\n"
         //keep the email in english
@@ -440,7 +403,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onSupportNavigateUp(): Boolean {
         if (backArrowShown)
-            fragmentManager.popBackStack()
+            supportFragmentManager.popBackStack()
         else
             drawer_layout.openDrawer(GravityCompat.START)
         return true
@@ -449,20 +412,25 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent?.data?.isHierarchical == true) {
-            val token = intent.data.getQueryParameter("token")
+            val uri = intent.data!!
+            val path = uri.path
+            val token = uri.getQueryParameter("token")
             if (token != null){
-                Stuff.log("onNewIntent got token")
-                LFMRequester(Stuff.AUTH_FROM_TOKEN, token).asAsyncTask(applicationContext)
+                Stuff.log("onNewIntent got token for $path")
+                when(path) {
+                    "/lastfm" ->
+                            LFMRequester (Stuff.LASTFM_SESS_AUTH, token)
+                        .asAsyncTask(applicationContext)
+                    "/librefm" -> {
+                            LFMRequester (Stuff.LIBREFM_SESS_AUTH, token)
+                        .asAsyncTask(applicationContext)
+                    }
+                }
             }
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
-        super.onConfigurationChanged(newConfig)
-        Stuff.setAppBarHeight(this)
-    }
-
-    fun showBackArrow(show: Boolean = true){
+    fun showBackArrow(show: Boolean){
         if (backArrowShown != show) {
             val start = if (show) 0f else 1f
             val anim = ValueAnimator.ofFloat(start, 1 - start)
@@ -474,6 +442,12 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             anim.startDelay = 200
             anim.duration = 1000
             anim.start()
+
+            if (show)
+                drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            else
+                drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+
             backArrowShown = show
         }
     }
@@ -481,63 +455,74 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private val mainReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-                CONNECTIVITY_ACTION -> isOnline = Stuff.getOnlineStatus(context)
-                NLService.pWHITELIST, NLService.pBLACKLIST -> {
-                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())
-                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())
-
-                    if (intent.action == NLService.pWHITELIST)
-                        wSet.add(intent.getStringExtra("packageName"))
-                    else {
-                        bSet.add(intent.getStringExtra("packageName"))
-                    }
-                    bSet.removeAll(wSet) //whitelist takes over blacklist for conflicts
-                    pref.edit()
-                            .putStringSet(Stuff.PREF_WHITELIST, wSet)
-                            .putStringSet(Stuff.PREF_BLACKLIST,  bSet)
-                            .apply()
-                }
+                NLService.iDRAWER_UPDATE -> onDrawerOpened(true)
             }
         }
     }
 
     public override fun onStart() {
         super.onStart()
-        pref.registerOnSharedPreferenceChangeListener(this)
         val iF = IntentFilter()
-        iF.addAction(CONNECTIVITY_ACTION)
-        iF.addAction(NLService.pBLACKLIST)
-        iF.addAction(NLService.pWHITELIST)
+        iF.addAction(NLService.iDRAWER_UPDATE)
         registerReceiver(mainReceiver, iF)
-        isOnline = Stuff.getOnlineStatus(this)
+
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val builder = NetworkRequest.Builder()
+        connectivityCb = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network?) {
+                isOnline = true
+            }
+
+            override fun onLost(network: Network?) {
+                isOnline = false
+            }
+
+            override fun onUnavailable() {
+                isOnline = false
+            }
+        }
+
+        cm.registerNetworkCallback(builder.build(), connectivityCb)
+
+        val ni = cm.activeNetworkInfo
+        isOnline = ni?.isConnected == true
     }
 
     public override fun onStop() {
-        pref.unregisterOnSharedPreferenceChangeListener(this)
         unregisterReceiver(mainReceiver)
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        cm.unregisterNetworkCallback(connectivityCb)
         super.onStop()
     }
 
-    override fun onDestroy() {
-        pref.unregisterOnSharedPreferenceChangeListener(this)
-        PendingScrobblesDb.destroyInstance()
-        super.onDestroy()
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("tab_bar_visible", tab_bar.visibility)
     }
+
+//    override fun onDestroy() {
+//        PendingScrobblesDb.destroyInstance()
+//        super.onDestroy()
+//    }
 
     companion object {
         var isOnline = true
 
         fun checkBackStack(activity: Main){
-            if (activity.app_bar != null) {
-                activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                if (activity.fragmentManager.backStackEntryCount == 0) {
-                    activity.app_bar.setExpanded(true, true)
-                    activity.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            val appBar = activity.findViewById<StatefulAppBar>(R.id.app_bar)
+
+            if (appBar != null) {
+
+                if (activity.supportFragmentManager.backStackEntryCount == 0) {
+                    // what the fuck, kotlin extensions? stop giving me old instances
+                    if (activity.findViewById<ViewPager>(R.id.pager)?.currentItem == 0)
+                        appBar.setExpanded(true, true)
+                    else
+                        appBar.setExpanded(false, true)
                     activity.showBackArrow(false)
                 } else {
-                    if (activity.fragmentManager.findFragmentByTag(Stuff.GET_SIMILAR)?.isVisible != true)
-                        activity.app_bar.setExpanded(false, true)
-                    activity.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                    if (activity.supportFragmentManager.findFragmentByTag(Stuff.GET_SIMILAR)?.isVisible != true)
+                        appBar.setExpanded(false, true)
                     activity.showBackArrow(true)
                 }
             }

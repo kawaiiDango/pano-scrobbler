@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@android:id/widget_frame"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="left"
+              android:background="@color/highlightPink"
+              android:gravity="left"
+              android:orientation="horizontal"
+              android:paddingLeft="11dp"
+              android:paddingRight="11dp">
+
+    <TextView
+        android:id="@android:id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:id="@android:id/summary"
+        android:layout_width="2dp"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/app_list_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:drawableTop="@drawable/vd_add"
+        android:text="@string/pref_enabled_apps_title"
+        android:textColor="?android:attr/textColorSecondary"/>
+
+    <LinearLayout
+        android:id="@+id/app_icons_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:orientation="horizontal"/>
+
+</LinearLayout>

@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
       tools:showIn="navigation_view">
-<!-- group needs an id to be set for the seperator to show up -->
+<!-- group needs an id to be set for the separator to show up -->
     <item android:title="@string/on_last_fm">
         <menu>
             <group android:id="@+id/nav_group_top">
                 <item
+                    app:actionLayout="@layout/action_external"
                     android:id="@+id/nav_last_week"
                     android:icon="@drawable/vd_bar_chart"
                     android:title="@string/last_week"/>
                 <item
+                    app:actionLayout="@layout/action_external"
                     android:id="@+id/nav_loved"
                     android:icon="@drawable/vd_heart"
                     android:title="@string/loved"/>

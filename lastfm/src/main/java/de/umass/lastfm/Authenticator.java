@@ -53,6 +53,7 @@ public class Authenticator {
 	/**
 	 * Create a web service session for a user. Used for authenticating a user when the password can be inputted by the user.
 	 *
+	 * @param apiRoot null (lastfm) or custom api root
 	 * @param username last.fm username
 	 * @param password last.fm password in cleartext or 32-char md5 string
 	 * @param apiKey The API key
@@ -60,7 +61,7 @@ public class Authenticator {
 	 * @return a Session instance
 	 * @see Session
 	 */
-	public static Session getMobileSession(String username, String password, String apiKey, String secret) {
+	public static Session getMobileSession(String apiRoot, String username, String password, String apiKey, String secret) {
 		if (!isMD5(password))
 			password = md5(password);
 		String authToken = md5(username + password);
@@ -69,7 +70,7 @@ public class Authenticator {
 		Result result = Caller.getInstance()
 				.call("auth.getMobileSession", apiKey, "username", username, "authToken", authToken, "api_sig", sig);
 		DomElement element = result.getContentElement();
-		return Session.sessionFromElement(element, apiKey, secret);
+		return Session.sessionFromElement(apiRoot, element, apiKey, secret);
 	}
 
 	/**
@@ -86,20 +87,21 @@ public class Authenticator {
 	/**
 	 * Fetch a session key for a user.
 	 *
+     * @param apiRoot null (lastfm) or custom api root
 	 * @param token A token returned by {@link #getToken(String)}
 	 * @param apiKey A last.fm API key
 	 * @param secret Your last.fm API secret
 	 * @return a Session instance
 	 * @see Session
 	 */
-	public static Session getSession(String token, String apiKey, String secret) {
+	public static Session getSession(String apiRoot, String token, String apiKey, String secret) {
 		String m = "auth.getSession";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("api_key", apiKey);
 		params.put("token", token);
 		params.put("api_sig", createSignature(m, params, secret));
-		Result result = Caller.getInstance().call(m, apiKey, params);
-		return Session.sessionFromElement(result.getContentElement(), apiKey, secret);
+		Result result = Caller.getInstance().call(apiRoot, m, apiKey, params);
+		return Session.sessionFromElement(apiRoot, result.getContentElement(), apiKey, secret);
 	}
 
 	static String createSignature(String method, Map<String, String> params, String secret) {

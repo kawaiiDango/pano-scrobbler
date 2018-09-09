@@ -41,6 +41,7 @@ public class Session {
 	private String secret;
 	private String username;
 	private String key;
+	private String apiRootUrl = Caller.DEFAULT_API_ROOT;
 	private boolean subscriber;
 
 	private Session() {
@@ -55,7 +56,11 @@ public class Session {
 	 * @return a Session instance
 	 */
 	public static Session createSession(String apiKey, String secret, String sessionKey) {
-		return createSession(apiKey, secret, sessionKey, null, false);
+		return createSession(apiKey, secret, sessionKey, null, null, false);
+	}
+
+	public static Session createCustomRootSession(String apiRootUrl, String apiKey, String secret, String sessionKey) {
+		return createSession(apiKey, secret, sessionKey, null, apiRootUrl, false);
 	}
 
 	/**
@@ -69,13 +74,15 @@ public class Session {
 	 * @return a Session instance
 	 */
 	public static Session createSession(String apiKey, String secret, String sessionKey, String username,
-										boolean subscriber) {
+                                            String apiRootUrl, boolean subscriber) {
 		Session s = new Session();
 		s.apiKey = apiKey;
 		s.secret = secret;
 		s.key = sessionKey;
 		s.username = username;
 		s.subscriber = subscriber;
+		if (apiRootUrl != null)
+            s.apiRootUrl = apiRootUrl;
 		return s;
 	}
 
@@ -99,6 +106,10 @@ public class Session {
 		return username;
 	}
 
+    public String getApiRootUrl() {
+        return apiRootUrl;
+    }
+
 	@Override
 	public String toString() {
 		return "Session[" +
@@ -110,12 +121,12 @@ public class Session {
 				']';
 	}
 
-	static Session sessionFromElement(DomElement element, String apiKey, String secret) {
+	static Session sessionFromElement(String apiRoot, DomElement element, String apiKey, String secret) {
 		if (element == null)
 			return null;
 		String user = element.getChildText("name");
 		String key = element.getChildText("key");
 		boolean subsc = element.getChildText("subscriber").equals("1");
-		return createSession(apiKey, secret, key, user, subsc);
+		return createSession(apiKey, secret, key, user, apiRoot, subsc);
 	}
 }

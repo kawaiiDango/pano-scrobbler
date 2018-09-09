@@ -55,6 +55,25 @@ public class ScrobbleResult extends Result {
 		super.httpErrorCode = result.getHttpErrorCode();
 	}
 
+    private ScrobbleResult(String dummy) {
+        super(dummy);
+    }
+
+    public static ScrobbleResult createHttp200OKResult(int status, String statusMsg, String body) {
+        ScrobbleResult sr = new ScrobbleResult("");
+        if (status == 200 && body.equals("ok"))
+            sr.status = Status.OK;
+        else {
+            sr.status = Status.FAILED;
+            if (body.equals(""))
+                sr.errorMessage = statusMsg;
+            else
+                sr.errorMessage = body;
+        }
+        sr.httpErrorCode = status;
+        return sr;
+    }
+
 	public String getTrack() {
 		return track;
 	}

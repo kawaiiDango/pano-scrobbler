@@ -26,28 +26,40 @@
 
 package de.umass.lastfm;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.Proxy;
-import java.net.URL;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import de.umass.lastfm.Result.Status;
-import de.umass.lastfm.cache.Cache;
-import de.umass.lastfm.cache.DefaultExpirationPolicy;
-import de.umass.lastfm.cache.FileSystemCache;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import static de.umass.util.StringUtilities.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import de.umass.lastfm.Result.Status;
+import de.umass.lastfm.cache.Cache;
+import de.umass.lastfm.cache.DefaultExpirationPolicy;
+
+import static de.umass.util.StringUtilities.encode;
+import static de.umass.util.StringUtilities.map;
+import static de.umass.util.StringUtilities.md5;
 
 /**
  * The <code>Caller</code> class handles the low-level communication between the client and last.fm.<br/>
@@ -63,7 +75,7 @@ public class Caller {
 	private static final String PARAM_API_KEY = "api_key";
 	private static final String PARAM_METHOD = "method";
 
-	private static final String DEFAULT_API_ROOT = "https://ws.audioscrobbler.com/2.0/";
+	static final String DEFAULT_API_ROOT = "https://ws.audioscrobbler.com/2.0/";
 	private static final Caller instance = new Caller();
 	
 	private final Logger log = Logger.getLogger("de.umass.lastfm.Caller");
@@ -76,11 +88,11 @@ public class Caller {
 	private boolean debugMode = false;
 
 	private Cache cache;
-	private Result lastResult;
+//	private Result lastResult;
 
-	private Caller() {
-		cache = new FileSystemCache();
-	}
+//	private Caller() {
+//		cache = new FileSystemCache();
+//	}
 
 	/**
 	 * Returns the single instance of the <code>Caller</code> class.
@@ -178,24 +190,28 @@ public class Caller {
 	 *
 	 * @return the last Result object
 	 */
-	public Result getLastResult() {
-		return lastResult;
-	}
+//	public Result getLastResult() {
+//		return lastResult;
+//	}
 
 	public Result call(String method, String apiKey, String... params) throws CallException {
 		return call(method, apiKey, map(params));
 	}
 
 	public Result call(String method, String apiKey, Map<String, String> params) throws CallException {
-		return call(method, apiKey, params, null);
+		return call(null, method, apiKey, params, null);
+	}
+
+	public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params) throws CallException {
+		return call(apiRootUrl, method, apiKey, params, null);
 	}
 
 	public Result call(String method, Session session, String... params) {
-		return call(method, session.getApiKey(), map(params), session);
+		return call(null, method, session.getApiKey(), map(params), session);
 	}
 
 	public Result call(String method, Session session, Map<String, String> params) {
-		return call(method, session.getApiKey(), params, session);
+		return call(null, method, session.getApiKey(), params, session);
 	}
 
 	/**
@@ -209,11 +225,12 @@ public class Caller {
 	 * @param session A Session instance or <code>null</code>
 	 * @return the result of the operation
 	 */
-	private Result call(String method, String apiKey, Map<String, String> params, Session session) {
+	private Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params, Session session) {
 		params = new HashMap<String, String>(params); // create new Map in case params is an immutable Map
 		InputStream inputStream = null;
 		
 		// try to load from cache
+        //TODO: this is bugged for custom api root
 		String cacheEntryName = Cache.createCacheEntryName(method, params);
 		if (session == null && cache != null &&
                 cache.getExpirationPolicy().getExpirationTime(method, params) != DefaultExpirationPolicy.NETWORK_AND_CACHE_CONST
@@ -229,13 +246,21 @@ public class Caller {
 				params.put("sk", session.getKey());
 				params.put("api_sig", Authenticator.createSignature(method, params, session.getSecret()));
 			}
+
+            if (apiRootUrl == null) {
+			    if (session != null)
+                    apiRootUrl = session.getApiRootUrl();
+			    else
+			        apiRootUrl = this.apiRootUrl;
+            }
+
 			try {
-				HttpURLConnection urlConnection = openPostConnection(method, params);
+				HttpURLConnection urlConnection = openPostConnection(apiRootUrl, method, params);
 				inputStream = getInputStreamFromConnection(urlConnection);
 				
 				if (inputStream == null) {
-					this.lastResult = Result.createHttpErrorResult(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
-					return lastResult;
+					return Result.createHttpErrorResult(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
+//					return lastResult;
 				} else {
 					if (cache != null) {
 						long expires = urlConnection.getHeaderFieldDate("Expires", -1);
@@ -263,7 +288,7 @@ public class Caller {
 					cache.remove(cacheEntryName);
 				}
 			}
-			this.lastResult = result;
+//			this.lastResult = result;
 			return result;
 		} catch (IOException e) {
 			throw new CallException(e);
@@ -298,7 +323,7 @@ public class Caller {
 		return urlConnection;
 	}
 
-	private HttpURLConnection openPostConnection(String method, Map<String, String> params) throws IOException {
+	private HttpURLConnection openPostConnection(String apiRootUrl, String method, Map<String, String> params) throws IOException {
 		HttpURLConnection urlConnection = openConnection(apiRootUrl);
 		urlConnection.setRequestMethod("POST");
 		urlConnection.setDoOutput(true);

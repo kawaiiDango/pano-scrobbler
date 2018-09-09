@@ -1,115 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="4dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingTop="4dp">
 
-    <com.arn.scrobble.ui.FixedLineTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/friends_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:singleLine="true"
+        android:layout_gravity="center"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
         tools:text="name"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/friends_pic"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_below="@+id/friends_name"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:elevation="20dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_placeholder_user"/>
-
-    <LinearLayout
-        android:id="@+id/friends_links"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/friends_pic"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <Button
-            android:id="@+id/friends_profile"
-            style="@style/friendsLinks"
-            android:drawableTop="@drawable/vd_open_in_new"
-            android:text="@string/user_profile"/>
-
-        <Button
-            android:id="@+id/friends_loved"
-            style="@style/friendsLinks"
-            android:drawableTop="@drawable/vd_heart"
-            android:text="@string/loved"/>
-
-        <Button
-            android:id="@+id/friends_chart"
-            style="@style/friendsLinks"
-            android:drawableTop="@drawable/vd_bar_chart"
-            android:text="@string/last_week"/>
-    </LinearLayout>
+        tools:src="@drawable/ic_placeholder_user"/>
 
     <FrameLayout
-        android:id="@+id/friends_track"
+        android:id="@+id/friends_track_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/friends_links"
-        android:background="?android:attr/selectableItemBackground">
-
-        <View
-            android:id="@+id/friends_arrow"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="right"
-            android:alpha="0.5"
-            android:background="@drawable/shape_triangle_corner"/>
+        android:background="@drawable/selector_track_container">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/gradient_dark_overlay_nav"
             android:orientation="vertical"
             android:paddingBottom="4dp"
-            android:paddingEnd="4dp"
             android:paddingStart="28dp">
 
-            <com.arn.scrobble.ui.FixedLineTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/friends_title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="-4sp"
-                android:ellipsize="marquee"
+                android:layout_height="16sp"
+                android:layout_marginBottom="-1sp"
+                android:drawableRight="@drawable/shape_triangle_corner"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
-                android:singleLine="true"
+                android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/colorAccentLight"
+                android:textSize="13sp"
                 tools:text="tit"/>
 
-            <com.arn.scrobble.ui.FixedLineTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/friends_subtitle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
+                android:layout_height="14sp"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
-                android:singleLine="true"
+                android:maxLines="1"
+                android:paddingEnd="4dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="12sp"
                 tools:text="subtit"/>
 
             <TextView
                 android:id="@+id/friends_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="14sp"
+                android:layout_gravity="right"
                 android:layout_marginEnd="11dp"
-                android:gravity="bottom|right"
+                android:layout_marginTop="3dp"
+                android:gravity="bottom"
                 android:singleLine="true"
-                android:textAppearance="@android:style/TextAppearance.Material.Caption"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                 tools:text="date"/>
         </LinearLayout>
 
@@ -120,15 +84,15 @@
             android:layout_marginLeft="4dp"
             android:layout_marginTop="4dp"
             android:alpha="0.7"
-            app:srcCompat="@drawable/vd_music_circle"/>
+            tools:srcCompat="@drawable/vd_music_circle"/>
 
-        <ImageView
-            android:id="@+id/friends_music_icon_playing"
-            android:layout_width="20sp"
-            android:layout_height="20sp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/avd_eq"/>
+        <!--<ImageView-->
+        <!--android:id="@+id/friends_music_icon_playing"-->
+        <!--android:layout_width="20sp"-->
+        <!--android:layout_height="20sp"-->
+        <!--android:layout_marginLeft="4dp"-->
+        <!--android:layout_marginTop="4dp"-->
+        <!--android:visibility="invisible"-->
+        <!--app:srcCompat="@drawable/avd_eq"/>-->
     </FrameLayout>
-</RelativeLayout>
+</LinearLayout>

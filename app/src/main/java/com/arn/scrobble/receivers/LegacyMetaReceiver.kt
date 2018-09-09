@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BadParcelableException
+import android.os.SystemClock
+import com.arn.scrobble.KeepNLSAliveJob
 import com.arn.scrobble.NLService
 import com.arn.scrobble.SessListener
 import com.arn.scrobble.Stuff
@@ -21,20 +23,21 @@ class LegacyMetaReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         try {
+//            scrobbling_source for poweramp
             if (intent.hasExtra(Stuff.IGNORE_LEGAGY_META[0] + ".source"))
                 return
         } catch (e: BadParcelableException) {
             return
         }
-        if (System.currentTimeMillis() - serviceRunningCheckTime > Stuff.RECENTS_REFRESH_INTERVAL) {
-            NLService.ensureServiceRunning(context)
+        if (System.currentTimeMillis() - serviceRunningCheckTime > Stuff.RECENTS_REFRESH_INTERVAL * 4) {
+            KeepNLSAliveJob.ensureServiceRunning(context)
             serviceRunningCheckTime = System.currentTimeMillis()
         }
         processIntent(intent, context)
     }
 
     private fun processIntent(intent: Intent, context: Context) {
-        if (intent.action.indexOf('.') == -1)
+        if (intent.action?.indexOf('.') == -1)
             Stuff.log("intent action is corrupted: " + intent.action)
         else if (intent.extras == null || intent.extras.size() == 0)
             Stuff.log("intent extras are null or empty, skipping intent")
@@ -79,24 +82,24 @@ class LegacyMetaReceiver : BroadcastReceiver() {
 
                 val hash = artist.hashCode() + track.hashCode()
                 try{
-                    NLService.handler.postDelayed({
+                    NLService.handler.postAtTime({
                         val timeDiff = System.currentTimeMillis() - SessListener.lastSessEventTime
 
-                        if (SessListener.numSessions == 0 || timeDiff > Stuff.META_WAIT * 3 )
-                            return@postDelayed
+                        if (SessListener.numSessions == 0 || timeDiff > Stuff.META_WAIT * 2.5 )
+                            return@postAtTime
 
-                        Stuff.log("numSessions: " + SessListener.numSessions + " timeDiff: " + timeDiff)
+                        Stuff.log("LegacyMetaReceiver numSessions: " + SessListener.numSessions + " timeDiff: " + timeDiff)
 
                         if (isPlaying && !NLService.handler.hasMessages(hash)) {
                             SessListener.lastHash = NLService.handler.scrobble(artist, album, track, duration)
                             Stuff.log( "LegacyMetaReceiver scrobbling $track")
-                            Stuff.log("timeDiff=" + timeDiff + ", numSessions=" + SessListener.numSessions)
 
                         } else if (!isPlaying && NLService.handler.hasMessages(hash)) {
                             NLService.handler.remove(SessListener.lastHash)
                             Stuff.log("LegacyMetaReceiver cancelled $hash")
                         }
-                    }, Stuff.META_WAIT+200)
+                    }, TOKEN,
+                            SystemClock.uptimeMillis() + Stuff.META_WAIT * 2)
                 } catch (e:Exception){
                     e.printStackTrace()
                 }
@@ -145,5 +148,6 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                 "com.android.music.metachanged",
                 "com.android.music.playstatechanged"
         )
+        const val TOKEN = 95
     }
 }

@@ -31,7 +31,6 @@
         android:orientation="horizontal"
         android:visibility="gone"
         tools:visibility="visible">
-        <!--android:background="?attr/selectableItemBackground"-->
 
         <TextView
             android:layout_width="match_parent"
@@ -56,6 +55,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
             <TextView
+                android:id="@+id/first_things_0_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="3dp"
@@ -129,7 +129,6 @@
         android:id="@+id/first_things_3"
         style="@style/firstThings"
         android:orientation="horizontal">
-        <!--android:background="?attr/selectableItemBackground"-->
 
         <TextView
             android:layout_width="match_parent"

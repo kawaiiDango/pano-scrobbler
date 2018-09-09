@@ -17,7 +17,7 @@ object DebugOnly {
 //        if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
 //                     .detectDiskReads()
-                    .detectDiskWrites()
+//                    .detectDiskWrites()
                     .detectNetwork()   // or .detectAll() for all detectable problems
                     .detectCustomSlowCalls()
                     .penaltyLog()

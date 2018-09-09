@@ -1,49 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sample="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
+        app:iconSpaceReserved="false"
         android:defaultValue="true"
         android:persistent="true"
         android:key="master"
-        android:summaryOff="@string/pref_master_off"
-        android:summaryOn="@string/pref_master_on"
         android:title="@string/pref_master"/>
 
+    <Preference app:iconSpaceReserved="false"
+                android:selectable="false"
+                android:summary="@string/pref_offline_info" />
+
     <SwitchPreference
+        app:iconSpaceReserved="false"
         android:defaultValue="true"
         android:key="show_notifications"
         android:persistent="true"
         android:summaryOff="@string/pref_noti_off"
         android:summaryOn="@string/pref_noti_on"
         android:title="@string/pref_noti"/>
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="offline_scrobble"
-        android:persistent="true"
-        android:summaryOff="@string/pref_offline_off"
-        android:summaryOn="@string/pref_offline_on"
-        android:title="@string/pref_offline"/>
 
     <ListPreference
+        app:iconSpaceReserved="false"
         android:title="@string/pref_search_title"
         android:entries="@array/search_sites_title"
         android:entryValues="@array/search_sites_url"
         android:defaultValue="@string/search_site_default"
         android:key="search_url"
+        android:persistent="false"
     />
     <PreferenceCategory
+        app:iconSpaceReserved="false"
         android:title="@string/pref_scrobble_from">
         <com.arn.scrobble.pref.AppIconsPref
-            android:title="@string/pref_enabled_apps"
             android:key="app_whitelist"/>
         <Preference
+            app:iconSpaceReserved="false"
             android:selectable="false"
             android:summary="@string/pref_enabled_apps_summary"
             />
 
         <SwitchPreference
+            app:iconSpaceReserved="false"
             android:defaultValue="true"
             android:key="auto_detect"
             android:persistent="true"
@@ -54,46 +55,87 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:iconSpaceReserved="false"
         android:title="@string/pref_delay">
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <SeekBarPreference
+            app:iconSpaceReserved="false"
             android:key="delay_secs"
             android:title="@string/pref_delay_secs"
-            android:defaultValue="60"
+            android:defaultValue="90"
+            android:max="120"/>
 
-            sample:msbp_minValue="20"
-            sample:msbp_maxValue="120"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="secs"
-            sample:msbp_dialogEnabled="false"/>
-
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <SeekBarPreference
+            app:iconSpaceReserved="false"
             android:key="delay_per"
             android:title="@string/pref_delay_per"
-            android:defaultValue="40"
+            android:defaultValue="50"
+            android:max="75"/>
+<!--
 
-            sample:msbp_minValue="30"
-            sample:msbp_maxValue="75"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="secs"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="%"
-            sample:msbp_dialogEnabled="false"/>
-
+-->
         <Preference
+            app:iconSpaceReserved="false"
             android:summary="@string/pref_delay_note"
             android:selectable="false"
             />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pref_logout">
-        <Preference
-            android:title="@string/pref_logout_title"
-            android:key="reauth"
+        app:iconSpaceReserved="false">
+        <EditTextPreference
+            app:iconSpaceReserved="false"
+            android:title="Share signature"
+            android:summary="Tap to edit"
+            android:key="share_sig"
+            android:persistent="false"
             />
     </PreferenceCategory>
     <PreferenceCategory
+        app:iconSpaceReserved="false"
+        android:title="@string/scrobble_services">
+        <Preference
+            app:iconSpaceReserved="false"
+            android:title="@string/lastfm"
+            android:key="lastfm"
+            />
+        <Preference
+            app:iconSpaceReserved="false"
+            android:title="@string/librefm"
+            android:key="librefm"
+            />
+        <!--<Preference-->
+            <!--app:iconSpaceReserved="false"-->
+            <!--android:title="gnufm nixtape"-->
+            <!--android:key="gnufm_nixtape"-->
+            <!--/>-->
+        <Preference
+            app:iconSpaceReserved="false"
+            android:title="@string/listenbrainz"
+            android:key="listenbrainz"
+            />
+        <Preference
+            app:iconSpaceReserved="false"
+            android:title="@string/custom_listenbrainz"
+            android:key="lb_custom"
+            />
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"
+            android:persistent="true"
+            android:key="lastfm_disable"
+            android:summary="You still need a lastFM login for the rest of the UI to work, for now"
+            android:title="Don't scrobble to lastFM"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         android:title="@string/pref_about">
         <Preference
+            app:iconSpaceReserved="false"
             android:title="@string/pref_about_title"
             android:summary="https://github.com/kawaiiDango/pScrobbler"
             android:key="about"

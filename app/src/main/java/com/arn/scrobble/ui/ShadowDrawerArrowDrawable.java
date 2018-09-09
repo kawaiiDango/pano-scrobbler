@@ -21,12 +21,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.support.annotation.FloatRange;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 
 import com.arn.scrobble.Stuff;
+
+import androidx.annotation.FloatRange;
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
 
 /**
  * A drawable that can draw a "Drawer hamburger" menu or an arrow and animate between them.
@@ -158,7 +159,7 @@ public class ShadowDrawerArrowDrawable extends DrawerArrowDrawable {
         // the arrow pointing the other way for RTL.
         final float barThickness = mPaint.getStrokeWidth();
         final int remainingSpace = (int) (bounds.height() - barThickness * 3 - mBarGap * 2);
-        float yOffset = (remainingSpace / 4) * 2; // making sure it is a multiple of 2.
+        float yOffset = (remainingSpace / 4f) * 2; // making sure it is a multiple of 2.
         yOffset += barThickness * 1.5f + mBarGap;
 
         canvas.translate(bounds.centerX(), yOffset);

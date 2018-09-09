@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<View xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="24dp"
+      android:layout_height="24dp"
+      android:layout_gravity="center_vertical|end"
+      android:layout_marginTop="10sp"
+      android:alpha="0.45"
+      android:background="@drawable/vd_open_in_new"/>

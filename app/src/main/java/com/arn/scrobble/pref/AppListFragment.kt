@@ -1,30 +1,30 @@
 package com.arn.scrobble.pref
 
-import android.app.Fragment
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.transition.Fade
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ListView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import kotlinx.android.synthetic.main.content_app_list.*
 import java.util.Collections
-import android.widget.AbsListView
 
 
 /**
  * Created by arn on 05/09/2017.
  */
 class AppListFragment : Fragment() {
+    private var firstRun = false
+    private var appListLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,70 +38,58 @@ class AppListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = AppListAdapter(activity, R.layout.list_item_app, R.layout.header_default)
+        val adapter = AppListAdapter(activity!!)
+        app_list.layoutManager = LinearLayoutManager(context)
         app_list.adapter = adapter
-        app_list.setOnScrollListener(object : AbsListView.OnScrollListener {
-            var lastFirstVisibleItem:Int = 0
+        app_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
-            override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {
+            override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
                 if(scrollState == 0) { //scrolling stopped
                     app_list_done.show()
                 } else //scrolling
                     app_list_done.hide()
-/*
-                if (view.id == app_list.id) {
-                    val currentFirstVisibleItem = app_list.firstVisiblePosition
-                    if (currentFirstVisibleItem > lastFirstVisibleItem) { //scrolling down
-                        app_list_done.hide()
-                    } else if (currentFirstVisibleItem < lastFirstVisibleItem) {//scrolling up
-                        app_list_done.show()
-                    }
-
-                    lastFirstVisibleItem = currentFirstVisibleItem
-                }
-*/
-            }
-
-            override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
             }
         })
 
         app_list_done.setOnClickListener {
-            fragmentManager.popBackStack()
+            activity!!.supportFragmentManager.popBackStack()
         }
         app_list_done.setOnLongClickListener {
-            PreferenceManager.getDefaultSharedPreferences(activity?: return@setOnLongClickListener false )
-                    .edit().putStringSet(Stuff.PREF_BLACKLIST, setOf()).apply()
+            MultiPreferences(context?: return@setOnLongClickListener false )
+                    .putStringSet(Stuff.PREF_BLACKLIST, setOf())
             Stuff.toast(activity, "Cleared blacklist")
             true
         }
-        val otherApps = getAppList(adapter)
-        Thread({
-            Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity.packageManager))
-            app_list?.post({
-                val prefs = PreferenceManager.getDefaultSharedPreferences(activity?: return@post)
-                val firstRun = prefs.getBoolean(Stuff.PREF_FIRST_RUN, true)
-                if (firstRun){
-                    for(i in 0 until app_list.count)
-                        app_list.setItemChecked(i, true)
-                    prefs.edit().putBoolean(Stuff.PREF_FIRST_RUN, false).apply()
-                }
-                otherApps.forEach {adapter.add(it)}
-            })
-        }).start()
+        val excludePackageNames = getAppList(adapter)
+        Thread {
+            val pm = activity!!.packageManager
+            val otherApps = pm.getInstalledApplications(PackageManager.GET_META_DATA) as MutableList<ApplicationInfo>
 
-        app_list.setOnItemClickListener{
-            adapterView: AdapterView<*>, view1: View, pos1: Int, l: Long ->
-            val i=l.toInt()
-            adapterView as ListView
-            if (adapterView.checkedItemCount > Stuff.MAX_APPS){
-                Stuff.toast(activity, getString(R.string.max_apps_exceeded, Stuff.MAX_APPS))
-                adapterView.setItemChecked(i, false)
-            } else {
-                adapterView.setItemChecked(i, adapterView.isItemChecked(i)) //i have no idea why this works
+            adapter.addSectionHeader(getString(R.string.video_players))
+
+            val it = otherApps.iterator()
+            while (it.hasNext()) {
+                val applicationInfo = it.next()
+                if(Stuff.IGNORE_ARTIST_META.contains(applicationInfo.packageName)) {
+                    adapter.add(applicationInfo, firstRun)
+                    excludePackageNames.add(applicationInfo.packageName)
+                }
+                if (excludePackageNames.contains(applicationInfo.packageName) ||
+                        applicationInfo.icon == 0 || !applicationInfo.enabled ||
+                        (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0) {
+                    it.remove()
+                }
             }
-            adapter.notifyDataSetChanged()
-        }
+            adapter.addSectionHeader(getString(R.string.other_apps))
+            Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity!!.packageManager))
+
+            val oldCount = adapter.itemCount
+            otherApps.forEach {adapter.add(it)}
+            appListLoaded = true
+            app_list?.post {
+                adapter.notifyItemRangeChanged(oldCount-1, adapter.itemCount, 0)
+            }
+        }.start()
     }
 
     override fun onStart() {
@@ -109,69 +97,49 @@ class AppListFragment : Fragment() {
         Stuff.setTitle(activity, R.string.action_app_list)
     }
     override fun onStop() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        val prefs = MultiPreferences(context ?: return)
         if (app_list != null) {
             val wSet = mutableSetOf<String>()
 
-            app_list.checkedItemIds.forEach {
-                try {
-                    val packageName = (app_list.adapter.getItem(it.toInt()) as ApplicationInfo).packageName
-                            ?: return@forEach
-                    wSet.add(packageName)
-                } catch (e: IndexOutOfBoundsException) {}
-            }
+            val adapter = app_list.adapter as AppListAdapter
+            wSet.addAll(adapter.getSelectedPackages())
 
             //BL = old WL - new WL
-            val bSet = prefs.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf()) +
-                    prefs.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf()).minus(wSet) -
+            val bSet = prefs.getStringSet(Stuff.PREF_BLACKLIST, setOf()) +
+                    prefs.getStringSet(Stuff.PREF_WHITELIST, setOf()) -
                     wSet
-            prefs.edit()
-                    .putStringSet(Stuff.PREF_WHITELIST, wSet)
-                    .putStringSet(Stuff.PREF_BLACKLIST,  bSet)
-                    .apply()
+
+            prefs.putStringSet(Stuff.PREF_WHITELIST, wSet)
+            prefs.putStringSet(Stuff.PREF_BLACKLIST, bSet)
         }
         super.onStop()
     }
 
-    private fun getAppList(adapter: AppListAdapter): MutableList<ApplicationInfo> {
-        val pm = activity.packageManager
+
+    private fun getAppList(adapter: AppListAdapter): MutableList<String> {
+        val prefs = MultiPreferences(context!!)
+        firstRun = prefs.getBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, true)
+        if (firstRun)
+            prefs.putBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, false)
+
+        val pm = activity!!.packageManager
         val resolveIntent = Intent(Intent.ACTION_VIEW)
         val uri = Uri.withAppendedPath(
                 MediaStore.Audio.Media.INTERNAL_CONTENT_URI, "1")
         resolveIntent.setDataAndType(uri, "audio/*")
 
-        val otherApps = pm.getInstalledApplications(PackageManager.GET_META_DATA) as MutableList<ApplicationInfo>
         val potentialApps = pm.queryIntentActivities(resolveIntent, PackageManager.GET_RESOLVED_FILTER)
-        val excludePackageNames = mutableListOf<String>(activity.packageName)
+        val excludePackageNames = mutableListOf<String>(activity!!.packageName)
 
         adapter.addSectionHeader(getString(R.string.music_players))
         potentialApps.forEach{
             if (!excludePackageNames.contains(it.activityInfo.packageName)) {
-                adapter.add(it.activityInfo.applicationInfo)
+                adapter.add(it.activityInfo.applicationInfo, firstRun)
                 excludePackageNames.add(it.activityInfo.packageName)
             }
 
         }
-        adapter.addSectionHeader(getString(R.string.video_players))
-        otherApps.forEach {
-            if(Stuff.IGNORE_ARTIST_META.contains(it.packageName)) {
-                adapter.add(it)
-                excludePackageNames.add(it.packageName)
-            }
-        }
-
-        val it = otherApps.iterator()
-        while (it.hasNext()) {
-            val applicationInfo = it.next()
-            if (excludePackageNames.contains(applicationInfo.packageName) ||
-                    applicationInfo.icon == 0 ||
-                    (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0) {
-                it.remove()
-            }
-        }
-
-        adapter.addSectionHeader(getString(R.string.other_apps))
-
-        return otherApps
+        adapter.notifyDataSetChanged()
+        return excludePackageNames
     }
 }

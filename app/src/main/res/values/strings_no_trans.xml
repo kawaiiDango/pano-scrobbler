@@ -5,13 +5,14 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="email">kawaiiDango@protonmail.com</string>
-    <string name="share_link">goo.gl/ek1Nof</string>
+    <string name="share_link">bit.ly/Pscr</string>
     <string name="ok_cool">Looks cool</string>
     <string name="ignore_app">Ignore this app</string>
     <string name="unscrobble">Unscrobble</string>
-    <string name="love">Love it</string>
-    <string name="unlove">Unlove it</string>
     <string name="last_week">Last.week</string>
+    <string name="lastfm">LastFM</string>
+    <string name="librefm">LibreFM</string>
+    <string name="listenbrainz">ListenBrainz</string>
 
     <string name="search_site_default">https://www.youtube.com/results?search_query=</string>
     <string-array name="search_sites_title">

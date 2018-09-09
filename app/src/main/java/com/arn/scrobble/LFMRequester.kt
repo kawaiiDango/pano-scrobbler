@@ -1,14 +1,15 @@
 package com.arn.scrobble
 
-import android.content.AsyncTaskLoader
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.AsyncTask
-import java.util.Calendar
-import android.preference.PreferenceManager
-import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PendingScrobblesDb
+import android.util.LruCache
+import androidx.lifecycle.MutableLiveData
+import com.arn.scrobble.pending.PendingScrJob
+import com.arn.scrobble.pending.db.PendingScrobble
+import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.*
 import de.umass.lastfm.cache.FileSystemCache
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -20,6 +21,7 @@ import java.io.InterruptedIOException
 import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.*
 
 
 /**
@@ -27,103 +29,100 @@ import java.net.URL
  */
 
 class LFMRequester constructor(var command: String, vararg args: String) {
-    private lateinit var prefs: SharedPreferences
-    var args = arrayListOf<String>()
+    private lateinit var prefs: MultiPreferences
+    private var skipCP = false
+    private var callback: ((success:Boolean) -> Unit)? = null
+    private var args = mutableListOf(*args)
     var isLoading = false
 
-    init {
-        args.forEach { this.args.add(it) }
-    }
-
-    fun inBackground(context: Context?): Any? {
+    private fun inBackground(context: Context?): Any? {
         context ?: return null
 
-        fun notifyFailed(title1: String, title2: String?, state: String, iconId: Int, hash: Int){
-            val i = Intent(NLService.iNOTIFY_FAILED)
-            i.putExtra("title1", title1)
-            i.putExtra("title2", title2)
-            i.putExtra("state", state)
-            i.putExtra("iconId", iconId)
-            i.putExtra("hash", hash)
-            context.sendBroadcast(i)
-        }
-
-        fun reAuth() {
-            PreferenceManager.getDefaultSharedPreferences(context)
-                    .edit()
-                    .remove(Stuff.SESS_KEY)
-                    .apply()
-            Stuff.openInBrowser(Stuff.AUTH_CB_URL, context)
-        }
         isLoading = true
-//        Stuff.timeIt("loadInBackground "+ command)
+        Stuff.timeIt("loadInBackground $command")
         Stuff.log("loadInBackground $command $args")
-        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs = MultiPreferences(context)
+        if (skipCP)
+            prefs.skipContentProvider = true
         try {
             var reAuthNeeded = false
-            var session: Session? = null
+            var lastfmSession: Session? = null
             val caller = Caller.getInstance()
-            caller.userAgent = Stuff.USER_AGENT
-            val fsCache = FileSystemCache(context.cacheDir)
+            if (caller.userAgent != Stuff.USER_AGENT) { // static instance not inited
+                caller.userAgent = Stuff.USER_AGENT
+                val fsCache = FileSystemCache(context.cacheDir)
+                caller.cache = fsCache
+            }
 
             if (command == Stuff.GET_RECENTS_CACHED) {
                 command = Stuff.GET_RECENTS
-                fsCache.expirationPolicy = LFMCachePolicy(false)
+                caller.cache.expirationPolicy = LFMCachePolicy(false)
             } else
-                fsCache.expirationPolicy = LFMCachePolicy(Main.isOnline)
-            caller.cache = fsCache
+                caller.cache.expirationPolicy = LFMCachePolicy(Main.isOnline)
+
 //            caller.isDebugMode = false
 
-            val key: String = prefs.getString(Stuff.SESS_KEY, "")
-            var username: String? = prefs.getString(Stuff.USERNAME, null)
+            val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+            var lastfmUsername: String? = prefs.getString(Stuff.PREF_LASTFM_USERNAME, null)
 
-            if (key.length > 5)
-                session = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, key)
-            else
+            if (!lastfmSessKey.isNullOrBlank())
+                lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
+
+            if (lastfmSession == null || lastfmUsername == null)
                 reAuthNeeded = true
 
-            if (session == null || username == null)
-                reAuthNeeded = true
-//            Stuff.timeIt("!reAuthNeeded " + command)
+            Stuff.timeIt("!reAuthNeeded $command")
             if (!reAuthNeeded) {
                 when (command) {
-                    Stuff.AUTH_FROM_TOKEN -> return null
+                    Stuff.LASTFM_SESS_AUTH -> return null
                     Stuff.GET_RECENTS -> {
-                        return User.getRecentTracks(username, Integer.parseInt(args[0]), 15, true, Stuff.LAST_KEY)
+                        return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 15, true, Stuff.LAST_KEY)
                     }
                     Stuff.GET_FRIENDS_RECENTS -> {
-                        // args[1] = position
-                        return User.getRecentTracks(args[0], 1, 1, false, Stuff.LAST_KEY)
+                        // args[0] = position
+                        return Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, Stuff.LAST_KEY))
                     }
-                    //for love: command = tag, args[1] = artist, args[2] = song,
-                    Stuff.LOVE -> return Track.love(args[0], args[1], session)
-                    Stuff.UNLOVE -> return Track.unlove(args[0], args[1], session)
-                    Stuff.GET_SIMILAR -> return Track.getSimilar(args[0], args[1], Stuff.LAST_KEY, 6)
+                    //for love: command = tag, args[0] = artist, args[1] = song,
+                    Stuff.LOVE -> return Track.love(args[0], args[1], lastfmSession)
+                    Stuff.UNLOVE -> return Track.unlove(args[0], args[1], lastfmSession)
+                    // args[2] = limit
+                    Stuff.GET_SIMILAR -> return Track.getSimilar(args[0], args[1], Stuff.LAST_KEY, args[2].toInt())
+                    Stuff.DELETE -> {
+                        val unscrobbler = LastfmUnscrobbler(context)
+                        val success = unscrobbler.checkCsrf(lastfmUsername!!) &&
+                                unscrobbler.unscrobble(args[0],args[2],args[3].toLong())
+                        callback!!.invoke(success)
+                    }
                     Stuff.GET_DRAWER_INFO -> {
-                        val profile = User.getInfo(session)
+                        val profile = User.getInfo(lastfmSession)
                         val cal = Calendar.getInstance()
                         cal.set(Calendar.HOUR_OF_DAY, 0)
                         cal.set(Calendar.MINUTE, 0)
                         cal.set(Calendar.SECOND, 0)
-                        val recents = User.getRecentTracks(username, 1, 1, cal.timeInMillis/1000, 0, Stuff.LAST_KEY)
+                        val recents = User.getRecentTracks(lastfmUsername, 1, 1, cal.timeInMillis/1000, 0, Stuff.LAST_KEY)
 
-                        prefs.edit().putInt(Stuff.PREF_NUM_SCROBBLES, recents?.totalPages ?: 0)
-                                .putString(Stuff.PREF_PROFILE_PIC, profile?.getImageURL(ImageSize.EXTRALARGE) ?: "")
+                        val actPref = context.getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
+                        actPref.edit()
+                                .putInt(Stuff.PREF_ACTIVITY_NUM_SCROBBLES, recents?.totalPages ?: 0)
+                                .putString(Stuff.PREF_ACTIVITY_PROFILE_PIC, profile?.getImageURL(ImageSize.EXTRALARGE) ?: "")
                                 .apply()
+
+                        val intent = Intent(NLService.iDRAWER_UPDATE)
+                        context.sendBroadcast(intent)
                         return null
                     }
                     Stuff.GET_FRIENDS -> {
                         val limit = if (args.size > 1) args[1].toInt() else 30
                         return try {
-                            User.getFriends(username, true, Integer.parseInt(args[0]), limit, Stuff.LAST_KEY)
+                            User.getFriends(lastfmUsername, true, Integer.parseInt(args[0]), limit, Stuff.LAST_KEY)
                         } catch (e:NullPointerException){
                             PaginatedResult<User>(1,0, listOf())
                         }
                     }
-                    Stuff.HERO_INFO -> {
-                        if (!Main.isOnline)
+                    Stuff.GET_HERO_INFO -> {
+                        if (!Main.isOnline || args[0] == "")
                             return null
-                        //args[1] = page url, args[2] = api large image url
+                        //args[0] = page url, args[1] = api large image url
                         val url = URL(args[0])
                         var urlConnection:HttpURLConnection? = null
                         val scrapped = mutableListOf<String?>()
@@ -135,19 +134,8 @@ class LFMRequester constructor(var command: String, vararg args: String) {
                             if (resp == "")
                                 return null
                             //0
-                            var idx = resp.indexOf("id=\"header-expanded-image\"")
-                            var img = args[1]
-                            var idx2: Int
-                            if (idx > -1) {
-                                idx = resp.indexOf("src=", idx) + 5
-                                idx2 = resp.indexOf("\"", idx)
-                                img = resp.substring(idx, idx2)
-                            }
-//                            if (img == "")
-                                //TODO: get artist image
-                            scrapped.add(img)
-                            //1
-                            idx = resp.indexOf("charts/sparkline")
+                            var idx = resp.indexOf("charts/sparkline")
+                            val idx2: Int
                             if (idx > -1) {
                                 idx = resp.indexOf("[", idx) + 1
                                 idx2 = resp.indexOf("]", idx)
@@ -155,92 +143,183 @@ class LFMRequester constructor(var command: String, vararg args: String) {
                                 scrapped.add(chart)
                             } else
                                 scrapped.add(null)
+
+                            /*
+                            //1
+                            idx = resp.indexOf("id=\"header-expanded-image\"")
+                            var img = args[1]
+                            if (idx > -1) {
+                                idx = resp.indexOf("src=", idx) + 5
+                                idx2 = resp.indexOf("\"", idx)
+                                img = resp.substring(idx, idx2)
+                            }
+                            scrapped.add(img)
+                            */
                         } finally {
                             urlConnection?.disconnect()
                         }
                         return scrapped
                     }
-                }
 
-                var scrobbleResult: ScrobbleResult? = null
+                    Stuff.NOW_PLAYING, Stuff.SCROBBLE -> {
+                        val scrobbleResults = mutableMapOf<String, ScrobbleResult>()
 
-                //for scrobble: command = tag, args[1] = artist, args[2] = album, args[3] = song, args[4] = time, args[5] = duration
-                val scrobbleData = ScrobbleData()
-                scrobbleData.artist = args[0]
-                scrobbleData.album = args[1]
-                scrobbleData.track = args[2]
-                scrobbleData.timestamp = (args[3].toLong()/1000).toInt() // in secs
-                scrobbleData.duration = (args[4].toLong()/1000).toInt() // in secs
+                        //for scrobble: command = tag, args[0] = artist, args[1] = album, args[2] = song, args[3] = time, args[4] = duration
+                        val scrobbleData = ScrobbleData()
+                        scrobbleData.artist = args[0]
+                        scrobbleData.album = args[1]
+                        scrobbleData.track = args[2]
+                        scrobbleData.timestamp = (args[3].toLong()/1000).toInt() // in secs
+                        scrobbleData.duration = (args[4].toLong()/1000).toInt() // in secs
 
-                if (scrobbleData.duration < 30)
-                    scrobbleData.duration = -1 //default
+                        if (scrobbleData.duration < 30)
+                            scrobbleData.duration = -1 //default
 
-                when(command) {
-                    Stuff.NOW_PLAYING -> {
-                        if (NLService.isOnline){
+
+                        val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
+                        val librefmSession: Session? =
+                            if (!librefmSessKey.isNullOrBlank())
+                                Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
+                            else
+                                null
+
+                        when(command) {
+                            Stuff.NOW_PLAYING -> {
+                                if (NLService.isOnline){
+                                    val hash = args[0].hashCode() + args[2].hashCode()
+                                    val corrected = getCorrectedData(args[0], args[2])
+                                    if (corrected != null) {
+                                        scrobbleData.artist = corrected.first
+                                        scrobbleData.track = corrected.second
+                                        if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
+                                            scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, lastfmSession)
+
+                                        if (librefmSession != null)
+                                            scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, librefmSession)
+
+                                        if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
+                                            scrobbleResults[context.getString(R.string.listenbrainz)] =
+                                                    ListenBrainz(prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null))
+                                                    .updateNowPlaying(scrobbleData)
+                                        if (prefs.getString(Stuff.PREF_LB_CUSTOM_USERNAME, null) != null)
+                                            scrobbleResults[context.getString(R.string.custom_listenbrainz)] =
+                                                    ListenBrainz(prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null))
+                                                    .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
+                                                    .updateNowPlaying(scrobbleData)
+                                    } else {
+                                        //no such artist
+                                        val i = Intent(NLService.iBAD_META)
+                                            i.putExtra(NLService.B_ARTIST, args[0])
+                                            i.putExtra(NLService.B_ALBUM, args[1])
+                                            i.putExtra(NLService.B_TITLE, args[2])
+                                            i.putExtra(NLService.B_TIME, args[3].toLong())
+                                            i.putExtra(NLService.B_HASH, hash)
+                                            context.sendBroadcast(i)
+                                    }
+                                }
+                            }
+                            Stuff.SCROBBLE -> {
+                                var couldntConnect = false
+                                if (NLService.isOnline) {
+                                    try {
+                                        if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
+                                            scrobbleResults[context.getString(R.string.lastfm)] = Track.scrobble(scrobbleData, lastfmSession)
+
+                                        if (librefmSession != null)
+                                            scrobbleResults[context.getString(R.string.lastfm)] = Track.scrobble(scrobbleData, librefmSession)
+
+                                        Stuff.log("scrobbleResults:$scrobbleResults")
+
+                                        if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
+                                            scrobbleResults[context.getString(R.string.listenbrainz)] =
+                                                    ListenBrainz(prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null))
+                                                    .scrobble(scrobbleData)
+
+                                        if (prefs.getString(Stuff.PREF_LB_CUSTOM_USERNAME, null) != null)
+                                            scrobbleResults[context.getString(R.string.custom_listenbrainz)] =
+                                                    ListenBrainz(prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null))
+                                                    .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
+                                                    .scrobble(scrobbleData)
+
+                                    } catch (e: CallException){
+                                        Stuff.log("CallException: $e")
+                                        couldntConnect = true
+                                    }
+                                }
+                                if (couldntConnect || !NLService.isOnline){
+                                    val dao = PendingScrobblesDb.getDb(context).getDao()
+                                    val entry = PendingScrobble()
+                                    entry.artist = scrobbleData.artist
+                                    entry.album = scrobbleData.album
+                                    entry.track = scrobbleData.track
+                                    entry.timestamp = args[3].toLong()
+                                    entry.duration = args[4].toLong()
+                                    dao.insert(entry)
+                                    PendingScrJob.checkAndSchedule(context)
+                                }
+                            }
+                        }
+                        try {
                             val hash = args[0].hashCode() + args[2].hashCode()
-                            val corrected = getCorrectedData(args[0], args[2])
-                            if (corrected != null) {
-                                scrobbleData.artist = corrected.first
-                                scrobbleData.track = corrected.second
-                                scrobbleResult = Track.updateNowPlaying(scrobbleData, session)
-                            } else {
-                                notifyFailed(args[0], context.getString(R.string.invalid_artist),
-                                        context.getString(R.string.not_scrobling), NLService.NOTI_ERR_ICON, hash)
+
+                            var failedText = ""
+                            scrobbleResults.keys.forEach { key ->
+                                if (scrobbleResults[key]?.isSuccessful == false) {
+                                    val errMsg = scrobbleResults[key]?.errorMessage ?: context.getString(R.string.network_error)
+                                    failedText += "$key: $errMsg\n"
+                                } else if (scrobbleResults[key]?.isSuccessful == true && scrobbleResults[key]?.isIgnored == true) {
+                                    val artistTrunc = if (args[0].length > 12) args[0].substring(0, 12) else args[0]
+                                    failedText += key + ": " +context.getString(R.string.scrobble_ignored, artistTrunc) + "\n"
+                                }
+                                if (failedText != ""){
+                                    val i = Intent(NLService.iOTHER_ERR)
+                                    i.putExtra(NLService.B_ERR_MSG, failedText)
+                                    i.putExtra(NLService.B_HASH, hash)
+                                    context.sendBroadcast(i)
+                                }
                             }
-                        }
-                    }
-                    Stuff.SCROBBLE -> {
-                        var couldntConnect = false
-                        if (NLService.isOnline) {
-                            try {
-                                scrobbleResult = Track.scrobble(scrobbleData, session)
-                            } catch (e: CallException){
-                                Stuff.log("CallException: $e")
-                                couldntConnect = true
-                            }
-                        }
-                        if (couldntConnect || !NLService.isOnline){
-                            val dao = PendingScrobblesDb.getDb(context).getDao()
-                            val entry = PendingScrobble()
-                            entry.artist = scrobbleData.artist
-                            entry.album = scrobbleData.album
-                            entry.track = scrobbleData.track
-                            entry.timestamp = args[3].toLong()
-                            entry.duration = args[4].toLong()
-                            dao.insert(entry)
-                            OfflineScrobbleJob.checkAndSchedule(context, true)
+                        } catch (e: NullPointerException) {
+                            return "$command: NullPointerException"
                         }
                     }
                 }
-                try {
-                    val hash = args[0].hashCode() + args[2].hashCode()
-                    if (scrobbleResult?.isSuccessful == false) {
-                        notifyFailed(args[0] + " " + args[2], context.getString(R.string.network_error), context.getString(R.string.not_scrobling),
-                                android.R.drawable.stat_notify_error, hash)
-                    } else if(scrobbleResult?.isSuccessful == true && scrobbleResult.isIgnored) {
-                        val artistTrunc = if (args[0].length > 12) args[0].substring(0, 12) else args[0]
-                        notifyFailed(args[2], context.getString(R.string.scrobble_ignored, artistTrunc), context.getString(R.string.not_scrobling),
-                                NLService.NOTI_ERR_ICON, hash)
-                    }
-                } catch (e: NullPointerException) {
-                    return command + ": NullPointerException"
-                }
-            } else if (command == Stuff.AUTH_FROM_TOKEN){
-                val token = if (args.size == 1) args[0] else null
-                if (token != null && token.length > 5) {
-                    session = Authenticator.getSession(token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
-                    if (session != null) {
-                        username = session.username
-                        prefs.edit()
-                                .putString(Stuff.USERNAME, username)
-                                .putString(Stuff.SESS_KEY, session.key)
-                                .apply()
+            } //end !reauthNeeded (for lastfm)
+
+            when (command) {
+                Stuff.LASTFM_SESS_AUTH -> {
+                    val token = if (args.size == 1) args[0] else null
+                    if (!token.isNullOrBlank()) {
+                        lastfmSession = Authenticator.getSession(null, token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
+                        if (lastfmSession != null) {
+                            lastfmUsername = lastfmSession.username
+                            prefs.putString(Stuff.PREF_LASTFM_USERNAME, lastfmUsername)
+                            prefs.putString(Stuff.PREF_LASTFM_SESS_KEY, lastfmSession.key)
+                            val intent = Intent(NLService.iSESS_CHANGED)
+                            context.sendBroadcast(intent)
+                        }
                     }
                 }
-            } else if (command != Stuff.GET_RECENTS ) {
-                reAuth()
-                return context.getString(R.string.please_authorize)
+                Stuff.LIBREFM_SESS_AUTH -> {
+                    val token = if (args.size == 1) args[0] else null
+                    if (!token.isNullOrBlank()) {
+                        val librefmSession = Authenticator.getSession(Stuff.LIBREFM_API_ROOT,
+                                token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY)
+                        if (librefmSession != null) {
+                            prefs.putString(Stuff.PREF_LIBREFM_USERNAME, librefmSession.username)
+                            prefs.putString(Stuff.PREF_LIBREFM_SESS_KEY, librefmSession.key)
+                            val intent = Intent(NLService.iSESS_CHANGED)
+                            context.sendBroadcast(intent)
+                        }
+                    }
+                }
+                Stuff.GET_RECENTS -> {}
+                else -> {
+                    if (reAuthNeeded) {
+                        reAuth(context)
+                        return context.getString(R.string.please_authorize)
+                    }
+                }
             }
         } catch(e: CallException){
             //ignore
@@ -255,11 +334,20 @@ class LFMRequester constructor(var command: String, vararg args: String) {
         return null
     }
 
-    fun asAsyncTask(context: Context): AsyncTask<Unit, Unit, Any?>? = MyAsyncTask(context, this).execute()
+    fun skipContentProvider(): LFMRequester {
+        skipCP = true
+        return this
+    }
 
-    fun asLoader(context: Context): AsyncTaskLoader<Any?> = Loader(context, this)
+    fun addCallback(callback: (success:Boolean)->Unit): LFMRequester {
+        this.callback = callback
+        return this
+    }
 
-    class MyAsyncTask(context: Context, private val requester: LFMRequester): AsyncTask<Unit, Unit, Any?>() {
+    fun asAsyncTask(context: Context, mld: MutableLiveData<*>? = null): AsyncTask<Unit, Unit, Any?>? =
+            MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?).execute()
+
+    class MyAsyncTask(private val requester: LFMRequester, context: Context, private val mld: MutableLiveData<in Any?>? = null): AsyncTask<Unit, Unit, Any?>() {
         private var contextWr = WeakReference(context)
 
         override fun doInBackground(vararg p0: Unit?): Any? = requester.inBackground(contextWr.get())
@@ -269,54 +357,15 @@ class LFMRequester constructor(var command: String, vararg args: String) {
             val context = contextWr.get()
             if (context!= null && res is String)
                 Stuff.toast(context, res)
-        }
-    }
-    class Loader(context: Context, private val requester: LFMRequester): AsyncTaskLoader<Any?>(context) {
-        val command
-            get() = requester.command
-        val args
-            get() = requester.args
-        val isLoading
-            get() = requester.isLoading
-
-        override fun loadInBackground(): Any? = requester.inBackground(context)
-
-        override fun deliverResult(data: Any?) {
-            requester.isLoading = false
-            if (data is String) {
-                Stuff.toast(context, data.toString()) //error msgs
-                super.deliverResult(null)
-            } else {
-                super.deliverResult(data)
-//            Stuff.timeIt("deliverResult")
-            }
-        }
-    }
-/*
-    override fun onPostExecute(res: Any?) {
-        //do stuff
-        if (res is PaginatedResult<*>) {
-            if (command == Stuff.GET_FRIENDS_RECENTS)
-                handler?.obtainMessage(0, Pair(command,Pair(subCommand, res)))?.sendToTarget() //subCommand = grid position
             else
-                handler?.obtainMessage(0, Pair(command,res))?.sendToTarget()
-        } else if (res is Result) {
-            if (!res.isSuccessful) {
-                if (res.errorMessage != null)
-                    Stuff.toast(context, command + ": " + res.errorMessage)
-                else
-                    Stuff.toast(context, command+ " failed")
-            }
-        } else if (command == Stuff.HERO_INFO && res is MutableList<*> ||
-                command == Stuff.GET_SIMILAR && res is ArrayList<*>) {
-//            val s = res as MutableList<String?>
-            handler?.obtainMessage(0, Pair(command, res))?.sendToTarget()
-        } else if (res is String){ // error msg
-            Stuff.toast(context, res)
+                mld?.value = res
         }
     }
-*/
+
     companion object {
+
+        private val validArtistsCache = LruCache<String, Boolean>(10)
+
         private fun slurp(`is`: InputStream, bufferSize: Int): String {
             val buffer = CharArray(bufferSize)
             val out = StringBuilder()
@@ -342,12 +391,28 @@ class LFMRequester constructor(var command: String, vararg args: String) {
             return out.toString()
         }
 
-        fun getCorrectedData(artist:String, track: String): Pair<String, String>? {
-            val artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)
-            return if (artistInfo != null && artistInfo.name?.trim() != "" && artistInfo.listeners >= Stuff.MIN_LISTENER_COUNT)
-                Pair(artistInfo.name, track)
-            else
-                null
+        fun reAuth(context: Context) {
+            MultiPreferences(context).remove(Stuff.PREF_LASTFM_SESS_KEY)
+            Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
+        }
+
+        fun getCorrectedData(artist:String, track: String, threshold: Int = Stuff.MIN_LISTENER_COUNT):
+                Pair<String, String>? {
+            if (validArtistsCache[artist] == null) {
+                val artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)
+                Stuff.log("artistInfo: $artistInfo")
+                //nw err throws an exception
+                if (artistInfo!= null && artistInfo.name?.trim() != ""){
+                    if(artistInfo.listeners >= threshold) {
+                        validArtistsCache.put(artist, true)
+                        return Pair(artist, track)
+                    } else
+                        validArtistsCache.put(artist, false)
+                }
+
+            } else if (validArtistsCache[artist])
+                return Pair(artist, track)
+            return null
         }
 
         fun getCorrectedDataOld(artist:String, track: String): Pair<String, String>? {

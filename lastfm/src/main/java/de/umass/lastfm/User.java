@@ -669,7 +669,7 @@ public class User extends ImageHolder {
 			}
 			if (element.hasChild("recenttrack")) {
 				try {
-//TODO:					track
+
                     DomElement trackElem = element.getChild("recenttrack");
                     Track.TrackFactory trackFactory = new Track.TrackFactory();
                     user.recentTrack = trackFactory.createItemFromElement(trackElem);

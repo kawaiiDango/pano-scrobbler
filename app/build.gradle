@@ -18,21 +18,21 @@ android {
                 verCode++
                 versionFile.text = verCode.toString()
             }
-    }
-    else {
+    } else {
         throw new GradleException("Could not read version.txt!")
     }
 
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
+        buildToolsVersion "28.0.2"
         versionCode verCode
         versionName ((int)(versionCode/100) + "." + (versionCode%100) +  " - " + new Date().format('dd.MMM.YY'))
         setProperty("archivesBaseName", "pScrobbler")
         vectorDrawables.useSupportLibrary = true
+        resConfig "en"
     }
     buildTypes {
         release {
@@ -47,29 +47,37 @@ android {
     }
 }
 
+targetCompatibility = "1.8"
+
 dependencies {
+    def support_ver = "1.0.0-rc02"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-//        exclude group: 'com.android.support', module: 'support-annotations'
-//    })
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.jjoe64:graphview:4.2.1'
-    implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.android.support:palette-v7:27.1.1'
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4' //increases launch time by just 1ms
-//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4' //still adds permissions to the manifest
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "androidx.appcompat:appcompat:$support_ver"
+    implementation "androidx.preference:preference:$support_ver"
+    implementation "androidx.media:media:$support_ver"
+    implementation "androidx.palette:palette:$support_ver"
+    implementation "androidx.recyclerview:recyclerview:$support_ver"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0-rc01"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.0.0-rc01"
+    kapt "androidx.room:room-compiler:2.0.0-rc01"
+    implementation "androidx.room:room-runtime:2.0.0-rc01"
+
+    implementation "com.google.android.material:material:$support_ver"
+
+    implementation "com.squareup.picasso:picasso:2.71828"
+    implementation "de.hdodenhof:circleimageview:2.2.0"
+    implementation "com.robinhood.spark:spark:1.2.0"
+    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
+//    implementation 'com.vinaysshenoy:mugen:1.0.2' //doesnt compile with androidx
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:1.5.4"
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1' //still adds permissions to the manifest
 
     implementation project(':lastfm')
-    implementation project(':materialSeekbarPref')
-
-    kapt "android.arch.persistence.room:compiler:1.1.0-beta2"
-    implementation "android.arch.persistence.room:runtime:1.1.0-beta2"
 
     testImplementation 'junit:junit:4.12'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-}
-repositories {
-    mavenCentral()
+    // androidTestImplementation 'androidx.test:runner:1.1.0-alpha1'
+    // androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha1'
 }

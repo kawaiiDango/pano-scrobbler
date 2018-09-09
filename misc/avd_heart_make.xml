@@ -37,8 +37,8 @@
             <objectAnimator
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:propertyName="trimPathEnd"
-                android:startOffset="50"
-                android:duration="750"
+                android:startOffset="37"
+                android:duration="560"
                 android:valueFrom="0.1"
                 android:valueTo="1"
                 android:valueType="floatType"
@@ -50,8 +50,8 @@
           <objectAnimator
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:propertyName="trimPathEnd"
-                android:startOffset="50"
-                android:duration="750"
+                android:startOffset="37"
+                android:duration="560"
                 android:valueFrom="0.1"
                 android:valueTo="1"
                 android:valueType="floatType"
@@ -63,16 +63,16 @@
             <set xmlns:android="http://schemas.android.com/apk/res/android">
                 <objectAnimator
                     android:propertyName="pathData"
-                    android:startOffset="1320"
-                    android:duration="240"
+                    android:startOffset="990"
+                    android:duration="180"
                     android:valueFrom="M 18 26 C 18 26 21 28 24 28 C 27 28 29 25 32 25 C 35 25 38 26 38 26 L 38 38 L 18 38 L 18 26 Z"
                     android:valueTo="M 18 18 C 18 18 24 18 24 18 C 24 18 32 18 32 18 C 32 18 38 18 38 18 L 38 38 L 18 38 L 18 18 Z"
                     android:valueType="pathType"
                     android:interpolator="@android:interpolator/fast_out_linear_in"/>
                 <objectAnimator
                     android:propertyName="pathData"
-                    android:startOffset="1000"
-                    android:duration="320"
+                    android:startOffset="750"
+                    android:duration="240"
                     android:valueFrom="M 18 38 C 18 38 24 38 24 38 C 24 38 32 38 32 38 C 32 38 38 38 38 38 L 38 38 L 18 38 L 18 38 Z"
                     android:valueTo="M 18 26 C 18 26 21 28 24 28 C 27 28 29 25 32 25 C 35 25 38 26 38 26 L 38 38 L 18 38 L 18 26 Z"
                     android:valueType="pathType"
@@ -86,7 +86,7 @@
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:propertyName="alpha"
                 android:startOffset="0"
-                android:duration="800"
+                android:duration="600"
                 android:valueFrom="0.6"
                 android:valueTo="1"
                 android:valueType="floatType"

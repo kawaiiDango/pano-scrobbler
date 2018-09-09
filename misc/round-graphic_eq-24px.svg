@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 19.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   x="0px"
+   y="0px"
+   width="24px"
+   height="24px"
+   viewBox="0 0 24 24"
+   enable-background="new 0 0 24 24"
+   xml:space="preserve"
+   id="svg10"
+   sodipodi:docname="round-graphic_eq-24px.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"><metadata
+   id="metadata16"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs14" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1051"
+   id="namedview12"
+   showgrid="false"
+   inkscape:zoom="9.8333333"
+   inkscape:cx="12"
+   inkscape:cy="12"
+   inkscape:window-x="-9"
+   inkscape:window-y="-9"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg10" />
+<g
+   id="Bounding_Boxes">
+	<g
+   id="ui_x5F_spec_x5F_header_copy_3">
+	</g>
+	<path
+   fill="none"
+   d="M0,0h24v24H0V0z"
+   id="path3" />
+</g>
+<g
+   id="Rounded"
+   transform="matrix(0.63276836,0,0,0.63713228,4.2542373,4.2527177)">
+	<g
+   id="ui_x5F_spec_x5F_header_copy_6">
+	</g>
+	<path
+   d="m 8,18 v 0 c 0.55,0 1,-0.45 1,-1 V 7 C 9,6.45 8.55,6 8,6 V 6 C 7.45,6 7,6.45 7,7 v 10 c 0,0.55 0.45,1 1,1 z m 4,4 v 0 c 0.55,0 1,-0.45 1,-1 V 3 C 13,2.45 12.55,2 12,2 v 0 c -0.55,0 -1,0.45 -1,1 v 18 c 0,0.55 0.45,1 1,1 z M 4,14 v 0 c 0.55,0 1,-0.45 1,-1 V 11 C 5,10.45 4.55,10 4,10 v 0 c -0.55,0 -1,0.45 -1,1 v 2 c 0,0.55 0.45,1 1,1 z m 12,4 v 0 c 0.55,0 1,-0.45 1,-1 V 7 C 17,6.45 16.55,6 16,6 v 0 c -0.55,0 -1,0.45 -1,1 v 10 c 0,0.55 0.45,1 1,1 z m 3,-7 v 2 c 0,0.55 0.45,1 1,1 v 0 c 0.55,0 1,-0.45 1,-1 v -2 c 0,-0.55 -0.45,-1 -1,-1 v 0 c -0.55,0 -1,0.45 -1,1 z"
+   id="path7"
+   inkscape:connector-curvature="0" />
+</g>
+</svg>

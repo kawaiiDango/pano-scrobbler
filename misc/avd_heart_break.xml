@@ -34,7 +34,7 @@
             <objectAnimator
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:propertyName="rotation"
-                android:duration="800"
+                android:duration="600"
                 android:valueFrom="0"
                 android:valueTo="-30"
                 android:valueType="floatType"
@@ -46,7 +46,7 @@
             <objectAnimator
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:propertyName="rotation"
-                android:duration="800"
+                android:duration="600"
                 android:valueFrom="0"
                 android:valueTo="30"
                 android:valueType="floatType"
@@ -58,8 +58,8 @@
             <objectAnimator
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:propertyName="fillAlpha"
-                android:startOffset="400"
-                android:duration="800"
+                android:startOffset="300"
+                android:duration="600"
                 android:valueFrom="1"
                 android:valueTo="0"
                 android:valueType="floatType"
@@ -71,8 +71,8 @@
             <objectAnimator
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:propertyName="fillAlpha"
-                android:startOffset="400"
-                android:duration="800"
+                android:startOffset="300"
+                android:duration="600"
                 android:valueFrom="1"
                 android:valueTo="0"
                 android:valueType="floatType"

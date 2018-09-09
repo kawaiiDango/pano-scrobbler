@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="errors.must_be_between">Must be between</string>
-    <string name="errors.and">And</string>
-    <string name="enter_custom_value">Enter custom value</string>
-    <string name="apply">apply</string>
-</resources>

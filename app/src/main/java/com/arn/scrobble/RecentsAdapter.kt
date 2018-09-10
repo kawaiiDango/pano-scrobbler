@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.pending.PendingScrFragment
 import com.arn.scrobble.pending.db.PendingScrobble
@@ -21,6 +22,7 @@ import kotlinx.android.synthetic.main.content_recents.view.*
 import kotlinx.android.synthetic.main.header_pending.view.*
 import kotlinx.android.synthetic.main.list_item_recents.view.*
 import java.util.*
+import kotlin.math.max
 
 
 /**
@@ -43,6 +45,7 @@ class RecentsAdapter
     private var nonTrackViewCount = 0
     private var loadMoreListener: EndlessRecyclerViewScrollListener? = null
     private var fm: FragmentManager? = null
+    private val myUpdateCallback = MyUpdateCallback(this)
 
     init {
 //        setHasStableIds(true) //causes some opengl OOM and new holders to be created for no reason
@@ -205,7 +208,7 @@ class RecentsAdapter
         synchronized(tracksList) {
             val oldList = mutableListOf<Track>()
             oldList.addAll(tracksList)
-            totalPages = res.totalPages
+            totalPages = max(1, res.totalPages) //dont let totalpages be 0
             if (page == 1) {
                 tracksList.clear()
                 if (res.isEmpty) {
@@ -221,12 +224,9 @@ class RecentsAdapter
                 }
             }
             this.selectedPos = selectedPos
-            if (oldList.isEmpty())
-                notifyDataSetChanged() //diffutil messes up scroll pos
-            else {
-                val diff = DiffUtil.calculateDiff(DiffCallback(tracksList, oldList), false)
-                diff.dispatchUpdatesTo(this)
-            }
+            myUpdateCallback.offset = nonTrackViewCount
+            val diff = DiffUtil.calculateDiff(DiffCallback(tracksList, oldList), false)
+            diff.dispatchUpdatesTo(myUpdateCallback)
         }
     }
 
@@ -245,7 +245,28 @@ class RecentsAdapter
                     oldList[oldItemPosition].artist == newList[newItemPosition].artist &&
                     oldList[oldItemPosition].isLoved == newList[newItemPosition].isLoved
         }
+    }
 
+    class MyUpdateCallback(private val adapter: RecyclerView.Adapter<*>): ListUpdateCallback {
+        var offset = 0
+
+        override fun onInserted(position: Int, count: Int) {
+            if (position > offset)
+                adapter.notifyItemChanged(position - 1 + offset, 0)
+            adapter.notifyItemRangeInserted(position + offset, count)
+        }
+
+        override fun onRemoved(position: Int, count: Int) {
+            adapter.notifyItemRangeRemoved(position + offset, count)
+        }
+
+        override fun onMoved(fromPosition: Int, toPosition: Int) {
+            adapter.notifyItemMoved(fromPosition + offset, toPosition)
+        }
+
+        override fun onChanged(position: Int, count: Int, payload: Any?) {
+            adapter.notifyItemRangeChanged(position + offset, count, payload)
+        }
     }
 
     class VHAction(view: View, fm: FragmentManager?) : RecyclerView.ViewHolder(view){

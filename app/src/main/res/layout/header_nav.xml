@@ -54,6 +54,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="@dimen/fab_margin"
         android:tooltipText="@string/user_profile"
+        android:contentDescription="@string/user_profile"
         app:srcCompat="@drawable/vd_open_in_new"/>
 
 </RelativeLayout>

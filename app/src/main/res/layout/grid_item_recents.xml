@@ -108,6 +108,7 @@
         android:layout_above="@+id/recents_track_container"
         android:layout_toStartOf="@+id/recents_date"
         android:visibility="gone"
+        android:contentDescription="@string/hero_search"
         tools:srcCompat="@drawable/avd_eq"/>
 
 </RelativeLayout>

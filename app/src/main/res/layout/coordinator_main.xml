@@ -89,6 +89,7 @@
                         android:id="@+id/sparkline"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:contentDescription="@string/graph_info"
                         app:spark_animateChanges="true"
                         app:spark_lineWidth="6dp"
                         />
@@ -168,17 +169,18 @@
                     android:background="?attr/selectableItemBackground"
                     android:scaleType="centerInside"
                     android:tooltipText="@string/share_this_song"
+                    android:contentDescription="@string/share_this_song"
                     app:srcCompat="@drawable/vd_share"/>
 
                 <!--<ImageButton-->
                     <!--android:id="@+id/hero_info"-->
-                    <!--android:layout_width="32dp"-->
-                    <!--android:layout_height="32dp"-->
-                    <!--android:layout_marginEnd="@dimen/hero_button_margin_end"-->
+                    <!--android:layout_width="38dp"-->
+                    <!--android:layout_height="38dp"-->
                     <!--android:background="?attr/selectableItemBackground"-->
                     <!--android:padding="4dp"-->
                     <!--android:scaleType="centerInside"-->
                     <!--android:tooltipText="@string/hero_info"-->
+                    <!--android:contentDescription="@string/hero_info"-->
                     <!--app:srcCompat="@drawable/vd_info"/>-->
 
                 <ImageButton
@@ -189,6 +191,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:scaleType="centerInside"
                     android:tooltipText="@string/hero_search"
+                    android:contentDescription="@string/hero_search"
                     app:srcCompat="@drawable/vd_search"/>
             </LinearLayout>
 

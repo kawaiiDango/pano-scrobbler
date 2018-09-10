@@ -23,7 +23,9 @@
     <TextView
         android:id="@+id/recents_menu"
         android:layout_width="50dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/recents_img"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="20dp"
@@ -34,9 +36,11 @@
         android:paddingEnd="10dp"
         android:paddingStart="20dp"
         android:text="⋮"
+        android:contentDescription="@string/item_options"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="20sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        tools:ignore="HardcodedText"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/recents_title"

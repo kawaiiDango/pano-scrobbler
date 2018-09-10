@@ -4,19 +4,23 @@
 <img alt='GIF' src='https://media.giphy.com/media/WvikAmG3iseJoFun1A/giphy.gif' width="240"/>
 ###### Thats the GIF of a much older version.
 
-#### This is intended for:
-- Scrobbling to lastfm from anything which produces audio with metadata, including the official youtube app, a chat app or some less known chinese player
-- Sanity check the metadata with lastFM's records before scrobbling.
-- View info about a track, such as listener count charts, album art etc
+#### Features:
+- Scrobble from anything which produces audio with metadata, including the official youtube app, a chat app or some less known chinese player
+- Scrobble to lastFM, LibreFM, Listenbrainz
+- Sanity check the metadata with lastFM's records. 
+- View track info, such as listener count charts, album art etc
 - View recent scrobbles
-- Work with recent scrobbles (e.g. love a track, cancel a scrobble)
-- Offline scrobbling with job scheduler
+- Work with recent scrobbles (love a track, cancel a scrobble)
+- Edit tags
+- Delete existing scrobbles
+- Offline scrobbling
 - Offline viewing of cached data
 - Check what your friends are listening to
+- View and play songs similar to a given one
 
-#### This is not intended to be:
-- an app to browse lastfm.
-- to contain any webviews. Links would rather open in the browser
+#### This is not intended to:
+- be an app to browse lastfm.
+- contain any webviews. Links would rather open in the browser
 - contain any kind of ADs
 
 ## Thanks to:

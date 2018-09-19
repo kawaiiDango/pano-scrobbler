@@ -3,7 +3,9 @@ package com.arn.scrobble
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.AsyncTask
+import android.preference.PreferenceManager
 import android.util.LruCache
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.pending.PendingScrJob
@@ -28,8 +30,8 @@ import java.util.*
  * Created by arn on 18-03-2017.
  */
 
-class LFMRequester constructor(var command: String, vararg args: String) {
-    private lateinit var prefs: MultiPreferences
+class LFMRequester(var command: String, vararg args: String) {
+    private lateinit var prefs: DualPref
     private var skipCP = false
     private var callback: ((success:Boolean) -> Unit)? = null
     private var args = mutableListOf(*args)
@@ -41,15 +43,15 @@ class LFMRequester constructor(var command: String, vararg args: String) {
         isLoading = true
         Stuff.timeIt("loadInBackground $command")
         Stuff.log("loadInBackground $command $args")
-        prefs = MultiPreferences(context)
-        if (skipCP)
-            prefs.skipContentProvider = true
+        prefs = DualPref(skipCP, context)
+
         try {
             var reAuthNeeded = false
             var lastfmSession: Session? = null
             val caller = Caller.getInstance()
             if (caller.userAgent != Stuff.USER_AGENT) { // static instance not inited
                 caller.userAgent = Stuff.USER_AGENT
+                caller.isDebugMode = false
                 val fsCache = FileSystemCache(context.cacheDir)
                 caller.cache = fsCache
             }
@@ -59,8 +61,6 @@ class LFMRequester constructor(var command: String, vararg args: String) {
                 caller.cache.expirationPolicy = LFMCachePolicy(false)
             } else
                 caller.cache.expirationPolicy = LFMCachePolicy(Main.isOnline)
-
-//            caller.isDebugMode = false
 
             val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
             var lastfmUsername: String? = prefs.getString(Stuff.PREF_LASTFM_USERNAME, null)
@@ -78,10 +78,10 @@ class LFMRequester constructor(var command: String, vararg args: String) {
                     Stuff.GET_RECENTS -> {
                         return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 15, true, Stuff.LAST_KEY)
                     }
-                    Stuff.GET_FRIENDS_RECENTS -> {
-                        // args[0] = position
-                        return Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, Stuff.LAST_KEY))
-                    }
+                    Stuff.GET_FRIENDS_RECENTS ->
+                        // args[0] = username
+                        Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, Stuff.LAST_KEY))
+
                     //for love: command = tag, args[0] = artist, args[1] = song,
                     Stuff.LOVE -> return Track.love(args[0], args[1], lastfmSession)
                     Stuff.UNLOVE -> return Track.unlove(args[0], args[1], lastfmSession)
@@ -431,4 +431,45 @@ class LFMRequester constructor(var command: String, vararg args: String) {
             }
         }
     }
-}//    private static ArrayList<Integer> scrobbledHashes= new ArrayList<>();
+}
+
+class DualPref(private val skipCp: Boolean, context: Context?) {
+
+    lateinit var sPref: SharedPreferences
+    lateinit var mPref: MultiPreferences
+
+    init {
+        if (skipCp)
+            sPref = PreferenceManager.getDefaultSharedPreferences(context)
+        else
+            mPref = MultiPreferences(context!!)
+    }
+
+    fun getBoolean(key: String, default: Boolean): Boolean {
+        return if (skipCp)
+            sPref.getBoolean(key, default)
+        else
+            mPref.getBoolean(key, default)
+    }
+
+    fun putBoolean(key: String, value: Boolean) {
+        return if (skipCp)
+            sPref.edit().putBoolean(key, value).apply()
+        else
+            mPref.putBoolean(key, value)
+    }
+
+    fun getString(key: String, default: String?): String? {
+        return if (skipCp)
+            sPref.getString(key, default)
+        else
+            mPref.getString(key, default)
+    }
+
+    fun putString(key: String, value: String) {
+        return if (skipCp)
+            sPref.edit().putString(key, value).apply()
+        else
+            mPref.putString(key, value)
+    }
+}

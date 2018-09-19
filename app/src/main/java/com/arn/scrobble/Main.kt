@@ -500,10 +500,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         outState.putInt("tab_bar_visible", tab_bar.visibility)
     }
 
-//    override fun onDestroy() {
+    override fun onDestroy() {
+        MultiPreferences.destroyClient()
 //        PendingScrobblesDb.destroyInstance()
-//        super.onDestroy()
-//    }
+        super.onDestroy()
+    }
 
     companion object {
         var isOnline = true

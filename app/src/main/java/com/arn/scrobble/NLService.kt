@@ -9,8 +9,7 @@ import android.graphics.BitmapFactory
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkRequest
+import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.*
 import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
@@ -27,7 +26,7 @@ class NLService : NotificationListenerService() {
     private lateinit var nm: NotificationManager
     private var sessListener: SessListener? = null
     private var bReceiver: LegacyMetaReceiver? = null
-    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
+//    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
         if (BuildConfig.DEBUG)
@@ -73,6 +72,7 @@ class NLService : NotificationListenerService() {
         filter.addAction(pBLACKLIST)
         filter.addAction(iBAD_META)
         filter.addAction(iOTHER_ERR)
+        filter.addAction(CONNECTIVITY_ACTION)
         applicationContext.registerReceiver(nlservicereciver, filter)
 
         corrrectedDataCache = LruCache(10)
@@ -106,25 +106,7 @@ class NLService : NotificationListenerService() {
         KeepNLSAliveJob.checkAndSchedule(applicationContext)
 
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val builder = NetworkRequest.Builder()
-        connectivityCb = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network?) {
-                isOnline = true
-            }
-
-            override fun onLost(network: Network?) {
-//                isOnline = false
-            }
-
-            override fun onUnavailable() {
-                isOnline = false
-            }
-        }
-
-        cm.registerNetworkCallback(builder.build(), connectivityCb)
-
-        val ni = cm.activeNetworkInfo
-        isOnline = ni?.isConnected == true
+        isOnline = cm.activeNetworkInfo?.isConnected == true
 
         sendBroadcast(Intent(iNLS_STARTED))
     }
@@ -133,8 +115,8 @@ class NLService : NotificationListenerService() {
         Stuff.log("onListenerDisconnected")
         try {
             applicationContext.unregisterReceiver(nlservicereciver)
-            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            cm.unregisterNetworkCallback(connectivityCb)
+//            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//            cm.unregisterNetworkCallback(connectivityCb)
         } catch(e:IllegalArgumentException) {
             Stuff.log("nlservicereciver wasn't registered")
         }
@@ -224,6 +206,10 @@ class NLService : NotificationListenerService() {
                             intent.getLongExtra(B_TIME, System.currentTimeMillis()),
                             intent.getStringExtra(B_ERR_MSG)
                             )
+                }
+                CONNECTIVITY_ACTION -> {
+                    val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                    isOnline =  cm.activeNetworkInfo?.isConnected == true
                 }
             }
         }
@@ -324,13 +310,14 @@ class NLService : NotificationListenerService() {
             return scrobble(splits[0], "", splits[1], duration, packageName)
         }
 
-        private fun buildNotification(): NotificationCompat.Builder {
+        fun buildNotification(): NotificationCompat.Builder {
             return NotificationCompat.Builder(applicationContext)
                     .setShowWhen(false)
                     .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))
                     .setAutoCancel(true)
                     .setCustomBigContentView(null)
                     .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+//                    .setOngoing(true) //todo: remove
         }
 
         fun notifyScrobble(artist: String, title: String, nowPlaying: Boolean, loved: Boolean = false) {
@@ -418,7 +405,7 @@ class NLService : NotificationListenerService() {
                         else
                             NotificationCompat.PRIORITY_MIN
                     )
-            nm.notify(NOTI_ID_ERR, 0, nb.build())
+            nm.notify(NOTI_ID_SCR, 0, nb.build())
         }
 
         fun notifyOtherError(errMsg: String, showState: Boolean = true) {

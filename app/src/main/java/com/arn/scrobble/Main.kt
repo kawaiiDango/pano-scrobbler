@@ -474,11 +474,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             }
 
             override fun onLost(network: Network?) {
-                isOnline = false
+                isOnline = cm.activeNetworkInfo?.isConnected == true
             }
 
             override fun onUnavailable() {
-                isOnline = false
+                isOnline = cm.activeNetworkInfo?.isConnected == true
             }
         }
 

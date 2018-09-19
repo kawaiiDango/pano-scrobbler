@@ -62,6 +62,8 @@
     <string name="grant_notification_access">Grant notification access</string>
     <string name="grant_notification_access_desc">Needed to retrieve music metadata even from non-music apps, such as youtube, browser etc. No actual notifications are read.</string>
     <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM and Listenbrainz can be authenticated after this, from settings</string>
+    <string name="swap">Swap</string>
     <string name="rate_msg">Enjoying this app?</string>
     <string name="rate_link">Rate it</string>
     <string name="time_now">now</string>
@@ -84,7 +86,7 @@
     <string name="pref_enabled_apps_title">Choose apps</string>
     <string name="pref_auto_detect_summary">…we will still ask you to confirm/ignore that app</string>
     <string name="pref_auto_detect">Auto detect new music-like apps</string>
-    <string name="pref_delay">Scrobble delay (whichever is applicable)</string>
+    <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
     <string name="pref_delay_secs">Delay in secs</string>
     <string name="pref_delay_per">Delay in percent</string>
     <string name="pref_delay_note">"ℹ️ Now Playing is updated at once, regardless of the delay"</string>

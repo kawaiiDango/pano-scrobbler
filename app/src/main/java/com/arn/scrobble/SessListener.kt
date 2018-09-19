@@ -24,7 +24,7 @@ class SessListener constructor(private val pref: SharedPreferences,
     private val controllersMap = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
     private var controllers : List<MediaController>? = null
 
-    private var blackList = pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!
+    private val blackList = mutableSetOf<String>()
     private val whiteList = mutableSetOf<String>()
     private var autoDetectApps = pref.getBoolean(Stuff.PREF_AUTO_DETECT, true)
     private var scrobblingEnabled = pref.getBoolean(Stuff.PREF_MASTER, true)
@@ -33,6 +33,7 @@ class SessListener constructor(private val pref: SharedPreferences,
     init {
         pref.registerOnSharedPreferenceChangeListener(this)
         whiteList.addAll(pref.getStringSet(Stuff.PREF_WHITELIST, setOf())!!)
+        blackList.addAll(pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!)
     }
 
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
@@ -44,7 +45,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!controllersMap.containsKey(controller.sessionToken)) {
                         Stuff.log("onActiveSessionsChanged [" + controllers.size + "] : " + controller.packageName)
-                        val cb = MyCallback(whiteList, handler, controller.packageName, controller.sessionToken.toString() + ", " + hashCode())
+                        val cb = MyCallback(whiteList, blackList, handler, controller.packageName, controller.sessionToken.toString() + ", " + hashCode())
                         controller.registerCallback(cb)
                         if (controller.playbackState != null)
                             cb.onPlaybackStateChanged(controller.playbackState!!) //Melody needs this
@@ -79,7 +80,8 @@ class SessListener constructor(private val pref: SharedPreferences,
         numSessions = controllersMap.size
     }
 
-    class MyCallback(private val whiteList: MutableSet<String>, private val handler: NLService.ScrobbleHandler,
+    class MyCallback(private val whiteList: MutableSet<String>, private val blackList: MutableSet<String>,
+                     private val handler: NLService.ScrobbleHandler,
                      private val packageName: String, private val who: String) : Callback() {
         var currHash = 0
         var lastScrobblePos = 1L
@@ -222,11 +224,14 @@ class SessListener constructor(private val pref: SharedPreferences,
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {
         when (key){
-            Stuff.PREF_WHITELIST -> {
+            Stuff.PREF_WHITELIST -> synchronized(whiteList) {
                 whiteList.clear()
                 whiteList.addAll(pref.getStringSet(key, setOf())!!)
             }
-            Stuff.PREF_BLACKLIST -> blackList = pref.getStringSet(key, setOf())!!
+            Stuff.PREF_BLACKLIST -> synchronized(blackList) {
+                blackList.clear()
+                blackList.addAll(pref.getStringSet(key, setOf())!!)
+            }
             Stuff.PREF_AUTO_DETECT -> autoDetectApps = pref.getBoolean(key, true)
             Stuff.PREF_MASTER -> scrobblingEnabled = pref.getBoolean(key, true)
             Stuff.PREF_LASTFM_SESS_KEY -> loggedIn = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null) != null

@@ -39,7 +39,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
     private fun processIntent(intent: Intent, context: Context) {
         if (intent.action?.indexOf('.') == -1)
             Stuff.log("intent action is corrupted: " + intent.action)
-        else if (intent.extras == null || intent.extras.size() == 0)
+        else if (intent.extras == null || intent.extras!!.size() == 0)
             Stuff.log("intent extras are null or empty, skipping intent")
         else if (isInitialStickyBroadcast)
             Stuff.log("received cached sticky broadcast, won't process it")
@@ -71,7 +71,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                         return
                 }
 */
-                val durationAny: Any? = intent.extras["duration"]
+                val durationAny: Any? = intent.extras!!["duration"]
                 var duration: Long = durationAny as? Long ?: if(durationAny is Int)
                     durationAny.toLong()
                 else

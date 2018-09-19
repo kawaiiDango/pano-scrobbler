@@ -111,29 +111,36 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         recents_list.adapter = adapter
         (recents_list.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
 
+        val loadMoreListener = object : EndlessRecyclerViewScrollListener(llm) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
+                loadRecents(page)
+            }
+        }
+        loadMoreListener.loading = false
+
         viewModel = VMFactory.getVM(this, TracksVM::class.java)
         viewModel.loadRecentsList(1, false)
                 .observe(viewLifecycleOwner, Observer {
-                it ?: return@Observer
-                adapter.populate(it, it.page, !firstLoadNw)
+                        loadMoreListener.loading = false
+                        it ?: return@Observer
+                        adapter.populate(it, it.page, !firstLoadNw)
 
-                if (!firstLoadCache && firstLoadNw)
-                    firstLoadNw = false
+                        if (!firstLoadCache && firstLoadNw)
+                            firstLoadNw = false
 
-                if (firstLoadCache) {
-                    firstLoadCache = false
-                    loadRecents(1)
-                    toggleGraphDetails(activity.sparkline, true)
-                } else if (it.page == 1){
-                    refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
-                }
+                        if (firstLoadCache) {
+                            firstLoadCache = false
+                            loadRecents(1)
+                            toggleGraphDetails(activity.sparkline, true)
+                        } else if (it.page == 1){
+                            refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
+                        }
             })
         viewModel.loadHero(null)
                 .observe(viewLifecycleOwner, Observer {
-                it ?: return@Observer
-                setGraph(it[0])
+                        it ?: return@Observer
+                        setGraph(it[0])
             })
-
 
         viewModel.loadPending(2)
             .observe(viewLifecycleOwner, Observer {
@@ -141,12 +148,6 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                     adapter.setPendingScrobbles(activity.supportFragmentManager, it.first, it.second)
             })
 
-        val loadMoreListener = object : EndlessRecyclerViewScrollListener(llm) {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadRecents(page)
-            }
-        }
-         loadMoreListener.loading = false
         recents_list.addOnScrollListener(loadMoreListener)
         adapter.setLoadMoreReference(loadMoreListener)
         adapter.setClickListener(this)
@@ -165,11 +166,11 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
             toggleGraphDetails(it as SparkView)
         }
 
-//        activity.hero_info.setOnClickListener { v:View ->
-//            val t = activity.hero_img.tag
-//            if (t is Track)
-//                Stuff.openInBrowser(t.url, activity, v)
-//        }
+        activity.hero_info.setOnClickListener { v:View ->
+            val t = activity.hero_img.tag
+            if (t is Track)
+                Stuff.openInBrowser(t.url, activity, v)
+        }
         activity.hero_play.setOnClickListener { v:View ->
             val t = activity.hero_img.tag
             if (t is Track)
@@ -252,9 +253,11 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         recents_list ?: return false
 
         if (page <= adapter.totalPages) {
+            Stuff.log("loadRecents A")
             val firstVisible = (recents_list.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
             if ((page == 1 && firstVisible < 5) || page > 1) {
                 viewModel.loadRecentsList(page, true)
+                Stuff.log("loadRecents B")
             }
             if (adapter.itemCount == 0 || page > 1)
                 adapter.setLoading(true)
@@ -366,6 +369,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
         fun set(palette: Palette?) {
             palette ?: return
+            context ?: return
 
             colorPrimDark = palette.getDominantColor(Color.WHITE)
             if (!Stuff.isDark(colorPrimDark))
@@ -386,8 +390,8 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
             val contentBgFrom = (content.background as ColorDrawable).color
             val contentBgAnimator = ObjectAnimator.ofArgb(content, "backgroundColor", contentBgFrom, colorMutedBlack)
             val shareBgAnimator = ObjectAnimator.ofArgb(activity.hero_share, "colorFilter", lastColorLightWhite, colorLightWhite)
-            val similarColorAnimator = ObjectAnimator.ofArgb(activity.hero_similar, "textColor", lastColorLightWhite, colorLightWhite)
-//            val infoBgAnimator = ObjectAnimator.ofArgb(activity.hero_info, "colorFilter", lastColorLightWhite, colorLightWhite)
+            val similarColorAnimator = ObjectAnimator.ofArgb(activity.hero_similar, "colorFilter", lastColorLightWhite, colorLightWhite)
+            val infoBgAnimator = ObjectAnimator.ofArgb(activity.hero_info, "colorFilter", lastColorLightWhite, colorLightWhite)
             val searchBgAnimator = ObjectAnimator.ofArgb(activity.hero_play, "colorFilter", lastColorLightWhite, colorLightWhite)
             val sparklineTickTopAnimator = ObjectAnimator.ofArgb(activity.sparkline_tick_top, "textColor", lastColorLightWhite, colorLightWhite)
             val sparklineTickBottomAnimator = ObjectAnimator.ofArgb(activity.sparkline_tick_bottom, "textColor", lastColorLightWhite, colorLightWhite)
@@ -397,9 +401,9 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
             navbarBgAnimator.addUpdateListener{
                 activity.window.navigationBarColor = it.animatedValue as Int
             }
-//            activity.window.navigationBarColor = 0
+
             val animSetList = mutableListOf(contentBgAnimator,
-                    similarColorAnimator, shareBgAnimator, searchBgAnimator,
+                    similarColorAnimator, shareBgAnimator, searchBgAnimator, infoBgAnimator,
                     navbarBgAnimator, sparklineAnimator, sparklineHorizontalLabel, sparklineTickBottomAnimator, sparklineTickTopAnimator)
 
             for (i in 0..ctl.toolbar.childCount){

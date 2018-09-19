@@ -144,24 +144,28 @@
                     tools:text="title expanded title expanded "
                     tools:visibility="visible"/>
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                <!--<TextView-->
+                    <!--android:id="@+id/hero_similar"-->
+                    <!--android:layout_width="@dimen/similar_width"-->
+                    <!--android:layout_height="38dp"-->
+                    <!--android:background="?attr/selectableItemBackground"-->
+                    <!--android:clickable="true"-->
+                    <!--android:focusable="true"-->
+                    <!--android:gravity="center"-->
+                    <!--android:singleLine="true"-->
+                    <!--android:text="@string/similar_tracks_button"-->
+                    <!--android:textColor="@color/colorAccentLight"-->
+                    <!--android:tooltipText="@string/similar_tracks"/>-->
 
-                <TextView
+                <ImageButton
                     android:id="@+id/hero_similar"
-                    android:layout_width="@dimen/similar_width"
+                    android:layout_width="38dp"
                     android:layout_height="38dp"
                     android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:text="@string/similar_tracks_button"
-                    android:textColor="@color/colorAccentLight"
-                    android:tooltipText="@string/similar_tracks"/>
-
+                    android:scaleType="centerInside"
+                    android:tooltipText="@string/similar_tracks"
+                    android:contentDescription="@string/similar_tracks"
+                    app:srcCompat="@drawable/vd_similar"/>
                 <ImageButton
                     android:id="@+id/hero_share"
                     android:layout_width="38dp"
@@ -172,16 +176,16 @@
                     android:contentDescription="@string/share_this_song"
                     app:srcCompat="@drawable/vd_share"/>
 
-                <!--<ImageButton-->
-                    <!--android:id="@+id/hero_info"-->
-                    <!--android:layout_width="38dp"-->
-                    <!--android:layout_height="38dp"-->
-                    <!--android:background="?attr/selectableItemBackground"-->
-                    <!--android:padding="4dp"-->
-                    <!--android:scaleType="centerInside"-->
-                    <!--android:tooltipText="@string/hero_info"-->
-                    <!--android:contentDescription="@string/hero_info"-->
-                    <!--app:srcCompat="@drawable/vd_info"/>-->
+                <ImageButton
+                    android:id="@+id/hero_info"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="4dp"
+                    android:scaleType="centerInside"
+                    android:tooltipText="@string/hero_info"
+                    android:contentDescription="@string/hero_info"
+                    app:srcCompat="@drawable/vd_info"/>
 
                 <ImageButton
                     android:id="@+id/hero_play"

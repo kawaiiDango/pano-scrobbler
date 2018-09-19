@@ -109,7 +109,7 @@ open class LoginFragment: DialogFragment() {
                     else
                         activity?.onBackPressed()
                 },
-                700
+                500
         )
     }
 

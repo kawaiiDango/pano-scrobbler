@@ -99,7 +99,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         toggle = object: ActionBarDrawerToggle(
                 this, drawer_layout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             override fun onDrawerOpened(drawerView: View) {
-                super.onDrawerOpened(drawerView)
                 this@Main.onDrawerOpened()
             }
         }
@@ -258,8 +257,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun onDrawerOpened(forceUpdate: Boolean = false){
-        if (drawer_layout?.isDrawerVisible(GravityCompat.START) != true ||
-                System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL)
+        if (drawer_layout?.isDrawerVisible(GravityCompat.START) != true || (!forceUpdate &&
+                        System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL))
             return
 
         val username = if (BuildConfig.DEBUG) "nobody" else pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
@@ -274,7 +273,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         if (picUrl != "")
             Picasso.get()
                     .load(picUrl)
-                    .placeholder(R.drawable.vd_wave)
+                    .noPlaceholder()
                     .error(R.drawable.vd_wave)
                     .centerCrop()
                     .fit()

@@ -225,6 +225,7 @@ class RecentsAdapter
             }
             this.selectedPos = selectedPos
             myUpdateCallback.offset = nonTrackViewCount
+            myUpdateCallback.selectedPos = selectedPos
             val diff = DiffUtil.calculateDiff(DiffCallback(tracksList, oldList), false)
             diff.dispatchUpdatesTo(myUpdateCallback)
         }
@@ -249,10 +250,12 @@ class RecentsAdapter
 
     class MyUpdateCallback(private val adapter: RecyclerView.Adapter<*>): ListUpdateCallback {
         var offset = 0
+        var selectedPos = 0
 
         override fun onInserted(position: Int, count: Int) {
             if (position > offset)
                 adapter.notifyItemChanged(position - 1 + offset, 0)
+            adapter.notifyItemChanged(selectedPos, 0)
             adapter.notifyItemRangeInserted(position + offset, count)
         }
 

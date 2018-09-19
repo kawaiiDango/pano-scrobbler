@@ -75,10 +75,12 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
                     override fun onAnimationEnd(p0: Animator?) {
                         val activity = getActivity() ?: return
                         Stuff.setAppBarHeight(activity, adapter.itemSizeDp*3)
-                        activity.app_bar.hero_similar.isEnabled = true
+                        activity.ctl.hero_similar.isEnabled = true
                         activity.ctl.hero_similar.visibility = View.GONE
                         activity.ctl.sparkline_frame.visibility = View.GONE
-                        activity.ctl.hero_title.visibility = View.VISIBLE
+                        activity.ctl.hero_title.postDelayed({
+                            activity.ctl.hero_title.visibility = View.VISIBLE
+                        }, 50)
                     }
 
                 }

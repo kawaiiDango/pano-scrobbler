@@ -502,15 +502,15 @@ object Stuff {
                 np.setImageResource(R.drawable.avd_eq)
                 anim = np.drawable
             }
-            if (anim is AnimatedVectorDrawableCompat && !anim.isRunning) {
-                anim.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+            if (anim is AnimatedVectorDrawableCompat? && anim?.isRunning != true) {
+                anim?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
                         drawable as AnimatedVectorDrawableCompat?
                         if (drawable != null && drawable.isVisible)
-                            np.post { anim.start() }
+                            np.post { anim?.start() }
                     }
                 })
-                anim.start()
+                anim?.start()
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && anim is AnimatedVectorDrawable && !anim.isRunning) {
                 anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {

@@ -50,6 +50,12 @@ class EditFragment: LoginFragment() {
             view.login_textfield_last.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
         }
 
+        view.edit_swap.visibility = View.VISIBLE
+        view.edit_swap.setOnClickListener {
+            val tmp = view.login_textfield1.editText?.text
+            view.login_textfield1.editText!!.text = view.login_textfield_last.editText!!.text
+            view.login_textfield_last.editText!!.text = tmp
+        }
         view.login_submit.text = getString(R.string.menu_edit)
         return view
     }
@@ -123,9 +129,12 @@ class EditFragment: LoginFragment() {
                     i.putExtra(NLService.B_ALBUM, album)
                     i.putExtra(NLService.B_TITLE, track)
                     i.putExtra(NLService.B_TIME, timeMillis)
-                    context!!.sendBroadcast(i)
+                    context?.sendBroadcast(i)
                 } else {
-                    Stuff.toast(context!!, errMsg)
+                    context?.let {
+                        Stuff.toast(it, errMsg)
+                    }
+
                     error()
                 }
             }

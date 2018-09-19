@@ -232,7 +232,7 @@ object Stuff {
                 .replace(" *\\[[^)]*] *".toRegex(), " ")
 
                 //remove HD info
-                .replace("\\W* HD|HQ|4K|MV|Official Music Video|Music Video|Lyric Video|Official Audio( \\W*)?"
+                .replace("\\W* HD|HQ|4K|MV|M/V|Official Music Video|Music Video|Lyric Video|Official Audio( \\W*)?"
                         .toRegex(RegexOption.IGNORE_CASE)
                         , " ")
 

@@ -78,8 +78,7 @@ class EditFragment: LoginFragment() {
         val origArtist = args.getString(NLService.B_ARTIST)
         val timeMillis = args.getLong(NLService.B_TIME, System.currentTimeMillis())
 
-        if (track.isBlank() || artist.isBlank() ||
-                origTrack.isNullOrBlank() || origArtist.isNullOrBlank()) {
+        if (track.isBlank() || artist.isBlank()) {
             error()
             return
         }

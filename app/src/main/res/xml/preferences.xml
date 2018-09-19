@@ -60,17 +60,18 @@
 
         <SeekBarPreference
             app:iconSpaceReserved="false"
-            android:key="delay_secs"
-            android:title="@string/pref_delay_secs"
-            android:defaultValue="90"
-            android:max="120"/>
-
-        <SeekBarPreference
-            app:iconSpaceReserved="false"
             android:key="delay_per"
             android:title="@string/pref_delay_per"
             android:defaultValue="50"
             android:max="75"/>
+
+        <SeekBarPreference
+            app:iconSpaceReserved="false"
+            android:key="delay_secs"
+            android:title="@string/pref_delay_secs"
+            android:defaultValue="240"
+            android:max="360"/>
+
 <!--
 
             sample:msbp_interval="1"

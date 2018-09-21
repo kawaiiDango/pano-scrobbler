@@ -37,7 +37,7 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
             val info = pm.getApplicationInfo(request.uri.toString().split(":")[1], 0)
             val b = Stuff.drawableToBitmap(info.loadIcon(pm), request.targetWidth, request.targetHeight, isMIUI)
             RequestHandler.Result(b, LoadedFrom.DISK)
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (e: Exception) { //catch miui security exceptions too
             null
         }
     }

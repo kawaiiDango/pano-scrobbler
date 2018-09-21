@@ -1,11 +1,9 @@
 package com.arn.scrobble
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.AsyncTask
 import android.os.Bundle
 import android.text.InputType
 import android.transition.Fade
@@ -61,15 +59,14 @@ class EditFragment: LoginFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.AppTheme_Transparent)
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         return dialog
     }
 
-    override fun validate() {
-        val args = arguments ?: return
+    override fun validateAsync(): String? {
+        val args = arguments ?: return null
         val track = login_textfield1.editText!!.text.toString()
         val origTrack = args.getString(NLService.B_TITLE)
         val album = login_textfield2.editText!!.text.toString()
@@ -77,68 +74,51 @@ class EditFragment: LoginFragment() {
         val artist = login_textfield_last.editText!!.text.toString()
         val origArtist = args.getString(NLService.B_ARTIST)
         val timeMillis = args.getLong(NLService.B_TIME, System.currentTimeMillis())
+        var errMsg: String? = null
 
         if (track.isBlank() || artist.isBlank()) {
-            error()
-            return
+            errMsg = getString(R.string.required_fields_empty)
+            return errMsg
         }
 
         if(!standalone && track == origTrack &&
                 artist == origArtist && album == origAlbum) {
-            success()
-            return
+            return errMsg
         }
 
-        val asyncTask = @SuppressLint("StaticFieldLeak")
-        object : AsyncTask<Int, Unit, String?>(){
-            override fun doInBackground(vararg p0: Int?): String? {
-                var errMsg: String? = null
-                try {
-                    val validArtist = LFMRequester.getCorrectedData(artist, track, 4)
-                    if (validArtist == null) {
-                        errMsg = getString(R.string.state_invalid_artist)
-                    } else {
-                        val lastfmSessKey: String? = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
-                        val lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
-                        val scrobbleData = ScrobbleData(artist, track, (timeMillis / 1000).toInt())
-                        scrobbleData.album = album
-                        val result = Track.scrobble(scrobbleData, lastfmSession)
+        try {
+            val validArtist = LFMRequester.getCorrectedData(artist, track, 4)
+            if (validArtist == null) {
+                errMsg = getString(R.string.state_invalid_artist)
+            } else {
+                val lastfmSessKey: String? = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+                val lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
+                val scrobbleData = ScrobbleData(artist, track, (timeMillis / 1000).toInt())
+                scrobbleData.album = album
+                val result = Track.scrobble(scrobbleData, lastfmSession)
 
-                        if (result?.isSuccessful == true && !result.isIgnored && !standalone) {
-                            val unscrobbler = LastfmUnscrobbler(context!!)
-                            val csrfExists = unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
-                            if (csrfExists)
-                                unscrobbler.unscrobble(origArtist, origTrack, timeMillis)
-                        } else if (result.isIgnored)
-                            errMsg = getString(R.string.scrobble_ignored)
-                        else if (!standalone)
-                            errMsg = getString(R.string.network_error)
-                    }
-                } catch (e: Exception){
-                    errMsg = e.message
-                }
-                return errMsg
+                if (result?.isSuccessful == true && !result.isIgnored && !standalone) {
+                    val unscrobbler = LastfmUnscrobbler(context!!)
+                    val csrfExists = unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
+                    if (csrfExists)
+                        unscrobbler.unscrobble(origArtist, origTrack, timeMillis)
+                } else if (result.isIgnored)
+                    errMsg = getString(R.string.scrobble_ignored, artist)
+                else if (!standalone)
+                    errMsg = getString(R.string.network_error)
             }
-
-            override fun onPostExecute(errMsg: String?) {
-                if (errMsg == null) {
-                    success()
-                    val i = Intent(NLService.iEDITED)
-                    i.putExtra(NLService.B_ARTIST, artist)
-                    i.putExtra(NLService.B_ALBUM, album)
-                    i.putExtra(NLService.B_TITLE, track)
-                    i.putExtra(NLService.B_TIME, timeMillis)
-                    context?.sendBroadcast(i)
-                } else {
-                    context?.let {
-                        Stuff.toast(it, errMsg)
-                    }
-
-                    error()
-                }
-            }
+        } catch (e: Exception){
+            errMsg = e.message
         }
-        asyncTask.execute(0)
-        hideKeyboard()
+        if (errMsg == null) {
+            val i = Intent(NLService.iEDITED)
+            i.putExtra(NLService.B_ARTIST, artist)
+            i.putExtra(NLService.B_ALBUM, album)
+            i.putExtra(NLService.B_TITLE, track)
+            i.putExtra(NLService.B_TIME, timeMillis)
+            context?.sendBroadcast(i)
+        }
+        return errMsg
+
     }
 }

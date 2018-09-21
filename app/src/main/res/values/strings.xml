@@ -7,6 +7,7 @@
     <string name="network_error">Network error</string>
     <string name="scrobble_ignored">ignored "%s"</string>
     <string name="limit_exceeded_ignored">Daily scrobble limit exceeded</string>
+    <string name="required_fields_empty">Required fields are empty</string>
     <string name="artist">Artist</string>
     <string name="album">Album (optional)</string>
     <string name="track">Track</string>

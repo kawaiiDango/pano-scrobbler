@@ -105,7 +105,7 @@ class SessListener constructor(private val pref: SharedPreferences,
 
                 Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos duration=$duration who=$who")
 
-                val isPossiblyAtStart = pos == 0.toLong() ||
+                val isPossiblyAtStart = pos <= 0.toLong() || //wynk puts -1
                         (pos < Stuff.START_POS_LIMIT && duration > 0 &&
                         System.currentTimeMillis() - lastScrobbleTime - Stuff.START_POS_LIMIT >= duration)
 

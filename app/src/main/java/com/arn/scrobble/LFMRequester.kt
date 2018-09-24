@@ -345,7 +345,7 @@ class LFMRequester(var command: String, vararg args: String) {
     }
 
     fun asAsyncTask(context: Context, mld: MutableLiveData<*>? = null): AsyncTask<Unit, Unit, Any?>? =
-            MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?).execute()
+            MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
 
     class MyAsyncTask(private val requester: LFMRequester, context: Context, private val mld: MutableLiveData<in Any?>? = null): AsyncTask<Unit, Unit, Any?>() {
         private var contextWr = WeakReference(context)

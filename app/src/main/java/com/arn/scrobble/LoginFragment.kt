@@ -143,7 +143,7 @@ open class LoginFragment: DialogFragment() {
                     error(errMsg)
             }
         }
-        asyncTask?.execute()
+        asyncTask?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         hideKeyboard()
     }
 

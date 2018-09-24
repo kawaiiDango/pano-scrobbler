@@ -16,6 +16,7 @@ import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
+import org.xml.sax.SAXException
 
 
 /**
@@ -149,6 +150,14 @@ class PendingScrJob : JobService() {
                         }
                     }
 
+                } catch (e: SAXException) {
+                    Stuff.log("OfflineScrobble: SAXException " + e.message)
+                    if (BATCH_SIZE != 1) {
+                        BATCH_SIZE = 1
+                        done = true //try again
+                    } else
+                        done = false
+                    return done
                 } catch (e: Exception) {
                     Stuff.log("OfflineScrobble: n/w err - " + e.message)
                     done = false
@@ -171,7 +180,7 @@ class PendingScrJob : JobService() {
         const val JOB_ID = 10
         private const val MOCK = false
         var mightBeRunning = false // this may not be false when the job is force stopped
-        private const val BATCH_SIZE = 30 //max 50
+        private var BATCH_SIZE = 40 //max 50
         private const val STATE_SCROBBLE_ERR = -1
 
         fun checkAndSchedule(context: Context, force: Boolean = false) {

@@ -1,14 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext.kotlin_version = '1.2.71'
     repositories {
         google()
         jcenter()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0-alpha10'
+        classpath 'com.android.tools.build:gradle:3.3.0-alpha11'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.triplet.gradle:play-publisher:2.0.0-SNAPSHOT'
 //        classpath 'com.github.triplet.gradle:play-publisher:1.2.2'

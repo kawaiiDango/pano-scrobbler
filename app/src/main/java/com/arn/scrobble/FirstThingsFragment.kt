@@ -175,8 +175,7 @@ class FirstThingsFragment: Fragment() {
         }
 
         fun checkAppListExists(pref: MultiPreferences): Boolean {
-            val set = pref.getStringSet(Stuff.PREF_WHITELIST, emptySet())
-            return set.isNotEmpty()
+            return !pref.getBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, true)
         }
     }
 }

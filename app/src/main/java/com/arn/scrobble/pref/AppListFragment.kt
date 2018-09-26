@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
 import android.transition.Fade
@@ -61,7 +62,7 @@ class AppListFragment : Fragment() {
             true
         }
         val excludePackageNames = getAppList(adapter)
-        Thread {
+        AsyncTask.THREAD_POOL_EXECUTOR.execute {
             val pm = activity!!.packageManager
             val otherApps = pm.getInstalledApplications(PackageManager.GET_META_DATA) as MutableList<ApplicationInfo>
 
@@ -73,6 +74,12 @@ class AppListFragment : Fragment() {
                 if(Stuff.IGNORE_ARTIST_META.contains(applicationInfo.packageName)) {
                     adapter.add(applicationInfo, firstRun)
                     excludePackageNames.add(applicationInfo.packageName)
+                }
+                if (firstRun) {
+                    val prefs = MultiPreferences(context ?: return@execute)
+                    val wSet = mutableSetOf<String>()
+                    wSet.addAll(adapter.getSelectedPackages())
+                    prefs.putStringSet(Stuff.PREF_WHITELIST, wSet)
                 }
                 if (excludePackageNames.contains(applicationInfo.packageName) ||
                         applicationInfo.icon == 0 || !applicationInfo.enabled ||
@@ -89,7 +96,7 @@ class AppListFragment : Fragment() {
             app_list?.post {
                 adapter.notifyItemRangeChanged(oldCount-1, adapter.itemCount, 0)
             }
-        }.start()
+        }
     }
 
     override fun onStart() {
@@ -98,6 +105,8 @@ class AppListFragment : Fragment() {
     }
     override fun onStop() {
         val prefs = MultiPreferences(context ?: return)
+        if (firstRun)
+            prefs.putBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, false)
         if (app_list != null) {
             val wSet = mutableSetOf<String>()
 
@@ -119,8 +128,6 @@ class AppListFragment : Fragment() {
     private fun getAppList(adapter: AppListAdapter): MutableList<String> {
         val prefs = MultiPreferences(context!!)
         firstRun = prefs.getBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, true)
-        if (firstRun)
-            prefs.putBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, false)
 
         val pm = activity!!.packageManager
         val resolveIntent = Intent(Intent.ACTION_VIEW)

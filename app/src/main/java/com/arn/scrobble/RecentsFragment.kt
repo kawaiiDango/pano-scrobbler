@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -253,11 +254,9 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         recents_list ?: return false
 
         if (page <= adapter.totalPages) {
-            Stuff.log("loadRecents A")
             val firstVisible = (recents_list.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
             if ((page == 1 && firstVisible < 5) || page > 1) {
                 viewModel.loadRecentsList(page, true)
-                Stuff.log("loadRecents B")
             }
             if (adapter.itemCount == 0 || page > 1)
                 adapter.setLoading(true)
@@ -441,7 +440,10 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         val track = adapter.getTrack(position) ?: return
         when {
             view.id == R.id.recents_menu -> openPopupMenu((view.parent as ViewGroup).recents_date, track)
-            view.id == R.id.recents_img_overlay -> loveToggle(view, track)
+            view.id == R.id.recents_img_overlay -> {
+                loveToggle(view, track)
+                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            }
             else -> {
                 val lastClickedPos = adapter.selectedPos
                 if (lastClickedPos != position) {

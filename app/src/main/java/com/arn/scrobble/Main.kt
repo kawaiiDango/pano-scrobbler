@@ -34,6 +34,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.ViewPager
+import com.arn.scrobble.pending.PendingScrService
+import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.pref.PrefFragment
@@ -371,12 +373,13 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val log = Stuff.exec("logcat -d")
         val logFile = File(filesDir, "log.txt")
-//        val dbFile = File(activity.filesDir, PendingScrobblesDb.tableName + ".db")
         logFile.writeText(log)
         val logUri = FileProvider.getUriForFile(this, "com.arn.scrobble.fileprovider", logFile)
-//        activity.getDatabasePath(PendingScrobblesDb.tableName)
-//                .copyTo(dbFile, true)
-//        val dbUri = FileProvider.getUriForFile(activity, activity.packageName+".fileprovider", dbFile)
+
+//        PendingScrobblesDb.destroyInstance()
+//        val dbFile = File(filesDir, PendingScrobblesDb.tableName + ".sqlite")
+//        getDatabasePath(PendingScrobblesDb.tableName).copyTo(dbFile, true)
+//        val dbUri = FileProvider.getUriForFile(this, "com.arn.scrobble.fileprovider", dbFile)
 
         val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                 "mailto", "huh@huh.com", null))
@@ -501,7 +504,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onDestroy() {
         MultiPreferences.destroyClient()
-//        PendingScrobblesDb.destroyInstance()
+        if (!PendingScrService.mightBeRunning)
+            PendingScrobblesDb.destroyInstance()
         super.onDestroy()
     }
 

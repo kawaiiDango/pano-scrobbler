@@ -93,35 +93,37 @@ class LastfmUnscrobbler(context: Context?) {
         return true
     }
 
-    fun loginWithPassword(password: String): Boolean {
-        var succ = false
+    fun loginWithPassword(password: String): String? {
+        var errMsg: String? = "" //null if success
         val request = Request.Builder()
                 .url(URL_LOGIN)
                 .build()
 
         //fetch csrf token
-        val resp = client!!.newCall(request).execute()
+        try {
+            val resp = client!!.newCall(request).execute()
+            if (resp.code() == 200) {
+                if (csrfToken == null)
+                    Stuff.log("err: LastfmUnscrobbler csrfToken == null")
+                else
+                    errMsg = authenticate(username, password)
+            } else
+                errMsg = "Error: HTTP status " + resp.code()
+            resp.close()
+        } catch (e: Exception) {
+            errMsg = e.message
+        }
 
-        if (resp.code() == 200) {
-            if (csrfToken == null)
-                Stuff.log("err: LastfmUnscrobbler csrfToken == null")
-            else if (authenticate(username, password))
-                succ = true
-        } else
-            Stuff.log("err: LastfmUnscrobbler status: " + resp.code())
-
-        resp.close()
-
-        if (!succ)
+        if (errMsg != null)
             clearCookies()
-        return succ
+        return errMsg
     }
 
-    private fun authenticate(username: String, password: String): Boolean {
-        println("authenticate")
+    private fun authenticate(username: String, password: String): String? {
+        //null if success
 
         val body = FormBody.Builder()
-                .add(FIELD_CSRFTOKEN, csrfToken ?: return false)
+                .add(FIELD_CSRFTOKEN, csrfToken ?: return "No csrf token")
                 .add(FIELD_USERNAME, username)
                 .add(FIELD_PASSWORD, password)
                 .build()
@@ -138,21 +140,19 @@ class LastfmUnscrobbler(context: Context?) {
             val respString = resp.body()?.string() ?: ""
 
             if (resp.code() != 200) {
-                if (resp.code() == 403 || resp.code() == 401) {
-                    Stuff.log("err: LastfmUnscrobbler Incorrect credentials")
+                return if (resp.code() == 403 || resp.code() == 401) {
+                    "Incorrect credentials"
                 } else {
-                    Stuff.log("err: LastfmUnscrobbler authenticate status: "+ resp.code())
+                    "authenticate status: "+ resp.code()
                 }
-                return false
             } else if (respString.indexOf("auth-avatar") == -1)
-                return false
+                return "Couldn't log in"
             resp.close()
         } catch (e: Exception) {
-            Stuff.log("Could not post: " + e.message)
-            return false
+            return "Could not log in: " + e.message
         }
 
-        return true
+        return null
     }
 
     fun unscrobble(artist: String, track: String, timeMillis: Long): Boolean {

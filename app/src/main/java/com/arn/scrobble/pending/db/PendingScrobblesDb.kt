@@ -20,7 +20,7 @@ abstract class PendingScrobblesDb : RoomDatabase() {
         const val tableName = "pendingScrobbles"
         private var INSTANCE: PendingScrobblesDb? = null
         fun getDb(context: Context): PendingScrobblesDb {
-            if (INSTANCE == null) {
+            if (INSTANCE == null || INSTANCE?.isOpen == false) {
                 INSTANCE = Room.databaseBuilder(context.applicationContext, PendingScrobblesDb::class.java, tableName)
                         .addMigrations(MIGRATION_2_3)
                         // allow queries on the main thread.
@@ -32,8 +32,8 @@ abstract class PendingScrobblesDb : RoomDatabase() {
         }
 
         fun destroyInstance() {
-//            if (INSTANCE?.isOpen == true)
-//                INSTANCE?.close()
+            if (INSTANCE?.isOpen == true)
+                INSTANCE?.close()
             INSTANCE = null
         }
 

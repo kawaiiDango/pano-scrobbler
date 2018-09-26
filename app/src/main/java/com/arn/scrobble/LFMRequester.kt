@@ -51,7 +51,7 @@ class LFMRequester(var command: String, vararg args: String) {
             val caller = Caller.getInstance()
             if (caller.userAgent != Stuff.USER_AGENT) { // static instance not inited
                 caller.userAgent = Stuff.USER_AGENT
-                caller.isDebugMode = false
+                caller.isDebugMode = true
                 val fsCache = FileSystemCache(context.cacheDir)
                 caller.cache = fsCache
             }
@@ -80,7 +80,7 @@ class LFMRequester(var command: String, vararg args: String) {
                     }
                     Stuff.GET_FRIENDS_RECENTS ->
                         // args[0] = username
-                        Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, Stuff.LAST_KEY))
+                        return Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, Stuff.LAST_KEY))
 
                     //for love: command = tag, args[0] = artist, args[1] = song,
                     Stuff.LOVE -> return Track.love(args[0], args[1], lastfmSession)
@@ -435,8 +435,8 @@ class LFMRequester(var command: String, vararg args: String) {
 
 class DualPref(private val skipCp: Boolean, context: Context?) {
 
-    lateinit var sPref: SharedPreferences
-    lateinit var mPref: MultiPreferences
+    private lateinit var sPref: SharedPreferences
+    private lateinit var mPref: MultiPreferences
 
     init {
         if (skipCp)

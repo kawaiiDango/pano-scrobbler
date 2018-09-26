@@ -173,7 +173,7 @@ open class LoginFragment: DialogFragment() {
             val unscrobbler = LastfmUnscrobbler(context!!)
             unscrobbler.clearCookies()
             unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
-            success =  unscrobbler.loginWithPassword(tlast)
+            return unscrobbler.loginWithPassword(tlast)
         } else
             Stuff.toast(activity!!, "service not implemented")
         return if (success) null else ""

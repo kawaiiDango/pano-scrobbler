@@ -505,9 +505,8 @@ object Stuff {
             if (anim is AnimatedVectorDrawableCompat? && anim?.isRunning != true) {
                 anim?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
-                        drawable as AnimatedVectorDrawableCompat?
                         if (drawable != null && drawable.isVisible)
-                            np.post { anim?.start() }
+                            np.post { (np.drawable as AnimatedVectorDrawableCompat?)?.start() }
                     }
                 })
                 anim?.start()

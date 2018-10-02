@@ -322,7 +322,7 @@ object Stuff {
     }
 
     fun sanitizeArtist(artistOrig: String): String {
-        val splits = artistOrig.split('|', ';').filter { !it.isBlank() }
+        val splits = artistOrig.split("|", "; ").filter { !it.isBlank() }
         return splits[0]
     }
 

@@ -65,7 +65,10 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
     private val editReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context?, i: Intent) {
             val extras = i.extras!!
-            adapter.editTrack(extras.getString(NLService.B_ARTIST)!!, extras.getString(NLService.B_TITLE)!!, extras.getLong(NLService.B_TIME))
+            adapter.editTrack(extras.getString(NLService.B_ARTIST)!!,
+                    extras.getString(NLService.B_ALBUM)!!,
+                    extras.getString(NLService.B_TITLE)!!,
+                    extras.getLong(NLService.B_TIME))
         }
     }
 

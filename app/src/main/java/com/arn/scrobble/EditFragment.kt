@@ -102,6 +102,10 @@ class EditFragment: LoginFragment() {
                     val csrfExists = unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
                     if (csrfExists)
                         unscrobbler.unscrobble(origArtist, origTrack, timeMillis)
+
+                    //editing just the album is a noop, scrobble again
+                    if (track == origTrack && artist == origArtist && album != origAlbum)
+                        Track.scrobble(scrobbleData, lastfmSession)
                 } else if (result.isIgnored)
                     errMsg = getString(R.string.scrobble_ignored, artist)
                 else if (!standalone)

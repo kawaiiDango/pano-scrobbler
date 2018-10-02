@@ -117,8 +117,8 @@ class RecentsAdapter
         }
     }
 
-    fun editTrack(artist: String, title: String, timeMillis: Long) {
-        val track = Track(title, null, artist)
+    fun editTrack(artist: String, album: String, title: String, timeMillis: Long) {
+        val track = Track(title, null, album, artist)
         track.playedWhen = if (timeMillis != 0L)
                 Date(timeMillis)
             else

@@ -51,7 +51,7 @@ class LFMRequester(var command: String, vararg args: String) {
             val caller = Caller.getInstance()
             if (caller.userAgent != Stuff.USER_AGENT) { // static instance not inited
                 caller.userAgent = Stuff.USER_AGENT
-                caller.isDebugMode = true
+                caller.isDebugMode = false
                 val fsCache = FileSystemCache(context.cacheDir)
                 caller.cache = fsCache
             }

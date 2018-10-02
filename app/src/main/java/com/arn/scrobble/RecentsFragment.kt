@@ -78,9 +78,8 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val activity = activity!!
         if (userVisibleHint)
-            Stuff.setAppBarHeight(activity)
+            Stuff.setAppBarHeight(activity!!)
 
         val llm = LinearLayoutManager(context!!)
         recents_list.layoutManager = llm
@@ -135,7 +134,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                         if (firstLoadCache) {
                             firstLoadCache = false
                             loadRecents(1)
-                            toggleGraphDetails(activity.sparkline, true)
+                            toggleGraphDetails(activity!!.sparkline, true)
                         } else if (it.page == 1){
                             refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
                         }
@@ -149,7 +148,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         viewModel.loadPending(2)
             .observe(viewLifecycleOwner, Observer {
                     it ?: return@Observer
-                    adapter.setPendingScrobbles(activity.supportFragmentManager, it.first, it.second)
+                    adapter.setPendingScrobbles(activity!!.supportFragmentManager, it.first, it.second)
             })
 
         recents_list.addOnScrollListener(loadMoreListener)
@@ -159,9 +158,9 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
         appPrefs = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
 
-        activity.hero_share.setOnClickListener(shareClickListener)
+        activity!!.hero_share.setOnClickListener(shareClickListener)
 
-        val sparkline = activity.sparkline
+        val sparkline = activity!!.sparkline
         if (sparkline.adapter == null) { // not inited
             sparkline.sparkAnimator = MorphSparkAnimator()
             sparkline.adapter = SparkLineAdapter()
@@ -170,19 +169,19 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
             toggleGraphDetails(it as SparkView)
         }
 
-        activity.hero_info.setOnClickListener { v:View ->
-            val t = activity.hero_img.tag
+        activity!!.hero_info.setOnClickListener { v:View ->
+            val t = activity?.hero_img?.tag
             if (t is Track)
                 Stuff.openInBrowser(t.url, activity, v)
         }
-        activity.hero_play.setOnClickListener { v:View ->
-            val t = activity.hero_img.tag
+        activity!!.hero_play.setOnClickListener { v:View ->
+            val t =  activity?.hero_img?.tag
             if (t is Track)
-                Stuff.openSearchURL(t.artist + " - " + t.name, v, activity)
+                Stuff.openSearchURL(t.artist + " - " + t.name, v, activity!!)
         }
-        activity.hero_similar.setOnClickListener { v:View ->
+        activity!!.hero_similar.setOnClickListener { v:View ->
             v.isEnabled = false
-            val t = activity.hero_img.tag
+            val t = activity?.hero_img?.tag
             if (t is Track) {
                 val simFragment = SimilarTracksFragment()
                 val b = Bundle()
@@ -190,7 +189,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                 b.putString("track", t.name)
                 simFragment.arguments = b
 
-                activity.supportFragmentManager.beginTransaction()
+                activity!!.supportFragmentManager.beginTransaction()
                         .hide(this)
                         .add(R.id.frame, simFragment, Stuff.TAG_SIMILAR)
                         .addToBackStack(null)
@@ -571,15 +570,6 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                 else -> false
             }
         }
-/*
-        val classPopupMenu = Class.forName(popup::class.java.name)
-        val mPopup = classPopupMenu.getDeclaredField("mPopup")
-        mPopup.isAccessible = true
-        val menuPopupHelper = mPopup.get(popup)
-        val classPopupHelper = Class.forName(menuPopupHelper::class.java.name)
-        val setForceIcons = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.java)
-        setForceIcons.invoke(menuPopupHelper, true)
-*/
         popup.show()
     }
 

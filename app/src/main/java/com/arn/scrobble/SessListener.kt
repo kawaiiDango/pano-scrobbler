@@ -170,11 +170,15 @@ class SessListener constructor(private val pref: SharedPreferences,
         }
 
         @Synchronized override fun onMetadataChanged(metadata: MediaMetadata?) {
-            val artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
+            var artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
                     metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
             val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
+
+            if (packageName == Stuff.PACKAGE_XIAMI)
+                artist = artist.replace(';', '|')
+
             val sameAsOld = (artist == this.artist && title == this.title && album == this.album)
 
             Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld,"+

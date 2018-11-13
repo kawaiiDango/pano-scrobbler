@@ -161,6 +161,8 @@ object Stuff {
             "com.n7mobile.nplayer"
     )
 
+    const val PACKAGE_XIAMI = "fm.xiami.main"
+
     private val seperators = arrayOf(// in priority order
             "—", " ‎– ", "–", " _ ", " - ", " \\| ", "-", "「", "『", "ー", " • ",
 

@@ -61,9 +61,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        DebugOnly.installLeakCanary(application)
-        DebugOnly.strictMode()
-
         Stuff.timeIt("onCreate start")
         super.onCreate(savedInstanceState)
 

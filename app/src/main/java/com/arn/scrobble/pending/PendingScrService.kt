@@ -21,17 +21,13 @@ class PendingScrService: Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return Service.START_NOT_STICKY
-    }
-
-    override fun onCreate() {
-        super.onCreate()
         if (!PendingScrJob.mightBeRunning) {
             mightBeRunning = true
             val js = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             js.cancel(PendingScrJob.JOB_ID)
             startForegroundService()
         }
+        return Service.START_NOT_STICKY
     }
 
     private fun startForegroundService() {

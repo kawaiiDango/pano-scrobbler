@@ -7,11 +7,11 @@ import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
 import android.os.AsyncTask
-import android.preference.PreferenceManager
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.ListenBrainz
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -38,7 +38,7 @@ class PendingScrJob : JobService() {
 
     class OfflineScrobbleTask(context: Context): AsyncTask<Unit, String, Boolean>() {
         private val dao = PendingScrobblesDb.getDb(context).getDao()
-        private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        private val prefs = MultiPreferences(context)
         var progressCb:((str:String)->Unit)? = null
         var doneCb:((done:Boolean)->Unit)? = null
 

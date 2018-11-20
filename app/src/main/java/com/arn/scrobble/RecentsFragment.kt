@@ -136,6 +136,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                             loadRecents(1)
                             toggleGraphDetails(activity!!.sparkline, true)
                         } else if (it.page == 1){
+                            viewModel.loadPending(2)
                             refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
                         }
             })

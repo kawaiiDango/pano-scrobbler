@@ -135,7 +135,7 @@ class RecentsAdapter
     fun setPendingScrobbles(fm:FragmentManager?, psList: List<PendingScrobble>, count:Int) {
         val headerText = fragmentContent.context.getString(R.string.pending_scrobbles)
         var shift = 0
-        val lastPsSize = psList.size
+        val lastPsSize = pendingScrobbles.size
         actionHeaderPos = -1
         if (count == 0 || psList.isEmpty()){
             this.fm = null
@@ -173,7 +173,7 @@ class RecentsAdapter
         if (lastPsSize == psList.size)
             notifyItemRangeChanged(0, nonTrackViewCount, 0)
         else
-            notifyItemRangeChanged(0, nonTrackViewCount)
+            notifyDataSetChanged()
     }
 
     fun setStatusHeader(s:String){

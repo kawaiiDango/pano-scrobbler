@@ -27,18 +27,22 @@ android {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
         targetSdkVersion 28
-        buildToolsVersion "28.0.2"
         versionCode verCode
         versionName ((int)(versionCode/100) + "." + (versionCode%100) +  " - " + new Date().format('dd.MMM.YY'))
         setProperty("archivesBaseName", "pScrobbler")
         vectorDrawables.useSupportLibrary = true
         resConfig "en"
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+            }
+        }
     }
     buildTypes {
         release {
             shrinkResources true
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {
@@ -50,19 +54,19 @@ android {
 targetCompatibility = "1.8"
 
 dependencies {
-    def support_ver = "1.0.0-rc02"
+    def support_ver = "1.0.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:$support_ver"
+    implementation "androidx.appcompat:appcompat:1.0.2"
     implementation "androidx.preference:preference:$support_ver"
     implementation "androidx.media:media:$support_ver"
     implementation "androidx.palette:palette:$support_ver"
     implementation "androidx.recyclerview:recyclerview:$support_ver"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0-rc01"
-    kapt "androidx.lifecycle:lifecycle-compiler:2.0.0-rc01"
-    kapt "androidx.room:room-compiler:2.0.0-rc01"
-    implementation "androidx.room:room-runtime:2.0.0-rc01"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.0.0"
+    kapt "androidx.room:room-compiler:2.0.0"
+    implementation "androidx.room:room-runtime:2.0.0"
 
     implementation "com.google.android.material:material:$support_ver"
 
@@ -71,8 +75,8 @@ dependencies {
     implementation "com.robinhood.spark:spark:1.2.0"
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
 //    implementation 'com.vinaysshenoy:mugen:1.0.2' //doesnt compile with androidx
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:1.5.4"
-//    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
+//    debugImplementation "com.squareup.leakcanary:leakcanary-android:1.6.1"
+    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
 //    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1' //still adds permissions to the manifest
 
     implementation project(':lastfm')

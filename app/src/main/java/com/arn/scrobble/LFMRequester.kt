@@ -188,7 +188,30 @@ class LFMRequester(var command: String, vararg args: String) {
                             Stuff.NOW_PLAYING -> {
                                 if (NLService.isOnline){
                                     val hash = args[0].hashCode() + args[2].hashCode()
-                                    val corrected = getCorrectedData(args[0], args[2])
+
+                                    val track =
+                                            try {
+                                                Track.getInfo(args[0], args[2], null, lastfmUsername, Tokens.LAST_KEY)
+                                            } catch (e: CallException){
+                                                null
+                                            }
+                                    val corrected =
+                                            if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT/2)
+                                                Pair(args[0], args[2])
+                                            else
+                                                getValidArtist(args[0], args[2])
+                                    if (track != null) {
+                                        val i = Intent(NLService.iMETA_UPDATE)
+                                        i.putExtra(NLService.B_ARTIST, args[0])
+                                        if (args[1] == "")
+                                            i.putExtra(NLService.B_ALBUM, track.album) ?: ""
+                                        else
+                                            i.putExtra(NLService.B_ALBUM, args[1])
+                                        i.putExtra(NLService.B_TITLE, track.name)
+                                        i.putExtra(NLService.B_USER_LOVED, track.isLoved)
+                                        i.putExtra(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
+                                        context.sendBroadcast(i)
+                                    }
                                     if (corrected != null) {
                                         scrobbleData.artist = corrected.first
                                         scrobbleData.track = corrected.second
@@ -269,8 +292,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                     val errMsg = scrobbleResults[key]?.errorMessage ?: context.getString(R.string.network_error)
                                     failedText += "$key: $errMsg\n"
                                 } else if (scrobbleResults[key]?.isSuccessful == true && scrobbleResults[key]?.isIgnored == true) {
-                                    val artistTrunc = if (args[0].length > 12) args[0].substring(0, 12) else args[0]
-                                    failedText += key + ": " +context.getString(R.string.scrobble_ignored, artistTrunc) + "\n"
+                                    failedText += key + ": " +context.getString(R.string.scrobble_ignored, args[0]) + "\n"
                                 }
                                 if (failedText != ""){
                                     val i = Intent(NLService.iOTHER_ERR)
@@ -396,7 +418,7 @@ class LFMRequester(var command: String, vararg args: String) {
             Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
         }
 
-        fun getCorrectedData(artist:String, track: String, threshold: Int = Stuff.MIN_LISTENER_COUNT):
+        fun getValidArtist(artist:String, track: String, threshold: Int = Stuff.MIN_LISTENER_COUNT):
                 Pair<String, String>? {
             if (validArtistsCache[artist] == null) {
                 val artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)

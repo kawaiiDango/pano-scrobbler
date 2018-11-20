@@ -51,13 +51,14 @@
     <string name="show_all"><u>See all</u></string>
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
+    <string name="num_scrobbles_noti">%1$d scrobbles</string>
     <plurals name="num_scrobbles">
         <item quantity="one">%1$d scrobble today</item>
         <item quantity="other">%1$d scrobbles today</item>
     </plurals>
     <string name="please_authorize">Please Authorize LastFM</string>
     <string name="friends">Friends</string>
-    <string name="num_scrobbles">%s (%d scrobbles)</string>
+    <string name="num_scrobbles">%1s (%2d scrobbles)</string>
     <string name="grant_autostart">Enable autostart</string>
     <string name="grant_autostart_desc">Needed on %1$s devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>

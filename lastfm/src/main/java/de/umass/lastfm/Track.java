@@ -71,6 +71,7 @@ public class Track extends MusicEntry {
 	private boolean fullTrackAvailable;
 	private boolean nowPlaying;
     private boolean loved = false;
+//    private int userPlayCount = 0;
     private Artist artistExtended; // using it only for getRecents(extended=1)
 
 	private Date playedWhen;
@@ -108,6 +109,10 @@ public class Track extends MusicEntry {
         this.loved = loved;
     }
 
+    public void setUserPlayCount(int userPlayCount) {
+        super.userPlaycount = userPlayCount;
+    }
+
     public void setNowPlaying(boolean nowPlaying) {
         this.nowPlaying = nowPlaying;
     }
@@ -137,6 +142,10 @@ public class Track extends MusicEntry {
 
 	public String getAlbum() {
 		return album;
+	}
+
+	public void setAlbum(String album) {
+		this.album = album;
 	}
 
 	public String getAlbumMbid() {
@@ -785,6 +794,8 @@ public class Track extends MusicEntry {
 				track.fullTrackAvailable = s != null && Integer.parseInt(s) == 1;
 			}
 			DomElement loved = element.getChild("loved");
+            if (loved == null)
+                loved = element.getChild("userloved");
 			if (loved != null) {
 				String s = loved.getText();
 				track.loved = s != null && Integer.parseInt(s) == 1;

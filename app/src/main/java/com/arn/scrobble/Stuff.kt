@@ -162,6 +162,7 @@ object Stuff {
     )
 
     const val PACKAGE_XIAMI = "fm.xiami.main"
+    const val PACKAGE_PANDORA = "com.pandora.android"
 
     private val seperators = arrayOf(// in priority order
             "—", " ‎– ", "–", " _ ", " - ", " \\| ", "-", "「", "『", "ー", " • ",

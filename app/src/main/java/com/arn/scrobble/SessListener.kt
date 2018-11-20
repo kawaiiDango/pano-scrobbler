@@ -178,6 +178,8 @@ class SessListener constructor(private val pref: SharedPreferences,
 
             if (packageName == Stuff.PACKAGE_XIAMI)
                 artist = artist.replace(';', '|')
+            else if (packageName == Stuff.PACKAGE_PANDORA)
+                artist = artist.replace("Ofln - ", "")
 
             val sameAsOld = (artist == this.artist && title == this.title && album == this.album)
 

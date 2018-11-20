@@ -87,7 +87,7 @@ class EditFragment: LoginFragment() {
         }
 
         try {
-            val validArtist = LFMRequester.getCorrectedData(artist, track, 4)
+            val validArtist = LFMRequester.getValidArtist(artist, track, 4)
             if (validArtist == null) {
                 errMsg = getString(R.string.state_invalid_artist)
             } else {

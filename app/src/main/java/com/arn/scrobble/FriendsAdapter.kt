@@ -159,7 +159,10 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
     }
 
     fun getItem(id: Int): User {
-        return users[id]
+        return if (id < users.size)
+            users[id]
+        else
+            users.last()
     }
 
     override fun getItemId(position: Int): Long {

@@ -54,7 +54,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
             val p = Pair(dao.all(limit), dao.count)
             pendingTracks.postValue(p)
             if (p.second > 0 && Main.isOnline && !PendingScrService.mightBeRunning) {
-                val intent = Intent(getApplication(), PendingScrService::class.java)
+                val intent = Intent(getApplication<Application>().applicationContext, PendingScrService::class.java)
                 getApplication<Application>().startService(intent)
             }
         }

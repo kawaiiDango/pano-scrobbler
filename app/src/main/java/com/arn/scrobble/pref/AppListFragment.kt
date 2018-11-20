@@ -63,7 +63,7 @@ class AppListFragment : Fragment() {
         }
         val excludePackageNames = getAppList(adapter)
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
-            val pm = activity!!.packageManager
+            val pm = activity?.packageManager ?: return@execute
             val otherApps = pm.getInstalledApplications(PackageManager.GET_META_DATA) as MutableList<ApplicationInfo>
 
             adapter.addSectionHeader(getString(R.string.video_players))

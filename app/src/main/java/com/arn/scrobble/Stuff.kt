@@ -507,16 +507,18 @@ object Stuff {
             if (anim is AnimatedVectorDrawableCompat? && anim?.isRunning != true) {
                 anim?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
-                        if (drawable != null && drawable.isVisible)
-                            np.post { (np.drawable as AnimatedVectorDrawableCompat?)?.start() }
+                        if (drawable?.isVisible == true)
+                            np.post {
+                                (np.drawable as? AnimatedVectorDrawableCompat)?.start()
+                            }
                     }
                 })
                 anim?.start()
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && anim is AnimatedVectorDrawable && !anim.isRunning) {
                 anim.registerAnimationCallback(object : Animatable2.AnimationCallback() {
                     override fun onAnimationEnd(drawable: Drawable?) {
-                        if (drawable != null && drawable.isVisible)
-                            (drawable as AnimatedVectorDrawable).start()
+                        if (drawable?.isVisible == true)
+                            (drawable as? AnimatedVectorDrawable)?.start()
                     }
                 })
                 anim.start()
@@ -536,7 +538,7 @@ object Stuff {
     fun openSearchURL(query: String, view: View, context: Context) {
         var url =
                 context.getSharedPreferences(ACTIVITY_PREFS, Context.MODE_PRIVATE)
-                        .getString(PREF_ACTIVITY_SEARCH_URL, context.getString(R.string.search_site_default))
+                        .getString(PREF_ACTIVITY_SEARCH_URL, context.getString(R.string.search_site_default))!!
 
         try {
             url += URLEncoder.encode(query, "UTF-8")

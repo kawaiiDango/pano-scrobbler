@@ -53,7 +53,7 @@ class PendingScrJob : JobService() {
 
                 var corrected: Pair<String,String>?
                 try {
-                    corrected = LFMRequester.getCorrectedData(entry.artist, entry.track)
+                    corrected = LFMRequester.getValidArtist(entry.artist, entry.track)
                 } catch (e: Exception){
                     Stuff.log("OfflineScrobble: n/w err1 - " + e.message)
                     done = false

@@ -136,7 +136,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
         val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadFriends(page)
+                loadFriends(page+1)
             }
         }
         friends_grid.addOnScrollListener(loadMoreListener)

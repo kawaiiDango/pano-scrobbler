@@ -245,7 +245,7 @@ class NLService : NotificationListenerService() {
             if (method == B_NOW_PLAYING) {
                 nowPlaying(artist, album, title, duration, m.what, packageName)
             } else if (method == B_SCROBBLE) {
-                submitScrobble(artist, currentTrack.album, title, time, duration)
+                submitScrobble(artist, currentTrack.album ?: "", title, time, duration)
             }
 
         }
@@ -368,9 +368,9 @@ class NLService : NotificationListenerService() {
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setStyle(style)
                     .addAction(loveAction)
-            if (userPlayCount > 1)
+            if (userPlayCount > 0)
                 nb.setContentTitle("$artist - $title")
-                    .setContentText(getString(R.string.num_scrobbles_noti, userPlayCount))
+                    .setContentText(resources.getQuantityString(R.plurals.num_scrobbles_noti, userPlayCount, userPlayCount))
             else
                 nb.setContentTitle(title)
                     .setContentText(artist)

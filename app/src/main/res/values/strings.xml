@@ -51,10 +51,13 @@
     <string name="show_all"><u>See all</u></string>
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
-    <string name="num_scrobbles_noti">%1$d scrobbles</string>
     <plurals name="num_scrobbles">
         <item quantity="one">%1$d scrobble today</item>
         <item quantity="other">%1$d scrobbles today</item>
+    </plurals>
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$d scrobble</item>
+        <item quantity="other">%1$d scrobbles</item>
     </plurals>
     <string name="please_authorize">Please Authorize LastFM</string>
     <string name="friends">Friends</string>

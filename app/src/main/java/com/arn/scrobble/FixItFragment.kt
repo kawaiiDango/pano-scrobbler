@@ -1,6 +1,7 @@
 package com.arn.scrobble
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
@@ -39,9 +40,13 @@ class FixItFragment: BottomSheetDialogFragment() {
         addTouchDelegate(fix_it_nls_action, 24, 10)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            fix_it_battery.visibility = View.VISIBLE
-            fix_it_battery_action.setOnClickListener {
-                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            val batteryIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+            if (activity!!.packageManager.queryIntentActivities(batteryIntent,
+                            PackageManager.MATCH_DEFAULT_ONLY)?.isNotEmpty() == true) {
+                fix_it_battery.visibility = View.VISIBLE
+                fix_it_battery_action.setOnClickListener {
+                    startActivity(batteryIntent)
+                }
             }
         }
         addTouchDelegate(fix_it_battery_action, 24, 10)

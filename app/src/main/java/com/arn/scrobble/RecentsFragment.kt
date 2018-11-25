@@ -173,7 +173,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         activity!!.hero_info.setOnClickListener { v:View ->
             val t = activity?.hero_img?.tag
             if (t is Track)
-                Stuff.openInBrowser(t.url, activity, v)
+                Stuff.openInBrowser(t.url, activity, null)
         }
         activity!!.hero_play.setOnClickListener { v:View ->
             val t =  activity?.hero_img?.tag

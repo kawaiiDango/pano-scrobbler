@@ -106,7 +106,10 @@ open class LoginFragment: DialogFragment() {
         login_progress.postDelayed(
                 {
                     if (showsDialog)
-                        dismiss()
+                        try {
+                            dismiss()
+                        } catch (e:IllegalStateException)
+                        {}
                     else
                         activity?.onBackPressed()
                 },

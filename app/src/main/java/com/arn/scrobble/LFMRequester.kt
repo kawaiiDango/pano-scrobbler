@@ -204,7 +204,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                         val i = Intent(NLService.iMETA_UPDATE)
                                         i.putExtra(NLService.B_ARTIST, args[0])
                                         if (args[1] == "")
-                                            i.putExtra(NLService.B_ALBUM, track.album) ?: ""
+                                            i.putExtra(NLService.B_ALBUM, track.album ?: "")
                                         else
                                             i.putExtra(NLService.B_ALBUM, args[1])
                                         i.putExtra(NLService.B_TITLE, track.name)
@@ -368,6 +368,9 @@ class LFMRequester(var command: String, vararg args: String) {
 
     fun asAsyncTask(context: Context, mld: MutableLiveData<*>? = null): AsyncTask<Unit, Unit, Any?>? =
             MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+
+    fun asSerialAsyncTask(context: Context, mld: MutableLiveData<*>? = null): AsyncTask<Unit, Unit, Any?>? =
+            MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?).execute()
 
     class MyAsyncTask(private val requester: LFMRequester, context: Context, private val mld: MutableLiveData<in Any?>? = null): AsyncTask<Unit, Unit, Any?>() {
         private var contextWr = WeakReference(context)

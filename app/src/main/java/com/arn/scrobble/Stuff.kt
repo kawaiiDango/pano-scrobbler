@@ -182,7 +182,6 @@ object Stuff {
             "com.huawei.systemmanager", "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity",
             "com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity",
             "com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity",
-            "com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity",
             "com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity",
             "com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager",
             "com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity",

@@ -167,7 +167,7 @@ class NLService : NotificationListenerService() {
                             intent.getStringExtra("artist"),
                             intent.getStringExtra("title"))
                             .skipContentProvider()
-                            .asAsyncTask(applicationContext)
+                            .asSerialAsyncTask(applicationContext)
                     val artist = intent.getStringExtra("artist")
                     val title = intent.getStringExtra("title")
                     val np = handler.hasMessages(artist.hashCode() + title.hashCode())
@@ -258,7 +258,7 @@ class NLService : NotificationListenerService() {
                     val artist = Stuff.sanitizeArtist(artist)
                     LFMRequester(Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString())
                             .skipContentProvider()
-                            .asAsyncTask(applicationContext)
+                            .asSerialAsyncTask(applicationContext)
 
                     val m = obtainMessage()
                     val b = Bundle()
@@ -295,7 +295,7 @@ class NLService : NotificationListenerService() {
         private fun submitScrobble(artist:String, album:String, title: String, time:Long, duration:Long) {
             LFMRequester(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString())
                     .skipContentProvider()
-                    .asAsyncTask(applicationContext)
+                    .asSerialAsyncTask(applicationContext)
             notifyScrobble(artist, title, false, currentTrack.isLoved, currentTrack.userPlaycount)
         }
 

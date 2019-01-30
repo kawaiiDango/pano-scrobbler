@@ -369,7 +369,7 @@ class NLService : NotificationListenerService() {
                     .setStyle(style)
                     .addAction(loveAction)
             if (userPlayCount > 0)
-                nb.setContentTitle("$artist - $title")
+                nb.setContentTitle("$artist — $title")
                     .setContentText(resources.getQuantityString(R.plurals.num_scrobbles_noti, userPlayCount, userPlayCount))
             else
                 nb.setContentTitle(title)

@@ -99,7 +99,8 @@ class LFMRequester(var command: String, vararg args: String) {
                         cal.set(Calendar.HOUR_OF_DAY, 0)
                         cal.set(Calendar.MINUTE, 0)
                         cal.set(Calendar.SECOND, 0)
-                        val recents = User.getRecentTracks(lastfmUsername, 1, 1, cal.timeInMillis/1000, 0, Stuff.LAST_KEY)
+                        val recents = User.getRecentTracks(lastfmUsername, 1, 1,
+                                cal.timeInMillis/1000, System.currentTimeMillis()/1000, Stuff.LAST_KEY)
 
                         val actPref = context.getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
                         actPref.edit()

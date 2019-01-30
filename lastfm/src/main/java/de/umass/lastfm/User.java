@@ -200,7 +200,7 @@ public class User extends ImageHolder {
 		if (fromTime > 0)
 		    params.put("from", String.valueOf(fromTime));
 		if (toTime > 0)
-		    params.put("page", String.valueOf(toTime));
+		    params.put("to", String.valueOf(toTime));
 		Result result = Caller.getInstance().call("user.getRecentTracks", apiKey, params);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}

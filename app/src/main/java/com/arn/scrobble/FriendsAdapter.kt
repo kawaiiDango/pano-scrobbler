@@ -219,7 +219,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                 vTitle.text = "…"
                 vSubtitle.text = " "
                 vDate.text = " "
-
+                vTrackContainer.setOnClickListener {}
                 enqueueRecentsReq(user.name, adapterPosition)
             }
 

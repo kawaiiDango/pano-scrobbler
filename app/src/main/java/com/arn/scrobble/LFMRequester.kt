@@ -76,11 +76,11 @@ class LFMRequester(var command: String, vararg args: String) {
                 when (command) {
                     Stuff.LASTFM_SESS_AUTH -> return null
                     Stuff.GET_RECENTS -> {
-                        return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 15, true, Stuff.LAST_KEY)
+                        return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 15, true, lastfmSessKey, Stuff.LAST_KEY)
                     }
                     Stuff.GET_FRIENDS_RECENTS ->
                         // args[0] = username
-                        return Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, Stuff.LAST_KEY))
+                        return Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, null, Stuff.LAST_KEY))
 
                     //for love: command = tag, args[0] = artist, args[1] = song,
                     Stuff.LOVE -> return Track.love(args[0], args[1], lastfmSession)
@@ -100,7 +100,7 @@ class LFMRequester(var command: String, vararg args: String) {
                         cal.set(Calendar.MINUTE, 0)
                         cal.set(Calendar.SECOND, 0)
                         val recents = User.getRecentTracks(lastfmUsername, 1, 1,
-                                cal.timeInMillis/1000, System.currentTimeMillis()/1000, Stuff.LAST_KEY)
+                                cal.timeInMillis/1000, System.currentTimeMillis()/1000, lastfmSessKey, Stuff.LAST_KEY)
 
                         val actPref = context.getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
                         actPref.edit()

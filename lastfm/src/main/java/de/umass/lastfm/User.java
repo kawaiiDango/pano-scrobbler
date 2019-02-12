@@ -176,21 +176,21 @@ public class User extends ImageHolder {
 		return ResponseBuilder.buildCollection(result, User.class);
 	}
 
-	public static PaginatedResult<Track> getRecentTracks(String user, String apiKey) {
-		return getRecentTracks(user, 1, 10, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, String sessKey, String apiKey) {
+		return getRecentTracks(user, 1, 10, sessKey, apiKey);
 	}
 
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, String apiKey) {
-        return getRecentTracks(user, page, limit, false, 0, 0, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, String sessKey, String apiKey) {
+        return getRecentTracks(user, page, limit, false, 0, 0, sessKey, apiKey);
     }
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, boolean extended, String apiKey) {
-        return getRecentTracks(user, page, limit, extended, 0, 0, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, boolean extended, String sessKey, String apiKey) {
+        return getRecentTracks(user, page, limit, extended, 0, 0, sessKey, apiKey);
     }
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, long fromTime, long toTime, String apiKey) {
-        return getRecentTracks(user, page, limit, false, fromTime, toTime, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, long fromTime, long toTime, String sessKey, String apiKey) {
+        return getRecentTracks(user, page, limit, false, fromTime, toTime, sessKey, apiKey);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit,
-                boolean extended, long fromTime, long toTime, String apiKey) {
+                boolean extended, long fromTime, long toTime, String sessKey, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("user", user);
 		params.put("limit", String.valueOf(limit));
@@ -201,6 +201,8 @@ public class User extends ImageHolder {
 		    params.put("from", String.valueOf(fromTime));
 		if (toTime > 0)
 		    params.put("to", String.valueOf(toTime));
+		if (sessKey != null)
+            params.put("sk", String.valueOf(sessKey)); //for private profiles
 		Result result = Caller.getInstance().call("user.getRecentTracks", apiKey, params);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}

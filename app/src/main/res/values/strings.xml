@@ -37,7 +37,7 @@
     <string name="user_profile">Profile</string>
     <string name="item_options">Options for this item</string>
     <string name="new_player">%s detected</string>
-    <string name="new_player_prompt">Scrobble this app?</string>
+    <string name="new_player_prompt">Keep scrobbling this app?</string>
     <string name="no_scrobbles">"No scrobbled songs yet…  😫
     Lets make some noise!"
     </string>

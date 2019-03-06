@@ -5,7 +5,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        DebugOnly.installLeakCanary(this)
+//        DebugOnly.installLeakCanary(this)
         DebugOnly.strictMode()
     }
 }

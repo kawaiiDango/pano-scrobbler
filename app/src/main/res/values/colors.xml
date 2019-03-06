@@ -5,6 +5,7 @@
     <color name="colorAccent">#f06292</color>
     <color name="colorNoti">#ec407a</color>
     <color name="colorAccentLight">#e1bee7</color>
+    <color name="colorAccentLighter">#E8D9EB</color>
     <color name="colorAccentLightTrans">#bbe1bee7</color>
     <color name="lightDivider">#11ffffff</color>
     <color name="darkBg">#a9000000</color>

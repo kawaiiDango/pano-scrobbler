@@ -31,11 +31,33 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/recents_title"
+            android:layout_width="match_parent"
+            android:layout_height="22dp"
+            android:layout_gravity="bottom"
+            android:clickable="false"
+            android:drawableEnd="@drawable/shape_triangle_corner"
+            android:ellipsize="end"
+            android:gravity="bottom"
+            android:longClickable="false"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/colorAccentLighter"
+            android:textSize="20sp"
+            app:autoSizeMaxTextSize="20sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+            tools:text="Title title"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/recents_subtitle"
             android:layout_width="match_parent"
             android:layout_height="18dp"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="-3dp"
             android:clickable="false"
-            android:drawableEnd="@drawable/shape_triangle_corner"
             android:ellipsize="end"
             android:linksClickable="false"
             android:longClickable="false"
@@ -45,32 +67,10 @@
             android:textSize="24sp"
             app:autoSizeMaxTextSize="24sp"
             app:autoSizeMinTextSize="14sp"
+
             app:autoSizeStepGranularity="1sp"
             app:autoSizeTextType="uniform"
-
             tools:text="subtit subtit"/>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/recents_title"
-            android:layout_width="match_parent"
-            android:layout_height="22dp"
-            android:layout_gravity="bottom"
-            android:layout_marginTop="-3dp"
-            android:clickable="false"
-            android:ellipsize="end"
-            android:gravity="bottom"
-            android:longClickable="false"
-            android:maxLines="1"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@color/colorAccentLight"
-            android:textSize="20sp"
-            app:autoSizeMaxTextSize="20sp"
-            app:autoSizeMinTextSize="12sp"
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform"
-            tools:text="Title title"/>
 
     </LinearLayout>
 

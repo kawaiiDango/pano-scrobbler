@@ -92,6 +92,7 @@ class SessListener constructor(private val pref: SharedPreferences,
         var artist = ""
         var album = ""
         var title = ""
+        var albumArtist = ""
         var duration = -1L
 
         init {
@@ -146,7 +147,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                             (!handler.hasMessages(currHash) ||
                             System.currentTimeMillis() - lastScrobbleTime > 2000)) {
                         Stuff.log("scrobbleit")
-                        scrobble(artist, album, title, duration)
+                        scrobble(artist, album, title, albumArtist, duration)
                         lastScrobblePos = pos
                     } else
                         handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN)
@@ -158,7 +159,7 @@ class SessListener constructor(private val pref: SharedPreferences,
             }
         }
 
-        fun scrobble(artist: String, album: String, title: String, duration: Long) {
+        fun scrobble(artist: String, album: String, title: String, albumArtist: String, duration: Long) {
             lastScrobbleTime = System.currentTimeMillis()
             val isWhitelisted = whiteList.contains(packageName)
             val packageNameParam = if (!isWhitelisted) packageName else null
@@ -166,12 +167,13 @@ class SessListener constructor(private val pref: SharedPreferences,
             if (isIgnoreArtistMeta)
                 lastHash = handler.scrobble(title, duration, packageNameParam)
             else
-                lastHash = handler.scrobble(artist, album, title, duration, packageNameParam)
+                lastHash = handler.scrobble(artist, album, title, albumArtist, duration, packageNameParam)
         }
 
         @Synchronized override fun onMetadataChanged(metadata: MediaMetadata?) {
+            var albumArtist = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
             var artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
-                    metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
+                    albumArtist
             val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
@@ -189,6 +191,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                 this.artist = artist
                 this.album = album
                 this.title = title
+                this.albumArtist = albumArtist
                 this.duration = duration
 
 //                lastSessEventTime = System.currentTimeMillis()
@@ -199,7 +202,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                 if (artist != "" && title != "" &&
                         !handler.hasMessages(currHash) &&
                         lastState == PlaybackState.STATE_PLAYING)
-                    scrobble(artist, album, title, duration)
+                    scrobble(artist, album, title, albumArtist, duration)
             }
         }
 

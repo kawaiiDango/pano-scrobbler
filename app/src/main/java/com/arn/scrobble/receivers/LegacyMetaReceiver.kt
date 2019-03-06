@@ -91,7 +91,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                         Stuff.log("LegacyMetaReceiver numSessions: " + SessListener.numSessions + " timeDiff: " + timeDiff)
 
                         if (isPlaying && !NLService.handler.hasMessages(hash)) {
-                            SessListener.lastHash = NLService.handler.scrobble(artist, album, track, duration)
+                            SessListener.lastHash = NLService.handler.scrobble(artist, album, track, "", duration)
                             Stuff.log( "LegacyMetaReceiver scrobbling $track")
 
                         } else if (!isPlaying && NLService.handler.hasMessages(hash)) {

@@ -165,13 +165,15 @@ class LFMRequester(var command: String, vararg args: String) {
                     Stuff.NOW_PLAYING, Stuff.SCROBBLE -> {
                         val scrobbleResults = mutableMapOf<String, ScrobbleResult>()
 
-                        //for scrobble: command = tag, args[0] = artist, args[1] = album, args[2] = song, args[3] = time, args[4] = duration
+                        //for scrobble: command = tag, args[0] = artist, args[1] = album, args[2] = title, args[3] = albumArtist, args[4] = time, args[5] = duration
                         val scrobbleData = ScrobbleData()
                         scrobbleData.artist = args[0]
                         scrobbleData.album = args[1]
                         scrobbleData.track = args[2]
-                        scrobbleData.timestamp = (args[3].toLong()/1000).toInt() // in secs
-                        scrobbleData.duration = (args[4].toLong()/1000).toInt() // in secs
+                        if (args[3] != "" && args[3] != args[0])
+                            scrobbleData.albumArtist = args[3]
+                        scrobbleData.timestamp = (args[4].toLong()/1000).toInt() // in secs
+                        scrobbleData.duration = (args[5].toLong()/1000).toInt() // in secs
 
                         if (scrobbleData.duration < 30)
                             scrobbleData.duration = -1 //default
@@ -237,7 +239,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                             i.putExtra(NLService.B_ARTIST, args[0])
                                             i.putExtra(NLService.B_ALBUM, args[1])
                                             i.putExtra(NLService.B_TITLE, args[2])
-                                            i.putExtra(NLService.B_TIME, args[3].toLong())
+                                            i.putExtra(NLService.B_TIME, args[4].toLong())
                                             i.putExtra(NLService.B_HASH, hash)
                                             context.sendBroadcast(i)
                                     }
@@ -277,8 +279,10 @@ class LFMRequester(var command: String, vararg args: String) {
                                     entry.artist = scrobbleData.artist
                                     entry.album = scrobbleData.album
                                     entry.track = scrobbleData.track
-                                    entry.timestamp = args[3].toLong()
-                                    entry.duration = args[4].toLong()
+                                    if (scrobbleData.albumArtist != null)
+                                        entry.albumArtist = scrobbleData.albumArtist
+                                    entry.timestamp = args[4].toLong()
+                                    entry.duration = args[5].toLong()
                                     dao.insert(entry)
                                     PendingScrJob.checkAndSchedule(context)
                                 }

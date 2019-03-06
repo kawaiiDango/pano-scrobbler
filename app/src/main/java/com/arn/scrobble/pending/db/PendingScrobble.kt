@@ -16,6 +16,7 @@ class PendingScrobble {
     var track: String = ""
     var album: String = ""
     var artist: String = ""
+    var albumArtist: String = ""
     var duration: Long = 0
     var timestamp: Long = System.currentTimeMillis()
     var autoCorrected: Int = 0

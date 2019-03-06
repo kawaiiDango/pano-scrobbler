@@ -236,6 +236,7 @@ class NLService : NotificationListenerService() {
             val title = m.data.getString(B_TITLE)!!
             val artist = m.data.getString(B_ARTIST)!!
             val album = m.data.getString(B_ALBUM)!!
+            val albumArtist = m.data.getString(B_ALBUM_ARTIST)!!
             val time = m.data.getLong(B_TIME)
             val duration = m.data.getLong(B_DURATION)
             val packageName = m.data.getString(B_PACKAGE)
@@ -243,20 +244,20 @@ class NLService : NotificationListenerService() {
             val method = m.data.getInt(B_METHOD)
 
             if (method == B_NOW_PLAYING) {
-                nowPlaying(artist, album, title, duration, m.what, packageName)
+                nowPlaying(artist, album, title, albumArtist, duration, m.what, packageName)
             } else if (method == B_SCROBBLE) {
-                submitScrobble(artist, currentTrack.album ?: "", title, time, duration)
+                submitScrobble(artist, currentTrack.album ?: "", title, albumArtist, time, duration)
             }
 
         }
 
-        private fun nowPlaying(artist:String, album:String, title: String, duration:Long, hash:Int, packageName: String?) {
+        private fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, duration:Long, hash:Int, packageName: String?) {
             if (!hasMessages(hash)) {
                 val now = System.currentTimeMillis()
                 if (artist != "" && title != "") {
                     val album = Stuff.sanitizeAlbum(album)
                     val artist = Stuff.sanitizeArtist(artist)
-                    LFMRequester(Stuff.NOW_PLAYING, artist, album, title, now.toString(), duration.toString())
+                    LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString())
                             .skipContentProvider()
                             .asSerialAsyncTask(applicationContext)
 
@@ -265,6 +266,7 @@ class NLService : NotificationListenerService() {
                     b.putString(B_ARTIST, artist)
                     b.putString(B_ALBUM, album)
                     b.putString(B_TITLE, title)
+                    b.putString(B_ALBUM_ARTIST, albumArtist)
                     b.putLong(B_TIME, now)
                     b.putLong(B_DURATION, duration)
                     b.putInt(B_METHOD, B_SCROBBLE)
@@ -292,14 +294,14 @@ class NLService : NotificationListenerService() {
             }
         }
 
-        private fun submitScrobble(artist:String, album:String, title: String, time:Long, duration:Long) {
-            LFMRequester(Stuff.SCROBBLE, artist, album, title, time.toString(), duration.toString())
+        private fun submitScrobble(artist:String, album:String, title: String, albumArtist: String, time:Long, duration:Long) {
+            LFMRequester(Stuff.SCROBBLE, artist, album, title, albumArtist, time.toString(), duration.toString())
                     .skipContentProvider()
                     .asSerialAsyncTask(applicationContext)
             notifyScrobble(artist, title, false, currentTrack.isLoved, currentTrack.userPlaycount)
         }
 
-        fun scrobble(artist:String, album:String, title: String, duration:Long, packageName: String? = null): Int {
+        fun scrobble(artist:String, album:String, title: String, albumArtist: String, duration:Long, packageName: String? = null): Int {
             val m = obtainMessage()
             val b = Bundle()
             val hash = artist.hashCode() + title.hashCode()
@@ -307,6 +309,7 @@ class NLService : NotificationListenerService() {
             b.putString(B_ARTIST, artist)
             b.putString(B_ALBUM, album)
             b.putString(B_TITLE, title)
+            b.putString(B_ALBUM_ARTIST, albumArtist)
             b.putLong(B_DURATION, duration)
             b.putString(B_PACKAGE, packageName)
             b.putInt(B_METHOD, B_NOW_PLAYING)
@@ -320,7 +323,7 @@ class NLService : NotificationListenerService() {
 
         fun scrobble(songTitle: String, duration:Long, packageName:String? = null): Int {
             val splits = Stuff.sanitizeTitle(songTitle)
-            return scrobble(splits[0], "", splits[1], duration, packageName)
+            return scrobble(splits[0], "", splits[1], "", duration, packageName)
         }
 
         fun buildNotification(): NotificationCompat.Builder {
@@ -690,6 +693,7 @@ class NLService : NotificationListenerService() {
         const val iOTHER_ERR = "com.arn.scrobble.OTHER_ERR"
         const val iBAD_META = "com.arn.scrobble.BAD_META"
         const val B_TITLE = "title"
+        const val B_ALBUM_ARTIST = "albumartist"
         const val B_TIME = "time"
         const val B_ARTIST = "artist"
         const val B_ALBUM = "album"

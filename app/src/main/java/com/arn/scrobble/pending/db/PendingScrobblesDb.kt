@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * Created by arn on 11/09/2017.
  */
 
-@Database(entities = [(PendingScrobble::class)], version = 3)
+@Database(entities = [(PendingScrobble::class)], version = 4)
 abstract class PendingScrobblesDb : RoomDatabase() {
     abstract fun getDao(): PendingScrobblesDao
 
@@ -22,7 +22,7 @@ abstract class PendingScrobblesDb : RoomDatabase() {
         fun getDb(context: Context): PendingScrobblesDb {
             if (INSTANCE == null || INSTANCE?.isOpen == false) {
                 INSTANCE = Room.databaseBuilder(context.applicationContext, PendingScrobblesDb::class.java, tableName)
-                        .addMigrations(MIGRATION_2_3)
+                        .addMigrations(MIGRATION_3_4)
                         // allow queries on the main thread.
                         // Don't do this on a real app! See PersistenceBasicSample for an example.
 //                        .allowMainThreadQueries()
@@ -37,9 +37,9 @@ abstract class PendingScrobblesDb : RoomDatabase() {
             INSTANCE = null
         }
 
-        private val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+        private val MIGRATION_3_4: Migration = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
-/*
+                /*
                 val TABLE_NAME_TEMP = "tmp"
 
                 // 1. Create new table
@@ -58,7 +58,7 @@ abstract class PendingScrobblesDb : RoomDatabase() {
                 // 4. Change the table name to the correct one
                 database.execSQL("ALTER TABLE $TABLE_NAME_TEMP RENAME TO $TABLE_NAME")
                 */
-                database.execSQL("ALTER TABLE $tableName ADD album TEXT NOT NULL DEFAULT \"\"")
+                database.execSQL("ALTER TABLE $tableName ADD albumArtist TEXT NOT NULL DEFAULT \"\"")
 
             }
         }

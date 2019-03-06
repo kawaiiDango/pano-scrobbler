@@ -45,7 +45,8 @@ class SessListener constructor(private val pref: SharedPreferences,
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!controllersMap.containsKey(controller.sessionToken)) {
                         Stuff.log("onActiveSessionsChanged [" + controllers.size + "] : " + controller.packageName)
-                        val cb = MyCallback(whiteList, blackList, handler, controller.packageName, controller.sessionToken.toString() + ", " + hashCode())
+                        val cb = MyCallback(whiteList, blackList, handler, controller.packageName,
+                                controller.sessionToken.toString() + ", " + hashCode())
                         controller.registerCallback(cb)
                         if (controller.playbackState != null)
                             cb.onPlaybackStateChanged(controller.playbackState!!) //Melody needs this
@@ -68,8 +69,9 @@ class SessListener constructor(private val pref: SharedPreferences,
         val it = controllersMap.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
-            if ((tokens != null && !tokens.contains(token)) ||
-                    (packageNames != null && packageNames.contains(pair.first.packageName))) {
+            if (pair.first.packageName != Stuff.IGNORE_ARTIST_META[0] && pair.first.packageName != Stuff.IGNORE_ARTIST_META[1]
+                    && ((tokens != null && !tokens.contains(token)) ||
+                    (packageNames != null && packageNames.contains(pair.first.packageName)))) {
                 pair.second.stop()
                 pair.first.unregisterCallback(pair.second)
                 synchronized(controllersMap) {

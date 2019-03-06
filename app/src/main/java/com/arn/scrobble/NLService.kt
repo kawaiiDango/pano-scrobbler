@@ -176,8 +176,9 @@ class NLService : NotificationListenerService() {
                             intent.getStringExtra("title"), np, loved, currentTrack.userPlaycount)
                 }
                 pWHITELIST, pBLACKLIST -> {
-                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())!!
-                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())!!
+                    //create copies
+                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())!!.toMutableSet()!!
+                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())!!.toMutableSet()!!
 
                     if (intent.action == pWHITELIST)
                         wSet.add(intent.getStringExtra("packageName"))

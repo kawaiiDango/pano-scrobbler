@@ -39,7 +39,8 @@ public enum IgnoredMessageCode {
 	TRACK_IGNORED(2),
 	TIMESTAMP_TOO_OLD(3),
 	TIMESTAMP_TOO_NEW(4),
-	DAILY_SCROBBLE_LIMIT_EXCEEDED(5);
+	DAILY_SCROBBLE_LIMIT_EXCEEDED(5),
+	ALREADY_SCROBBLED(91);
 
 	/**
 	 * The ignored message error id returned by the Last.fm API.

@@ -97,6 +97,7 @@ object Stuff {
     const val PREF_ACTIVITY_NUM_SCROBBLES = "num_scrobbles_cached"
     const val PREF_ACTIVITY_PROFILE_PIC = "profile_cached"
     const val PREF_ACTIVITY_SHARE_SIG = "share_sig"
+    const val PREF_SCR_ALBUM_ARTIST = "scr_album_artist"
     const val ACTIVITY_PREFS = "activity_preferences"
 
     const val PREF_LASTFM_SESS_KEY = "lastfm_sesskey"

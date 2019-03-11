@@ -95,6 +95,7 @@
     <string name="pref_delay_secs">Delay in secs</string>
     <string name="pref_delay_per">Delay in percent</string>
     <string name="pref_delay_note">"ℹ️ Now Playing is updated at once, regardless of the delay"</string>
+    <string name="pref_album_artist">Scrobble album artists</string>
     <string name="pref_logout">Logout</string>
     <string name="pref_confirm_logout">CONFIRM LOGOUT? Tap again.</string>
     <string name="pref_login">Login</string>

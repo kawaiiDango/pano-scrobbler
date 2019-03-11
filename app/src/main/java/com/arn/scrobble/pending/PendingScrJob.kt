@@ -115,7 +115,8 @@ class PendingScrJob : JobService() {
                 scrobbleData.artist = it.artist
                 scrobbleData.album = it.album
                 scrobbleData.track = it.track
-                if (it.albumArtist != "" && it.albumArtist != it.artist)
+                if (prefs.getBoolean(Stuff.PREF_SCR_ALBUM_ARTIST, false) &&
+                        it.albumArtist != "" && it.albumArtist != it.artist)
                     scrobbleData.albumArtist = it.albumArtist
                 scrobbleData.timestamp = (it.timestamp / 1000).toInt() // in secs
                 if(it.duration > 10*1000)

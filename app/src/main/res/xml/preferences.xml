@@ -72,6 +72,13 @@
             android:defaultValue="240"
             android:max="360"/>
 
+<!--
+
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="secs"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="%"
+-->
         <Preference
             app:iconSpaceReserved="false"
             android:summary="@string/pref_delay_note"
@@ -81,12 +88,6 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false">
-        <SwitchPreference
-            app:iconSpaceReserved="false"
-            android:defaultValue="false"
-            android:key="scr_album_artist"
-            android:persistent="true"
-            android:title="@string/pref_album_artist"/>
         <EditTextPreference
             app:iconSpaceReserved="false"
             android:title="Share signature"

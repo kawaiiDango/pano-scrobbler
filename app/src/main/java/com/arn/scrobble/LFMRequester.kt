@@ -170,8 +170,7 @@ class LFMRequester(var command: String, vararg args: String) {
                         scrobbleData.artist = args[0]
                         scrobbleData.album = args[1]
                         scrobbleData.track = args[2]
-                        if (prefs.getBoolean(Stuff.PREF_SCR_ALBUM_ARTIST, false) &&
-                                args[3] != "" && args[3] != args[0])
+                        if (args[3] != "" && args[3] != args[0])
                             scrobbleData.albumArtist = args[3]
                         scrobbleData.timestamp = (args[4].toLong()/1000).toInt() // in secs
                         scrobbleData.duration = (args[5].toLong()/1000).toInt() // in secs

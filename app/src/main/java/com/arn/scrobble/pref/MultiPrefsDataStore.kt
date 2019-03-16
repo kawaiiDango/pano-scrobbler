@@ -13,7 +13,6 @@ class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
             Stuff.PREF_MASTER to true,
             Stuff.PREF_NOTIFICATIONS to true,
             Stuff.PREF_AUTO_DETECT to true,
-            Stuff.PREF_SCR_ALBUM_ARTIST to false,
             Stuff.PREF_DELAY_SECS to 240,
             Stuff.PREF_DELAY_PER to 50,
             Stuff.PREF_LB_CUSTOM_ROOT to Stuff.LISTENBRAINZ_API_ROOT,

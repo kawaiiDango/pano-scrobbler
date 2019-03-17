@@ -22,7 +22,7 @@
         android:summaryOff="@string/pref_noti_off"
         android:summaryOn="@string/pref_noti_on"
         android:title="@string/pref_noti"/>
-
+<!--
     <ListPreference
         app:iconSpaceReserved="false"
         android:title="@string/pref_search_title"
@@ -32,6 +32,7 @@
         android:key="search_url"
         android:persistent="false"
     />
+    -->
     <PreferenceCategory
         app:iconSpaceReserved="false"
         android:title="@string/pref_scrobble_from">

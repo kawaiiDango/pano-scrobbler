@@ -178,7 +178,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         activity!!.hero_play.setOnClickListener { v:View ->
             val t =  activity?.hero_img?.tag
             if (t is Track)
-                Stuff.openSearchURL(t.artist + " - " + t.name, v, activity!!)
+                Stuff.launchSearchIntent(t.artist, t.name, context!!)
         }
         activity!!.hero_similar.setOnClickListener { v:View ->
             v.isEnabled = false

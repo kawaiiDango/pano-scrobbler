@@ -47,7 +47,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                     .commit()
             true
         }
-
+/*
         val searchSite = findPreference(Stuff.PREF_ACTIVITY_SEARCH_URL) as ListPreference
         val searchSiteVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SEARCH_URL,
                 Stuff.PREF_ACTIVITY_SEARCH_URL_DEFAULT)
@@ -64,7 +64,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                     .apply()
             true
         }
-
+*/
         val delaySecs = findPreference(Stuff.PREF_DELAY_SECS) as SeekBarPreference
         delaySecs.min = 20
 

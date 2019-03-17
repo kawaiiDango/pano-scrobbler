@@ -213,7 +213,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                 }
 
                 vTrackContainer.setOnClickListener { v: View ->
-                    Stuff.openSearchURL(track.artist + " - " + track.name, v, itemView.context)
+                    Stuff.launchSearchIntent(track.artist, track.name, itemView.context)
                 }
             } else {
                 vTitle.text = "…"

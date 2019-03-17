@@ -3,6 +3,7 @@ package com.arn.scrobble
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ActivityOptions
+import android.app.SearchManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
@@ -15,6 +16,7 @@ import android.graphics.drawable.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.format.DateUtils
 import android.util.DisplayMetrics
@@ -534,7 +536,7 @@ object Stuff {
         swl.setProgressBackgroundColorSchemeResource(R.color.darkBg)
     }
 
-    //
+
     fun openSearchURL(query: String, view: View, context: Context) {
         var url =
                 context.getSharedPreferences(ACTIVITY_PREFS, Context.MODE_PRIVATE)
@@ -546,6 +548,14 @@ object Stuff {
             Stuff.toast(context, context.getString(R.string.failed_encode_url))
         }
         openInBrowser(url, context, view)
+    }
+    fun launchSearchIntent(artist: String, track: String, context: Context) {
+        val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH)
+        intent.putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
+        intent.putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
+        intent.putExtra(SearchManager.QUERY, "$artist - $track")
+
+        context.startActivity(intent)
     }
 
     fun openInBrowser(url: String, context: Context?, source: View? = null, startX: Int = 10, startY: Int = 10) {

@@ -166,7 +166,7 @@ class LastfmUnscrobbler(context: Context?) {
                 .add("ajax", "1")
                 .build()
 
-        val url = "$URL_USER$username/unscrobble"
+        val url = "$URL_USER$username/library/delete"
         val request = Request.Builder()
                 .url(url)
                 .header("Referer", URL_USER+ username)

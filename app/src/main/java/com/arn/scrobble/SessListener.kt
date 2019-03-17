@@ -185,6 +185,9 @@ class SessListener constructor(private val pref: SharedPreferences,
             else if (packageName == Stuff.PACKAGE_PANDORA)
                 artist = artist.replace("Ofln - ", "")
 
+            if (albumArtist == "Unknown Artist" || albumArtist == "Various Artists")
+                albumArtist = ""
+
             val sameAsOld = (artist == this.artist && title == this.title && album == this.album)
 
             Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld,"+

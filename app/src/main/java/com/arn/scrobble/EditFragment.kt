@@ -107,7 +107,7 @@ class EditFragment: LoginFragment() {
                     if (track == origTrack && artist == origArtist && album != origAlbum)
                         Track.scrobble(scrobbleData, lastfmSession)
                 } else if (result.isIgnored)
-                    errMsg = getString(R.string.scrobble_ignored, artist)
+                    errMsg = getString(R.string.scrobble_ignored_or_old)
                 else if (!standalone)
                     errMsg = getString(R.string.network_error)
             }

@@ -2,7 +2,7 @@
 <a href='https://play.google.com/store/apps/details?id=com.arn.scrobble&utm_source=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="200"/></a>
 
 <img alt='GIF' src='https://media.giphy.com/media/WvikAmG3iseJoFun1A/giphy.gif' width="240"/>
-##### Thats the GIF of a much older version.
+_Thats the GIF of a much older version._
 
 #### Features:
 - Scrobble from anything which produces audio with metadata, including the official youtube app, a chat app or some less known chinese player
@@ -22,6 +22,9 @@
 - be an app to browse lastfm.
 - contain any webviews. Links would rather open in the browser
 - contain any kind of ADs
+
+### Compiling:
+See [instructions.md](instructions.md)
 
 ### Thanks to:
 

@@ -47,6 +47,12 @@ class PrefFragment : PreferenceFragmentCompat(){
                     .commit()
             true
         }
+
+        val spotifyNotice = findPreference("spotify_notice")
+        spotifyNotice.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            Stuff.openInBrowser("https://www.last.fm/settings/applications", activity)
+            true
+        }
 /*
         val searchSite = findPreference(Stuff.PREF_ACTIVITY_SEARCH_URL) as ListPreference
         val searchSiteVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SEARCH_URL,

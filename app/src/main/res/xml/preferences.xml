@@ -43,6 +43,11 @@
             android:selectable="false"
             android:summary="@string/pref_enabled_apps_summary"
             />
+        <Preference
+            app:iconSpaceReserved="false"
+            android:key="spotify_notice"
+            android:summary="@string/pref_spotify_notice"
+            />
 
         <SwitchPreference
             app:iconSpaceReserved="false"

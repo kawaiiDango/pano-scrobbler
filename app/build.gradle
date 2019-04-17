@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.github.triplet.play'
 apply plugin: 'kotlin-kapt'
 apply from: 'keys.gradle'
 
@@ -71,12 +70,11 @@ dependencies {
     implementation "com.google.android.material:material:$support_ver"
 
     implementation "com.squareup.picasso:picasso:2.71828"
-    implementation "de.hdodenhof:circleimageview:2.2.0"
+    implementation "de.hdodenhof:circleimageview:3.0.0"
     implementation "com.robinhood.spark:spark:1.2.0"
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
-//    implementation 'com.vinaysshenoy:mugen:1.0.2' //doesnt compile with androidx
 //    debugImplementation "com.squareup.leakcanary:leakcanary-android:1.6.2"
-    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
 //    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2' //still adds permissions to the manifest
 
     implementation project(':lastfm')

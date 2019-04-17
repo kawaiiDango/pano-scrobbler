@@ -6,6 +6,7 @@
     <string name="parse_error">Couldn\'t parse title</string>
     <string name="network_error">Network error</string>
     <string name="scrobble_ignored">ignored "%s"</string>
+    <string name="scrobble_ignored_or_old">Artist ignored or scrobble is too old</string>
     <string name="limit_exceeded_ignored">Daily scrobble limit exceeded</string>
     <string name="required_fields_empty">Required fields are empty</string>
     <string name="artist">Artist</string>
@@ -61,7 +62,7 @@
     </plurals>
     <string name="please_authorize">Please Authorize LastFM</string>
     <string name="friends">Friends</string>
-    <string name="num_scrobbles">%1s (%2d scrobbles)</string>
+    <string name="num_scrobbles">%1$s (%2$d scrobbles)</string>
     <string name="grant_autostart">Enable autostart</string>
     <string name="grant_autostart_desc">Needed on %1$s devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>
@@ -85,10 +86,11 @@
     <string name="pref_noti_off">Check your scrobbbles from the app only</string>
     <string name="pref_noti_on">…while scrobbling</string>
     <string name="pref_noti">Notifications</string>
-    <string name="pref_offline_info">ℹ️ When offline, scrobbles will be saved, to be sent later.</string>
+    <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from">Scrobble from</string>
     <string name="pref_enabled_apps_summary">Most apps that play music with metadata, are supported</string>
     <string name="pref_enabled_apps_title">Choose apps</string>
+    <string name="pref_spotify_notice">ℹ️ To avoid duplicate scrobbles from Spotify, disable it here and enable it from lastFM website.</string>
     <string name="pref_auto_detect_summary">…we will still ask you to confirm/ignore that app</string>
     <string name="pref_auto_detect">Auto detect new music-like apps</string>
     <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
@@ -102,6 +104,7 @@
     <string name="pref_about_title">version</string>
     <string name="pref_search_title">Song search service</string>
     <string name="pref_scrobble_only">(Scrobble only)</string>
+    <string name="pref_scrobble_love_only">(Scrobble &amp; love only)</string>
     <string name="pref_user_label">User</string>
     <string name="pref_token_label">Authentication token</string>
     <string name="lastfm_password">Lastfm Password</string>
@@ -140,4 +143,6 @@ Press back if you do not want this."</string>
     <string name="fix_it_battrery_desc">Only if nothing else worked</string>
     <string name="fix_it_ram_desc">This app uses a minimal amount of RAM (5–20 MB) in the background. Check if other background apps are taking up RAM</string>
     <string name="fix_it_action">OPEN</string>
+    <string name="huawei_startup_mgr">Navigate to Settings > Battery > App launch and whitelist this app</string>
+    <string name="generic_startup_mgr">Unable to open the startup manager automatically. Open it manually and whitelist this app</string>
 </resources>

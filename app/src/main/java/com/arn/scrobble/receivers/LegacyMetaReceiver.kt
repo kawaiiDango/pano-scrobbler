@@ -85,7 +85,9 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                     NLService.handler.postAtTime({
                         val timeDiff = System.currentTimeMillis() - SessListener.lastSessEventTime
 
-                        if (SessListener.numSessions == 0 || timeDiff > Stuff.META_WAIT * 2.5 )
+                        if (SessListener.numSessions == 0 ||
+                                (!intent.getStringExtra("package").contains(Stuff.PACKAGE_BLACKPLAYER_PREFIX)
+                                && timeDiff > Stuff.META_WAIT * 2.5) )
                             return@postAtTime
 
                         Stuff.log("LegacyMetaReceiver numSessions: " + SessListener.numSessions + " timeDiff: " + timeDiff)

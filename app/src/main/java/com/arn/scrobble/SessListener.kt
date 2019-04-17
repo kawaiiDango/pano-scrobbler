@@ -110,7 +110,7 @@ class SessListener constructor(private val pref: SharedPreferences,
 
                 val isPossiblyAtStart = pos <= 0.toLong() || //wynk puts -1
                         (pos < Stuff.START_POS_LIMIT && duration > 0 &&
-                        System.currentTimeMillis() - lastScrobbleTime - Stuff.START_POS_LIMIT >= duration)
+                        System.currentTimeMillis() - lastScrobbleTime + Stuff.START_POS_LIMIT >= duration)
 
                 if (lastState == state /* bandcamp does this */ &&
                         !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))

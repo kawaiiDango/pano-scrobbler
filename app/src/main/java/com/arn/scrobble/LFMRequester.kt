@@ -9,6 +9,7 @@ import android.preference.PreferenceManager
 import android.util.LruCache
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.pending.PendingScrJob
+import com.arn.scrobble.pending.db.PendingLove
 import com.arn.scrobble.pending.db.PendingScrobble
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.MultiPreferences
@@ -83,8 +84,49 @@ class LFMRequester(var command: String, vararg args: String) {
                         return Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, null, Stuff.LAST_KEY))
 
                     //for love: command = tag, args[0] = artist, args[1] = song,
-                    Stuff.LOVE -> return Track.love(args[0], args[1], lastfmSession)
-                    Stuff.UNLOVE -> return Track.unlove(args[0], args[1], lastfmSession)
+                    Stuff.LOVE, Stuff.UNLOVE -> {
+                        val love = command == Stuff.LOVE
+
+                        val dao = PendingScrobblesDb.getDb(context).getLovesDao()
+                        val pl = dao.find(args[0], args[1])
+                        return if (pl != null){
+                            if (pl.shouldLove == !love) {
+                                pl.shouldLove = love
+                                dao.update(pl)
+                            }
+                            1
+                        } else {
+                            try {
+                                val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
+                                val librefmSession: Session? =
+                                        if (!librefmSessKey.isNullOrBlank())
+                                            Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
+                                        else null
+                                if(librefmSession != null){
+                                    if (love)
+                                        Track.love(args[0], args[1], librefmSession)
+                                    else
+                                        Track.unlove(args[0], args[1], librefmSession)
+                                }
+                                if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)) {
+                                    if (love)
+                                        Track.love(args[0], args[1], lastfmSession)
+                                    else
+                                        Track.unlove(args[0], args[1], lastfmSession)
+                                } else 1
+                            } catch (e: CallException){
+                                val entry = PendingLove()
+                                entry.artist = args[0]
+                                entry.track = args[1]
+                                entry.shouldLove = love
+                                dao.insert(entry)
+                                PendingScrJob.checkAndSchedule(context)
+                                PendingScrobblesDb.getDb(context).close()
+                                1
+                            }
+                        }
+                    }
                     // args[2] = limit
                     Stuff.GET_SIMILAR -> return Track.getSimilar(args[0], args[1], Stuff.LAST_KEY, args[2].toInt())
                     Stuff.DELETE -> {

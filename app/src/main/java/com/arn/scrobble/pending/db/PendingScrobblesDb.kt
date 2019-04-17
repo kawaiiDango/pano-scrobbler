@@ -12,17 +12,19 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * Created by arn on 11/09/2017.
  */
 
-@Database(entities = [(PendingScrobble::class)], version = 4)
+@Database(entities = [PendingScrobble::class, PendingLove::class], version = 5)
 abstract class PendingScrobblesDb : RoomDatabase() {
     abstract fun getDao(): PendingScrobblesDao
+    abstract fun getLovesDao(): PendingLovesDao
 
     companion object {
-        const val tableName = "pendingScrobbles"
+        const val fileName = "pendingScrobbles"
         private var INSTANCE: PendingScrobblesDb? = null
         fun getDb(context: Context): PendingScrobblesDb {
             if (INSTANCE == null || INSTANCE?.isOpen == false) {
-                INSTANCE = Room.databaseBuilder(context.applicationContext, PendingScrobblesDb::class.java, tableName)
+                INSTANCE = Room.databaseBuilder(context.applicationContext, PendingScrobblesDb::class.java, fileName)
                         .addMigrations(MIGRATION_3_4)
+                        .addMigrations(MIGRATION_4_5)
                         // allow queries on the main thread.
                         // Don't do this on a real app! See PersistenceBasicSample for an example.
 //                        .allowMainThreadQueries()
@@ -58,8 +60,14 @@ abstract class PendingScrobblesDb : RoomDatabase() {
                 // 4. Change the table name to the correct one
                 database.execSQL("ALTER TABLE $TABLE_NAME_TEMP RENAME TO $TABLE_NAME")
                 */
-                database.execSQL("ALTER TABLE $tableName ADD albumArtist TEXT NOT NULL DEFAULT \"\"")
+                database.execSQL("ALTER TABLE $fileName ADD albumArtist TEXT NOT NULL DEFAULT \"\"")
 
+            }
+        }
+        private val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                val tableName = "pendingLoves"
+                database.execSQL("CREATE TABLE IF NOT EXISTS $tableName (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `track` TEXT NOT NULL, `artist` TEXT NOT NULL, `shouldLove` INTEGER NOT NULL DEFAULT 1)")
             }
         }
 

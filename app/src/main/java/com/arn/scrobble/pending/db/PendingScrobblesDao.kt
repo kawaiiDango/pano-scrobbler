@@ -6,7 +6,7 @@ import androidx.room.*
 /**
  * Created by arn on 11/09/2017.
  */
-const val tableName = "pendingScrobbles"
+private const val tableName = "pendingScrobbles"
 
 @Dao
 interface PendingScrobblesDao {

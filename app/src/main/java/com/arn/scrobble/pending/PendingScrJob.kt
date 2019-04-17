@@ -12,6 +12,7 @@ import com.arn.scrobble.ListenBrainz
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.MultiPreferences
+import de.umass.lastfm.Result
 import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -38,12 +39,14 @@ class PendingScrJob : JobService() {
 
     class OfflineScrobbleTask(context: Context): AsyncTask<Unit, String, Boolean>() {
         private val dao = PendingScrobblesDb.getDb(context).getDao()
+        private val lovesDao = PendingScrobblesDb.getDb(context).getLovesDao()
         private val prefs = MultiPreferences(context)
         var progressCb:((str:String)->Unit)? = null
         var doneCb:((done:Boolean)->Unit)? = null
 
         override fun doInBackground(vararg p0: Unit?): Boolean {
-            var done = true
+            var done = submitLoves()
+
             var aneCount = dao.allNotAutocorrectedCount
 
             while (aneCount > 0){
@@ -105,7 +108,7 @@ class PendingScrJob : JobService() {
                     else
                         null
 
-            if (librefmSession == null && lastfmSession == null) { //user logged out
+            if (lastfmSessKey.isNullOrBlank()) { //user logged out
                 return done
             }
 
@@ -167,6 +170,51 @@ class PendingScrJob : JobService() {
                 }
             }
             return done
+        }
+
+        private fun submitLoves(): Boolean {
+            val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+            val lastfmEnabled = !prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
+
+            val lastfmSession: Session? = if (!lastfmSessKey.isNullOrBlank() && lastfmEnabled)
+                Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
+            else
+                null
+            val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
+            val librefmSession: Session? = if (!librefmSessKey.isNullOrBlank())
+                Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
+            else
+                null
+            if (lastfmSessKey.isNullOrBlank()) { //user logged out
+                return true
+            }
+            try {
+                do {
+                    val entry = lovesDao.loadLastPending
+                    if (entry != null) {
+                        var res:Result? = null
+                        if (librefmSession != null)
+                            res = if (entry.shouldLove)
+                                Track.love(entry.artist, entry.track, librefmSession)
+                            else
+                                Track.unlove(entry.artist, entry.track, librefmSession)
+                        if (lastfmSession != null)
+                            res = if (entry.shouldLove)
+                                Track.love(entry.artist, entry.track, lastfmSession)
+                            else
+                                Track.unlove(entry.artist, entry.track, lastfmSession)
+
+                        if ((res == null || res.isSuccessful) && !MOCK)
+                            //if only lbz is enabled
+                            lovesDao.delete(entry)
+                    }
+                } while (entry != null)
+                return true
+            } catch (e: Exception) {
+                Stuff.log("OfflineScrobble: n/w err submitLoves - " + e.message)
+                return false
+            }
         }
 
         override fun onProgressUpdate(vararg values: String) {

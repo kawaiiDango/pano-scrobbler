@@ -180,7 +180,9 @@ class PrefFragment : PreferenceFragmentCompat(){
                                      logout: (() -> Unit)? = null) {
         val elem = findPreference(key)
         setAuthLabel(elem)
-        if (elem.key != "lastfm")
+        if (elem.key == "librefm")
+            elem.title = elem.title.toString()+ " " + getString(R.string.pref_scrobble_love_only)
+        else if (elem.key == "listenbrainz" || elem.key == "lb_custom")
             elem.title = elem.title.toString()+ " " + getString(R.string.pref_scrobble_only)
         elem.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {

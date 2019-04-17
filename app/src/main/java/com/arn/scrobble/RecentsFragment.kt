@@ -481,12 +481,6 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
     private fun openPopupMenu (anchor: View, track: Track) {
         val popup = PopupMenu(context, anchor)
 
-        if (!Main.isOnline) {
-            popup.menu.add(R.string.unavailable_offline)
-            popup.show()
-            return
-        }
-
         popup.inflate(R.menu.recents_item_menu)
         val loveMenu = popup.menu.findItem(R.id.menu_love)
 
@@ -527,7 +521,9 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                     true
                 }
                 R.id.menu_edit -> {
-                    if (csrfTokenExists()){
+                    if (!Main.isOnline)
+                        Stuff.toast(context!!, getString(R.string.unavailable_offline))
+                    else if (csrfTokenExists()){
                         val b = Bundle()
                         b.putString(NLService.B_ARTIST, track.artist)
                         b.putString(NLService.B_ALBUM, track.album)
@@ -552,7 +548,9 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                     true
                 }
                 R.id.menu_delete -> {
-                    if (csrfTokenExists()){
+                    if (!Main.isOnline)
+                        Stuff.toast(context!!, getString(R.string.unavailable_offline))
+                    else if (csrfTokenExists()){
                         LFMRequester(Stuff.DELETE, track.artist, track.album, track.name,
                                 track.playedWhen.time.toString(), track.duration.toString())
                                 .addCallback { succ ->

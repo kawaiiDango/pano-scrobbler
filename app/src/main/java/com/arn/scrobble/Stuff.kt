@@ -178,7 +178,7 @@ object Stuff {
 
     private val metaSpam = arrayOf("downloaded")
 
-    private val STARTUPMGR_INTENTS = arrayOf( //pkg, class
+    val STARTUPMGR_INTENTS = arrayOf( //pkg, class
             "com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity",
             "com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity",
             "com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity",

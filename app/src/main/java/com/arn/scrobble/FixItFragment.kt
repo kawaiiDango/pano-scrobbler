@@ -29,7 +29,7 @@ class FixItFragment: BottomSheetDialogFragment() {
             fix_it_startup_desc.text = getString(R.string.fix_it_startup_desc_sure)
             fix_it_startup_action.visibility = View.VISIBLE
             fix_it_startup_action.setOnClickListener {
-                startActivity(startupMgrIntent)
+                FirstThingsFragment.openStartupMgr(startupMgrIntent!!, context!!)
             }
             addTouchDelegate(fix_it_startup_action, 24, 10)
         }

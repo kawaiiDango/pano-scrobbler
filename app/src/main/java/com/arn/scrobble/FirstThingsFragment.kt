@@ -34,7 +34,7 @@ class FirstThingsFragment: Fragment() {
 
         if (startupMgrIntent != null) {
             view.first_things_0.setOnClickListener {
-                startActivity(startupMgrIntent)
+                openStartupMgr(startupMgrIntent!!, context!!)
                 Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
             }
             view.first_things_0.first_things_0_desc.text =
@@ -176,6 +176,17 @@ class FirstThingsFragment: Fragment() {
 
         fun checkAppListExists(pref: MultiPreferences): Boolean {
             return !pref.getBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, true)
+        }
+
+        fun openStartupMgr(startupMgrIntent: Intent, context: Context){
+            try {
+                context.startActivity(startupMgrIntent)
+            } catch (e:SecurityException){
+                if (startupMgrIntent.component?.packageName == Stuff.STARTUPMGR_INTENTS[4])
+                    Stuff.toast(context, context.getString(R.string.huawei_startup_mgr))
+                else
+                    Stuff.toast(context, context.getString(R.string.generic_startup_mgr))
+            }
         }
     }
 }

@@ -42,8 +42,6 @@ import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.coordinator_main.view.*
 import java.io.IOException
 import java.io.UnsupportedEncodingException
-import java.net.MalformedURLException
-import java.net.URL
 import java.net.URLEncoder
 import java.text.DecimalFormat
 import java.util.*
@@ -176,7 +174,7 @@ object Stuff {
             " \"", " /")
     private val unwantedSeperators = arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
 
-    private val metaSpam = arrayOf("downloaded")
+    private val metaSpam = arrayOf("downloaded", ".com", ".co.", "www.")
 
     val STARTUPMGR_INTENTS = arrayOf( //pkg, class
             "com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity",
@@ -305,20 +303,6 @@ object Stuff {
         if (albumOrig.contains("unknown", true) &&
                 albumOrig.length <= "unknown".length + 4)
             return ""
-        //url
-        val splits = albumOrig.split(' ')
-        splits.forEach {
-            try {
-                if (it.matches(".*\\w+\\.\\w+.*".toRegex())) {
-                    if (it.contains(':'))
-                        URL(it)
-                    else
-                        URL("http://$it")
-                    return ""
-                }
-            } catch (e: MalformedURLException) {
-            }
-        }
 
         if (metaSpam.any { albumOrig.contains(it) })
             return ""
@@ -327,7 +311,7 @@ object Stuff {
     }
 
     fun sanitizeArtist(artistOrig: String): String {
-        val splits = artistOrig.split("|", "; ").filter { !it.isBlank() }
+        val splits = artistOrig.split("; ").filter { !it.isBlank() }
         return splits[0]
     }
 

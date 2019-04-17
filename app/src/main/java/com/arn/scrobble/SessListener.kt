@@ -181,7 +181,7 @@ class SessListener constructor(private val pref: SharedPreferences,
             val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
 
             if (packageName == Stuff.PACKAGE_XIAMI)
-                artist = artist.replace(';', '|')
+                artist = artist.replace(";", "; ")
             else if (packageName == Stuff.PACKAGE_PANDORA)
                 artist = artist.replace("Ofln - ", "")
 

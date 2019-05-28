@@ -324,16 +324,24 @@ public class Caller {
 	}
 
 	private HttpURLConnection openPostConnection(String apiRootUrl, String method, Map<String, String> params) throws IOException {
-		HttpURLConnection urlConnection = openConnection(apiRootUrl);
-		urlConnection.setRequestMethod("POST");
-		urlConnection.setDoOutput(true);
-		OutputStream outputStream = urlConnection.getOutputStream();
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-		String post = buildPostBody(method, params);
-		log.info("Post body: " + post);
-		writer.write(post);
-		writer.close();
-		return urlConnection;
+	    if (method.equals("track.getInfo")){
+            String post = buildPostBody(method, params);
+            log.info("Post body: " + post);
+            HttpURLConnection urlConnection = openConnection(apiRootUrl+"?"+post);
+            return urlConnection;
+        } else {
+            HttpURLConnection urlConnection = openConnection(apiRootUrl);
+            urlConnection.setRequestMethod("POST");
+            String post = buildPostBody(method, params);
+            log.info("Post body: " + post);
+            urlConnection.setRequestProperty("Content-Length", Integer.toString(post.length()));
+            urlConnection.setDoOutput(true);
+            OutputStream outputStream = urlConnection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+            writer.write(post);
+            writer.close();
+            return urlConnection;
+        }
 	}
 
 	private InputStream getInputStreamFromConnection(HttpURLConnection connection) throws IOException {

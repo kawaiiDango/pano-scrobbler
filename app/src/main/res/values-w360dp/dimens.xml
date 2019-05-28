@@ -1,5 +1,4 @@
 <resources>
-    <dimen name="similar_width">70sp</dimen>
     <dimen name="hero_button_margin_end">5dp</dimen>
     <dimen name="graph_margin_end">10dp</dimen>
 </resources>

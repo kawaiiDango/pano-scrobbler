@@ -166,10 +166,13 @@ class SessListener constructor(private val pref: SharedPreferences,
             val isWhitelisted = whiteList.contains(packageName)
             val packageNameParam = if (!isWhitelisted) packageName else null
             handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN) //remove all from legacy receiver, to prevent duplicates
-            if (isIgnoreArtistMeta)
-                lastHash = handler.scrobble(title, duration, packageNameParam)
-            else
-                lastHash = handler.scrobble(artist, album, title, albumArtist, duration, packageNameParam)
+            val hash = artist.hashCode() + title.hashCode()
+            if (isIgnoreArtistMeta) {
+                val splits = Stuff.sanitizeTitle(title)
+                handler.nowPlaying(splits[0], "", splits[1], "", duration, hash, false, packageNameParam)
+            } else
+                handler.nowPlaying(artist, album, title, albumArtist, duration, hash, true, packageNameParam)
+            lastHash = hash
         }
 
         @Synchronized override fun onMetadataChanged(metadata: MediaMetadata?) {
@@ -187,7 +190,7 @@ class SessListener constructor(private val pref: SharedPreferences,
 
             val sameAsOld = (artist == this.artist && title == this.title && album == this.album)
 
-            Stuff.log("onMetadataChanged $artist [$album] ~ $title, sameAsOld=$sameAsOld,"+
+            Stuff.log("onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld,"+
                     "lastState=$lastState, package=$packageName who=$who")
             if (!sameAsOld) {
                 this.artist = artist

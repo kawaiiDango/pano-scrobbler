@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_recents_list"
+                android:orientation="horizontal"
+                android:paddingBottom="1dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp">
+
+    <ImageView
+        android:id="@+id/edits_img"
+        android:layout_width="40dp"
+        android:layout_height="60dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:paddingStart="10dp"
+        android:tint="@color/colorAccentLight"
+        app:srcCompat="@drawable/vd_edit"
+        tools:srcCompat="@drawable/vd_edit"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/edits_track"
+        android:layout_width="0dp"
+        android:layout_height="27dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="11dp"
+        android:layout_toStartOf="@+id/edits_delete"
+        android:layout_toEndOf="@+id/edits_img"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="1"
+        android:padding="1sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/colorAccentLight"
+        android:textSize="24sp"
+        app:autoSizeMaxTextSize="24sp"
+        app:autoSizeMinTextSize="14sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        tools:text="Title title"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/edits_artist"
+        android:layout_width="0dp"
+        android:layout_height="23dp"
+        android:layout_below="@+id/edits_track"
+        android:layout_marginStart="42dp"
+        android:layout_marginEnd="8dp"
+        android:layout_toStartOf="@+id/edits_delete"
+        android:layout_toEndOf="@+id/edits_img"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:padding="1sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="20sp"
+        app:autoSizeMaxTextSize="20sp"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        tools:text="subtit subtit"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/edits_album"
+        android:layout_width="0dp"
+        android:layout_height="23dp"
+        android:layout_below="@+id/edits_artist"
+        android:layout_marginStart="42dp"
+        android:layout_marginEnd="8dp"
+        android:layout_toStartOf="@+id/edits_delete"
+        android:layout_toEndOf="@+id/edits_img"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:padding="1sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="20sp"
+        app:autoSizeMaxTextSize="20sp"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        tools:text="album album"/>
+
+    <ImageButton
+        android:id="@+id/edits_delete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/edits_img"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/menu_delete"
+        android:focusable="true"
+        android:gravity="top|end"
+        android:scaleType="fitCenter"
+        android:src="@drawable/vd_delete"
+        tools:src="@drawable/vd_delete"/>
+
+</RelativeLayout>
+
+

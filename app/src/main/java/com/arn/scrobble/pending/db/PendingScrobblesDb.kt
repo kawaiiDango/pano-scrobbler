@@ -12,10 +12,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * Created by arn on 11/09/2017.
  */
 
-@Database(entities = [PendingScrobble::class, PendingLove::class], version = 5)
+@Database(entities = [PendingScrobble::class, PendingLove::class, Edit::class], version = 6)
 abstract class PendingScrobblesDb : RoomDatabase() {
-    abstract fun getDao(): PendingScrobblesDao
+    abstract fun getScrobblesDao(): PendingScrobblesDao
     abstract fun getLovesDao(): PendingLovesDao
+    abstract fun getEditsDao(): EditsDao
 
     companion object {
         const val fileName = "pendingScrobbles"
@@ -23,8 +24,7 @@ abstract class PendingScrobblesDb : RoomDatabase() {
         fun getDb(context: Context): PendingScrobblesDb {
             if (INSTANCE == null || INSTANCE?.isOpen == false) {
                 INSTANCE = Room.databaseBuilder(context.applicationContext, PendingScrobblesDb::class.java, fileName)
-                        .addMigrations(MIGRATION_3_4)
-                        .addMigrations(MIGRATION_4_5)
+                        .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                         // allow queries on the main thread.
                         // Don't do this on a real app! See PersistenceBasicSample for an example.
 //                        .allowMainThreadQueries()
@@ -39,7 +39,7 @@ abstract class PendingScrobblesDb : RoomDatabase() {
             INSTANCE = null
         }
 
-        private val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 /*
                 val TABLE_NAME_TEMP = "tmp"
@@ -64,10 +64,16 @@ abstract class PendingScrobblesDb : RoomDatabase() {
 
             }
         }
-        private val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 val tableName = "pendingLoves"
                 database.execSQL("CREATE TABLE IF NOT EXISTS $tableName (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `track` TEXT NOT NULL, `artist` TEXT NOT NULL, `shouldLove` INTEGER NOT NULL DEFAULT 1)")
+            }
+        }
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                val tableName = "edits"
+                database.execSQL("CREATE TABLE IF NOT EXISTS $tableName (`hash` TEXT PRIMARY KEY NOT NULL, `track` TEXT NOT NULL, `album` TEXT NOT NULL, `albumArtist` TEXT NOT NULL, `artist` TEXT NOT NULL)")
             }
         }
 

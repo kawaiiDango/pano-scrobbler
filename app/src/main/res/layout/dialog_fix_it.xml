@@ -138,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:paddingBottom="@dimen/elevation_hero_btn"
-                android:text="@string/fix_it_battrery_title"
+                android:text="@string/fix_it_battery_title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
             <TextView
@@ -146,7 +146,7 @@
                 android:layout_height="0dp"
                 android:layout_marginBottom="2dp"
                 android:layout_weight="1"
-                android:text="@string/fix_it_battrery_desc"/>
+                android:text="@string/fix_it_battery_desc"/>
 
             <TextView
                 android:id="@+id/fix_it_battery_action"

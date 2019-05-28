@@ -85,11 +85,6 @@
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="%"
 -->
-        <Preference
-            app:iconSpaceReserved="false"
-            android:summary="@string/pref_delay_note"
-            android:selectable="false"
-            />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -100,6 +95,11 @@
             android:summary="Tap to edit"
             android:key="share_sig"
             android:persistent="false"
+            />
+        <Preference
+            android:title="@string/edits"
+            app:iconSpaceReserved="false"
+            android:key="edits"
             />
     </PreferenceCategory>
     <PreferenceCategory

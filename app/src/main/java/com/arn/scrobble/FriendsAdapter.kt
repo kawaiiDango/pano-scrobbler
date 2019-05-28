@@ -41,7 +41,6 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
     private var itemClickListener: ItemClickListener? = null
     var totalPages: Int = 1
     val handler = DelayHandler(WeakReference(this))
-    private val recentsLoadQ = mutableListOf<Int>()
     lateinit var viewModel: FriendsVM
     private val paletteColorsCache = LruCache<String, Int>(50)
 
@@ -93,10 +92,6 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                 if (users[i].name == sortedRes[j].name &&
                         sortedRes[j].recentTrack == null && users[i].recentTrack != null &&
                         (i in firstVisible..lastVisible)) {
-                    if (!recentsLoadQ.contains(i))
-                        recentsLoadQ.add(i)
-                    loadNextRecents()
-                    enqueueRecentsReq(users[i].name, j)
                     sortedRes[j].recentTrack = users[i].recentTrack
                 }
             }
@@ -114,11 +109,6 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
     }
 
     fun populateFriendsRecent(res: PaginatedResult<Track>, username: String) {
-        if (recentsLoadQ.isNotEmpty()) {
-            recentsLoadQ.removeAt(0)
-            loadNextRecents()
-        }
-
         if (!res.isEmpty && users.isNotEmpty()) {
             for (pos in 0..users.size) {
                 if (users[pos].name == username){
@@ -132,37 +122,20 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                 }
             }
         }
-
     }
 
-    fun loadNextRecents() {
-        synchronized(recentsLoadQ) {
-
-            if (/*!friendsRecentsLoader.isLoading && */recentsLoadQ.isNotEmpty()) {
-                val pos = recentsLoadQ.first()
-                val glm = fragmentContent.friends_grid.layoutManager as GridLayoutManager? ?: return
-                if (pos >= glm.findFirstVisibleItemPosition() && pos <= glm.findLastVisibleItemPosition())
-                    viewModel.loadFriendsRecents(users[pos].name)
-//                else
-                recentsLoadQ.removeAt(0)
-            }
-
-        }
+    fun loadFriendsRecents(pos:Int) {
+        val glm = fragmentContent.friends_grid.layoutManager as GridLayoutManager? ?: return
+        if ((pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
+                (pos - glm.spanCount) <= glm.findLastVisibleItemPosition())
+            viewModel.loadFriendsRecents(users[pos].name)
     }
 
-    private fun enqueueRecentsReq(username: String, pos: Int) {
-        if (!recentsLoadQ.contains(pos) && !handler.hasMessages(username.hashCode())) {
-            recentsLoadQ.add(pos)
-            val msg = handler.obtainMessage(username.hashCode(), Stuff.NEED_FRIENDS_RECENTS)
-            handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
-        }
-    }
-
-    fun getItem(id: Int): User {
-        return if (id < users.size)
+    fun getItem(id: Int): User? {
+        return if (id >= 0 || id < users.size)
             users[id]
         else
-            users.last()
+            null
     }
 
     override fun getItemId(position: Int): Long {
@@ -220,7 +193,11 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                 vSubtitle.text = " "
                 vDate.text = " "
                 vTrackContainer.setOnClickListener {}
-                enqueueRecentsReq(user.name, adapterPosition)
+                if (!handler.hasMessages(user.name.hashCode())) {
+                    val msg = handler.obtainMessage(user.name.hashCode())
+                    msg.arg1 = adapterPosition
+                    handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
+                }
             }
 
             val userImg = user.getImageURL(ImageSize.MEDIUM)
@@ -268,11 +245,8 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
 
     class DelayHandler(private val friendsAdapterWr: WeakReference<FriendsAdapter>) : Handler() {
         override fun handleMessage(m: Message) {
-            val command = m.obj as String
-            when (command) {
-                Stuff.NEED_FRIENDS_RECENTS ->
-                    friendsAdapterWr.get()?.loadNextRecents()
-            }
+            val pos = m.arg1
+            friendsAdapterWr.get()?.loadFriendsRecents(pos)
         }
     }
 

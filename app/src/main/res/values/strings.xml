@@ -17,7 +17,8 @@
     <string name="state_unscrobbled">Un-scrobbled</string>
     <string name="state_didnt_scrobble">Didn\'t scrobble</string>
     <string name="state_invalid_artist">No such artist</string>
-    <string name="edit_tags_noti">(Tap to edit)</string>
+    <string name="tap_to_edit">(Tap to edit)</string>
+    <string name="tap_to_edit_force">(Tap to edit or force)</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
     <string name="recents">Recents</string>
     <string name="graph_info">… last 6 months</string>
@@ -42,7 +43,7 @@
     <string name="no_scrobbles">"No scrobbled songs yet…  😫
     Lets make some noise!"
     </string>
-    <string name="no_friends">No lastFM friends yet…</string>
+    <string name="no_friends">No lastFM friends yet… or LastFM\'s friends API is down.</string>
     <string name="channel_scrobbling">Now scrobbling</string>
     <string name="channel_err">Scrobble errors</string>
     <string name="channel_new_app">New app detected</string>
@@ -78,6 +79,10 @@
     <string name="generating_report">Generating report…</string>
     <string name="loved">Loved</string>
     <string name="on_last_fm">On last.FM:</string>
+    <string name="edits">Edits</string>
+    <string name="n_edits">%1$d saved edits</string>
+    <string name="force_remembered">Force scrobble (will remember)</string>
+    <string name="force">Force</string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
     <string name="pref_master_on">Scrobbler active</string>
@@ -85,6 +90,7 @@
     <string name="pref_master_qs_hint">Can also be toggled from the quick settings tile.</string>
     <string name="pref_noti_off">Check your scrobbbles from the app only</string>
     <string name="pref_noti_on">…while scrobbling</string>
+    <string name="pref_noti_q">Make sure silent notifications are turned on in system settings.</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from">Scrobble from</string>
@@ -96,7 +102,6 @@
     <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
     <string name="pref_delay_secs">Delay in secs</string>
     <string name="pref_delay_per">Delay in percent</string>
-    <string name="pref_delay_note">"ℹ️ Now Playing is updated at once, regardless of the delay"</string>
     <string name="pref_logout">Logout</string>
     <string name="pref_confirm_logout">CONFIRM LOGOUT? Tap again.</string>
     <string name="pref_login">Login</string>
@@ -116,10 +121,10 @@ Press back if you do not want this."</string>
     <string name="custom_listenbrainz">Custom Listenbrainz server</string>
     <string name="failed_encode_url">failed to encode URL</string>
     <string name="check_nls">Check %s</string>
-    <string name="similar_tracks_button">SIMILAR</string>
     <string name="similar_tracks">Similar songs</string>
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="no_browser">No browser is installed.</string>
+    <string name="no_player">No music player is installed.</string>
     <string name="not_running">The scrobbler service has died.</string>
     <string name="not_running_fix_action">Fix it</string>
     <string name="login_submit">Verify</string>
@@ -128,7 +133,6 @@ Press back if you do not want this."</string>
     <string name="qs_master_disabled">Not running</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
-    <string name="menu_deleted">Deleted</string>
     <string name="love">Love</string>
     <string name="unlove">Unlove</string>
 
@@ -139,10 +143,10 @@ Press back if you do not want this."</string>
     <string name="fix_it_ram_title">Free up RAM</string>
     <string name="fix_it_noti_title">Toggle notification access off and on</string>
     <string name="fix_it_noti_desc">This is a temporary fix</string>
-    <string name="fix_it_battrery_title">Disable battery optimizations</string>
-    <string name="fix_it_battrery_desc">Only if nothing else worked</string>
-    <string name="fix_it_ram_desc">This app uses a minimal amount of RAM (5–20 MB) in the background. Check if other background apps are taking up RAM</string>
+    <string name="fix_it_battery_title">Disable battery optimizations</string>
+    <string name="fix_it_battery_desc">Only if nothing else worked</string>
+    <string name="fix_it_ram_desc">This app uses a minimal amount of RAM (5–15 MB) in the background. Check if other background apps are taking up RAM</string>
     <string name="fix_it_action">OPEN</string>
-    <string name="huawei_startup_mgr">Navigate to Settings > Battery > App launch and whitelist this app</string>
-    <string name="generic_startup_mgr">Unable to open the startup manager automatically. Open it manually and whitelist this app</string>
+    <string name="fix_it_huawei_startup_mgr">Navigate to Settings > Battery > App launch and whitelist this app</string>
+    <string name="fix_it_generic_startup_mgr">Unable to open the startup manager automatically. Open it manually and whitelist this app</string>
 </resources>

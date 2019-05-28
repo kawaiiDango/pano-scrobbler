@@ -260,8 +260,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL))
             return
 
-        val username = if (BuildConfig.DEBUG) "nobody" else pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
-        nav_name.text = username
+        val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
+        nav_name.text = if (BuildConfig.DEBUG) "nobody" else username
         val num = actPref.getInt(Stuff.PREF_ACTIVITY_NUM_SCROBBLES, 0)
         nav_num_scrobbles.text = resources.getQuantityString(R.plurals.num_scrobbles, num, num)
 

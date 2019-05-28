@@ -3,6 +3,7 @@ package com.arn.scrobble.pref
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -15,6 +16,9 @@ import androidx.core.content.ContextCompat
 import androidx.preference.*
 import com.arn.scrobble.*
 import com.arn.scrobble.R
+import com.arn.scrobble.pending.db.PendingScrobblesDb
+
+
 
 /**
  * Created by arn on 09/07/2017.
@@ -36,6 +40,13 @@ class PrefFragment : PreferenceFragmentCompat(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val master = findPreference(Stuff.PREF_MASTER) as SwitchPreference
             master.summary = getString(R.string.pref_master_qs_hint)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                Build.VERSION.PREVIEW_SDK_INT > 0 ||
+                Build.VERSION.SDK_INT > Build.VERSION_CODES.P){
+            val notif = findPreference(Stuff.PREF_NOTIFICATIONS) as SwitchPreference
+            notif.summaryOn = getString(R.string.pref_noti_q)
         }
 
         val appList = findPreference(Stuff.PREF_WHITELIST)
@@ -88,8 +99,22 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
+        val edits = findPreference("edits")
+        AsyncTask.THREAD_POOL_EXECUTOR.execute {
+            val numEdits = PendingScrobblesDb.getDb(context!!).getEditsDao().count
+            activity!!.runOnUiThread{ edits.title = getString(R.string.n_edits, numEdits) }
+        }
+        edits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            activity!!.supportFragmentManager.beginTransaction()
+                    .remove(this)
+                    .add(R.id.frame, EditsFragment())
+                    .addToBackStack(null)
+                    .commit()
+            true
+        }
+
         initAuthConfirmation("lastfm", {
-                LFMRequester.reAuth(context!!)
+                Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
             },
                 Stuff.PREF_LASTFM_USERNAME, Stuff.PREF_LASTFM_SESS_KEY,
                 logout = {LastfmUnscrobbler(context!!).clearCookies()}

@@ -19,15 +19,21 @@
         android:scaleType="centerCrop"
         tools:srcCompat="@mipmap/ic_launcher"/>
 
+    <View
+        android:background="@drawable/gradient_dark_overlay_nav"
+        android:layout_alignParentBottom="true"
+        android:layout_height="65dp"
+        android:layout_width="match_parent"
+        />
+
     <LinearLayout
         android:id="@+id/recents_track_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/selector_track_container"
+        android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="#30000000"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -43,7 +49,7 @@
             android:maxLines="1"
             android:paddingStart="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@color/colorAccentLighter"
+            android:textColor="@color/colorAccentLight"
             android:textSize="20sp"
             app:autoSizeMaxTextSize="20sp"
             app:autoSizeMinTextSize="12sp"
@@ -55,8 +61,8 @@
             android:id="@+id/recents_subtitle"
             android:layout_width="match_parent"
             android:layout_height="18dp"
-            android:layout_marginBottom="3dp"
             android:layout_marginTop="-3dp"
+            android:layout_marginBottom="3dp"
             android:clickable="false"
             android:ellipsize="end"
             android:linksClickable="false"

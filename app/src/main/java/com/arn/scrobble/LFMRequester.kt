@@ -66,7 +66,7 @@ class LFMRequester(var command: String, vararg args: String) {
             val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
             var lastfmUsername: String? = prefs.getString(Stuff.PREF_LASTFM_USERNAME, null)
 
-            if (!lastfmSessKey.isNullOrBlank())
+            if (lastfmSessKey != null)
                 lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
 
             if (lastfmSession == null || lastfmUsername == null)
@@ -76,9 +76,7 @@ class LFMRequester(var command: String, vararg args: String) {
             if (!reAuthNeeded) {
                 when (command) {
                     Stuff.LASTFM_SESS_AUTH -> return null
-                    Stuff.GET_RECENTS -> {
-                        return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 15, true, lastfmSessKey, Stuff.LAST_KEY)
-                    }
+                    Stuff.GET_RECENTS -> return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 15, false, null, Stuff.LAST_KEY)
                     Stuff.GET_FRIENDS_RECENTS ->
                         // args[0] = username
                         return Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, null, Stuff.LAST_KEY))
@@ -122,7 +120,6 @@ class LFMRequester(var command: String, vararg args: String) {
                                 entry.shouldLove = love
                                 dao.insert(entry)
                                 PendingScrJob.checkAndSchedule(context)
-                                PendingScrobblesDb.getDb(context).close()
                                 1
                             }
                         }
@@ -161,6 +158,11 @@ class LFMRequester(var command: String, vararg args: String) {
                         } catch (e:NullPointerException){
                             PaginatedResult<User>(1,0, listOf())
                         }
+                    }
+                    //args[0] = artist, args[1] = track, args[2] = pos
+                    Stuff.GET_INFO -> {
+                        val info = Track.getInfo(args[0], args[1], Tokens.LAST_KEY)
+                        return Pair(args[2].toInt(), info)
                     }
                     Stuff.GET_HERO_INFO -> {
                         if (!Main.isOnline || args[0] == "")
@@ -207,7 +209,7 @@ class LFMRequester(var command: String, vararg args: String) {
                     Stuff.NOW_PLAYING, Stuff.SCROBBLE -> {
                         val scrobbleResults = mutableMapOf<String, ScrobbleResult>()
 
-                        //for scrobble: command = tag, args[0] = artist, args[1] = album, args[2] = title, args[3] = albumArtist, args[4] = time, args[5] = duration
+                        //for scrobble: command = tag, args[0] = artist, args[1] = album, args[2] = title, args[3] = albumArtist, args[4] = time, args[5] = duration, args[6] = hash
                         val scrobbleData = ScrobbleData()
                         scrobbleData.artist = args[0]
                         scrobbleData.album = args[1]
@@ -232,19 +234,19 @@ class LFMRequester(var command: String, vararg args: String) {
                         when(command) {
                             Stuff.NOW_PLAYING -> {
                                 if (NLService.isOnline){
-                                    val hash = args[0].hashCode() + args[2].hashCode()
+                                    val hash = args[6].toInt()
 
                                     val track =
                                             try {
                                                 Track.getInfo(args[0], args[2], null, lastfmUsername, Tokens.LAST_KEY)
-                                            } catch (e: CallException){
+                                            } catch (e: Exception){
                                                 null
                                             }
                                     val corrected =
                                             if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT/2)
-                                                Pair(args[0], args[2])
+                                                Pair(track.artist, track.name)
                                             else
-                                                getValidArtist(args[0], args[2])
+                                                getValidArtist(args[0], args[2], prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
                                     if (track != null) {
                                         val i = Intent(NLService.iMETA_UPDATE)
                                         i.putExtra(NLService.B_ARTIST, args[0])
@@ -252,13 +254,22 @@ class LFMRequester(var command: String, vararg args: String) {
                                             i.putExtra(NLService.B_ALBUM, track.album ?: "")
                                         else
                                             i.putExtra(NLService.B_ALBUM, args[1])
+                                        if (args[3] == "")
+                                            i.putExtra(NLService.B_ALBUM_ARTIST, track.albumArtist ?: "")
+                                        else
+                                            i.putExtra(NLService.B_ALBUM_ARTIST, args[3])
                                         i.putExtra(NLService.B_TITLE, track.name)
+                                        i.putExtra(NLService.B_HASH, hash)
                                         i.putExtra(NLService.B_USER_LOVED, track.isLoved)
                                         i.putExtra(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
                                         context.sendBroadcast(i)
                                     }
                                     if (corrected != null) {
                                         scrobbleData.artist = corrected.first
+                                        if(track?.album != null)
+                                            scrobbleData.album = track.album
+                                        if(track?.albumArtist != null)
+                                            scrobbleData.albumArtist = track.albumArtist
                                         scrobbleData.track = corrected.second
                                         if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
                                             scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, lastfmSession)
@@ -281,6 +292,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                             i.putExtra(NLService.B_ARTIST, args[0])
                                             i.putExtra(NLService.B_ALBUM, args[1])
                                             i.putExtra(NLService.B_TITLE, args[2])
+                                            i.putExtra(NLService.B_ALBUM_ARTIST, args[3])
                                             i.putExtra(NLService.B_TIME, args[4].toLong())
                                             i.putExtra(NLService.B_HASH, hash)
                                             context.sendBroadcast(i)
@@ -316,7 +328,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                     }
                                 }
                                 if (couldntConnect || !NLService.isOnline){
-                                    val dao = PendingScrobblesDb.getDb(context).getDao()
+                                    val dao = PendingScrobblesDb.getDb(context).getScrobblesDao()
                                     val entry = PendingScrobble()
                                     entry.artist = scrobbleData.artist
                                     entry.album = scrobbleData.album
@@ -403,6 +415,11 @@ class LFMRequester(var command: String, vararg args: String) {
         return null
     }
 
+    private fun reAuth(context: Context) {
+        MultiPreferences(context).remove(Stuff.PREF_LASTFM_SESS_KEY)
+        Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
+    }
+
     fun skipContentProvider(): LFMRequester {
         skipCP = true
         return this
@@ -463,27 +480,24 @@ class LFMRequester(var command: String, vararg args: String) {
             return out.toString()
         }
 
-        fun reAuth(context: Context) {
-            MultiPreferences(context).remove(Stuff.PREF_LASTFM_SESS_KEY)
-            Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
-        }
 
-        fun getValidArtist(artist:String, track: String, threshold: Int = Stuff.MIN_LISTENER_COUNT):
-                Pair<String, String>? {
-            if (validArtistsCache[artist] == null) {
+        fun getValidArtist(artist:String, track: String, set:Set<String>? = null): Pair<String, String>? {
+            val valid = set?.contains(artist) == true
+            if (valid || validArtistsCache[artist] != null)
+                return Pair(artist, track)
+            else if (validArtistsCache[artist] == null) {
                 val artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)
                 Stuff.log("artistInfo: $artistInfo")
                 //nw err throws an exception
                 if (artistInfo!= null && artistInfo.name?.trim() != ""){
-                    if(artistInfo.listeners >= threshold) {
+                    if(artistInfo.listeners >= Stuff.MIN_LISTENER_COUNT) {
                         validArtistsCache.put(artist, true)
                         return Pair(artist, track)
                     } else
                         validArtistsCache.put(artist, false)
                 }
 
-            } else if (validArtistsCache[artist])
-                return Pair(artist, track)
+            }
             return null
         }
 
@@ -529,6 +543,13 @@ class DualPref(private val skipCp: Boolean, context: Context?) {
             sPref.edit().putBoolean(key, value).apply()
         else
             mPref.putBoolean(key, value)
+    }
+
+    fun getStringSet(key: String, default: Set<String>?): Set<String>? {
+        return if (skipCp)
+            sPref.getStringSet(key, default)
+        else
+            mPref.getStringSet(key, default)
     }
 
     fun getString(key: String, default: String?): String? {

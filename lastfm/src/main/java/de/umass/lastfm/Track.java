@@ -66,6 +66,7 @@ public class Track extends MusicEntry {
 
 	protected String album;		// protected for use in Playlist.playlistFromElement
 	private String albumMbid;
+	private String albumArtist;
 	private int position = -1;
 
 	private boolean fullTrackAvailable;
@@ -150,6 +151,12 @@ public class Track extends MusicEntry {
 
 	public String getAlbumMbid() {
 		return albumMbid;
+	}
+	public void setAlbumArtist(String albumArtist) {
+		this.albumArtist = albumArtist;
+	}
+	public String getAlbumArtist() {
+		return albumArtist;
 	}
 
 	public boolean isFullTrackAvailable() {
@@ -492,6 +499,7 @@ public class Track extends MusicEntry {
 			}
 			track.album = album.getChildText("title");
 			track.albumMbid = album.getChildText("mbid");
+			track.albumArtist = album.getChildText("artist");
 			ImageHolder.loadImages(track, album);
 		}
 		return track;
@@ -743,7 +751,7 @@ public class Track extends MusicEntry {
 
 	@Override
 	public String toString() {
-		return "Track[name=" + name + ",artist=" + artist + ", album=" + album + ", loved=" + loved + ", position=" + position + ", duration=" + duration
+		return "Track[name=" + name + ",artist=" + artist + ", album=" + album + ", albumArtist=" + albumArtist + ", loved=" + loved + ", position=" + position + ", duration=" + duration
 				+ ", location=" + location + ", nowPlaying=" + nowPlaying + ", fullTrackAvailable=" + fullTrackAvailable + ", playedWhen="
 				+ playedWhen + ", artistMbId=" + artistMbid + ", albumMbId" + albumMbid + "]";
 	}

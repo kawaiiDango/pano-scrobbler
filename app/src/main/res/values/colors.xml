@@ -4,9 +4,11 @@
     <color name="colorPrimaryDark">#5a0934</color>
     <color name="colorAccent">#f06292</color>
     <color name="colorNoti">#ec407a</color>
+
+<!--    <color name="colorAccentLight">#FFD2E7</color>-->
     <color name="colorAccentLight">#e1bee7</color>
-    <color name="colorAccentLighter">#E8D9EB</color>
     <color name="colorAccentLightTrans">#bbe1bee7</color>
+<!--    <color name="colorAccentLightTrans">#bbFFD2E7</color>-->
     <color name="lightDivider">#11ffffff</color>
     <color name="darkBg">#a9000000</color>
     <color name="defaultDarkBg">#303030</color>

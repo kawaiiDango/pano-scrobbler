@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.ui.ItemClickListener
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.grid_item_recents.view.*
 import kotlinx.android.synthetic.main.header_default.view.*
@@ -18,6 +18,7 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
 
     private var clickListener: ItemClickListener? = null
     private val tracks = mutableListOf<Track>()
+    private val tracksImg = mutableMapOf<Int,String>()
     var itemSizeDp = 150
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHItem{
@@ -30,10 +31,15 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
         return tracks[id]
     }
 
+    fun setImg(pos:Int, url:String){
+        tracksImg[pos] = url
+        notifyItemChanged(pos)
+    }
+
     override fun getItemCount() = tracks.size
 
     override fun onBindViewHolder(holder:VHItem, position: Int) {
-        holder.setItemData(tracks[position])
+        holder.setItemData(tracks[position], tracksImg[position])
     }
 
     fun setClickListener(itemClickListener: ItemClickListener) {
@@ -59,22 +65,25 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
             clickListener?.onItemClick(view, adapterPosition)
         }
 
-        fun setItemData(track: Track) {
+        fun setItemData(track: Track, imgUrl:String?) {
             vTitle.text = track.name
             vSubtitle.text = track.artist
 
-
-            val imgUrl = track.getImageURL(ImageSize.LARGE)
-
             if (imgUrl != null && imgUrl != "") {
-                vImg.clearColorFilter()
                 Picasso.get()
                         .load(imgUrl)
                         .fit()
                         .centerCrop()
-                        .placeholder(R.drawable.vd_wave_simple)
+                        .noPlaceholder()
                         .error(R.drawable.vd_wave_simple)
-                        .into(vImg)
+                        .into(vImg, object : Callback{
+                            override fun onSuccess() {
+                                vImg.clearColorFilter()
+                            }
+
+                            override fun onError(e: Exception) {
+                            }
+                        })
 
             } else {
                 vImg.setImageResource(R.drawable.vd_wave_simple)

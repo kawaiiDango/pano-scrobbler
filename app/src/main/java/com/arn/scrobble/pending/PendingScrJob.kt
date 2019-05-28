@@ -38,7 +38,7 @@ class PendingScrJob : JobService() {
     }
 
     class OfflineScrobbleTask(context: Context): AsyncTask<Unit, String, Boolean>() {
-        private val dao = PendingScrobblesDb.getDb(context).getDao()
+        private val dao = PendingScrobblesDb.getDb(context).getScrobblesDao()
         private val lovesDao = PendingScrobblesDb.getDb(context).getLovesDao()
         private val prefs = MultiPreferences(context)
         var progressCb:((str:String)->Unit)? = null
@@ -56,7 +56,7 @@ class PendingScrJob : JobService() {
 
                 var corrected: Pair<String,String>?
                 try {
-                    corrected = LFMRequester.getValidArtist(entry.artist, entry.track)
+                    corrected = LFMRequester.getValidArtist(entry.artist, entry.track, prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
                 } catch (e: Exception){
                     Stuff.log("OfflineScrobble: n/w err1 - " + e.message)
                     done = false

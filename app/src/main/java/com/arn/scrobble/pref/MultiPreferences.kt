@@ -60,6 +60,7 @@ class MultiPreferences(private val name: String, private val context: Context) {
                             else
                                 str.split(", ").toSet()
                         }
+                        MultiPrefsProvider.CODE_SIZE -> cursor.getInt(colIndex)
                         else -> throw IllegalArgumentException("Invalid type")
                     }
         }
@@ -84,6 +85,8 @@ class MultiPreferences(private val name: String, private val context: Context) {
 
     fun putStringSet(key: String, value: Set<String>?) = update(MultiPrefsProvider.CODE_STRING_SET, key, value ?: setOf<String>())
     fun getStringSet(key: String, defaultValue: Set<String>?) = query(MultiPrefsProvider.CODE_STRING_SET, key, defaultValue) as Set<String>
+
+    fun size() = query(MultiPrefsProvider.CODE_SIZE, "", 0) as Int
 
     fun remove(key: String) {
         val deleteUri = MultiPrefsProvider.createQueryUri(name, key, MultiPrefsProvider.CODE_INTEGER)

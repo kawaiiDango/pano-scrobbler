@@ -10,7 +10,8 @@ import android.transition.Fade
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
+import com.arn.scrobble.pending.db.Edit
+import com.arn.scrobble.pending.db.PendingScrobblesDb
 import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -19,7 +20,7 @@ import kotlinx.android.synthetic.main.content_login.view.*
 
 class EditFragment: LoginFragment() {
 
-    var standalone = false
+    private var standalone = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         arguments?.putString(TEXTF1, getString(R.string.track))
@@ -34,6 +35,15 @@ class EditFragment: LoginFragment() {
         else
             standalone = true
 
+        if (arguments?.getBoolean(NLService.B_FORCEABLE) == true) {
+            view.login_force.visibility = View.VISIBLE
+            view.login_force.setOnCheckedChangeListener { compoundButton, checked ->
+                if (checked)
+                    login_submit.setText(R.string.force)
+                else
+                    login_submit.setText(R.string.menu_edit)
+            }
+        }
 
         arguments?.getString(NLService.B_TITLE)?.let {
             view.login_textfield1.editText!!.setText(it)
@@ -59,7 +69,7 @@ class EditFragment: LoginFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.AppTheme_Transparent)
+        setStyle(STYLE_NO_TITLE, R.style.AppTheme_Transparent)
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         return dialog
@@ -69,7 +79,8 @@ class EditFragment: LoginFragment() {
         val args = arguments ?: return null
         val track = login_textfield1.editText!!.text.toString()
         val origTrack = args.getString(NLService.B_TITLE)
-        val album = login_textfield2.editText!!.text.toString()
+        var album = login_textfield2.editText!!.text.toString()
+        var albumArtist = ""//login_textfield2.editText!!.text.toString()
         val origAlbum = args.getString(NLService.B_ALBUM)
         val artist = login_textfield_last.editText!!.text.toString()
         val origArtist = args.getString(NLService.B_ARTIST)
@@ -82,30 +93,69 @@ class EditFragment: LoginFragment() {
         }
 
         if(!standalone && track == origTrack &&
-                artist == origArtist && album == origAlbum) {
+                artist == origArtist && album == origAlbum && album != "") {
             return errMsg
         }
 
         try {
-            val validArtist = LFMRequester.getValidArtist(artist, track, 4)
-            if (validArtist == null) {
+            var validArtist:Pair<String,String>? = null
+            var validTrack:Track? = null
+
+            if (!login_force.isChecked) {
+                if (album.isBlank() && origAlbum.isBlank())
+                    validTrack =
+                            try {
+                                Track.getInfo(artist, track, Tokens.LAST_KEY)
+                            } catch (e: Exception) {
+                                null
+                            }
+                if (validTrack == null)
+                    validArtist = LFMRequester.getValidArtist(artist, track, pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+                else {
+                    if (album.isBlank() && validTrack.album != null) {
+                        album = validTrack.album
+                        activity!!.runOnUiThread { login_textfield2.editText!!.setText(validTrack.album) }
+                    }
+                    if (albumArtist.isBlank() && validTrack.albumArtist != null) {
+                        albumArtist = validTrack.albumArtist
+                    }
+                }
+            }
+            if (validTrack == null && validArtist == null && !login_force.isChecked) {
                 errMsg = getString(R.string.state_invalid_artist)
             } else {
                 val lastfmSessKey: String? = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
                 val lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
                 val scrobbleData = ScrobbleData(artist, track, (timeMillis / 1000).toInt())
                 scrobbleData.album = album
+                scrobbleData.albumArtist = albumArtist
                 val result = Track.scrobble(scrobbleData, lastfmSession)
 
-                if (result?.isSuccessful == true && !result.isIgnored && !standalone) {
-                    val unscrobbler = LastfmUnscrobbler(context!!)
-                    val csrfExists = unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
-                    if (csrfExists)
-                        unscrobbler.unscrobble(origArtist, origTrack, timeMillis)
+                if (result?.isSuccessful == true && !result.isIgnored) {
+                    if(!standalone) {
+                        val unscrobbler = LastfmUnscrobbler(context!!)
+                        val csrfExists = unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
+                        if (csrfExists)
+                            unscrobbler.unscrobble(origArtist, origTrack, timeMillis)
 
-                    //editing just the album is a noop, scrobble again
-                    if (track == origTrack && artist == origArtist && album != origAlbum)
-                        Track.scrobble(scrobbleData, lastfmSession)
+                        //editing just the album is a noop, scrobble again
+                        if (track == origTrack && artist == origArtist)
+                            Track.scrobble(scrobbleData, lastfmSession)
+                    }
+                    if(!(track == origTrack && artist == origArtist && album == origAlbum)) {
+                        val dao = PendingScrobblesDb.getDb(context!!).getEditsDao()
+                        val e = Edit()
+                        e.artist = artist
+                        e.album = album
+                        e.albumArtist = albumArtist
+                        e.track = track
+                        e.hash = origArtist.hashCode().toString() + origAlbum.hashCode().toString() + origTrack.hashCode().toString()
+                        dao.upsert(e)
+                    }
+                    if (login_force.isChecked){
+                        val oldSet = pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, setOf())
+                        pref.putStringSet(Stuff.PREF_ALLOWED_ARTISTS, oldSet + artist)
+                    }
                 } else if (result.isIgnored)
                     errMsg = getString(R.string.scrobble_ignored_or_old)
                 else if (!standalone)

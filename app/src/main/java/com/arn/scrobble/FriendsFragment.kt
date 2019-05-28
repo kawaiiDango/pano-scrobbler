@@ -143,10 +143,11 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     override fun onItemClick (view: View, position: Int) {
-        val gridItem = adapter!!.getViewForPopup(context!!, position) as ViewGroup
         val user = adapter!!.getItem(position)
-
-        showPopupWindow(gridItem, view, user)
+        if (user != null) {
+            val gridItem = adapter!!.getViewForPopup(context!!, position) as ViewGroup
+            showPopupWindow(gridItem, view, user)
+        }
     }
 
     private fun showPopupWindow(content: ViewGroup, anchor: View, user: User) {
@@ -175,7 +176,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
             content.friends_pic.layoutParams.width = Stuff.dp2px(120, context!!)
             content.friends_pic.layoutParams.height = Stuff.dp2px(120, context!!)
-            content.friends_name.text = getString(R.string.num_scrobbles, content.friends_name.text, user.playcount)
+            if (user.playcount > 0)
+                content.friends_name.text = getString(R.string.num_scrobbles, content.friends_name.text, user.playcount)
 
             action.friends_profile.setOnClickListener { v:View ->
                 Stuff.openInBrowser(userLink, activity, v)

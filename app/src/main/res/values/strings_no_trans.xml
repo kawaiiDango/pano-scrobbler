@@ -13,16 +13,4 @@
     <string name="lastfm">LastFM</string>
     <string name="librefm">LibreFM</string>
     <string name="listenbrainz">ListenBrainz</string>
-
-    <string name="search_site_default">https://www.youtube.com/results?search_query=</string>
-    <string-array name="search_sites_title">
-        <item>YouTube</item>
-        <item>Spotify</item>
-        <item>SoundCloud</item>
-    </string-array>
-    <string-array name="search_sites_url">
-        <item>@string/search_site_default</item>
-        <item>https://open.spotify.com/search/</item>
-        <item>https://soundcloud.com/search?q=</item>
-    </string-array>
 </resources>

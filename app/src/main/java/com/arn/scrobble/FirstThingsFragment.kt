@@ -183,9 +183,9 @@ class FirstThingsFragment: Fragment() {
                 context.startActivity(startupMgrIntent)
             } catch (e:SecurityException){
                 if (startupMgrIntent.component?.packageName == Stuff.STARTUPMGR_INTENTS[4])
-                    Stuff.toast(context, context.getString(R.string.huawei_startup_mgr))
+                    Stuff.toast(context, context.getString(R.string.fix_it_huawei_startup_mgr))
                 else
-                    Stuff.toast(context, context.getString(R.string.generic_startup_mgr))
+                    Stuff.toast(context, context.getString(R.string.fix_it_generic_startup_mgr))
             }
         }
     }

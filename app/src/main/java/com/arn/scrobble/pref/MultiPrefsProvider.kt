@@ -68,6 +68,7 @@ class MultiPrefsProvider : ContentProvider() {
             CODE_BOOLEAN -> return preferenceToCursor(if (interactor.getBoolean(uri.pathSegments[2], defaultValue!!.toBoolean())) 1 else 0)
             CODE_FLOAT -> return preferenceToCursor(interactor.getFloat(uri.pathSegments[2], defaultValue!!.toFloat()))
             CODE_STRING_SET -> return preferenceToCursor(interactor.getStringSet(uri.pathSegments[2], setOf())!!.joinToString())
+            CODE_SIZE -> return preferenceToCursor(interactor.size())
         }
 
         return null
@@ -146,6 +147,7 @@ class MultiPrefsProvider : ContentProvider() {
         const val URL_STRING_SET = "content://$PROVIDER_NAME/stringset/"
         // Special URL just for clearing preferences
         const val URL_PREFERENCES = "content://$PROVIDER_NAME/prefs/"
+        const val URL_SIZE = "content://$PROVIDER_NAME/size/"
 
         const val CODE_STRING = 1
         const val CODE_INTEGER = 2
@@ -154,6 +156,7 @@ class MultiPrefsProvider : ContentProvider() {
         const val CODE_FLOAT = 5
         const val CODE_STRING_SET = 6
         const val CODE_PREFS = 7
+        const val CODE_SIZE = 8
 
         /**
          * Create UriMatcher to match all requests
@@ -169,6 +172,7 @@ class MultiPrefsProvider : ContentProvider() {
             mUriMatcher.addURI(PROVIDER_NAME, "float/*/*", CODE_FLOAT)
             mUriMatcher.addURI(PROVIDER_NAME, "stringset/*/*", CODE_STRING_SET)
             mUriMatcher.addURI(PROVIDER_NAME, "prefs/*/", CODE_PREFS)
+            mUriMatcher.addURI(PROVIDER_NAME, "size/*", CODE_SIZE)
         }
 
         const val KEY = "key"
@@ -185,6 +189,7 @@ class MultiPrefsProvider : ContentProvider() {
                 CODE_FLOAT -> Uri.parse("$URL_FLOAT$prefFileName/$key")
                 CODE_STRING_SET -> Uri.parse("$URL_STRING_SET$prefFileName/$key")
                 CODE_PREFS -> Uri.parse("$URL_PREFERENCES$prefFileName/$key")
+                CODE_SIZE -> Uri.parse("$URL_SIZE$prefFileName")
 
                 else -> throw IllegalStateException("Not Supported Type : $prefType")
             }

@@ -35,6 +35,7 @@ import com.robinhood.spark.SparkView
 import com.robinhood.spark.animation.MorphSparkAnimator
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.content_recents.*
 import kotlinx.android.synthetic.main.coordinator_main.*
@@ -56,6 +57,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
     private lateinit var viewModel: TracksVM
     private lateinit var animSet: AnimatorSet
     private var smoothScroller: LinearSmoothScroller? = null
+    private var inited = false
 
     private var colorPrimDark = 0
     private var colorLightWhite = 0
@@ -79,7 +81,25 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (userVisibleHint)
-            Stuff.setAppBarHeight(activity!!)
+            postInit(view)
+    }
+
+    private fun postInit(view:View) {
+        inited = true
+//        Stuff.setAppBarHeight(activity!!)
+        val activity = activity
+        if (activity != null && isVisible/* && isResumed*/) {
+            activity.ctl.setContentScrimColor(lastColorVibrantDark)
+            activity.toolbar.title = " "
+            Stuff.setAppBarHeight(activity)
+
+            /*
+            if (Stuff.isDark(RecentsAdapter.lastColorDomPrimary))
+                activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorLightWhite)
+            else
+                activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorMutedDark)
+            */
+        }
 
         val llm = LinearLayoutManager(context!!)
         recents_list.layoutManager = llm
@@ -124,33 +144,33 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         viewModel = VMFactory.getVM(this, TracksVM::class.java)
         viewModel.loadRecentsList(1, false)
                 .observe(viewLifecycleOwner, Observer {
-                        loadMoreListener.loading = false
-                        it ?: return@Observer
-                        adapter.populate(it, it.page, !firstLoadNw)
+                    loadMoreListener.loading = false
+                    it ?: return@Observer
+                    adapter.populate(it, it.page, !firstLoadNw)
 
-                        if (!firstLoadCache && firstLoadNw)
-                            firstLoadNw = false
+                    if (!firstLoadCache && firstLoadNw)
+                        firstLoadNw = false
 
-                        if (firstLoadCache) {
-                            firstLoadCache = false
-                            loadRecents(1)
-                            toggleGraphDetails(activity!!.sparkline, true)
-                        } else if (it.page == 1){
-                            viewModel.loadPending(2)
-                            refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
-                        }
-            })
+                    if (firstLoadCache) {
+                        firstLoadCache = false
+                        loadRecents(1)
+                        toggleGraphDetails(activity!!.sparkline, true)
+                    } else if (it.page == 1){
+                        viewModel.loadPending(2)
+                        refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
+                    }
+                })
         viewModel.loadHero(null)
                 .observe(viewLifecycleOwner, Observer {
-                        it ?: return@Observer
-                        setGraph(it[0])
-            })
+                    it ?: return@Observer
+                    setGraph(it[0])
+                })
 
         viewModel.loadPending(2)
-            .observe(viewLifecycleOwner, Observer {
+                .observe(viewLifecycleOwner, Observer {
                     it ?: return@Observer
                     adapter.setPendingScrobbles(activity!!.supportFragmentManager, it.first, it.second)
-            })
+                })
 
         recents_list.addOnScrollListener(loadMoreListener)
         adapter.setLoadMoreReference(loadMoreListener)
@@ -272,19 +292,8 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
     override fun setUserVisibleHint(visible: Boolean) {
         super.setUserVisibleHint(visible)
-        val activity = activity
-        if (activity != null && visible/* && isResumed*/) {
-            activity.ctl.setContentScrimColor(lastColorVibrantDark)
-            activity.toolbar.title = " "
-            Stuff.setAppBarHeight(activity)
-
-            /*
-            if (Stuff.isDark(RecentsAdapter.lastColorDomPrimary))
-                activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorLightWhite)
-            else
-                activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorMutedDark)
-            */
-        }
+        if (visible && isResumed && !inited)
+            postInit(view!!)
     }
 
     override fun onStart() {
@@ -320,13 +329,13 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
         ctl.hero_title.text = track.name
         hero.tag = track
-        val imgUrl = Stuff.getAlbumOrArtistImg(track, fullSize)
+        val imgUrl = track.getImageURL(ImageSize.EXTRALARGE)
 
         if (!fullSize && oldTrack?.name != track.name){
             viewModel.loadHero(track.url)
         }
 
-        if (imgUrl != "" && imgUrl == Stuff.getAlbumOrArtistImg(oldTrack, false))
+        if (imgUrl != "" && imgUrl == oldTrack?.getImageURL(ImageSize.MEDIUM))
             return
 
         //load img, animate colors

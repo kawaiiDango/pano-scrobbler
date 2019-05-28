@@ -16,6 +16,7 @@ import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.VHHeader
 import com.arn.scrobble.ui.VHPending
 import com.squareup.picasso.Picasso
+import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.content_recents.view.*
@@ -350,7 +351,7 @@ class RecentsAdapter
                 vOverlay.visibility = View.INVISIBLE
             }
 
-            val imgUrl = Stuff.getAlbumOrArtistImg(track, false)
+            val imgUrl = track.getImageURL(ImageSize.MEDIUM)
 
             if (imgUrl != null && imgUrl != "") {
                 vImg.clearColorFilter()

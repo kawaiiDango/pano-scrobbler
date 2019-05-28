@@ -36,13 +36,9 @@ import com.arn.scrobble.RecentsFragment.Companion.lastColorMutedBlack
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.arn.scrobble.ui.StatefulAppBar
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.coordinator_main.view.*
 import java.io.IOException
-import java.io.UnsupportedEncodingException
-import java.net.URLEncoder
 import java.text.DecimalFormat
 import java.util.*
 
@@ -60,7 +56,6 @@ object Stuff {
     const val GET_RECENTS = "recents"
     const val TAG_PAGER = "pager"
     const val DELETE = "delete"
-    const val EDIT = "edit"
     const val GET_SIMILAR = "similar"
     const val TAG_SIMILAR = "similar"
     const val GET_RECENTS_CACHED = "recents_cached"
@@ -77,10 +72,9 @@ object Stuff {
     const val LOVE = "loved"
     const val UNLOVE = "unloved"
     const val GET_FRIENDS_RECENTS = "get_friends_recent"
-    const val NEED_FRIENDS_RECENTS = "need_friends_recent"
     const val FRIENDS_RECENTS_DELAY: Long = 800
     const val GET_HERO_INFO = "heroinfo"
-    const val GET_PENDING = "pending"
+    const val GET_INFO = "info"
     const val PREF_MASTER = "master"
     const val PREF_NOTIFICATIONS = "show_notifications"
     const val PREF_WHITELIST = "app_whitelist"
@@ -88,9 +82,8 @@ object Stuff {
     const val PREF_AUTO_DETECT = "auto_detect"
     const val PREF_DELAY_SECS = "delay_secs"
     const val PREF_DELAY_PER = "delay_per"
+    const val PREF_ALLOWED_ARTISTS = "allowed_artists"
 
-    const val PREF_ACTIVITY_SEARCH_URL = "search_url"
-    const val PREF_ACTIVITY_SEARCH_URL_DEFAULT = "https://www.youtube.com/results?search_query="
     const val PREF_ACTIVITY_FIRST_RUN = "first_run"
     const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
     const val PREF_ACTIVITY_LAST_TAB = "last_tab"
@@ -157,16 +150,13 @@ object Stuff {
             "net.scweeny.CS.browser.dev"
     )
 
-    val IGNORE_LEGAGY_META = arrayOf(
-            "com.n7mobile.nplayer"
-    )
-
+    const val PACKAGE_N7PLAYER = "com.n7mobile.nplayer"
     const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"
     const val PACKAGE_BLACKPLAYER_PREFIX = "com.kodarkooperativet.blackplayer"
 
     private val seperators = arrayOf(// in priority order
-            "—", " ‎– ", "–", " _ ", " - ", " \\| ", "-", "「", "『", "ー", " • ",
+            "—", " – ", " –", "– ", " _ ", " - ", " \\| ", " -", "- ", "「", "『", "ー", " • ",
 
             "【", "〖", "〔",
             "】", "〗", "』", "」", "〕",
@@ -474,15 +464,6 @@ object Stuff {
         return null
     }
 
-    fun getAlbumOrArtistImg(track: Track?, fullSize: Boolean): String? {
-        val size = if (fullSize) ImageSize.EXTRALARGE else ImageSize.MEDIUM
-
-        var imgUrl: String? = track?.getImageURL(size)
-        if (imgUrl.isNullOrEmpty())
-            imgUrl = track?.artistExtended?.getImageURL(size)
-        return imgUrl
-    }
-
     fun nowPlayingAnim(np: ImageView, isNowPlaying: Boolean) {
         if (isNowPlaying) {
             np.visibility = View.VISIBLE
@@ -521,26 +502,16 @@ object Stuff {
         swl.setProgressBackgroundColorSchemeResource(R.color.darkBg)
     }
 
-
-    fun openSearchURL(query: String, view: View, context: Context) {
-        var url =
-                context.getSharedPreferences(ACTIVITY_PREFS, Context.MODE_PRIVATE)
-                        .getString(PREF_ACTIVITY_SEARCH_URL, context.getString(R.string.search_site_default))!!
-
-        try {
-            url += URLEncoder.encode(query, "UTF-8")
-        } catch (e: UnsupportedEncodingException) {
-            Stuff.toast(context, context.getString(R.string.failed_encode_url))
-        }
-        openInBrowser(url, context, view)
-    }
     fun launchSearchIntent(artist: String, track: String, context: Context) {
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH)
         intent.putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
         intent.putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
         intent.putExtra(SearchManager.QUERY, "$artist - $track")
-
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException){
+            toast(context, context.getString(R.string.no_player))
+        }
     }
 
     fun openInBrowser(url: String, context: Context?, source: View? = null, startX: Int = 10, startY: Int = 10) {

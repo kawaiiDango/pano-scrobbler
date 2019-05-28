@@ -18,9 +18,10 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     private val heroInfo = MutableLiveData<MutableList<String>>()
     private var lastHeroInfoAsyncTask: AsyncTask<*,*,*>? = null
     private val similar = MutableLiveData<List<Track>>()
+    private val similarTrackInfo = MutableLiveData<Pair<Int,Track>>()
     private val pendingTracks = MutableLiveData<Pair<List<PendingScrobble>, Int>>()
     private val executor = Executors.newSingleThreadExecutor()
-    private val dao = PendingScrobblesDb.getDb(application).getDao()
+    private val dao = PendingScrobblesDb.getDb(application).getScrobblesDao()
     private val lovesDao = PendingScrobblesDb.getDb(application).getLovesDao()
     //for room's built in livedata to work, data must be inserted, deleted from the same dao object
     var page = 1
@@ -48,6 +49,11 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     fun loadSimilar(artist: String, track: String, limit: Int): MutableLiveData<List<Track>> {
         LFMRequester(Stuff.GET_SIMILAR, artist, track, limit.toString()).asAsyncTask(getApplication(), similar)
         return similar
+    }
+
+    fun loadInfo(artist: String, track: String, pos:Int): MutableLiveData<Pair<Int,Track>> {
+        LFMRequester(Stuff.GET_INFO, artist, track, pos.toString()).asAsyncTask(getApplication(), similarTrackInfo)
+        return similarTrackInfo
     }
 
     fun loadPending(limit: Int): MutableLiveData<Pair<List<PendingScrobble>, Int>> {

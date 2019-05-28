@@ -17,6 +17,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.arn.scrobble.ui.ItemClickListener
+import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.content_similar.*
 import kotlinx.android.synthetic.main.content_similar.view.*
@@ -30,7 +31,10 @@ import kotlin.math.max
  */
 class SimilarTracksFragment : Fragment(), ItemClickListener {
     private lateinit var similarLd: MutableLiveData<List<Track>>
-    lateinit var adapter: SimilarTracksAdapter
+    private lateinit var infoLd: MutableLiveData<Pair<Int,Track>>
+    private var infoLdInited = false
+    private lateinit var viewModel:TracksVM
+    private lateinit var adapter: SimilarTracksAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +98,19 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
             else
                 similar_linear_layout?.header_text?.text = getString(R.string.offline)
             adapter.populate(it)
+            it.forEachIndexed { i, t ->
+                if (!infoLdInited) {
+                    infoLd = viewModel.loadInfo(t.artist, t.name, i)
+                    infoLd.observe(viewLifecycleOwner, Observer {
+                        it ?: return@Observer
+                        val img = it.second.getImageURL(ImageSize.LARGE)
+                        if(img != null)
+                            adapter.setImg(it.first, img)
+                    })
+                    infoLdInited = true
+                } else
+                    viewModel.loadInfo(t.artist, t.name, i)
+            }
         })
 
         return view
@@ -140,8 +157,7 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
 
         adapter.itemSizeDp = w
         glm.spanCount = cols
-
-        val viewModel = VMFactory.getVM(this, TracksVM::class.java)
+        viewModel = VMFactory.getVM(this, TracksVM::class.java)
         val arguments = arguments!!
         similarLd = viewModel.loadSimilar(arguments.getString("artist")!!, arguments.getString("track")!!, rows * cols)
     }
@@ -149,6 +165,6 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
     override fun onItemClick (view: View, position: Int) {
         val adapter = similar_grid.adapter as SimilarTracksAdapter
         val track = adapter.getItem(position)
-        Stuff.openSearchURL(track.artist + " - " + track.name, view, activity!!)
+        Stuff.launchSearchIntent(track.artist, track.name, context!!)
     }
 }

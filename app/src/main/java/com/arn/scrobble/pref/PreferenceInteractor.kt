@@ -29,6 +29,8 @@ class PreferenceInteractor(mContext: Context, mPreferenceName: String) {
     fun getStringSet(key: String, defaultVal: Set<String>): Set<String>? = mSharedPreferences.getStringSet(key, defaultVal)
     fun setStringSet(key: String, value: Set<String>) = mSharedPreferences.edit().putStringSet(key, value).apply()
 
+    fun size() = mSharedPreferences.all.size
+
     fun removePref(key: String) {
         mSharedPreferences.edit().remove(key).apply()
     }

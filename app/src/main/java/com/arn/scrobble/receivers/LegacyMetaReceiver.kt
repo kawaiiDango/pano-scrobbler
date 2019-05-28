@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BadParcelableException
+import android.os.Build
 import android.os.SystemClock
 import com.arn.scrobble.KeepNLSAliveJob
 import com.arn.scrobble.NLService
@@ -24,12 +25,13 @@ class LegacyMetaReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         try {
 //            scrobbling_source for poweramp
-            if (intent.hasExtra(Stuff.IGNORE_LEGAGY_META[0] + ".source"))
+            if (intent.hasExtra(Stuff.PACKAGE_N7PLAYER + ".source"))
                 return
         } catch (e: BadParcelableException) {
             return
         }
-        if (System.currentTimeMillis() - serviceRunningCheckTime > Stuff.RECENTS_REFRESH_INTERVAL * 4) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O &&
+                System.currentTimeMillis() - serviceRunningCheckTime > Stuff.RECENTS_REFRESH_INTERVAL * 4) {
             KeepNLSAliveJob.ensureServiceRunning(context)
             serviceRunningCheckTime = System.currentTimeMillis()
         }
@@ -50,6 +52,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
             if (isPlaying == null) {
                 Stuff.log("does not contain playing state, ignoring")
             } else {
+                val albumArtist = intent.getStringExtra("albumArtist")?.trim() ?: ""
                 val artist = intent.getStringExtra("artist")?.trim()
                 val album = intent.getStringExtra("album")?.trim() ?: ""
                 val track = intent.getStringExtra("track")?.trim()
@@ -86,14 +89,15 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                         val timeDiff = System.currentTimeMillis() - SessListener.lastSessEventTime
 
                         if (SessListener.numSessions == 0 ||
-                                (!intent.getStringExtra("package").contains(Stuff.PACKAGE_BLACKPLAYER_PREFIX)
+                                (intent.getStringExtra("package")?.contains(Stuff.PACKAGE_BLACKPLAYER_PREFIX) != true
                                 && timeDiff > Stuff.META_WAIT * 2.5) )
                             return@postAtTime
 
                         Stuff.log("LegacyMetaReceiver numSessions: " + SessListener.numSessions + " timeDiff: " + timeDiff)
 
                         if (isPlaying && !NLService.handler.hasMessages(hash)) {
-                            SessListener.lastHash = NLService.handler.scrobble(artist, album, track, "", duration)
+                            NLService.handler.nowPlaying(artist, album, track, albumArtist, duration, hash, false, null)
+                            SessListener.lastHash = hash
                             Stuff.log( "LegacyMetaReceiver scrobbling $track")
 
                         } else if (!isPlaying && NLService.handler.hasMessages(hash)) {

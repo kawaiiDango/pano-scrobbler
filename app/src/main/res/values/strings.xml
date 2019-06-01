@@ -20,6 +20,7 @@
     <string name="tap_to_edit">(Tap to edit)</string>
     <string name="tap_to_edit_force">(Tap to edit or force)</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
+    <string name="recently_loved">♥ Recently Loved</string>
     <string name="recents">Recents</string>
     <string name="graph_info">… last 6 months</string>
     <string name="action_app_list">Enabled Apps</string>
@@ -40,7 +41,8 @@
     <string name="item_options">Options for this item</string>
     <string name="new_player">%s detected</string>
     <string name="new_player_prompt">Keep scrobbling this app?</string>
-    <string name="no_scrobbles">"No scrobbled songs yet…  😫
+    <string name="no_track_url">This track doesn\'t have a url</string>
+    <string name="no_scrobbles">"No songs here yet…  😫
     Lets make some noise!"
     </string>
     <string name="no_friends">No lastFM friends yet… or LastFM\'s friends API is down.</string>

@@ -101,8 +101,11 @@ class PrefFragment : PreferenceFragmentCompat(){
 
         val edits = findPreference("edits")
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
-            val numEdits = PendingScrobblesDb.getDb(context!!).getEditsDao().count
-            activity!!.runOnUiThread{ edits.title = getString(R.string.n_edits, numEdits) }
+            val context = context
+            if (context != null) {
+                val numEdits = PendingScrobblesDb.getDb(context).getEditsDao().count
+                activity!!.runOnUiThread { edits.title = getString(R.string.n_edits, numEdits) }
+            }
         }
         edits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             activity!!.supportFragmentManager.beginTransaction()

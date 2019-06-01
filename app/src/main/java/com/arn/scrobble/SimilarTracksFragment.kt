@@ -31,8 +31,6 @@ import kotlin.math.max
  */
 class SimilarTracksFragment : Fragment(), ItemClickListener {
     private lateinit var similarLd: MutableLiveData<List<Track>>
-    private lateinit var infoLd: MutableLiveData<Pair<Int,Track>>
-    private var infoLdInited = false
     private lateinit var viewModel:TracksVM
     private lateinit var adapter: SimilarTracksAdapter
 
@@ -98,21 +96,18 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
             else
                 similar_linear_layout?.header_text?.text = getString(R.string.offline)
             adapter.populate(it)
+
             it.forEachIndexed { i, t ->
-                if (!infoLdInited) {
-                    infoLd = viewModel.loadInfo(t.artist, t.name, i)
-                    infoLd.observe(viewLifecycleOwner, Observer {
-                        it ?: return@Observer
-                        val img = it.second.getImageURL(ImageSize.LARGE)
-                        if(img != null)
-                            adapter.setImg(it.first, img)
-                    })
-                    infoLdInited = true
-                } else
-                    viewModel.loadInfo(t.artist, t.name, i)
+                viewModel.loadInfo(t.artist, t.name, i)
             }
         })
 
+        viewModel.trackInfo.observe(viewLifecycleOwner, Observer {
+            it ?: return@Observer
+            val img = it.second.getImageURL(ImageSize.LARGE)
+            if(img != null)
+                adapter.setImg(it.first, img)
+        })
         return view
     }
 

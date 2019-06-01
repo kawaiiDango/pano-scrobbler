@@ -2,6 +2,8 @@ package com.arn.scrobble
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.os.Handler
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,7 @@ import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.content_recents.view.*
 import kotlinx.android.synthetic.main.header_pending.view.*
 import kotlinx.android.synthetic.main.list_item_recents.view.*
+import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.math.max
 
@@ -47,6 +50,10 @@ class RecentsAdapter
     private var loadMoreListener: EndlessRecyclerViewScrollListener? = null
     private var fm: FragmentManager? = null
     private val myUpdateCallback = MyUpdateCallback(this)
+    lateinit var viewmodel: TracksVM
+    var isShowingLoves = false
+    val handler = TrackInfoHandler(WeakReference(this))
+    private val imgMap = mutableMapOf<Int, Map<ImageSize, String>>()
 
     init {
 //        setHasStableIds(true) //causes some opengl OOM and new holders to be created for no reason
@@ -84,7 +91,6 @@ class RecentsAdapter
 
     fun setLoading(b:Boolean){
         loadMoreListener?.loading = b
-//        fragmentContent.footer_progressbar.visibility = if (b) View.VISIBLE else View.GONE
         fragmentContent.recents_swipe_refresh.isRefreshing = false
     }
 
@@ -176,7 +182,13 @@ class RecentsAdapter
         else
             notifyDataSetChanged()
     }
-
+    fun setStatusHeader(){
+        val header =  if (isShowingLoves)
+            fragmentContent.context.getString(R.string.recently_loved)
+        else
+            fragmentContent.context.getString(R.string.recently_scrobbled)
+        setStatusHeader(header)
+    }
     fun setStatusHeader(s:String){
         if (nonTrackViewCount == 0)
             nonTrackViewCount++
@@ -199,7 +211,7 @@ class RecentsAdapter
             return
 
         if (Main.isOnline)
-            setStatusHeader(fragmentContent.context.getString(R.string.recently_scrobbled))
+            setStatusHeader()
         else
             setStatusHeader(fragmentContent.context.getString(R.string.offline))
 
@@ -216,13 +228,14 @@ class RecentsAdapter
                     setStatusHeader(refresh.context.getString(R.string.no_scrobbles))
                 }
             }
-            res.pageResults.toMutableList()
             res.forEachIndexed { i, it ->
                 if (!it.isNowPlaying || page == 1) {
                     tracksList.add(it)
                     if (getItemId(tracksList.size - 1) == selectedId)
                         selectedPos = tracksList.size + nonTrackViewCount - 1
                 }
+                if (isShowingLoves && imgMap[it.artist.hashCode() + it.name.hashCode()] != null)
+                    it.imageUrlsMap = imgMap[it.artist.hashCode() + it.name.hashCode()]
             }
             this.selectedPos = selectedPos
             myUpdateCallback.offset = nonTrackViewCount
@@ -230,6 +243,28 @@ class RecentsAdapter
             val diff = DiffUtil.calculateDiff(DiffCallback(tracksList, oldList), false)
             diff.dispatchUpdatesTo(myUpdateCallback)
         }
+    }
+
+    fun  loadImg(pos: Int){
+        val idx = pos - nonTrackViewCount
+        if(idx >= 0 && idx < tracksList.size){
+            viewmodel.loadInfo(tracksList[idx].artist, tracksList[idx].name, pos)
+        }
+    }
+
+    fun setImg(pos: Int, imgMapp: Map<ImageSize, String>){
+        val idx = pos - nonTrackViewCount
+        if(idx >= 0 && idx < tracksList.size){
+            tracksList[idx].imageUrlsMap = imgMapp
+            this.imgMap[tracksList[idx].artist.hashCode() + tracksList[idx].name.hashCode()] = imgMapp
+            notifyItemChanged(pos)
+            if (pos == selectedPos)
+                mSetHeroListener?.onSetHero(pos, tracksList[idx], true)
+        }
+    }
+
+    fun removeHandlerCallbacks(){
+        handler.cancelAll()
     }
 
     class DiffCallback(private var newList: List<Track>, private var oldList: List<Track>) : DiffUtil.Callback() {
@@ -321,7 +356,7 @@ class RecentsAdapter
             itemClickListener?.onItemClick(itemView, adapterPosition)
         }
 
-        fun setSelected(selected:Boolean, track: Track) {
+        fun setSelected(selected:Boolean, track: Track = tracksList[selectedPos - nonTrackViewCount]) {
             itemView.isActivated = selected
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 vImg.foreground = if (selected) ColorDrawable(vImg.context.getColor(R.color.thumbnailHighlight)) else null
@@ -366,6 +401,10 @@ class RecentsAdapter
             } else {
                 vImg.setImageResource(R.drawable.vd_wave_simple)
                 vImg.setColorFilter(Stuff.getMatColor(vImg.context, "500", track.name.hashCode().toLong()))
+                if (isShowingLoves){
+                    if(imgMap[track.artist.hashCode() + track.name.hashCode()] == null)
+                        handler.sendMessage(vImg.hashCode(), adapterPosition)
+                }
             }
             setSelected(adapterPosition == selectedPos, track)
         }
@@ -373,6 +412,28 @@ class RecentsAdapter
 
     interface SetHeroTrigger {
         fun onSetHero(position: Int, track: Track, fullSize: Boolean)
+    }
+
+    class TrackInfoHandler(private val recentssAdapterWr: WeakReference<RecentsAdapter>) : Handler() {
+        private var count = 0
+        override fun handleMessage(m: Message) {
+            if (count > 0)
+                count --
+            val pos = m.arg1
+            recentssAdapterWr.get()?.loadImg(pos)
+        }
+        fun sendMessage(what:Int, pos:Int){
+            if (!hasMessages(what))
+                count ++
+            else
+                removeMessages(what)
+            val msg = obtainMessage(what, pos, 0)
+            sendMessageDelayed(msg, count * 250L)
+        }
+        fun cancelAll(){
+            removeCallbacksAndMessages(null)
+            count = 0
+        }
     }
 }
 

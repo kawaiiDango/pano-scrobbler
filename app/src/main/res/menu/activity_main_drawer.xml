@@ -12,16 +12,15 @@
                     android:id="@+id/nav_last_week"
                     android:icon="@drawable/vd_bar_chart"
                     android:title="@string/last_week"/>
-                <item
-                    app:actionLayout="@layout/action_external"
-                    android:id="@+id/nav_loved"
-                    android:icon="@drawable/vd_heart"
-                    android:title="@string/loved"/>
             </group>
         </menu>
     </item>
 
     <group android:id="@+id/nav_group_bottom">
+        <item
+            android:id="@+id/nav_loved"
+            android:icon="@drawable/vd_heart"
+            android:title="@string/loved"/>
         <item
             android:id="@+id/nav_friends"
             android:icon="@drawable/vd_friends"

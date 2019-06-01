@@ -42,7 +42,6 @@ class LFMRequester(var command: String, vararg args: String) {
         context ?: return null
 
         isLoading = true
-        Stuff.timeIt("loadInBackground $command")
         Stuff.log("loadInBackground $command $args")
         prefs = DualPref(skipCP, context)
 
@@ -57,8 +56,8 @@ class LFMRequester(var command: String, vararg args: String) {
                 caller.cache = fsCache
             }
 
-            if (command == Stuff.GET_RECENTS_CACHED) {
-                command = Stuff.GET_RECENTS
+            if (command == Stuff.GET_RECENTS_CACHED || command == Stuff.GET_LOVES_CACHED) {
+                command = command.replace("_cached","")
                 caller.cache.expirationPolicy = LFMCachePolicy(false)
             } else
                 caller.cache.expirationPolicy = LFMCachePolicy(Main.isOnline)
@@ -72,11 +71,19 @@ class LFMRequester(var command: String, vararg args: String) {
             if (lastfmSession == null || lastfmUsername == null)
                 reAuthNeeded = true
 
-            Stuff.timeIt("!reAuthNeeded $command")
+            //takes up to 16ms till here
             if (!reAuthNeeded) {
                 when (command) {
                     Stuff.LASTFM_SESS_AUTH -> return null
-                    Stuff.GET_RECENTS -> return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 15, false, null, Stuff.LAST_KEY)
+                    Stuff.GET_RECENTS -> return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 20, false, null, Stuff.LAST_KEY)
+                    Stuff.GET_LOVES -> {
+                        val pr = User.getLovedTracks(lastfmUsername, Integer.parseInt(args[0]), 20, Stuff.LAST_KEY)
+                        pr.pageResults.forEach {
+                            it.isLoved = true
+                            it.imageUrlsMap.clear()
+                        }
+                        return pr
+                    }
                     Stuff.GET_FRIENDS_RECENTS ->
                         // args[0] = username
                         return Pair(args[0], User.getRecentTracks(args[0], 1, 1, false, null, Stuff.LAST_KEY))
@@ -195,8 +202,9 @@ class LFMRequester(var command: String, vararg args: String) {
                             var img = args[1]
                             if (idx > -1) {
                                 idx = resp.indexOf("src=", idx) + 5
-                                idx2 = resp.indexOf("\"", idx)
+                                val idx2 = resp.indexOf("\"", idx)
                                 img = resp.substring(idx, idx2)
+                                img.replace("/ar0/","/300x300/")
                             }
                             scrapped.add(img)
                             */
@@ -483,7 +491,7 @@ class LFMRequester(var command: String, vararg args: String) {
 
         fun getValidArtist(artist:String, track: String, set:Set<String>? = null): Pair<String, String>? {
             val valid = set?.contains(artist) == true
-            if (valid || validArtistsCache[artist] != null)
+            if (valid || validArtistsCache[artist] == true)
                 return Pair(artist, track)
             else if (validArtistsCache[artist] == null) {
                 val artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)

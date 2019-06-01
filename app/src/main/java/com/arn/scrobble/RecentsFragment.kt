@@ -47,7 +47,7 @@ import kotlinx.android.synthetic.main.list_item_recents.view.*
  * Created by arn on 09/07/2017.
  */
 
-class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTrigger {
+open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTrigger {
     private lateinit var adapter: RecentsAdapter
     private lateinit var appPrefs: SharedPreferences
     private var firstLoadCache = true
@@ -57,7 +57,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
     private lateinit var viewModel: TracksVM
     private lateinit var animSet: AnimatorSet
     private var smoothScroller: LinearSmoothScroller? = null
-    private var inited = false
+    var isShowingLoves = false
 
     private var colorPrimDark = 0
     private var colorLightWhite = 0
@@ -85,7 +85,6 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
     }
 
     private fun postInit(view:View) {
-        inited = true
 //        Stuff.setAppBarHeight(activity!!)
         val activity = activity
         if (activity != null && isVisible/* && isResumed*/) {
@@ -105,7 +104,9 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         recents_list.layoutManager = llm
 
         adapter = RecentsAdapter(view)
-        adapter.setStatusHeader(getString(R.string.recently_scrobbled))
+
+        adapter.isShowingLoves = isShowingLoves
+        adapter.setStatusHeader()
 
         animSet = AnimatorSet()
         animSet.addListener(object : Animator.AnimatorListener{
@@ -141,10 +142,22 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         }
         loadMoreListener.loading = false
 
+        appPrefs = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+
+        val sparkline = activity!!.sparkline
+        if (sparkline.adapter == null) { // not inited
+            sparkline.sparkAnimator = MorphSparkAnimator()
+            sparkline.adapter = SparkLineAdapter()
+        }
         viewModel = VMFactory.getVM(this, TracksVM::class.java)
-        viewModel.loadRecentsList(1, false)
-                .observe(viewLifecycleOwner, Observer {
-                    loadMoreListener.loading = false
+        adapter.viewmodel = viewModel
+        val ld = if (isShowingLoves)
+                viewModel.loadLovesList(1, false)
+            else
+                viewModel.loadRecentsList(1, false)
+
+                ld.observe(viewLifecycleOwner, Observer {
+//                    loadMoreListener.loading = false
                     it ?: return@Observer
                     adapter.populate(it, it.page, !firstLoadNw)
 
@@ -155,7 +168,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                         firstLoadCache = false
                         loadRecents(1)
                         toggleGraphDetails(activity!!.sparkline, true)
-                    } else if (it.page == 1){
+                    } else if (it.page == 1 && !isShowingLoves){
                         viewModel.loadPending(2)
                         refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
                     }
@@ -165,35 +178,38 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                     it ?: return@Observer
                     setGraph(it[0])
                 })
-
-        viewModel.loadPending(2)
-                .observe(viewLifecycleOwner, Observer {
-                    it ?: return@Observer
-                    adapter.setPendingScrobbles(activity!!.supportFragmentManager, it.first, it.second)
-                })
+        if (isShowingLoves)
+            viewModel.trackInfo.observe(viewLifecycleOwner, Observer {
+                it ?: return@Observer
+                adapter.setImg(it.first, it.second.imageUrlsMap)
+            })
+        else
+            viewModel.loadPending(2)
+                    .observe(viewLifecycleOwner, Observer {
+                        it ?: return@Observer
+                        adapter.setPendingScrobbles(activity!!.supportFragmentManager, it.first, it.second)
+                    })
 
         recents_list.addOnScrollListener(loadMoreListener)
         adapter.setLoadMoreReference(loadMoreListener)
         adapter.setClickListener(this)
         adapter.setHeroListener(this)
 
-        appPrefs = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-
         activity!!.hero_share.setOnClickListener(shareClickListener)
 
-        val sparkline = activity!!.sparkline
-        if (sparkline.adapter == null) { // not inited
-            sparkline.sparkAnimator = MorphSparkAnimator()
-            sparkline.adapter = SparkLineAdapter()
-        }
+
         sparkline.setOnClickListener{
             toggleGraphDetails(it as SparkView)
         }
 
         activity!!.hero_info.setOnClickListener { v:View ->
             val t = activity?.hero_img?.tag
-            if (t is Track)
-                Stuff.openInBrowser(t.url, activity, null)
+            if (t is Track) {
+                if (t.url != null)
+                    Stuff.openInBrowser(t.url, activity, null)
+                else
+                    Stuff.toast(context!!, getString(R.string.no_track_url))
+            }
         }
         activity!!.hero_play.setOnClickListener { v:View ->
             val t =  activity?.hero_img?.tag
@@ -211,7 +227,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                 simFragment.arguments = b
 
                 activity!!.supportFragmentManager.beginTransaction()
-                        .hide(this)
+                        .hide(activity!!.supportFragmentManager.findFragmentByTag(Stuff.TAG_PAGER)!!)
                         .add(R.id.frame, simFragment, Stuff.TAG_SIMILAR)
                         .addToBackStack(null)
                         .commit()
@@ -279,7 +295,10 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
         if (page <= adapter.totalPages) {
             val firstVisible = (recents_list.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
             if ((page == 1 && firstVisible < 5) || page > 1) {
-                viewModel.loadRecentsList(page, true)
+                if (isShowingLoves)
+                    viewModel.loadLovesList(page, true)
+                else
+                    viewModel.loadRecentsList(page, true)
             }
             if (adapter.itemCount == 0 || page > 1)
                 adapter.setLoading(true)
@@ -292,8 +311,12 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
     override fun setUserVisibleHint(visible: Boolean) {
         super.setUserVisibleHint(visible)
-        if (visible && isResumed && !inited)
+        if (visible && isResumed && recents_list?.adapter == null)
             postInit(view!!)
+        else if (visible && isResumed) {
+            val holder = recents_list.findViewHolderForAdapterPosition(adapter.selectedPos)
+            (holder as RecentsAdapter.VHTrack?)?.setSelected(true)
+        }
     }
 
     override fun onStart() {
@@ -303,6 +326,8 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
     override fun onStop() {
         refreshHandler.removeCallbacks(timedRefresh)
+        if (userVisibleHint && isShowingLoves)
+            adapter.removeHandlerCallbacks()
         try {
             context?.unregisterReceiver(editReceiver)
         } catch (e: IllegalArgumentException) {}
@@ -320,7 +345,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 //        onSetHero(-1, null, imgUrl)
 //    }
 
-    override fun onSetHero(position: Int, track: Track, fullSize: Boolean/*, imgUrl: String?*/) {
+    override fun onSetHero(position: Int, track: Track, fullSize: Boolean) {
         val ctl = activity?.ctl ?: return
         val hero = ctl.hero_img
 
@@ -329,13 +354,16 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
         ctl.hero_title.text = track.name
         hero.tag = track
-        val imgUrl = track.getImageURL(ImageSize.EXTRALARGE)
+        val imgUrl = if(fullSize)
+            track.getImageURL(ImageSize.EXTRALARGE)
+        else
+            track.getImageURL(ImageSize.MEDIUM)
 
         if (!fullSize && oldTrack?.name != track.name){
             viewModel.loadHero(track.url)
         }
 
-        if (imgUrl != "" && imgUrl == oldTrack?.getImageURL(ImageSize.MEDIUM))
+        if (imgUrl != null && imgUrl == oldTrack?.getImageURL(ImageSize.MEDIUM))
             return
 
         //load img, animate colors
@@ -366,6 +394,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                 }
             })
         } else {
+            Picasso.get().cancelRequest(hero)
             val color = Stuff.getMatColor(hero.context, "500", track.name.hashCode().toLong())
             hero.setColorFilter(color)
             hero.setImageResource(R.drawable.vd_wave)
@@ -476,7 +505,7 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
                                 override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?) =
                                         super.calculateSpeedPerPixel(displayMetrics) * 3
 
-                                override fun getVerticalSnapPreference() = LinearSmoothScroller.SNAP_TO_START
+                                override fun getVerticalSnapPreference() = SNAP_TO_START
                             }
                         smoothScroller?.targetPosition = position
                         recents_list.layoutManager?.startSmoothScroll(smoothScroller)
@@ -499,6 +528,11 @@ class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTri
 
         if (track.playedWhen == null)
             popup.menu.removeItem(R.id.menu_delete)
+
+        if (isShowingLoves){
+            popup.menu.removeItem(R.id.menu_delete)
+            popup.menu.removeItem(R.id.menu_edit)
+        }
 
         fun csrfTokenExists(): Boolean {
             val prefs = MultiPreferences(context!!)

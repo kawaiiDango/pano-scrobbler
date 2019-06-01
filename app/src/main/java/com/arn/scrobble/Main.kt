@@ -289,10 +289,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, frame, 10, 200)
             }
             R.id.nav_loved -> {
-                Stuff.openInBrowser("https://www.last.fm/user/$username/loved", this, frame, 10, 200)
+                tab_bar.getTabAt(1)?.select()
             }
             R.id.nav_friends -> {
-                tab_bar.getTabAt(1)?.select()
+                tab_bar.getTabAt(2)?.select()
             }
             R.id.nav_settings -> {
                 supportFragmentManager.beginTransaction()
@@ -516,7 +516,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
                 if (activity.supportFragmentManager.backStackEntryCount == 0) {
                     // what the fuck, kotlin extensions? stop giving me old instances
-                    if (activity.findViewById<ViewPager>(R.id.pager)?.currentItem == 0)
+                    if (activity.findViewById<ViewPager>(R.id.pager)?.currentItem != 2)
                         appBar.setExpanded(true, true)
                     else
                         appBar.setExpanded(false, true)

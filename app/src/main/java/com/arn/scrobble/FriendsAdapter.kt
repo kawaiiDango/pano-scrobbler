@@ -132,7 +132,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
     }
 
     fun getItem(id: Int): User? {
-        return if (id >= 0 || id < users.size)
+        return if (id >= 0 && id < users.size)
             users[id]
         else
             null
@@ -249,6 +249,4 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
             friendsAdapterWr.get()?.loadFriendsRecents(pos)
         }
     }
-
-
 }

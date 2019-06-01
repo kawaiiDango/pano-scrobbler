@@ -122,6 +122,13 @@ public class Track extends MusicEntry {
         return artistExtended;
     }
 
+    public Map<ImageSize, String> getImageUrlsMap() {
+        return imageUrls;
+    }
+
+    public void setImageUrlsMap(Map<ImageSize, String> map) {
+        imageUrls = map;
+    }
 	/**
 	 * Returns the duration of the song, if available, in seconds. The duration attribute is only available
 	 * for tracks retrieved by {@link Playlist#fetch(String, String) Playlist.fetch} and

@@ -12,8 +12,8 @@ class PagerAdapter(fm: FragmentManager, private var tabCount: Int): FragmentStat
         //Returning the current tabs
         return when (position) {
             0 -> RecentsFragment()
-            1 -> FriendsFragment()
-//            2 -> AppListFragment()
+            1 -> LovesFragment()
+            2 -> FriendsFragment()
             else -> null
         }
     }

@@ -21,8 +21,8 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
 
     private val tabMeta = arrayOf(
             Pair(R.string.recents, R.drawable.vd_history),
-            Pair(R.string.friends, R.drawable.vd_friends),
-            Pair(R.string.loved, R.drawable.vd_heart)
+            Pair(R.string.loved, R.drawable.vd_heart),
+            Pair(R.string.friends, R.drawable.vd_friends)
     )
 
     private var backStackChecked = false
@@ -33,7 +33,7 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
         //https://stackoverflow.com/questions/12490963/replacing-viewpager-with-fragment-then-navigating-back
 
         view.pager.addOnPageChangeListener(this)
-        view.pager.adapter = PagerAdapter(childFragmentManager, 2)
+        view.pager.adapter = PagerAdapter(childFragmentManager, 3)
         return view
     }
 

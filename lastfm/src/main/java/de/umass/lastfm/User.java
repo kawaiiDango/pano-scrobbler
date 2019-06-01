@@ -399,7 +399,7 @@ public class User extends ImageHolder {
 	 * @return the loved tracks
 	 */
 	public static PaginatedResult<Track> getLovedTracks(String user, String apiKey) {
-		return getLovedTracks(user, 1, apiKey);
+		return getLovedTracks(user, 1, 50, apiKey);
 	}
 
 	/**
@@ -410,8 +410,9 @@ public class User extends ImageHolder {
 	 * @param apiKey A Last.fm API key.
 	 * @return the loved tracks
 	 */
-	public static PaginatedResult<Track> getLovedTracks(String user, int page, String apiKey) {
-		Result result = Caller.getInstance().call("user.getLovedTracks", apiKey, "user", user, "page", String.valueOf(page));
+	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, String apiKey) {
+		Result result = Caller.getInstance().call("user.getLovedTracks", apiKey,
+                "user", user, "page", String.valueOf(page), "limit", String.valueOf(limit));
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 

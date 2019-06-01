@@ -75,7 +75,7 @@ class LFMRequester(var command: String, vararg args: String) {
             if (!reAuthNeeded) {
                 when (command) {
                     Stuff.LASTFM_SESS_AUTH -> return null
-                    Stuff.GET_RECENTS -> return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 20, false, null, Stuff.LAST_KEY)
+                    Stuff.GET_RECENTS -> return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 20, true, null, Stuff.LAST_KEY)
                     Stuff.GET_LOVES -> {
                         val pr = User.getLovedTracks(lastfmUsername, Integer.parseInt(args[0]), 20, Stuff.LAST_KEY)
                         pr.pageResults.forEach {

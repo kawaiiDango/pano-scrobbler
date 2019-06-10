@@ -92,12 +92,10 @@ class FriendsFragment : Fragment(), ItemClickListener {
         super.onStop()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (newConfig != null) {
-            val glm = friends_grid?.layoutManager as GridLayoutManager?
-            glm?.spanCount = getNumColumns(newConfig)
-        }
+        val glm = friends_grid?.layoutManager as GridLayoutManager?
+        glm?.spanCount = getNumColumns(newConfig)
     }
 
     override fun setUserVisibleHint(visible: Boolean) {

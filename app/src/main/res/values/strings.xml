@@ -45,7 +45,7 @@
     <string name="no_scrobbles">"No songs here yet…  😫
     Lets make some noise!"
     </string>
-    <string name="no_friends">No lastFM friends yet… or LastFM\'s friends API is down.</string>
+    <string name="no_friends">No lastFM friends yet… or LastFM\'s friends API is down, which we have no control over.</string>
     <string name="channel_scrobbling">Now scrobbling</string>
     <string name="channel_err">Scrobble errors</string>
     <string name="channel_new_app">New app detected</string>
@@ -92,7 +92,7 @@
     <string name="pref_master_qs_hint">Can also be toggled from the quick settings tile.</string>
     <string name="pref_noti_off">Check your scrobbbles from the app only</string>
     <string name="pref_noti_on">…while scrobbling</string>
-    <string name="pref_noti_q">Make sure silent notifications are turned on in system settings.</string>
+    <string name="pref_noti_q">Make sure gentle notifications are shown, in system settings.</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from">Scrobble from</string>

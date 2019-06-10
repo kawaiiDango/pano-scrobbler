@@ -8,13 +8,13 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 class PagerAdapter(fm: FragmentManager, private var tabCount: Int): FragmentStatePagerAdapter(fm) {
 
     //Overriding method getItem
-    override fun getItem(position: Int): Fragment? {
+    override fun getItem(position: Int): Fragment {
         //Returning the current tabs
         return when (position) {
             0 -> RecentsFragment()
             1 -> LovesFragment()
-            2 -> FriendsFragment()
-            else -> null
+            else -> FriendsFragment()
+//            else -> null
         }
     }
 

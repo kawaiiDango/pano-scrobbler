@@ -51,7 +51,7 @@ class FixItFragment: BottomSheetDialogFragment() {
         }
         addTouchDelegate(fix_it_battery_action, 24, 10)
 
-        val bottomSheetView = dialog.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        val bottomSheetView = dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         BottomSheetBehavior.from(bottomSheetView).isHideable = false
     }
 

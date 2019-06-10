@@ -78,12 +78,12 @@ class EditFragment: LoginFragment() {
     override fun validateAsync(): String? {
         val args = arguments ?: return null
         val track = login_textfield1.editText!!.text.toString()
-        val origTrack = args.getString(NLService.B_TITLE)
+        val origTrack = args.getString(NLService.B_TITLE) ?: ""
         var album = login_textfield2.editText!!.text.toString()
         var albumArtist = ""//login_textfield2.editText!!.text.toString()
-        val origAlbum = args.getString(NLService.B_ALBUM)
+        val origAlbum = args.getString(NLService.B_ALBUM) ?: ""
         val artist = login_textfield_last.editText!!.text.toString()
-        val origArtist = args.getString(NLService.B_ARTIST)
+        val origArtist = args.getString(NLService.B_ARTIST) ?: ""
         val timeMillis = args.getLong(NLService.B_TIME, System.currentTimeMillis())
         var errMsg: String? = null
 

@@ -304,6 +304,8 @@ object Stuff {
 
     fun sanitizeArtist(artistOrig: String): String {
         val splits = artistOrig.split("; ").filter { !it.isBlank() }
+        if (splits.isEmpty())
+            return ""
         return splits[0]
     }
 

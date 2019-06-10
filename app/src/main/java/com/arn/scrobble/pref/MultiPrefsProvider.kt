@@ -32,7 +32,7 @@ class MultiPrefsProvider : ContentProvider() {
         return if (mPreferenceMap.containsKey(preferenceName)) {
             mPreferenceMap[preferenceName]!!
         } else {
-            val interactor = PreferenceInteractor(context, preferenceName)
+            val interactor = PreferenceInteractor(context!!, preferenceName)
             mPreferenceMap[preferenceName] = interactor
             interactor
         }

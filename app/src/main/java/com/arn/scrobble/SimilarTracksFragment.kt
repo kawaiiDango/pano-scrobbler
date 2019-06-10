@@ -131,16 +131,14 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
         super.onDestroyView()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
-        if (newConfig != null) {
-            if (userVisibleHint)
-                Stuff.setAppBarHeight(activity!!, adapter.itemSizeDp*3)
-            val glm = similar_grid?.layoutManager as GridLayoutManager? ?: return
-            calcGridSize(glm)
+        if (userVisibleHint)
+            Stuff.setAppBarHeight(activity!!, adapter.itemSizeDp*3)
+        val glm = similar_grid?.layoutManager as GridLayoutManager? ?: return
+        calcGridSize(glm)
 //            adapter.notifyDataSetChanged()
-        }
     }
 
     private fun calcGridSize(glm: GridLayoutManager) {

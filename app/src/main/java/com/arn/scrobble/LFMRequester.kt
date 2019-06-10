@@ -75,7 +75,7 @@ class LFMRequester(var command: String, vararg args: String) {
             if (!reAuthNeeded) {
                 when (command) {
                     Stuff.LASTFM_SESS_AUTH -> return null
-                    Stuff.GET_RECENTS -> return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 20, true, null, Stuff.LAST_KEY)
+                    Stuff.GET_RECENTS -> return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 20, true, lastfmSessKey, Stuff.LAST_KEY)
                     Stuff.GET_LOVES -> {
                         val pr = User.getLovedTracks(lastfmUsername, Integer.parseInt(args[0]), 20, Stuff.LAST_KEY)
                         pr.pageResults.forEach {
@@ -168,8 +168,15 @@ class LFMRequester(var command: String, vararg args: String) {
                     }
                     //args[0] = artist, args[1] = track, args[2] = pos
                     Stuff.GET_INFO -> {
-                        val info = Track.getInfo(args[0], args[1], Tokens.LAST_KEY)
-                        return Pair(args[2].toInt(), info)
+                        val info = try {
+                            Track.getInfo(args[0], args[1], Tokens.LAST_KEY)
+                        } catch (e:Exception){
+                            null
+                        }
+                        return if(info != null)
+                            Pair(args[2].toInt(), info)
+                        else
+                            null
                     }
                     Stuff.GET_HERO_INFO -> {
                         if (!Main.isOnline || args[0] == "")
@@ -222,8 +229,7 @@ class LFMRequester(var command: String, vararg args: String) {
                         scrobbleData.artist = args[0]
                         scrobbleData.album = args[1]
                         scrobbleData.track = args[2]
-                        if (args[3] != "" && args[3] != args[0])
-                            scrobbleData.albumArtist = args[3]
+                        scrobbleData.albumArtist = args[3]
                         scrobbleData.timestamp = (args[4].toLong()/1000).toInt() // in secs
                         scrobbleData.duration = (args[5].toLong()/1000).toInt() // in secs
 
@@ -256,29 +262,26 @@ class LFMRequester(var command: String, vararg args: String) {
                                             else
                                                 getValidArtist(args[0], args[2], prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
                                     if (track != null) {
+                                        if (args[1] == ""){
+                                            scrobbleData.artist = track.artist
+                                            if(track.album != null)
+                                                scrobbleData.album = track.album
+                                            if(track.albumArtist != null)
+                                                scrobbleData.albumArtist = track.albumArtist
+                                            scrobbleData.track = track.name
+                                        }
+
                                         val i = Intent(NLService.iMETA_UPDATE)
-                                        i.putExtra(NLService.B_ARTIST, args[0])
-                                        if (args[1] == "")
-                                            i.putExtra(NLService.B_ALBUM, track.album ?: "")
-                                        else
-                                            i.putExtra(NLService.B_ALBUM, args[1])
-                                        if (args[3] == "")
-                                            i.putExtra(NLService.B_ALBUM_ARTIST, track.albumArtist ?: "")
-                                        else
-                                            i.putExtra(NLService.B_ALBUM_ARTIST, args[3])
-                                        i.putExtra(NLService.B_TITLE, track.name)
+                                        i.putExtra(NLService.B_ARTIST, scrobbleData.artist)
+                                        i.putExtra(NLService.B_ALBUM, scrobbleData.album)
+                                        i.putExtra(NLService.B_ALBUM_ARTIST, scrobbleData.albumArtist)
+                                        i.putExtra(NLService.B_TITLE, scrobbleData.track)
                                         i.putExtra(NLService.B_HASH, hash)
                                         i.putExtra(NLService.B_USER_LOVED, track.isLoved)
                                         i.putExtra(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
                                         context.sendBroadcast(i)
                                     }
                                     if (corrected != null) {
-                                        scrobbleData.artist = corrected.first
-                                        if(track?.album != null)
-                                            scrobbleData.album = track.album
-                                        if(track?.albumArtist != null)
-                                            scrobbleData.albumArtist = track.albumArtist
-                                        scrobbleData.track = corrected.second
                                         if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
                                             scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, lastfmSession)
 

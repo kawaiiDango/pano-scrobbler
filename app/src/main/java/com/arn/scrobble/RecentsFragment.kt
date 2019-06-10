@@ -195,11 +195,24 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         adapter.setClickListener(this)
         adapter.setHeroListener(this)
 
-        activity!!.hero_share.setOnClickListener(shareClickListener)
-
-
         sparkline.setOnClickListener{
             toggleGraphDetails(it as SparkView)
+        }
+
+        activity!!.hero_share.setOnClickListener{
+            val track = activity?.hero_img?.tag
+            if (track is Track) {
+
+                var shareText = getString(R.string.share_text,
+                        track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
+                shareText += "\n" +appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
+                        getString(R.string.share_sig, getString(R.string.share_link)))
+                val i = Intent(Intent.ACTION_SEND)
+                i.type = "text/plain"
+                i.putExtra(Intent.EXTRA_SUBJECT, shareText)
+                i.putExtra(Intent.EXTRA_TEXT, shareText)
+                startActivity(Intent.createChooser(i, getString(R.string.share_this_song)))
+            }
         }
 
         activity!!.hero_info.setOnClickListener { v:View ->
@@ -241,7 +254,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             frame.visibility = View.INVISIBLE
         } else {
             val points = arrayListOf<Float>()
-            pointsStr!!.split(", ")
+            pointsStr.split(", ")
                     .forEach {
                         points.add(it.toFloat())
                     }
@@ -321,13 +334,17 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
     override fun onStart() {
         super.onStart()
-        context?.registerReceiver(editReceiver, IntentFilter(NLService.iEDITED))
+        if(!isShowingLoves)
+            context?.registerReceiver(editReceiver, IntentFilter(NLService.iEDITED))
     }
 
     override fun onStop() {
         refreshHandler.removeCallbacks(timedRefresh)
+        activity!!.hero_img?.tag = null
         if (userVisibleHint && isShowingLoves)
-            adapter.removeHandlerCallbacks()
+            try {
+                adapter.removeHandlerCallbacks()
+            }catch (e: Exception){}
         try {
             context?.unregisterReceiver(editReceiver)
         } catch (e: IllegalArgumentException) {}
@@ -335,7 +352,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         super.onStop()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (userVisibleHint)
             Stuff.setAppBarHeight(activity!!)
@@ -405,7 +422,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
     private fun setPaletteColors(oneColor: Int? = null){
         val activity = activity ?: return
         val ctl = activity.ctl
-        val content = activity.recents_swipe_refresh ?: return
+        val content = recents_swipe_refresh ?: return
 
         fun set(palette: Palette?) {
             palette ?: return
@@ -649,23 +666,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         aSet.start()
 
         track.isLoved = !track.isLoved
-    }
-
-
-    private val shareClickListener = View.OnClickListener {
-        val track = activity!!.hero_img?.tag
-        if (track is Track) {
-
-            var shareText = getString(R.string.share_text,
-                    track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
-            shareText += "\n" +appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
-                    getString(R.string.share_sig, getString(R.string.share_link)))
-            val i = Intent(Intent.ACTION_SEND)
-            i.type = "text/plain"
-            i.putExtra(Intent.EXTRA_SUBJECT, shareText)
-            i.putExtra(Intent.EXTRA_TEXT, shareText)
-            startActivity(Intent.createChooser(i, getString(R.string.share_this_song)))
-        }
     }
 
     companion object {

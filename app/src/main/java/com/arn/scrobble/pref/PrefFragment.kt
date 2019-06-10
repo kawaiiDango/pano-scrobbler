@@ -38,18 +38,16 @@ class PrefFragment : PreferenceFragmentCompat(){
         addPreferencesFromResource(R.xml.preferences)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val master = findPreference(Stuff.PREF_MASTER) as SwitchPreference
+            val master = findPreference<SwitchPreference>(Stuff.PREF_MASTER)!!
             master.summary = getString(R.string.pref_master_qs_hint)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                Build.VERSION.PREVIEW_SDK_INT > 0 ||
-                Build.VERSION.SDK_INT > Build.VERSION_CODES.P){
-            val notif = findPreference(Stuff.PREF_NOTIFICATIONS) as SwitchPreference
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            val notif = findPreference<SwitchPreference>(Stuff.PREF_NOTIFICATIONS)!!
             notif.summaryOn = getString(R.string.pref_noti_q)
         }
 
-        val appList = findPreference(Stuff.PREF_WHITELIST)
+        val appList = findPreference<Preference>(Stuff.PREF_WHITELIST)!!
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             activity!!.supportFragmentManager.beginTransaction()
                     .remove(this)
@@ -59,7 +57,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        val spotifyNotice = findPreference("spotify_notice")
+        val spotifyNotice = findPreference<Preference>("spotify_notice")!!
         spotifyNotice.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             Stuff.openInBrowser("https://www.last.fm/settings/applications", activity)
             true
@@ -82,13 +80,13 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 */
-        val delaySecs = findPreference(Stuff.PREF_DELAY_SECS) as SeekBarPreference
+        val delaySecs = findPreference<SeekBarPreference>(Stuff.PREF_DELAY_SECS)!!
         delaySecs.min = 20
 
-        val delayPer = findPreference(Stuff.PREF_DELAY_PER) as SeekBarPreference
+        val delayPer = findPreference<SeekBarPreference>(Stuff.PREF_DELAY_PER)!!
         delayPer.min = 30
 
-        val shareSig = findPreference(Stuff.PREF_ACTIVITY_SHARE_SIG) as EditTextPreference
+        val shareSig = findPreference<EditTextPreference>(Stuff.PREF_ACTIVITY_SHARE_SIG)!!
         val shareSigVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
                 getString(R.string.share_sig, getString(R.string.share_link)))
         shareSig.text = shareSigVal
@@ -99,7 +97,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        val edits = findPreference("edits")
+        val edits = findPreference<Preference>("edits")!!
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
             val context = context
             if (context != null) {
@@ -177,7 +175,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 Stuff.PREF_LB_CUSTOM_USERNAME, Stuff.PREF_LB_CUSTOM_TOKEN, Stuff.PREF_LB_CUSTOM_ROOT
         )
 
-        val about = findPreference("about")
+        val about = findPreference<Preference>("about")!!
         try {
             about.title = "v " + BuildConfig.VERSION_NAME
             about.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -202,11 +200,11 @@ class PrefFragment : PreferenceFragmentCompat(){
         }
     }
 
-    private fun setAuthLabel(elemKey: String) = setAuthLabel(findPreference(elemKey))
+    private fun setAuthLabel(elemKey: String) = setAuthLabel(findPreference<Preference>(elemKey)!!)
 
     private fun initAuthConfirmation(key:String, login: () -> Unit, vararg keysToClear: String,
                                      logout: (() -> Unit)? = null) {
-        val elem = findPreference(key)
+        val elem = findPreference<Preference>(key)!!
         setAuthLabel(elem)
         if (elem.key == "librefm")
             elem.title = elem.title.toString()+ " " + getString(R.string.pref_scrobble_love_only)

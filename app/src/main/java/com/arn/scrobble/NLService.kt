@@ -28,7 +28,7 @@ class NLService : NotificationListenerService() {
     private lateinit var nm: NotificationManager
     private var sessListener: SessListener? = null
     private var bReceiver: LegacyMetaReceiver? = null
-    private lateinit var currentBundle: Bundle
+    private var currentBundle = Bundle()
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
@@ -195,14 +195,14 @@ class NLService : NotificationListenerService() {
                 pLOVE, pUNLOVE -> {
                     val loved = intent.action == pLOVE
                     LFMRequester(if (loved) Stuff.LOVE else Stuff.UNLOVE,
-                            intent.getStringExtra(B_ARTIST),
-                            intent.getStringExtra(B_TITLE))
+                            intent.getStringExtra(B_ARTIST)!!,
+                            intent.getStringExtra(B_TITLE)!!)
                             .skipContentProvider()
                             .asSerialAsyncTask(applicationContext)
                     val np = handler.hasMessages(SessListener.lastHash)
                     currentBundle.putBoolean(B_USER_LOVED, loved)
-                    handler.notifyScrobble(intent.getStringExtra(B_ARTIST),
-                            intent.getStringExtra(B_TITLE), SessListener.lastHash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT))
+                    handler.notifyScrobble(intent.getStringExtra(B_ARTIST)!!,
+                            intent.getStringExtra(B_TITLE)!!, SessListener.lastHash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT))
                 }
                 pWHITELIST, pBLACKLIST -> {
                     //create copies
@@ -228,13 +228,13 @@ class NLService : NotificationListenerService() {
                 }
                 iOTHER_ERR -> {
                     handler.remove(intent.getIntExtra(B_HASH, 0))
-                    handler.notifyOtherError(intent.getStringExtra(B_ERR_MSG))
+                    handler.notifyOtherError(intent.getStringExtra(B_ERR_MSG)!!)
                 }
                 iBAD_META -> {
                     handler.remove(intent.getIntExtra(B_HASH, 0))
-                    handler.notifyBadMeta(intent.getStringExtra(B_ARTIST),
-                            intent.getStringExtra(B_ALBUM),
-                            intent.getStringExtra(B_TITLE),
+                    handler.notifyBadMeta(intent.getStringExtra(B_ARTIST)!!,
+                            intent.getStringExtra(B_ALBUM)!!,
+                            intent.getStringExtra(B_TITLE)!!,
                             intent.getLongExtra(B_TIME, System.currentTimeMillis()),
                             intent.getStringExtra(B_ERR_MSG)
                             )
@@ -274,17 +274,23 @@ class NLService : NotificationListenerService() {
         fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, duration:Long,
                        hash:Int, forcable:Boolean, packageName: String?) {
             removeMessages(SessListener.lastHash)
-            if (!hasMessages(hash))
+            if (artist != "" && !hasMessages(hash))
                 AsyncTask.THREAD_POOL_EXECUTOR.execute {
                 val now = System.currentTimeMillis()
                 var album = Stuff.sanitizeAlbum(album)
                 var artist = Stuff.sanitizeArtist(artist)
                 var albumArtist = albumArtist
                 var title = title
+
                 val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
-                val e = dao.find(artist.hashCode().toString() +
-                        album.hashCode().toString() + title.hashCode().toString())
-                if (e != null){
+                val e =
+                        try{
+                            dao.find(artist.hashCode().toString() +
+                                    album.hashCode().toString() + title.hashCode().toString())
+                        }catch (e: Exception) {
+                            null
+                        }
+                if (e != null) {
                     artist = e.artist
                     album = e.album
                     if (e.albumArtist.isNotBlank())
@@ -292,7 +298,8 @@ class NLService : NotificationListenerService() {
                     title = e.track
                 }
                 if (artist != "" && title != "") {
-                    LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString(), hash.toString())
+                    if(isOnline)
+                        LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString(), hash.toString())
                             .skipContentProvider()
                             .asSerialAsyncTask(applicationContext)
 

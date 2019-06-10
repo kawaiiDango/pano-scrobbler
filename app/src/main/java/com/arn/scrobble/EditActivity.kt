@@ -12,7 +12,7 @@ class EditActivity: AppCompatActivity() {
             val ef = EditFragment()
             ef.arguments = intent.extras
 
-            supportFragmentManager!!.beginTransaction()
+            supportFragmentManager.beginTransaction()
                     .replace(R.id.blank_frame, ef)
                     .commit()
         }

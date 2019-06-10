@@ -10,6 +10,7 @@ import android.content.*
 import android.content.pm.LabeledIntent
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Rect
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.Network
@@ -158,6 +159,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             tab_bar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
         }
         supportFragmentManager.addOnBackStackChangedListener(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            drawer_layout.systemGestureExclusionRects = listOf(Rect(0, 0, 100, 2500))
+            //it doesnt work out of the box
+        }
 //        showNotRunning()
 //        test()
     }

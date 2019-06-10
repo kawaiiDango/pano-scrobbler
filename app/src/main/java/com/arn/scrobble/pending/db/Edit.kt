@@ -19,6 +19,6 @@ class Edit {
     var artist: String = ""
 
     override fun toString(): String {
-        return "Edit [track=$track, album=$album, albumArtist=$albumArtist, artist=$artist]"
+        return "Edit [hash=$hash track=$track, album=$album, albumArtist=$albumArtist, artist=$artist]"
     }
 }

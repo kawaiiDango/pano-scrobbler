@@ -211,10 +211,12 @@ class SessListener constructor(private val pref: SharedPreferences,
             }
         }
 
-        override fun onPlaybackStateChanged(state: PlaybackState) {
+        override fun onPlaybackStateChanged(state: PlaybackState?) {
             lastSessEventTime = System.currentTimeMillis()
-            val msg = stateHandler.obtainMessage(0, state.state, state.position.toInt())
-            stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
+            if (state != null) {
+                val msg = stateHandler.obtainMessage(0, state.state, state.position.toInt())
+                stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
+            }
         }
 
         override fun onSessionDestroyed() {

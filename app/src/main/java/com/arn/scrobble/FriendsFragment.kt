@@ -69,8 +69,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
         return if (page <= adapter.totalPages || adapter.totalPages == 0) {
             if ((page == 1 && (friends_grid.layoutManager as GridLayoutManager).findFirstVisibleItemPosition() < 15) || page > 1) {
                 viewModel.loadFriendsList(page, true)
-            } else {
-                adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL)
             }
             if (adapter.itemCount == 0 || page > 1)
                 friends_linear_layout.friends_swipe_refresh.isRefreshing = true
@@ -108,6 +106,16 @@ class FriendsFragment : Fragment(), ItemClickListener {
         Stuff.setTitle(activity, 0)
 
         adapter = FriendsAdapter(view!!)
+        val glm = GridLayoutManager(context!!, getNumColumns())
+        friends_grid.layoutManager = glm
+        (friends_grid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        friends_grid.adapter = adapter
+
+        val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
+                loadFriends(page+1)
+            }
+        }
 
         viewModel = VMFactory.getVM(this, FriendsVM::class.java)
         val friendsListLd = viewModel.loadFriendsList(1, false)
@@ -115,6 +123,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
             friendsListLd.observe(viewLifecycleOwner, Observer {
                 it ?: return@Observer
                 adapter!!.populate(it, it.page)
+                loadMoreListener.loading = false
+                if (it.page == 1)
+                    adapter!!.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL*2)
             })
             viewModel.loadFriendsRecents(null)
                     .observe(viewLifecycleOwner, Observer {
@@ -125,18 +136,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
         adapter!!.setClickListener(this)
         adapter!!.viewModel = viewModel
 
-        val glm = GridLayoutManager(context!!, getNumColumns())
-        friends_grid.layoutManager = glm
-        (friends_grid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
-        friends_grid.adapter = adapter
-
         loadFriends(1)
 
-        val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadFriends(page+1)
-            }
-        }
         friends_grid.addOnScrollListener(loadMoreListener)
     }
 

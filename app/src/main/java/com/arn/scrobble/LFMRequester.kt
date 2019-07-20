@@ -18,13 +18,13 @@ import de.umass.lastfm.cache.FileSystemCache
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import java.io.IOException
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.InterruptedIOException
 import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
+import java.util.zip.GZIPInputStream
 
 
 /**
@@ -160,11 +160,59 @@ class LFMRequester(var command: String, vararg args: String) {
                     }
                     Stuff.GET_FRIENDS -> {
                         val limit = if (args.size > 1) args[1].toInt() else 30
-                        return try {
-                            User.getFriends(lastfmUsername, true, Integer.parseInt(args[0]), limit, Stuff.LAST_KEY)
+                        var pr:PaginatedResult<User>
+                        try {
+                            pr = User.getFriends(lastfmUsername, true, Integer.parseInt(args[0]), limit, Stuff.LAST_KEY)
                         } catch (e:NullPointerException){
-                            PaginatedResult<User>(1,0, listOf())
+                            val url = URL("https://www.last.fm/user/$lastfmUsername/following?page="+args[0])
+                            var urlConnection:HttpURLConnection? = null
+                            val users = mutableListOf<User>()
+                            try {
+                                var idx = 0
+                                urlConnection = url.openConnection() as HttpURLConnection
+                                urlConnection.setRequestProperty("Accept-Encoding", "gzip")
+                                urlConnection.instanceFollowRedirects = false
+
+                                if (urlConnection.responseCode != 200)
+                                    idx = -1
+                                val resp = slurp(urlConnection, 1024)
+                                if (resp == "")
+                                    idx = -1
+                                if (idx > -1)
+                                    idx = resp.indexOf("<ul class=\"user-list\">", 50000)
+                                var idx2: Int
+                                if (idx > -1) {
+                                    do {
+                                        idx = resp.indexOf("  link-block-target", idx)
+                                        if(idx > -1)
+                                            idx= resp.indexOf(">", idx+1)
+                                        if(idx > -1){
+                                            idx += 1
+                                            idx2 = resp.indexOf("<", idx)
+                                            val uname = resp.substring(idx, idx2)
+                                            idx= resp.indexOf("<img", idx2)
+                                            idx= resp.indexOf("\"", idx)
+                                            idx2= resp.indexOf("\"", idx+1)
+                                            val imageUrl = resp.substring(idx+1,idx2)
+                                            val user = User(uname, "https://www.last.fm/user/$uname")
+                                            user.imageURL = imageUrl
+                                            users.add(user)
+                                            idx = idx2
+                                        }
+                                    }while(idx > -1)
+
+                                }
+                            } catch(e:Exception){
+                            } finally {
+                                urlConnection?.disconnect()
+                            }
+                            val totalPages = if (users.isEmpty())
+                                args[0].toInt()
+                            else
+                                10
+                            pr = PaginatedResult(args[0].toInt(),totalPages, users)
                         }
+                        return pr
                     }
                     //args[0] = artist, args[1] = track, args[2] = pos
                     Stuff.GET_INFO -> {
@@ -187,19 +235,37 @@ class LFMRequester(var command: String, vararg args: String) {
                         val scrapped = mutableListOf<String?>()
                         try {
                             urlConnection = url.openConnection() as HttpURLConnection
+                            urlConnection.setRequestProperty("Accept-Encoding", "gzip")
+
                             if (urlConnection.responseCode != 200)
                                 return null
-                            val resp = slurp(urlConnection.inputStream, 1024)
+                            val resp = slurp(urlConnection, 1024)
                             if (resp == "")
                                 return null
                             //0
-                            var idx = resp.indexOf("charts/sparkline")
-                            val idx2: Int
+                            var idx = resp.indexOf("charts/listener-trend",200000)
+                            var idx2: Int
+                            var days = 0
+                            val daily = arrayListOf<Int>()
+                            val monthly = arrayOf(0,0,0,0,0)
                             if (idx > -1) {
-                                idx = resp.indexOf("[", idx) + 1
-                                idx2 = resp.indexOf("]", idx)
-                                val chart = resp.substring(idx, idx2)
-                                scrapped.add(chart)
+                                val stop1 = "data-value=\""
+                                do {
+                                    idx = resp.indexOf(stop1, idx)
+                                    if(idx > -1){
+                                        idx += stop1.length
+                                        idx2 = resp.indexOf("\"", idx)
+                                        val value = resp.substring(idx, idx2).toInt()
+                                        daily.add(value)
+                                    }
+                                }while(idx > -1)
+                                for(i in daily.size-1 downTo 0){
+                                    monthly[4-days/30] += daily[i]
+                                    days++
+                                    if(days/30 >4)
+                                        break
+                                }
+                                scrapped.add(monthly.joinToString())
                             } else
                                 scrapped.add(null)
 
@@ -215,6 +281,7 @@ class LFMRequester(var command: String, vararg args: String) {
                             }
                             scrapped.add(img)
                             */
+                        } catch (e:Exception){
                         } finally {
                             urlConnection?.disconnect()
                         }
@@ -466,11 +533,16 @@ class LFMRequester(var command: String, vararg args: String) {
 
         private val validArtistsCache = LruCache<String, Boolean>(10)
 
-        private fun slurp(`is`: InputStream, bufferSize: Int): String {
+        private fun slurp(urlConnection: HttpURLConnection, bufferSize: Int): String {
             val buffer = CharArray(bufferSize)
             val out = StringBuilder()
             try {
-                InputStreamReader(`is`, "UTF-8").use { `in` ->
+                val ir = if ("gzip" == urlConnection.contentEncoding) {
+                    InputStreamReader(GZIPInputStream(urlConnection.inputStream), "UTF-8")
+                } else {
+                    InputStreamReader(urlConnection.inputStream, "UTF-8")
+                }
+                ir.use { `in` ->
                     while (true) {
                         val rsz = `in`.read(buffer, 0, buffer.size)
                         if (rsz < 0)
@@ -487,7 +559,7 @@ class LFMRequester(var command: String, vararg args: String) {
                 ex.printStackTrace()
                 return ""
             }
-            `is`.close()
+            urlConnection.inputStream.close()
             return out.toString()
         }
 

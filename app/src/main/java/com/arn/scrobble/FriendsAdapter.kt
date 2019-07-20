@@ -93,6 +93,11 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                         sortedRes[j].recentTrack == null && users[i].recentTrack != null &&
                         (i in firstVisible..lastVisible)) {
                     sortedRes[j].recentTrack = users[i].recentTrack
+                    if (!handler.hasMessages(users[i].name.hashCode())) {
+                        val msg = handler.obtainMessage(users[i].name.hashCode())
+                        msg.arg1 = j
+                        handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
+                    }
                 }
             }
 
@@ -193,7 +198,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                 vSubtitle.text = " "
                 vDate.text = " "
                 vTrackContainer.setOnClickListener {}
-                if (!handler.hasMessages(user.name.hashCode())) {
+                if (!handler.hasMessages(user.name.hashCode()) && adapterPosition > -1) {
                     val msg = handler.obtainMessage(user.name.hashCode())
                     msg.arg1 = adapterPosition
                     handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)

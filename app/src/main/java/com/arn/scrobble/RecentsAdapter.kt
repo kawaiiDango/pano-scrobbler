@@ -347,9 +347,6 @@ class RecentsAdapter
             vOverlay.setOnClickListener {
                 itemClickListener?.onItemClick(it, adapterPosition)
             }
-            vDate.setOnClickListener {
-                vMenu.callOnClick()
-            }
         }
 
         override fun onClick(view: View) {
@@ -374,7 +371,7 @@ class RecentsAdapter
                 Stuff.nowPlayingAnim(vPlaying, true)
             } else {
                 vDate.visibility = View.VISIBLE
-                vDate.text = Stuff.myRelativeTime(itemView.context, track.playedWhen)
+                vDate.text = Stuff.myRelativeTime(itemView.context, track.playedWhen?.time ?: 0, true)
                 Stuff.nowPlayingAnim(vPlaying, false)
             }
 

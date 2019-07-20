@@ -39,6 +39,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.coordinator_main.view.*
 import java.io.IOException
+import java.text.DateFormat
 import java.text.DecimalFormat
 import java.util.*
 
@@ -419,13 +420,19 @@ object Stuff {
     fun myRelativeTime(context: Context, date: Date?): CharSequence =
             myRelativeTime(context, date?.time ?: 0)
 
-    fun myRelativeTime(context: Context, millis: Long): CharSequence {
-        var relDate: CharSequence = context.getString(R.string.time_now)
-        if (millis != 0L)
-            relDate = DateUtils.getRelativeTimeSpanString(
-                    millis, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL)
-        if (relDate[0] == '0')
+    fun myRelativeTime(context: Context, millis: Long, showTime: Boolean = false): CharSequence {
+        if (millis == 0L)
+            return context.getString(R.string.time_now)
+        val diff = System.currentTimeMillis()-millis
+        if(diff <=60*1000)
             return context.getString(R.string.time_now_long)
+        var relDate = DateUtils.getRelativeTimeSpanString(
+                    millis, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL) as String
+
+        if(showTime && diff>24*3600*1000){
+            val df = DateFormat.getTimeInstance(DateFormat.SHORT)
+            relDate = relDate + ", "+ df.format(Date(millis))
+        }
         return relDate
     }
 

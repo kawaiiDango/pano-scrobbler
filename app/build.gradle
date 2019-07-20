@@ -57,15 +57,15 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.1.0-beta01"
-    implementation "androidx.preference:preference:1.1.0-beta01"
-    implementation "androidx.media:media:1.1.0-beta02"
+    implementation "androidx.appcompat:appcompat:1.1.0-rc01"
+    implementation "androidx.preference:preference:1.1.0-rc01"
+    implementation "androidx.media:media:1.1.0-rc01"
     implementation "androidx.palette:palette:1.0.0"
-    implementation "androidx.recyclerview:recyclerview:1.1.0-alpha06"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01"
-    kapt "androidx.lifecycle:lifecycle-compiler:2.2.0-alpha01"
-    kapt "androidx.room:room-compiler:2.1.0-rc01"
-    implementation "androidx.room:room-runtime:2.1.0-rc01"
+    implementation "androidx.recyclerview:recyclerview:1.1.0-beta01"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.2.0-alpha02"
+    kapt "androidx.room:room-compiler:2.1.0"
+    implementation "androidx.room:room-runtime:2.1.0"
 
     implementation "com.google.android.material:material:1.1.0-alpha07"
 

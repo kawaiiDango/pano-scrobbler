@@ -66,6 +66,7 @@
 
         <SeekBarPreference
             app:iconSpaceReserved="false"
+            app:showSeekBarValue="true"
             android:key="delay_per"
             android:title="@string/pref_delay_per"
             android:defaultValue="50"
@@ -73,6 +74,7 @@
 
         <SeekBarPreference
             app:iconSpaceReserved="false"
+            app:showSeekBarValue="true"
             android:key="delay_secs"
             android:title="@string/pref_delay_secs"
             android:defaultValue="240"

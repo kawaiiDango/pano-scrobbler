@@ -22,7 +22,7 @@
     <string name="recently_scrobbled">Recently Scrobbled</string>
     <string name="recently_loved">♥ Recently Loved</string>
     <string name="recents">Recents</string>
-    <string name="graph_info">… last 6 months</string>
+    <string name="graph_info">… last 5 months</string>
     <string name="action_app_list">Enabled Apps</string>
     <string name="first_things">Almost there…</string>
     <string name="music_players">Music Players</string>
@@ -78,7 +78,6 @@
     <string name="time_now">now</string>
     <string name="time_now_long">just now</string>
     <string name="no_mail_apps">No email client is installed.</string>
-    <string name="generating_report">Generating report…</string>
     <string name="loved">Loved</string>
     <string name="on_last_fm">On last.FM:</string>
     <string name="edits">Edits</string>

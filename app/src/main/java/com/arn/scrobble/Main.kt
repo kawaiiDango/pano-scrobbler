@@ -330,7 +330,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     }
     private fun mailLogs(){
-        Stuff.toast(this, getString(R.string.generating_report))
         val activeSessions = try {
             val sessManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
             sessManager.getActiveSessions(ComponentName(this, NLService::class.java))

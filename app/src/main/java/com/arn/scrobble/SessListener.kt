@@ -69,9 +69,8 @@ class SessListener constructor(private val pref: SharedPreferences,
         val it = controllersMap.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
-            if (pair.first.packageName != Stuff.IGNORE_ARTIST_META[0] && pair.first.packageName != Stuff.IGNORE_ARTIST_META[1]
-                    && ((tokens != null && !tokens.contains(token)) ||
-                    (packageNames != null && packageNames.contains(pair.first.packageName)))) {
+            if ((tokens != null && !tokens.contains(token)) ||
+                    (packageNames != null && packageNames.contains(pair.first.packageName))) {
                 pair.second.stop()
                 pair.first.unregisterCallback(pair.second)
                 synchronized(controllersMap) {
@@ -219,10 +218,11 @@ class SessListener constructor(private val pref: SharedPreferences,
             }
         }
 
-        override fun onSessionDestroyed() {
-            Stuff.log("onSessionDestroyed")
-            stop()
-        }
+        //Do not use
+//        override fun onSessionDestroyed() {
+//            Stuff.log("onSessionDestroyed")
+//            stop()
+//        }
 
         fun stop() {
             stateHandler.removeCallbacksAndMessages(null)

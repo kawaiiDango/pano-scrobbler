@@ -57,7 +57,7 @@ public class User extends ImageHolder {
 	private Date registeredDate;
 	private Track recentTrack;
 
-	private User(String name, String url) {
+	public User(String name, String url) {
 		this.name = name;
 		this.url = url;
 	}
@@ -104,6 +104,10 @@ public class User extends ImageHolder {
 
 	public String getImageURL() {
 		return getImageURL(ImageSize.MEDIUM);
+	}
+
+	public void setImageURL(String url) {
+	    imageUrls.put(ImageSize.MEDIUM, url);
 	}
 
 	public String getId() {

@@ -299,6 +299,12 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             R.id.nav_friends -> {
                 tab_bar.getTabAt(2)?.select()
             }
+            R.id.nav_rec -> {
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, RecFragment())
+                        .addToBackStack(null)
+                        .commit()
+            }
             R.id.nav_settings -> {
                 supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, PrefFragment())

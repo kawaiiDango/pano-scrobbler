@@ -26,6 +26,10 @@
             android:icon="@drawable/vd_friends"
             android:title="@string/friends"/>
         <item
+            android:id="@+id/nav_rec"
+            android:icon="@drawable/vd_mic"
+            android:title="@string/menu_rec"/>
+        <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/vd_settings"
             android:title="@string/action_settings"/>

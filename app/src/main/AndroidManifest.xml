@@ -6,6 +6,8 @@
     <uses-permission android:name="android.Manifest.permission.MEDIA_CONTENT_CONTROL" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
 
     <application
         android:allowBackup="true"

@@ -93,6 +93,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                         sortedRes[j].recentTrack == null && users[i].recentTrack != null &&
                         (i in firstVisible..lastVisible)) {
                     sortedRes[j].recentTrack = users[i].recentTrack
+                    sortedRes[j].playcount = users[i].playcount
                     if (!handler.hasMessages(users[i].name.hashCode())) {
                         val msg = handler.obtainMessage(users[i].name.hashCode())
                         msg.arg1 = j
@@ -121,6 +122,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                     val newRecent = res.pageResults.first()
                     if (oldRecent?.playedWhen != newRecent?.playedWhen || oldRecent?.name != newRecent?.name) {
                         users[pos].recentTrack = newRecent
+                        users[pos].playcount = res.totalPages
                         notifyItemChanged(pos, 0)
                     }
                     break
@@ -171,7 +173,10 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
         }
 
         fun setItemData(user: User) {
-            vName.text = user.realname ?: user.name
+            vName.text = if (user.realname == null || user.realname == "")
+                    user.name
+            else
+                user.realname
 
             val track = user.recentTrack
             if (track != null && track.name != null && track.name != "") {

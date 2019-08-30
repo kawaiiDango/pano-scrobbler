@@ -98,6 +98,10 @@ public class User extends ImageHolder {
 		return playcount;
 	}
 
+	public void setPlaycount(int playcount) {
+		this.playcount = playcount;
+	}
+
 	public boolean isSubscriber() {
 		return subscriber;
 	}

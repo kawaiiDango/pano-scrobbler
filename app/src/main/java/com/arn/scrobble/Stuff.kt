@@ -159,7 +159,7 @@ object Stuff {
     const val PACKAGE_BLACKPLAYER_PREFIX = "com.kodarkooperativet.blackplayer"
 
     private val seperators = arrayOf(// in priority order
-            "—", " – ", " –", "– ", " _ ", " - ", " \\| ", " -", "- ", "「", "『", "ー", " • ",
+            "—", " – ", " –", "– ", " _ ", " - ", " \\| ", " -", "- ", "「", "『", /*"ー", */" • ",
 
             "【", "〖", "〔",
             "】", "〗", "』", "」", "〕",

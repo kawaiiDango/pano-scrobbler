@@ -282,6 +282,8 @@ class LFMRequester(var command: String, vararg args: String) {
                             scrapped.add(img)
                             */
                         } catch (e:Exception){
+                            if(scrapped.isEmpty())
+                                scrapped.add(null)
                         } finally {
                             urlConnection?.disconnect()
                         }

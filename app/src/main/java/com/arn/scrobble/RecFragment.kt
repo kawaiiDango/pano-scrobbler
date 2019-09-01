@@ -15,7 +15,6 @@ import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.content_rec.*
-import kotlinx.android.synthetic.main.content_rec.view.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -24,10 +23,9 @@ import java.io.IOException
 
 
 
-public class RecFragment:Fragment(){
+class RecFragment:Fragment(){
     private var started = false
     private val code = 200
-    private var permissionToRecordAccepted = false
     private val handler = Handler()
     private var recorder:MediaRecorder? = null
     private val duration = 10000L
@@ -38,15 +36,17 @@ public class RecFragment:Fragment(){
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.content_rec, container, false)
-        view.rec_progress.setOnClickListener { startOrCancel() }
-        return view
+        return inflater.inflate(R.layout.content_rec, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         path = activity!!.filesDir.absolutePath+"/sample.rec"
-        startOrCancel()
+        handler.postDelayed({
+            startOrCancel()
+            rec_progress.setOnClickListener { startOrCancel() }
+        }, 300)
+
     }
 
     override fun onStart() {
@@ -97,7 +97,9 @@ public class RecFragment:Fragment(){
         } else {
             try {
                 recorder?.stop()
+                recorder?.reset()
                 recorder?.release()
+                recorder = null
             } catch (e:Exception) {}
             asyncTask?.cancel(true)
             asyncTask = null
@@ -142,7 +144,9 @@ public class RecFragment:Fragment(){
 
     private fun finishRecording() {
         recorder?.stop()
+        recorder?.reset()
         recorder?.release()
+        recorder = null
         rec_status.setText(R.string.uploading)
 
         asyncTask = SubmitAsync()
@@ -189,7 +193,7 @@ public class RecFragment:Fragment(){
 
         if(statusCode == 0) {
             rec_img.setImageResource(R.drawable.vd_check_simple)
-            rec_status.text = getString(R.string.scrobbledx, "$artist — $title")
+            rec_status.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
             LFMRequester(Stuff.SCROBBLE, artist, album, title, "", System.currentTimeMillis().toString(), "0")
                     .asSerialAsyncTask(context!!)
         } else
@@ -199,7 +203,8 @@ public class RecFragment:Fragment(){
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == code && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        if (requestCode == code && grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED)
             startOrCancel()
     }
 
@@ -207,7 +212,7 @@ public class RecFragment:Fragment(){
         override fun doInBackground(vararg path: String?): String {
             val file = File(path[0])
             val a = IdentifyProtocolV1()
-            return a.recognize("identify-ap-southeast-1.acrcloud.com", Tokens.ACR_KEY, Tokens.ACR_SECRET, file, "audio", 10000)
+            return a.recognize(Tokens.ACR_HOST, Tokens.ACR_KEY, Tokens.ACR_SECRET, file, "audio", 10000)
         }
 
         override fun onPostExecute(result: String?) {

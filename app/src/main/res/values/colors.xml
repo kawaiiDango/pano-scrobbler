@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#880e4f</color>
-    <color name="colorPrimaryDark">#5a0934</color>
+    <color name="colorPrimaryLight">#880e4f</color>
+    <color name="colorPrimary">#5a0934</color>
     <color name="colorAccent">#f06292</color>
     <color name="colorNoti">#ec407a</color>
 
@@ -10,8 +10,7 @@
     <color name="colorAccentLightTrans">#bbe1bee7</color>
 <!--    <color name="colorAccentLightTrans">#bbFFD2E7</color>-->
     <color name="lightDivider">#11ffffff</color>
-    <color name="darkBg">#a9000000</color>
-    <color name="defaultDarkBg">#303030</color>
+    <color name="darkBg">#80000000</color>
     <color name="highlightPink">#22f06292</color> <!-- accent -->
     <color name="highlightGreen">#5aaed581</color> <!-- green 300 -->
     <color name="status_bar_scrim">#32000000</color>

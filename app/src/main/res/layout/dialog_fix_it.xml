@@ -4,7 +4,7 @@
             android:layout_height="match_parent"
             android:nestedScrollingEnabled="true"
             xmlns:tools="http://schemas.android.com/tools"
-            android:background="@color/defaultDarkBg"
+            android:background="#222"
             android:theme="@style/AppTheme">
 
     <LinearLayout

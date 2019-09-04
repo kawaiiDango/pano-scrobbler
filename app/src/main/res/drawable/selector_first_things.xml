@@ -3,7 +3,7 @@
     <item>
         <selector>
             <item android:state_enabled="false" android:drawable="@android:color/transparent"/>
-            <item android:state_enabled="true" android:drawable="@color/colorPrimaryDark"/>
+            <item android:state_enabled="true" android:drawable="@color/colorPrimary"/>
             <item android:state_enabled="true" android:drawable="@color/highlightPink"/>
         </selector>
     </item>

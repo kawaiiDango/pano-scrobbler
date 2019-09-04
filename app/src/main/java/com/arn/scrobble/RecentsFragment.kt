@@ -432,7 +432,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             if (!Stuff.isDark(colorPrimDark))
                 colorPrimDark = palette.getDarkVibrantColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
             colorLightWhite = palette.getLightMutedColor(ContextCompat.getColor(context!!, android.R.color.primary_text_dark))
-            colorMutedDark = palette.getDarkMutedColor(ContextCompat.getColor(context!!, R.color.colorPrimaryDark))
+            colorMutedDark = palette.getDarkMutedColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
             colorMutedBlack = palette.getDarkMutedColor(ContextCompat.getColor(context!!, android.R.color.background_dark))
 
             ctl.setContentScrimColor(colorPrimDark)

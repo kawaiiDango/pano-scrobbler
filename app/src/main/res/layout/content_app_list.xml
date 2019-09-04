@@ -18,11 +18,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_done_margin"
         android:layout_marginEnd="@dimen/fab_done_margin"
+        android:layout_marginBottom="@dimen/fab_done_margin"
         android:clickable="true"
         android:focusable="true"
-        app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@drawable/vd_check_simple"/>
+        app:backgroundTint="@color/colorPrimaryLight"
+        app:srcCompat="@drawable/vd_check_simple" />
 
 </FrameLayout>

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.text.InputType
@@ -15,7 +16,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.arn.scrobble.pref.MultiPreferences
 import kotlinx.android.synthetic.main.content_login.*
@@ -192,8 +192,7 @@ open class LoginFragment: DialogFragment() {
 
         if (checksLogin) {
             Stuff.setTitle(activity, R.string.pref_login)
-            (activity!! as Main).ctl.setContentScrimColor(
-                    ContextCompat.getColor(activity!!, R.color.background_material_dark))
+            (activity!! as Main).ctl.setContentScrimColor(Color.BLACK)
 
             val iF = IntentFilter()
             iF.addAction(NLService.iSESS_CHANGED)

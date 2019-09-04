@@ -11,4 +11,8 @@ class VHHeader(view: View) : RecyclerView.ViewHolder(view) {
     fun setHeaderText(s:String) {
         vText.text = s
     }
+
+    fun setHeaderTextColor(color:Int){
+        vText.setTextColor(color)
+    }
 }

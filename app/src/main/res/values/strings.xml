@@ -13,7 +13,7 @@
     <string name="album">Album (optional)</string>
     <string name="track">Track</string>
     <string name="state_scrobbling">Now scrobbling…</string>
-    <string name="state_scrobbled">Scrobbled…</string>
+    <string name="state_scrobbled">Scrobbled</string>
     <string name="state_unscrobbled">Un-scrobbled</string>
     <string name="state_didnt_scrobble">Didn\'t scrobble</string>
     <string name="state_invalid_artist">No such artist</string>
@@ -88,8 +88,7 @@
     <string name="menu_rec">Scrobble from mic</string>
     <string name="listening">Listening to music playing around you…</string>
     <string name="uploading">Uploading…</string>
-    <string name="scrobbledx">Scrobbled:\n%1$s</string>
-    <string name="powered_acr">Powered by ACRCloud</string>
+    <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
     <string name="pref_master_on">Scrobbler active</string>

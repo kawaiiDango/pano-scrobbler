@@ -466,7 +466,7 @@ object Stuff {
 
     fun getStartupIntent(context: Context): Intent? {
         // https://stackoverflow.com/questions/48166206/how-to-start-power-manager-of-all-android-manufactures-to-enable-background-and/48166241#48166241
-        for (i in 0 until STARTUPMGR_INTENTS.size step 2) {
+        for (i in STARTUPMGR_INTENTS.indices step 2) {
             val intent = Intent().setComponent(ComponentName(STARTUPMGR_INTENTS[i], STARTUPMGR_INTENTS[i+1]))
             if (context.packageManager.resolveActivity(intent,
                             PackageManager.MATCH_DEFAULT_ONLY) != null)

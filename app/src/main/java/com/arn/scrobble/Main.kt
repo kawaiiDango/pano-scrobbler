@@ -175,7 +175,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         toggle.onDrawerSlide(drawer_layout, if (backArrowShown) 1f else 0f)
 
         Stuff.timeIt("onPostCreate")
-//        test()
     }
 
     fun testNoti (){
@@ -288,9 +287,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
+        drawer_layout.closeDrawer(GravityCompat.START)
+
         when (item.itemId) {
             R.id.nav_last_week -> {
+                val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
                 Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, frame, 10, 200)
             }
             R.id.nav_loved -> {
@@ -315,13 +316,18 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 mailLogs()
             }
         }
-
-        drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
     override fun onBackStackChanged() {
         checkBackStack(this)
+    }
+
+    override fun onBackPressed() {
+        if (drawer_layout.isDrawerOpen(GravityCompat.START))
+            drawer_layout.closeDrawer(GravityCompat.START)
+        else
+            super.onBackPressed()
     }
 
     private fun showNotRunning(){
@@ -333,8 +339,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 .setActionTextColor(Color.YELLOW)
         snackbar.view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
         snackbar.show()
-
     }
+
     private fun mailLogs(){
         val activeSessions = try {
             val sessManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager

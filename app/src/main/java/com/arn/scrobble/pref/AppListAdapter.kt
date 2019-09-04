@@ -6,6 +6,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -53,7 +54,10 @@ class AppListAdapter
             is VHItem -> appList[position]?.let {
                 holder.setItemData(it)
             }
-            is VHHeader -> holder.setHeaderText(sectionHeaders[position] ?: "...")
+            is VHHeader -> {
+                holder.setHeaderText(sectionHeaders[position] ?: "...")
+                holder.setHeaderTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorAccent))
+            }
             else -> throw RuntimeException("Invalid view type $holder")
         }
     }
@@ -104,7 +108,7 @@ class AppListAdapter
         }
 
         fun setItemData(app: ApplicationInfo) {
-            vName.text = app.loadLabel(packageManager) ?: return
+            vName.text = app.loadLabel(packageManager)
             val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME + ":" + app.packageName)
 
             picasso.load(uri)

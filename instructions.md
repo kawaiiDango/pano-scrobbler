@@ -5,6 +5,7 @@ package com.arn.scrobble
 object Tokens {
     const val LAST_KEY = ""
     const val LAST_SECRET = ""
+    const val ACR_HOST = ""
     const val ACR_KEY = ""
     const val ACR_SECRET = ""
 }

@@ -98,7 +98,7 @@ class EditFragment: LoginFragment() {
         }
 
         try {
-            var validArtist:Pair<String,String>? = null
+            var validArtist:String? = null
             var validTrack:Track? = null
 
             if (!login_force.isChecked) {
@@ -110,7 +110,7 @@ class EditFragment: LoginFragment() {
                                 null
                             }
                 if (validTrack == null)
-                    validArtist = LFMRequester.getValidArtist(artist, track, pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+                    validArtist = LFMRequester.getValidArtist(artist, pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
                 else {
                     if (album.isBlank() && validTrack.album != null) {
                         album = validTrack.album

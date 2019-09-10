@@ -108,6 +108,7 @@ object Stuff {
     const val PREF_GNUFM_NIXTAPE = "gnufm_nixtape"
     const val PREF_GNUFM_SESS_KEY = "gnufm_token"
     const val PREF_LASTFM_DISABLE = "lastfm_disable"
+    const val PREF_NOW_PLAYING = "now_playing"
 
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 

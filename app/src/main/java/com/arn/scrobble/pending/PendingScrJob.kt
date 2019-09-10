@@ -54,16 +54,16 @@ class PendingScrJob : JobService() {
 
                 publishProgress( "$aneCount remaining")
 
-                var corrected: Pair<String,String>?
+                var correctedArtist: String?
                 try {
-                    corrected = LFMRequester.getValidArtist(entry.artist, entry.track, prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+                    correctedArtist = LFMRequester.getValidArtist(entry.artist, prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
                 } catch (e: Exception){
                     Stuff.log("OfflineScrobble: n/w err1 - " + e.message)
                     done = false
                     break
 
                 }
-                if (corrected != null)
+                if (correctedArtist != null)
                     dao.markValidArtist(entry.artist)
                 else
                     dao.deleteInvalidArtist(entry.artist)

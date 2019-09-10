@@ -118,6 +118,7 @@
     <string name="pref_scrobble_love_only">(Scrobble &amp; love only)</string>
     <string name="pref_user_label">User</string>
     <string name="pref_token_label">Authentication token</string>
+    <string name="pref_now_playing">Submit now playing</string>
     <string name="lastfm_password">Lastfm Password</string>
     <string name="lastfm_login_info">"Deleting and editing scrobbles are not a part of the lastFM API. The app can still simulate a non-API login to lastFM, for which, your password is needed.
 

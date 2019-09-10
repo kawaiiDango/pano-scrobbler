@@ -79,18 +79,17 @@
             android:title="@string/pref_delay_secs"
             android:defaultValue="240"
             android:max="360"/>
-
-<!--
-
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="secs"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="%"
--->
     </PreferenceCategory>
 
     <PreferenceCategory
         app:iconSpaceReserved="false">
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="true"
+            android:key="now_playing"
+            android:persistent="true"
+            android:title="@string/pref_now_playing"/>
+
         <EditTextPreference
             app:iconSpaceReserved="false"
             android:title="Share signature"

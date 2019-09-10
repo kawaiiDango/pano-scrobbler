@@ -274,34 +274,14 @@ class NLService : NotificationListenerService() {
         fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, duration:Long,
                        hash:Int, forcable:Boolean, packageName: String?) {
             removeMessages(SessListener.lastHash)
-            if (artist != "" && !hasMessages(hash))
-                AsyncTask.THREAD_POOL_EXECUTOR.execute {
+            if (artist != "" && !hasMessages(hash)){
                 val now = System.currentTimeMillis()
-                var album = Stuff.sanitizeAlbum(album)
-                var artist = Stuff.sanitizeArtist(artist)
-                var albumArtist = albumArtist
-                var title = title
-
-                val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
-                val e =
-                        try{
-                            dao.find(artist.hashCode().toString() +
-                                    album.hashCode().toString() + title.hashCode().toString())
-                        }catch (e: Exception) {
-                            null
-                        }
-                if (e != null) {
-                    artist = e.artist
-                    album = e.album
-                    if (e.albumArtist.isNotBlank())
-                        albumArtist = e.albumArtist
-                    title = e.track
-                }
+                val album = Stuff.sanitizeAlbum(album)
+                val artist = Stuff.sanitizeArtist(artist)
                 if (artist != "" && title != "") {
-                    if(isOnline)
-                        LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString(), hash.toString())
-                            .skipContentProvider()
-                            .asSerialAsyncTask(applicationContext)
+                    LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString(), hash.toString())
+                        .skipContentProvider()
+                        .asSerialAsyncTask(applicationContext)
 
                     val m = obtainMessage()
                     val b = Bundle()

@@ -316,56 +316,82 @@ class LFMRequester(var command: String, vararg args: String) {
 
                         when(command) {
                             Stuff.NOW_PLAYING -> {
-                                if (NLService.isOnline){
-                                    val hash = args[6].toInt()
+                                var track: Track? = null
+                                var correctedArtist: String? = null
+                                val hash = args[6].toInt()
 
-                                    val track =
-                                            try {
-                                                Track.getInfo(args[0], args[2], null, lastfmUsername, Tokens.LAST_KEY)
-                                            } catch (e: Exception){
-                                                null
-                                            }
-                                    val corrected =
-                                            if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT/2)
-                                                Pair(track.artist, track.name)
-                                            else
-                                                getValidArtist(args[0], args[2], prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+                                if (NLService.isOnline) {
+                                    try {
+                                        track = Track.getInfo(args[0], args[2], null, lastfmUsername, Tokens.LAST_KEY)
+                                        } catch (e: Exception) { }
                                     if (track != null) {
-                                        if (args[1] == ""){
+                                        if (args[1] == "") {
                                             scrobbleData.artist = track.artist
-                                            if(track.album != null)
+                                            if (track.album != null)
                                                 scrobbleData.album = track.album
-                                            if(track.albumArtist != null)
+                                            if (track.albumArtist != null)
                                                 scrobbleData.albumArtist = track.albumArtist
                                             scrobbleData.track = track.name
                                         }
-
-                                        val i = Intent(NLService.iMETA_UPDATE)
-                                        i.putExtra(NLService.B_ARTIST, scrobbleData.artist)
-                                        i.putExtra(NLService.B_ALBUM, scrobbleData.album)
-                                        i.putExtra(NLService.B_ALBUM_ARTIST, scrobbleData.albumArtist)
-                                        i.putExtra(NLService.B_TITLE, scrobbleData.track)
-                                        i.putExtra(NLService.B_HASH, hash)
+                                    }
+                                    correctedArtist =
+                                            if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT / 2)
+                                                track.artist
+                                            else
+                                                getValidArtist(args[0], prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+                                    if (correctedArtist != null)
+                                        scrobbleData.artist = correctedArtist
+                                }
+                                val dao = PendingScrobblesDb.getDb(context).getEditsDao()
+                                val edit =
+                                        try {
+                                            dao.find(scrobbleData.artist.hashCode().toString() +
+                                                    scrobbleData.album.hashCode().toString() + scrobbleData.track.hashCode().toString())
+                                        } catch (e: Exception) {
+                                            null
+                                        }
+                                if (edit != null) {
+                                    scrobbleData.artist = edit.artist
+                                    scrobbleData.album = edit.album
+                                    if (edit.albumArtist.isNotBlank())
+                                        scrobbleData.albumArtist = edit.albumArtist
+                                    scrobbleData.track = edit.track
+                                    try {
+                                        track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, lastfmUsername, Tokens.LAST_KEY)
+                                    } catch (e: Exception) { }
+                                }
+                                if (edit != null || track!= null) {
+                                    val i = Intent(NLService.iMETA_UPDATE)
+                                    i.putExtra(NLService.B_ARTIST, scrobbleData.artist)
+                                    i.putExtra(NLService.B_ALBUM, scrobbleData.album)
+                                    i.putExtra(NLService.B_ALBUM_ARTIST, scrobbleData.albumArtist)
+                                    i.putExtra(NLService.B_TITLE, scrobbleData.track)
+                                    i.putExtra(NLService.B_HASH, hash)
+                                    if (track != null) {
                                         i.putExtra(NLService.B_USER_LOVED, track.isLoved)
                                         i.putExtra(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
-                                        context.sendBroadcast(i)
                                     }
-                                    if (corrected != null) {
-                                        if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
-                                            scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, lastfmSession)
+                                    context.sendBroadcast(i)
+                                }
+                                if (NLService.isOnline){
+                                    if (correctedArtist != null || edit != null) {
+                                        if (prefs.getBoolean(Stuff.PREF_NOW_PLAYING, true)) {
+                                            if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
+                                                scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, lastfmSession)
 
-                                        if (librefmSession != null)
-                                            scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, librefmSession)
+                                            if (librefmSession != null)
+                                                scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, librefmSession)
 
-                                        if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
-                                            scrobbleResults[context.getString(R.string.listenbrainz)] =
-                                                    ListenBrainz(prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null))
-                                                    .updateNowPlaying(scrobbleData)
-                                        if (prefs.getString(Stuff.PREF_LB_CUSTOM_USERNAME, null) != null)
-                                            scrobbleResults[context.getString(R.string.custom_listenbrainz)] =
-                                                    ListenBrainz(prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null))
-                                                    .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
-                                                    .updateNowPlaying(scrobbleData)
+                                            if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
+                                                scrobbleResults[context.getString(R.string.listenbrainz)] =
+                                                        ListenBrainz(prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null))
+                                                                .updateNowPlaying(scrobbleData)
+                                            if (prefs.getString(Stuff.PREF_LB_CUSTOM_USERNAME, null) != null)
+                                                scrobbleResults[context.getString(R.string.custom_listenbrainz)] =
+                                                        ListenBrainz(prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null))
+                                                                .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
+                                                                .updateNowPlaying(scrobbleData)
+                                        }
                                     } else {
                                         //no such artist
                                         val i = Intent(NLService.iBAD_META)
@@ -566,22 +592,22 @@ class LFMRequester(var command: String, vararg args: String) {
         }
 
 
-        fun getValidArtist(artist:String, track: String, set:Set<String>? = null): Pair<String, String>? {
+        fun getValidArtist(artist:String, set:Set<String>? = null): String? {
             val valid = set?.contains(artist) == true
             if (valid || validArtistsCache[artist] == true)
-                return Pair(artist, track)
+                return artist
             else if (validArtistsCache[artist] == null) {
                 val artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)
                 Stuff.log("artistInfo: $artistInfo")
                 //nw err throws an exception
                 if (artistInfo!= null && artistInfo.name?.trim() != ""){
                     if(artistInfo.listeners >= Stuff.MIN_LISTENER_COUNT) {
-                        validArtistsCache.put(artist, true)
-                        return Pair(artist, track)
+                        validArtistsCache.put(artistInfo.name, true)
+                        return artistInfo.name
                     } else
                         validArtistsCache.put(artist, false)
-                }
-
+                } else
+                    validArtistsCache.put(artist, false)
             }
             return null
         }

@@ -1,8 +1,8 @@
 package com.arn.scrobble.pref
 
 import android.content.Intent
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
@@ -64,13 +64,16 @@ class AppListFragment : Fragment() {
         val excludePackageNames = getAppList(adapter)
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
             val pm = activity?.packageManager ?: return@execute
-            val otherApps = pm.getInstalledApplications(PackageManager.GET_META_DATA) as MutableList<ApplicationInfo>
+
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_LAUNCHER)
+            val otherApps = pm.queryIntentActivities(intent, 0)
 
             adapter.addSectionHeader(getString(R.string.video_players))
 
             val it = otherApps.iterator()
             while (it.hasNext()) {
-                val applicationInfo = it.next()
+                val applicationInfo = it.next().activityInfo.applicationInfo
                 if(Stuff.IGNORE_ARTIST_META.contains(applicationInfo.packageName)) {
                     adapter.add(applicationInfo, firstRun)
                     excludePackageNames.add(applicationInfo.packageName)
@@ -82,16 +85,21 @@ class AppListFragment : Fragment() {
                     prefs.putStringSet(Stuff.PREF_WHITELIST, wSet)
                 }
                 if (excludePackageNames.contains(applicationInfo.packageName) ||
-                        applicationInfo.icon == 0 || !applicationInfo.enabled ||
-                        (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0) {
+                        applicationInfo.icon == 0 || !applicationInfo.enabled) {
                     it.remove()
                 }
             }
             adapter.addSectionHeader(getString(R.string.other_apps))
-            Collections.sort(otherApps, ApplicationInfo.DisplayNameComparator(activity!!.packageManager))
+            Collections.sort(otherApps, ResolveInfo.DisplayNameComparator(activity!!.packageManager))
 
             val oldCount = adapter.itemCount
-            otherApps.forEach {adapter.add(it)}
+            var lastPackageName = ""
+            otherApps.forEach {
+                val ai = it.activityInfo.applicationInfo
+                if (lastPackageName != ai.packageName)
+                    adapter.add(it.activityInfo.applicationInfo)
+                lastPackageName = ai.packageName
+            }
             appListLoaded = true
             app_list?.post {
                 adapter.notifyItemRangeChanged(oldCount-1, adapter.itemCount, 0)

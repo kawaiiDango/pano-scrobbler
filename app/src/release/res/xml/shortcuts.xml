@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="rec"
+        android:enabled="true"
+        android:icon="@drawable/vd_mic"
+        android:shortcutShortLabel="@string/menu_rec_short"
+        android:shortcutLongLabel="@string/menu_rec_short"
+        android:shortcutDisabledMessage="@string/menu_rec_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.arn.scrobble"
+            android:targetClass="com.arn.scrobble.Main" >
+            <extra android:name="deeplink" android:value="34" />
+        </intent>
+    </shortcut>
+</shortcuts>

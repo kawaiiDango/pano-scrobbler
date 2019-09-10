@@ -2,14 +2,16 @@ package com.arn.scrobble
 
 import android.Manifest.permission.RECORD_AUDIO
 import android.animation.ObjectAnimator
+import android.app.PendingIntent
 import android.content.pm.PackageManager
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
 import android.media.MediaRecorder
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
@@ -18,7 +20,6 @@ import kotlinx.android.synthetic.main.content_rec.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
-import java.io.IOException
 
 
 
@@ -36,6 +37,8 @@ class RecFragment:Fragment(){
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            setHasOptionsMenu(true)
         return inflater.inflate(R.layout.content_rec, container, false)
     }
 
@@ -60,6 +63,26 @@ class RecFragment:Fragment(){
             startOrCancel()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.rec_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_add_to_hs && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val shortcutManager = activity!!.getSystemService(ShortcutManager::class.java)
+            if (shortcutManager!!.isRequestPinShortcutSupported) {
+                val pinShortcutInfo = ShortcutInfo.Builder(context, "rec").build()
+                val pinnedShortcutCallbackIntent = shortcutManager.createShortcutResultIntent(pinShortcutInfo)
+                val successCallback = PendingIntent.getBroadcast(context,0,
+                        pinnedShortcutCallbackIntent,0)
+
+                shortcutManager.requestPinShortcut(pinShortcutInfo, successCallback.intentSender)
+            }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun startOrCancel(){
         if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             Stuff.toast(context, getString(R.string.grant_rec_perm))
@@ -73,7 +96,8 @@ class RecFragment:Fragment(){
         }
         if(!started) {
 
-            startRecording()
+            if(!startRecording())
+                return
             rec_status.setText(R.string.listening)
             rec_img.setImageResource(R.drawable.vd_wave_simple)
             if (fadeAnimator?.isRunning == true)
@@ -125,21 +149,20 @@ class RecFragment:Fragment(){
         }
     }
 
-    private fun startRecording() {
-        recorder = MediaRecorder().apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
-            setOutputFile(path)
-            setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
-
-            try {
-                prepare()
-            } catch (e: IOException) {
-                Stuff.log("prepare() failed")
-            }
-
-            start()
+    private fun startRecording():Boolean {
+        recorder = MediaRecorder()
+        recorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
+        recorder!!.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
+        recorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
+        recorder!!.setOutputFile(path)
+        try {
+            recorder!!.prepare()
+            recorder!!.start()
+        } catch (e: Exception) {
+            Stuff.log("prepare/start failed")
+            return false
         }
+        return true
     }
 
     private fun finishRecording() {

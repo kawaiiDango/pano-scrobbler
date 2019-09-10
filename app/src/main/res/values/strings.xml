@@ -86,6 +86,8 @@
     <string name="force">Force</string>
     <string name="grant_rec_perm">Please grant permission to use the microphone</string>
     <string name="menu_rec">Scrobble from mic</string>
+    <string name="menu_rec_short">From mic</string>
+    <string name="add_to_hs">Add to homescreen</string>
     <string name="listening">Listening to music playing around you…</string>
     <string name="uploading">Uploading…</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>

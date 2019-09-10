@@ -4,17 +4,13 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       tools:showIn="navigation_view">
 <!-- group needs an id to be set for the separator to show up -->
-    <item android:title="@string/on_last_fm">
-        <menu>
-            <group android:id="@+id/nav_group_top">
-                <item
-                    app:actionLayout="@layout/action_external"
-                    android:id="@+id/nav_last_week"
-                    android:icon="@drawable/vd_bar_chart"
-                    android:title="@string/last_week"/>
-            </group>
-        </menu>
-    </item>
+    <group android:id="@+id/nav_group_top">
+        <item
+            app:actionLayout="@layout/action_external"
+            android:id="@+id/nav_last_week"
+            android:icon="@drawable/vd_bar_chart"
+            android:title="@string/last_week"/>
+    </group>
 
     <group android:id="@+id/nav_group_bottom">
         <item

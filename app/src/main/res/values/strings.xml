@@ -79,7 +79,6 @@
     <string name="time_now_long">just now</string>
     <string name="no_mail_apps">No email client is installed.</string>
     <string name="loved">Loved</string>
-    <string name="on_last_fm">On last.FM:</string>
     <string name="edits">Edits</string>
     <string name="n_edits">%1$d saved edits</string>
     <string name="force_remembered">Force scrobble (will remember)</string>

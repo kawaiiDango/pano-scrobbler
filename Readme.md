@@ -2,28 +2,29 @@
 <a href='https://play.google.com/store/apps/details?id=com.arn.scrobble&utm_source=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="200"/></a>
 
 <img alt='GIF' src='https://media.giphy.com/media/WvikAmG3iseJoFun1A/giphy.gif' width="240"/>
-_Thats the GIF of a much older version._
+*Thats the GIF of a much older version.*
 
 #### Features:
-- Scrobble from anything which produces audio with metadata, including the official youtube app, a chat app or some less known chinese player
-- Scrobble to lastFM, LibreFM, Listenbrainz
+- Scrobble from anything which produces audio with metadata, including Youtube, Chrome, Telegram etc.
+- Scrobble to lastFM, LibreFM and Listenbrainz
+- View scrobble count in notification
 - Sanity check the metadata with lastFM's records. 
 - View track info, such as listener count charts, album art etc
 - View recent scrobbles
 - Work with recent scrobbles (love a track, cancel a scrobble)
-- Edit tags
+- Edit scrobbles for free
 - Delete existing scrobbles
-- Offline scrobbling
-- Offline viewing of cached data
+- Offline cacheing and scrobbling
 - Check what your friends are listening to
 - View and play songs similar to a given one
+- Identify and scrobble a song from mic
 
 #### This is not intended to:
 - be an app to browse lastfm.
 - contain any webviews. Links would rather open in the browser
 - contain any kind of ADs
 
-### Compiling:
+### Building:
 See [instructions.md](instructions.md)
 
 ### Thanks to:

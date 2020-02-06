@@ -59,20 +59,21 @@ dependencies {
     implementation "androidx.preference:preference:1.1.0"
     implementation "androidx.media:media:1.1.0"
     implementation "androidx.palette:palette:1.0.0"
-    implementation "androidx.recyclerview:recyclerview:1.1.0-beta04"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-alpha04"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-    kapt "androidx.lifecycle:lifecycle-compiler:2.2.0-alpha04"
-    kapt "androidx.room:room-compiler:2.1.0"
-    implementation "androidx.room:room-runtime:2.1.0"
+//    implementation "android.arch.lifecycle:common-java8:1.1.1"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.2.0"
+    kapt "androidx.room:room-compiler:2.2.3"
+    implementation "androidx.room:room-runtime:2.2.3"
 
-    implementation "com.google.android.material:material:1.1.0-alpha10"
+    implementation "com.google.android.material:material:1.1.0-beta01"
 
     implementation "com.squareup.picasso:picasso:2.71828"
-    implementation "de.hdodenhof:circleimageview:3.0.0"
+    implementation "de.hdodenhof:circleimageview:3.1.0"
     implementation "com.robinhood.spark:spark:1.2.0"
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
-//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.1'
 
     implementation project(':lastfm')
 

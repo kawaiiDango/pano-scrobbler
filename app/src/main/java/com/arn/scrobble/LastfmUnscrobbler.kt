@@ -79,6 +79,10 @@ class LastfmUnscrobbler(context: Context?) {
         }
     }
 
+    fun putCookies(url:HttpUrl, cookies: List<Cookie>) {
+        cookieJar.saveFromResponse(url, cookies)
+    }
+
     fun clearCookies() {
         (cookieJar as PersistentCookieJar).clear()
     }
@@ -191,14 +195,17 @@ class LastfmUnscrobbler(context: Context?) {
         }
         return true
     }
+
+    companion object {
+        const val COOKIE_CSRFTOKEN = "csrftoken"
+        const val COOKIE_SESSIONID = "sessionid"
+    }
 }
 
 private const val URL_LOGIN = "https://secure.last.fm/login"
 private const val URL_USER = "https://www.last.fm/user/"
 
 private const val FIELD_CSRFTOKEN = "csrfmiddlewaretoken"
-private const val COOKIE_CSRFTOKEN = "csrftoken"
-private const val COOKIE_SESSIONID = "sessionid"
 
 private const val FIELD_USERNAME = "username"
 private const val FIELD_PASSWORD = "password"

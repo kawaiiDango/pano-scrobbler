@@ -14,7 +14,6 @@ class PagerAdapter(fm: FragmentManager, private var tabCount: Int): FragmentStat
             0 -> RecentsFragment()
             1 -> LovesFragment()
             else -> FriendsFragment()
-//            else -> null
         }
     }
 

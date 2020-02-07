@@ -89,6 +89,7 @@
     <string name="add_to_hs">Add to homescreen</string>
     <string name="listening">Listening to music playing around you…</string>
     <string name="uploading">Uploading…</string>
+    <string name="loading">…</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
@@ -97,7 +98,7 @@
     <string name="pref_master_qs_hint">Can also be toggled from the quick settings tile.</string>
     <string name="pref_noti_off">Check your scrobbbles from the app only</string>
     <string name="pref_noti_on">…while scrobbling</string>
-    <string name="pref_noti_q">Make sure gentle notifications are shown, in system settings.</string>
+    <string name="pref_noti_q">You may want to promote the notification, if it shows up in Other Notifications</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from">Scrobble from</string>
@@ -129,6 +130,7 @@ Press back if you do not want this."</string>
     <string name="custom_listenbrainz">Custom Listenbrainz server</string>
     <string name="failed_encode_url">failed to encode URL</string>
     <string name="check_nls">Check %s</string>
+    <string name="check_nls_tv">Special app access > Notification Access > %s</string>
     <string name="similar_tracks">Similar songs</string>
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="no_browser">No browser is installed.</string>
@@ -143,18 +145,24 @@ Press back if you do not want this."</string>
     <string name="menu_delete">Delete</string>
     <string name="love">Love</string>
     <string name="unlove">Unlove</string>
+    <string name="acr_host">Host</string>
+    <string name="acr_key">Access Key</string>
+    <string name="acr_secret">Secret</string>
+    <string name="add_acr_key">Add ACRCloud Key</string>
+    <string name="remove_acr_key">Remove ACRCloud Key</string>
+    <string name="add_acr_consider">To prevent hitting rate limits, consider adding your own ACRCloud Key</string>
+    <string name="add">Add</string>
+    <string name="add_acr_key_info">"• Sign up at console.acrcloud.com
+• Navigate to Projects \> Audio &amp; video recognition
+• Create a new project, select Recorded Audio and the ACRCloud Music bucket"</string>
 
     <string name="fix_it_title">Possible fixes</string>
     <string name="fix_it_startup_title">Startup Managers</string>
     <string name="fix_it_startup_desc_default">If your system has startup managers or power managers, please whitelist this app, as they can prevent it from scrobbling in the background.</string>
-    <string name="fix_it_startup_desc_sure">Your system has a startup manager, which can kill this app in the background. Check if this app is whitelisted.</string>
-    <string name="fix_it_ram_title">Free up RAM</string>
     <string name="fix_it_noti_title">Toggle notification access off and on</string>
     <string name="fix_it_noti_desc">This is a temporary fix</string>
     <string name="fix_it_battery_title">Disable battery optimizations</string>
     <string name="fix_it_battery_desc">Only if nothing else worked</string>
-    <string name="fix_it_ram_desc">This app uses a minimal amount of RAM (5–15 MB) in the background. Check if other background apps are taking up RAM</string>
     <string name="fix_it_action">OPEN</string>
     <string name="fix_it_huawei_startup_mgr">Navigate to Settings > Battery > App launch and whitelist this app</string>
-    <string name="fix_it_generic_startup_mgr">Unable to open the startup manager automatically. Open it manually and whitelist this app</string>
 </resources>

@@ -8,12 +8,12 @@
     android:layout_width="match_parent"
     android:background="@android:color/black"
     android:layout_height="match_parent">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recents_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:nestedScrollingEnabled="true"
-            tools:listitem="@layout/list_item_recents"
-            />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recents_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="true"
+        tools:listitem="@layout/list_item_recents" />
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

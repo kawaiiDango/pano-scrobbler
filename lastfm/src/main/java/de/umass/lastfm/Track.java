@@ -468,7 +468,7 @@ public class Track extends MusicEntry {
 	 * @return Track information
 	 */
 	public static Track getInfo(String artist, String trackOrMbid, String apiKey) {
-		return getInfo(artist, trackOrMbid, null, null, apiKey);
+		return getInfo(artist, trackOrMbid, null, null, null, apiKey);
 	}
 
 	/**
@@ -481,8 +481,9 @@ public class Track extends MusicEntry {
 	 * @param apiKey A Last.fm API key.
 	 * @return Track information
 	 */
-	public static Track getInfo(String artist, String trackOrMbid, Locale locale, String username, String apiKey) {
-		Map<String, String> params = new HashMap<String, String>();
+
+	public static Track getInfo(String artist, String trackOrMbid, Locale locale, String username, Session session, String apiKey) {
+	    Map<String, String> params = new HashMap<String, String>();
 		if (StringUtilities.isMbid(trackOrMbid)) {
 			params.put("mbid", trackOrMbid);
 		} else {
@@ -493,7 +494,10 @@ public class Track extends MusicEntry {
 			params.put("lang", locale.getLanguage());
 		}
 		MapUtilities.nullSafePut(params, "username", username);
-		Result result = Caller.getInstance().call("track.getInfo", apiKey, params);
+
+		Result result = Caller.getInstance().call(null, "track.getInfo",
+                apiKey, params, session, false);
+		Caller.getInstance().call("track.getInfo", apiKey, params);
 		if (!result.isSuccessful())
 			return null;
 		DomElement content = result.getContentElement();

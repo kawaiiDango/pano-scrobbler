@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
@@ -25,11 +26,12 @@ import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.coordinator_main.view.*
 import kotlinx.android.synthetic.main.header_default.view.*
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 /**
  * Created by arn on 29/12/2017.
  */
-class SimilarTracksFragment : Fragment(), ItemClickListener {
+class SimilarTracksFragment : Fragment(), ItemClickListener, FocusChangeListener {
     private lateinit var similarLd: MutableLiveData<List<Track>>
     private lateinit var viewModel:TracksVM
     private lateinit var adapter: SimilarTracksAdapter
@@ -51,6 +53,7 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
 
         view.similar_grid.layoutManager = glm
         adapter.setClickListener(this)
+        adapter.setFocusListener(this)
         view.similar_grid.adapter = adapter
         view.header_text.text = getString(R.string.similar_tracks)
 
@@ -113,7 +116,10 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
 
     override fun onDestroyView() {
         val activity = activity!!
-        activity.ctl.hero_similar.visibility = View.VISIBLE
+        if (activity.ctl.hero_similar.isInTouchMode)
+            activity.ctl.hero_similar.visibility = View.VISIBLE
+        else
+            activity.ctl.hero_similar.visibility = View.INVISIBLE
         activity.ctl.hero_title.visibility = View.GONE
         activity.ctl.sparkline_frame.visibility = View.VISIBLE
         Stuff.setAppBarHeight(activity)
@@ -143,12 +149,15 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
 
     private fun calcGridSize(glm: GridLayoutManager) {
         val cols: Int
-        var w = 106
-        cols = resources.configuration.screenWidthDp / w
-        w += (resources.configuration.screenWidthDp % w)/cols
-        val rows = max(resources.configuration.screenHeightDp/3/w, 3)
+        var w = resources.getDimension(R.dimen.grid_size).roundToInt()
+        val screenW = resources.displayMetrics.widthPixels
+        cols = screenW / w
+        w += (screenW % w)/cols
+        var rows = max(resources.displayMetrics.heightPixels/3/w, 3)
+        if (rows * cols <= 6)
+            rows++
 
-        adapter.itemSizeDp = w
+        adapter.itemSizeDp = w/resources.displayMetrics.densityDpi
         glm.spanCount = cols
         viewModel = VMFactory.getVM(this, TracksVM::class.java)
         val arguments = arguments!!
@@ -159,5 +168,14 @@ class SimilarTracksFragment : Fragment(), ItemClickListener {
         val adapter = similar_grid.adapter as SimilarTracksAdapter
         val track = adapter.getItem(position)
         Stuff.launchSearchIntent(track.artist, track.name, context!!)
+    }
+
+    //only called when !view.isInTouchMode
+    override fun onFocus(view: View, position: Int) {
+        val pos = IntArray(2)
+        view.getLocationInWindow(pos)
+
+        if (pos[1] + view.height > activity!!.coordinator.height && activity!!.app_bar.isExpanded)
+            activity!!.app_bar.setExpanded(false, true)
     }
 }

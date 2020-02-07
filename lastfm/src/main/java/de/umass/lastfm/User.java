@@ -26,7 +26,13 @@
 
 package de.umass.lastfm;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import de.umass.util.MapUtilities;
 import de.umass.util.StringUtilities;
@@ -166,12 +172,16 @@ public class User extends ImageHolder {
 	}
 
 	public static PaginatedResult<User> getFriends(String user, String apiKey) {
-		return getFriends(user, false, 1, 50, apiKey);
+		return getFriends(user, 1, 50, null, apiKey);
 	}
 
-	public static PaginatedResult<User> getFriends(String user, boolean recenttracks, int page, int limit, String apiKey) {
-		Result result = Caller.getInstance().call("user.getFriends", apiKey, "user", user, "recenttracks",
-				String.valueOf(recenttracks ? 1 : 0), "limit", String.valueOf(limit), "page", String.valueOf(page));
+	public static PaginatedResult<User> getFriends(String user, int page, int limit, Session session, String apiKey) {
+        Map<String, String> params = new HashMap<String, String>();
+        MapUtilities.nullSafePut(params, "user", user);
+        params.put("page", String.valueOf(page));
+        params.put("limit", String.valueOf(limit));
+        Result result = Caller.getInstance().call(null, "user.getFriends",
+                apiKey, params, session, false);
 		return ResponseBuilder.buildPaginatedResult(result, User.class);
 	}
 
@@ -184,23 +194,23 @@ public class User extends ImageHolder {
 		return ResponseBuilder.buildCollection(result, User.class);
 	}
 
-	public static PaginatedResult<Track> getRecentTracks(String user, String sessKey, String apiKey) {
-		return getRecentTracks(user, 1, 10, sessKey, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, Session session, String apiKey) {
+		return getRecentTracks(user, 1, 10, session, apiKey);
 	}
 
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, String sessKey, String apiKey) {
-        return getRecentTracks(user, page, limit, false, 0, 0, sessKey, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, Session session, String apiKey) {
+        return getRecentTracks(user, page, limit, false, 0, 0, session, apiKey);
     }
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, boolean extended, String sessKey, String apiKey) {
-        return getRecentTracks(user, page, limit, extended, 0, 0, sessKey, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, boolean extended, Session session, String apiKey) {
+        return getRecentTracks(user, page, limit, extended, 0, 0, session, apiKey);
     }
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, long fromTime, long toTime, String sessKey, String apiKey) {
-        return getRecentTracks(user, page, limit, false, fromTime, toTime, sessKey, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, long fromTime, long toTime, Session session, String apiKey) {
+        return getRecentTracks(user, page, limit, false, fromTime, toTime, session, apiKey);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit,
-                boolean extended, long fromTime, long toTime, String sessKey, String apiKey) {
+                boolean extended, long fromTime, long toTime, Session session, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("user", user);
+        MapUtilities.nullSafePut(params, "user", user);
 		params.put("limit", String.valueOf(limit));
 		params.put("page", String.valueOf(page));
 		if (extended)
@@ -209,9 +219,9 @@ public class User extends ImageHolder {
 		    params.put("from", String.valueOf(fromTime));
 		if (toTime > 0)
 		    params.put("to", String.valueOf(toTime));
-		if (sessKey != null)
-            params.put("sk", String.valueOf(sessKey)); //for private profiles
-		Result result = Caller.getInstance().call("user.getRecentTracks", apiKey, params);
+        Result result;
+            result = Caller.getInstance().call(null, "user.getRecentTracks",
+                apiKey, params, session, false);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
@@ -407,7 +417,7 @@ public class User extends ImageHolder {
 	 * @return the loved tracks
 	 */
 	public static PaginatedResult<Track> getLovedTracks(String user, String apiKey) {
-		return getLovedTracks(user, 1, 50, apiKey);
+		return getLovedTracks(user, 1, 50, null, apiKey);
 	}
 
 	/**
@@ -418,9 +428,13 @@ public class User extends ImageHolder {
 	 * @param apiKey A Last.fm API key.
 	 * @return the loved tracks
 	 */
-	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, String apiKey) {
-		Result result = Caller.getInstance().call("user.getLovedTracks", apiKey,
-                "user", user, "page", String.valueOf(page), "limit", String.valueOf(limit));
+	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, Session session, String apiKey) {
+        Map<String, String> params = new HashMap<String, String>();
+        MapUtilities.nullSafePut(params, "user", user);
+        params.put("page", String.valueOf(page));
+        params.put("limit", String.valueOf(limit));
+        Result result = Caller.getInstance().call(null, "user.getLovedTracks",
+                apiKey, params, session, false);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
@@ -629,7 +643,7 @@ public class User extends ImageHolder {
 
 		Result result = Caller.getInstance().call("user.getPersonalTags", apiKey, params);
 		if (!result.isSuccessful())
-			return new PaginatedResult<T>(0, 0, Collections.<T>emptyList());
+			return new PaginatedResult<T>(0, 0, Collections.<T>emptyList(), null);
 
 		String childElementName = params.get(taggingTypeParam) + "s";
 		DomElement contentElement = result.getContentElement();
@@ -676,22 +690,6 @@ public class User extends ImageHolder {
 					user.registeredDate = new Date(Long.parseLong(unixtime) * 1000);
 				} catch (NumberFormatException e) {
 					// no registered date
-				}
-			}
-			if (element.hasChild("recenttrack")) {
-				try {
-
-                    DomElement trackElem = element.getChild("recenttrack");
-                    Track.TrackFactory trackFactory = new Track.TrackFactory();
-                    user.recentTrack = trackFactory.createItemFromElement(trackElem);
-
-                    //date is only available as an attribute
-                    String uts = trackElem.getAttribute("uts");
-                    long utsTime = Long.parseLong(uts);
-                    user.recentTrack.setPlayedWhen(new Date(utsTime * 1000));
-
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 			return user;

@@ -117,7 +117,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
     fun populateFriendsRecent(res: PaginatedResult<Track>, username: String) {
         if (!res.isEmpty && users.isNotEmpty()) {
             for (pos in 0..users.size) {
-                if (users[pos].name == username){
+                if (pos < users.size && users[pos].name == username){
                     val oldRecent = users[pos].recentTrack
                     val newRecent = res.pageResults.first()
                     if (oldRecent?.playedWhen != newRecent?.playedWhen || oldRecent?.name != newRecent?.name) {
@@ -163,8 +163,10 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
         private val vImg = view.friends_pic
 
         init {
-            if (clickable)
+            if (clickable) {
                 itemView.setOnClickListener(this)
+                vImg.setOnClickListener { onClick(itemView) }
+            }
         }
 
         override fun onClick(view: View) {

@@ -27,16 +27,14 @@ import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import com.arn.scrobble.pref.MultiPreferences
-import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
-import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.*
 import com.robinhood.spark.SparkView
 import com.robinhood.spark.animation.MorphSparkAnimator
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_recents.*
 import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.coordinator_main.view.*
@@ -47,12 +45,17 @@ import kotlinx.android.synthetic.main.list_item_recents.view.*
  * Created by arn on 09/07/2017.
  */
 
-open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTrigger {
+open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener, RecentsAdapter.SetHeroTrigger {
     private lateinit var adapter: RecentsAdapter
     private lateinit var appPrefs: SharedPreferences
     private var firstLoadCache = true
     private var firstLoadNw = true
-    private var timedRefresh = Runnable { loadRecents(1) }
+    private var timedRefresh = Runnable {
+        loadRecents(1)
+        val ps = activity?.coordinator?.paddingStart
+        if (ps != null && ps > 0)
+            LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(activity!!.applicationContext)
+    }
     private var refreshHandler = Handler()
     private lateinit var viewModel: TracksVM
     private lateinit var animSet: AnimatorSet
@@ -157,10 +160,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 viewModel.loadRecentsList(1, false)
 
                 ld.observe(viewLifecycleOwner, Observer {
-//                    loadMoreListener.loading = false
                     it ?: return@Observer
                     adapter.populate(it, it.page, !firstLoadNw)
-
+                    if (viewModel.page != it.page)
+                        loadRecents(1, true)
+                    loadMoreListener.currentPage = it.page
                     if (!firstLoadCache && firstLoadNw)
                         firstLoadNw = false
 
@@ -193,6 +197,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         recents_list.addOnScrollListener(loadMoreListener)
         adapter.setLoadMoreReference(loadMoreListener)
         adapter.setClickListener(this)
+        adapter.setFocusListener(this)
         adapter.setHeroListener(this)
 
         sparkline.setOnClickListener{
@@ -278,7 +283,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
     }
 
     private fun toggleGraphDetails(sparkline: SparkView, init: Boolean = false){
-        val activity = activity!!
+        val activity = activity ?: return
         var show = appPrefs.getBoolean(Stuff.PREF_ACTIVITY_GRAPH_DETAILS, true)
         if (!init)
             show = !show
@@ -301,13 +306,13 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 .apply()
     }
 
-    private fun loadRecents(page: Int): Boolean {
+    private fun loadRecents(page: Int, force:Boolean = false): Boolean {
         Stuff.log("loadRecents $page")
         recents_list ?: return false
 
         if (page <= adapter.totalPages) {
             val firstVisible = (recents_list.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-            if ((page == 1 && firstVisible < 5) || page > 1) {
+            if (force || (page == 1 && firstVisible < 5) || page > 1) {
                 if (isShowingLoves)
                     viewModel.loadLovesList(page, true)
                 else
@@ -340,7 +345,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
     override fun onStop() {
         refreshHandler.removeCallbacks(timedRefresh)
-        activity!!.hero_img?.tag = null
+//        activity!!.hero_img?.tag = null
         if (userVisibleHint && isShowingLoves)
             try {
                 adapter.removeHandlerCallbacks()
@@ -370,6 +375,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         val oldTrack = hero.tag as Track?
 
         ctl.hero_title.text = track.name
+        //TODO: check
         hero.tag = track
         val imgUrl = if(fullSize)
             track.getImageURL(ImageSize.EXTRALARGE)
@@ -446,6 +452,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
             val contentBgFrom = (content.background as ColorDrawable).color
             val contentBgAnimator = ObjectAnimator.ofArgb(content, "backgroundColor", contentBgFrom, colorMutedBlack)
+            val navBgAnimator = ObjectAnimator.ofArgb(activity.nav_view, "backgroundColor", contentBgFrom, colorMutedBlack)
             val shareBgAnimator = ObjectAnimator.ofArgb(activity.hero_share, "colorFilter", lastColorLightWhite, colorLightWhite)
             val similarColorAnimator = ObjectAnimator.ofArgb(activity.hero_similar, "colorFilter", lastColorLightWhite, colorLightWhite)
             val infoBgAnimator = ObjectAnimator.ofArgb(activity.hero_info, "colorFilter", lastColorLightWhite, colorLightWhite)
@@ -461,7 +468,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
             val animSetList = mutableListOf(contentBgAnimator,
                     similarColorAnimator, shareBgAnimator, searchBgAnimator, infoBgAnimator,
-                    navbarBgAnimator, sparklineAnimator, sparklineHorizontalLabel, sparklineTickBottomAnimator, sparklineTickTopAnimator)
+                    navbarBgAnimator, sparklineAnimator, sparklineHorizontalLabel,
+                    sparklineTickBottomAnimator, sparklineTickTopAnimator)
+            if (activity.coordinator.paddingStart > 0)
+                animSetList.add(navBgAnimator)
 
             for (i in 0..ctl.toolbar.childCount){
                 val child = ctl.toolbar.getChildAt(i)
@@ -529,7 +539,20 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     }
                     activity.app_bar?.setExpanded(true, true)
                 }
+                if (!view.isInTouchMode)
+                    openPopupMenu(view.recents_date, track)
             }
+        }
+    }
+
+    //only called when !view.isInTouchMode
+    override fun onFocus(view: View, position: Int) {
+        if (!view.isInTouchMode) {
+            val pos = IntArray(2)
+            view.getLocationInWindow(pos)
+
+            if (pos[1] + view.height > activity!!.coordinator.height && activity!!.app_bar.isExpanded)
+                activity!!.app_bar.setExpanded(false, true)
         }
     }
 
@@ -537,6 +560,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         val popup = PopupMenu(context, anchor)
 
         popup.inflate(R.menu.recents_item_menu)
+        if (!anchor.isInTouchMode)
+            popup.inflate(R.menu.recents_item_tv_menu)
         val loveMenu = popup.menu.findItem(R.id.menu_love)
 
         if (track.isLoved)
@@ -563,8 +588,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
                 val lf = LoginFragment()
                 lf.arguments = b
-                (activity as Main)
-                        .supportFragmentManager!!.beginTransaction()
+                activity!!.supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, lf)
                         .addToBackStack(null)
                         .commit()
@@ -602,8 +626,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                                 .addToBackStack(null)
                                 .commit()
                                 */
-                        ef.show((activity as Main)
-                                .supportFragmentManager, null)
+                        ef.show(activity!!.supportFragmentManager, null)
                     }
                     true
                 }
@@ -625,6 +648,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     }
                     true
                 }
+                R.id.menu_play -> activity!!.hero_play.callOnClick()
+                R.id.menu_info -> activity!!.hero_info.callOnClick()
+                R.id.menu_share -> activity!!.hero_share.callOnClick()
+                R.id.menu_similar -> activity!!.hero_similar.callOnClick()
 
                 else -> false
             }

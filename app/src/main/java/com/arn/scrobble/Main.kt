@@ -8,6 +8,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.*
 import android.content.pm.LabeledIntent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Rect
@@ -22,9 +23,11 @@ import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
+import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageButton
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -42,11 +45,13 @@ import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.arn.scrobble.ui.StatefulAppBar
+import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.coordinator_main.*
+import kotlinx.android.synthetic.main.coordinator_main.view.*
 import kotlinx.android.synthetic.main.header_nav.*
 import org.codechimp.apprater.AppRater
 import java.io.File
@@ -59,6 +64,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private lateinit var actPref: SharedPreferences
     private var lastDrawerOpenTime:Long = 0
     private var backArrowShown = false
+    private var coordinatorPadding = 0
+    private var drawerInited = false
     private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +79,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         pref = MultiPreferences(applicationContext)
         actPref = getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+        coordinatorPadding = coordinator.paddingStart
+        isTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
 //        NLService.migratePrefs(pref)
 //        app_bar.onStateChangeListener?.invoke(app_bar.state)
 //        tab_bar.visibility = View.GONE
@@ -104,6 +113,21 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         }
         toggle.drawerArrowDrawable = ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
 
+        if (isTV) {
+            hero_similar.visibility = View.INVISIBLE
+            hero_share.visibility = View.INVISIBLE
+            hero_info.visibility = View.INVISIBLE
+            hero_play.visibility = View.INVISIBLE
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                for (i in 0..ctl.toolbar.childCount) {
+                    val child = ctl.toolbar.getChildAt(i)
+                    if (child is ImageButton) {
+                        child.setFocusable(false)
+                        break
+                    }
+                }
+        }
         drawer_layout.addDrawerListener(toggle)
         nav_view.setNavigationItemSelectedListener(this)
 
@@ -141,16 +165,18 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                                 if (!KeepNLSAliveJob.ensureServiceRunning(this))
                                     showNotRunning()
                             },2000)
-                        else
+                        else if (!isTV)
                             AppRater.app_launched(this)
                     }
+                    openLockDrawer()
                 }
             } else {
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, FirstThingsFragment())
+                        .replace(R.id.frame, FirstThingsFragment(), Stuff.TAG_FIRST_THINGS)
                         .commit()
                 app_bar.setExpanded(false, true)
-                drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                closeLockDrawer()
+                //TODO:remove padding and later add
             }
         } else {
             tab_bar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
@@ -284,7 +310,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        drawer_layout.closeDrawer(GravityCompat.START)
+        if (coordinatorPadding == 0)
+            drawer_layout.closeDrawer(GravityCompat.START)
 
         when (item.itemId) {
             R.id.nav_last_week -> {
@@ -321,7 +348,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START))
+        if (drawer_layout.isDrawerOpen(GravityCompat.START) && coordinatorPadding == 0)
             drawer_layout.closeDrawer(GravityCompat.START)
         else
             super.onBackPressed()
@@ -335,6 +362,16 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 }
                 .setActionTextColor(Color.YELLOW)
         snackbar.view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        snackbar.addCallback(object : Snackbar.Callback() {
+            override fun onShown(sb: Snackbar?) {
+                super.onShown(sb)
+                if (sb != null && isTV)
+                    sb.view.postDelayed({
+                        sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                                .requestFocus()
+                }, 200)
+            }
+        })
         snackbar.show()
     }
 
@@ -455,10 +492,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             anim.duration = 1000
             anim.start()
 
-            if (show)
-                drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            else
-                drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            when {
+                show -> closeLockDrawer()
+                coordinatorPadding > 0 -> openLockDrawer()
+                else -> drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            }
 
             backArrowShown = show
         }
@@ -500,6 +538,40 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         isOnline = ni?.isConnected == true
     }
 
+    private fun closeLockDrawer(){
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        if (coordinatorPadding > 0)
+            coordinator.setPadding(0,0,0,0)
+    }
+
+
+    private fun openLockDrawer(){
+        if(coordinatorPadding > 0) {
+            drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+            if (!drawerInited) {
+                drawer_layout.setScrimColor(0)
+                nav_view.addOnLayoutChangeListener { view, left, top, right, bottom,
+                                                     leftWas, topWas, rightWas, bottomWas ->
+                    if (left != leftWas || right != rightWas)
+                        onDrawerOpened()
+                }
+                drawerInited = true
+            }
+            if (coordinator.paddingStart != coordinatorPadding)
+                coordinator.setPaddingRelative(coordinatorPadding,0,0,0)
+        }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+//        Stuff.log("focus: $currentFocus")
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            val f = currentFocus
+            if (f is NavigationMenuItemView)
+                f.nextFocusRightId = R.id.pager
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
     public override fun onStop() {
         unregisterReceiver(mainReceiver)
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -521,6 +593,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     companion object {
         var isOnline = true
+        var isTV = false
 
         fun checkBackStack(activity: Main){
             val appBar = activity.findViewById<StatefulAppBar>(R.id.app_bar)
@@ -528,12 +601,14 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             if (appBar != null) {
 
                 if (activity.supportFragmentManager.backStackEntryCount == 0) {
+                    val firstThingsVisible = activity.supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
                     // what the fuck, kotlin extensions? stop giving me old instances
-                    if (activity.findViewById<ViewPager>(R.id.pager)?.currentItem != 2)
+                    if (activity.findViewById<ViewPager>(R.id.pager)?.currentItem != 2 && firstThingsVisible != true)
                         appBar.setExpanded(true, true)
                     else
                         appBar.setExpanded(false, true)
-                    activity.showBackArrow(false)
+                    if (firstThingsVisible != true)
+                        activity.showBackArrow(false)
                 } else {
                     if (activity.supportFragmentManager.findFragmentByTag(Stuff.GET_SIMILAR)?.isVisible != true)
                         appBar.setExpanded(false, true)

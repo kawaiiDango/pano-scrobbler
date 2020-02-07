@@ -48,10 +48,12 @@ class SessListener constructor(private val pref: SharedPreferences,
                         val cb = MyCallback(whiteList, blackList, handler, controller.packageName,
                                 controller.sessionToken.toString() + ", " + hashCode())
                         controller.registerCallback(cb)
-                        if (controller.playbackState != null)
-                            cb.onPlaybackStateChanged(controller.playbackState!!) //Melody needs this
-                        if (controller.metadata != null)
-                            cb.onMetadataChanged(controller.metadata)
+                        val ps = controller.playbackState
+                        if (ps != null)
+                            cb.onPlaybackStateChanged(ps) //Melody needs this
+                        val md = controller.metadata
+                        if (md != null)
+                            cb.onMetadataChanged(md)
 
                         val pair = Pair.create(controller, cb)
                         synchronized(controllersMap) {

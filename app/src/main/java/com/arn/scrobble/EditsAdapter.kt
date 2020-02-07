@@ -73,7 +73,8 @@ class EditsAdapter(context: Context) : RecyclerView.Adapter<EditsAdapter.VHEdits
                 vDel.visibility = View.INVISIBLE
             else
                 vDel.setOnClickListener {
-                    itemClickListener.onItemClick(it, adapterPosition)
+                    val pos = adapterPosition
+                    itemClickListener.onItemClick(it, pos)
                 }
         }
     }

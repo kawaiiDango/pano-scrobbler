@@ -13,10 +13,7 @@ import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.pending.PendingScrFragment
 import com.arn.scrobble.pending.db.PendingScrobble
-import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.VHHeader
-import com.arn.scrobble.ui.VHPending
+import com.arn.scrobble.ui.*
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
@@ -39,6 +36,7 @@ class RecentsAdapter
 
     var totalPages:Int = 1
     private var itemClickListener: ItemClickListener? = null
+    private var focusChangeListener: FocusChangeListener? = null
     private var mSetHeroListener: SetHeroTrigger? = null
     private val tracksList = mutableListOf<Track>()
     private val sectionHeaders = mutableMapOf<Int,String>()
@@ -55,9 +53,9 @@ class RecentsAdapter
     val handler = TrackInfoHandler(WeakReference(this))
     private val imgMap = mutableMapOf<Int, Map<ImageSize, String>>()
 
-    init {
+//    init {
 //        setHasStableIds(true) //causes some opengl OOM and new holders to be created for no reason
-    }
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -98,6 +96,10 @@ class RecentsAdapter
 
     fun setClickListener(itemClickListener: ItemClickListener) {
         this.itemClickListener = itemClickListener
+    }
+
+    fun setFocusListener(itemFocusListener: FocusChangeListener) {
+        this.focusChangeListener = itemFocusListener
     }
 
     fun setHeroListener(l: SetHeroTrigger) {
@@ -328,7 +330,7 @@ class RecentsAdapter
         }
     }
 
-    inner class VHTrack(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+    inner class VHTrack(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnFocusChangeListener {
 
         private val vOverlay = view.recents_img_overlay
         private val vMenu = view.recents_menu
@@ -340,6 +342,7 @@ class RecentsAdapter
 
         init {
             view.setOnClickListener(this)
+            view.onFocusChangeListener = this
 
             vMenu.setOnClickListener {
                 itemClickListener?.onItemClick(it, adapterPosition)
@@ -351,6 +354,11 @@ class RecentsAdapter
 
         override fun onClick(view: View) {
             itemClickListener?.onItemClick(itemView, adapterPosition)
+        }
+
+        override fun onFocusChange(view: View?, focused: Boolean) {
+            if (view != null && !view.isInTouchMode && focused)
+                focusChangeListener?.onFocus(itemView, adapterPosition)
         }
 
         fun setSelected(selected:Boolean, track: Track = tracksList[selectedPos - nonTrackViewCount]) {

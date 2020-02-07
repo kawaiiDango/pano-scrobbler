@@ -9,6 +9,7 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.Main
 import com.arn.scrobble.R
 import com.google.android.material.snackbar.Snackbar
 
@@ -226,6 +227,15 @@ object AppRater {
                                 commitOrApply(editor)
                             }
                         }
+                    }
+
+                    override fun onShown(sb: Snackbar?) {
+                        super.onShown(sb)
+                        if (sb != null && Main.isTV)
+                            sb.view.postDelayed({
+                                sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                                        .requestFocus()
+                            }, 200)
                     }
                 })
 /*      never show

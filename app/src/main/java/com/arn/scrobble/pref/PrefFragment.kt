@@ -37,19 +37,19 @@ class PrefFragment : PreferenceFragmentCompat(){
         exitTransition = Fade()
         addPreferencesFromResource(R.xml.preferences)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !Main.isTV) {
             val master = findPreference<SwitchPreference>(Stuff.PREF_MASTER)!!
             master.summary = getString(R.string.pref_master_qs_hint)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !Main.isTV){
             val notif = findPreference<SwitchPreference>(Stuff.PREF_NOTIFICATIONS)!!
             notif.summaryOn = getString(R.string.pref_noti_q)
         }
 
         val appList = findPreference<Preference>(Stuff.PREF_WHITELIST)!!
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            activity!!.supportFragmentManager.beginTransaction()
+                parentFragmentManager.beginTransaction()
                     .remove(this)
                     .add(R.id.frame, AppListFragment())
                     .addToBackStack(null)
@@ -106,7 +106,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             }
         }
         edits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            activity!!.supportFragmentManager.beginTransaction()
+                parentFragmentManager.beginTransaction()
                     .remove(this)
                     .add(R.id.frame, EditsFragment())
                     .addToBackStack(null)
@@ -115,14 +115,33 @@ class PrefFragment : PreferenceFragmentCompat(){
         }
 
         initAuthConfirmation("lastfm", {
-                Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
+            val wf = WebViewFragment()
+            val b = Bundle()
+            b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
+            b.putBoolean(Stuff.ARG_SAVE_COOKIES, true)
+            wf.arguments = b
+            parentFragmentManager.beginTransaction()
+                    .remove(this)
+                    .add(R.id.frame, wf)
+                    .addToBackStack(null)
+                    .commit()
+//                Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
             },
                 Stuff.PREF_LASTFM_USERNAME, Stuff.PREF_LASTFM_SESS_KEY,
                 logout = {LastfmUnscrobbler(context!!).clearCookies()}
         )
 
         initAuthConfirmation("librefm", {
-                Stuff.openInBrowser(Stuff.LIBREFM_AUTH_CB_URL, context)
+            val wf = WebViewFragment()
+            val b = Bundle()
+            b.putString(Stuff.ARG_URL, Stuff.LIBREFM_AUTH_CB_URL)
+            wf.arguments = b
+            parentFragmentManager.beginTransaction()
+                    .remove(this)
+                    .add(R.id.frame, wf)
+                    .addToBackStack(null)
+                    .commit()
+//                Stuff.openInBrowser(Stuff.LIBREFM_AUTH_CB_URL, context)
             },
                 Stuff.PREF_LIBREFM_USERNAME, Stuff.PREF_LIBREFM_SESS_KEY
         )
@@ -167,7 +186,7 @@ class PrefFragment : PreferenceFragmentCompat(){
 
                 val loginFragment = LoginFragment()
                 loginFragment.arguments = b
-                activity!!.supportFragmentManager.beginTransaction()
+                parentFragmentManager.beginTransaction()
                         .replace(R.id.frame, loginFragment)
                         .addToBackStack(null)
                         .commit()

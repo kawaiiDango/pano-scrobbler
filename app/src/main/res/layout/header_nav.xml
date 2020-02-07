@@ -49,12 +49,14 @@
         android:id="@+id/nav_profile_link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/user_profile"
+        android:nextFocusRight="@id/pager"
         android:padding="@dimen/fab_margin"
         android:tooltipText="@string/user_profile"
-        android:contentDescription="@string/user_profile"
-        app:srcCompat="@drawable/vd_open_in_new"/>
+        app:srcCompat="@drawable/vd_open_in_new" />
+    <!--sometimes focus doesn't work on borderless-->
 
 </RelativeLayout>

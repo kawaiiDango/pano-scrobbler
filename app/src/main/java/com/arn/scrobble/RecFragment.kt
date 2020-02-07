@@ -6,22 +6,25 @@ import android.app.PendingIntent
 import android.content.pm.PackageManager
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.graphics.Color
 import android.media.MediaRecorder
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.arn.scrobble.pref.MultiPreferences
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.content_rec.*
+import kotlinx.android.synthetic.main.content_rec.view.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
-
-
 
 
 class RecFragment:Fragment(){
@@ -34,12 +37,18 @@ class RecFragment:Fragment(){
     private var fadeAnimator: ObjectAnimator? = null
     private var progressAnimator: ObjectAnimator? = null
     private var asyncTask: AsyncTask<String, Int, String>? = null
-
+    private val pref: MultiPreferences by lazy { MultiPreferences(context!!) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        val view = inflater.inflate(R.layout.content_rec, container, false)
+        if (!Main.isTV)
             setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.content_rec, container, false)
+        if (!view.rec_progress.isInTouchMode) {
+            val outValue = TypedValue()
+            context!!.theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)
+            view.rec_progress.setBackgroundResource(outValue.resourceId)
+        }
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,6 +64,7 @@ class RecFragment:Fragment(){
     override fun onStart() {
         super.onStart()
         Stuff.setTitle(activity, R.string.menu_rec)
+//        showSnackbar()
     }
 
     override fun onDestroyView() {
@@ -65,6 +75,10 @@ class RecFragment:Fragment(){
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.rec_menu, menu)
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            menu.findItem(R.id.menu_add_to_hs).isVisible = false
+        if (pref.getString(Stuff.PREF_ACR_HOST, "") != "")
+            menu.findItem(R.id.menu_add_acr_key).title = getString(R.string.remove_acr_key)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -79,11 +93,61 @@ class RecFragment:Fragment(){
                 shortcutManager.requestPinShortcut(pinShortcutInfo, successCallback.intentSender)
             }
             return true
+        } else if (item.itemId == R.id.menu_add_acr_key) {
+            if (item.title == getString(R.string.remove_acr_key)) {
+                item.title = getString(R.string.add_acr_key)
+                removeKey()
+            } else
+                openAddKey()
+            return true
         }
         return super.onOptionsItemSelected(item)
     }
 
+    private fun openAddKey() {
+        val b = Bundle()
+        b.putString(LoginFragment.HEADING, getString(R.string.add_acr_key))
+        b.putString(LoginFragment.INFO, getString(R.string.add_acr_key_info))
+        b.putString(LoginFragment.TEXTF1, getString(R.string.acr_host))
+        b.putString(LoginFragment.TEXTF2, getString(R.string.acr_key))
+        b.putString(LoginFragment.TEXTFL, getString(R.string.acr_secret))
+
+        val loginFragment = LoginFragment()
+        loginFragment.arguments = b
+        parentFragmentManager.beginTransaction()
+                .replace(R.id.frame, loginFragment)
+                .addToBackStack(null)
+                .commit()
+    }
+    private fun removeKey() {
+        pref.remove(Stuff.PREF_ACR_HOST)
+        pref.remove(Stuff.PREF_ACR_KEY)
+        pref.remove(Stuff.PREF_ACR_SECRET)
+    }
+
+    private fun showSnackbar(){
+        val snackbar = Snackbar
+                .make(view!!, R.string.add_acr_consider, 8*1000)
+                .setAction(R.string.add) {
+                    openAddKey()
+                }
+                .setActionTextColor(Color.YELLOW)
+                .addCallback(object : Snackbar.Callback() {
+            override fun onShown(sb: Snackbar?) {
+                super.onShown(sb)
+                if (sb != null && Main.isTV)
+                    sb.view.postDelayed({
+                        sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                                .requestFocus()
+                    }, 200)
+            }
+        })
+        snackbar.view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
+        snackbar.show()
+    }
+
     private fun startOrCancel(){
+        context ?: return
         if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             Stuff.toast(context, getString(R.string.grant_rec_perm))
             requestPermissions(arrayOf(RECORD_AUDIO), code)
@@ -96,7 +160,7 @@ class RecFragment:Fragment(){
         }
         if(!started) {
 
-            if(!startRecording())
+            if(!startRecording() || rec_status == null)
                 return
             rec_status.setText(R.string.listening)
             rec_img.setImageResource(R.drawable.vd_wave_simple)
@@ -219,9 +283,11 @@ class RecFragment:Fragment(){
             rec_status.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
             LFMRequester(Stuff.SCROBBLE, artist, album, title, "", System.currentTimeMillis().toString(), "0")
                     .asSerialAsyncTask(context!!)
-        } else
+        } else {
+            if (rec_status.text.contains(" limit "))
+                showSnackbar()
             rec_status.text = statusMsg
-
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -232,10 +298,13 @@ class RecFragment:Fragment(){
     }
 
     inner class SubmitAsync: AsyncTask<String, Int, String>() {
-        override fun doInBackground(vararg path: String?): String {
+        override fun doInBackground(vararg path: String): String {
             val file = File(path[0])
-            val a = IdentifyProtocolV1()
-            return a.recognize(Tokens.ACR_HOST, Tokens.ACR_KEY, Tokens.ACR_SECRET, file, "audio", 10000)
+            val i = IdentifyProtocolV1()
+            val host = pref.getString(Stuff.PREF_ACR_HOST, Tokens.ACR_HOST)
+            val key = pref.getString(Stuff.PREF_ACR_KEY, Tokens.ACR_KEY)
+            val secret = pref.getString(Stuff.PREF_ACR_SECRET, Tokens.ACR_SECRET)
+            return i.recognize(host, key, secret, file, "audio", 10000)
         }
 
         override fun onPostExecute(result: String?) {

@@ -12,4 +12,7 @@
     <dimen name="hero_button_margin_end">0dp</dimen>
     <dimen name="graph_margin_end">2dp</dimen>
     <dimen name="graph_margin_details">15sp</dimen>
+    <dimen name="coordinator_padding">0dp</dimen>
+    <dimen name="grid_size">160dp</dimen>
+    <dimen name="tabPadding">-1dp</dimen>
 </resources>

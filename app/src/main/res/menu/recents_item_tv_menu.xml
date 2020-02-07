@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_play"
+        android:title="@string/hero_search"/>
+    <item
+        android:id="@+id/menu_info"
+        android:title="@string/hero_info"/>
+    <item
+        android:id="@+id/menu_share"
+        android:title="@string/share_this_song"/>
+    <item
+        android:id="@+id/menu_similar"
+        android:title="@string/similar_tracks"/>
+</menu>

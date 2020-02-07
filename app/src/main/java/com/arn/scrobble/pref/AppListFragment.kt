@@ -39,8 +39,11 @@ class AppListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = AppListAdapter(activity!!)
+        if (!app_list.isInTouchMode)
+            app_list.requestFocus()
+
         app_list.layoutManager = LinearLayoutManager(context)
+        val adapter = AppListAdapter(activity!!)
         app_list.adapter = adapter
         app_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
@@ -53,7 +56,7 @@ class AppListFragment : Fragment() {
         })
 
         app_list_done.setOnClickListener {
-            activity!!.supportFragmentManager.popBackStack()
+            parentFragmentManager.popBackStack()
         }
         app_list_done.setOnLongClickListener {
             MultiPreferences(context?: return@setOnLongClickListener false )

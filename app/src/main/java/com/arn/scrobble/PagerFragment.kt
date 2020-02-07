@@ -31,7 +31,8 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
         val view = inflater.inflate(R.layout.content_pager, container, false)
 
         //https://stackoverflow.com/questions/12490963/replacing-viewpager-with-fragment-then-navigating-back
-
+        if (!view.isInTouchMode)
+            view.requestFocus()
         view.pager.addOnPageChangeListener(this)
         view.pager.adapter = PagerAdapter(childFragmentManager, 3)
         return view

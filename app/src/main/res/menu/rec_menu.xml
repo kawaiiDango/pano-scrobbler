@@ -5,4 +5,7 @@
     <item
         android:id="@+id/menu_add_to_hs"
         android:title="@string/add_to_hs"/>
+    <item
+        android:id="@+id/menu_add_acr_key"
+        android:title="@string/add_acr_key"/>
 </menu>

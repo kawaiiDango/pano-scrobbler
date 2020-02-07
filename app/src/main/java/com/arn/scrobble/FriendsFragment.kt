@@ -29,10 +29,12 @@ import de.umass.lastfm.User
 import kotlinx.android.synthetic.main.action_friends.view.*
 import kotlinx.android.synthetic.main.content_friends.*
 import kotlinx.android.synthetic.main.content_friends.view.*
+import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.grid_item_friend.view.*
 import kotlinx.android.synthetic.main.header_default.view.*
 import java.lang.ref.WeakReference
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 
 /**
@@ -240,6 +242,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun getNumColumns(config:Configuration = resources.configuration): Int {
-        return config.screenWidthDp / 160
+        return (resources.displayMetrics.widthPixels - activity!!.coordinator!!.paddingStart) /
+                resources.getDimension(R.dimen.grid_size).roundToInt()
     }
 }

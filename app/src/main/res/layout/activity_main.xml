@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
+<com.arn.scrobble.ui.MyDrawerLayout
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:focusable="false"
     tools:openDrawer="start">
 
     <include
@@ -20,10 +21,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:maxWidth="280dp"
         app:headerLayout="@layout/header_nav"
         app:itemBackground="@drawable/selector_nav_bg"
         app:itemIconTint="@color/colorAccent"
         app:itemTextColor="@drawable/selector_nav_text"
         app:menu="@menu/activity_main_drawer"/>
 
-</androidx.drawerlayout.widget.DrawerLayout>
+</com.arn.scrobble.ui.MyDrawerLayout>

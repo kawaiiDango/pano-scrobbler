@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:paddingStart="@dimen/coordinator_padding"
     app:layout_collapseMode="parallax"
     app:layout_collapseParallaxMultiplier="0.6"
     tools:context="com.arn.scrobble.Main">
@@ -217,8 +218,8 @@
                     app:tabGravity="fill"
                     app:tabIconTint="@color/colorAccentLightTrans"
                     app:tabIndicatorColor="@color/colorAccentLight"
-                    app:tabPaddingEnd="-1dp"
-                    app:tabPaddingStart="-1dp"
+                    app:tabPaddingEnd="@dimen/tabPadding"
+                    app:tabPaddingStart="@dimen/tabPadding"
                     app:tabSelectedTextColor="@color/colorAccentLight"
                     />
             </androidx.appcompat.widget.Toolbar>

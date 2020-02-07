@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.header_default.view.*
 class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Adapter<SimilarTracksAdapter.VHItem>() {
 
     private var clickListener: ItemClickListener? = null
+    private var focusChangeListener: FocusChangeListener? = null
     private val tracks = mutableListOf<Track>()
     private val tracksImg = mutableMapOf<Int,String>()
     var itemSizeDp = 150
@@ -24,7 +26,7 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHItem{
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.grid_item_recents, parent, false)
-        return VHItem(view, itemSizeDp, clickListener)
+        return VHItem(view, itemSizeDp, clickListener, focusChangeListener)
     }
 
     fun getItem(id: Int): Track {
@@ -46,7 +48,13 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
         clickListener = itemClickListener
     }
 
-    class VHItem(view: View, sizeDp: Int, private val clickListener: ItemClickListener?) : RecyclerView.ViewHolder(view), View.OnClickListener {
+    fun setFocusListener(itemFocusListener: FocusChangeListener) {
+        this.focusChangeListener = itemFocusListener
+    }
+
+    class VHItem(view: View, sizeDp: Int, private val clickListener: ItemClickListener?,
+                 private val focusChangeListener: FocusChangeListener?) :
+            RecyclerView.ViewHolder(view), View.OnClickListener, View.OnFocusChangeListener {
         private val vFrame = view.recents_track_container
         private val vDate = view.recents_date
         private val vTitle = view.recents_title
@@ -55,14 +63,20 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
 
         init {
             vFrame.setOnClickListener(this)
+            vFrame.onFocusChangeListener = this
             vDate.visibility = View.GONE
-            val dp = Stuff.dp2px(sizeDp, view.context)
-            view.minimumWidth = dp
-            view.minimumHeight = dp
+            val px = Stuff.dp2px(sizeDp, view.context)
+            view.minimumWidth = px
+            view.minimumHeight = px
         }
 
         override fun onClick(view: View) {
             clickListener?.onItemClick(view, adapterPosition)
+        }
+
+        override fun onFocusChange(view: View?, focused: Boolean) {
+            if (view != null && !view.isInTouchMode && focused)
+                focusChangeListener?.onFocus(itemView, adapterPosition)
         }
 
         fun setItemData(track: Track, imgUrl:String?) {

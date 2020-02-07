@@ -4,7 +4,8 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="vertical"
-              android:paddingTop="4dp">
+              android:paddingTop="4dp"
+              android:focusable="false">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/friends_name"
@@ -22,9 +23,11 @@
         android:layout_gravity="center"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:elevation="20dp"
+        android:focusable="true"
         tools:src="@drawable/ic_placeholder_user"/>
 
     <FrameLayout
+        android:focusable="true"
         android:id="@+id/friends_track_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

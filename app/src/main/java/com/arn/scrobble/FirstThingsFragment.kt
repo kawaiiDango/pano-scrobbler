@@ -1,6 +1,7 @@
 package com.arn.scrobble
 
 import android.content.*
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -17,6 +18,7 @@ import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
 import kotlinx.android.synthetic.main.content_first_things.*
 import kotlinx.android.synthetic.main.content_first_things.view.*
+import kotlinx.android.synthetic.main.coordinator_main.*
 
 
 /**
@@ -42,15 +44,44 @@ class FirstThingsFragment: Fragment() {
             view.first_things_0.visibility = View.VISIBLE
         }
         view.first_things_1.setOnClickListener {
-            Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
-            val intent = Intent(Stuff.NLS_SETTINGS)
-            startActivity(intent)
+            val intent = if (Main.isTV && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                Intent().setComponent(ComponentName("com.android.tv.settings","com.android.tv.settings.device.apps.AppsActivity"))
+            else
+                Intent(Stuff.NLS_SETTINGS)
+            if (context!!.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
+                startActivity(intent)
+                if (Main.isTV)
+                    Stuff.toast(activity, getString(R.string.check_nls_tv, getString(R.string.app_name)))
+                else
+                    Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
+            } else {
+                val wf = WebViewFragment()
+                val b = Bundle()
+                b.putString(Stuff.ARG_URL, getString(R.string.tv_link))
+                wf.arguments = b
+                parentFragmentManager.beginTransaction()
+                        .hide(this)
+                        .add(R.id.frame, wf)
+                        .addToBackStack(null)
+                        .commit()
+            }
+
         }
         view.first_things_2.setOnClickListener {
-            Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, activity)
+            val wf = WebViewFragment()
+            val b = Bundle()
+            b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
+            b.putBoolean(Stuff.ARG_SAVE_COOKIES, true)
+            wf.arguments = b
+            parentFragmentManager.beginTransaction()
+                    .hide(this)
+                    .add(R.id.frame, wf)
+                    .addToBackStack(null)
+                    .commit()
+//            Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, activity)
         }
         view.first_things_3.setOnClickListener {
-            activity!!.supportFragmentManager.beginTransaction()
+                parentFragmentManager.beginTransaction()
                     .hide(this)
                     .add(R.id.frame, AppListFragment())
                     .addToBackStack(null)
@@ -99,10 +130,10 @@ class FirstThingsFragment: Fragment() {
             markAsDone(R.id.first_things_3)
 
         if(stepsNeeded == 0 || skipChecks) {
-            activity.supportFragmentManager.beginTransaction()
+            parentFragmentManager.beginTransaction()
                     .replace(R.id.frame, PagerFragment(), Stuff.TAG_PAGER)
                     .commit()
-            activity.supportFragmentManager.addOnBackStackChangedListener(activity as Main)
+            parentFragmentManager.addOnBackStackChangedListener(activity as Main)
             Main.checkBackStack(activity)
             return
         }
@@ -126,9 +157,11 @@ class FirstThingsFragment: Fragment() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (!hidden)
+        if (!hidden) {
             checkAll()
-    }
+            activity!!.toolbar.title = getString(R.string.first_things)
+        }
+        }
 
     override fun onDestroyView() {
         activity!!.unregisterReceiver(receiver)
@@ -139,6 +172,7 @@ class FirstThingsFragment: Fragment() {
     private fun markAsDone(resId:Int){
         val v= activity!!.findViewById<ViewGroup>(resId)
         v.isEnabled = false
+        v.isFocusable = false
         v.alpha = 0.4f
         val tv = v.getChildAt(0) as TextView
         tv.text = "✅ "
@@ -178,14 +212,18 @@ class FirstThingsFragment: Fragment() {
             return !pref.getBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, true)
         }
 
-        fun openStartupMgr(startupMgrIntent: Intent, context: Context){
-            try {
-                context.startActivity(startupMgrIntent)
-            } catch (e:SecurityException){
-                if (startupMgrIntent.component?.packageName == Stuff.STARTUPMGR_INTENTS[4])
-                    Stuff.toast(context, context.getString(R.string.fix_it_huawei_startup_mgr))
-                else
-                    Stuff.toast(context, context.getString(R.string.fix_it_generic_startup_mgr))
+        fun openStartupMgr(startupMgrIntent: Intent?, context: Context){
+            if (startupMgrIntent == null)
+                Stuff.openInBrowser("https://dontkillmyapp.com", context)
+            else {
+                try {
+                    context.startActivity(startupMgrIntent)
+                } catch (e: SecurityException) {
+                    if (startupMgrIntent.component?.packageName == Stuff.STARTUPMGR_INTENTS[4])
+                        Stuff.toast(context, context.getString(R.string.fix_it_huawei_startup_mgr))
+                    else
+                        Stuff.openInBrowser("https://dontkillmyapp.com", context)
+                }
             }
         }
     }

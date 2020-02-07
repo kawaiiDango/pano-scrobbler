@@ -63,21 +63,25 @@ class LFMRequester(var command: String, vararg args: String) {
                 caller.cache.expirationPolicy = LFMCachePolicy(Main.isOnline)
 
             val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
-            var lastfmUsername: String? = prefs.getString(Stuff.PREF_LASTFM_USERNAME, null)
+            val lastfmUsername: String? by lazy { prefs.getString(Stuff.PREF_LASTFM_USERNAME, null) }
 
             if (lastfmSessKey != null)
                 lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
-
-            if (lastfmSession == null || lastfmUsername == null)
+            else
                 reAuthNeeded = true
 
             //takes up to 16ms till here
             if (!reAuthNeeded) {
                 when (command) {
                     Stuff.LASTFM_SESS_AUTH -> return null
-                    Stuff.GET_RECENTS -> return User.getRecentTracks(lastfmUsername, Integer.parseInt(args[0]), 20, true, lastfmSessKey, Stuff.LAST_KEY)
+                    Stuff.GET_RECENTS -> {
+                        val tracks = User.getRecentTracks(null, Integer.parseInt(args[0]), 20, true, lastfmSession, null)
+                        if (tracks.username != null && tracks.username != lastfmUsername)
+                            prefs.putString(Stuff.PREF_LASTFM_USERNAME, tracks.username)
+                        return tracks
+                    }
                     Stuff.GET_LOVES -> {
-                        val pr = User.getLovedTracks(lastfmUsername, Integer.parseInt(args[0]), 20, Stuff.LAST_KEY)
+                        val pr = User.getLovedTracks(null, Integer.parseInt(args[0]), 20, lastfmSession, null)
                         pr.pageResults.forEach {
                             it.isLoved = true
                             it.imageUrlsMap.clear()
@@ -145,8 +149,8 @@ class LFMRequester(var command: String, vararg args: String) {
                         cal.set(Calendar.HOUR_OF_DAY, 0)
                         cal.set(Calendar.MINUTE, 0)
                         cal.set(Calendar.SECOND, 0)
-                        val recents = User.getRecentTracks(lastfmUsername, 1, 1,
-                                cal.timeInMillis/1000, System.currentTimeMillis()/1000, lastfmSessKey, Stuff.LAST_KEY)
+                        val recents = User.getRecentTracks(null, 1, 1,
+                                cal.timeInMillis/1000, System.currentTimeMillis()/1000, lastfmSession, null)
 
                         val actPref = context.getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
                         actPref.edit()
@@ -162,7 +166,7 @@ class LFMRequester(var command: String, vararg args: String) {
                         val limit = if (args.size > 1) args[1].toInt() else 30
                         var pr:PaginatedResult<User>
                         try {
-                            pr = User.getFriends(lastfmUsername, true, Integer.parseInt(args[0]), limit, Stuff.LAST_KEY)
+                            pr = User.getFriends(null, Integer.parseInt(args[0]), limit, lastfmSession, null)
                         } catch (e:NullPointerException){
                             val url = URL("https://www.last.fm/user/$lastfmUsername/following?page="+args[0])
                             var urlConnection:HttpURLConnection? = null
@@ -210,7 +214,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                 args[0].toInt()
                             else
                                 10
-                            pr = PaginatedResult(args[0].toInt(),totalPages, users)
+                            pr = PaginatedResult(args[0].toInt(),totalPages, users, null)
                         }
                         return pr
                     }
@@ -322,24 +326,22 @@ class LFMRequester(var command: String, vararg args: String) {
 
                                 if (NLService.isOnline) {
                                     try {
-                                        track = Track.getInfo(args[0], args[2], null, lastfmUsername, Tokens.LAST_KEY)
+                                        track = Track.getInfo(args[0], args[2], null, null, lastfmSession, null)
                                         } catch (e: Exception) { }
-                                    if (track != null) {
-                                        if (args[1] == "") {
-                                            scrobbleData.artist = track.artist
-                                            if (track.album != null)
-                                                scrobbleData.album = track.album
-                                            if (track.albumArtist != null)
-                                                scrobbleData.albumArtist = track.albumArtist
-                                            scrobbleData.track = track.name
-                                        }
+                                    if (track != null && args[1] == "") {
+                                        scrobbleData.artist = track.artist
+                                        if (track.album != null)
+                                            scrobbleData.album = track.album
+                                        if (track.albumArtist != null)
+                                            scrobbleData.albumArtist = track.albumArtist
+                                        scrobbleData.track = track.name
                                     }
                                     correctedArtist =
                                             if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT / 2)
                                                 track.artist
                                             else
                                                 getValidArtist(args[0], prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
-                                    if (correctedArtist != null)
+                                    if (correctedArtist != null && args[1] == "")
                                         scrobbleData.artist = correctedArtist
                                 }
                                 val dao = PendingScrobblesDb.getDb(context).getEditsDao()
@@ -357,7 +359,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                         scrobbleData.albumArtist = edit.albumArtist
                                     scrobbleData.track = edit.track
                                     try {
-                                        track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, lastfmUsername, Tokens.LAST_KEY)
+                                        track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, null, lastfmSession, null)
                                     } catch (e: Exception) { }
                                 }
                                 if (edit != null || track!= null) {
@@ -479,8 +481,7 @@ class LFMRequester(var command: String, vararg args: String) {
                     if (!token.isNullOrBlank()) {
                         lastfmSession = Authenticator.getSession(null, token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
                         if (lastfmSession != null) {
-                            lastfmUsername = lastfmSession.username
-                            prefs.putString(Stuff.PREF_LASTFM_USERNAME, lastfmUsername)
+                            prefs.putString(Stuff.PREF_LASTFM_USERNAME, lastfmSession.username)
                             prefs.putString(Stuff.PREF_LASTFM_SESS_KEY, lastfmSession.key)
                             val intent = Intent(NLService.iSESS_CHANGED)
                             context.sendBroadcast(intent)
@@ -597,7 +598,7 @@ class LFMRequester(var command: String, vararg args: String) {
             if (valid || validArtistsCache[artist] == true)
                 return artist
             else if (validArtistsCache[artist] == null) {
-                val artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)
+                val artistInfo = Artist.getInfo(artist, false, Stuff.LAST_KEY)
                 Stuff.log("artistInfo: $artistInfo")
                 //nw err throws an exception
                 if (artistInfo!= null && artistInfo.name?.trim() != ""){

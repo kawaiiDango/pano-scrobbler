@@ -225,7 +225,13 @@ public class Caller {
 	 * @param session A Session instance or <code>null</code>
 	 * @return the result of the operation
 	 */
-	private Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params, Session session) {
+    private Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
+                        Session session) {
+        return call(apiRootUrl,method,apiKey,params,session,true);
+    }
+
+	public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
+                        Session session, boolean createSignature) {
 		params = new HashMap<String, String>(params); // create new Map in case params is an immutable Map
 		InputStream inputStream = null;
 		
@@ -241,11 +247,16 @@ public class Caller {
 		// no entry in cache, load from web
 		if (inputStream == null) {
 			// fill parameter map with apiKey and session info
-			params.put(PARAM_API_KEY, apiKey);
+
 			if (session != null) {
+                params.put(PARAM_API_KEY, session.getApiKey());
 				params.put("sk", session.getKey());
-				params.put("api_sig", Authenticator.createSignature(method, params, session.getSecret()));
+				if (createSignature)
+				    params.put("api_sig", Authenticator.createSignature(method, params, session.getSecret()));
 			}
+
+            if (!params.containsKey(PARAM_API_KEY))
+                params.put(PARAM_API_KEY, apiKey);
 
             if (apiRootUrl == null) {
 			    if (session != null)

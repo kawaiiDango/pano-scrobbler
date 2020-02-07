@@ -1,4 +1,5 @@
 <resources>
     <dimen name="hero_button_margin_end">5dp</dimen>
     <dimen name="graph_margin_end">10dp</dimen>
+    <dimen name="tabPadding">0dp</dimen>
 </resources>

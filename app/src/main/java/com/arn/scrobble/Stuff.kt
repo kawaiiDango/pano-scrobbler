@@ -59,6 +59,9 @@ object Stuff {
     const val GET_LOVES = "loves"
     const val GET_LOVES_CACHED = "loves_cached"
     const val TAG_PAGER = "pager"
+    const val TAG_FIRST_THINGS = "first_things"
+    const val ARG_URL = "url"
+    const val ARG_SAVE_COOKIES = "cookies"
     const val DELETE = "delete"
     const val GET_SIMILAR = "similar"
     const val TAG_SIMILAR = "similar"
@@ -110,6 +113,9 @@ object Stuff {
     const val PREF_GNUFM_SESS_KEY = "gnufm_token"
     const val PREF_LASTFM_DISABLE = "lastfm_disable"
     const val PREF_NOW_PLAYING = "now_playing"
+    const val PREF_ACR_HOST = "acr_host"
+    const val PREF_ACR_KEY = "acr_key"
+    const val PREF_ACR_SECRET = "acr_secret"
 
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
@@ -133,15 +139,19 @@ object Stuff {
         ACTION_NOTIFICATION_LISTENER_SETTINGS
     else "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
     const val LASTFM_AUTH_CB_URL = "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=pscrobble://auth/lastfm"
-    const val LIBREFM_AUTH_CB_URL = "https://www.libre.fm/api/auth?api_key=$LAST_KEY&cb=pscrobble://auth/librefm"
+    const val LIBREFM_AUTH_CB_URL = "https://www.libre.fm/api/auth?api_key=pScrobbler&cb=pscrobble://auth/librefm"
 
     private var timeIt: Long = 0
 
     val IGNORE_ARTIST_META = arrayOf(
             "com.google.android.youtube",
             "com.vanced.android.youtube",
+            "com.bvanced.android.youtube",
+            "com.pvanced.android.youtube",
             "com.google.android.ogyoutube",
             "com.google.android.apps.youtube.mango",
+            "com.google.android.youtube.tv",
+            "org.schabi.newpipe",
             "com.android.chrome",
             "com.chrome.beta",
             "com.chrome.dev",
@@ -152,7 +162,9 @@ object Stuff {
             "tugapower.codeaurora.browser",
             "com.rsbrowser.browser",
             "com.brave.browser",
-            "net.scweeny.CS.browser.dev"
+            "net.scweeny.CS.browser.dev",
+
+            "jp.nicovideo.nicobox"
     )
 
     const val PACKAGE_N7PLAYER = "com.n7mobile.nplayer"
@@ -185,7 +197,6 @@ object Stuff {
     )
 
     fun log(s: String) {
-//        println(s)
         Log.i(TAG, s)
     }
 
@@ -511,7 +522,7 @@ object Stuff {
     }
 
     fun setProgressCircleColor(swl: SwipeRefreshLayout) {
-        swl.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary)
+        swl.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimaryLight)
         swl.setProgressBackgroundColorSchemeResource(R.color.darkBg)
     }
 

@@ -18,6 +18,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.DialogFragment
 import com.arn.scrobble.pref.MultiPreferences
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_login.view.*
 import kotlinx.android.synthetic.main.coordinator_main.*
@@ -48,17 +49,12 @@ open class LoginFragment: DialogFragment() {
         args?.getString(INFO)?.let {
             view.login_info.visibility = View.VISIBLE
             view.login_info.text = it
-
-            view.login_textfield_last.editText?.onFocusChangeListener = View.OnFocusChangeListener { v, focused ->
-                if (focused)
-                    view.login_info.visibility = View.GONE
-                else
-                    view.login_info.visibility = View.VISIBLE
-            }
         }
         args?.getString(TEXTF1)?.let {
             view.login_textfield1.visibility = View.VISIBLE
             view.login_textfield1.hint = it
+            if (!view.isInTouchMode)
+                view.login_textfield1.requestFocus()
         }
         args?.getString(TEXTF2)?.let {
             view.login_textfield2.visibility = View.VISIBLE
@@ -67,9 +63,9 @@ open class LoginFragment: DialogFragment() {
         args?.getString(TEXTFL)?.let {
             view.login_textfield_last.hint = it
             if (args.getString(HEADING) == getString(R.string.lastfm)) {
-                view.login_textfield_last.isPasswordVisibilityToggleEnabled = true
                 view.login_textfield_last.editText!!.inputType = InputType.TYPE_CLASS_TEXT or
                         InputType.TYPE_TEXT_VARIATION_PASSWORD
+                view.login_textfield_last.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
             }
 
             view.login_textfield_last.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
@@ -177,7 +173,15 @@ open class LoginFragment: DialogFragment() {
             unscrobbler.clearCookies()
             unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
             return unscrobbler.loginWithPassword(tlast)
-        } else
+        } else if (title == getString(R.string.add_acr_key)) {
+            if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()){
+                pref.putString(Stuff.PREF_ACR_HOST, t1)
+                pref.putString(Stuff.PREF_ACR_KEY, t2)
+                pref.putString(Stuff.PREF_ACR_SECRET, tlast)
+            } else
+                success = false
+        }
+        else
             Stuff.toast(activity!!, "service not implemented")
         return if (success) null else ""
     }

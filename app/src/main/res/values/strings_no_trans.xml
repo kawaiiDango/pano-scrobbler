@@ -6,6 +6,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="email">kawaiiDango@protonmail.com</string>
     <string name="share_link">bit.ly/Pscr</string>
+    <string name="tv_link">https://bit.ly/Pscrtv</string>
     <string name="ok_cool">Looks cool</string>
     <string name="ignore_app">Ignore this app</string>
     <string name="unscrobble">Unscrobble</string>

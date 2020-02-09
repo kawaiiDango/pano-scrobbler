@@ -22,6 +22,7 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_login.view.*
 import kotlinx.android.synthetic.main.coordinator_main.*
+import org.json.JSONObject
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -175,9 +176,22 @@ open class LoginFragment: DialogFragment() {
             return unscrobbler.loginWithPassword(tlast)
         } else if (title == getString(R.string.add_acr_key)) {
             if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()){
-                pref.putString(Stuff.PREF_ACR_HOST, t1)
-                pref.putString(Stuff.PREF_ACR_KEY, t2)
-                pref.putString(Stuff.PREF_ACR_SECRET, tlast)
+                val i = IdentifyProtocolV1()
+                try {
+                    val res = i.recognize(t1, t2, tlast, null, "audio", 10000)
+                    val j = JSONObject(res)
+                    val statusCode = j.getJSONObject("status").getInt("code")
+
+                    if (statusCode == 2004) {
+                        // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
+                        pref.putString(Stuff.PREF_ACR_HOST, t1)
+                        pref.putString(Stuff.PREF_ACR_KEY, t2)
+                        pref.putString(Stuff.PREF_ACR_SECRET, tlast)
+                    } else
+                        success = false
+                } catch (e: Exception) {
+                    success = false
+                }
             } else
                 success = false
         }

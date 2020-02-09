@@ -164,8 +164,13 @@ import javax.crypto.spec.SecretKeySpec;
  
          Map<String, Object> postParams = new HashMap<String, Object>();
          postParams.put("access_key", accessKey);
-         postParams.put("sample_bytes", file.length() + "");
-         postParams.put("sample", file);
+         if (file == null){
+             postParams.put("sample_bytes", "0");
+             postParams.put("sample", "");
+         } else {
+             postParams.put("sample_bytes", file.length() + "");
+             postParams.put("sample", file);
+         }
          postParams.put("timestamp", timestamp);
          postParams.put("signature", signature);
          postParams.put("data_type", queryType);

@@ -238,7 +238,7 @@ public class Caller {
 		// try to load from cache
         //TODO: this is bugged for custom api root
 		String cacheEntryName = Cache.createCacheEntryName(method, params);
-		if (session == null && cache != null &&
+		if (!createSignature && cache != null &&
                 cache.getExpirationPolicy().getExpirationTime(method, params) != DefaultExpirationPolicy.NETWORK_AND_CACHE_CONST
                 ) {
 			inputStream = getStreamFromCache(cacheEntryName);

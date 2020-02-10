@@ -1,9 +1,7 @@
 package com.arn.scrobble.pref
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,10 +12,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.Main
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import kotlinx.android.synthetic.main.content_app_list.*
-import java.util.Collections
+import java.util.*
 
 
 /**
@@ -64,45 +63,59 @@ class AppListFragment : Fragment() {
             Stuff.toast(activity, "Cleared blacklist")
             true
         }
-        val excludePackageNames = getAppList(adapter)
+        val excludePackageNames = getMusicPlayers(adapter)
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
             val pm = activity?.packageManager ?: return@execute
 
             val intent = Intent(Intent.ACTION_MAIN)
             intent.addCategory(Intent.CATEGORY_LAUNCHER)
-            val otherApps = pm.queryIntentActivities(intent, 0)
+            val launcherApps = pm.queryIntentActivities(intent, 0)
+
+            val pkgMap = mutableMapOf<String, ResolveInfo>()
+            launcherApps.forEach {
+                val ai = it.activityInfo.applicationInfo
+                if (ai.icon != 0 && ai.enabled)
+                    pkgMap[it.activityInfo.applicationInfo.packageName] = it
+            }
+            if (Main.isTV) {
+                intent.removeCategory(Intent.CATEGORY_LAUNCHER)
+                intent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+                val tvApps = pm.queryIntentActivities(intent, 0)
+                tvApps.forEach {
+                    if (!pkgMap.containsKey(it.activityInfo.applicationInfo.packageName) &&
+                            it.activityInfo.applicationInfo.icon != 0 &&
+                            it.activityInfo.applicationInfo.enabled)
+                        pkgMap[it.activityInfo.applicationInfo.packageName] = it
+                }
+            }
 
             adapter.addSectionHeader(getString(R.string.video_players))
 
-            val it = otherApps.iterator()
-            while (it.hasNext()) {
-                val applicationInfo = it.next().activityInfo.applicationInfo
-                if(Stuff.IGNORE_ARTIST_META.contains(applicationInfo.packageName)) {
-                    adapter.add(applicationInfo, firstRun)
-                    excludePackageNames.add(applicationInfo.packageName)
-                }
-                if (firstRun) {
-                    val prefs = MultiPreferences(context ?: return@execute)
-                    val wSet = mutableSetOf<String>()
-                    wSet.addAll(adapter.getSelectedPackages())
-                    prefs.putStringSet(Stuff.PREF_WHITELIST, wSet)
-                }
-                if (excludePackageNames.contains(applicationInfo.packageName) ||
-                        applicationInfo.icon == 0 || !applicationInfo.enabled) {
-                    it.remove()
-                }
+            Stuff.IGNORE_ARTIST_META.forEach {
+                if (pkgMap.containsKey(it))
+                    adapter.add(pkgMap.remove(it)!!.activityInfo.applicationInfo, firstRun)
+            }
+
+            excludePackageNames.forEach {
+                pkgMap.remove(it)
+            }
+
+            if (firstRun) {
+                val prefs = MultiPreferences(context ?: return@execute)
+                val wSet = mutableSetOf<String>()
+                wSet.addAll(adapter.getSelectedPackages())
+                prefs.putStringSet(Stuff.PREF_WHITELIST, wSet)
             }
             adapter.addSectionHeader(getString(R.string.other_apps))
+
+            val otherApps = pkgMap.values.toMutableList()
             Collections.sort(otherApps, ResolveInfo.DisplayNameComparator(activity!!.packageManager))
+            otherApps.forEach {
+                adapter.add(it.activityInfo.applicationInfo)
+            }
 
             val oldCount = adapter.itemCount
-            var lastPackageName = ""
-            otherApps.forEach {
-                val ai = it.activityInfo.applicationInfo
-                if (lastPackageName != ai.packageName)
-                    adapter.add(it.activityInfo.applicationInfo)
-                lastPackageName = ai.packageName
-            }
+
             appListLoaded = true
             app_list?.post {
                 adapter.notifyItemRangeChanged(oldCount-1, adapter.itemCount, 0)
@@ -136,26 +149,22 @@ class AppListFragment : Fragment() {
     }
 
 
-    private fun getAppList(adapter: AppListAdapter): MutableList<String> {
+    private fun getMusicPlayers(adapter: AppListAdapter): MutableSet<String> {
         val prefs = MultiPreferences(context!!)
         firstRun = prefs.getBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, true)
 
         val pm = activity!!.packageManager
-        val resolveIntent = Intent(Intent.ACTION_VIEW)
-        val uri = Uri.withAppendedPath(
-                MediaStore.Audio.Media.INTERNAL_CONTENT_URI, "1")
-        resolveIntent.setDataAndType(uri, "audio/*")
-
-        val potentialApps = pm.queryIntentActivities(resolveIntent, PackageManager.GET_RESOLVED_FILTER)
-        val excludePackageNames = mutableListOf<String>(activity!!.packageName)
+        val intent = Intent(MediaStore.INTENT_ACTION_MUSIC_PLAYER)
+        //the newer intent category doesn't catch many players including poweramp
+        val musicPlayers = pm.queryIntentActivities(intent, 0)
+        val excludePackageNames = mutableSetOf<String>(activity!!.packageName)
 
         adapter.addSectionHeader(getString(R.string.music_players))
-        potentialApps.forEach{
+        musicPlayers.forEach {
             if (!excludePackageNames.contains(it.activityInfo.packageName)) {
                 adapter.add(it.activityInfo.applicationInfo, firstRun)
                 excludePackageNames.add(it.activityInfo.packageName)
             }
-
         }
         adapter.notifyDataSetChanged()
         return excludePackageNames

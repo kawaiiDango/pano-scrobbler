@@ -52,6 +52,13 @@
         <SwitchPreference
             app:iconSpaceReserved="false"
             android:defaultValue="true"
+            android:key="pixel_np"
+            android:persistent="true"
+            android:title="@string/pref_pixel_np"/>
+
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="true"
             android:key="auto_detect"
             android:persistent="true"
             android:summary="@string/pref_auto_detect_summary"

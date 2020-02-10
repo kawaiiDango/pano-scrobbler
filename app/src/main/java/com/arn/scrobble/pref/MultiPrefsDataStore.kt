@@ -17,7 +17,8 @@ class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
             Stuff.PREF_DELAY_PER to 50,
             Stuff.PREF_LB_CUSTOM_ROOT to Stuff.LISTENBRAINZ_API_ROOT,
             Stuff.PREF_LASTFM_DISABLE to false,
-            Stuff.PREF_NOW_PLAYING to true
+            Stuff.PREF_NOW_PLAYING to true,
+            Stuff.PREF_PIXEL_NP to true
     )
 
     override fun getString(key: String, defValue: String?) =

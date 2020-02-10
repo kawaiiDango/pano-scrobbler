@@ -62,6 +62,19 @@ class PrefFragment : PreferenceFragmentCompat(){
             Stuff.openInBrowser("https://www.last.fm/settings/applications", activity)
             true
         }
+
+        try {
+            context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            val pixelNp = findPreference<SwitchPreference>(Stuff.PREF_PIXEL_NP)
+            if (pixelNp != null){
+                pixelNp.summary = getString(R.string.pref_pixel_np_nope)
+                pixelNp.isEnabled = false
+                pixelNp.isPersistent = false
+                pixelNp.isChecked = false
+            }
+        }
+
 /*
         val searchSite = findPreference(Stuff.PREF_ACTIVITY_SEARCH_URL) as ListPreference
         val searchSiteVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SEARCH_URL,

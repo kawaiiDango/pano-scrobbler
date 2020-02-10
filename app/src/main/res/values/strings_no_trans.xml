@@ -14,4 +14,6 @@
     <string name="lastfm">LastFM</string>
     <string name="librefm">LibreFM</string>
     <string name="listenbrainz">ListenBrainz</string>
+
+    <string name="song_format_string">%1$s by %2$s</string>
 </resources>

@@ -116,6 +116,7 @@ object Stuff {
     const val PREF_ACR_HOST = "acr_host"
     const val PREF_ACR_KEY = "acr_key"
     const val PREF_ACR_SECRET = "acr_secret"
+    const val PREF_PIXEL_NP = "pixel_np"
 
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
@@ -167,6 +168,8 @@ object Stuff {
             "jp.nicovideo.nicobox"
     )
 
+    const val CHANNEL_PIXEL_NP = "com.google.intelligence.sense.ambientmusic.MusicNotificationChannel"
+    const val PACKAGE_PIXEL_NP = "com.google.intelligence.sense"
     const val PACKAGE_N7PLAYER = "com.n7mobile.nplayer"
     const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"
@@ -321,6 +324,29 @@ object Stuff {
         if (splits.isEmpty())
             return ""
         return splits[0]
+    }
+
+    fun pixelNPExtractMeta(titleStr: String, formatStr: String):Array<String>? {
+        val tpos = formatStr.indexOf("%1\$s")
+        val apos = formatStr.indexOf("%2\$s")
+        val regex = formatStr.replace("(", "\\(")
+                .replace(")", "\\)")
+                .replace("%1\$s", "(.*)")
+                .replace("%2\$s", "(.*)")
+        return try {
+            val m = regex.toRegex().find(titleStr)!!
+            val g = m.groupValues
+            if (g.size != 3)
+                throw Exception("group size != 3")
+            if (tpos > apos)
+                arrayOf(g[1],g[2])
+            else
+                arrayOf(g[2],g[1])
+
+        } catch (e:Exception) {
+            print("err in $titleStr $formatStr")
+            null
+        }
     }
 
     fun setTitle(activity: Activity?, strId: Int) {

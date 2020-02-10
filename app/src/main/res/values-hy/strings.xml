@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="song_format_string">%2$s-ի %1$s երգը</string>
+</resources>

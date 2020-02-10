@@ -14,6 +14,7 @@ import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.*
 import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
+import android.service.notification.StatusBarNotification
 import android.util.LruCache
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -181,6 +182,54 @@ class NLService : NotificationListenerService() {
                     .apply()
     }
 
+    override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        detectPixelNP(sbn, false)
+    }
+
+    override fun onNotificationRemoved(sbn: StatusBarNotification?, rankingMap: RankingMap?, reason: Int) { //only for >26
+        if (reason == REASON_APP_CANCEL || reason == REASON_APP_CANCEL_ALL ||
+                reason == REASON_TIMEOUT || reason == REASON_ERROR)
+            detectPixelNP(sbn, true)
+    }
+
+    private fun detectPixelNP(sbn: StatusBarNotification?, removed:Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && sbn != null &&
+                pref.getBoolean(Stuff.PREF_PIXEL_NP, true) && sbn.packageName == Stuff.PACKAGE_PIXEL_NP) {
+            val n = sbn.notification
+            if (n.channelId == Stuff.CHANNEL_PIXEL_NP) {
+                Stuff.log("detectPixelNP " + n.extras.getString(Notification.EXTRA_TITLE) + "removed=$removed")
+                if (removed) {
+                    handler.remove(currentBundle.getInt(B_HASH))
+                    return
+                }
+                val title = n.extras.getString(Notification.EXTRA_TITLE) ?: return
+                val meta = Stuff.pixelNPExtractMeta(title, getString(R.string.song_format_string))
+                if (meta != null){
+                    val hash = meta[0].hashCode() + meta[1].hashCode()
+                    val packageNameArg =
+                            if (pref.getStringSet(Stuff.PREF_WHITELIST, null)?.contains(sbn.packageName) == false)
+                                sbn.packageName
+                            else
+                                null
+                    if (handler.hasMessages(currentBundle.getInt(B_HASH)))
+                        handler.remove(currentBundle.getInt(B_HASH))
+
+                    val delay = System.currentTimeMillis() - currentBundle.getLong(B_TIME) - currentBundle.getLong(B_DELAY)
+                    if (currentBundle.getInt(B_HASH) == hash && delay < 0){ //"resume" scrobbling
+                        val m = handler.obtainMessage()
+                        m.data = currentBundle
+                        m.what = hash
+                        handler.sendMessageDelayed(m, -delay)
+                        handler.notifyScrobble(meta[0], meta[1], hash, true, currentBundle.getBoolean(B_USER_LOVED))
+                    } else
+                        handler.nowPlaying(meta[0], "", meta[1], "", 0, hash, false, packageNameArg, true)
+
+                } else
+                    Stuff.log("detectPixelNP parse failed")
+            }
+        }
+    }
+
     private val nlservicereciver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action){
@@ -205,14 +254,24 @@ class NLService : NotificationListenerService() {
                             intent.getStringExtra(B_TITLE)!!, SessListener.lastHash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT))
                 }
                 pWHITELIST, pBLACKLIST -> {
+                    //handle pixel_np blacklist in its own settings
+                    val pkgName = intent.getStringExtra("packageName")
+                    if (pkgName == Stuff.PACKAGE_PIXEL_NP){
+                        if (intent.action == pBLACKLIST) {
+                            pref.edit().putBoolean(Stuff.PREF_PIXEL_NP, false).apply()
+                            handler.remove(currentBundle.getInt(B_HASH))
+                            nm.cancel(NOTI_ID_APP, 0)
+                            return
+                        }
+                    }
                     //create copies
                     val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())!!.toMutableSet()!!
                     val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())!!.toMutableSet()!!
 
                     if (intent.action == pWHITELIST)
-                        wSet.add(intent.getStringExtra("packageName"))
+                        wSet.add(pkgName)
                     else {
-                        bSet.add(intent.getStringExtra("packageName"))
+                        bSet.add(pkgName)
                     }
                     bSet.removeAll(wSet) //whitelist takes over blacklist for conflicts
                     pref.edit()
@@ -272,7 +331,7 @@ class NLService : NotificationListenerService() {
         }
 
         fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, duration:Long,
-                       hash:Int, forcable:Boolean, packageName: String?) {
+                       hash:Int, forcable:Boolean, packageName: String?, lessDelay: Boolean = false) {
             removeMessages(SessListener.lastHash)
             if (artist != "" && !hasMessages(hash)){
                 val now = System.currentTimeMillis()
@@ -283,7 +342,6 @@ class NLService : NotificationListenerService() {
                         .skipContentProvider()
                         .asSerialAsyncTask(applicationContext)
 
-                    val m = obtainMessage()
                     val b = Bundle()
                     b.putString(B_ARTIST, artist)
                     b.putString(B_ALBUM, album)
@@ -292,17 +350,25 @@ class NLService : NotificationListenerService() {
                     b.putLong(B_TIME, now)
                     b.putLong(B_DURATION, duration)
                     b.putBoolean(B_FORCEABLE, forcable)
-                    currentBundle = b
-                    m.data = b
-                    m.what = hash
+
                     val delaySecs = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
                     val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
                     val delay = if (duration > 10000 && duration*delayPer/100 < delaySecs) //dont scrobble <10 sec songs?
                         duration*delayPer/100
-                    else
-                        delaySecs
+                    else {
+                        if (lessDelay)
+                            delaySecs*2/3 //esp for pixel now playing
+                        else
+                            delaySecs
+                    }
+                    b.putLong(B_DELAY, delay)
+                    currentBundle = b
 
+                    val m = obtainMessage()
+                    m.data = b
+                    m.what = hash
                     sendMessageDelayed(m, delay)
+
                     notifyScrobble(artist, title, hash, true, false)
                     //display ignore thing only on successful parse
                     if (packageName != null) {
@@ -587,6 +653,7 @@ class NLService : NotificationListenerService() {
         const val B_ERR_MSG = "err"
         const val B_STANDALONE = "alone"
         const val B_FORCEABLE = "forceable"
+        const val B_DELAY = "delay"
         const val NOTI_ID_SCR = "scrobble_success"
         const val NOTI_ID_ERR = "err"
         const val NOTI_ID_APP = "new_app"

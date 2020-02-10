@@ -13,7 +13,7 @@ android {
         verCode = line.toInteger()
         List<String> runTasks = gradle.startParameter.getTaskNames()
         for (String item : runTasks)
-            if ( item.contains("assembleRelease") || item.contains("publishReleaseApk") || item.contains("bundleRelease")) {
+            if (item.contains("publishReleaseApk")) {
                 verCode++
                 versionFile.text = verCode.toString()
             }
@@ -30,7 +30,8 @@ android {
         versionName ((int)(versionCode/100) + "." + (versionCode%100) +  " - " + new Date().format('dd.MMM.YY'))
         setProperty("archivesBaseName", "pScrobbler")
         vectorDrawables.useSupportLibrary = true
-        resConfig "en"
+        resConfigs "af", "am", "ar", "as", "az", "be", "bg", "bn", "bs", "ca", "cs", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi", "fil", "fr", "gl", "gsw", "gu", "he", "hi", "hr", "hu", "hy", "id", "is", "it", "iw", "ja", "ka", "kk", "km", "kn", "ko", "ky", "ln", "lo", "lt", "lv", "mk", "ml", "mn", "mo", "mr", "ms", "my", "nb", "ne", "nl", "no", "or", "pa", "pl", "pt", "ro", "ru", "si", "sk", "sl", "sq", "sr", "sv", "sw", "ta", "te", "th", "tl", "tr", "uk", "ur", "uz", "vi", "zh", "zh-rTW", "zu"
+        //this removes regional variants from the support libraries
         kapt {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas".toString())
@@ -55,7 +56,7 @@ targetCompatibility = "1.8"
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.1.0"
+    implementation "androidx.appcompat:appcompat:1.2.0-alpha02"
     implementation "androidx.preference:preference:1.1.0"
     implementation "androidx.media:media:1.1.0"
     implementation "androidx.palette:palette:1.0.0"
@@ -73,7 +74,7 @@ dependencies {
     implementation "de.hdodenhof:circleimageview:3.1.0"
     implementation "com.robinhood.spark:spark:1.2.0"
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.1'
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.1'
 
     implementation project(':lastfm')
 

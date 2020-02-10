@@ -43,6 +43,13 @@ class FirstThingsFragment: Fragment() {
                     getString(R.string.grant_autostart_desc, Build.MANUFACTURER)
             view.first_things_0.visibility = View.VISIBLE
         }
+        try {
+            context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
+            view.first_things_1_desc.text = getString(R.string.grant_notification_access_desc, getString(R.string.except_pixel_np))
+        } catch (e: PackageManager.NameNotFoundException) {
+            view.first_things_1_desc.text = getString(R.string.grant_notification_access_desc, "")
+        }
+
         view.first_things_1.setOnClickListener {
             val intent = if (Main.isTV && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 Intent().setComponent(ComponentName("com.android.tv.settings","com.android.tv.settings.device.apps.AppsActivity"))

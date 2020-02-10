@@ -71,10 +71,11 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
             <TextView
+                android:id="@+id/first_things_1_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="3dp"
-                android:text="@string/grant_notification_access_desc"
+                tools:text="@string/grant_notification_access_desc"
                 android:textSize="13sp"/>
         </LinearLayout>
 

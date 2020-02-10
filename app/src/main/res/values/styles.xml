@@ -9,9 +9,12 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
+        <item name="android:textDirection">locale</item>
     </style>
 
     <style name="AppTheme.Transparent" parent="Base.Theme.AppCompat.Dialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowMinWidthMajor">60%</item>
@@ -42,7 +45,9 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:colorBackground">@android:color/black</item>
+    </style>
 
     <style name="firstThings">
         <item name="android:layout_margin">@dimen/fab_margin</item>
@@ -63,7 +68,6 @@
         <item name="android:drawableTint">@color/colorAccentLight</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
-        <!--<item name="android:background">?attr/selectableItemBackground</item>-->
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>

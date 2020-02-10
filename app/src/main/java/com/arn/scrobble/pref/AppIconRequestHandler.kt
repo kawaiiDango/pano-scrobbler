@@ -8,7 +8,6 @@ import com.arn.scrobble.Stuff
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Request
 import com.squareup.picasso.RequestHandler
-import java.io.IOException
 
 
 /**
@@ -31,13 +30,13 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
         return data.uri != null && TextUtils.equals(data.uri.scheme, SCHEME_PNAME)
     }
 
-    @Throws(IOException::class)
-    override fun load(request: Request, networkPolicy: Int): RequestHandler.Result? {
+    override fun load(request: Request, networkPolicy: Int): Result? {
         return try {
             val info = pm.getApplicationInfo(request.uri.toString().split(":")[1], 0)
             val b = Stuff.drawableToBitmap(info.loadIcon(pm), request.targetWidth, request.targetHeight, isMIUI)
-            RequestHandler.Result(b, LoadedFrom.DISK)
+            Result(b, LoadedFrom.DISK)
         } catch (e: Exception) { //catch miui security exceptions too
+            e.printStackTrace()
             null
         }
     }

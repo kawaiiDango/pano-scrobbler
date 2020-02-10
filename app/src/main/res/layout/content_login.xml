@@ -140,7 +140,7 @@
                 android:layout_width="65dp"
                 android:layout_height="65dp"
                 android:scaleType="fitCenter"
-                android:tint="@color/colorAccent"
+                app:tint="@color/colorAccent"
                 android:visibility="gone"
                 tools:src="@drawable/vd_check"/>
 

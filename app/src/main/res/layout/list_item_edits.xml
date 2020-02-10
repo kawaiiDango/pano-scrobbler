@@ -17,7 +17,7 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:paddingStart="10dp"
-        android:tint="@color/colorAccentLight"
+        app:tint="@color/colorAccentLight"
         app:srcCompat="@drawable/vd_edit"
         tools:srcCompat="@drawable/vd_edit"/>
 

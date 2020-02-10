@@ -48,7 +48,7 @@
         android:alpha="0.5"
         android:contentDescription="@string/menu_rec"
         android:scaleType="fitCenter"
-        android:tint="@color/colorAccent"
+        app:tint="@color/colorAccent"
         app:srcCompat="@drawable/vd_wave_simple" />
 
 </RelativeLayout>

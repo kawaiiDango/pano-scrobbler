@@ -144,7 +144,8 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
-        android:alpha="0.01"
+        android:alpha="0"
         android:ems="1"
-        android:singleLine="true"/>
+        android:singleLine="true"
+        android:visibility="invisible"/>
 </LinearLayout>

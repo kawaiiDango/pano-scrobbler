@@ -14,5 +14,7 @@
     <dimen name="graph_margin_details">15sp</dimen>
     <dimen name="coordinator_padding">0dp</dimen>
     <dimen name="grid_size">160dp</dimen>
-    <dimen name="tabPadding">-1dp</dimen>
+    <dimen name="recents_overlay_rotate">10</dimen>
+    <dimen name="triangle_pivot_x">30%</dimen>
+    <dimen name="triangle_pivot_y">-40%</dimen>
 </resources>

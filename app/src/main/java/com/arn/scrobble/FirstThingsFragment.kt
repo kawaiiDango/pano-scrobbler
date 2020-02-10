@@ -95,28 +95,41 @@ class FirstThingsFragment: Fragment() {
                     .commit()
         }
 
-        view.testing_pass.addTextChangedListener(object : TextWatcher {
+        if (arguments?.getBoolean(Stuff.ARG_NOPASS) == true) {
+            view.testing_pass.visibility = View.GONE
+        } else {
+            view.testing_pass.showSoftInputOnFocus = false
+            view.testing_pass.addTextChangedListener(object : TextWatcher {
 
-            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+                override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+                }
+
+                override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+                }
+
+                override fun afterTextChanged(editable: Editable) {
+                    val splits = editable.split('_')
+                    if (splits.size == 3) {
+                        pref.putString(Stuff.PREF_LASTFM_USERNAME, splits[0])
+                        pref.putString(Stuff.PREF_LASTFM_SESS_KEY, splits[1])
+                        val imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                        imm?.hideSoftInputFromWindow(view!!.windowToken, 0)
+                        checkAll(true)
+                    } else
+                        Stuff.log("bad pass")
+                }
+
+            })
+
+            view.testing_pass.setOnTouchListener { v, event ->
+                if (v != null) {
+                    v.onTouchEvent(event)
+                    v.alpha = 0.2f
+                }
+                true
             }
+        }
 
-            override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
-
-            }
-
-            override fun afterTextChanged(arg0: Editable) {
-                val splits = testing_pass.text.split('_')
-                if (splits.size == 3) {
-                    pref.putString(Stuff.PREF_LASTFM_USERNAME, splits[0])
-                    pref.putString(Stuff.PREF_LASTFM_SESS_KEY, splits[1])
-                    val imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-                    imm?.hideSoftInputFromWindow(view?.windowToken, 0)
-                    checkAll(true)
-                } else
-                    Stuff.log("bad pass")
-            }
-
-        })
         return view
     }
 
@@ -136,15 +149,8 @@ class FirstThingsFragment: Fragment() {
         if (checkAppListExists(pref))
             markAsDone(R.id.first_things_3)
 
-        if(stepsNeeded == 0 || skipChecks) {
-            parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, PagerFragment(), Stuff.TAG_PAGER)
-                    .commit()
-            parentFragmentManager.addOnBackStackChangedListener(activity as Main)
-            Main.checkBackStack(activity)
-            return
-        }
-
+        if(stepsNeeded == 0 || skipChecks)
+            (activity as Main).showPager()
     }
 
     override fun onStart() {
@@ -155,6 +161,13 @@ class FirstThingsFragment: Fragment() {
         activity!!.registerReceiver(receiver, iF)
         Stuff.setTitle(activity, R.string.first_things)
         (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
+        if (arguments?.getBoolean(Stuff.ARG_NOPASS) != true)
+        //prevent keyboard from showing up on start
+            testing_pass.postDelayed({
+                testing_pass?.visibility = View.VISIBLE
+            }, 200)
+
     }
 
     override fun onResume() {

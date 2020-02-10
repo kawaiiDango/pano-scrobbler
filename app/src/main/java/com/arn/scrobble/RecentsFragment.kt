@@ -665,14 +665,16 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         val scaleyAnimator = ObjectAnimator.ofFloat(loveIcon, "scaleY", 0f)
         val rotAnimator = ObjectAnimator.ofFloat(loveIcon, "rotation", 0f)
 
-
+        val isRtl = resources.getBoolean(R.bool.is_rtl)
         if (track.isLoved) {
             LFMRequester(Stuff.UNLOVE, track.artist, track.name).asAsyncTask(context!!)
 
             alphaAnimator.setFloatValues(0f)
             scalexAnimator.setFloatValues(1f, 0.5f)
             scaleyAnimator.setFloatValues(1f, 0.5f)
-            rotAnimator.setFloatValues(10f, 60f)
+            val startRot = if (isRtl) -10f else 10f
+            val toRot = if (isRtl) -60f else 60f
+            rotAnimator.setFloatValues(startRot, toRot)
         } else {
             if (loveIcon.background == null)
                 loveIcon.background = context!!.getDrawable(R.drawable.vd_heart_solid)
@@ -684,7 +686,9 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             alphaAnimator.setFloatValues(0.9f)
             scalexAnimator.setFloatValues(2f, 1f)
             scaleyAnimator.setFloatValues(2f, 1f)
-            rotAnimator.setFloatValues(-50f, 10f)
+            val startRot = if (isRtl) 50f else -50f
+            val toRot = if (isRtl) -10f else 10f
+            rotAnimator.setFloatValues(startRot, toRot)
         }
         val aSet = AnimatorSet()
         aSet.playTogether(alphaAnimator, scalexAnimator, scaleyAnimator, rotAnimator)

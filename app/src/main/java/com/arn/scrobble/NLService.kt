@@ -418,7 +418,7 @@ class NLService : NotificationListenerService() {
             }
 
             i = Intent(applicationContext, Main::class.java)
-                    .putExtra(Stuff.DEEP_LINK_KEY, Stuff.DL_NOW_PLAYING)
+                    .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_NOW_PLAYING)
             val launchIntent = PendingIntent.getActivity(applicationContext, 8, i,
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
@@ -446,7 +446,10 @@ class NLService : NotificationListenerService() {
             if (nowPlaying) {
                 nb.setSubText(getString(R.string.state_scrobbling))
                 nb.addAction(getAction(R.drawable.vd_undo, "❌", getString(R.string.unscrobble), cancelToastIntent))
-                style.setShowActionsInCompactView(0, 1)
+                if (resources.getBoolean(R.bool.is_rtl))
+                    style.setShowActionsInCompactView(1, 0)
+                else
+                    style.setShowActionsInCompactView(0, 1)
             } else {
                 nb.setSubText(getString(R.string.state_scrobbled))
                 style.setShowActionsInCompactView(0)
@@ -538,7 +541,7 @@ class NLService : NotificationListenerService() {
             val okayIntent = PendingIntent.getBroadcast(applicationContext, 2, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
             intent = Intent(applicationContext, Main::class.java)
-                    .putExtra(Stuff.DEEP_LINK_KEY, Stuff.DL_APP_LIST)
+                    .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST)
             val launchIntent = PendingIntent.getActivity(applicationContext, 7, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
@@ -550,7 +553,12 @@ class NLService : NotificationListenerService() {
                     .setContentIntent(launchIntent)
                     .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
                     .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
-                    .setStyle(MediaStyleMod().setShowActionsInCompactView(0,1))
+                    .setStyle(
+                            if (resources.getBoolean(R.bool.is_rtl))
+                        MediaStyleMod().setShowActionsInCompactView(1, 0)
+                    else
+                        MediaStyleMod().setShowActionsInCompactView(0, 1)
+                    )
                     .buildMediaStyleMod()
             nm.notify(NOTI_ID_APP, 0, n)
         }

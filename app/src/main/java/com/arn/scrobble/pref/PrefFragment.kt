@@ -12,12 +12,15 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.transition.Fade
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.preference.*
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SeekBarPreference
+import androidx.preference.SwitchPreference
 import com.arn.scrobble.*
-import com.arn.scrobble.R
 import com.arn.scrobble.pending.db.PendingScrobblesDb
-
 
 
 /**
@@ -99,15 +102,30 @@ class PrefFragment : PreferenceFragmentCompat(){
         val delayPer = findPreference<SeekBarPreference>(Stuff.PREF_DELAY_PER)!!
         delayPer.min = 30
 
-        val shareSig = findPreference<EditTextPreference>(Stuff.PREF_ACTIVITY_SHARE_SIG)!!
-        val shareSigVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
+        val shareSig = findPreference<Preference>(Stuff.PREF_ACTIVITY_SHARE_SIG)!!
+
+        shareSig.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+
+            val shareSigVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
                 getString(R.string.share_sig, getString(R.string.share_link)))
-        shareSig.text = shareSigVal
-        shareSig.onPreferenceChangeListener = Preference.OnPreferenceChangeListener{ pref: Preference, newVal ->
-            appPrefs.edit()
-                    .putString(Stuff.PREF_ACTIVITY_SHARE_SIG, newVal.toString().take(50))
-                    .apply()
+            val et = EditText(context)
+            et.setText(shareSigVal)
+            val padding = resources.getDimensionPixelSize(R.dimen.fab_margin)
+
+            val dialog = AlertDialog.Builder(context!!, R.style.AppTheme_Transparent)
+                    .setTitle(R.string.pref_share_sig)
+                    .setPositiveButton(android.R.string.ok) { dialog, id ->
+                        appPrefs.edit()
+                                .putString(Stuff.PREF_ACTIVITY_SHARE_SIG, et.text.toString().take(50))
+                                .apply()
+                    }
+                    .setNegativeButton(android.R.string.cancel) { dialog, id ->
+                    }
+                    .create()
+            dialog.setView(et,padding,padding/3,padding,0)
+            dialog.show()
             true
+
         }
 
         val edits = findPreference<Preference>("edits")!!

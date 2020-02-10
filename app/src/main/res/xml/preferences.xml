@@ -97,10 +97,10 @@
             android:persistent="true"
             android:title="@string/pref_now_playing"/>
 
-        <EditTextPreference
+        <Preference
             app:iconSpaceReserved="false"
-            android:title="Share signature"
-            android:summary="Tap to edit"
+            android:title="@string/pref_share_sig"
+            android:summary="@string/pref_share_sig_desc"
             android:key="share_sig"
             android:persistent="false"
             />

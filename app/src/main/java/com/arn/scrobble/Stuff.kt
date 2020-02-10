@@ -42,6 +42,8 @@ import java.io.IOException
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.math.ln
+import kotlin.math.pow
 
 
 /**
@@ -62,6 +64,7 @@ object Stuff {
     const val TAG_FIRST_THINGS = "first_things"
     const val ARG_URL = "url"
     const val ARG_SAVE_COOKIES = "cookies"
+    const val ARG_NOPASS = "nopass"
     const val DELETE = "delete"
     const val GET_SIMILAR = "similar"
     const val TAG_SIMILAR = "similar"
@@ -75,7 +78,7 @@ object Stuff {
     const val DL_APP_LIST = 32
     const val DL_NOW_PLAYING = 33
     const val DL_MIC = 34
-    const val DEEP_LINK_KEY = "deeplink"
+    const val DIRECT_OPEN_KEY = "deeplink"
     const val LOVE = "loved"
     const val UNLOVE = "unloved"
     const val GET_FRIENDS_RECENTS = "get_friends_recent"
@@ -447,10 +450,10 @@ object Stuff {
     fun humanReadableNum(f: Float): String {
         val n = f.toLong()
         val k = 1000
-        if (n < k) return n.toString()
-        val exp = (Math.log(n.toDouble()) / Math.log(k.toDouble())).toInt()
+        if (n < k) return DecimalFormat("#").format(n) //localise
+        val exp = (ln(n.toDouble()) / ln(k.toDouble())).toInt()
         val unit = "KMB"[exp - 1] //kilo, million, bilion
-        val dec = n / Math.pow(k.toDouble(), exp.toDouble())
+        val dec = n / k.toDouble().pow(exp.toDouble())
 
         val decimal = DecimalFormat("#.#").format(dec)
         return decimal + unit

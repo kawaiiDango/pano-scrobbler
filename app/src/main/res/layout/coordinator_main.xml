@@ -99,7 +99,7 @@
                         android:id="@+id/sparkline_tick_top"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="top"
+                        android:layout_gravity="top|start"
                         android:textSize="@dimen/button_caption"
                         tools:text="10000"/>
 
@@ -107,9 +107,8 @@
                         android:id="@+id/sparkline_tick_bottom"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
+                        android:layout_gravity="bottom|start"
                         android:layout_marginBottom="@dimen/button_caption"
-                        android:gravity="bottom"
                         android:textSize="@dimen/button_caption"
                         tools:text="000"/>
 
@@ -143,20 +142,7 @@
                     android:visibility="gone"
                     tools:background="@color/darkBg"
                     tools:text="title expanded title expanded "
-                    tools:visibility="visible"/>
-
-                <!--<TextView-->
-                    <!--android:id="@+id/hero_similar"-->
-                    <!--android:layout_width="@dimen/similar_width"-->
-                    <!--android:layout_height="38dp"-->
-                    <!--android:background="?attr/selectableItemBackground"-->
-                    <!--android:clickable="true"-->
-                    <!--android:focusable="true"-->
-                    <!--android:gravity="center"-->
-                    <!--android:singleLine="true"-->
-                    <!--android:text="@string/similar_tracks_button"-->
-                    <!--android:textColor="@color/colorAccentLight"-->
-                    <!--android:tooltipText="@string/similar_tracks"/>-->
+                    tools:visibility="gone"/>
 
                 <ImageButton
                     android:id="@+id/hero_similar"
@@ -204,7 +190,6 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:contentInsetEnd="70sp"
                 app:elevation="@dimen/elevation_hero_btn"
                 app:layout_collapseMode="pin"
                 app:title=" "
@@ -218,8 +203,6 @@
                     app:tabGravity="fill"
                     app:tabIconTint="@color/colorAccentLightTrans"
                     app:tabIndicatorColor="@color/colorAccentLight"
-                    app:tabPaddingEnd="@dimen/tabPadding"
-                    app:tabPaddingStart="@dimen/tabPadding"
                     app:tabSelectedTextColor="@color/colorAccentLight"
                     />
             </androidx.appcompat.widget.Toolbar>

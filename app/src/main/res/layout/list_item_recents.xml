@@ -114,7 +114,7 @@
         android:clickable="true"
         android:elevation="@dimen/elevation_hero_btn"
         android:outlineProvider="bounds"
-        android:rotation="10"
+        android:rotation="@dimen/recents_overlay_rotate"
         android:transformPivotX="25dp"
         android:transformPivotY="50dp"
         android:visibility="invisible"

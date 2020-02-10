@@ -124,6 +124,8 @@
     <string name="pref_now_playing">Submit now playing</string>
     <string name="pref_pixel_np">Scrobble Pixel\'s Now Playing</string>
     <string name="pref_pixel_np_nope">This feature is available only on eligible Pixel devices</string>
+    <string name="pref_share_sig">Share signature</string>
+    <string name="pref_share_sig_desc">Tap to edit</string>
     <string name="lastfm_password">Lastfm Password</string>
     <string name="lastfm_login_info">"Deleting and editing scrobbles are not a part of the lastFM API. The app can still simulate a non-API login to lastFM, for which, your password is needed.
 

@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="16sp"
                 android:layout_marginBottom="-1sp"
-                android:drawableRight="@drawable/shape_triangle_corner"
+                android:drawableEnd="@drawable/shape_triangle_corner"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
@@ -70,7 +70,7 @@
                 android:id="@+id/friends_date"
                 android:layout_width="wrap_content"
                 android:layout_height="14sp"
-                android:layout_gravity="right"
+                android:layout_gravity="end"
                 android:layout_marginEnd="11dp"
                 android:layout_marginTop="3dp"
                 android:gravity="bottom"
@@ -83,19 +83,11 @@
             android:id="@+id/friends_music_icon"
             android:layout_width="20sp"
             android:layout_height="20sp"
-            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:alpha="0.7"
             android:contentDescription="@string/hero_search"
             tools:srcCompat="@drawable/vd_music_circle"/>
 
-        <!--<ImageView-->
-        <!--android:id="@+id/friends_music_icon_playing"-->
-        <!--android:layout_width="20sp"-->
-        <!--android:layout_height="20sp"-->
-        <!--android:layout_marginLeft="4dp"-->
-        <!--android:layout_marginTop="4dp"-->
-        <!--android:visibility="invisible"-->
-        <!--app:srcCompat="@drawable/avd_eq"/>-->
     </FrameLayout>
 </LinearLayout>

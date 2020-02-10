@@ -11,7 +11,6 @@ import android.content.pm.LabeledIntent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.Rect
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.Network
@@ -131,33 +130,37 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         drawer_layout.addDrawerListener(toggle)
         nav_view.setNavigationItemSelectedListener(this)
 
+        val hidePassBox =
+            if (intent.data?.isHierarchical == true && intent.data?.path == "/testFirstThings"){
+                pref.remove(Stuff.PREF_LASTFM_SESS_KEY)
+                true
+            } else
+                false
+
         if (savedInstanceState == null) {
             if (FirstThingsFragment.checkAuthTokenExists(pref) &&
                 FirstThingsFragment.checkNLAccess(this)) {
 
-                val deepLinkExtra = intent?.getIntExtra(Stuff.DEEP_LINK_KEY, 0) ?: 0
-                val pagerFragment = PagerFragment()
+                val directOpenExtra = intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) ?: 0
 
-                supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, pagerFragment, Stuff.TAG_PAGER)//, Stuff.GET_RECENTS)
-                        .commit()
-
-                if (deepLinkExtra == Stuff.DL_SETTINGS || intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
+                if (directOpenExtra == Stuff.DL_SETTINGS || intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
                     supportFragmentManager.beginTransaction()
                             .replace(R.id.frame, PrefFragment())
                             .addToBackStack(null)
                             .commit()
-                else if (deepLinkExtra == Stuff.DL_APP_LIST)
+                else if (directOpenExtra == Stuff.DL_APP_LIST)
                     supportFragmentManager.beginTransaction()
                             .replace(R.id.frame, AppListFragment())
                             .addToBackStack(null)
                             .commit()
-                else if (deepLinkExtra == Stuff.DL_MIC)
+                else if (directOpenExtra == Stuff.DL_MIC)
                     supportFragmentManager.beginTransaction()
                             .replace(R.id.frame, RecFragment())
                             .addToBackStack(null)
                             .commit()
                 else {
+                    showPager()
+
                     val handler = Handler()
                     handler.post {
                         if (!KeepNLSAliveJob.ensureServiceRunning(this))
@@ -168,26 +171,35 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         else if (!isTV)
                             AppRater.app_launched(this)
                     }
-                    openLockDrawer()
                 }
             } else {
-                supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, FirstThingsFragment(), Stuff.TAG_FIRST_THINGS)
-                        .commit()
-                app_bar.setExpanded(false, true)
-                closeLockDrawer()
-                //TODO:remove padding and later add
+                showFirstThings(hidePassBox)
             }
         } else {
             tab_bar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
         }
         supportFragmentManager.addOnBackStackChangedListener(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            drawer_layout.systemGestureExclusionRects = listOf(Rect(0, 0, 100, 2500))
-            //it doesnt work out of the box
-        }
 //        showNotRunning()
 //        test()
+    }
+
+    fun showPager(){
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.frame, PagerFragment(), Stuff.TAG_PAGER)
+                .commit()
+        openLockDrawer()
+    }
+
+    private fun showFirstThings(hidePassBox: Boolean) {
+        val b = Bundle()
+        b.putBoolean(Stuff.ARG_NOPASS, hidePassBox)
+        val f = FirstThingsFragment()
+        f.arguments = b
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.frame, f, Stuff.TAG_FIRST_THINGS)
+                .commit()
+        app_bar.setExpanded(false, true)
+        closeLockDrawer()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -231,7 +243,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         longDescription.append(" rest")
 
         val launchIntent = PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, Main::class.java)
-                .putExtra(Stuff.DEEP_LINK_KEY, Stuff.DL_APP_LIST),
+                .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST),
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
         val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
@@ -344,7 +356,25 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onBackStackChanged() {
-        checkBackStack(this)
+        if (app_bar != null) {
+            if (supportFragmentManager.backStackEntryCount == 0) {
+                val firstThingsVisible = supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
+                // what the fuck, kotlin extensions? stop giving me old instances
+                if (findViewById<ViewPager>(R.id.pager)?.currentItem != 2 && firstThingsVisible != true)
+                    app_bar.setExpanded(true, true)
+                else
+                    app_bar.setExpanded(false, true)
+                if (firstThingsVisible != true)
+                    showBackArrow(false)
+
+                if (supportFragmentManager.fragments.isEmpty()) //came back from direct open
+                    showPager()
+            } else {
+                if (supportFragmentManager.findFragmentByTag(Stuff.GET_SIMILAR)?.isVisible != true)
+                    app_bar.setExpanded(false, true)
+                showBackArrow(true)
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -474,12 +504,18 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             LFMRequester (Stuff.LIBREFM_SESS_AUTH, token)
                         .asAsyncTask(applicationContext)
                     }
+                    "/testFirstThings" -> {
+                        pref.remove(Stuff.PREF_LASTFM_SESS_KEY)
+                        for (i in 0..supportFragmentManager.backStackEntryCount)
+                            supportFragmentManager.popBackStackImmediate()
+                        showFirstThings(true)
+                    }
                 }
             }
         }
     }
 
-    fun showBackArrow(show: Boolean){
+    private fun showBackArrow(show: Boolean){
         if (backArrowShown != show) {
             val start = if (show) 0f else 1f
             val anim = ValueAnimator.ofFloat(start, 1 - start)
@@ -594,27 +630,5 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     companion object {
         var isOnline = true
         var isTV = false
-
-        fun checkBackStack(activity: Main){
-            val appBar = activity.findViewById<StatefulAppBar>(R.id.app_bar)
-
-            if (appBar != null) {
-
-                if (activity.supportFragmentManager.backStackEntryCount == 0) {
-                    val firstThingsVisible = activity.supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
-                    // what the fuck, kotlin extensions? stop giving me old instances
-                    if (activity.findViewById<ViewPager>(R.id.pager)?.currentItem != 2 && firstThingsVisible != true)
-                        appBar.setExpanded(true, true)
-                    else
-                        appBar.setExpanded(false, true)
-                    if (firstThingsVisible != true)
-                        activity.showBackArrow(false)
-                } else {
-                    if (activity.supportFragmentManager.findFragmentByTag(Stuff.GET_SIMILAR)?.isVisible != true)
-                        appBar.setExpanded(false, true)
-                    activity.showBackArrow(true)
-                }
-            }
-        }
     }
 }

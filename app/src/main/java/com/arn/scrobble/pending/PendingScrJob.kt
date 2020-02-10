@@ -10,6 +10,7 @@ import android.os.AsyncTask
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.ListenBrainz
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Tokens
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.Result
@@ -118,6 +119,19 @@ class PendingScrJob : JobService() {
                 scrobbleData.artist = it.artist
                 scrobbleData.album = it.album
                 scrobbleData.track = it.track
+
+                if (it.album.isEmpty() && it.albumArtist.isEmpty()){
+                    try {
+                        val track = Track.getInfo(it.artist, it.track, Tokens.LAST_KEY)
+                        if (track != null) {
+                            if (!track.album.isNullOrEmpty())
+                                scrobbleData.album = track.album
+                            if (!track.albumArtist.isNullOrEmpty())
+                                scrobbleData.albumArtist = track.albumArtist
+                        }
+                    } catch (e: Exception) { }
+                }
+
                 if (it.albumArtist != "" && it.albumArtist != it.artist)
                     scrobbleData.albumArtist = it.albumArtist
                 scrobbleData.timestamp = (it.timestamp / 1000).toInt() // in secs

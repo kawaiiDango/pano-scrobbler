@@ -4,6 +4,8 @@
 <img alt='GIF' src='https://media.giphy.com/media/WvikAmG3iseJoFun1A/giphy.gif' width="240"/>
 *Thats the GIF of a much older version.*
 
+<a href="https://bit.ly/Pscrdl">Download latest apk</a> (Do not use this if the play store link works for you and want automatic updates)
+
 #### Features:
 - Scrobble from anything which produces audio with metadata, including Youtube, Chrome, Telegram etc.
 - Scrobble to lastFM, LibreFM and Listenbrainz
@@ -18,10 +20,12 @@
 - Check what your friends are listening to
 - View and play songs similar to a given one
 - Identify and scrobble a song from mic
+- Supports TVs (Oreo and lower needs adb commands)
+- Supports Pixel Now Playing
 
 #### This is not intended to:
 - be an app to browse lastfm.
-- contain any webviews. Links would rather open in the browser
+- use webviews except the first steps. Other links would rather open in the browser
 - contain any kind of ADs
 
 ### Building:

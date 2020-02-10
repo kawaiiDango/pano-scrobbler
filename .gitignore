@@ -15,3 +15,4 @@
 /app/keys.gradle
 /app/version.txt
 /app/*.json
+/app/release-public

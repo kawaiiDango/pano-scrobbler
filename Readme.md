@@ -8,7 +8,7 @@
 
 #### Features:
 - Scrobble from anything which produces audio with metadata, including Youtube, Chrome, Telegram etc.
-- Scrobble to lastFM, LibreFM and Listenbrainz
+- Scrobble to lastFM, LibreFM, GNU FM and Listenbrainz
 - View scrobble count in notification
 - Sanity check the metadata with lastFM's records. 
 - View track info, such as listener count charts, album art etc

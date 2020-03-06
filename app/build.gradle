@@ -16,6 +16,7 @@ android {
             if (item.contains("publishReleaseApk")) {
                 verCode++
                 versionFile.text = verCode.toString()
+                break
             }
     } else {
         throw new GradleException("Could not read version.txt!")
@@ -56,7 +57,7 @@ targetCompatibility = "1.8"
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.2.0-alpha02"
+    implementation "androidx.appcompat:appcompat:1.2.0-alpha03"
     implementation "androidx.preference:preference:1.1.0"
     implementation "androidx.media:media:1.1.0"
     implementation "androidx.palette:palette:1.0.0"
@@ -65,10 +66,10 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 //    implementation "android.arch.lifecycle:common-java8:1.1.1"
     kapt "androidx.lifecycle:lifecycle-compiler:2.2.0"
-    kapt "androidx.room:room-compiler:2.2.3"
-    implementation "androidx.room:room-runtime:2.2.3"
+    kapt "androidx.room:room-compiler:2.2.4"
+    implementation "androidx.room:room-runtime:2.2.4"
 
-    implementation "com.google.android.material:material:1.1.0-beta01"
+    implementation "com.google.android.material:material:1.1.0-rc02"
 
     implementation "com.squareup.picasso:picasso:2.71828"
     implementation "de.hdodenhof:circleimageview:3.1.0"

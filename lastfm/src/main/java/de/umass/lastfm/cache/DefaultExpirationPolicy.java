@@ -73,6 +73,9 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 		ONE_WEEK_METHODS.add("user.gettopartists");
 		ONE_WEEK_METHODS.add("user.gettoptracks");
 		ONE_WEEK_METHODS.add("user.gettoptags");
+
+		//track info without username
+        ONE_WEEK_METHODS.add("track.getinfo");
 	}
 
 	/**
@@ -96,6 +99,9 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 			else
 				return cacheRecentWeeklyCharts;
 		}
+		if (method.equals("track.getinfo"))
+			return !params.containsKey("username") ? ONE_WEEK : -1;
+
 		return ONE_WEEK_METHODS.contains(method) ? ONE_WEEK : -1;
 	}
 

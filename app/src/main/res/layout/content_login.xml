@@ -71,10 +71,11 @@
                 tools:visibility="visible">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/login_textfield2_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableTint="@color/colorAccent"
-                    android:singleLine="true"/>
+                    android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -84,13 +85,16 @@
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/swap"
-                android:paddingEnd="7dp"
+                android:nextFocusLeft="@id/login_textfield2_edittext"
+                android:nextFocusRight="@id/login_textfield2_edittext"
+                android:nextFocusDown="@id/login_textfield_last_edittext"
                 android:paddingStart="7dp"
                 android:paddingTop="10dp"
+                android:paddingEnd="7dp"
                 android:tooltipText="@string/swap"
                 android:visibility="gone"
                 app:srcCompat="@drawable/vd_swap"
-                tools:visibility="visible"/>
+                tools:visibility="visible" />
 
         </LinearLayout>
 
@@ -101,6 +105,7 @@
             android:hint="@string/pref_token_label">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_textfield_last_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

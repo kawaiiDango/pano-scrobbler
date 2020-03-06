@@ -12,6 +12,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.transition.Fade
+import android.webkit.URLUtil
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -40,6 +41,8 @@ class PrefFragment : PreferenceFragmentCompat(){
         exitTransition = Fade()
         addPreferencesFromResource(R.xml.preferences)
 
+        val hideOnTV = mutableListOf<Preference>()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !Main.isTV) {
             val master = findPreference<SwitchPreference>(Stuff.PREF_MASTER)!!
             master.summary = getString(R.string.pref_master_qs_hint)
@@ -66,18 +69,18 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
+        val pixelNp = findPreference<SwitchPreference>(Stuff.PREF_PIXEL_NP)!!
+        hideOnTV.add(pixelNp)
         try {
             context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
         } catch (e: PackageManager.NameNotFoundException) {
-            val pixelNp = findPreference<SwitchPreference>(Stuff.PREF_PIXEL_NP)
-            if (pixelNp != null){
-                pixelNp.summary = getString(R.string.pref_pixel_np_nope)
-                pixelNp.isEnabled = false
-                pixelNp.isPersistent = false
-                pixelNp.isChecked = false
-            }
+            pixelNp.summary = getString(R.string.pref_pixel_np_nope)
+            pixelNp.isEnabled = false
+            pixelNp.isPersistent = false
+            pixelNp.isChecked = false
         }
-
+        val autoDetect = findPreference<SwitchPreference>(Stuff.PREF_AUTO_DETECT)!!
+        hideOnTV.add(autoDetect)
 /*
         val searchSite = findPreference(Stuff.PREF_ACTIVITY_SEARCH_URL) as ListPreference
         val searchSiteVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SEARCH_URL,
@@ -176,23 +179,42 @@ class PrefFragment : PreferenceFragmentCompat(){
             },
                 Stuff.PREF_LIBREFM_USERNAME, Stuff.PREF_LIBREFM_SESS_KEY
         )
-/*
-        initAuthConfirmation("gnufm_nixtape", {
-                val b = Bundle()
-                b.putString(LoginFragment.HEADING, "GnuFM")
-                b.putString(LoginFragment.TEXTF1, getString(R.string.pref_user_label))
-                b.putString(LoginFragment.TEXTF2, "GnuFM nixtape URL")
 
-                val loginFragment = LoginFragment()
-                loginFragment.arguments = b
-                fragmentManager!!.beginTransaction()
-                        .replace(R.id.frame, loginFragment)
-                        .addToBackStack(null)
-                        .commit()
+        initAuthConfirmation("gnufm", {
+            val nixtapeUrl =
+                    preferenceManager.preferenceDataStore?.getString(Stuff.PREF_GNUFM_ROOT, "https://")!!
+                val et = EditText(context)
+                et.setText(nixtapeUrl)
+                val padding = resources.getDimensionPixelSize(R.dimen.fab_margin)
+
+                val dialog = AlertDialog.Builder(context!!, R.style.AppTheme_Transparent)
+                        .setTitle(R.string.pref_gnufm_title)
+                        .setPositiveButton(android.R.string.ok) { dialog, id ->
+                            var newUrl = et.text.toString()
+                            if (URLUtil.isValidUrl(newUrl)) {
+                                if (!newUrl.endsWith('/'))
+                                    newUrl += '/'
+                                preferenceManager.preferenceDataStore?.putString(Stuff.PREF_GNUFM_ROOT, newUrl)
+                                val wf = WebViewFragment()
+                                val b = Bundle()
+                                b.putString(Stuff.ARG_URL, newUrl+"api/auth?api_key="+Stuff.LIBREFM_KEY+"&cb=pscrobble://auth/gnufm")
+                                wf.arguments = b
+                                parentFragmentManager.beginTransaction()
+                                        .remove(this)
+                                        .add(R.id.frame, wf)
+                                        .addToBackStack(null)
+                                        .commit()
+                            }
+                        }
+                        .setNegativeButton(android.R.string.cancel) { dialog, id ->
+                        }
+                        .create()
+                dialog.setView(et,padding,padding/3,padding,0)
+                dialog.show()
             },
-                Stuff.PREF_GNUFM_USERNAME, Stuff.PREF_GNUFM_SESS_KEY, Stuff.PREF_GNUFM_NIXTAPE
+                Stuff.PREF_GNUFM_USERNAME, Stuff.PREF_GNUFM_SESS_KEY, Stuff.PREF_GNUFM_ROOT
         )
-        */
+
 
         initAuthConfirmation("listenbrainz", {
                 val b = Bundle()
@@ -235,6 +257,11 @@ class PrefFragment : PreferenceFragmentCompat(){
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
+
+        if (Main.isTV)
+            hideOnTV.forEach {
+                it.isVisible = false
+            }
     }
 
     private fun setAuthLabel(elem: Preference) {
@@ -256,7 +283,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                                      logout: (() -> Unit)? = null) {
         val elem = findPreference<Preference>(key)!!
         setAuthLabel(elem)
-        if (elem.key == "librefm")
+        if (elem.key == "librefm" || elem.key == "gnufm")
             elem.title = elem.title.toString()+ " " + getString(R.string.pref_scrobble_love_only)
         else if (elem.key == "listenbrainz" || elem.key == "lb_custom")
             elem.title = elem.title.toString()+ " " + getString(R.string.pref_scrobble_only)
@@ -314,6 +341,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             if (intent.action == NLService.iSESS_CHANGED) {
                 setAuthLabel("lastfm")
                 setAuthLabel("librefm")
+                setAuthLabel("gnufm")
             }
         }
     }

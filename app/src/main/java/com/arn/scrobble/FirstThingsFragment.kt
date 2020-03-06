@@ -98,6 +98,8 @@ class FirstThingsFragment: Fragment() {
         if (arguments?.getBoolean(Stuff.ARG_NOPASS) == true) {
             view.testing_pass.visibility = View.GONE
         } else {
+            if (Main.isTV)
+                view.testing_pass.isFocusable = false
             view.testing_pass.showSoftInputOnFocus = false
             view.testing_pass.addTextChangedListener(object : TextWatcher {
 
@@ -123,6 +125,8 @@ class FirstThingsFragment: Fragment() {
 
             view.testing_pass.setOnTouchListener { v, event ->
                 if (v != null) {
+                    if (Main.isTV)
+                        v.isFocusable = true
                     v.onTouchEvent(event)
                     v.alpha = 0.2f
                 }
@@ -179,7 +183,7 @@ class FirstThingsFragment: Fragment() {
         super.onHiddenChanged(hidden)
         if (!hidden) {
             checkAll()
-            activity!!.toolbar.title = getString(R.string.first_things)
+            activity?.toolbar?.title = getString(R.string.first_things)
         }
         }
 

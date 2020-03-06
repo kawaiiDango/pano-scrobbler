@@ -90,7 +90,9 @@
     <string name="add_to_hs">Add to homescreen</string>
     <string name="listening">Listening to music playing around you…</string>
     <string name="uploading">Uploading…</string>
+    <string name="recording_failed">Failed to start recording. Mic might be busy or unavailable on this device</string>
     <string name="loading">…</string>
+    <string name="press_back">Press back when done</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
@@ -126,6 +128,8 @@
     <string name="pref_pixel_np_nope">This feature is available only on eligible Pixel devices</string>
     <string name="pref_share_sig">Share signature</string>
     <string name="pref_share_sig_desc">Tap to edit</string>
+    <string name="pref_gnufm">GNU FM</string>
+    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="lastfm_password">Lastfm Password</string>
     <string name="lastfm_login_info">"Deleting and editing scrobbles are not a part of the lastFM API. The app can still simulate a non-API login to lastFM, for which, your password is needed.
 
@@ -140,7 +144,7 @@ Press back if you do not want this."</string>
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="no_browser">No browser is installed.</string>
     <string name="no_player">No music player is installed.</string>
-    <string name="not_running">The scrobbler service has died.</string>
+    <string name="not_running">The scrobbler was killed by your system.</string>
     <string name="not_running_fix_action">Fix it</string>
     <string name="login_submit">Verify</string>
     <string name="qs_master_on">@string/pref_master_on</string>
@@ -157,10 +161,13 @@ Press back if you do not want this."</string>
     <string name="remove_acr_key">Remove ACRCloud Key</string>
     <string name="add_acr_consider">To prevent hitting rate limits, consider adding your own ACRCloud Key</string>
     <string name="add">Add</string>
-    <string name="add_acr_key_info">"• Sign up at console.acrcloud.com
-• Navigate to Projects \> Audio &amp; video recognition
+    <string name="add_acr_key_info">"• Sign up at https://console.acrcloud.com
+• Navigate to Projects > Audio &amp; video recognition
 • Create a new project, select Recorded Audio and the ACRCloud Music bucket"</string>
-
+    <string name="pending_n_remaining">%1$d remaining</string>
+    <string name="pending_loves">Submitting loves</string>
+    <string name="pending_batch">Submitting a batch</string>
+    <string name="webview_error">The page failed to load (is your internet working?)</string>
     <string name="fix_it_title">Possible fixes</string>
     <string name="fix_it_startup_title">Startup Managers</string>
     <string name="fix_it_startup_desc_default">If your system has startup managers or power managers, please whitelist this app, as they can prevent it from scrobbling in the background.</string>

@@ -41,27 +41,34 @@ class AppListFragment : Fragment() {
         if (!app_list.isInTouchMode)
             app_list.requestFocus()
 
+        if (Main.isTV){
+            app_list_done.visibility = View.GONE
+            Stuff.toast(context, getString(R.string.press_back))
+        }
+
         app_list.layoutManager = LinearLayoutManager(context)
         val adapter = AppListAdapter(activity!!)
         app_list.adapter = adapter
-        app_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        if (!Main.isTV) {
+            app_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
-            override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
-                if(scrollState == 0) { //scrolling stopped
-                    app_list_done.show()
-                } else //scrolling
-                    app_list_done.hide()
+                override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
+                    if (scrollState == 0) { //scrolling stopped
+                        app_list_done.show()
+                    } else //scrolling
+                        app_list_done.hide()
+                }
+            })
+
+            app_list_done.setOnClickListener {
+                parentFragmentManager.popBackStack()
             }
-        })
-
-        app_list_done.setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
-        app_list_done.setOnLongClickListener {
-            MultiPreferences(context?: return@setOnLongClickListener false )
-                    .putStringSet(Stuff.PREF_BLACKLIST, setOf())
-            Stuff.toast(activity, "Cleared blacklist")
-            true
+            app_list_done.setOnLongClickListener {
+                MultiPreferences(context ?: return@setOnLongClickListener false)
+                        .putStringSet(Stuff.PREF_BLACKLIST, setOf())
+                Stuff.toast(activity, "Cleared blacklist")
+                true
+            }
         }
         val excludePackageNames = getMusicPlayers(adapter)
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
@@ -105,6 +112,8 @@ class AppListFragment : Fragment() {
                 val wSet = mutableSetOf<String>()
                 wSet.addAll(adapter.getSelectedPackages())
                 prefs.putStringSet(Stuff.PREF_WHITELIST, wSet)
+                if (Main.isTV)
+                    prefs.putBoolean(Stuff.PREF_AUTO_DETECT, false)
             }
             adapter.addSectionHeader(getString(R.string.other_apps))
 

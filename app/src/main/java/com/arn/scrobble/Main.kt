@@ -159,6 +159,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             .addToBackStack(null)
                             .commit()
                 else {
+                    if (coordinatorPadding > 0)
+                        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
                     showPager()
 
                     val handler = Handler()
@@ -167,7 +169,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             handler.postDelayed({
                                 if (!KeepNLSAliveJob.ensureServiceRunning(this))
                                     showNotRunning()
-                            },2000)
+                            },500)
                         else if (!isTV)
                             AppRater.app_launched(this)
                     }
@@ -177,6 +179,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         } else {
             tab_bar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
+            if (supportFragmentManager.findFragmentByTag(Stuff.TAG_PAGER)?.isAdded == true &&
+                    supportFragmentManager.backStackEntryCount == 0)
+                openLockDrawer()
         }
         supportFragmentManager.addOnBackStackChangedListener(this)
 //        showNotRunning()
@@ -184,10 +189,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     fun showPager(){
+        openLockDrawer()
         supportFragmentManager.beginTransaction()
                 .replace(R.id.frame, PagerFragment(), Stuff.TAG_PAGER)
                 .commit()
-        openLockDrawer()
     }
 
     private fun showFirstThings(hidePassBox: Boolean) {
@@ -504,6 +509,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             LFMRequester (Stuff.LIBREFM_SESS_AUTH, token)
                         .asAsyncTask(applicationContext)
                     }
+                    "/gnufm" -> {
+                            LFMRequester (Stuff.GNUFM_SESS_AUTH, token)
+                        .asAsyncTask(applicationContext)
+                    }
                     "/testFirstThings" -> {
                         pref.remove(Stuff.PREF_LASTFM_SESS_KEY)
                         for (i in 0..supportFragmentManager.backStackEntryCount)
@@ -585,7 +594,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         if(coordinatorPadding > 0) {
             drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
             if (!drawerInited) {
-                drawer_layout.setScrimColor(0)
                 nav_view.addOnLayoutChangeListener { view, left, top, right, bottom,
                                                      leftWas, topWas, rightWas, bottomWas ->
                     if (left != leftWas || right != rightWas)
@@ -602,8 +610,12 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 //        Stuff.log("focus: $currentFocus")
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
             val f = currentFocus
-            if (f is NavigationMenuItemView)
-                f.nextFocusRightId = R.id.pager
+            if (f is NavigationMenuItemView) {
+                if (resources.getBoolean(R.bool.is_rtl))
+                    f.nextFocusLeftId = R.id.pager
+                else
+                    f.nextFocusRightId = R.id.pager
+            }
         }
         return super.onKeyDown(keyCode, event)
     }
@@ -616,8 +628,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+        if (drawer_layout.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+            drawer_layout.isSaveEnabled = false
         outState.putInt("tab_bar_visible", tab_bar.visibility)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {

@@ -55,8 +55,10 @@ class RecFragment:Fragment(){
         super.onViewCreated(view, savedInstanceState)
         path = activity!!.filesDir.absolutePath+"/sample.rec"
         handler.postDelayed({
-            startOrCancel()
-            rec_progress.setOnClickListener { startOrCancel() }
+            if (rec_progress!= null) {
+                startOrCancel()
+                rec_progress.setOnClickListener { startOrCancel() }
+            }
         }, 300)
 
     }
@@ -223,16 +225,31 @@ class RecFragment:Fragment(){
             recorder!!.prepare()
             recorder!!.start()
         } catch (e: Exception) {
-            Stuff.log("prepare/start failed")
-            return false
+            Stuff.log("prepare/start failed MIC")
+            recorder!!.reset()
+            recorder!!.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION) // needed on fire tv
+            recorder!!.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
+            recorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
+            recorder!!.setOutputFile(path)
+            try {
+                recorder!!.prepare()
+                recorder!!.start()
+            } catch (e: Exception) {
+                Stuff.log("prepare/start failed VOICE_RECOGNITION")
+                rec_status.setText(R.string.recording_failed)
+                return false
+            }
         }
         return true
     }
 
     private fun finishRecording() {
-        recorder?.stop()
-        recorder?.reset()
-        recorder?.release()
+        try {
+            recorder?.stop()
+            recorder?.reset()
+            recorder?.release()
+        } catch (e:Exception) {}
+
         recorder = null
         rec_status.setText(R.string.uploading)
 
@@ -284,7 +301,7 @@ class RecFragment:Fragment(){
             LFMRequester(Stuff.SCROBBLE, artist, album, title, "", System.currentTimeMillis().toString(), "0")
                     .asSerialAsyncTask(context!!)
         } else {
-            if (rec_status.text.contains(" limit "))
+            if (statusCode == 3003)
                 showSnackbar()
             rec_status.text = statusMsg
         }

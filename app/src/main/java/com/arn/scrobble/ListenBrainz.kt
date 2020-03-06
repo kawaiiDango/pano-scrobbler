@@ -112,27 +112,20 @@ class ListenBrainz (private val token:String? = null) {
 
     fun checkAuth(context:Context, pref: MultiPreferences, username:String): Boolean {
         token!!
-        val url = URL("$apiRoot/1/submit-listens")
+        val url = URL("$apiRoot/1/validate-token?token=$token")
 
         var success = false
         try {
             val conn = url.openConnection() as HttpURLConnection
             conn.connectTimeout = Stuff.CONNECT_TIMEOUT
             conn.readTimeout = Stuff.READ_TIMEOUT
-            conn.requestMethod = "POST"
-            conn.setRequestProperty ("Authorization", "token $token")
-            conn.setRequestProperty ("Content-Type", "application/json; charset=utf-8")
-            conn.doOutput = true
-
-            val os = conn.outputStream
-            val writer = os.bufferedWriter()
-            writer.write("{}")
-            writer.close()
-            os.close()
             conn.connect()
-            success = conn.responseCode == 400
-            //400 = success (invalid json)
-            //401 = fail (invalid token)
+            success = false
+            if (conn.responseCode == 200) {
+                val respJson = JSONObject(conn.inputStream.bufferedReader().readText())
+                if (respJson.getString("message") == "Token valid.")
+                    success = true
+            }
 
         } catch (e: IOException) {
             Stuff.toast(context, e.toString())

@@ -162,7 +162,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 ld.observe(viewLifecycleOwner, Observer {
                     it ?: return@Observer
                     adapter.populate(it, it.page, !firstLoadNw)
-                    if (viewModel.page != it.page)
+                    if (viewModel.page != it.page && Main.isTV)
                         loadRecents(1, true)
                     loadMoreListener.currentPage = it.page
                     if (!firstLoadCache && firstLoadNw)

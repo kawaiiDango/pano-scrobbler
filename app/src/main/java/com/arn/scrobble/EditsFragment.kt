@@ -18,6 +18,8 @@ class EditsFragment: Fragment() {
         view.edits_list.layoutManager = LinearLayoutManager(context!!)
         view.edits_list.adapter = adapter
         adapter.loadAll()
+        if (!view.isInTouchMode)
+            view.requestFocus()
         return view
     }
 

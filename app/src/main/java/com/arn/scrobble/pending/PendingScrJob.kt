@@ -7,10 +7,7 @@ import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
 import android.os.AsyncTask
-import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.ListenBrainz
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Tokens
+import com.arn.scrobble.*
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.Result
@@ -38,7 +35,7 @@ class PendingScrJob : JobService() {
         return true
     }
 
-    class OfflineScrobbleTask(context: Context): AsyncTask<Unit, String, Boolean>() {
+    class OfflineScrobbleTask(private val context: Context): AsyncTask<Unit, String, Boolean>() {
         private val dao = PendingScrobblesDb.getDb(context).getScrobblesDao()
         private val lovesDao = PendingScrobblesDb.getDb(context).getLovesDao()
         private val prefs = MultiPreferences(context)
@@ -53,8 +50,7 @@ class PendingScrJob : JobService() {
             while (aneCount > 0){
                 val entry = dao.loadLastPending ?: continue
 
-                publishProgress( "$aneCount remaining")
-
+                publishProgress(context.getString(R.string.pending_n_remaining, aneCount))
                 var correctedArtist: String?
                 try {
                     correctedArtist = LFMRequester.getValidArtist(entry.artist, prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
@@ -70,10 +66,8 @@ class PendingScrJob : JobService() {
                     dao.deleteInvalidArtist(entry.artist)
                 Thread.sleep(400)
 
-                if (aneCount >= BATCH_SIZE) {
-                    publishProgress( "Submitting a batch, $aneCount remaining")
+                if (aneCount >= BATCH_SIZE)
                     done = submitBatch()
-                }
 
                 if (!MOCK)
                     aneCount = dao.allNotAutocorrectedCount
@@ -95,6 +89,8 @@ class PendingScrJob : JobService() {
             var done = true
             val entries = dao.allAutocorrected(BATCH_SIZE)
 
+            publishProgress(context.getString(R.string.pending_batch))
+
             val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
             val lastfmEnabled = !prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
 
@@ -106,6 +102,12 @@ class PendingScrJob : JobService() {
             val librefmSession: Session? = if (!librefmSessKey.isNullOrBlank())
                         Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
                                 Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
+                    else
+                        null
+            val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
+            val gnufmSession: Session? = if (!gnufmSessKey.isNullOrBlank())
+                        Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                                Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
                     else
                         null
 
@@ -122,7 +124,7 @@ class PendingScrJob : JobService() {
 
                 if (it.album.isEmpty() && it.albumArtist.isEmpty()){
                     try {
-                        val track = Track.getInfo(it.artist, it.track, Tokens.LAST_KEY)
+                        val track = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
                         if (track != null) {
                             if (!track.album.isNullOrEmpty())
                                 scrobbleData.album = track.album
@@ -147,6 +149,8 @@ class PendingScrJob : JobService() {
                         scrobbleResults = Track.scrobble(scrobbleDatas, librefmSession)
                     if (lastfmSession != null)
                         scrobbleResults = Track.scrobble(scrobbleDatas, lastfmSession)
+                    if (gnufmSession != null)
+                        scrobbleResults = Track.scrobble(scrobbleDatas, gnufmSession)
 
                     if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
                         ListenBrainz(prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null))
@@ -200,6 +204,12 @@ class PendingScrJob : JobService() {
                         Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
             else
                 null
+            val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
+            val gnufmSession: Session? = if (!gnufmSessKey.isNullOrBlank())
+                Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
+            else
+                null
             if (lastfmSessKey.isNullOrBlank()) { //user logged out
                 return true
             }
@@ -207,12 +217,18 @@ class PendingScrJob : JobService() {
                 do {
                     val entry = lovesDao.loadLastPending
                     if (entry != null) {
+                        publishProgress(context.getString(R.string.pending_loves))
                         var res:Result? = null
                         if (librefmSession != null)
                             res = if (entry.shouldLove)
                                 Track.love(entry.artist, entry.track, librefmSession)
                             else
                                 Track.unlove(entry.artist, entry.track, librefmSession)
+                        if (gnufmSession != null)
+                            res = if (entry.shouldLove)
+                                Track.love(entry.artist, entry.track, gnufmSession)
+                            else
+                                Track.unlove(entry.artist, entry.track, gnufmSession)
                         if (lastfmSession != null)
                             res = if (entry.shouldLove)
                                 Track.love(entry.artist, entry.track, lastfmSession)
@@ -261,7 +277,7 @@ class PendingScrJob : JobService() {
                     return
             }
 
-            val job = JobInfo.Builder(PendingScrJob.JOB_ID, ComponentName(context, PendingScrJob::class.java))
+            val job = JobInfo.Builder(JOB_ID, ComponentName(context, PendingScrJob::class.java))
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .setMinimumLatency(Stuff.OFFLINE_SCROBBLE_JOB_DELAY)
                     .setPersisted(true)

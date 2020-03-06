@@ -74,6 +74,7 @@ class NLService : NotificationListenerService() {
         filter.addAction(iBAD_META)
         filter.addAction(iOTHER_ERR)
         filter.addAction(iMETA_UPDATE)
+        filter.addAction(iDISMISS_MAIN_NOTI)
         filter.addAction(CONNECTIVITY_ACTION)
         applicationContext.registerReceiver(nlservicereciver, filter)
 
@@ -221,9 +222,11 @@ class NLService : NotificationListenerService() {
                         m.what = hash
                         handler.sendMessageDelayed(m, -delay)
                         handler.notifyScrobble(meta[0], meta[1], hash, true, currentBundle.getBoolean(B_USER_LOVED))
-                    } else
+                    } else if (currentBundle.getInt(B_HASH) == hash &&
+                            System.currentTimeMillis() - currentBundle.getLong(B_TIME) < Stuff.PIXEL_NP_INTERVAL)
+                        Stuff.log("ignoring possible duplicate")
+                    else
                         handler.nowPlaying(meta[0], "", meta[1], "", 0, hash, false, packageNameArg, true)
-
                 } else
                     Stuff.log("detectPixelNP parse failed")
             }
@@ -305,7 +308,10 @@ class NLService : NotificationListenerService() {
                                 intent.getIntExtra(B_HASH, 0), true,
                                 currentBundle.getBoolean(B_USER_LOVED), currentBundle.getInt(B_USER_PLAY_COUNT))
                     }
-            }
+                }
+                iDISMISS_MAIN_NOTI -> {
+                    nm.cancel(NOTI_ID_SCR, 0)
+                }
                 CONNECTIVITY_ACTION -> {
                     val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                     isOnline =  cm.activeNetworkInfo?.isConnected == true
@@ -480,6 +486,7 @@ class NLService : NotificationListenerService() {
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
             val nb = buildNotification()
+                    .setAutoCancel(false)
                     .setChannelId(NOTI_ID_ERR)
                     .setSmallIcon(R.drawable.ic_noti_err)
                     .setContentIntent(editIntent)
@@ -642,6 +649,7 @@ class NLService : NotificationListenerService() {
         const val pUNLOVE = "com.arn.scrobble.UNLOVE"
         const val pBLACKLIST = "com.arn.scrobble.BLACKLIST"
         const val pWHITELIST = "com.arn.scrobble.WHITELIST"
+        const val iDISMISS_MAIN_NOTI = "com.arn.scrobble.DISMISS_MAIN_NOTI"
         const val iNLS_STARTED = "com.arn.scrobble.NLS_STARTED"
         const val iSESS_CHANGED = "com.arn.scrobble.SESS_CHANGED"
         const val iEDITED = "com.arn.scrobble.EDITED"

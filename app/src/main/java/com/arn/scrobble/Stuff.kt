@@ -112,8 +112,8 @@ object Stuff {
     const val PREF_LB_CUSTOM_ROOT = "lb_root"
     const val PREF_LB_CUSTOM_TOKEN = "lb_token"
     const val PREF_GNUFM_USERNAME = "gnufm_username"
-    const val PREF_GNUFM_NIXTAPE = "gnufm_nixtape"
-    const val PREF_GNUFM_SESS_KEY = "gnufm_token"
+    const val PREF_GNUFM_ROOT = "gnufm_root"
+    const val PREF_GNUFM_SESS_KEY = "gnufm_sesskey"
     const val PREF_LASTFM_DISABLE = "lastfm_disable"
     const val PREF_NOW_PLAYING = "now_playing"
     const val PREF_ACR_HOST = "acr_host"
@@ -124,6 +124,7 @@ object Stuff {
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
+    const val PIXEL_NP_INTERVAL: Long = 5 * 60 * 1000
     const val CONNECT_TIMEOUT = 10 * 1000
     const val READ_TIMEOUT = 20 * 1000
     const val CANCELLABLE_MSG = 9
@@ -143,7 +144,7 @@ object Stuff {
         ACTION_NOTIFICATION_LISTENER_SETTINGS
     else "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
     const val LASTFM_AUTH_CB_URL = "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=pscrobble://auth/lastfm"
-    const val LIBREFM_AUTH_CB_URL = "https://www.libre.fm/api/auth?api_key=pScrobbler&cb=pscrobble://auth/librefm"
+    const val LIBREFM_AUTH_CB_URL = "https://www.libre.fm/api/auth?api_key=$LIBREFM_KEY&cb=pscrobble://auth/librefm"
 
     private var timeIt: Long = 0
 
@@ -156,6 +157,7 @@ object Stuff {
             "com.google.android.apps.youtube.mango",
             "com.google.android.youtube.tv",
             "org.schabi.newpipe",
+            "com.kapp.youtube.final",
             "com.android.chrome",
             "com.chrome.beta",
             "com.chrome.dev",
@@ -234,7 +236,7 @@ object Stuff {
         var resp = ""
         try {
             val process = Runtime.getRuntime().exec(command)
-            resp = process.inputStream.bufferedReader().use { it.readText() }
+            resp = process.inputStream.bufferedReader().readText()
         } catch (e: IOException) {
         }
         return resp
@@ -243,8 +245,8 @@ object Stuff {
     fun sanitizeTitle(titleContentOriginal: String): Array<String> {
         //New detection of trackinformation
         //remove (*) and/or [*] to remove unimportant data
-        val titleContent = titleContentOriginal.replace(" *\\([^)]*\\) *".toRegex(), " ")
-                .replace(" *\\[[^)]*] *".toRegex(), " ")
+        val titleContent = titleContentOriginal.replace(" *\\([^)]*?\\) *".toRegex(), " ")
+                .replace(" *\\[[^)]*?] *".toRegex(), " ")
 
                 //remove HD info
                 .replace("\\W* HD|HQ|4K|MV|M/V|Official Music Video|Music Video|Lyric Video|Official Audio( \\W*)?"
@@ -257,13 +259,13 @@ object Stuff {
         var musicInfo: Array<String>? = null
         for (s in seperators) {
             //parsing artist - title
-            musicInfo = titleContent.split(s.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            musicInfo = titleContent.split(s.toRegex()).filter { it.isNotBlank() }.toTypedArray()
 
 //            println("musicInfo= "+musicInfo[0] + (if (musicInfo.size >1) "," + musicInfo[1] else "") + "|" + musicInfo.size)
             //got artist, parsing title - audio (cover) [blah]
-            if (musicInfo.size > 1 && musicInfo[0] != "") {
+            if (musicInfo.size > 1) {
                 for (j in 0 until seperators.size - 2) {
-                    val splits = musicInfo[1].split(seperators[j].toRegex()).filter { !it.isEmpty() }
+                    val splits = musicInfo[1].split(seperators[j].toRegex()).filter { it.isNotEmpty() }
 //                    println("splits= $splits |" + splits.size + "|" + seperators[j])
                     if (splits.size > 1) {
                         musicInfo[1] = splits[0]
@@ -277,7 +279,7 @@ object Stuff {
         }
 
 
-        if (musicInfo == null || musicInfo.size == 1) {
+        if (musicInfo == null || musicInfo.size < 2) {
             return arrayOf(titleContent, "")
         }
 

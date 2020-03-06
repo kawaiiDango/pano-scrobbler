@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.text.InputType
+import android.text.util.Linkify
 import android.transition.Slide
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -35,6 +36,7 @@ import java.net.URL
 open class LoginFragment: DialogFragment() {
     protected lateinit var pref: MultiPreferences
     protected var checksLogin = true
+    protected var standalone = false
     private var asyncTask: AsyncTask<Int, Unit, String?>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -44,22 +46,23 @@ open class LoginFragment: DialogFragment() {
         pref = MultiPreferences(context!!)
         val args = arguments
         args?.getString(HEADING)?.let {
-            view.login_title.visibility = View.VISIBLE
             view.login_title.text = it
+            view.login_title.visibility = View.VISIBLE
         }
         args?.getString(INFO)?.let {
-            view.login_info.visibility = View.VISIBLE
+            view.login_info.autoLinkMask = Linkify.WEB_URLS
             view.login_info.text = it
+            view.login_info.visibility = View.VISIBLE
         }
         args?.getString(TEXTF1)?.let {
-            view.login_textfield1.visibility = View.VISIBLE
             view.login_textfield1.hint = it
             if (!view.isInTouchMode)
                 view.login_textfield1.requestFocus()
+            view.login_textfield1.visibility = View.VISIBLE
         }
         args?.getString(TEXTF2)?.let {
-            view.login_textfield2.visibility = View.VISIBLE
             view.login_textfield2.hint = it
+            view.login_textfield2.visibility = View.VISIBLE
         }
         args?.getString(TEXTFL)?.let {
             view.login_textfield_last.hint = it
@@ -105,10 +108,12 @@ open class LoginFragment: DialogFragment() {
                     if (showsDialog)
                         try {
                             dismiss()
-                        } catch (e:IllegalStateException)
-                        {}
-                    else
+                        } catch (e:IllegalStateException) {}
+                    else {
+                        if (standalone)
+                            context?.sendBroadcast(Intent(NLService.iDISMISS_MAIN_NOTI))
                         activity?.onBackPressed()
+                    }
                 },
                 500
         )

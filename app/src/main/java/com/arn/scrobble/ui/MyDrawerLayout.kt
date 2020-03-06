@@ -19,5 +19,7 @@ class MyDrawerLayout : DrawerLayout {
         super.setDrawerLockMode(lockMode)
         // if the drawer is locked, then disallow interception
         m_disallowIntercept = lockMode == LOCK_MODE_LOCKED_OPEN
+        if (lockMode == LOCK_MODE_LOCKED_OPEN)
+            setScrimColor(0)
     }
 }

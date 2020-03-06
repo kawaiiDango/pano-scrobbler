@@ -24,6 +24,7 @@ import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
+import java.util.logging.Level
 import java.util.zip.GZIPInputStream
 
 
@@ -51,7 +52,7 @@ class LFMRequester(var command: String, vararg args: String) {
             val caller = Caller.getInstance()
             if (caller.userAgent != Stuff.USER_AGENT) { // static instance not inited
                 caller.userAgent = Stuff.USER_AGENT
-                caller.isDebugMode = false
+                caller.logger.level = Level.WARNING
                 val fsCache = FileSystemCache(context.cacheDir)
                 caller.cache = fsCache
             }
@@ -76,8 +77,8 @@ class LFMRequester(var command: String, vararg args: String) {
                     Stuff.LASTFM_SESS_AUTH -> return null
                     Stuff.GET_RECENTS -> {
                         val tracks = User.getRecentTracks(null, Integer.parseInt(args[0]), 20, true, lastfmSession, null)
-                        if (tracks.username != null && tracks.username != lastfmUsername)
-                            prefs.putString(Stuff.PREF_LASTFM_USERNAME, tracks.username)
+//                        if (tracks.username != null && tracks.username != lastfmUsername)
+//                            prefs.putString(Stuff.PREF_LASTFM_USERNAME, tracks.username)
                         return tracks
                     }
                     Stuff.GET_LOVES -> {
@@ -107,17 +108,25 @@ class LFMRequester(var command: String, vararg args: String) {
                         } else {
                             try {
                                 val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
-                                val librefmSession: Session? =
-                                        if (!librefmSessKey.isNullOrBlank())
-                                            Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
-                                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
-                                        else null
-                                if(librefmSession != null){
+                                if (!librefmSessKey.isNullOrBlank()) {
+                                    val librefmSession = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                            Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
                                     if (love)
                                         Track.love(args[0], args[1], librefmSession)
                                     else
                                         Track.unlove(args[0], args[1], librefmSession)
                                 }
+
+                                val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
+                                if (!gnufmSessKey.isNullOrBlank()) {
+                                    val gnufmSession: Session = Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                                            Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
+                                    if (love)
+                                        Track.love(args[0], args[1], gnufmSession)
+                                    else
+                                        Track.unlove(args[0], args[1], gnufmSession)
+                                }
+
                                 if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)) {
                                     if (love)
                                         Track.love(args[0], args[1], lastfmSession)
@@ -166,7 +175,7 @@ class LFMRequester(var command: String, vararg args: String) {
                         val limit = if (args.size > 1) args[1].toInt() else 30
                         var pr:PaginatedResult<User>
                         try {
-                            pr = User.getFriends(null, Integer.parseInt(args[0]), limit, lastfmSession, null)
+                            pr = User.getFriends(lastfmUsername, Integer.parseInt(args[0]), limit, null, Stuff.LAST_KEY)
                         } catch (e:NullPointerException){
                             val url = URL("https://www.last.fm/user/$lastfmUsername/following?page="+args[0])
                             var urlConnection:HttpURLConnection? = null
@@ -221,7 +230,7 @@ class LFMRequester(var command: String, vararg args: String) {
                     //args[0] = artist, args[1] = track, args[2] = pos
                     Stuff.GET_INFO -> {
                         val info = try {
-                            Track.getInfo(args[0], args[1], Tokens.LAST_KEY)
+                            Track.getInfo(args[0], args[1], Stuff.LAST_KEY)
                         } catch (e:Exception){
                             null
                         }
@@ -309,15 +318,6 @@ class LFMRequester(var command: String, vararg args: String) {
                         if (scrobbleData.duration < 30)
                             scrobbleData.duration = -1 //default
 
-
-                        val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
-                        val librefmSession: Session? =
-                            if (!librefmSessKey.isNullOrBlank())
-                                Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
-                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
-                            else
-                                null
-
                         when(command) {
                             Stuff.NOW_PLAYING -> {
                                 var track: Track? = null
@@ -326,7 +326,8 @@ class LFMRequester(var command: String, vararg args: String) {
 
                                 if (NLService.isOnline) {
                                     try {
-                                        track = Track.getInfo(args[0], args[2], null, null, lastfmSession, null)
+                                        track = Track.getInfo(args[0], args[2], null, lastfmUsername, null, Stuff.LAST_KEY)
+                                        //works even if the username is wrong
                                         } catch (e: Exception) { }
                                     if (track != null && args[1] == "") {
                                         scrobbleData.artist = track.artist
@@ -359,7 +360,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                         scrobbleData.albumArtist = edit.albumArtist
                                     scrobbleData.track = edit.track
                                     try {
-                                        track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, null, lastfmSession, null)
+                                        track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, lastfmUsername, null, Stuff.LAST_KEY)
                                     } catch (e: Exception) { }
                                 }
                                 if (edit != null || track!= null) {
@@ -381,8 +382,19 @@ class LFMRequester(var command: String, vararg args: String) {
                                             if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
                                                 scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, lastfmSession)
 
-                                            if (librefmSession != null)
-                                                scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, librefmSession)
+                                            val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
+                                            if (!librefmSessKey.isNullOrBlank()) {
+                                                val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
+                                                scrobbleResults[context.getString(R.string.librefm)] = Track.updateNowPlaying(scrobbleData, librefmSession)
+                                            }
+
+                                            val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
+                                            if (!gnufmSessKey.isNullOrBlank()) {
+                                                val gnufmSession: Session = Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
+                                                scrobbleResults[context.getString(R.string.pref_gnufm)] = Track.updateNowPlaying(scrobbleData, gnufmSession)
+                                            }
 
                                             if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
                                                 scrobbleResults[context.getString(R.string.listenbrainz)] =
@@ -414,8 +426,19 @@ class LFMRequester(var command: String, vararg args: String) {
                                         if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
                                             scrobbleResults[context.getString(R.string.lastfm)] = Track.scrobble(scrobbleData, lastfmSession)
 
-                                        if (librefmSession != null)
-                                            scrobbleResults[context.getString(R.string.lastfm)] = Track.scrobble(scrobbleData, librefmSession)
+                                        val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
+                                        if (!librefmSessKey.isNullOrBlank()) {
+                                            val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
+                                            scrobbleResults[context.getString(R.string.librefm)] = Track.scrobble(scrobbleData, librefmSession)
+                                        }
+
+                                        val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
+                                        if (!gnufmSessKey.isNullOrBlank()) {
+                                            val gnufmSession: Session = Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
+                                            scrobbleResults[context.getString(R.string.pref_gnufm)] = Track.scrobble(scrobbleData, gnufmSession)
+                                        }
 
                                         Stuff.log("scrobbleResults:$scrobbleResults")
 
@@ -456,18 +479,20 @@ class LFMRequester(var command: String, vararg args: String) {
                             var failedText = ""
                             scrobbleResults.keys.forEach { key ->
                                 if (scrobbleResults[key]?.isSuccessful == false) {
-                                    val errMsg = scrobbleResults[key]?.errorMessage ?: context.getString(R.string.network_error)
+                                    val errMsg = scrobbleResults[key]?.errorMessage
+                                            ?: context.getString(R.string.network_error)
                                     failedText += "$key: $errMsg\n"
                                 } else if (scrobbleResults[key]?.isSuccessful == true && scrobbleResults[key]?.isIgnored == true) {
-                                    failedText += key + ": " +context.getString(R.string.scrobble_ignored, args[0]) + "\n"
-                                }
-                                if (failedText != ""){
-                                    val i = Intent(NLService.iOTHER_ERR)
-                                    i.putExtra(NLService.B_ERR_MSG, failedText)
-                                    i.putExtra(NLService.B_HASH, hash)
-                                    context.sendBroadcast(i)
+                                    failedText += key + ": " + context.getString(R.string.scrobble_ignored, args[0]) + "\n"
                                 }
                             }
+                            if (failedText != ""){
+                                val i = Intent(NLService.iOTHER_ERR)
+                                i.putExtra(NLService.B_ERR_MSG, failedText)
+                                i.putExtra(NLService.B_HASH, hash)
+                                context.sendBroadcast(i)
+                            }
+
                         } catch (e: NullPointerException) {
                             return "$command: NullPointerException"
                         }
@@ -496,6 +521,20 @@ class LFMRequester(var command: String, vararg args: String) {
                         if (librefmSession != null) {
                             prefs.putString(Stuff.PREF_LIBREFM_USERNAME, librefmSession.username)
                             prefs.putString(Stuff.PREF_LIBREFM_SESS_KEY, librefmSession.key)
+                            val intent = Intent(NLService.iSESS_CHANGED)
+                            context.sendBroadcast(intent)
+                        }
+                    }
+                }
+                Stuff.GNUFM_SESS_AUTH -> {
+                    val token = if (args.size == 1) args[0] else null
+                    if (!token.isNullOrBlank()) {
+                        val gnufmSession = Authenticator.getSession(
+                                prefs.getString(Stuff.PREF_GNUFM_ROOT,null)+"2.0/",
+                                token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY)
+                        if (gnufmSession != null) {
+                            prefs.putString(Stuff.PREF_GNUFM_USERNAME, gnufmSession.username)
+                            prefs.putString(Stuff.PREF_GNUFM_SESS_KEY, gnufmSession.key)
                             val intent = Intent(NLService.iSESS_CHANGED)
                             context.sendBroadcast(intent)
                         }
@@ -598,11 +637,25 @@ class LFMRequester(var command: String, vararg args: String) {
             if (valid || validArtistsCache[artist] == true)
                 return artist
             else if (validArtistsCache[artist] == null) {
-                val artistInfo = Artist.getInfo(artist, false, Stuff.LAST_KEY)
+                var artistInfo: Artist? = null
+                var errCode = Caller.getInstance().lastError?.errorCode
+                //6 = artist not found on lastfm, 7 = invalid resource specified on librefm
+                if (errCode != null && errCode != 6 && errCode != 7)
+                    artistInfo = getArtistInfoLibreFM(artist)
+                else {
+                    artistInfo = Artist.getInfo(artist, false, Stuff.LAST_KEY)
+                    errCode = Caller.getInstance().lastError?.errorCode
+                    if (artistInfo == null && errCode != null && errCode != 6 && errCode != 7)
+                        artistInfo = getArtistInfoLibreFM(artist)
+                }
+                errCode = Caller.getInstance().lastError?.errorCode
+                if (artistInfo == null && errCode != null && errCode != 6 && errCode != 7)
+                    return artist
+
                 Stuff.log("artistInfo: $artistInfo")
                 //nw err throws an exception
                 if (artistInfo!= null && artistInfo.name?.trim() != ""){
-                    if(artistInfo.listeners >= Stuff.MIN_LISTENER_COUNT) {
+                    if(artistInfo.listeners == -1 || artistInfo.listeners >= Stuff.MIN_LISTENER_COUNT) {
                         validArtistsCache.put(artistInfo.name, true)
                         return artistInfo.name
                     } else
@@ -611,6 +664,12 @@ class LFMRequester(var command: String, vararg args: String) {
                     validArtistsCache.put(artist, false)
             }
             return null
+        }
+
+        fun getArtistInfoLibreFM(artist: String):Artist? {
+            val result: Result = Caller.getInstance().call(Stuff.LIBREFM_API_ROOT, "artist.getInfo",
+                    "", mapOf("artist" to artist))
+            return ResponseBuilder.buildItem(result, Artist::class.java)
         }
 
         fun getCorrectedDataOld(artist:String, track: String): Pair<String, String>? {

@@ -7,6 +7,7 @@ import android.app.Service
 import android.app.job.JobScheduler
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -27,7 +28,7 @@ class PendingScrService: Service() {
             js.cancel(PendingScrJob.JOB_ID)
             startForegroundService()
         }
-        return Service.START_NOT_STICKY
+        return START_NOT_STICKY
     }
 
     private fun startForegroundService() {
@@ -50,7 +51,7 @@ class PendingScrService: Service() {
             nm.notify(PendingScrJob.JOB_ID, nb.build())
         }
         ost.doneCb = { done -> stop()}
-        ost.execute()
+        ost.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
 
     }
 

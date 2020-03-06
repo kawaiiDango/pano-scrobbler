@@ -102,7 +102,6 @@
             android:title="@string/pref_share_sig"
             android:summary="@string/pref_share_sig_desc"
             android:key="share_sig"
-            android:persistent="false"
             />
         <Preference
             android:title="@string/edits"
@@ -123,11 +122,11 @@
             android:title="@string/librefm"
             android:key="librefm"
             />
-        <!--<Preference-->
-            <!--app:iconSpaceReserved="false"-->
-            <!--android:title="gnufm nixtape"-->
-            <!--android:key="gnufm_nixtape"-->
-            <!--/>-->
+        <Preference
+            app:iconSpaceReserved="false"
+            android:title="@string/pref_gnufm"
+            android:key="gnufm"
+            />
         <Preference
             app:iconSpaceReserved="false"
             android:title="@string/listenbrainz"

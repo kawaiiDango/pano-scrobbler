@@ -497,7 +497,6 @@ public class Track extends MusicEntry {
 
 		Result result = Caller.getInstance().call(null, "track.getInfo",
                 apiKey, params, session, false);
-		Caller.getInstance().call("track.getInfo", apiKey, params);
 		if (!result.isSuccessful())
 			return null;
 		DomElement content = result.getContentElement();

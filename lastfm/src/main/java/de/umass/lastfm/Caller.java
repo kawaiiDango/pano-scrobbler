@@ -89,6 +89,7 @@ public class Caller {
 
 	private Cache cache;
 //	private Result lastResult;
+	private Result lastError;
 
 //	private Caller() {
 //		cache = new FileSystemCache();
@@ -194,6 +195,10 @@ public class Caller {
 //		return lastResult;
 //	}
 
+	public Result getLastError() {
+		return lastError;
+	}
+
 	public Result call(String method, String apiKey, String... params) throws CallException {
 		return call(method, apiKey, map(params));
 	}
@@ -227,7 +232,7 @@ public class Caller {
 	 */
     private Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
                         Session session) {
-        return call(apiRootUrl,method,apiKey,params,session,true);
+        return call(apiRootUrl,method,apiKey,params,session,session != null);
     }
 
 	public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
@@ -238,9 +243,8 @@ public class Caller {
 		// try to load from cache
         //TODO: this is bugged for custom api root
 		String cacheEntryName = Cache.createCacheEntryName(method, params);
-		if (!createSignature && cache != null &&
-                cache.getExpirationPolicy().getExpirationTime(method, params) != DefaultExpirationPolicy.NETWORK_AND_CACHE_CONST
-                ) {
+		long cacheTime = cache != null ? cache.getExpirationPolicy().getExpirationTime(method, params) : -1;
+		if (!createSignature && cache != null && cacheTime != DefaultExpirationPolicy.NETWORK_AND_CACHE_CONST) {
 			inputStream = getStreamFromCache(cacheEntryName);
 		}
 		
@@ -273,7 +277,7 @@ public class Caller {
 					return Result.createHttpErrorResult(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
 //					return lastResult;
 				} else {
-					if (cache != null) {
+					if (cache != null && cacheTime != -1) { //scrobbles and np were getting cached
 						long expires = urlConnection.getHeaderFieldDate("Expires", -1);
 						if (expires == -1) {
 							expires = cache.findExpirationDate(method, params);
@@ -294,11 +298,13 @@ public class Caller {
 		try {
 			Result result = createResultFromInputStream(inputStream);
 			if (!result.isSuccessful()) {
-				log.warning(String.format("API call failed with result: %s%n", result));
+				log.warning(String.format(method + " failed with result: %s%n", result));
 				if (cache != null) {
 					cache.remove(cacheEntryName);
 				}
-			}
+                lastError = result;
+			} else
+                lastError = null;
 //			this.lastResult = result;
 			return result;
 		} catch (IOException e) {

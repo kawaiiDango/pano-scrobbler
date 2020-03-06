@@ -25,7 +25,8 @@ class LegacyMetaReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         try {
 //            scrobbling_source for poweramp
-            if (intent.hasExtra(Stuff.PACKAGE_N7PLAYER + ".source"))
+            if (intent.hasExtra(Stuff.PACKAGE_N7PLAYER + ".source") ||
+                    intent.getStringExtra("player") == "foobar2000")
                 return
         } catch (e: BadParcelableException) {
             return

@@ -7,6 +7,7 @@ import android.media.session.MediaController.Callback
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -110,55 +111,54 @@ class SessListener constructor(private val pref: SharedPreferences,
 
                 Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos duration=$duration who=$who")
 
-                val isPossiblyAtStart = pos <= 0.toLong() || //wynk puts -1
+                val isPossiblyAtStart = pos <= 0L || //wynk puts -1
                         (pos < Stuff.START_POS_LIMIT && duration > 0 &&
-                        System.currentTimeMillis() - lastScrobbleTime + Stuff.START_POS_LIMIT >= duration)
+                                System.currentTimeMillis() - lastScrobbleTime + Stuff.START_POS_LIMIT >= duration)
 
                 if (lastState == state /* bandcamp does this */ &&
                         !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
                     return
 
-                if (state != PlaybackState.STATE_BUFFERING)
-                    lastState = state
-
-                if (title == "" || artist == "")
-                    return
-
-                if (state == PlaybackState.STATE_PAUSED) {
+                if (title != "" && artist != "") {
+                    if (state == PlaybackState.STATE_PAUSED) {
 //                    if (duration != 0.toLong() && pos == 0.toLong()) //this breaks phonograph
 //                        return
-                    if (handler.hasMessages(lastHash)) //if it wasnt scrobbled, consider scrobling again
+                        if (handler.hasMessages(lastHash)) //if it wasnt scrobbled, consider scrobling again
+                            lastScrobblePos = 1
+                        else if (pos > Stuff.START_POS_LIMIT) {
+                            lastScrobblePos = pos
+                            //save pos, to use it later in resume
+                        }
+                        handler.remove(lastHash)
+                        Stuff.log("paused")
+                    } else if (state == PlaybackState.STATE_STOPPED) {
+                        // a replay should count as another scrobble. Replay (in youtube app) is stop, buffer, then play
                         lastScrobblePos = 1
-                    else if (pos > Stuff.START_POS_LIMIT){
-                        lastScrobblePos = pos
-                        //save pos, to use it later in resume
-                    }
-                    handler.remove(lastHash)
-                    Stuff.log("paused")
-                } else if (state == PlaybackState.STATE_STOPPED) {
-                    // a replay should count as another scrobble. Replay (in youtube app) is stop, buffer, then play
-                    lastScrobblePos = 1
-                    handler.remove(lastHash)
-                    Stuff.log("stopped")
-                } else if (state == PlaybackState.STATE_PLAYING
-                        // state.state == PlaybackState.STATE_BUFFERING || state == PlaybackState.STATE_NONE
-                        ) {
+                        handler.remove(lastHash)
+                        Stuff.log("stopped")
+                    } else if (state == PlaybackState.STATE_PLAYING
+                    // state.state == PlaybackState.STATE_BUFFERING || state == PlaybackState.STATE_NONE
+                    ) {
 //                if (state.state == PlaybackState.STATE_BUFFERING && state.position == 0.toLong())
 //                    return  //dont scrobble first buffering
 
-                    Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $isPossiblyAtStart $title")
-                    if ((isPossiblyAtStart || lastScrobblePos == 1.toLong()) &&
-                            (!handler.hasMessages(currHash) ||
-                            System.currentTimeMillis() - lastScrobbleTime > 2000)) {
-                        Stuff.log("scrobbleit")
-                        scrobble(artist, album, title, albumArtist, duration)
-                        lastScrobblePos = pos
-                    } else
-                        handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN)
-                } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
-                    Stuff.log("$state connecting $pos")
-                } else {
-                    Stuff.log("other ($state) : $title")
+                        Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $isPossiblyAtStart $title")
+                        if ((isPossiblyAtStart || lastScrobblePos == 1L ||
+                                        lastState == PlaybackState.STATE_SKIPPING_TO_QUEUE_ITEM) && //amazon music needs this
+                                (!handler.hasMessages(currHash) ||
+                                        System.currentTimeMillis() - lastScrobbleTime > 2000)) {
+                            Stuff.log("scrobbleit")
+                            scrobble(artist, album, title, albumArtist, duration)
+                            lastScrobblePos = pos
+                        } else
+                            handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN)
+                    } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
+                        Stuff.log("$state connecting $pos")
+                    } else {
+                        Stuff.log("other ($state) : $title")
+                    }
+                    if (state != PlaybackState.STATE_BUFFERING)
+                        lastState = state
                 }
             }
         }
@@ -183,7 +183,9 @@ class SessListener constructor(private val pref: SharedPreferences,
                     albumArtist
             val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
             val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
-            val duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
+            var duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
+            if (duration < -1)
+                duration = -1
 
             if (packageName == Stuff.PACKAGE_XIAMI)
                 artist = artist.replace(";", "; ")

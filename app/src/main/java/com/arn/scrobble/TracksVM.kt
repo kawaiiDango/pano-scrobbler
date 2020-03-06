@@ -63,7 +63,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadInfo(artist: String, track: String, pos:Int): MutableLiveData<Pair<Int,Track>> {
-        LFMRequester(Stuff.GET_INFO, artist, track, pos.toString()).asAsyncTask(getApplication(), trackInfo)
+        LFMRequester(Stuff.GET_INFO, artist, track, pos.toString()).asSerialAsyncTask(getApplication(), trackInfo)
         return trackInfo
     }
 

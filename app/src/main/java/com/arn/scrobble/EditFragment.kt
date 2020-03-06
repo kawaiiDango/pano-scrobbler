@@ -19,9 +19,6 @@ import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_login.view.*
 
 class EditFragment: LoginFragment() {
-
-    private var standalone = false
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         arguments?.putString(TEXTF1, getString(R.string.track))
         arguments?.putString(TEXTF2, getString(R.string.album))
@@ -105,7 +102,7 @@ class EditFragment: LoginFragment() {
                 if (album.isBlank() && origAlbum.isBlank())
                     validTrack =
                             try {
-                                Track.getInfo(artist, track, Tokens.LAST_KEY)
+                                Track.getInfo(artist, track, Stuff.LAST_KEY)
                             } catch (e: Exception) {
                                 null
                             }

@@ -433,7 +433,7 @@ class RecentsAdapter
             else
                 removeMessages(what)
             val msg = obtainMessage(what, pos, 0)
-            sendMessageDelayed(msg, count * 250L)
+            sendMessageDelayed(msg, count * 100L)
         }
         fun cancelAll(){
             removeCallbacksAndMessages(null)

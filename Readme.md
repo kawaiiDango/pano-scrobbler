@@ -1,10 +1,14 @@
 ## Pano Scrobbler
-<a href='https://play.google.com/store/apps/details?id=com.arn.scrobble&utm_source=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="200"/></a>
+[play-store]: https://img.shields.io/endpoint?url=https%3A%2F%2Fkawaiidango.github.io%2Fshield%2Fplay-store.json
+[play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
+[ko-fi]: https://img.shields.io/endpoint?url=https%3A%2F%2Fkawaiidango.github.io%2Fshield%2Fko-fi.json
+[ko-fi-link]: https://ko-fi.com/kawaiiDango
+[![play-store][play-store]][play-store-link] [![ko-fii][ko-fi]][ko-fi-link]
 
 <img alt='GIF' src='https://media.giphy.com/media/WvikAmG3iseJoFun1A/giphy.gif' width="240"/>
-*Thats the GIF of a much older version.*
+<i>Thats the GIF of a much older version.</i>
 
-<a href="https://bit.ly/Pscrdl">Download latest apk</a> (Do not use this if the play store link works for you and want automatic updates)
+<a href="https://bit.ly/Pscrdl">Download latest apk</a> (Do not use this if the play store link works for you and you want automatic updates)
 
 #### Features:
 - Scrobble from anything which produces audio with metadata, including Youtube, Chrome, Telegram etc.
@@ -32,13 +36,10 @@
 See [instructions.md](instructions.md)
 
 ### Thanks to:
-
 - Musixmatch's FloatingLyrics for the idea and inspiration
 - https://github.com/jkovacs/lastfm-java (I added many missing lastfm api methods in a messy way, might make a pull request some time)
-- https://github.com/codechimp-org/AppRater (Made it into a snackbar version)
 - http://materialdesignicons.com
 - Other dependencies in build.gradle
-
 - **Kaycee da Ghost** for putting up with me while i tried to fix miui specific bugs
 - **memeko ヾ(\*・ω・)ノ** for the ui design
 - **My username is true** as a long time dedicated tester and spotting lots of bugs

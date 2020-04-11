@@ -3,7 +3,7 @@
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
 [ko-fi]: https://img.shields.io/endpoint?url=https%3A%2F%2Fkawaiidango.github.io%2Fshield%2Fko-fi.json
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
-[![play-store][play-store]][play-store-link] [![ko-fii][ko-fi]][ko-fi-link]
+[![download][play-store]][play-store-link] [![donate][ko-fi]][ko-fi-link]
 
 <img alt='GIF' src='https://media.giphy.com/media/WvikAmG3iseJoFun1A/giphy.gif' width="240"/>
 <i>Thats the GIF of a much older version.</i>

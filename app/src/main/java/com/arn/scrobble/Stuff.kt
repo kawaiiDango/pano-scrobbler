@@ -120,6 +120,7 @@ object Stuff {
     const val PREF_ACR_KEY = "acr_key"
     const val PREF_ACR_SECRET = "acr_secret"
     const val PREF_PIXEL_NP = "pixel_np"
+    const val PREF_INTENTS = "intents"
 
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 

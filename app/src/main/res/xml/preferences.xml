@@ -150,6 +150,11 @@
         android:title="@string/pref_about">
         <Preference
             app:iconSpaceReserved="false"
+            android:title="@string/pref_intents"
+            android:key="intents"
+            />
+        <Preference
+            app:iconSpaceReserved="false"
             android:title="@string/pref_about_title"
             android:summary="https://github.com/kawaiiDango/pScrobbler"
             android:key="about"

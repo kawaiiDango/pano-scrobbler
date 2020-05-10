@@ -9,11 +9,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.transition.Fade
 import android.webkit.URLUtil
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.preference.Preference
@@ -22,6 +24,7 @@ import androidx.preference.SeekBarPreference
 import androidx.preference.SwitchPreference
 import com.arn.scrobble.*
 import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.ui.MyClickableSpan
 
 
 /**
@@ -247,6 +250,30 @@ class PrefFragment : PreferenceFragmentCompat(){
                 Stuff.PREF_LB_CUSTOM_USERNAME, Stuff.PREF_LB_CUSTOM_TOKEN, Stuff.PREF_LB_CUSTOM_ROOT
         )
 
+        findPreference<Preference>(Stuff.PREF_INTENTS)
+                ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            val ss = SpannableString(getString(R.string.pref_intents_dialog_desc))
+            val newlinePosList = mutableListOf(-1)
+            ss.forEachIndexed { index, c ->
+                if (c == '\n')
+                    newlinePosList += index
+            }
+            newlinePosList.forEachIndexed { index, i ->
+                if (index in 1..3) {
+                    val start = newlinePosList[index - 1] + 1
+                    val end = newlinePosList[index]
+                    ss.setSpan(MyClickableSpan(start, end), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+                }
+            }
+            AlertDialog.Builder(context!!)
+                    .setTitle(R.string.pref_intents_dialog_title)
+                    .setMessage(ss)
+                    .setPositiveButton(android.R.string.ok) { _, _ -> }
+                    .show()
+                    .findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
+
+            true
+        }
         val about = findPreference<Preference>("about")!!
         try {
             about.title = "v " + BuildConfig.VERSION_NAME

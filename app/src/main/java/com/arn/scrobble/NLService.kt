@@ -30,6 +30,7 @@ class NLService : NotificationListenerService() {
     private var sessListener: SessListener? = null
     private var bReceiver: LegacyMetaReceiver? = null
     private var currentBundle = Bundle()
+    private var isScrobbling = false
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
@@ -237,8 +238,14 @@ class NLService : NotificationListenerService() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action){
                  pCANCEL -> {
-                     handler.removeMessages(intent.getIntExtra(B_HASH, 0))
-                     handler.notifyOtherError(getString(R.string.state_unscrobbled), false)
+                     var hash = intent.getIntExtra(B_HASH, 0)
+                     if (hash == 0) {
+                         hash = currentBundle.getInt(B_HASH, 0)
+                         if (hash == 0 || !handler.hasMessages(hash))
+                             return
+                     } else
+                         handler.notifyOtherError(getString(R.string.state_unscrobbled), false)
+                     handler.removeMessages(hash)
                      handler.postDelayed({
                          if(!handler.hasMessages(SessListener.lastHash)) //dont dismiss if it started showing another np
                             handler.remove(0)
@@ -246,15 +253,33 @@ class NLService : NotificationListenerService() {
                  }
                 pLOVE, pUNLOVE -> {
                     val loved = intent.action == pLOVE
-                    LFMRequester(if (loved) Stuff.LOVE else Stuff.UNLOVE,
-                            intent.getStringExtra(B_ARTIST)!!,
-                            intent.getStringExtra(B_TITLE)!!)
+                    var artist = intent.getStringExtra(B_ARTIST)
+                    var title = intent.getStringExtra(B_TITLE)
+                    if (artist == null && title == null) {
+                        if (isScrobbling && currentBundle.getString(B_ARTIST) != null &&
+                                currentBundle.getString(B_TITLE) != null) {
+                            artist = currentBundle.getString(B_ARTIST)!!
+                            title = currentBundle.getString(B_TITLE)!!
+                            Stuff.toast(context, (
+                                    if (loved)
+                                        "♥"
+                                    else
+                                        "\uD83D\uDC94"
+                                    ) + artist + " — " + title
+                            )
+                            if (loved == intent.getBooleanExtra(B_USER_LOVED, false))
+                                return
+                        } else
+                            return
+                    }
+
+                    LFMRequester(if (loved) Stuff.LOVE else Stuff.UNLOVE, artist!!, title!!)
                             .skipContentProvider()
                             .asSerialAsyncTask(applicationContext)
                     val np = handler.hasMessages(SessListener.lastHash)
                     currentBundle.putBoolean(B_USER_LOVED, loved)
-                    handler.notifyScrobble(intent.getStringExtra(B_ARTIST)!!,
-                            intent.getStringExtra(B_TITLE)!!, SessListener.lastHash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT))
+                    handler.notifyScrobble(artist,
+                            title, SessListener.lastHash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT))
                 }
                 pWHITELIST, pBLACKLIST -> {
                     //handle pixel_np blacklist in its own settings
@@ -356,6 +381,7 @@ class NLService : NotificationListenerService() {
                     b.putLong(B_TIME, now)
                     b.putLong(B_DURATION, duration)
                     b.putBoolean(B_FORCEABLE, forcable)
+                    b.putInt(B_HASH, hash)
 
                     val delaySecs = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
                     val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
@@ -382,6 +408,7 @@ class NLService : NotificationListenerService() {
                     }
                     //for rating
                     AppRater.incrementScrobbleCount(applicationContext)
+                    isScrobbling = true
                 } else {
                     currentBundle = Bundle()
                     notifyBadMeta(artist, album, title, now, getString(R.string.parse_error))
@@ -632,6 +659,7 @@ class NLService : NotificationListenerService() {
 
         fun remove(hash: Int) {
             Stuff.log("$hash cancelled")
+            isScrobbling = false
             if (hash != 0)
                 removeMessages(hash)
             nm.cancel(NOTI_ID_SCR, 0)

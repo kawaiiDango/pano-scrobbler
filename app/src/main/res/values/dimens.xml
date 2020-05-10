@@ -6,6 +6,7 @@
     <dimen name="elevation_hero_btn">7dp</dimen>
     <dimen name="tz_hero_btn">2dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="list_item_padding">8dp</dimen>
     <dimen name="nav_header_height">196dp</dimen>
     <dimen name="hero_overlay_height">176dp</dimen>
     <dimen name="button_caption">12sp</dimen>

@@ -91,7 +91,9 @@ object Stuff {
     const val PREF_BLACKLIST = "app_blacklist"
     const val PREF_AUTO_DETECT = "auto_detect"
     const val PREF_DELAY_SECS = "delay_secs"
+    const val PREF_DELAY_SECS_DEFAULT = 240
     const val PREF_DELAY_PER = "delay_per"
+    const val PREF_DELAY_PER_DEFAULT = 50
     const val PREF_ALLOWED_ARTISTS = "allowed_artists"
 
     const val PREF_ACTIVITY_FIRST_RUN = "first_run"
@@ -120,6 +122,8 @@ object Stuff {
     const val PREF_ACR_KEY = "acr_key"
     const val PREF_ACR_SECRET = "acr_secret"
     const val PREF_PIXEL_NP = "pixel_np"
+    const val PREF_IMPORT = "import"
+    const val PREF_EXPORT = "export"
     const val PREF_INTENTS = "intents"
 
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
@@ -136,6 +140,12 @@ object Stuff {
     const val DEBOUNCE_TIME = 100
     const val MAX_APPS = 30
     const val MIN_LISTENER_COUNT = 7
+    const val REQUEST_CODE_EXPORT = 10
+    const val REQUEST_CODE_IMPORT = 11
+    const val EDITS_NOPE = 0
+    const val EDITS_REPLACE_ALL = 1
+    const val EDITS_REPLACE_EXISTING = 2
+    const val EDITS_KEEP_EXISTING = 3
 
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"

@@ -111,6 +111,22 @@
     </PreferenceCategory>
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        android:key="imexport"
+        android:title="@string/pref_imexport">
+        <Preference
+            app:iconSpaceReserved="false"
+            android:title="@string/pref_export"
+            android:summary="@string/pref_export_desc"
+            android:key="export"
+            />
+        <Preference
+            android:title="@string/pref_import"
+            app:iconSpaceReserved="false"
+            android:key="import"
+            />
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
         android:title="@string/scrobble_services">
         <Preference
             app:iconSpaceReserved="false"

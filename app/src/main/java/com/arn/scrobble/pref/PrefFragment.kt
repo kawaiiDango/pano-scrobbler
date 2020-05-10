@@ -1,5 +1,6 @@
 package com.arn.scrobble.pref
 
+import android.app.Activity
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.format.DateFormat
 import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
@@ -16,6 +18,7 @@ import android.transition.Fade
 import android.webkit.URLUtil
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.preference.Preference
@@ -25,6 +28,7 @@ import androidx.preference.SwitchPreference
 import com.arn.scrobble.*
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.ui.MyClickableSpan
+import kotlinx.android.synthetic.main.dialog_import.view.*
 
 
 /**
@@ -143,13 +147,36 @@ class PrefFragment : PreferenceFragmentCompat(){
             }
         }
         edits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                parentFragmentManager.beginTransaction()
+            parentFragmentManager.beginTransaction()
                     .remove(this)
                     .add(R.id.frame, EditsFragment())
                     .addToBackStack(null)
                     .commit()
             true
         }
+
+        findPreference<Preference>(Stuff.PREF_EXPORT)
+                ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "application/json"
+            intent.putExtra(Intent.EXTRA_TITLE, getString(R.string.export_file_name,
+                    DateFormat.getMediumDateFormat(context).format(System.currentTimeMillis())
+                    ))
+            startActivityForResult(intent, Stuff.REQUEST_CODE_EXPORT)
+            true
+        }
+
+        findPreference<Preference>(Stuff.PREF_IMPORT)
+                ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "application/*"
+            startActivityForResult(intent, Stuff.REQUEST_CODE_IMPORT)
+            true
+        }
+        hideOnTV.add(findPreference("imexport")!!)
+
 
         initAuthConfirmation("lastfm", {
             val wf = WebViewFragment()
@@ -341,6 +368,64 @@ class PrefFragment : PreferenceFragmentCompat(){
                 }
                 true
             }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK){
+            if (requestCode == Stuff.REQUEST_CODE_EXPORT) {
+                if (data != null) {
+                    val currentUri = data.data ?: return
+                    AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                        val exporter = ImExporter()
+                        exporter.setOutputUri(context!!, currentUri)
+                        if (!exporter.export())
+                            activity?.runOnUiThread {
+                                Stuff.toast(context!!, getString(R.string.export_failed), Toast.LENGTH_LONG)
+                            }
+                        else
+                            Stuff.log("Exported")
+                        exporter.close()
+                    }
+                }
+            } else if (requestCode == Stuff.REQUEST_CODE_IMPORT) {
+                if (data != null) {
+                    val currentUri = data.data ?: return
+                    val v = layoutInflater.inflate(R.layout.dialog_import, null)
+                    AlertDialog.Builder(context!!)
+                            .setView(v)
+                            .setTitle(R.string.import_options)
+                            .setPositiveButton(android.R.string.ok) { _, _ ->
+                                val editsModeMap = mapOf(
+                                        R.id.import_edits_nope to Stuff.EDITS_NOPE,
+                                        R.id.import_edits_replace_all to Stuff.EDITS_REPLACE_ALL,
+                                        R.id.import_edits_replace_existing to Stuff.EDITS_REPLACE_EXISTING,
+                                        R.id.import_edits_keep to Stuff.EDITS_KEEP_EXISTING
+                                )
+                                val editsMode = editsModeMap[v.import_radio_group.checkedRadioButtonId]!!
+                                val settingsMode = v.import_settings.isChecked
+                                if (editsMode == Stuff.EDITS_NOPE && !settingsMode)
+                                    return@setPositiveButton
+                                AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                                    val importer = ImExporter()
+                                    importer.setInputUri(context!!, currentUri)
+                                    if (!importer.import(editsMode, settingsMode))
+                                        activity?.runOnUiThread {
+                                            Stuff.toast(context!!, getString(R.string.import_hey_wtf), Toast.LENGTH_LONG)
+                                        }
+                                    else
+                                        activity?.runOnUiThread {
+                                            Stuff.toast(context!!, getString(R.string.imported))
+                                            parentFragmentManager.popBackStack()
+                                        }
+                                    importer.close()
+                                }
+                            }
+                            .show()
+                }
+            }
+        }
     }
 
     override fun onStart() {

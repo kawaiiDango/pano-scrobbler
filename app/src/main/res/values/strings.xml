@@ -130,6 +130,19 @@
     <string name="pref_share_sig_desc">Tap to edit</string>
     <string name="pref_gnufm">GNU FM</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
+    <string name="pref_imexport">Import &amp; export</string>
+    <string name="pref_export">Export</string>
+    <string name="pref_export_desc">Backs up settings and saved edits. Will not save logins for security reasons. Useful for moving between devices or sharing with friends.</string>
+    <string name="pref_import">Import</string>
+    <string name="import_hey_wtf">That\'s probably not a Pano Scrobbler export file</string>
+    <string name="export_failed">Export failed</string>
+    <string name="imported">Imported</string>
+    <string name="import_options">Import options</string>
+    <string name="import_edits_nope">Do not import edits</string>
+    <string name="import_edits_replace_all">Replace all edits</string>
+    <string name="import_edits_replace_existing">Merge, replacing existing edits</string>
+    <string name="import_edits_keep">Merge, keeping existing edits</string>
+    <string name="import_settings">Import settings</string>
     <string name="pref_intents_dialog_title">Broadcast intents</string>
     <string name="pref_intents_dialog_desc">"com.arn.scrobble.LOVE
 com.arn.scrobble.UNLOVE

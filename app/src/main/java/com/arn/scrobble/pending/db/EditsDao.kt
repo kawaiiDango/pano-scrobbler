@@ -22,6 +22,9 @@ interface EditsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg e: Edit)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertIgnore(vararg e: Edit)
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(e: Edit)
 
@@ -35,4 +38,7 @@ interface EditsDao {
 
     @Delete
     fun delete(e: Edit)
+
+    @Query("DELETE FROM $tableName")
+    fun nuke()
 }

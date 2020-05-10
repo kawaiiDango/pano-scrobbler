@@ -1,7 +1,7 @@
 ## Pano Scrobbler
-[play-store]: https://img.shields.io/endpoint?url=https%3A%2F%2Fkawaiidango.github.io%2Fshield%2Fplay-store.json
+[play-store]: shields/play-store.svg
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
-[ko-fi]: https://img.shields.io/endpoint?url=https%3A%2F%2Fkawaiidango.github.io%2Fshield%2Fko-fi.json
+[ko-fi]: shields/ko-fi.svg
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
 [![download][play-store]][play-store-link] [![donate][ko-fi]][ko-fi-link]
 

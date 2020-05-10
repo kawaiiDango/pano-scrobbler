@@ -26,6 +26,8 @@
 - Identify and scrobble a song from mic
 - Supports TVs (Oreo and lower needs adb commands)
 - Supports Pixel Now Playing
+- Import & export settings and saved edits
+- Intents for apps like Tasker, Macrodroid etc
 
 #### This is not intended to:
 - be an app to browse lastfm.

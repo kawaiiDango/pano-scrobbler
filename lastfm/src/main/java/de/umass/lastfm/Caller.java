@@ -90,6 +90,7 @@ public class Caller {
 	private Cache cache;
 //	private Result lastResult;
 	private Result lastError;
+    int timeout = 20000;
 
 //	private Caller() {
 //		cache = new FileSystemCache();
@@ -345,10 +346,14 @@ public class Caller {
             String post = buildPostBody(method, params);
             log.info("Post body: " + post);
             HttpURLConnection urlConnection = openConnection(apiRootUrl+"?"+post);
+            urlConnection.setConnectTimeout(timeout);
+            urlConnection.setReadTimeout(timeout);
             return urlConnection;
         } else {
             HttpURLConnection urlConnection = openConnection(apiRootUrl);
             urlConnection.setRequestMethod("POST");
+            urlConnection.setConnectTimeout(timeout);
+            urlConnection.setReadTimeout(timeout);
             String post = buildPostBody(method, params);
             log.info("Post body: " + post);
             urlConnection.setRequestProperty("Content-Length", Integer.toString(post.length()));

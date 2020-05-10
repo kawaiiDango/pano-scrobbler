@@ -100,6 +100,8 @@ open class LoginFragment: DialogFragment() {
     }
 
     protected open fun success() {
+        if (context == null || !isAdded)
+            return
         login_progress.visibility = View.GONE
         login_status.setImageResource(R.drawable.vd_check)
         login_status.visibility = View.VISIBLE
@@ -122,6 +124,8 @@ open class LoginFragment: DialogFragment() {
     protected fun error(errMsg: String) {
         if (errMsg.isNotEmpty())
             Stuff.toast(context, errMsg)
+        if (context == null || !isAdded)
+            return
         login_progress.visibility = View.GONE
         login_status.setImageResource(R.drawable.vd_ban)
         login_status.visibility = View.VISIBLE

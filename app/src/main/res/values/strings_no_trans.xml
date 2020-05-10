@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- DO NOT TRANSLATE -->
-    <string name="app_name">Pano Scrobbler</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="email">kawaiiDango@protonmail.com</string>
-    <string name="share_link">bit.ly/Pscr</string>
-    <string name="tv_link">https://bit.ly/Pscrtv</string>
-    <string name="ok_cool">Looks cool</string>
-    <string name="ignore_app">Ignore this app</string>
-    <string name="unscrobble">Unscrobble</string>
-    <string name="last_week">Last.week</string>
-    <string name="lastfm">LastFM</string>
-    <string name="librefm">LibreFM</string>
-    <string name="listenbrainz">ListenBrainz</string>
+    <string name="app_name" translatable="false">Pano Scrobbler</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="email" translatable="false">kawaiiDango@protonmail.com</string>
+    <string name="share_link" translatable="false">bit.ly/Pscr</string>
+    <string name="tv_link" translatable="false">https://bit.ly/Pscrtv</string>
+    <string name="github_link" translatable="false">https://github.com/kawaiiDango/pScrobbler</string>
+    <string name="ok_cool" translatable="false">Looks cool</string>
+    <string name="ignore_app" translatable="false">Ignore this app</string>
+    <string name="unscrobble" translatable="false">Unscrobble</string>
+    <string name="last_week" translatable="false">Last.week</string>
+    <string name="lastfm" translatable="false">LastFM</string>
+    <string name="librefm" translatable="false">LibreFM</string>
+    <string name="listenbrainz" translatable="false">ListenBrainz</string>
+    <string name="export_file_name" translatable="false">pano_scrobbler_export %1$s.json</string>
 
     <string name="song_format_string">%1$s by %2$s</string>
 </resources>

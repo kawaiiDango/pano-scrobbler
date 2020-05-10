@@ -172,7 +172,7 @@
         <Preference
             app:iconSpaceReserved="false"
             android:title="@string/pref_about_title"
-            android:summary="https://github.com/kawaiiDango/pScrobbler"
+            android:summary="@string/github_link"
             android:key="about"
             />
     </PreferenceCategory>

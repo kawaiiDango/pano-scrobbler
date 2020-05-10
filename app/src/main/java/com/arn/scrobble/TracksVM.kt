@@ -22,8 +22,6 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     val trackInfo = MutableLiveData<Pair<Int,Track>>()
     private val pendingTracks = MutableLiveData<Pair<List<PendingScrobble>, Int>>()
     private val executor = Executors.newSingleThreadExecutor()
-    private val dao = PendingScrobblesDb.getDb(application).getScrobblesDao()
-    private val lovesDao = PendingScrobblesDb.getDb(application).getLovesDao()
     //for room's built in livedata to work, data must be inserted, deleted from the same dao object
     var page = 1
     private var loadedCachedRecents = false
@@ -69,6 +67,8 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
 
     fun loadPending(limit: Int): MutableLiveData<Pair<List<PendingScrobble>, Int>> {
         executor.execute{
+            val dao = PendingScrobblesDb.getDb(getApplication()).getScrobblesDao()
+            val lovesDao = PendingScrobblesDb.getDb(getApplication()).getLovesDao()
             val p = Pair(dao.all(limit), dao.count)
             pendingTracks.postValue(p)
             if ((p.second > 0 || lovesDao.count > 0)

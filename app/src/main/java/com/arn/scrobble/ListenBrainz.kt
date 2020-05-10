@@ -127,7 +127,7 @@ class ListenBrainz (private val token:String? = null) {
                     success = true
             }
 
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             Stuff.toast(context, e.toString())
         }
 

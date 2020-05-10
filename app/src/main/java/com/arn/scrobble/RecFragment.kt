@@ -29,7 +29,6 @@ import java.io.File
 
 class RecFragment:Fragment(){
     private var started = false
-    private val code = 200
     private val handler = Handler()
     private var recorder:MediaRecorder? = null
     private val duration = 10000L
@@ -151,8 +150,7 @@ class RecFragment:Fragment(){
     private fun startOrCancel(){
         context ?: return
         if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            Stuff.toast(context, getString(R.string.grant_rec_perm))
-            requestPermissions(arrayOf(RECORD_AUDIO), code)
+            requestPermissions(arrayOf(RECORD_AUDIO), Stuff.REQUEST_CODE_MIC_PERM)
             return
         }
 
@@ -309,9 +307,11 @@ class RecFragment:Fragment(){
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == code && grantResults.isNotEmpty() &&
+        if (requestCode == Stuff.REQUEST_CODE_MIC_PERM && grantResults.isNotEmpty() &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED)
             startOrCancel()
+        else
+            Stuff.toast(context, getString(R.string.grant_rec_perm))
     }
 
     inner class SubmitAsync: AsyncTask<String, Int, String>() {
@@ -321,7 +321,7 @@ class RecFragment:Fragment(){
             val host = pref.getString(Stuff.PREF_ACR_HOST, Tokens.ACR_HOST)
             val key = pref.getString(Stuff.PREF_ACR_KEY, Tokens.ACR_KEY)
             val secret = pref.getString(Stuff.PREF_ACR_SECRET, Tokens.ACR_SECRET)
-            return i.recognize(host, key, secret, file, "audio", 10000)
+            return i.recognize(host, key, secret, file, "audio", Stuff.CONNECT_TIMEOUT)
         }
 
         override fun onPostExecute(result: String?) {

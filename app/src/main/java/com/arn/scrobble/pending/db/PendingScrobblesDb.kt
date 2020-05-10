@@ -27,7 +27,8 @@ abstract class PendingScrobblesDb : RoomDatabase() {
                         .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                         // allow queries on the main thread.
                         // Don't do this on a real app! See PersistenceBasicSample for an example.
-//                        .allowMainThreadQueries()
+                        // Just dont do this on a UI thread
+                        .allowMainThreadQueries()
                         .build()
             }
             return INSTANCE!!

@@ -133,7 +133,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
 
     fun loadFriendsRecents(pos:Int) {
         val glm = fragmentContent.friends_grid.layoutManager as GridLayoutManager? ?: return
-        if ((pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
+        if (pos < users.size && (pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
                 (pos - glm.spanCount) <= glm.findLastVisibleItemPosition())
             viewModel.loadFriendsRecents(users[pos].name)
     }

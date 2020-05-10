@@ -157,9 +157,9 @@ class SessListener constructor(private val pref: SharedPreferences,
                     } else {
                         Stuff.log("other ($state) : $title")
                     }
-                    if (state != PlaybackState.STATE_BUFFERING)
-                        lastState = state
                 }
+                if (state != PlaybackState.STATE_BUFFERING)
+                    lastState = state
             }
         }
 

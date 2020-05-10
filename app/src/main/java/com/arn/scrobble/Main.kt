@@ -564,11 +564,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val builder = NetworkRequest.Builder()
         connectivityCb = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network?) {
+            override fun onAvailable(network: Network) {
                 isOnline = true
             }
 
-            override fun onLost(network: Network?) {
+            override fun onLost(network: Network) {
                 isOnline = cm.activeNetworkInfo?.isConnected == true
             }
 
@@ -577,7 +577,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
 
-        cm.registerNetworkCallback(builder.build(), connectivityCb)
+        cm.registerNetworkCallback(builder.build(), connectivityCb!!)
 
         val ni = cm.activeNetworkInfo
         isOnline = ni?.isConnected == true
@@ -623,7 +623,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     public override fun onStop() {
         unregisterReceiver(mainReceiver)
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        cm.unregisterNetworkCallback(connectivityCb)
+        cm.unregisterNetworkCallback(connectivityCb!!)
         super.onStop()
     }
 

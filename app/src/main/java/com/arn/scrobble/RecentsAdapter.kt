@@ -281,8 +281,10 @@ class RecentsAdapter
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition].name == newList[newItemPosition].name &&
+                    oldList[oldItemPosition].album == newList[newItemPosition].album &&
                     oldList[oldItemPosition].artist == newList[newItemPosition].artist &&
-                    oldList[oldItemPosition].isLoved == newList[newItemPosition].isLoved
+                    oldList[oldItemPosition].isLoved == newList[newItemPosition].isLoved &&
+                    oldList[oldItemPosition].getImageURL(ImageSize.MEDIUM) == newList[newItemPosition].getImageURL(ImageSize.MEDIUM)
         }
     }
 

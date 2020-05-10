@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 
 
 object VMFactory: ViewModelProvider.Factory {
@@ -12,7 +11,7 @@ object VMFactory: ViewModelProvider.Factory {
 
     fun <T : ViewModel>getVM(fr: Fragment, vmClass: Class<T>): T {
         application = fr.activity?.application
-        return ViewModelProviders.of(fr, this).get(vmClass)
+        return ViewModelProvider(fr, this).get(vmClass)
     }
 
     @Suppress("UNCHECKED_CAST")

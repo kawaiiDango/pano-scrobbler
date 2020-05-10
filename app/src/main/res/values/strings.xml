@@ -105,13 +105,13 @@
     <string name="pref_noti">Notifications</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from">Scrobble from</string>
-    <string name="pref_enabled_apps_summary">Most apps that play music with metadata, are supported</string>
+    <string name="pref_enabled_apps_summary">Supports most apps that play music with metadata</string>
     <string name="pref_enabled_apps_title">Choose apps</string>
     <string name="pref_spotify_notice">ℹ️ To avoid duplicate scrobbles from Spotify, disable it here and enable it from lastFM website.</string>
     <string name="pref_auto_detect_summary">…we will still ask you to confirm/ignore that app</string>
     <string name="pref_auto_detect">Auto detect new music-like apps</string>
     <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
-    <string name="pref_delay_secs">Delay in secs</string>
+    <string name="pref_delay_secs">Delay in seconds</string>
     <string name="pref_delay_per">Delay in percent</string>
     <string name="pref_logout">Logout</string>
     <string name="pref_confirm_logout">CONFIRM LOGOUT? Tap again.</string>

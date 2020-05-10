@@ -49,10 +49,13 @@ class EditsAdapter(context: Context) : RecyclerView.Adapter<EditsAdapter.VHEdits
     override fun getItemCount() = editsList.size
 
     override fun onItemClick(view: View, position: Int) {
-        val item = editsList.removeAt(position)
-        notifyItemRemoved(position)
-        AsyncTask.THREAD_POOL_EXECUTOR.execute {
-            dao.delete(item)
+        if (position != -1) {
+            //needed if the user quickly taps on the same item before the animation is done
+            val item = editsList.removeAt(position)
+            notifyItemRemoved(position)
+            AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                dao.delete(item)
+            }
         }
     }
 

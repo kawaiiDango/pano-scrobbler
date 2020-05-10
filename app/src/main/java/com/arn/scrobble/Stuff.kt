@@ -130,7 +130,7 @@ object Stuff {
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
     const val PIXEL_NP_INTERVAL: Long = 5 * 60 * 1000
-    const val CONNECT_TIMEOUT = 10 * 1000
+    const val CONNECT_TIMEOUT = 20 * 1000
     const val READ_TIMEOUT = 20 * 1000
     const val CANCELLABLE_MSG = 9
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
@@ -142,6 +142,7 @@ object Stuff {
     const val MIN_LISTENER_COUNT = 7
     const val REQUEST_CODE_EXPORT = 10
     const val REQUEST_CODE_IMPORT = 11
+    const val REQUEST_CODE_MIC_PERM = 20
     const val EDITS_NOPE = 0
     const val EDITS_REPLACE_ALL = 1
     const val EDITS_REPLACE_EXISTING = 2

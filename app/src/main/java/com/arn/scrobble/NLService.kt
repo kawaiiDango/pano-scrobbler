@@ -15,7 +15,6 @@ import android.os.*
 import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import android.util.LruCache
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.media.app.MediaStyleMod
@@ -58,7 +57,7 @@ class NLService : NotificationListenerService() {
         super.onListenerConnected()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (Looper.myLooper() == null) {
-                Handler(mainLooper).post { init() }
+                Handler(mainLooper!!).post { init() }
             } else
                 init()
         }
@@ -78,8 +77,6 @@ class NLService : NotificationListenerService() {
         filter.addAction(iDISMISS_MAIN_NOTI)
         filter.addAction(CONNECTIVITY_ACTION)
         applicationContext.registerReceiver(nlservicereciver, filter)
-
-        corrrectedDataCache = LruCache(10)
 
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         migratePrefs()
@@ -293,8 +290,8 @@ class NLService : NotificationListenerService() {
                         }
                     }
                     //create copies
-                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())!!.toMutableSet()!!
-                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())!!.toMutableSet()!!
+                    val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())!!.toMutableSet()
+                    val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())!!.toMutableSet()
 
                     if (intent.action == pWHITELIST)
                         wSet.add(pkgName)
@@ -366,8 +363,25 @@ class NLService : NotificationListenerService() {
             removeMessages(SessListener.lastHash)
             if (artist != "" && !hasMessages(hash)){
                 val now = System.currentTimeMillis()
-                val album = Stuff.sanitizeAlbum(album)
-                val artist = Stuff.sanitizeArtist(artist)
+                var album = Stuff.sanitizeAlbum(album)
+                var artist = Stuff.sanitizeArtist(artist)
+                var title = title
+                var albumArtist = albumArtist
+                if (artist != "" && title == "") {
+                    val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
+                    try {
+                        dao.find(artist.hashCode().toString() +
+                                album.hashCode().toString() + title.hashCode().toString())
+                        ?.let {
+                            artist = it.artist
+                            album = it.album
+                            title = it.track
+                            albumArtist = it.albumArtist
+                        }
+                    } catch (e: Exception) {
+                        Stuff.log("editsDao exception")
+                    }
+                }
                 if (artist != "" && title != "") {
                     LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString(), hash.toString())
                         .skipContentProvider()
@@ -557,13 +571,13 @@ class NLService : NotificationListenerService() {
         }
 
         fun notifyApp(packageName:String) {
-            val appName: String
+            val appName =
             try {
                 val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-                appName = packageManager.getApplicationLabel(applicationInfo).toString()
+                packageManager.getApplicationLabel(applicationInfo).toString()
             } catch (e: Exception) {
                 //eat up all NPEs and stuff
-                return
+                packageName
             }
 
             var intent = Intent(pBLACKLIST)
@@ -667,7 +681,6 @@ class NLService : NotificationListenerService() {
     }
 
     companion object {
-        lateinit var corrrectedDataCache: LruCache<Int, Bundle>
         var isOnline = true
 
         lateinit var handler: ScrobbleHandler

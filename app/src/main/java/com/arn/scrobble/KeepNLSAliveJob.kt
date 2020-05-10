@@ -63,7 +63,7 @@ class KeepNLSAliveJob: JobService() {
 
         fun checkAndSchedule(context: Context) {
             val js = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-            val jobs = js.allPendingJobs ?: listOf()
+            val jobs = js.allPendingJobs
 
             if (jobs.any { it.id == JOB_ID })
                 return

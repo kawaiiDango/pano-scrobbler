@@ -78,7 +78,7 @@ object Stuff {
     const val DL_APP_LIST = 32
     const val DL_NOW_PLAYING = 33
     const val DL_MIC = 34
-    const val DIRECT_OPEN_KEY = "deeplink"
+    const val DIRECT_OPEN_KEY = "directopen"
     const val LOVE = "loved"
     const val UNLOVE = "unloved"
     const val GET_FRIENDS_RECENTS = "get_friends_recent"

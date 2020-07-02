@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="pScrobbler/app" />
-      <module fileurl="file://$PROJECT_DIR$/lastfm/lastfm.iml" filepath="$PROJECT_DIR$/lastfm/lastfm.iml" group="pScrobbler/lastfm" />
-      <module fileurl="file://$PROJECT_DIR$/pScrobbler.iml" filepath="$PROJECT_DIR$/pScrobbler.iml" group="pScrobbler" />
+      <module fileurl="file://$PROJECT_DIR$/pScrobbler.iml" filepath="$PROJECT_DIR$/pScrobbler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/pScrobbler.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/pScrobbler.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lastfm/pScrobbler.lastfm.iml" filepath="$PROJECT_DIR$/.idea/modules/lastfm/pScrobbler.lastfm.iml" />
     </modules>
   </component>
 </project>

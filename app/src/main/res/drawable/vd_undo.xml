@@ -1,5 +1,5 @@
 <!-- drawable/undo_variant.xml -->
-<!-- automirror rtl does'nt work for notifications -->
+<!-- automirror rtl doesn't work for notifications -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:height="24dp"
     android:width="24dp"

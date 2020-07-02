@@ -11,27 +11,32 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.TracksVM
 import com.arn.scrobble.VMFactory
-import kotlinx.android.synthetic.main.content_recents.view.*
+import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.PendingMenu
+import kotlinx.android.synthetic.main.content_simple_list.view.*
+import kotlinx.android.synthetic.main.list_item_recents.view.*
 
 /**
  * Created by arn on 21/09/2017.
  */
-class PendingScrFragment: Fragment() {
+class PendingScrFragment: Fragment(), ItemClickListener {
+    lateinit var adapter: PendingScrAdapter
+    lateinit var vm: TracksVM
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.content_recents, container, false)
+        val view = inflater.inflate(R.layout.content_simple_list, container, false)
 
-        view.recents_list.layoutManager = LinearLayoutManager(context!!)
-        view.recents_list.isNestedScrollingEnabled = false
-        val adapter = PendingScrAdapter()
-        view.recents_list.adapter = adapter
-        view.recents_swipe_refresh.isEnabled = false
+        view.simple_list.layoutManager = LinearLayoutManager(context!!)
+        view.simple_list.isNestedScrollingEnabled = false
+        adapter = PendingScrAdapter(this)
+        view.simple_list.adapter = adapter
 
-        VMFactory.getVM(this, TracksVM::class.java)
-                .loadPending(1000)
+        vm = VMFactory.getVM(this, TracksVM::class.java)
+        vm.loadPending(1000, false)
                 .observe(viewLifecycleOwner, Observer {
                     it ?: return@Observer
                     adapter.clear()
-                    adapter.addAll(it.first)
+                    adapter.addAll(it)
                 })
         return view
     }
@@ -39,5 +44,18 @@ class PendingScrFragment: Fragment() {
     override fun onStart() {
         super.onStart()
         Stuff.setTitle(activity, R.string.pending_scrobbles)
+    }
+
+    override fun onItemClick(view: View, position: Int) {
+        val p = adapter.getPending(position)
+        if (view.id == R.id.recents_menu)
+            PendingMenu.openPendingPopupMenu((view.parent as ViewGroup).date_frame, p,
+                    {
+                    activity?.runOnUiThread { adapter.remove(position) }
+                    },
+                    {
+                        vm.loadPending(1000, false)
+                    }
+            )
     }
 }

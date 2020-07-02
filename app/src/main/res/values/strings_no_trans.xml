@@ -2,8 +2,6 @@
 <resources>
     <!-- DO NOT TRANSLATE -->
     <string name="app_name" translatable="false">Pano Scrobbler</string>
-    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
-    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="email" translatable="false">kawaiiDango@protonmail.com</string>
     <string name="share_link" translatable="false">bit.ly/Pscr</string>
     <string name="tv_link" translatable="false">https://bit.ly/Pscrtv</string>
@@ -14,6 +12,7 @@
     <string name="last_week" translatable="false">Last.week</string>
     <string name="lastfm" translatable="false">LastFM</string>
     <string name="librefm" translatable="false">LibreFM</string>
+    <string name="gnufm" translatable="false">GNU FM</string>
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
     <string name="export_file_name" translatable="false">pano_scrobbler_export %1$s.json</string>
 

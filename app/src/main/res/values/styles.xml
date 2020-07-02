@@ -10,6 +10,14 @@
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:textDirection">locale</item>
+        <item name="popupMenuStyle">@style/AppTheme.PopupOverlay</item>
+    </style>
+
+    <style name="DarkDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:background">@color/dialogBg</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
     <style name="AppTheme.Transparent" parent="Base.Theme.AppCompat.Dialog">
@@ -45,7 +53,7 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark">
+    <style name="AppTheme.PopupOverlay" parent="Widget.AppCompat.PopupMenu">
         <item name="android:colorBackground">@android:color/black</item>
     </style>
 
@@ -75,6 +83,11 @@
     <style name="bottomSheetContent">
         <item name="android:paddingStart">@dimen/elevation_hero_btn</item>
         <item name="android:paddingBottom">@dimen/fab_margin</item>
+    </style>
+
+    <style name="circleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 
 </resources>

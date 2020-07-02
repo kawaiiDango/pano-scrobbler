@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@android:id/widget_frame"
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@android:id/widget_frame"
               xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_gravity="left"
+              android:layout_gravity="start"
               android:background="@color/highlightPink"
-              android:gravity="left"
+              android:gravity="start"
               android:orientation="horizontal"
               android:paddingLeft="11dp"
               android:paddingRight="11dp">
@@ -27,9 +28,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:drawableTop="@drawable/vd_add"
         android:text="@string/pref_enabled_apps_title"
-        android:textColor="?android:attr/textColorSecondary"/>
+        android:textColor="?android:attr/textColorSecondary"
+        app:drawableTopCompat="@drawable/vd_add" />
 
     <LinearLayout
         android:id="@+id/app_icons_container"

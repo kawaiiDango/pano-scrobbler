@@ -1,5 +1,0 @@
-<resources>
-    <dimen name="recents_overlay_rotate">-10</dimen>
-    <dimen name="triangle_pivot_x">-40%</dimen>
-    <dimen name="triangle_pivot_y">87%</dimen>
-</resources>

@@ -12,17 +12,12 @@ class LastfmUnscrobbler(context: Context?) {
 
     private var csrfToken: String? = null
     private var username = ""
-    private var client: OkHttpClient? = null
-    get() {
-        if (field == null) {
-            val builder = OkHttpClient.Builder()
+    private val client by lazy {
+            OkHttpClient.Builder()
                     .cookieJar(cookieJar)
 //                .addInterceptor(LoggingInterceptor())
 //                .followRedirects(false)
-
-            field = builder.build()
-        }
-       return field
+                    .build()!!
     }
     private var cookieCache = SetCookieCache()
     private val cookieJar: CookieJar
@@ -105,7 +100,7 @@ class LastfmUnscrobbler(context: Context?) {
 
         //fetch csrf token
         try {
-            val resp = client!!.newCall(request).execute()
+            val resp = client.newCall(request).execute()
             if (resp.code() == 200) {
                 if (csrfToken == null)
                     Stuff.log("err: LastfmUnscrobbler csrfToken == null")
@@ -139,7 +134,7 @@ class LastfmUnscrobbler(context: Context?) {
                 .build()
 
         try {
-            val resp = client!!.newCall(request).execute()
+            val resp = client.newCall(request).execute()
 
             val respString = resp.body()?.string() ?: ""
 
@@ -178,7 +173,7 @@ class LastfmUnscrobbler(context: Context?) {
                 .build()
 
         try {
-            val resp = client!!.newCall(request).execute()
+            val resp = client.newCall(request).execute()
             val respStr = resp.body()?.string()
             if (resp.code() == 200 && respStr?.contains("{\"result\": true}") == true) {
                 Stuff.log("LastfmUnscrobbler unscrobbled: $track")

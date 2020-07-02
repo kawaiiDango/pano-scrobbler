@@ -12,7 +12,11 @@
             android:title="@string/last_week"/>
     </group>
 
-    <group android:id="@+id/nav_group_bottom">
+    <group android:id="@+id/nav_group_mid">
+        <item
+            android:id="@+id/nav_recents"
+            android:icon="@drawable/vd_history"
+            android:title="@string/recents"/>
         <item
             android:id="@+id/nav_loved"
             android:icon="@drawable/vd_heart"
@@ -21,6 +25,9 @@
             android:id="@+id/nav_friends"
             android:icon="@drawable/vd_friends"
             android:title="@string/friends"/>
+    </group>
+
+    <group android:id="@+id/nav_group_bottom">
         <item
             android:id="@+id/nav_rec"
             android:icon="@drawable/vd_mic"

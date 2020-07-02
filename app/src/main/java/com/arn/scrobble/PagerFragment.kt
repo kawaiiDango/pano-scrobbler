@@ -36,13 +36,8 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
         if (!view.isInTouchMode)
             view.requestFocus()
         (view as ViewPager).addOnPageChangeListener(this)
+        view.offscreenPageLimit = 2
         view.adapter = PagerAdapter(childFragmentManager, 3)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                !resources.getBoolean(R.bool.is_rtl)) {
-            view.systemGestureExclusionRects = listOf(Rect(0, 0, 100,
-                    resources.displayMetrics.heightPixels))
-            //fuck gestures
-        }
         return view
     }
 
@@ -59,7 +54,25 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
 
         tabBar.addOnTabSelectedListener(this)
         backStackChecked = false
+        setGestureExclusions(true)
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        setGestureExclusions(false)
+        super.onDestroyView()
+    }
+
+    private fun setGestureExclusions(set: Boolean){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                !resources.getBoolean(R.bool.is_rtl)) {
+            val list = if (set)
+                listOf(Rect(0, 0, 100, resources.displayMetrics.heightPixels))
+            else
+                listOf()
+            view?.systemGestureExclusionRects = list
+            //fuck gestures
+        }
     }
 
     override fun onStart() {
@@ -76,7 +89,7 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
     }
 
     override fun onStop() {
-        if (userVisibleHint && activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0) {
+        if (isVisible && activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0) {
             val pref = context?.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
             val pager = activity?.pager
             if (pager != null && pref != null)

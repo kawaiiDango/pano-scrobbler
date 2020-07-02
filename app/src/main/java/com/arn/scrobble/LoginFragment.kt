@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.webkit.URLUtil
 import androidx.fragment.app.DialogFragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.textfield.TextInputLayout
@@ -169,14 +170,11 @@ open class LoginFragment: DialogFragment() {
             success = ListenBrainz(tlast).checkAuth(activity!!, pref, t1)
         else if (title == getString(R.string.custom_listenbrainz) &&
                 t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()) {
-            try {
-                URL(t2)
-                if (!t2.endsWith("/"))
-                    t2 += "/"
-                success = ListenBrainz(tlast).setApiRoot(t2).checkAuth(activity!!, pref, t1)
-            } catch (e: MalformedURLException){
+            if (URLUtil.isValidUrl(t2)) {
+                if (!t2.endsWith('/'))
+                    t2 += '/'
+            } else
                 Stuff.toast(activity!!, getString(R.string.failed_encode_url))
-            }
 
         } else if (title == getString(R.string.lastfm) && tlast.isNotBlank()){
             val unscrobbler = LastfmUnscrobbler(context!!)

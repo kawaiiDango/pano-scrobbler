@@ -7,15 +7,17 @@ import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
 import android.os.AsyncTask
+import androidx.annotation.StringRes
 import com.arn.scrobble.*
+import com.arn.scrobble.pending.db.PendingLove
+import com.arn.scrobble.pending.db.PendingScrobble
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.MultiPreferences
-import de.umass.lastfm.Result
-import de.umass.lastfm.Session
-import de.umass.lastfm.Track
+import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import org.xml.sax.SAXException
+import java.util.logging.Level
 
 
 /**
@@ -25,7 +27,10 @@ class PendingScrJob : JobService() {
     override fun onStartJob(jp: JobParameters): Boolean {
         mightBeRunning = true
         val ost = OfflineScrobbleTask(applicationContext)
-        ost.doneCb = { done -> jobFinished(jp, done)}
+        ost.doneCb = { done ->
+            mightBeRunning = false
+            jobFinished(jp, done)
+        }
         ost.execute()
         return true
     }
@@ -36,19 +41,43 @@ class PendingScrJob : JobService() {
     }
 
     class OfflineScrobbleTask(private val context: Context): AsyncTask<Unit, String, Boolean>() {
-        private val dao = PendingScrobblesDb.getDb(context).getScrobblesDao()
-        private val lovesDao = PendingScrobblesDb.getDb(context).getLovesDao()
-        private val prefs = MultiPreferences(context)
+        private val dao by lazy { PendingScrobblesDb.getDb(context).getScrobblesDao() }
+        private val lovesDao by lazy { PendingScrobblesDb.getDb(context).getLovesDao() }
+        private val prefs by lazy { MultiPreferences(context) }
         var progressCb:((str:String)->Unit)? = null
         var doneCb:((done:Boolean)->Unit)? = null
 
         override fun doInBackground(vararg p0: Unit?): Boolean {
+            Stuff.initCaller(context)
+
             var done = submitLoves()
 
             var aneCount = dao.allNotAutocorrectedCount
 
+            dao.allEmptyAlbums.forEach {
+                publishProgress(context.getString(R.string.pending_n_remaining, aneCount--))
+                try {
+                    var track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
+                    if (track != null && track.listeners < Stuff.MIN_LISTENER_COUNT / 2)
+                        track = null
+                    if (track != null) {
+                        if (!track.album.isNullOrEmpty()) {
+                            it.album = track.album
+                            if (!track.albumArtist.isNullOrEmpty())
+                                it.albumArtist = track.albumArtist
+                        }
+                        it.autoCorrected = 1
+                        dao.update(it)
+                    }
+                } catch (e: Exception) {
+                }
+                Thread.sleep(DELAY)
+            }
+
+            aneCount = dao.allNotAutocorrectedCount
+
             while (aneCount > 0){
-                val entry = dao.loadLastPending ?: continue
+                val entry = dao.loadLastPending ?: break
 
                 publishProgress(context.getString(R.string.pending_n_remaining, aneCount))
                 var correctedArtist: String?
@@ -58,16 +87,18 @@ class PendingScrJob : JobService() {
                     Stuff.log("OfflineScrobble: n/w err1 - " + e.message)
                     done = false
                     break
-
                 }
                 if (correctedArtist != null)
                     dao.markValidArtist(entry.artist)
                 else
                     dao.deleteInvalidArtist(entry.artist)
-                Thread.sleep(400)
+                Thread.sleep(DELAY)
 
-                if (aneCount >= BATCH_SIZE)
-                    done = submitBatch()
+                if (aneCount >= BATCH_SIZE) {
+                    done = submitScrobbleBatch()
+                    if (!done) //err
+                        return done
+                }
 
                 if (!MOCK)
                     aneCount = dao.allNotAutocorrectedCount
@@ -76,100 +107,123 @@ class PendingScrJob : JobService() {
             }
 
             while (dao.allAutocorrectedCount > 0) {
-                done = submitBatch()
-                if (!done) //network wasnt stable
+                done = submitScrobbleBatch()
+                if (!done) //err
                     break
             }
 
             return done
         }
 
-
-        private fun submitBatch():Boolean {
+        private fun submitScrobbleBatch(): Boolean {
             var done = true
             val entries = dao.allAutocorrected(BATCH_SIZE)
 
             publishProgress(context.getString(R.string.pending_batch))
 
-            val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+            val lastfmSessKey: String = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+                    ?: //user logged out
+                    return done
+
             val lastfmEnabled = !prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
 
-            val lastfmSession: Session? = if (!lastfmSessKey.isNullOrBlank() && lastfmEnabled)
+            val lastfmSession: Session? = if (lastfmEnabled)
                         Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
                     else
                         null
             val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
-            val librefmSession: Session? = if (!librefmSessKey.isNullOrBlank())
+            val librefmSession: Session? = if (librefmSessKey != null)
                         Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
                                 Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
                     else
                         null
             val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
-            val gnufmSession: Session? = if (!gnufmSessKey.isNullOrBlank())
+            val gnufmSession: Session? = if (gnufmSessKey != null)
                         Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
                                 Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
                     else
                         null
 
-            if (lastfmSessKey.isNullOrBlank()) { //user logged out
-                return done
-            }
-
-            val scrobbleDatas = mutableListOf<ScrobbleData>()
+            val scrobbleDataToEntry = mutableMapOf<ScrobbleData, PendingScrobble>()
             entries.forEach {
                 val scrobbleData = ScrobbleData()
                 scrobbleData.artist = it.artist
                 scrobbleData.album = it.album
                 scrobbleData.track = it.track
-
-                if (it.album.isEmpty() && it.albumArtist.isEmpty()){
-                    try {
-                        val track = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
-                        if (track != null) {
-                            if (!track.album.isNullOrEmpty())
-                                scrobbleData.album = track.album
-                            if (!track.albumArtist.isNullOrEmpty())
-                                scrobbleData.albumArtist = track.albumArtist
-                        }
-                    } catch (e: Exception) { }
-                }
-
-                if (it.albumArtist != "" && it.albumArtist != it.artist)
-                    scrobbleData.albumArtist = it.albumArtist
+                scrobbleData.albumArtist = it.albumArtist
                 scrobbleData.timestamp = (it.timestamp / 1000).toInt() // in secs
                 if(it.duration > 10*1000)
                     scrobbleData.duration = (it.duration / 1000).toInt() // in secs
-                scrobbleDatas.add(scrobbleData)
+                scrobbleDataToEntry[scrobbleData] = it
             }
-            if (scrobbleDatas.isNotEmpty()) {
+            if (scrobbleDataToEntry.isNotEmpty()) {
                 try {
-                    //TODO: handle errs for all
-                    var scrobbleResults: MutableList<ScrobbleResult?>? = null
-                    if (librefmSession != null)
-                        scrobbleResults = Track.scrobble(scrobbleDatas, librefmSession)
-                    if (lastfmSession != null)
-                        scrobbleResults = Track.scrobble(scrobbleDatas, lastfmSession)
-                    if (gnufmSession != null)
-                        scrobbleResults = Track.scrobble(scrobbleDatas, gnufmSession)
+                    val scrobbleResults = mutableMapOf<@StringRes Int, ScrobbleResult>()
+                    //if an error occurs, there will be only one result
+                    var filteredData: MutableList<ScrobbleData>? = null
+                    if (lastfmSession != null &&
+                            filterForService(R.string.lastfm, scrobbleDataToEntry).also { filteredData = it }.isNotEmpty())
+                        scrobbleResults[R.string.lastfm] = try {
+                            Track.scrobble(filteredData, lastfmSession)[0]
+                        } catch (e: CallException) {
+                            ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                        }
 
-                    if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
-                        ListenBrainz(prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null))
-                                        .scrobble(scrobbleDatas)
+                    if (librefmSession != null &&
+                            filterForService(R.string.librefm, scrobbleDataToEntry).also { filteredData = it }.isNotEmpty())
+                        scrobbleResults[R.string.librefm] = try {
+                            Track.scrobble(filteredData, librefmSession)[0]
+                        } catch (e: CallException) {
+                            ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                        }
 
-                    if (prefs.getString(Stuff.PREF_LB_CUSTOM_USERNAME, null) != null)
-                        ListenBrainz(prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null))
+                    if (gnufmSession != null &&
+                            filterForService(R.string.gnufm, scrobbleDataToEntry).also { filteredData = it }.isNotEmpty())
+                        scrobbleResults[R.string.gnufm] = try {
+                            Track.scrobble(filteredData, gnufmSession)[0]
+                        } catch (e: CallException) {
+                            ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                        }
+                    var token = ""
+                    if (prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null)?.also { token = it } != null &&
+                            filterForService(R.string.listenbrainz, scrobbleDataToEntry).also { filteredData = it }.isNotEmpty())
+                        scrobbleResults[R.string.listenbrainz] = ListenBrainz(token)
+                                        .scrobble(filteredData!!)
+
+                    if (prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.also { token = it } != null &&
+                            filterForService(R.string.custom_listenbrainz, scrobbleDataToEntry).also { filteredData = it }.isNotEmpty())
+                        scrobbleResults[R.string.custom_listenbrainz] = ListenBrainz(token)
                                         .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
-                                        .scrobble(scrobbleDatas)
+                                        .scrobble(filteredData!!)
 
-                    scrobbleResults?.forEachIndexed { i, it ->
-                        if (it != null && (it.isSuccessful || it.isIgnored)) {
-                            if (!MOCK)
-                                dao.delete(entries[i])
-                        } else {
+                    val idsToDelete = mutableListOf<Int>()
+                    scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->
+                        var state = pendingScrobble.state
+
+                        Stuff.SERVICE_BIT_POS.forEach { (id, pos) ->
+                            val enabled = state and (1 shl pos) != 0
+                            if (enabled && (!scrobbleResults.containsKey(id) /* logged out */ ||
+                                            scrobbleResults[id]!!.errorCode == 7 ||
+                                            scrobbleResults[id]!!.isSuccessful))
+                                state = state and (1 shl pos).inv()
+                        }
+
+                        if (state == 0)
+                            idsToDelete += pendingScrobble._id
+                        else if (state != pendingScrobble.state) {
+                            pendingScrobble.state = state
+                            dao.update(pendingScrobble)
+                        }
+                    }
+
+                    if (!MOCK && idsToDelete.isNotEmpty())
+                        dao.delete(idsToDelete)
+
+                    scrobbleResults.forEach { (id, result) ->
+                        if (!result.isSuccessful) {
+                            Stuff.log("OfflineScrobble: err for " + context.getString(id) +
+                                    ": " + result)
                             done = false
-                            entries[i].state_timestamp = System.currentTimeMillis()
-                            entries[i].state = STATE_SCROBBLE_ERR
-                            dao.update(entries[i])
                         }
                     }
 
@@ -182,7 +236,8 @@ class PendingScrJob : JobService() {
                         done = false
                     return done
                 } catch (e: Exception) {
-                    Stuff.log("OfflineScrobble: n/w err - " + e.message)
+                    Stuff.log("OfflineScrobble: n/w err - ")
+                    e.printStackTrace()
                     done = false
                     return done
                 }
@@ -192,59 +247,100 @@ class PendingScrJob : JobService() {
 
         private fun submitLoves(): Boolean {
             val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+                    ?: return true //user logged out
             val lastfmEnabled = !prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
 
-            val lastfmSession: Session? = if (!lastfmSessKey.isNullOrBlank() && lastfmEnabled)
+            val lastfmSession: Session? = if (lastfmEnabled)
                 Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
             else
                 null
             val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
-            val librefmSession: Session? = if (!librefmSessKey.isNullOrBlank())
+            val librefmSession: Session? = if (librefmSessKey != null)
                 Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
                         Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
             else
                 null
             val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
-            val gnufmSession: Session? = if (!gnufmSessKey.isNullOrBlank())
+            val gnufmSession: Session? = if (gnufmSessKey != null)
                 Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
                         Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
             else
                 null
-            if (lastfmSessKey.isNullOrBlank()) { //user logged out
-                return true
-            }
+
             try {
-                do {
-                    val entry = lovesDao.loadLastPending
-                    if (entry != null) {
-                        publishProgress(context.getString(R.string.pending_loves))
-                        var res:Result? = null
-                        if (librefmSession != null)
-                            res = if (entry.shouldLove)
-                                Track.love(entry.artist, entry.track, librefmSession)
-                            else
-                                Track.unlove(entry.artist, entry.track, librefmSession)
-                        if (gnufmSession != null)
-                            res = if (entry.shouldLove)
-                                Track.love(entry.artist, entry.track, gnufmSession)
-                            else
-                                Track.unlove(entry.artist, entry.track, gnufmSession)
-                        if (lastfmSession != null)
-                            res = if (entry.shouldLove)
+                val entries = lovesDao.all(100)
+                var remaining = entries.size
+                for (entry in entries) {
+                    publishProgress(context.getString(R.string.submitting_loves, remaining--))
+                    val results = mutableMapOf<@StringRes Int, Result>()
+
+                    if (lastfmSession != null && filterOneForService(R.string.lastfm, entry))
+                        results[R.string.lastfm] = try {
+                            if (entry.shouldLove)
                                 Track.love(entry.artist, entry.track, lastfmSession)
                             else
                                 Track.unlove(entry.artist, entry.track, lastfmSession)
+                        } catch (e: CallException) {
+                            ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                        }
+                    if (librefmSession != null && filterOneForService(R.string.librefm, entry))
+                        results[R.string.librefm] = try {
+                            if (entry.shouldLove)
+                                Track.love(entry.artist, entry.track, librefmSession)
+                            else
+                                Track.unlove(entry.artist, entry.track, librefmSession)
+                        } catch (e: CallException) {
+                            ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                        }
+                    if (gnufmSession != null && filterOneForService(R.string.gnufm, entry))
+                        results[R.string.gnufm] = try {
+                            if (entry.shouldLove)
+                                Track.love(entry.artist, entry.track, gnufmSession)
+                            else
+                                Track.unlove(entry.artist, entry.track, gnufmSession)
+                        } catch (e: CallException) {
+                            ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                        }
 
-                        if ((res == null || res.isSuccessful) && !MOCK)
-                            //if only lbz is enabled
-                            lovesDao.delete(entry)
+                    var state = entry.state
+                    Stuff.SERVICE_BIT_POS.forEach { (id, pos) ->
+                        val enabled = state and (1 shl pos) != 0
+                        if (enabled && (!results.containsKey(id) /* logged out or is lbz */ ||
+                                        results[id]!!.errorCode == 6 ||
+                                        results[id]!!.errorCode == 7 ||
+                                        results[id]!!.isSuccessful).also {
+                                            Stuff.log("love err: " + results[id])
+                                        }
+                        )
+                            state = state and (1 shl pos).inv()
                     }
-                } while (entry != null)
+
+                    if (state == 0 && !MOCK)
+                        lovesDao.delete(entry)
+                    else if (state != entry.state) {
+                        entry.state = state
+                        lovesDao.update(entry)
+                    }
+                    Thread.sleep(DELAY)
+                }
                 return true
             } catch (e: Exception) {
                 Stuff.log("OfflineScrobble: n/w err submitLoves - " + e.message)
                 return false
             }
+        }
+
+        private fun filterOneForService(@StringRes id: Int, pl: PendingLove): Boolean {
+            return (pl.state and (1 shl Stuff.SERVICE_BIT_POS[id]!!)) != 0
+        }
+
+        private fun filterForService(@StringRes id: Int, scrobbleDataToEntry: MutableMap<ScrobbleData, PendingScrobble>): MutableList<ScrobbleData> {
+            val filtered = mutableListOf<ScrobbleData>()
+            scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->
+                if (pendingScrobble.state and (1 shl Stuff.SERVICE_BIT_POS[id]!!) != 0)
+                    filtered += scrobbleData
+            }
+            return filtered
         }
 
         override fun onProgressUpdate(vararg values: String) {
@@ -261,13 +357,13 @@ class PendingScrJob : JobService() {
         private const val MOCK = false
         var mightBeRunning = false // this may not be false when the job is force stopped
         private var BATCH_SIZE = 40 //max 50
-        private const val STATE_SCROBBLE_ERR = -1
+        private const val DELAY = 400L
 
         fun checkAndSchedule(context: Context, force: Boolean = false) {
             if (PendingScrService.mightBeRunning)
                 return
             val js = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-            val jobs = js.allPendingJobs ?: listOf()
+            val jobs = js.allPendingJobs
 
             if (jobs.any { it.id == JOB_ID }) {
                 Stuff.log("Found " + jobs.size + " existing jobs")

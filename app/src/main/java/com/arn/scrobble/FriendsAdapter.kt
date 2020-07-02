@@ -6,6 +6,7 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.util.LruCache
 import android.view.LayoutInflater
@@ -40,7 +41,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
     private var users = mutableListOf<User>()
     private var itemClickListener: ItemClickListener? = null
     var totalPages: Int = 1
-    val handler = DelayHandler(WeakReference(this))
+    val handler by lazy { DelayHandler(WeakReference(this)) }
     lateinit var viewModel: FriendsVM
     private val paletteColorsCache = LruCache<String, Int>(50)
 
@@ -156,7 +157,8 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
     inner class VHUser(view: View, private val clickable: Boolean = true) : RecyclerView.ViewHolder(view), View.OnClickListener {
         private val vName = view.friends_name
         private val vMusIcon = view.friends_music_icon
-        private val vTrackContainer = view.friends_track_container
+        private val vTrackFrame = view.friends_track_frame
+        private val vTrackLL = view.friends_track_ll
         private val vDate = view.friends_date
         private val vTitle = view.friends_title
         private val vSubtitle = view.friends_subtitle
@@ -182,6 +184,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
 
             val track = user.recentTrack
             if (track != null && track.name != null && track.name != "") {
+                vTrackLL.visibility = View.VISIBLE
                 vTitle.text = track.name
                 vSubtitle.text = track.artist
                 vDate.text = Stuff.myRelativeTime(itemView.context, track.playedWhen)
@@ -197,14 +200,17 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                         vMusIcon.setImageResource(R.drawable.vd_music_circle)
                 }
 
-                vTrackContainer.setOnClickListener { v: View ->
+                vTrackFrame.setOnClickListener { v: View ->
                     Stuff.launchSearchIntent(track.artist, track.name, itemView.context)
                 }
             } else {
-                vTitle.text = "…"
-                vSubtitle.text = " "
-                vDate.text = " "
-                vTrackContainer.setOnClickListener {}
+                vTrackLL.visibility = View.INVISIBLE
+                vTrackFrame.setOnClickListener(null)
+
+                if (vMusIcon.drawable == null ||
+                        vMusIcon.drawable is AnimatedVectorDrawable || vMusIcon.drawable is AnimatedVectorDrawableCompat)
+                    vMusIcon.setImageResource(R.drawable.vd_music_circle)
+
                 if (!handler.hasMessages(user.name.hashCode()) && adapterPosition > -1) {
                     val msg = handler.obtainMessage(user.name.hashCode())
                     msg.arg1 = adapterPosition
@@ -212,7 +218,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                 }
             }
 
-            val userImg = user.getImageURL(ImageSize.MEDIUM)
+            val userImg = user.getWebpImageURL(ImageSize.EXTRALARGE)
             if (userImg != vImg.tag) {
                 vImg.tag = userImg
                 val bgDark = ContextCompat.getColor(itemView.context, android.R.color.background_dark)
@@ -225,10 +231,8 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                 if (userImg != null && userImg != "") {
                     Picasso.get()
                             .load(userImg)
-                            .fit()
-                            .centerInside()
-                            .placeholder(R.drawable.ic_placeholder_user)
-                            .error(R.drawable.ic_placeholder_user)
+                            .placeholder(R.drawable.vd_placeholder_user)
+                            .error(R.drawable.vd_placeholder_user)
                             .into(vImg, object : Callback {
                                 override fun onSuccess() {
                                     val b = (vImg?.drawable as BitmapDrawable).bitmap
@@ -249,13 +253,13 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                                 }
                             })
                 } else {
-                    vImg.setImageResource(R.drawable.ic_placeholder_user)
+                    vImg.setImageResource(R.drawable.vd_placeholder_user)
                 }
             }
         }
     }
 
-    class DelayHandler(private val friendsAdapterWr: WeakReference<FriendsAdapter>) : Handler() {
+    class DelayHandler(private val friendsAdapterWr: WeakReference<FriendsAdapter>) : Handler(Looper.getMainLooper()) {
         override fun handleMessage(m: Message) {
             val pos = m.arg1
             friendsAdapterWr.get()?.loadFriendsRecents(pos)

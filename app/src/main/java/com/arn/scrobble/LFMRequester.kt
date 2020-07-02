@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.preference.PreferenceManager
 import android.util.LruCache
+import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.db.PendingLove
@@ -14,7 +15,6 @@ import com.arn.scrobble.pending.db.PendingScrobble
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.*
-import de.umass.lastfm.cache.FileSystemCache
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import java.io.IOException
@@ -24,7 +24,6 @@ import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
-import java.util.logging.Level
 import java.util.zip.GZIPInputStream
 
 
@@ -39,7 +38,7 @@ class LFMRequester(var command: String, vararg args: String) {
     private var args = mutableListOf(*args)
     var isLoading = false
 
-    private fun inBackground(context: Context?): Any? {
+    fun inBackground(context: Context?): Any? {
         context ?: return null
 
         isLoading = true
@@ -49,13 +48,7 @@ class LFMRequester(var command: String, vararg args: String) {
         try {
             var reAuthNeeded = false
             var lastfmSession: Session? = null
-            val caller = Caller.getInstance()
-            if (caller.userAgent != Stuff.USER_AGENT) { // static instance not inited
-                caller.userAgent = Stuff.USER_AGENT
-                caller.logger.level = Level.WARNING
-                val fsCache = FileSystemCache(context.cacheDir)
-                caller.cache = fsCache
-            }
+            val caller = Stuff.initCaller(context)
 
             if (command == Stuff.GET_RECENTS_CACHED || command == Stuff.GET_LOVES_CACHED) {
                 command = command.replace("_cached","")
@@ -70,6 +63,24 @@ class LFMRequester(var command: String, vararg args: String) {
                 lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
             else
                 reAuthNeeded = true
+
+            fun getServiceIdToKeys(lfmOnly: Boolean = false): Map<Int, String> {
+                val map = mutableMapOf<Int, String>()
+                var sessKey = ""
+                if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false) && lastfmSessKey != null)
+                    map[R.string.lastfm] = lastfmSessKey
+                if (prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)?.also { sessKey = it } != null)
+                    map[R.string.librefm] = sessKey
+                if (prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)?.also { sessKey = it } != null)
+                    map[R.string.gnufm] = sessKey
+                if (!lfmOnly) {
+                    if (prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null)?.also { sessKey = it } != null)
+                        map[R.string.listenbrainz] = sessKey
+                    if (prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.also { sessKey = it } != null)
+                        map[R.string.custom_listenbrainz] = sessKey
+                }
+                return map
+            }
 
             //takes up to 16ms till here
             if (!reAuthNeeded) {
@@ -96,61 +107,97 @@ class LFMRequester(var command: String, vararg args: String) {
                     //for love: command = tag, args[0] = artist, args[1] = song,
                     Stuff.LOVE, Stuff.UNLOVE -> {
                         val love = command == Stuff.LOVE
+                        var submittedAll = true
+                        val serviceIdToKeys = getServiceIdToKeys(true)
 
                         val dao = PendingScrobblesDb.getDb(context).getLovesDao()
                         val pl = dao.find(args[0], args[1])
-                        return if (pl != null){
+                        if (pl != null){
                             if (pl.shouldLove == !love) {
                                 pl.shouldLove = love
+                                serviceIdToKeys.keys.forEach { key ->
+                                    pl.state = pl.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
+                                }
                                 dao.update(pl)
                             }
-                            1
+                            submittedAll = false
                         } else {
-                            try {
-                                val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
-                                if (!librefmSessKey.isNullOrBlank()) {
-                                    val librefmSession = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
-                                            Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
-                                    if (love)
-                                        Track.love(args[0], args[1], librefmSession)
-                                    else
-                                        Track.unlove(args[0], args[1], librefmSession)
-                                }
+                            val results = mutableMapOf<@StringRes Int, Result>()
 
-                                val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
-                                if (!gnufmSessKey.isNullOrBlank()) {
-                                    val gnufmSession: Session = Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
-                                            Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
-                                    if (love)
-                                        Track.love(args[0], args[1], gnufmSession)
-                                    else
-                                        Track.unlove(args[0], args[1], gnufmSession)
-                                }
-
-                                if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)) {
+                            serviceIdToKeys[R.string.lastfm]?.let {
+                                results[R.string.lastfm] = try {
                                     if (love)
                                         Track.love(args[0], args[1], lastfmSession)
                                     else
                                         Track.unlove(args[0], args[1], lastfmSession)
-                                } else 1
-                            } catch (e: CallException){
+                                } catch (e: CallException) {
+                                    ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                                }
+                            }
+                            serviceIdToKeys[R.string.librefm]?.let {
+                                val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                                results[R.string.librefm] = try {
+                                    if (love)
+                                        Track.love(args[0], args[1], librefmSession)
+                                    else
+                                        Track.unlove(args[0], args[1], librefmSession)
+                                } catch (e: CallException) {
+                                    ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                                }
+                            }
+                            serviceIdToKeys[R.string.gnufm]?.let {
+                                val gnufmSession: Session = Session.createCustomRootSession(
+                                        prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                                results[R.string.gnufm] = try {
+                                    if (love)
+                                        Track.love(args[0], args[1], gnufmSession)
+                                    else
+                                        Track.unlove(args[0], args[1], gnufmSession)
+                                } catch (e: CallException) {
+                                    ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                                }
+                            }
+                            if (results.values.any { !it.isSuccessful }) {
                                 val entry = PendingLove()
                                 entry.artist = args[0]
                                 entry.track = args[1]
                                 entry.shouldLove = love
-                                dao.insert(entry)
-                                PendingScrJob.checkAndSchedule(context)
-                                1
+                                results.forEach { (id, result) ->
+                                    if (!result.isSuccessful && result.errorCode != 7)
+                                        entry.state = entry.state or (1 shl Stuff.SERVICE_BIT_POS[id]!!)
+                                }
+                                if (entry.state != 0) {
+                                    dao.insert(entry)
+                                    PendingScrJob.checkAndSchedule(context)
+                                    submittedAll = false
+                                }
                             }
                         }
+                        callback?.invoke(submittedAll)
                     }
                     // args[2] = limit
                     Stuff.GET_SIMILAR -> return Track.getSimilar(args[0], args[1], Stuff.LAST_KEY, args[2].toInt())
                     Stuff.DELETE -> {
+                        val serviceIdToKeys = getServiceIdToKeys(true)
                         val unscrobbler = LastfmUnscrobbler(context)
                         val success = unscrobbler.checkCsrf(lastfmUsername!!) &&
-                                unscrobbler.unscrobble(args[0],args[2],args[3].toLong())
+                                unscrobbler.unscrobble(args[0],args[1],args[2].toLong())
                         callback!!.invoke(success)
+
+                        serviceIdToKeys[R.string.librefm]?.let {
+                            val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                            Library.removeScrobble(args[0],args[1],args[2].toLong()/1000, librefmSession)
+                        }
+
+                        serviceIdToKeys[R.string.gnufm]?.let {
+                            val gnufmSession: Session = Session.createCustomRootSession(
+                                    prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                            Library.removeScrobble(args[0],args[1],args[2].toLong()/1000, gnufmSession)
+                        }
                     }
                     Stuff.GET_DRAWER_INFO -> {
                         val profile = User.getInfo(lastfmSession)
@@ -164,7 +211,7 @@ class LFMRequester(var command: String, vararg args: String) {
                         val actPref = context.getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
                         actPref.edit()
                                 .putInt(Stuff.PREF_ACTIVITY_NUM_SCROBBLES, recents?.totalPages ?: 0)
-                                .putString(Stuff.PREF_ACTIVITY_PROFILE_PIC, profile?.getImageURL(ImageSize.EXTRALARGE) ?: "")
+                                .putString(Stuff.PREF_ACTIVITY_PROFILE_PIC, profile?.getWebpImageURL(ImageSize.EXTRALARGE) ?: "")
                                 .apply()
 
                         val intent = Intent(NLService.iDRAWER_UPDATE)
@@ -304,7 +351,7 @@ class LFMRequester(var command: String, vararg args: String) {
                     }
 
                     Stuff.NOW_PLAYING, Stuff.SCROBBLE -> {
-                        val scrobbleResults = mutableMapOf<String, ScrobbleResult>()
+                        val scrobbleResults = mutableMapOf<@StringRes Int, ScrobbleResult>()
 
                         //for scrobble: command = tag, args[0] = artist, args[1] = album, args[2] = title, args[3] = albumArtist, args[4] = time, args[5] = duration, args[6] = hash
                         val scrobbleData = ScrobbleData()
@@ -314,21 +361,41 @@ class LFMRequester(var command: String, vararg args: String) {
                         scrobbleData.albumArtist = args[3]
                         scrobbleData.timestamp = (args[4].toLong()/1000).toInt() // in secs
                         scrobbleData.duration = (args[5].toLong()/1000).toInt() // in secs
+                        val hash = args[6].toInt()
 
                         if (scrobbleData.duration < 30)
                             scrobbleData.duration = -1 //default
+                        val serviceIdToKeys by lazy { getServiceIdToKeys() }
+
+                        fun getScrobbleResult(scrobbleData: ScrobbleData, session: Session, nowPlaying: Boolean): ScrobbleResult {
+                            if (Thread.interrupted())
+                                throw InterruptedException()
+                            return try {
+                                if (nowPlaying)
+                                    Track.updateNowPlaying(scrobbleData, session)
+                                else
+                                    Track.scrobble(scrobbleData, session)
+                            } catch (e: CallException) {
+                                if (e.cause is InterruptedIOException)
+                                    throw e.cause as InterruptedIOException
+                                ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
+                            }
+                        }
 
                         when(command) {
                             Stuff.NOW_PLAYING -> {
                                 var track: Track? = null
                                 var correctedArtist: String? = null
-                                val hash = args[6].toInt()
+                                if (Thread.interrupted())
+                                    throw InterruptedException()
 
-                                if (NLService.isOnline) {
+                                if (Main.isOnline) {
                                     try {
                                         track = Track.getInfo(args[0], args[2], null, lastfmUsername, null, Stuff.LAST_KEY)
                                         //works even if the username is wrong
-                                        } catch (e: Exception) { }
+                                        } catch (e: CallException) { }
+                                    if (Thread.interrupted())
+                                        throw InterruptedException()
                                     if (track != null && args[1] == "") {
                                         scrobbleData.artist = track.artist
                                         if (track.album != null)
@@ -361,7 +428,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                     scrobbleData.track = edit.track
                                     try {
                                         track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, lastfmUsername, null, Stuff.LAST_KEY)
-                                    } catch (e: Exception) { }
+                                    } catch (e: CallException) { }
                                 }
                                 if (edit != null || track!= null) {
                                     val i = Intent(NLService.iMETA_UPDATE)
@@ -376,35 +443,36 @@ class LFMRequester(var command: String, vararg args: String) {
                                     }
                                     context.sendBroadcast(i)
                                 }
-                                if (NLService.isOnline){
+                                if (Main.isOnline){
                                     if (correctedArtist != null || edit != null) {
                                         if (prefs.getBoolean(Stuff.PREF_NOW_PLAYING, true)) {
-                                            if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
-                                                scrobbleResults[context.getString(R.string.lastfm)] = Track.updateNowPlaying(scrobbleData, lastfmSession)
-
-                                            val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
-                                            if (!librefmSessKey.isNullOrBlank()) {
+                                            serviceIdToKeys[R.string.lastfm]?.let {
+                                                scrobbleResults[R.string.lastfm] = getScrobbleResult(scrobbleData, lastfmSession!!, true)
+                                            }
+                                            serviceIdToKeys[R.string.librefm]?.let {
                                                 val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
-                                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
-                                                scrobbleResults[context.getString(R.string.librefm)] = Track.updateNowPlaying(scrobbleData, librefmSession)
+                                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                                                scrobbleResults[R.string.librefm] = getScrobbleResult(scrobbleData, librefmSession, true)
                                             }
 
-                                            val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
-                                            if (!gnufmSessKey.isNullOrBlank()) {
-                                                val gnufmSession: Session = Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
-                                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
-                                                scrobbleResults[context.getString(R.string.pref_gnufm)] = Track.updateNowPlaying(scrobbleData, gnufmSession)
+                                            serviceIdToKeys[R.string.gnufm]?.let {
+                                                val gnufmSession: Session = Session.createCustomRootSession(
+                                                        prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                                                scrobbleResults[R.string.gnufm] = getScrobbleResult(scrobbleData, gnufmSession, true)
                                             }
 
-                                            if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
-                                                scrobbleResults[context.getString(R.string.listenbrainz)] =
-                                                        ListenBrainz(prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null))
+                                            serviceIdToKeys[R.string.listenbrainz]?.let {
+                                                scrobbleResults[R.string.listenbrainz] =
+                                                        ListenBrainz(it)
                                                                 .updateNowPlaying(scrobbleData)
-                                            if (prefs.getString(Stuff.PREF_LB_CUSTOM_USERNAME, null) != null)
-                                                scrobbleResults[context.getString(R.string.custom_listenbrainz)] =
-                                                        ListenBrainz(prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null))
+                                            }
+                                            serviceIdToKeys[R.string.custom_listenbrainz]?.let {
+                                                scrobbleResults[R.string.custom_listenbrainz] =
+                                                        ListenBrainz(it)
                                                                 .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
                                                                 .updateNowPlaying(scrobbleData)
+                                            }
                                         }
                                     } else {
                                         //no such artist
@@ -420,45 +488,40 @@ class LFMRequester(var command: String, vararg args: String) {
                                 }
                             }
                             Stuff.SCROBBLE -> {
-                                var couldntConnect = false
-                                if (NLService.isOnline) {
-                                    try {
-                                        if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false))
-                                            scrobbleResults[context.getString(R.string.lastfm)] = Track.scrobble(scrobbleData, lastfmSession)
-
-                                        val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
-                                        if (!librefmSessKey.isNullOrBlank()) {
-                                            val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
-                                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
-                                            scrobbleResults[context.getString(R.string.librefm)] = Track.scrobble(scrobbleData, librefmSession)
-                                        }
-
-                                        val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
-                                        if (!gnufmSessKey.isNullOrBlank()) {
-                                            val gnufmSession: Session = Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
-                                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
-                                            scrobbleResults[context.getString(R.string.pref_gnufm)] = Track.scrobble(scrobbleData, gnufmSession)
-                                        }
-
-                                        Stuff.log("scrobbleResults:$scrobbleResults")
-
-                                        if (prefs.getString(Stuff.PREF_LISTENBRAINZ_USERNAME, null) != null)
-                                            scrobbleResults[context.getString(R.string.listenbrainz)] =
-                                                    ListenBrainz(prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null))
-                                                    .scrobble(scrobbleData)
-
-                                        if (prefs.getString(Stuff.PREF_LB_CUSTOM_USERNAME, null) != null)
-                                            scrobbleResults[context.getString(R.string.custom_listenbrainz)] =
-                                                    ListenBrainz(prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null))
-                                                    .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
-                                                    .scrobble(scrobbleData)
-
-                                    } catch (e: CallException){
-                                        Stuff.log("CallException: $e")
-                                        couldntConnect = true
+                                if (Main.isOnline) {
+                                    serviceIdToKeys[R.string.lastfm]?.let {
+                                        scrobbleResults[R.string.lastfm] = getScrobbleResult(scrobbleData, lastfmSession!!, false)
                                     }
+
+                                    serviceIdToKeys[R.string.librefm]?.let {
+                                        val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                                Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                                        scrobbleResults[R.string.librefm] = getScrobbleResult(scrobbleData, librefmSession, false)
+                                    }
+
+                                    serviceIdToKeys[R.string.gnufm]?.let {
+                                        val gnufmSession: Session = Session.createCustomRootSession(
+                                                prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                                                Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                                        scrobbleResults[R.string.gnufm] = getScrobbleResult(scrobbleData, gnufmSession, false)
+                                    }
+
+                                    serviceIdToKeys[R.string.listenbrainz]?.let {
+                                        scrobbleResults[R.string.listenbrainz] =
+                                                ListenBrainz(it)
+                                                        .scrobble(scrobbleData)
+                                    }
+
+                                    serviceIdToKeys[R.string.custom_listenbrainz]?.let {
+                                        scrobbleResults[R.string.custom_listenbrainz] =
+                                                ListenBrainz(it)
+                                                        .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
+                                                        .scrobble(scrobbleData)
+                                    }
+
                                 }
-                                if (couldntConnect || !NLService.isOnline){
+                                if (!Main.isOnline ||
+                                        scrobbleResults.values.any { !it.isSuccessful } ){
                                     val dao = PendingScrobblesDb.getDb(context).getScrobblesDao()
                                     val entry = PendingScrobble()
                                     entry.artist = scrobbleData.artist
@@ -468,25 +531,38 @@ class LFMRequester(var command: String, vararg args: String) {
                                         entry.albumArtist = scrobbleData.albumArtist
                                     entry.timestamp = args[4].toLong()
                                     entry.duration = args[5].toLong()
+
+                                    if (!Main.isOnline)
+                                        serviceIdToKeys.keys.forEach { key ->
+                                            entry.state = entry.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
+                                        }
+                                    else
+                                        scrobbleResults.forEach { (key, result) ->
+                                            if (!result.isSuccessful) {
+                                                entry.state = entry.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
+                                            }
+                                        }
+                                    if (scrobbleResults.isNotEmpty())
+                                        entry.autoCorrected = 1
                                     dao.insert(entry)
                                     PendingScrJob.checkAndSchedule(context)
                                 }
                             }
                         }
                         try {
-                            val hash = args[0].hashCode() + args[2].hashCode()
-
-                            var failedText = ""
-                            scrobbleResults.keys.forEach { key ->
-                                if (scrobbleResults[key]?.isSuccessful == false) {
+                            val failedTextLines = mutableListOf<String>()
+                            scrobbleResults.forEach { (key, result) ->
+                                if (!result.isSuccessful) {
                                     val errMsg = scrobbleResults[key]?.errorMessage
                                             ?: context.getString(R.string.network_error)
-                                    failedText += "$key: $errMsg\n"
-                                } else if (scrobbleResults[key]?.isSuccessful == true && scrobbleResults[key]?.isIgnored == true) {
-                                    failedText += key + ": " + context.getString(R.string.scrobble_ignored, args[0]) + "\n"
+                                    failedTextLines += "<b>" + context.getString(key) + ":</b> $errMsg"
+                                } else if (result.isSuccessful && result.isIgnored) {
+                                    failedTextLines += "<b>" + context.getString(key) + ":</b> " + context.getString(R.string.scrobble_ignored, args[0])
                                 }
                             }
-                            if (failedText != ""){
+                            if (failedTextLines.isNotEmpty()){
+                                val failedText = failedTextLines.joinToString("<br>\n")
+                                Stuff.log("failedText= $failedText")
                                 val i = Intent(NLService.iOTHER_ERR)
                                 i.putExtra(NLService.B_ERR_MSG, failedText)
                                 i.putExtra(NLService.B_HASH, hash)
@@ -552,9 +628,11 @@ class LFMRequester(var command: String, vararg args: String) {
             //ignore
         } catch(e: InterruptedIOException){
             //ignore
+        } catch(e: InterruptedException){
+            //ignore
         } catch (e: Exception) {
             e.printStackTrace()
-            return "err: "+ e.cause
+            return "err: "+ e.message
         }
 
         // adb shell am start -W -a android.intent.action.VIEW -d "pscrobble://auth?token=hohoho" com.arn.scrobble
@@ -576,14 +654,20 @@ class LFMRequester(var command: String, vararg args: String) {
         return this
     }
 
-    fun asAsyncTask(context: Context, mld: MutableLiveData<*>? = null): AsyncTask<Unit, Unit, Any?>? =
-            MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+    fun asAsyncTask(context: Context, mld: MutableLiveData<*>? = null): MyAsyncTask {
+        val at = MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?)
+        at.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+        return at
+    }
 
-    fun asSerialAsyncTask(context: Context, mld: MutableLiveData<*>? = null): AsyncTask<Unit, Unit, Any?>? =
-            MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?).execute()
+    fun asSerialAsyncTask(context: Context, mld: MutableLiveData<*>? = null): MyAsyncTask {
+        val at = MyAsyncTask(this, context, mld as MutableLiveData<in Any?>?)
+        at.execute()
+        return at
+    }
 
     class MyAsyncTask(private val requester: LFMRequester, context: Context, private val mld: MutableLiveData<in Any?>? = null): AsyncTask<Unit, Unit, Any?>() {
-        private var contextWr = WeakReference(context)
+        private var contextWr = WeakReference(context.applicationContext)
 
         override fun doInBackground(vararg p0: Unit?): Any? = requester.inBackground(contextWr.get())
 
@@ -604,6 +688,7 @@ class LFMRequester(var command: String, vararg args: String) {
         private fun slurp(urlConnection: HttpURLConnection, bufferSize: Int): String {
             val buffer = CharArray(bufferSize)
             val out = StringBuilder()
+            var res = ""
             try {
                 val ir = if ("gzip" == urlConnection.contentEncoding) {
                     InputStreamReader(GZIPInputStream(urlConnection.inputStream), "UTF-8")
@@ -618,17 +703,13 @@ class LFMRequester(var command: String, vararg args: String) {
                         out.append(buffer, 0, rsz)
                     }
                 }
+                res = out.toString()
             } catch (ex: InterruptedException){
-                return ""
             } catch (ex: InterruptedIOException){
-                return ""
-            }
-            catch (ex: IOException) {
+            } catch (ex: IOException) {
                 ex.printStackTrace()
-                return ""
             }
-            urlConnection.inputStream.close()
-            return out.toString()
+            return res
         }
 
 
@@ -637,7 +718,7 @@ class LFMRequester(var command: String, vararg args: String) {
             if (valid || validArtistsCache[artist] == true)
                 return artist
             else if (validArtistsCache[artist] == null) {
-                var artistInfo: Artist? = null
+                var artistInfo: Artist?
                 var errCode = Caller.getInstance().lastError?.errorCode
                 //6 = artist not found on lastfm, 7 = invalid resource specified on librefm
                 if (errCode != null && errCode != 6 && errCode != 7)

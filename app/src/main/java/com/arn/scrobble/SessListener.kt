@@ -7,7 +7,6 @@ import android.media.session.MediaController.Callback
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -30,6 +29,7 @@ class SessListener constructor(private val pref: SharedPreferences,
     private var autoDetectApps = pref.getBoolean(Stuff.PREF_AUTO_DETECT, true)
     private var scrobblingEnabled = pref.getBoolean(Stuff.PREF_MASTER, true)
     private var loggedIn = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null) != null
+    lateinit var browserPackages: MutableList<String>
 
     init {
         pref.registerOnSharedPreferenceChangeListener(this)
@@ -46,7 +46,9 @@ class SessListener constructor(private val pref: SharedPreferences,
                     tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                     if (!controllersMap.containsKey(controller.sessionToken)) {
                         Stuff.log("onActiveSessionsChanged [" + controllers.size + "] : " + controller.packageName)
-                        val cb = MyCallback(whiteList, blackList, handler, controller.packageName,
+                        val ignoreArtistMeta =  Stuff.IGNORE_ARTIST_META.contains(controller.packageName) ||
+                                browserPackages.contains(controller.packageName)
+                        val cb = MyCallback(whiteList, blackList, handler, controller.packageName, ignoreArtistMeta,
                                 controller.sessionToken.toString() + ", " + hashCode())
                         controller.registerCallback(cb)
                         val ps = controller.playbackState
@@ -68,7 +70,7 @@ class SessListener constructor(private val pref: SharedPreferences,
         removeSessions(tokens)
     }
 
-    fun removeSessions(tokens: MutableSet<*>? = null, packageNames: Set<String>? = null) {
+    fun removeSessions(tokens: MutableSet<MediaSession.Token>? = null, packageNames: Set<String>? = null) {
         val it = controllersMap.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
@@ -85,14 +87,16 @@ class SessListener constructor(private val pref: SharedPreferences,
         numSessions = controllersMap.size
     }
 
-    class MyCallback(private val whiteList: MutableSet<String>, private val blackList: MutableSet<String>,
+    class MyCallback(private val whiteList: MutableSet<String>,
+                     private val blackList: MutableSet<String>,
                      private val handler: NLService.ScrobbleHandler,
-                     private val packageName: String, private val who: String) : Callback() {
+                     private val packageName: String,
+                     private val isIgnoreArtistMeta: Boolean,
+                     private val who: String) : Callback() {
         var currHash = 0
         var lastScrobblePos = 1L
         var lastScrobbleTime = 0L
         var lastState = -1
-        val isIgnoreArtistMeta = Stuff.IGNORE_ARTIST_META.contains(packageName)
 
         var artist = ""
         var album = ""
@@ -104,9 +108,9 @@ class SessListener constructor(private val pref: SharedPreferences,
             lastSessEventTime = System.currentTimeMillis()
         }
 
-        private val stateHandler = object : Handler() {
-            override fun handleMessage(msg: Message?) {
-                val state: Int = msg?.arg1!!
+        private val stateHandler = object : Handler(handler.looper) {
+            override fun handleMessage(msg: Message) {
+                val state: Int = msg.arg1
                 val pos: Long = msg.arg2.toLong()
 
                 Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos duration=$duration who=$who")
@@ -191,10 +195,15 @@ class SessListener constructor(private val pref: SharedPreferences,
                 artist = artist.replace(";", "; ")
             else if (packageName == Stuff.PACKAGE_PANDORA)
                 artist = artist.replace("Ofln - ", "")
+            else if (packageName.startsWith(Stuff.PACKAGE_SONOS_PREFIX) &&
+                    metadata?.getString(MediaMetadata.METADATA_KEY_COMPOSER) != null) {
+                artist = metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+                albumArtist = ""
+            }
 
             val sameAsOld = (artist == this.artist && title == this.title && album == this.album)
 
-            Stuff.log("onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld,"+
+            Stuff.log("onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, "+
                     "lastState=$lastState, package=$packageName who=$who")
             if (!sameAsOld) {
                 this.artist = artist

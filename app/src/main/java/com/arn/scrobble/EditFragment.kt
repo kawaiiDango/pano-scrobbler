@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.AsyncTask
 import android.os.Bundle
 import android.text.InputType
 import android.transition.Fade
@@ -12,9 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.arn.scrobble.pending.db.Edit
 import com.arn.scrobble.pending.db.PendingScrobblesDb
+import de.umass.lastfm.CallException
 import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
+import de.umass.lastfm.scrobble.ScrobbleResult
 import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_login.view.*
 
@@ -98,6 +101,8 @@ class EditFragment: LoginFragment() {
             var validArtist:String? = null
             var validTrack:Track? = null
 
+            Stuff.initCaller(context!!)
+
             if (!login_force.isChecked) {
                 if (album.isBlank() && origAlbum.isBlank())
                     validTrack =
@@ -129,15 +134,51 @@ class EditFragment: LoginFragment() {
                 val result = Track.scrobble(scrobbleData, lastfmSession)
 
                 if (result?.isSuccessful == true && !result.isIgnored) {
-                    if(!standalone) {
-                        val unscrobbler = LastfmUnscrobbler(context!!)
-                        val csrfExists = unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
-                        if (csrfExists)
-                            unscrobbler.unscrobble(origArtist, origTrack, timeMillis)
+                    AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                        if (!standalone) {
+                            LFMRequester(Stuff.DELETE, origArtist, origTrack, timeMillis.toString())
+                                    .addCallback { succ ->
+                                        if (succ) {
+                                            //editing just the album is a noop, scrobble again
+                                            if (track == origTrack && artist == origArtist)
+                                                Track.scrobble(scrobbleData, lastfmSession)
+                                        }
+                                    }
+                                    .inBackground(context!!) // in this thread
+                        }
 
-                        //editing just the album is a noop, scrobble again
-                        if (track == origTrack && artist == origArtist)
-                            Track.scrobble(scrobbleData, lastfmSession)
+                        //scrobble everywhere else
+                        fun getScrobbleResult(scrobbleData: ScrobbleData, session: Session): ScrobbleResult {
+                            return try {
+                                Track.scrobble(scrobbleData, session)
+                            } catch (e: CallException) {
+                                ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
+                            }
+                        }
+
+                        pref.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)?.let {
+                            val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
+                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                            getScrobbleResult(scrobbleData, librefmSession)
+                        }
+
+                        pref.getString(Stuff.PREF_GNUFM_SESS_KEY, null)?.let {
+                            val gnufmSession: Session = Session.createCustomRootSession(
+                                    pref.getString(Stuff.PREF_GNUFM_ROOT, null) + "2.0/",
+                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
+                            getScrobbleResult(scrobbleData, gnufmSession)
+                        }
+
+                        pref.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null)?.let {
+                            ListenBrainz(it)
+                                    .scrobble(scrobbleData)
+                        }
+
+                        pref.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.let {
+                            ListenBrainz(it)
+                                    .setApiRoot(pref.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
+                                    .scrobble(scrobbleData)
+                        }
                     }
                     if(!(track == origTrack && artist == origArtist && album == origAlbum)) {
                         val dao = PendingScrobblesDb.getDb(context!!).getEditsDao()

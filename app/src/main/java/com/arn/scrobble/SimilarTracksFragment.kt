@@ -107,7 +107,7 @@ class SimilarTracksFragment : Fragment(), ItemClickListener, FocusChangeListener
 
         viewModel.trackInfo.observe(viewLifecycleOwner, Observer {
             it ?: return@Observer
-            val img = it.second.getImageURL(ImageSize.LARGE)
+            val img = it.second.getWebpImageURL(ImageSize.EXTRALARGE)
             if(img != null)
                 adapter.setImg(it.first, img)
         })
@@ -140,7 +140,7 @@ class SimilarTracksFragment : Fragment(), ItemClickListener, FocusChangeListener
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
-        if (userVisibleHint)
+        if (isVisible)
             Stuff.setAppBarHeight(activity!!, adapter.itemSizeDp*3)
         val glm = similar_grid?.layoutManager as GridLayoutManager? ?: return
         calcGridSize(glm)

@@ -6,17 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.content_edits.view.*
+import kotlinx.android.synthetic.main.content_simple_list.view.*
 
 /**
  * Created by arn on 21/09/2017.
  */
 class EditsFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.content_edits, container, false)
+        val view = inflater.inflate(R.layout.content_simple_list, container, false)
         val adapter = EditsAdapter(context!!)
-        view.edits_list.layoutManager = LinearLayoutManager(context!!)
-        view.edits_list.adapter = adapter
+        view.simple_list.layoutManager = LinearLayoutManager(context!!)
+        view.simple_list.adapter = adapter
         adapter.loadAll()
         if (!view.isInTouchMode)
             view.requestFocus()

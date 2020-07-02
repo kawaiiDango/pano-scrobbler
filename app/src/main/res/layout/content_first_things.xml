@@ -3,7 +3,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:layout_marginLeft="20dp"
+              android:layout_marginHorizontal="15dp"
               android:gravity="center_vertical"
               android:orientation="vertical">
 
@@ -15,9 +15,8 @@
         tools:visibility="visible">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
-            android:layout_weight="6"
             android:gravity="center_vertical|center"
             android:text="0."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
@@ -25,7 +24,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2"
             android:orientation="vertical">
 
             <TextView
@@ -50,9 +48,8 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
-            android:layout_weight="6"
             android:gravity="center_vertical|center"
             android:text="1."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
@@ -60,7 +57,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2"
             android:orientation="vertical">
 
             <TextView
@@ -89,22 +85,19 @@
 
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
-            android:layout_weight="6"
             android:gravity="center_vertical|center"
             android:text="2."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_weight="2"
                 android:gravity="center_vertical"
                 android:text="@string/authenticate_with_lastfm"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
@@ -124,9 +117,8 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
-            android:layout_weight="6"
             android:gravity="center_vertical|center"
             android:text="3."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
@@ -134,7 +126,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:layout_weight="2"
             android:gravity="center_vertical"
             android:text="@string/choose_apps"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
@@ -144,6 +135,7 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
+        android:importantForAccessibility="no"
         android:alpha="0"
         android:ems="1"
         android:singleLine="true"

@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.Color
@@ -11,15 +12,15 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
-import android.view.HapticFeedbackConstants
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageButton
-import android.widget.PopupMenu
+import androidx.appcompat.view.SupportMenuInflater
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -54,9 +55,9 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         loadRecents(1)
         val ps = activity?.coordinator?.paddingStart
         if (ps != null && ps > 0)
-            LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(activity!!.applicationContext)
+            LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(context!!)
     }
-    private var refreshHandler = Handler()
+    private val refreshHandler by lazy { Handler(Looper.getMainLooper()) }
     private lateinit var viewModel: TracksVM
     private lateinit var animSet: AnimatorSet
     private var smoothScroller: LinearSmoothScroller? = null
@@ -81,19 +82,30 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         return inflater.inflate(R.layout.content_recents, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        if (userVisibleHint)
-            postInit(view)
+    override fun onResume() {
+        super.onResume()
+        if (recents_list?.adapter == null)
+            postInit()
+        else {
+            val holder = recents_list.findViewHolderForAdapterPosition(adapter.selectedPos)
+            (holder as RecentsAdapter.VHTrack?)?.setSelected(true)
+        }
     }
 
-    private fun postInit(view:View) {
+    override fun onPause() {
+        if (isShowingLoves)
+            try {
+                adapter.removeHandlerCallbacks()
+            }catch (e: Exception){}
+        super.onPause()
+    }
+
+    private fun postInit() {
 //        Stuff.setAppBarHeight(activity!!)
-        val activity = activity
-        if (activity != null && isVisible/* && isResumed*/) {
-            activity.ctl.setContentScrimColor(lastColorVibrantDark)
-            activity.toolbar.title = " "
-            Stuff.setAppBarHeight(activity)
+        val activity = activity as Main? ?: return
+        activity.ctl.setContentScrimColor(lastColorVibrantDark)
+        activity.toolbar.title = null
+        Stuff.setAppBarHeight(activity)
 
             /*
             if (Stuff.isDark(RecentsAdapter.lastColorDomPrimary))
@@ -101,12 +113,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             else
                 activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorMutedDark)
             */
-        }
 
         val llm = LinearLayoutManager(context!!)
         recents_list.layoutManager = llm
 
-        adapter = RecentsAdapter(view)
+        adapter = RecentsAdapter(view!!)
 
         adapter.isShowingLoves = isShowingLoves
         adapter.setStatusHeader()
@@ -147,7 +158,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
 
         appPrefs = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
 
-        val sparkline = activity!!.sparkline
+        val sparkline = activity.sparkline
         if (sparkline.adapter == null) { // not inited
             sparkline.sparkAnimator = MorphSparkAnimator()
             sparkline.adapter = SparkLineAdapter()
@@ -161,7 +172,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
 
                 ld.observe(viewLifecycleOwner, Observer {
                     it ?: return@Observer
-                    adapter.populate(it, it.page, !firstLoadNw)
+                    adapter.populate(it, it.page)
                     if (viewModel.page != it.page && Main.isTV)
                         loadRecents(1, true)
                     loadMoreListener.currentPage = it.page
@@ -171,9 +182,9 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                     if (firstLoadCache) {
                         firstLoadCache = false
                         loadRecents(1)
-                        toggleGraphDetails(activity!!.sparkline, true)
+                        toggleGraphDetails(activity.sparkline, true)
                     } else if (it.page == 1 && !isShowingLoves){
-                        viewModel.loadPending(2)
+                        viewModel.loadPending(2, false)
                         refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
                     }
                 })
@@ -188,10 +199,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 adapter.setImg(it.first, it.second.imageUrlsMap)
             })
         else
-            viewModel.loadPending(2)
+            viewModel.loadPending(2, !activity.pendingSubmitAttempted)
                     .observe(viewLifecycleOwner, Observer {
                         it ?: return@Observer
-                        adapter.setPendingScrobbles(activity!!.supportFragmentManager, it.first, it.second)
+                        activity.pendingSubmitAttempted = true
+                        adapter.setPending(activity.supportFragmentManager, it)
                     })
 
         recents_list.addOnScrollListener(loadMoreListener)
@@ -204,8 +216,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             toggleGraphDetails(it as SparkView)
         }
 
-        activity!!.hero_share.setOnClickListener{
-            val track = activity?.hero_img?.tag
+        activity.hero_share.setOnClickListener{
+            val track = activity.hero_img?.tag
             if (track is Track) {
 
                 var shareText = getString(R.string.share_text,
@@ -220,8 +232,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             }
         }
 
-        activity!!.hero_info.setOnClickListener { v:View ->
-            val t = activity?.hero_img?.tag
+        activity.hero_info.setOnClickListener { v:View ->
+            val t = activity.hero_img?.tag
             if (t is Track) {
                 if (t.url != null)
                     Stuff.openInBrowser(t.url, activity, null)
@@ -229,14 +241,14 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                     Stuff.toast(context!!, getString(R.string.no_track_url))
             }
         }
-        activity!!.hero_play.setOnClickListener { v:View ->
-            val t =  activity?.hero_img?.tag
+        activity.hero_play.setOnClickListener { v:View ->
+            val t =  activity.hero_img?.tag
             if (t is Track)
                 Stuff.launchSearchIntent(t.artist, t.name, context!!)
         }
-        activity!!.hero_similar.setOnClickListener { v:View ->
+        activity.hero_similar.setOnClickListener { v:View ->
             v.isEnabled = false
-            val t = activity?.hero_img?.tag
+            val t = activity.hero_img?.tag
             if (t is Track) {
                 val simFragment = SimilarTracksFragment()
                 val b = Bundle()
@@ -244,8 +256,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 b.putString("track", t.name)
                 simFragment.arguments = b
 
-                activity!!.supportFragmentManager.beginTransaction()
-                        .hide(activity!!.supportFragmentManager.findFragmentByTag(Stuff.TAG_PAGER)!!)
+                activity.supportFragmentManager.beginTransaction()
+                        .hide(activity.supportFragmentManager.findFragmentByTag(Stuff.TAG_PAGER)!!)
                         .add(R.id.frame, simFragment, Stuff.TAG_SIMILAR)
                         .addToBackStack(null)
                         .commit()
@@ -327,16 +339,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         return true
     }
 
-    override fun setUserVisibleHint(visible: Boolean) {
-        super.setUserVisibleHint(visible)
-        if (visible && isResumed && recents_list?.adapter == null)
-            postInit(view!!)
-        else if (visible && isResumed) {
-            val holder = recents_list.findViewHolderForAdapterPosition(adapter.selectedPos)
-            (holder as RecentsAdapter.VHTrack?)?.setSelected(true)
-        }
-    }
-
     override fun onStart() {
         super.onStart()
         if(!isShowingLoves)
@@ -345,11 +347,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
 
     override fun onStop() {
         refreshHandler.removeCallbacks(timedRefresh)
-//        activity!!.hero_img?.tag = null
-        if (userVisibleHint && isShowingLoves)
-            try {
-                adapter.removeHandlerCallbacks()
-            }catch (e: Exception){}
         try {
             context?.unregisterReceiver(editReceiver)
         } catch (e: IllegalArgumentException) {}
@@ -359,7 +356,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (userVisibleHint)
+        if (isVisible)
             Stuff.setAppBarHeight(activity!!)
     }
 
@@ -378,15 +375,15 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         //TODO: check
         hero.tag = track
         val imgUrl = if(fullSize)
-            track.getImageURL(ImageSize.EXTRALARGE)
+            track.getWebpImageURL(ImageSize.EXTRALARGE)
         else
-            track.getImageURL(ImageSize.MEDIUM)
+            track.getWebpImageURL(ImageSize.LARGE)
 
         if (!fullSize && oldTrack?.name != track.name){
             viewModel.loadHero(track.url)
         }
 
-        if (imgUrl != null && imgUrl == oldTrack?.getImageURL(ImageSize.MEDIUM))
+        if (imgUrl != null && imgUrl == oldTrack?.getWebpImageURL(ImageSize.LARGE))
             return
 
         //load img, animate colors
@@ -394,8 +391,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             val req = Picasso.get()
                     .load(imgUrl)
                     .error(R.drawable.vd_wave)
-                    .fit()
-                    .centerCrop()
 
             if (fullSize)
                 req.placeholder(hero.drawable)
@@ -505,42 +500,51 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
     }
 
     override fun onItemClick (view: View, position: Int) {
-        val track = adapter.getTrack(position) ?: return
-        when {
-            view.id == R.id.recents_menu -> openPopupMenu((view.parent as ViewGroup).recents_date, track)
-            view.id == R.id.recents_img_overlay -> {
-                loveToggle(view, track)
+        val item = adapter.getItem(position) ?: return
+        if (item !is Track) {
+            if (view.id == R.id.recents_menu)
+                PendingMenu.openPendingPopupMenu((view.parent as ViewGroup).date_frame, item,
+                        {
+                            viewModel.loadPending(2, false)
+                        }
+                )
+            return
+        }
+        when (view.id) {
+            R.id.recents_menu -> openTrackPopupMenu((view.parent as ViewGroup).date_frame, item)
+            R.id.recents_img_overlay -> {
+                loveToggle(view, item)
                 view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             }
             else -> {
                 val lastClickedPos = adapter.selectedPos
-                if (lastClickedPos != position) {
-                    adapter.selectedPos = position
-                    val lastHolder = recents_list.findViewHolderForAdapterPosition(lastClickedPos)
-                    val curHolder = recents_list.findViewHolderForAdapterPosition(position)
-                    if (lastHolder is RecentsAdapter.VHTrack? && curHolder is RecentsAdapter.VHTrack){
-                        lastHolder?.setSelected(false, track)
-                        curHolder.setSelected(true, track)
-                    }
+                adapter.selectedPos = position
+                val lastHolder = recents_list.findViewHolderForAdapterPosition(lastClickedPos)
+                val curHolder = recents_list.findViewHolderForAdapterPosition(position)
+                if (lastHolder is RecentsAdapter.VHTrack? && curHolder is RecentsAdapter.VHTrack) {
+                    if (lastClickedPos != position)
+                        lastHolder?.setSelected(false, item)
+                    curHolder.setSelected(true, item)
+                }
 
-                    val activity = activity!!
-                    if (!activity.app_bar.isExpanded) {
+                val activity = activity!!
+                if (!activity.app_bar.isExpanded) {
 //                  recents_list.smoothScrollToPosition(position) //wont work even witrh smoothscroller
 
-                        if (smoothScroller == null)
-                            smoothScroller = object : LinearSmoothScroller(recents_list.context) {
-                                override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?) =
-                                        super.calculateSpeedPerPixel(displayMetrics) * 3
+                    if (smoothScroller == null)
+                        smoothScroller = object : LinearSmoothScroller(recents_list.context) {
+                            override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?) =
+                                    super.calculateSpeedPerPixel(displayMetrics) * 3
 
-                                override fun getVerticalSnapPreference() = SNAP_TO_START
-                            }
-                        smoothScroller?.targetPosition = position
-                        recents_list.layoutManager?.startSmoothScroll(smoothScroller)
-                    }
+                            override fun getVerticalSnapPreference() = SNAP_TO_START
+                        }
+                    smoothScroller?.targetPosition = position
+                    recents_list.layoutManager?.startSmoothScroll(smoothScroller)
                     activity.app_bar?.setExpanded(true, true)
                 }
+
                 if (!view.isInTouchMode)
-                    openPopupMenu(view.recents_date, track)
+                    openTrackPopupMenu(view.date_frame, item)
             }
         }
     }
@@ -556,24 +560,26 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         }
     }
 
-    private fun openPopupMenu (anchor: View, track: Track) {
-        val popup = PopupMenu(context, anchor)
+    @SuppressLint("RestrictedApi")
+    private fun openTrackPopupMenu (anchor: View, track: Track) {
+        val menuBuilder = MenuBuilder(context)
+        val inflater = SupportMenuInflater(context)
 
-        popup.inflate(R.menu.recents_item_menu)
+        inflater.inflate(R.menu.recents_item_menu, menuBuilder)
         if (!anchor.isInTouchMode)
-            popup.inflate(R.menu.recents_item_tv_menu)
-        val loveMenu = popup.menu.findItem(R.id.menu_love)
+            inflater.inflate(R.menu.recents_item_tv_menu, menuBuilder)
+        val loveMenu = menuBuilder.findItem(R.id.menu_love)
 
-        if (track.isLoved)
+        if (track.isLoved) {
             loveMenu.title = getString(R.string.unlove)
-        loveMenu.icon?.setTint(Color.WHITE)
-
+            loveMenu.icon = ContextCompat.getDrawable(context!!, R.drawable.vd_heart_break_outline)
+        }
         if (track.playedWhen == null)
-            popup.menu.removeItem(R.id.menu_delete)
+            menuBuilder.removeItem(R.id.menu_delete)
 
         if (isShowingLoves){
-            popup.menu.removeItem(R.id.menu_delete)
-            popup.menu.removeItem(R.id.menu_edit)
+            menuBuilder.removeItem(R.id.menu_delete)
+            menuBuilder.removeItem(R.id.menu_edit)
         }
 
         fun csrfTokenExists(): Boolean {
@@ -597,66 +603,61 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 true
             }
         }
-
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_love -> {
-                    loveToggle((anchor.parent as ViewGroup).recents_img_overlay, track)
-                    true
-                }
-                R.id.menu_edit -> {
-                    if (!Main.isOnline)
-                        Stuff.toast(context!!, getString(R.string.unavailable_offline))
-                    else if (csrfTokenExists()){
-                        val b = Bundle()
-                        b.putString(NLService.B_ARTIST, track.artist)
-                        b.putString(NLService.B_ALBUM, track.album)
-                        b.putString(NLService.B_TITLE, track.name)
-
-                        val millis = track.playedWhen?.time
-                        if (millis != null)
-                            b.putLong(NLService.B_TIME, millis)
-
-                        val ef = EditFragment()
-                        ef.arguments = b
-/*
-                        (activity as Main)
-                                .supportFragmentManager!!.beginTransaction()
-                                .replace(R.id.frame, ef)
-                                .addToBackStack(null)
-                                .commit()
-                                */
-                        ef.show(activity!!.supportFragmentManager, null)
+        menuBuilder.setCallback(object : MenuBuilder.Callback {
+            override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
+                when (item.itemId) {
+                    R.id.menu_love -> {
+                        loveToggle((anchor.parent as ViewGroup).recents_img_overlay, track)
                     }
-                    true
-                }
-                R.id.menu_delete -> {
-                    if (!Main.isOnline)
-                        Stuff.toast(context!!, getString(R.string.unavailable_offline))
-                    else if (csrfTokenExists()){
-                        LFMRequester(Stuff.DELETE, track.artist, track.album, track.name,
-                                track.playedWhen.time.toString(), track.duration.toString())
-                                .addCallback { succ ->
-                                    if (succ){
-                                        view?.post {
-                                            adapter.removeTrack(track)
-                                        }
-                                    } else
-                                        Stuff.toast(context, getString(R.string.network_error))
-                                }
-                                .asAsyncTask(context!!)
-                    }
-                    true
-                }
-                R.id.menu_play -> activity!!.hero_play.callOnClick()
-                R.id.menu_info -> activity!!.hero_info.callOnClick()
-                R.id.menu_share -> activity!!.hero_share.callOnClick()
-                R.id.menu_similar -> activity!!.hero_similar.callOnClick()
+                    R.id.menu_edit -> {
+                        if (!Main.isOnline)
+                            Stuff.toast(context!!, getString(R.string.unavailable_offline))
+                        else if (csrfTokenExists()) {
+                            val b = Bundle()
+                            b.putString(NLService.B_ARTIST, track.artist)
+                            b.putString(NLService.B_ALBUM, track.album)
+                            b.putString(NLService.B_TITLE, track.name)
 
-                else -> false
+                            val millis = track.playedWhen?.time
+                            if (millis != null)
+                                b.putLong(NLService.B_TIME, millis)
+
+                            val ef = EditFragment()
+                            ef.arguments = b
+                            ef.show(activity!!.supportFragmentManager, null)
+                        }
+                    }
+                    R.id.menu_delete -> {
+                        if (!Main.isOnline)
+                            Stuff.toast(context!!, getString(R.string.unavailable_offline))
+                        else if (csrfTokenExists()) {
+                            LFMRequester(Stuff.DELETE, track.artist, track.name, track.playedWhen.time.toString())
+                                    .addCallback { succ ->
+                                        if (succ) {
+                                            view?.post {
+                                                adapter.removeTrack(track)
+                                            }
+                                        } else
+                                            Stuff.toast(context, getString(R.string.network_error))
+                                    }
+                                    .asAsyncTask(context!!)
+                        }
+                    }
+                    R.id.menu_play -> activity!!.hero_play.callOnClick()
+                    R.id.menu_info -> activity!!.hero_info.callOnClick()
+                    R.id.menu_share -> activity!!.hero_share.callOnClick()
+                    R.id.menu_similar -> activity!!.hero_similar.callOnClick()
+                    else -> return false
+                }
+                return true
             }
-        }
-        popup.show()
+
+            override fun onMenuModeChange(menu: MenuBuilder) {}
+        })
+
+        val popupMenu = MenuPopupHelper(context!!, menuBuilder, anchor)
+        popupMenu.setForceShowIcon(true)
+        popupMenu.show()
     }
 
     private fun loveToggle(loveIcon:View, track: Track) {
@@ -677,7 +678,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             rotAnimator.setFloatValues(startRot, toRot)
         } else {
             if (loveIcon.background == null)
-                loveIcon.background = context!!.getDrawable(R.drawable.vd_heart_solid)
+                loveIcon.background = ContextCompat.getDrawable(context!!, R.drawable.vd_heart_stroked)
 
             LFMRequester(Stuff.LOVE, track.artist, track.name).asAsyncTask(context!!)
 

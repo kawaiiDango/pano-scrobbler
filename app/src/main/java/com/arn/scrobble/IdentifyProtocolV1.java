@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +65,7 @@ import javax.crypto.spec.SecretKeySpec;
  			for (String key : params.keySet()) {
  				Object value = params.get(key);
  				if (value instanceof String || value instanceof Integer) {
- 					postBufferStream.write(String.format(stringKeyHeader, key, (String)value).getBytes());
+ 					postBufferStream.write(String.format(stringKeyHeader, key, value).getBytes());
  				} else if (value instanceof File){
                     postBufferStream.write(String.format(filePartHeader, key, key).getBytes());
 
@@ -78,6 +79,8 @@ import javax.crypto.spec.SecretKeySpec;
                         fin = new FileInputStream(file);
                         int bytesRead = 0;
                         while(fin.available()>0) {
+                            if (Thread.interrupted())
+                                throw new InterruptedException();
                             bytesRead = fin.read(buffer, 0, buffer.length);
                             postBufferStream.write(buffer, 0, bytesRead);
                         }
@@ -115,7 +118,7 @@ import javax.crypto.spec.SecretKeySpec;
  			out.flush();
  			int response = conn.getResponseCode();
  			if (response == HttpURLConnection.HTTP_OK) {
- 				reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+ 				reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
  				String tmpRes = "";
  				while ((tmpRes = reader.readLine()) != null) {
  					if (tmpRes.length() > 0)
@@ -162,7 +165,7 @@ import javax.crypto.spec.SecretKeySpec;
      	String sigStr = method + "\n" + httpURL + "\n" + accessKey + "\n" + dataType + "\n" + sigVersion + "\n" + timestamp;
      	String signature = encryptByHMACSHA1(sigStr.getBytes(), secretKey.getBytes());
  
-         Map<String, Object> postParams = new HashMap<String, Object>();
+         Map<String, Object> postParams = new HashMap<>();
          postParams.put("access_key", accessKey);
          if (file == null){
              postParams.put("sample_bytes", "0");

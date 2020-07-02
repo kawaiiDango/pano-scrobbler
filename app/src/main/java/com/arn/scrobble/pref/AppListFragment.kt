@@ -103,6 +103,12 @@ class AppListFragment : Fragment() {
                     adapter.add(pkgMap.remove(it)!!.activityInfo.applicationInfo, firstRun)
             }
 
+            val browserApps = Stuff.getBrowsers(pm)
+            browserApps.forEach {
+                if (pkgMap.containsKey(it.activityInfo.applicationInfo.packageName))
+                    adapter.add(pkgMap.remove(it.activityInfo.applicationInfo.packageName)!!.activityInfo.applicationInfo, firstRun)
+            }
+
             excludePackageNames.forEach {
                 pkgMap.remove(it)
             }

@@ -34,7 +34,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:paddingBottom="@dimen/elevation_hero_btn"
                 android:text="@string/fix_it_startup_title"
@@ -45,7 +44,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:layout_weight="1"
                 android:text="@string/fix_it_startup_desc_default"/>
 
             <TextView
@@ -84,9 +82,8 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:layout_weight="1"
                 android:text="@string/fix_it_noti_desc"/>
 
             <TextView
@@ -124,9 +121,8 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:layout_weight="1"
                 android:text="@string/fix_it_battery_desc"/>
 
             <TextView

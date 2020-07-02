@@ -16,8 +16,10 @@ class PendingLove {
     var track: String = ""
     var artist: String = ""
     var shouldLove: Boolean = true
+    var state: Int = 0
+    var state_timestamp: Long = System.currentTimeMillis()
 
     override fun toString(): String {
-        return "PendingLove [track=$track, artist=$artist, shouldLove=$shouldLove]"
+        return "PendingLove [track=$track, artist=$artist, shouldLove=$shouldLove, state=$state, state_timestamp=$state_timestamp]"
     }
 }

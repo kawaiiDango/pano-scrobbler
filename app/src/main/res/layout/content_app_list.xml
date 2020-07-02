@@ -19,6 +19,7 @@
         android:layout_marginEnd="@dimen/fab_done_margin"
         android:layout_marginBottom="@dimen/fab_done_margin"
         android:clickable="true"
+        android:contentDescription="@android:string/ok"
         android:focusable="true"
         app:backgroundTint="@color/colorPrimaryLight"
         app:srcCompat="@drawable/vd_check_simple" />

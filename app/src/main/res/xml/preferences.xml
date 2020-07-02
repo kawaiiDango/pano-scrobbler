@@ -140,7 +140,7 @@
             />
         <Preference
             app:iconSpaceReserved="false"
-            android:title="@string/pref_gnufm"
+            android:title="@string/gnufm"
             android:key="gnufm"
             />
         <Preference
@@ -151,7 +151,7 @@
         <Preference
             app:iconSpaceReserved="false"
             android:title="@string/custom_listenbrainz"
-            android:key="lb_custom"
+            android:key="lb"
             />
         <SwitchPreference
             app:iconSpaceReserved="false"

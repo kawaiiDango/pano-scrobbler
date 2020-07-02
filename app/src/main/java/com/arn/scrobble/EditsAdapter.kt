@@ -3,6 +3,7 @@ package com.arn.scrobble
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +18,9 @@ import kotlinx.android.synthetic.main.list_item_edits.view.*
  */
 class EditsAdapter(context: Context) : RecyclerView.Adapter<EditsAdapter.VHEdits>(), ItemClickListener {
     private val editsList = mutableListOf<Edit>()
-    private val dao = PendingScrobblesDb.getDb(context).getEditsDao()
+    private val dao by lazy { PendingScrobblesDb.getDb(context).getEditsDao() }
     private val emptyText = context.getString(R.string.n_edits, 0)
-    private val handler = Handler()
+    private val handler by lazy { Handler(Looper.getMainLooper()) }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHEdits {
         val inflater = LayoutInflater.from(parent.context)
@@ -32,7 +33,7 @@ class EditsAdapter(context: Context) : RecyclerView.Adapter<EditsAdapter.VHEdits
 
     fun loadAll() {
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
-            val edits = dao.all
+            val edits = dao.all.reversed()
             editsList.addAll(edits)
             handler.post {
                 if (editsList.isEmpty()){

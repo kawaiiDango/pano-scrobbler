@@ -1,5 +1,6 @@
 package androidx.core.media.app
 
+import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
@@ -12,32 +13,34 @@ import androidx.media.app.NotificationCompat
  * Created by arn on 29/09/2017.
  */
 class MediaStyleMod: NotificationCompat.MediaStyle() {
+    @SuppressLint("RestrictedApi")
     override fun makeContentView(builder: NotificationBuilderWithBuilderAccessor?): RemoteViews? {
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             //Accessing @hide methods is forbidden only for P+
 
             val generateContentView = NotificationCompat.MediaStyle::class.java.getDeclaredMethod("generateContentView")
-            if (generateContentView != null) {
-                generateContentView.isAccessible = true
-                val rv = generateContentView.invoke(this) as RemoteViews
+            generateContentView.isAccessible = true
+            val rv = generateContentView.invoke(this) as RemoteViews
 //            val rv = generateContentView()
-                val res = Resources.getSystem()
-                val attrs = arrayOf(android.R.attr.textColor).toIntArray()
+            val res = Resources.getSystem()
+            val attrs = arrayOf(android.R.attr.textColor).toIntArray()
 
-                var sysStyle = res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
-                val titleColorHack = mBuilder.mContext.obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.GRAY)
+            var sysStyle = res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
+            var ta = mBuilder.mContext.obtainStyledAttributes(sysStyle, attrs)
+            val titleColorHack = ta.getColor(0, Color.GRAY)
+            ta.recycle()
 
-                sysStyle = res.getIdentifier("TextAppearance.Material.Notification", "style", "android")
-                val descColorHack = mBuilder.mContext.obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.GRAY)
+            sysStyle = res.getIdentifier("TextAppearance.Material.Notification", "style", "android")
+            ta = mBuilder.mContext.obtainStyledAttributes(sysStyle, attrs)
+            val descColorHack = ta.getColor(0, Color.GRAY)
+            ta.recycle()
 
-                rv.setTextColor(R.id.title, titleColorHack)
-                rv.setTextColor(R.id.text, descColorHack)
-                rv.setTextColor(R.id.text2, descColorHack)
+            rv.setTextColor(R.id.title, titleColorHack)
+            rv.setTextColor(R.id.text, descColorHack)
+            rv.setTextColor(R.id.text2, descColorHack)
 
-                return rv
-            }
-            return null
+            return rv
         } else
             return null
     }

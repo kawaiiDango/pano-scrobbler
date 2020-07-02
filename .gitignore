@@ -16,3 +16,4 @@
 /app/version.txt
 /app/*.json
 /app/release-public
+/misc/profilerDumps

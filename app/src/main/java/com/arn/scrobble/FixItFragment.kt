@@ -35,7 +35,7 @@ class FixItFragment: BottomSheetDialogFragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val batteryIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
             if (activity!!.packageManager.queryIntentActivities(batteryIntent,
-                            PackageManager.MATCH_DEFAULT_ONLY)?.isNotEmpty() == true) {
+                            PackageManager.MATCH_DEFAULT_ONLY).isNotEmpty()) {
                 view.fix_it_battery.visibility = View.VISIBLE
                 view.fix_it_battery_action.setOnClickListener {
                     startActivity(batteryIntent)

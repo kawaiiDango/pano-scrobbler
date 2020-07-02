@@ -9,6 +9,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -36,12 +37,15 @@ import com.arn.scrobble.RecentsFragment.Companion.lastColorMutedBlack
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.arn.scrobble.ui.StatefulAppBar
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import de.umass.lastfm.Caller
+import de.umass.lastfm.cache.FileSystemCache
 import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.coordinator_main.view.*
 import java.io.IOException
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.util.*
+import java.util.logging.Level
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -125,6 +129,13 @@ object Stuff {
     const val PREF_IMPORT = "import"
     const val PREF_EXPORT = "export"
     const val PREF_INTENTS = "intents"
+    val SERVICE_BIT_POS = mapOf(
+            R.string.lastfm to 0,
+            R.string.librefm to 1,
+            R.string.gnufm to 2,
+            R.string.listenbrainz to 3,
+            R.string.custom_listenbrainz to 4
+    )
 
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
@@ -170,18 +181,6 @@ object Stuff {
             "com.google.android.youtube.tv",
             "org.schabi.newpipe",
             "com.kapp.youtube.final",
-            "com.android.chrome",
-            "com.chrome.beta",
-            "com.chrome.dev",
-            "com.opera.browser",
-            "com.opera.browser.beta",
-            "com.microsoft.emmx",
-
-            "tugapower.codeaurora.browser",
-            "com.rsbrowser.browser",
-            "com.brave.browser",
-            "net.scweeny.CS.browser.dev",
-
             "jp.nicovideo.nicobox"
     )
 
@@ -191,17 +190,19 @@ object Stuff {
     const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"
     const val PACKAGE_BLACKPLAYER_PREFIX = "com.kodarkooperativet.blackplayer"
+    const val PACKAGE_SONOS_PREFIX = "com.sonos.acr"
 
     private val seperators = arrayOf(// in priority order
-            "—", " – ", " –", "– ", " _ ", " - ", " \\| ", " -", "- ", "「", "『", /*"ー", */" • ",
+            "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", /*"ー", */" • ",
 
             "【", "〖", "〔",
             "】", "〗", "』", "」", "〕",
             // ":",
-            " \"", " /")
+            " \"", " / ", "／")
     private val unwantedSeperators = arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
 
     private val metaSpam = arrayOf("downloaded", ".com", ".co.", "www.")
+    private val metaUnknown = arrayOf(/*"unknown",*/ "[unknown]", "unknown album", "[unknown album]")
 
     val STARTUPMGR_INTENTS = arrayOf( //pkg, class
             "com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity",
@@ -213,8 +214,13 @@ object Stuff {
             "com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity",
             "com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager",
             "com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity",
-            "com.asus.mobilemanager", "com.asus.mobilemanager.MainActivity"
+            "com.asus.mobilemanager", "com.asus.mobilemanager.MainActivity",
+            "com.samsung.android.lool", "com.samsung.android.sm.battery.ui.setting.SleepingAppsActivity"
     )
+
+    val persistentNoti by lazy {
+        Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) in arrayOf("huawei", "samsung")
+    }
 
     fun log(s: String) {
         Log.i(TAG, s)
@@ -271,13 +277,15 @@ object Stuff {
         var musicInfo: Array<String>? = null
         for (s in seperators) {
             //parsing artist - title
-            musicInfo = titleContent.split(s.toRegex()).filter { it.isNotBlank() }.toTypedArray()
+            musicInfo = titleContent.split(s).filter { it.isNotBlank() }.toTypedArray()
+            if (s == "／")
+                musicInfo.reverse()
 
 //            println("musicInfo= "+musicInfo[0] + (if (musicInfo.size >1) "," + musicInfo[1] else "") + "|" + musicInfo.size)
             //got artist, parsing title - audio (cover) [blah]
             if (musicInfo.size > 1) {
                 for (j in 0 until seperators.size - 2) {
-                    val splits = musicInfo[1].split(seperators[j].toRegex()).filter { it.isNotEmpty() }
+                    val splits = musicInfo[1].split(seperators[j]).filter { it.isNotEmpty() }
 //                    println("splits= $splits |" + splits.size + "|" + seperators[j])
                     if (splits.size > 1) {
                         musicInfo[1] = splits[0]
@@ -296,9 +304,9 @@ object Stuff {
         }
 
         //remove ", ', 」, 』 from musicInfo
+        val allUnwantedSeperators = "(" + unwantedSeperators.joinToString("|") + ")"
         for (i in musicInfo.indices) {
-            for (s in unwantedSeperators)
-                musicInfo[i] = musicInfo[i].replace("^\\s*$s|$s\\s*$".toRegex(), " ")
+            musicInfo[i] = musicInfo[i].replace("^\\s*$allUnwantedSeperators|$allUnwantedSeperators\\s*$".toRegex(), " ")
         }
 
         musicInfo[1] = musicInfo[1].replace("\\.(avi|wmv|mp4|mpeg4|mov|3gpp|flv|webm)$".toRegex(RegexOption.IGNORE_CASE), " ")
@@ -319,18 +327,15 @@ object Stuff {
         }
 
         //delete spaces
-        musicInfo[0] = musicInfo[0].replace("^\\s\\s*", "").replace("\\s\\s*$", "").trim()
-        musicInfo[1] = musicInfo[1].replace("^\\s\\s*", "").replace("\\s\\s*$", "").trim()
+        musicInfo[0] = musicInfo[0].trim()
+        musicInfo[1] = musicInfo[1].trim()
 
         return musicInfo
     }
 
     fun sanitizeAlbum(albumOrig: String): String {
-        if (albumOrig.contains("unknown", true) &&
-                albumOrig.length <= "unknown".length + 4)
-            return ""
-
-        if (metaSpam.any { albumOrig.contains(it) })
+        val albumLower = albumOrig.toLowerCase(Locale.ENGLISH)
+        if (metaSpam.any { albumLower.contains(it) } || metaUnknown.any { albumLower == it })
             return ""
 
         return albumOrig
@@ -370,7 +375,7 @@ object Stuff {
         activity!!
         val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.ctl) ?: return
         if (strId == 0) { // = clear title
-            ctl.findViewById<Toolbar>(R.id.toolbar).title = " "
+            ctl.findViewById<Toolbar>(R.id.toolbar).title = null
             activity.window.navigationBarColor = lastColorMutedBlack
         } else {
             ctl.findViewById<Toolbar>(R.id.toolbar).title = activity.getString(strId)
@@ -598,5 +603,35 @@ object Stuff {
         } catch (e: ActivityNotFoundException) {
             toast(context, context.getString(R.string.no_browser))
         }
+    }
+
+    fun getBrowsers(pm: PackageManager): MutableList<ResolveInfo> {
+        val browsersIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
+        return pm.queryIntentActivities(browsersIntent,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    PackageManager.MATCH_ALL
+                else
+                    0
+        )
+    }
+
+    fun getBrowsersAsStrings(pm: PackageManager): MutableList<String> {
+        val browserPackages = mutableListOf<String>()
+        getBrowsers(pm)
+                .forEach {
+                    browserPackages += it.activityInfo.applicationInfo.packageName
+                }
+        return browserPackages
+    }
+
+    fun initCaller(context: Context): Caller {
+        val caller = Caller.getInstance()
+        if (caller.userAgent != USER_AGENT) { // static instance not inited
+            caller.userAgent = USER_AGENT
+            caller.logger.level = Level.WARNING
+            val fsCache = FileSystemCache(context.cacheDir)
+            caller.cache = fsCache
+        }
+        return caller
     }
 }

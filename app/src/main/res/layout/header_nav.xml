@@ -15,7 +15,9 @@
         android:id="@+id/nav_profile_pic"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:srcCompat="@drawable/vd_wave"/>
+        android:contentDescription="@string/profile_pic"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/vd_wave" />
 
     <View
         android:layout_width="match_parent"

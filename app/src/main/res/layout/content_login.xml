@@ -24,14 +24,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            android:drawableBottom="@drawable/shape_title_divider"
             android:gravity="start"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textColor="@color/colorAccent"
             android:transitionName="login_title"
             android:visibility="gone"
             tools:text="Loggi"
-            tools:visibility="visible"/>
+            tools:visibility="visible"
+            app:drawableBottomCompat="@drawable/shape_title_divider" />
 
         <TextView
             android:id="@+id/login_info"

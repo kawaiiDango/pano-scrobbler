@@ -2,11 +2,11 @@ package com.arn.scrobble
 
 import android.app.Application
 import android.content.Intent
-import android.os.AsyncTask
+import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.PendingScrService
-import com.arn.scrobble.pending.db.PendingScrobble
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
@@ -14,14 +14,15 @@ import java.util.concurrent.Executors
 
 
 class TracksVM(application: Application) : AndroidViewModel(application) {
-    private val recents = MutableLiveData<PaginatedResult<Track>>()
-    private val loves = MutableLiveData<PaginatedResult<Track>>()
-    private val heroInfo = MutableLiveData<MutableList<String>>()
-    private var lastHeroInfoAsyncTask: AsyncTask<*,*,*>? = null
-    private val similar = MutableLiveData<List<Track>>()
-    val trackInfo = MutableLiveData<Pair<Int,Track>>()
-    private val pendingTracks = MutableLiveData<Pair<List<PendingScrobble>, Int>>()
-    private val executor = Executors.newSingleThreadExecutor()
+    private val recents by lazy { MutableLiveData<PaginatedResult<Track>>() }
+    val deletedTracksStringSet by lazy { mutableSetOf<String>() }
+    private val loves by lazy { MutableLiveData<PaginatedResult<Track>>() }
+    private val heroInfo by lazy { MutableLiveData<MutableList<String>>() }
+    private var lastHeroInfoAsyncTask: LFMRequester.MyAsyncTask? = null
+    private val similar by lazy { MutableLiveData<List<Track>>() }
+    val trackInfo by lazy { MutableLiveData<Pair<Int,Track>>() }
+    private val pendingTracks by lazy { MutableLiveData<PendingListData>() }
+    private val executor by lazy { Executors.newSingleThreadExecutor() }
     //for room's built in livedata to work, data must be inserted, deleted from the same dao object
     var page = 1
     private var loadedCachedRecents = false
@@ -65,16 +66,35 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
         return trackInfo
     }
 
-    fun loadPending(limit: Int): MutableLiveData<Pair<List<PendingScrobble>, Int>> {
+    fun loadPending(limit: Int, submit: Boolean): MutableLiveData<PendingListData> {
         executor.execute{
             val dao = PendingScrobblesDb.getDb(getApplication()).getScrobblesDao()
             val lovesDao = PendingScrobblesDb.getDb(getApplication()).getLovesDao()
-            val p = Pair(dao.all(limit), dao.count)
-            pendingTracks.postValue(p)
-            if ((p.second > 0 || lovesDao.count > 0)
-                    && Main.isOnline && !PendingScrService.mightBeRunning) {
+            val data = PendingListData()
+            data.plCount = lovesDao.count
+            data.psCount = dao.count
+            var limit2: Int
+            if (data.plCount > 0) {
+                limit2 = limit
+                if (data.psCount > 0)
+                    limit2--
+                data.plList = lovesDao.all(limit2)
+            }
+            if (data.psCount > 0) {
+                limit2 = limit
+                if (data.plCount > 0)
+                    limit2--
+                data.psList = dao.all(limit2)
+            }
+
+            pendingTracks.postValue(data)
+            if (submit && (data.plCount > 0 || data.psCount > 0)
+                    && Main.isOnline && !PendingScrService.mightBeRunning && !PendingScrJob.mightBeRunning) {
                 val intent = Intent(getApplication<Application>().applicationContext, PendingScrService::class.java)
-                getApplication<Application>().startService(intent)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    getApplication<Application>().startForegroundService(intent)
+                else
+                    getApplication<Application>().startService(intent)
             }
         }
         return pendingTracks

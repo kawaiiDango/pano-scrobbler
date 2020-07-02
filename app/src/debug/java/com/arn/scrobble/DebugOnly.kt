@@ -20,7 +20,7 @@ object DebugOnly {
             StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
                     .detectActivityLeaks()
                     .detectFileUriExposure()
-//                     .detectLeakedClosableObjects()
+                     .detectLeakedClosableObjects()
                     .detectLeakedRegistrationObjects()
                     .detectLeakedSqlLiteObjects()
                     .penaltyLog()

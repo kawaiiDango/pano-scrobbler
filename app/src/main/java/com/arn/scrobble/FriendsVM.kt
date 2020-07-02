@@ -22,7 +22,7 @@ class FriendsVM(app: Application): AndroidViewModel(app) {
     }
     fun loadFriendsRecents(user: String?): MutableLiveData<Pair<String,PaginatedResult<Track>>> {
         if (user != null)
-            LFMRequester(Stuff.GET_FRIENDS_RECENTS, user).asSerialAsyncTask(getApplication(), track)
+            LFMRequester(Stuff.GET_FRIENDS_RECENTS, user).asAsyncTask(getApplication(), track)
         return track
     }
 }

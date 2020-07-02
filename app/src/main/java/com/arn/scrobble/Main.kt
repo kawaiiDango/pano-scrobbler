@@ -63,9 +63,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private lateinit var actPref: SharedPreferences
     private var lastDrawerOpenTime:Long = 0
     private var backArrowShown = false
-    private var coordinatorPadding = 0
+    var coordinatorPadding = 0
     private var drawerInited = false
-    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
+    var pendingSubmitAttempted = false
+    private lateinit var connectivityCb: ConnectivityManager.NetworkCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Stuff.timeIt("onCreate start")
@@ -87,7 +88,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
             when (state) {
                 StatefulAppBar.EXPANDED -> {
-                    toolbar.title = " "
+                    toolbar.title = null
                     tab_bar.visibility = View.GONE
                 }
                 StatefulAppBar.IDLE -> {
@@ -163,7 +164,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
                     showPager()
 
-                    val handler = Handler()
+                    val handler = Handler(mainLooper)
                     handler.post {
                         if (!KeepNLSAliveJob.ensureServiceRunning(this))
                             handler.postDelayed({
@@ -253,7 +254,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
         style.setShowActionsInCompactView(0, 1)
-        val icon = getDrawable(R.mipmap.ic_launcher)
+        val icon = ContextCompat.getDrawable(this, R.mipmap.ic_launcher)
 //        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
 
         val nb = NotificationCompat.Builder(applicationContext, NLService.NOTI_ID_SCR)
@@ -318,8 +319,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     .load(picUrl)
                     .noPlaceholder()
                     .error(R.drawable.vd_wave)
-                    .centerCrop()
-                    .fit()
                     .into(nav_profile_pic)
         if (!forceUpdate)
             LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(applicationContext)
@@ -334,6 +333,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             R.id.nav_last_week -> {
                 val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
                 Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, frame, 10, 200)
+            }
+            R.id.nav_recents -> {
+                tab_bar.getTabAt(0)?.select()
             }
             R.id.nav_loved -> {
                 tab_bar.getTabAt(1)?.select()
@@ -434,7 +436,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME+ "\n"
         text += "Android " + Build.VERSION.RELEASE+ "\n"
         text += "ROM: " + Build.DISPLAY+ "\n"
-        text += "Device: " + Build.BRAND + " "+ Build.MODEL+ "\n"
+        text += "Device: " + Build.BRAND + " " + Build.MODEL + " / " + Build.DEVICE + "\n" //Build.PRODUCT is obsolete
 
         val mi = ActivityManager.MemoryInfo()
         manager.getMemoryInfo(mi)
@@ -577,7 +579,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
 
-        cm.registerNetworkCallback(builder.build(), connectivityCb!!)
+        cm.registerNetworkCallback(builder.build(), connectivityCb)
 
         val ni = cm.activeNetworkInfo
         isOnline = ni?.isConnected == true
@@ -623,7 +625,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     public override fun onStop() {
         unregisterReceiver(mainReceiver)
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        cm.unregisterNetworkCallback(connectivityCb!!)
+        cm.unregisterNetworkCallback(connectivityCb)
         super.onStop()
     }
 

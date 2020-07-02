@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="vertical"
               android:paddingTop="4dp"
               android:focusable="false">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/friends_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,48 +17,52 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
         tools:text="name"/>
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/friends_pic"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/profile_pic"
         android:elevation="20dp"
         android:focusable="true"
-        tools:src="@drawable/ic_placeholder_user"/>
+        app:shapeAppearanceOverlay="@style/circleImageView"
+        tools:src="@drawable/vd_placeholder_user"/>
 
     <FrameLayout
         android:focusable="true"
-        android:id="@+id/friends_track_container"
+        android:id="@+id/friends_track_frame"
+        android:animateLayoutChanges="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/selector_track_container">
 
         <LinearLayout
+            android:id="@+id/friends_track_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="4dp"
-            android:paddingStart="28dp">
+            android:paddingStart="28sp">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <TextView
                 android:id="@+id/friends_title"
                 android:layout_width="match_parent"
-                android:layout_height="16sp"
-                android:layout_marginBottom="-1sp"
-                android:drawableEnd="@drawable/shape_triangle_corner"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-3sp"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/colorAccentLight"
                 android:textSize="13sp"
-                tools:text="tit"/>
+                tools:text="tit"
+                app:drawableEndCompat="@drawable/vd_rounded_corner" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <TextView
                 android:id="@+id/friends_subtitle"
                 android:layout_width="match_parent"
-                android:layout_height="14sp"
+                android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
@@ -69,10 +74,9 @@
             <TextView
                 android:id="@+id/friends_date"
                 android:layout_width="wrap_content"
-                android:layout_height="14sp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="11dp"
-                android:layout_marginTop="3dp"
                 android:gravity="bottom"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -85,7 +89,6 @@
             android:layout_height="20sp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
-            android:alpha="0.7"
             android:contentDescription="@string/hero_search"
             tools:srcCompat="@drawable/vd_music_circle"/>
 

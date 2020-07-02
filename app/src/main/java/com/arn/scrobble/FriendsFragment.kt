@@ -79,29 +79,27 @@ class FriendsFragment : Fragment(), ItemClickListener {
             false
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        if (userVisibleHint) // userVisibleHint may get set before onCreateView
-            postInit()
-    }
-
     override fun onStop() {
-        if (userVisibleHint)
+        if (isVisible)
             popupWr?.get()?.dismiss()
-        adapter?.handler?.removeCallbacks(runnable)
         super.onStop()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         val glm = friends_grid?.layoutManager as GridLayoutManager?
-        glm?.spanCount = getNumColumns(newConfig)
+        glm?.spanCount = getNumColumns()
     }
 
-    override fun setUserVisibleHint(visible: Boolean) {
-        super.setUserVisibleHint(visible)
-        if (visible && isResumed && friends_grid?.adapter == null)
+    override fun onResume() {
+        super.onResume()
+        if (friends_grid?.adapter == null)
             postInit()
+    }
+
+    override fun onPause() {
+        adapter?.handler?.removeCallbacks(runnable)
+        super.onPause()
     }
 
     private fun postInit() {
@@ -115,7 +113,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
         val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadFriends(page+1)
+                loadFriends(page)
             }
         }
 
@@ -125,6 +123,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             friendsListLd.observe(viewLifecycleOwner, Observer {
                 it ?: return@Observer
                 adapter!!.populate(it, it.page)
+                loadMoreListener.currentPage = it.page
                 loadMoreListener.loading = false
                 if (it.page == 1)
                     adapter!!.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL*2)
@@ -233,7 +232,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         wm.updateViewLayout(rootView, lp)
     }
 
-    private fun drawableTintCompat(view: TextView, color:Int = ContextCompat.getColor(activity!!, R.color.colorAccent)){
+    private fun drawableTintCompat(view: TextView, color:Int = ContextCompat.getColor(activity!!, R.color.colorAccentLight)){
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             view.compoundDrawables.forEach {
                 it?.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
@@ -241,7 +240,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         }
     }
 
-    private fun getNumColumns(config:Configuration = resources.configuration): Int {
+    private fun getNumColumns(): Int {
         return (resources.displayMetrics.widthPixels - activity!!.coordinator!!.paddingStart) /
                 resources.getDimension(R.dimen.grid_size).roundToInt()
     }

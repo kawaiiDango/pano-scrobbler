@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="125dp"
                 android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:orientation="horizontal"
                 android:paddingBottom="1dip"
                 android:paddingLeft="1dip"
@@ -31,55 +32,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <TextView
             android:id="@+id/recents_title"
             android:layout_width="match_parent"
-            android:layout_height="22dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:clickable="false"
-            android:drawableEnd="@drawable/shape_triangle_corner"
             android:ellipsize="end"
             android:gravity="bottom"
-            android:longClickable="false"
             android:maxLines="1"
             android:paddingStart="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/colorAccentLight"
-            android:textSize="20sp"
-            app:autoSizeMaxTextSize="20sp"
-            app:autoSizeMinTextSize="12sp"
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform"
+            android:textSize="14sp"
             tools:text="Title title"/>
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <TextView
             android:id="@+id/recents_subtitle"
             android:layout_width="match_parent"
-            android:layout_height="18dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="-3dp"
             android:layout_marginBottom="3dp"
-            android:clickable="false"
             android:ellipsize="end"
-            android:linksClickable="false"
-            android:longClickable="false"
             android:maxLines="1"
             android:paddingStart="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="24sp"
-            app:autoSizeMaxTextSize="24sp"
-            app:autoSizeMinTextSize="14sp"
-
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform"
+            android:textSize="13sp"
             tools:text="subtit subtit"/>
 
     </LinearLayout>
-
+<!--
     <TextView
         android:id="@+id/recents_date"
         android:layout_width="wrap_content"
@@ -116,5 +99,5 @@
         android:visibility="gone"
         android:contentDescription="@string/hero_search"
         tools:srcCompat="@drawable/avd_eq"/>
-
+-->
 </RelativeLayout>

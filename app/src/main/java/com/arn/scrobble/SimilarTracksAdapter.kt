@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.header_default.view.*
 /**
  * Created by arn on 29/12/2017.
  */
-class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Adapter<SimilarTracksAdapter.VHItem>() {
+class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Adapter<SimilarTracksAdapter.VHSimilar>() {
 
     private var clickListener: ItemClickListener? = null
     private var focusChangeListener: FocusChangeListener? = null
@@ -23,10 +23,10 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
     private val tracksImg = mutableMapOf<Int,String>()
     var itemSizeDp = 150
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHItem{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHSimilar{
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.grid_item_recents, parent, false)
-        return VHItem(view, itemSizeDp, clickListener, focusChangeListener)
+        return VHSimilar(view, itemSizeDp, clickListener, focusChangeListener)
     }
 
     fun getItem(id: Int): Track {
@@ -40,7 +40,7 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
 
     override fun getItemCount() = tracks.size
 
-    override fun onBindViewHolder(holder:VHItem, position: Int) {
+    override fun onBindViewHolder(holder:VHSimilar, position: Int) {
         holder.setItemData(tracks[position], tracksImg[position])
     }
 
@@ -52,19 +52,26 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
         this.focusChangeListener = itemFocusListener
     }
 
-    class VHItem(view: View, sizeDp: Int, private val clickListener: ItemClickListener?,
-                 private val focusChangeListener: FocusChangeListener?) :
+    fun populate(res: List<Track>){
+        if (res.isEmpty())
+            fragmentContent.header_text?.text = fragmentContent.context.getString(R.string.no_similar_tracks)
+        else {
+            tracks.clear()
+            tracks.addAll(res)
+            notifyDataSetChanged()
+        }
+    }
+
+    class VHSimilar(view: View, sizeDp: Int, private val clickListener: ItemClickListener?,
+                    private val focusChangeListener: FocusChangeListener?) :
             RecyclerView.ViewHolder(view), View.OnClickListener, View.OnFocusChangeListener {
-        private val vFrame = view.recents_track_container
-        private val vDate = view.recents_date
         private val vTitle = view.recents_title
         private val vSubtitle = view.recents_subtitle
         private val vImg = view.recents_img
 
         init {
-            vFrame.setOnClickListener(this)
-            vFrame.onFocusChangeListener = this
-            vDate.visibility = View.GONE
+            itemView.setOnClickListener(this)
+            itemView.onFocusChangeListener = this
             val px = Stuff.dp2px(sizeDp, view.context)
             view.minimumWidth = px
             view.minimumHeight = px
@@ -86,8 +93,6 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
             if (imgUrl != null && imgUrl != "") {
                 Picasso.get()
                         .load(imgUrl)
-                        .fit()
-                        .centerCrop()
                         .noPlaceholder()
                         .error(R.drawable.vd_wave_simple)
                         .into(vImg, object : Callback{
@@ -103,16 +108,6 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
                 vImg.setImageResource(R.drawable.vd_wave_simple)
                 vImg.setColorFilter(Stuff.getMatColor(itemView.context, "500", track.name.hashCode().toLong()))
             }
-        }
-    }
-
-    fun populate(res: List<Track>){
-        if (res.isEmpty())
-            fragmentContent.header_text?.text = fragmentContent.context.getString(R.string.no_similar_tracks)
-        else {
-            tracks.clear()
-            tracks.addAll(res)
-            notifyDataSetChanged()
         }
     }
 }

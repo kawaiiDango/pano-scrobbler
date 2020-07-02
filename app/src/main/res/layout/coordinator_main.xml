@@ -30,7 +30,7 @@
             app:expandedTitleMarginEnd="@dimen/title_margin_right"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Subhead"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed|snap"
-            app:statusBarScrim="@color/status_bar_scrim"
+            app:statusBarScrim="@color/statusBarScrim"
             app:titleEnabled="false"
             tools:titleEnabled="false">
 
@@ -71,7 +71,7 @@
 
                 <FrameLayout
                     android:id="@+id/sparkline_frame"
-                    android:layout_width="180dp"
+                    android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_gravity="bottom|start"
                     android:layout_marginBottom="@dimen/hero_button_margin_end"
@@ -80,6 +80,7 @@
                     android:layout_weight="2"
                     android:alpha="0.85"
                     android:animateLayoutChanges="true"
+                    android:contentDescription="@string/graph"
                     android:gravity="center_vertical"
                     android:visibility="invisible"
                     app:layout_collapseMode="parallax"
@@ -90,7 +91,7 @@
                         android:id="@+id/sparkline"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:contentDescription="@string/graph_info"
+                        android:importantForAccessibility="no"
                         app:spark_animateChanges="true"
                         app:spark_lineWidth="6dp"
                         />
@@ -126,7 +127,7 @@
 
                 <TextView
                     android:id="@+id/hero_title"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="32dp"
                     android:layout_marginStart="10dp"
                     android:layout_weight="2"

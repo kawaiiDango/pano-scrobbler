@@ -25,11 +25,13 @@ class AppIconsPref : Preference {
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
     constructor(context: Context) : super(context)
 
-    private lateinit var packageNames : MutableSet<String>
-    private var picasso: Picasso = Picasso.Builder(context)
-            .addRequestHandler(AppIconRequestHandler(context))
-            .build()
-    private val wPx = Stuff.dp2px(48, context)
+    private val picasso by lazy {
+        Picasso.Builder(context)
+                .addRequestHandler(AppIconRequestHandler(context))
+                .build()!!
+    }
+    private val wPx by lazy { Stuff.dp2px(48, context) }
+
 
 //    override fun onCreateView(parent: ViewGroup): View {
 //        super.onCreateView(parent)
@@ -42,7 +44,7 @@ class AppIconsPref : Preference {
 
         holder.isDividerAllowedAbove = false
         val v = holder.itemView
-        packageNames = preferenceDataStore!!.getStringSet(key, setOf())!!
+        val packageNames = preferenceDataStore!!.getStringSet(key, setOf())!!
 
         if (packageNames.isNotEmpty()) {
             v.app_icons_container.removeAllViews()

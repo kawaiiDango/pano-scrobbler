@@ -8,10 +8,7 @@ import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.Color
 import android.media.MediaRecorder
-import android.os.AsyncTask
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
+import android.os.*
 import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateInterpolator
@@ -29,13 +26,13 @@ import java.io.File
 
 class RecFragment:Fragment(){
     private var started = false
-    private val handler = Handler()
-    private var recorder:MediaRecorder? = null
+    private val handler by lazy { Handler(Looper.getMainLooper()) }
+    private var recorder: MediaRecorder? = null
     private val duration = 10000L
-    private lateinit var path:String
+    private lateinit var path: String
     private var fadeAnimator: ObjectAnimator? = null
     private var progressAnimator: ObjectAnimator? = null
-    private var asyncTask: AsyncTask<String, Int, String>? = null
+    private var asyncTask: SubmitAsync? = null
     private val pref: MultiPreferences by lazy { MultiPreferences(context!!) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -296,7 +293,8 @@ class RecFragment:Fragment(){
         if(statusCode == 0) {
             rec_img.setImageResource(R.drawable.vd_check_simple)
             rec_status.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
-            LFMRequester(Stuff.SCROBBLE, artist, album, title, "", System.currentTimeMillis().toString(), "0")
+            LFMRequester(Stuff.SCROBBLE, artist, album, title, "", System.currentTimeMillis().toString(),
+                    "0", (artist.hashCode() + title.hashCode()).toString())
                     .asSerialAsyncTask(context!!)
         } else {
             if (statusCode == 3003)

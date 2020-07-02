@@ -3,15 +3,18 @@ package com.arn.scrobble
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.pending.PendingScrFragment
+import com.arn.scrobble.pending.db.PendingLove
 import com.arn.scrobble.pending.db.PendingScrobble
 import com.arn.scrobble.ui.*
 import com.squareup.picasso.Picasso
@@ -40,7 +43,8 @@ class RecentsAdapter
     private var mSetHeroListener: SetHeroTrigger? = null
     private val tracksList = mutableListOf<Track>()
     private val sectionHeaders = mutableMapOf<Int,String>()
-    private val pendingScrobbles = mutableMapOf<Int, PendingScrobble>()
+    private val psMap = mutableMapOf<Int, PendingScrobble>()
+    private val plMap = mutableMapOf<Int, PendingLove>()
     var selectedPos = NP_ID
     private var actionHeaderPos = -1
     private var actionData = -1
@@ -50,7 +54,7 @@ class RecentsAdapter
     private val myUpdateCallback = MyUpdateCallback(this)
     lateinit var viewmodel: TracksVM
     var isShowingLoves = false
-    val handler = TrackInfoHandler(WeakReference(this))
+    val handler by lazy { TrackInfoHandler(WeakReference(this)) }
     private val imgMap = mutableMapOf<Int, Map<ImageSize, String>>()
 
 //    init {
@@ -61,7 +65,8 @@ class RecentsAdapter
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_TRACK -> VHTrack(inflater.inflate(R.layout.list_item_recents, parent, false))
-            TYPE_PENDING_TRACK -> VHPending(inflater.inflate(R.layout.list_item_recents, parent, false))
+            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener!!)
+            TYPE_PENDING_LOVE -> VHPendingLove(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener!!)
             TYPE_HEADER -> VHHeader(inflater.inflate(R.layout.header_default, parent, false))
             TYPE_ACTION -> VHAction(inflater.inflate(R.layout.header_pending, parent, false), fm)
             else -> throw RuntimeException("Invalid view type $viewType")
@@ -71,7 +76,8 @@ class RecentsAdapter
     override fun onBindViewHolder(holder:RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is VHTrack -> holder.setItemData(tracksList[position - nonTrackViewCount])
-            is VHPending -> holder.setItemData(pendingScrobbles[position] ?: return)
+            is VHPendingScrobble -> holder.setItemData(psMap[position] ?: return)
+            is VHPendingLove -> holder.setItemData(plMap[position] ?: return)
             is VHHeader -> holder.setHeaderText(sectionHeaders[position] ?: "...")
             is VHAction -> holder.setItemData(actionData)
             else -> throw RuntimeException("Invalid view type $holder")
@@ -81,7 +87,8 @@ class RecentsAdapter
     override fun getItemViewType(position: Int): Int {
         return when {
             position == actionHeaderPos -> TYPE_ACTION
-            pendingScrobbles.containsKey(position) -> TYPE_PENDING_TRACK
+            psMap.containsKey(position) -> TYPE_PENDING_SCROBBLE
+            plMap.containsKey(position) -> TYPE_PENDING_LOVE
             position >= nonTrackViewCount -> TYPE_TRACK
             else -> TYPE_HEADER
         }
@@ -110,17 +117,20 @@ class RecentsAdapter
         loadMoreListener = lm
     }
 
-    fun getTrack(pos: Int): Track? {
-        return if (getItemViewType(pos) == TYPE_TRACK)
-            tracksList[pos - nonTrackViewCount]
-        else
-            null
+    fun getItem(pos: Int): Any? {
+        return when {
+            getItemViewType(pos) == TYPE_TRACK -> tracksList[pos - nonTrackViewCount]
+            getItemViewType(pos) == TYPE_PENDING_SCROBBLE -> psMap[pos]
+            getItemViewType(pos) == TYPE_PENDING_LOVE -> plMap[pos]
+            else -> null
+        }
     }
 
     fun removeTrack(track: Track) {
         val idx = tracksList.indexOfFirst { it.playedWhen == track.playedWhen &&
                     it.name == track.name && it.artist == track.artist }
         if (idx != -1) {
+            viewmodel.deletedTracksStringSet += track.toString()
             tracksList.removeAt(idx)
             notifyItemRemoved(idx + nonTrackViewCount)
         }
@@ -134,6 +144,10 @@ class RecentsAdapter
                 null
         val idx = tracksList.indexOfFirst { it.playedWhen == track.playedWhen }
         if (idx != -1) {
+            val prevTrack = tracksList[idx]
+            if (prevTrack.artist == artist && prevTrack.album == album && prevTrack.name == title)
+                return
+            viewmodel.deletedTracksStringSet += prevTrack.toString()
             tracksList[idx] = track
             notifyItemChanged(idx + nonTrackViewCount)
         }
@@ -141,45 +155,60 @@ class RecentsAdapter
 
     override fun getItemCount() = tracksList.size + nonTrackViewCount
 
-    fun setPendingScrobbles(fm:FragmentManager?, psList: List<PendingScrobble>, count:Int) {
+    fun setPending(fm:FragmentManager?, pendingListData: PendingListData) {
         val headerText = fragmentContent.context.getString(R.string.pending_scrobbles)
         var shift = 0
-        val lastPsSize = pendingScrobbles.size
+        val lastDisplaySize = psMap.size + plMap.size
+        val totalCount = pendingListData.psCount + pendingListData.plCount
+        var displayCount = 0
+        if (pendingListData.psCount > 0)
+            displayCount = pendingListData.psList.size
+        if (pendingListData.plCount > 0)
+            displayCount += pendingListData.plList.size
+
         actionHeaderPos = -1
-        if (count == 0 || psList.isEmpty()){
+        if (totalCount == 0){
             this.fm = null
             if (sectionHeaders.containsValue(headerText)) {
-                val lastval = sectionHeaders[nonTrackViewCount - 1]!!
+                val lastval = sectionHeaders[nonTrackViewCount - 1] ?: return
                 sectionHeaders.clear()
                 sectionHeaders[0] = lastval
             }
         } else {
             this.fm = fm
-            if (count < 3) {
+            if (totalCount < 3) {
                 shift = 1
+                if (sectionHeaders[shift + displayCount] == null)
+                    sectionHeaders[shift + displayCount] = sectionHeaders[sectionHeaders.keys.last()]!!
             } else {
                 shift = 2
                 actionHeaderPos = 3
-                actionData = count - psList.size
+                actionData = totalCount - displayCount
             }
-
-            sectionHeaders.keys.forEach {
-                if (it != 0 && it != shift + psList.size)
+            sectionHeaders.keys.toIntArray().forEach {
+                if (it != 0 && it != shift + displayCount)
                     sectionHeaders.remove(it)
             }
+            Stuff.log(sectionHeaders.keys.toString())
             if (sectionHeaders[0] !=  headerText) {
-                sectionHeaders[shift + psList.size] = sectionHeaders[0]!!
+                sectionHeaders[shift + displayCount] = sectionHeaders[0]!!
                 sectionHeaders[0] = headerText
             }
         }
-        pendingScrobbles.clear()
-        psList.forEachIndexed { i, ps ->
-            pendingScrobbles[1 + i] = ps
-        }
+        psMap.clear()
+        plMap.clear()
+        if (pendingListData.plCount > 0)
+            pendingListData.plList.forEachIndexed { i, pl ->
+                plMap[1 + i] = pl
+            }
+        if (pendingListData.psCount > 0)
+            pendingListData.psList.forEachIndexed { i, ps ->
+                psMap[1 + plMap.size + i] = ps
+            }
         val oldNonTrackViewCount = nonTrackViewCount
-        nonTrackViewCount = shift + 1 + psList.size
+        nonTrackViewCount = shift + 1 + displayCount
         selectedPos += nonTrackViewCount - oldNonTrackViewCount
-        if (lastPsSize == psList.size)
+        if (lastDisplaySize == displayCount)
             notifyItemRangeChanged(0, nonTrackViewCount, 0)
         else
             notifyDataSetChanged()
@@ -203,11 +232,13 @@ class RecentsAdapter
     override fun getItemId(position: Int): Long {
         return if(position < nonTrackViewCount)
             position.toLong()
-        else
+        else if (position < tracksList.size)
             tracksList[position - nonTrackViewCount].playedWhen?.time ?: NP_ID.toLong()
+        else
+            NP_ID.toLong()
     }
 
-    fun populate(res: PaginatedResult<Track>, page: Int, keepSelection: Boolean) {
+    fun populate(res: PaginatedResult<Track>, page: Int) {
         val refresh = fragmentContent.recents_swipe_refresh
         if (refresh == null || !refresh.isShown)
             return
@@ -218,7 +249,7 @@ class RecentsAdapter
             setStatusHeader(fragmentContent.context.getString(R.string.offline))
 
         setLoading(false)
-        val selectedId = getItemId(selectedPos - nonTrackViewCount)
+        val selectedId = getItemId(selectedPos)
         var selectedPos = nonTrackViewCount
         synchronized(tracksList) {
             val oldList = mutableListOf<Track>()
@@ -230,15 +261,22 @@ class RecentsAdapter
                     setStatusHeader(refresh.context.getString(R.string.no_scrobbles))
                 }
             }
-            res.forEachIndexed { i, it ->
-                if (!it.isNowPlaying || page == 1) {
+            res.forEach {
+                if (viewmodel.deletedTracksStringSet.contains(it.toString()))
+                    return@forEach
+                if (!it.isNowPlaying || page == 1)
                     tracksList.add(it)
-                    if (getItemId(tracksList.size - 1) == selectedId)
-                        selectedPos = tracksList.size + nonTrackViewCount - 1
-                }
                 if (isShowingLoves && imgMap[it.artist.hashCode() + it.name.hashCode()] != null)
                     it.imageUrlsMap = imgMap[it.artist.hashCode() + it.name.hashCode()]
             }
+            if (selectedPos >= nonTrackViewCount)
+                for (i in 0 until tracksList.size) {
+                    if (tracksList[i].playedWhen?.time == selectedId) {
+                        selectedPos = i + nonTrackViewCount
+                        break
+                    }
+                }
+
             this.selectedPos = selectedPos
             myUpdateCallback.offset = nonTrackViewCount
             myUpdateCallback.selectedPos = selectedPos
@@ -332,7 +370,7 @@ class RecentsAdapter
         }
     }
 
-    inner class VHTrack(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnFocusChangeListener {
+    inner class VHTrack(view: View) : RecyclerView.ViewHolder(view), View.OnFocusChangeListener {
 
         private val vOverlay = view.recents_img_overlay
         private val vMenu = view.recents_menu
@@ -343,7 +381,9 @@ class RecentsAdapter
         private val vImg = view.recents_img
 
         init {
-            view.setOnClickListener(this)
+            view.setOnClickListener {
+                itemClickListener?.onItemClick(itemView, adapterPosition)
+            }
             view.onFocusChangeListener = this
 
             vMenu.setOnClickListener {
@@ -352,10 +392,7 @@ class RecentsAdapter
             vOverlay.setOnClickListener {
                 itemClickListener?.onItemClick(it, adapterPosition)
             }
-        }
-
-        override fun onClick(view: View) {
-            itemClickListener?.onItemClick(itemView, adapterPosition)
+            vOverlay.contentDescription = view.context.getString(R.string.loved)
         }
 
         override fun onFocusChange(view: View?, focused: Boolean) {
@@ -377,7 +414,7 @@ class RecentsAdapter
             vSubtitle.text = track.artist
 
             if (track.isNowPlaying) {
-                vDate.visibility = View.INVISIBLE
+                vDate.visibility = View.GONE
                 Stuff.nowPlayingAnim(vPlaying, true)
             } else {
                 vDate.visibility = View.VISIBLE
@@ -387,20 +424,18 @@ class RecentsAdapter
 
             if (track.isLoved) {
                 if (vOverlay.background == null)
-                    vOverlay.background = vOverlay.context.getDrawable(R.drawable.vd_heart_solid)
+                    vOverlay.background = ContextCompat.getDrawable(vOverlay.context, R.drawable.vd_heart_stroked)
                 vOverlay.visibility = View.VISIBLE
             } else {
                 vOverlay.visibility = View.INVISIBLE
             }
 
-            val imgUrl = track.getImageURL(ImageSize.MEDIUM)
+            val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
 
             if (imgUrl != null && imgUrl != "") {
                 vImg.clearColorFilter()
                 Picasso.get()
                         .load(imgUrl)
-                        .fit()
-                        .centerInside()
                         .placeholder(R.drawable.vd_wave_simple)
                         .error(R.drawable.vd_wave_simple)
                         .into(vImg)
@@ -421,13 +456,13 @@ class RecentsAdapter
         fun onSetHero(position: Int, track: Track, fullSize: Boolean)
     }
 
-    class TrackInfoHandler(private val recentssAdapterWr: WeakReference<RecentsAdapter>) : Handler() {
+    class TrackInfoHandler(private val recentsAdapterWr: WeakReference<RecentsAdapter>) : Handler(Looper.getMainLooper()) {
         private var count = 0
         override fun handleMessage(m: Message) {
             if (count > 0)
                 count --
             val pos = m.arg1
-            recentssAdapterWr.get()?.loadImg(pos)
+            recentsAdapterWr.get()?.loadImg(pos)
         }
         fun sendMessage(what:Int, pos:Int){
             if (!hasMessages(what))
@@ -447,6 +482,7 @@ class RecentsAdapter
 private const val NP_ID = -5
 
 private const val TYPE_TRACK = 0
-private const val TYPE_PENDING_TRACK = 1
-private const val TYPE_HEADER = 2
-private const val TYPE_ACTION = 3
+private const val TYPE_PENDING_SCROBBLE = 1
+private const val TYPE_PENDING_LOVE = 2
+private const val TYPE_HEADER = 3
+private const val TYPE_ACTION = 4

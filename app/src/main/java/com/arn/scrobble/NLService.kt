@@ -5,9 +5,9 @@ package com.arn.scrobble
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.*
+import android.content.Intent.ACTION_PACKAGE_ADDED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
@@ -15,6 +15,7 @@ import android.os.*
 import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.text.Html
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.media.app.MediaStyleMod
@@ -27,9 +28,9 @@ class NLService : NotificationListenerService() {
     private lateinit var pref: SharedPreferences
     private lateinit var nm: NotificationManager
     private var sessListener: SessListener? = null
-    private var bReceiver: LegacyMetaReceiver? = null
+    private var legacyMetaReceiver: LegacyMetaReceiver? = null
+    private var lastNpTask: LFMRequester.MyAsyncTask? = null
     private var currentBundle = Bundle()
-    private var isScrobbling = false
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
@@ -78,13 +79,19 @@ class NLService : NotificationListenerService() {
         filter.addAction(CONNECTIVITY_ACTION)
         applicationContext.registerReceiver(nlservicereciver, filter)
 
+        val f = IntentFilter()
+        f.addDataScheme("package")
+        f.addAction(ACTION_PACKAGE_ADDED)
+        applicationContext.registerReceiver(pkgInstallReceiver, f)
+
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         migratePrefs()
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        handler = ScrobbleHandler()
+        handler = ScrobbleHandler(mainLooper)
         val sessManager = applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         sessListener = SessListener(pref, handler)
+        sessListener?.browserPackages = Stuff.getBrowsersAsStrings(packageManager)
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener!!, ComponentName(this, this::class.java))
             //scrobble after the app is updated
@@ -102,7 +109,7 @@ class NLService : NotificationListenerService() {
             // permissions to be granted.
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) //ok this works
-            bReceiver = LegacyMetaReceiver.regIntents(applicationContext)
+            legacyMetaReceiver = LegacyMetaReceiver.regIntents(applicationContext)
         initChannels()
 //        KeepNLSAliveJob.checkAndSchedule(applicationContext)
 
@@ -121,18 +128,23 @@ class NLService : NotificationListenerService() {
         } catch(e:IllegalArgumentException) {
             Stuff.log("nlservicereciver wasn't registered")
         }
+        try {
+            applicationContext.unregisterReceiver(pkgInstallReceiver)
+        } catch(e:IllegalArgumentException) {
+            Stuff.log("pkgInstallReceiver wasn't registered")
+        }
         if (sessListener != null) {
-            sessListener?.removeSessions(mutableSetOf<MediaSession.Token>())
+            sessListener?.removeSessions(mutableSetOf())
             (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
                     .removeOnActiveSessionsChangedListener(sessListener!!)
             pref.unregisterOnSharedPreferenceChangeListener(sessListener)
             sessListener = null
             handler.removeCallbacksAndMessages(null)
         }
-        if (bReceiver != null) {
+        if (legacyMetaReceiver != null) {
             try {
-                applicationContext.unregisterReceiver(bReceiver)
-                bReceiver = null
+                applicationContext.unregisterReceiver(legacyMetaReceiver)
+                legacyMetaReceiver = null
             } catch(e:IllegalArgumentException) {
                 Stuff.log("LegacyMetaReceiver wasn't registered")
             }
@@ -241,7 +253,7 @@ class NLService : NotificationListenerService() {
                          if (hash == 0 || !handler.hasMessages(hash))
                              return
                      } else
-                         handler.notifyOtherError(getString(R.string.state_unscrobbled), false)
+                         handler.notifyTempMsg(getString(R.string.state_unscrobbled))
                      handler.removeMessages(hash)
                      handler.postDelayed({
                          if(!handler.hasMessages(SessListener.lastHash)) //dont dismiss if it started showing another np
@@ -253,7 +265,7 @@ class NLService : NotificationListenerService() {
                     var artist = intent.getStringExtra(B_ARTIST)
                     var title = intent.getStringExtra(B_TITLE)
                     if (artist == null && title == null) {
-                        if (isScrobbling && currentBundle.getString(B_ARTIST) != null &&
+                        if (currentBundle.getBoolean(B_IS_SCROBBLING) && currentBundle.getString(B_ARTIST) != null &&
                                 currentBundle.getString(B_TITLE) != null) {
                             artist = currentBundle.getString(B_ARTIST)!!
                             title = currentBundle.getString(B_TITLE)!!
@@ -311,11 +323,13 @@ class NLService : NotificationListenerService() {
                     nm.cancel(NOTI_ID_APP, 0)
                 }
                 iOTHER_ERR -> {
-                    handler.remove(intent.getIntExtra(B_HASH, 0))
-                    handler.notifyOtherError(intent.getStringExtra(B_ERR_MSG)!!)
+                    if (!handler.hasMessages(intent.getIntExtra(B_HASH, 0)) && currentBundle.getBoolean(B_IS_SCROBBLING))
+                        handler.notifyOtherError(getString(R.string.saved_as_pending), intent.getStringExtra(B_ERR_MSG)!!)
+                    else
+                        handler.notifyOtherError(" ", intent.getStringExtra(B_ERR_MSG)!!)
                 }
                 iBAD_META -> {
-                    handler.remove(intent.getIntExtra(B_HASH, 0))
+                    handler.remove(intent.getIntExtra(B_HASH, 0), false)
                     handler.notifyBadMeta(intent.getStringExtra(B_ARTIST)!!,
                             intent.getStringExtra(B_ALBUM)!!,
                             intent.getStringExtra(B_TITLE)!!,
@@ -336,8 +350,18 @@ class NLService : NotificationListenerService() {
                 }
                 CONNECTIVITY_ACTION -> {
                     val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                    isOnline =  cm.activeNetworkInfo?.isConnected == true
+                    Main.isOnline =  cm.activeNetworkInfo?.isConnected == true
                 }
+
+            }
+        }
+    }
+
+    private val pkgInstallReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == ACTION_PACKAGE_ADDED) {
+                if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false))
+                    sessListener?.browserPackages = Stuff.getBrowsersAsStrings(packageManager)
             }
         }
     }
@@ -383,7 +407,8 @@ class NLService : NotificationListenerService() {
                     }
                 }
                 if (artist != "" && title != "") {
-                    LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString(), hash.toString())
+                    lastNpTask?.cancel(true)
+                    lastNpTask = LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString(), hash.toString())
                         .skipContentProvider()
                         .asSerialAsyncTask(applicationContext)
 
@@ -396,6 +421,7 @@ class NLService : NotificationListenerService() {
                     b.putLong(B_DURATION, duration)
                     b.putBoolean(B_FORCEABLE, forcable)
                     b.putInt(B_HASH, hash)
+                    b.putBoolean(B_IS_SCROBBLING, true)
 
                     val delaySecs = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
                     val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
@@ -422,7 +448,6 @@ class NLService : NotificationListenerService() {
                     }
                     //for rating
                     AppRater.incrementScrobbleCount(applicationContext)
-                    isScrobbling = true
                 } else {
                     currentBundle = Bundle()
                     notifyBadMeta(artist, album, title, now, getString(R.string.parse_error))
@@ -431,7 +456,8 @@ class NLService : NotificationListenerService() {
         }
 
         private fun submitScrobble(artist:String, album:String, title: String, albumArtist: String, time:Long, duration:Long, hash:Int) {
-            LFMRequester(Stuff.SCROBBLE, artist, album, title, albumArtist, time.toString(), duration.toString())
+            lastNpTask = null
+            LFMRequester(Stuff.SCROBBLE, artist, album, title, albumArtist, time.toString(), duration.toString(), hash.toString())
                     .skipContentProvider()
                     .asSerialAsyncTask(applicationContext)
             notifyScrobble(artist, title, hash, false, currentBundle.getBoolean(B_USER_LOVED), currentBundle.getInt(B_USER_PLAY_COUNT))
@@ -483,6 +509,7 @@ class NLService : NotificationListenerService() {
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setStyle(style)
                     .addAction(loveAction)
+                    .setOngoing(Stuff.persistentNoti)
             if (userPlayCount > 0)
                 nb.setContentTitle("$artist — $title")
                     .setContentText(resources.getQuantityString(R.plurals.num_scrobbles_noti, userPlayCount, userPlayCount))
@@ -548,25 +575,40 @@ class NLService : NotificationListenerService() {
             nm.notify(NOTI_ID_SCR, 0, nb.build())
         }
 
-        fun notifyOtherError(errMsg: String, showState: Boolean = true) {
+        fun notifyOtherError(title:String, errMsg: String) {
             val intent = Intent(applicationContext, Main::class.java)
             val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
+            val spanned = Html.fromHtml(errMsg)
 
             val nb = buildNotification()
                     .setChannelId(NOTI_ID_SCR)
                     .setSmallIcon(R.drawable.ic_noti_err)
                     .setContentIntent(launchIntent)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
-                    .setContentTitle(errMsg)
-            if (showState) {
-                nb.setSubtextCompat(getString(R.string.state_didnt_scrobble))
-                if (errMsg.contains('\n'))
-                    nb.setStyle(NotificationCompat.BigTextStyle()
-                            .setBigContentTitle(getString(R.string.state_didnt_scrobble))
-                            .bigText(errMsg)
-                            .setSummaryText(null))
-            }
+                    .setContentText(spanned) //required on recent oneplus devices
+
+            val isMinimised = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                    nm.getNotificationChannel(NOTI_ID_SCR).importance < NotificationManager.IMPORTANCE_LOW
+            if (isMinimised)
+                nb.setContentTitle(errMsg.replace("</?br?>".toRegex(), ""))
+            else
+                nb.setContentTitle(title)
+            nb.setSubtextCompat(getString(R.string.state_didnt_scrobble))
+
+            nb.setStyle(NotificationCompat.BigTextStyle()
+                    .setBigContentTitle(title)
+                    .bigText(spanned))
+
+            nm.notify(NOTI_ID_SCR, 0, nb.build())
+        }
+
+        fun notifyTempMsg(msg: String) {
+            val nb = buildNotification()
+                    .setChannelId(NOTI_ID_SCR)
+                    .setSmallIcon(R.drawable.ic_noti_err)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setContentTitle(msg)
             nm.notify(NOTI_ID_SCR, 0, nb.build())
         }
 
@@ -671,17 +713,17 @@ class NLService : NotificationListenerService() {
             return n
         }
 
-        fun remove(hash: Int) {
+        fun remove(hash: Int, removeNoti: Boolean = true) {
             Stuff.log("$hash cancelled")
-            isScrobbling = false
+            currentBundle.putBoolean(B_IS_SCROBBLING, false)
             if (hash != 0)
                 removeMessages(hash)
-            nm.cancel(NOTI_ID_SCR, 0)
+            if (removeNoti)
+                nm.cancel(NOTI_ID_SCR, 0)
         }
     }
 
     companion object {
-        var isOnline = true
 
         lateinit var handler: ScrobbleHandler
         const val pNLS = "com.arn.scrobble.NLS"
@@ -711,6 +753,7 @@ class NLService : NotificationListenerService() {
         const val B_STANDALONE = "alone"
         const val B_FORCEABLE = "forceable"
         const val B_DELAY = "delay"
+        const val B_IS_SCROBBLING = "scrobbling"
         const val NOTI_ID_SCR = "scrobble_success"
         const val NOTI_ID_ERR = "err"
         const val NOTI_ID_APP = "new_app"

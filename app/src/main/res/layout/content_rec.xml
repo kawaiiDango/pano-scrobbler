@@ -16,6 +16,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:contentDescription="@string/menu_rec"
         app:progressBarThickness="4dp"
         app:progressbarColor="@color/colorAccent" />
 
@@ -46,7 +47,7 @@
         android:layout_height="150dp"
         android:layout_centerInParent="true"
         android:alpha="0.5"
-        android:contentDescription="@string/menu_rec"
+        android:importantForAccessibility="no"
         android:scaleType="fitCenter"
         app:tint="@color/colorAccent"
         app:srcCompat="@drawable/vd_wave_simple" />

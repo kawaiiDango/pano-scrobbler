@@ -10,7 +10,7 @@ import de.umass.lastfm.cache.DefaultExpirationPolicy;
  * Created by arn on 09/09/2017.
  */
 class LFMCachePolicy extends DefaultExpirationPolicy {
-    private Set<String> staleDataOffline = new HashSet<>();
+    private final Set<String> staleDataOffline = new HashSet<>();
     boolean isNetworkAvailable;
     public LFMCachePolicy (boolean isNetworkAvailable) {
         this.isNetworkAvailable = isNetworkAvailable;

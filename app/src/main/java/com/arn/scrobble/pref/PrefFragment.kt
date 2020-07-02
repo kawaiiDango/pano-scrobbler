@@ -4,10 +4,7 @@ import android.app.Activity
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.os.AsyncTask
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
+import android.os.*
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.format.DateFormat
@@ -37,7 +34,7 @@ import kotlinx.android.synthetic.main.dialog_import.view.*
 
 class PrefFragment : PreferenceFragmentCompat(){
 
-    private val restoreHandler = Handler()
+    private val restoreHandler by lazy { Handler(Looper.getMainLooper()) }
     private lateinit var appPrefs: SharedPreferences
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -122,7 +119,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             et.setText(shareSigVal)
             val padding = resources.getDimensionPixelSize(R.dimen.fab_margin)
 
-            val dialog = AlertDialog.Builder(context!!, R.style.AppTheme_Transparent)
+            val dialog = AlertDialog.Builder(context!!, R.style.DarkDialog)
                     .setTitle(R.string.pref_share_sig)
                     .setPositiveButton(android.R.string.ok) { dialog, id ->
                         appPrefs.edit()
@@ -139,13 +136,6 @@ class PrefFragment : PreferenceFragmentCompat(){
         }
 
         val edits = findPreference<Preference>("edits")!!
-        AsyncTask.THREAD_POOL_EXECUTOR.execute {
-            val context = context
-            if (context != null) {
-                val numEdits = PendingScrobblesDb.getDb(context).getEditsDao().count
-                activity!!.runOnUiThread { edits.title = getString(R.string.n_edits, numEdits) }
-            }
-        }
         edits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
                     .remove(this)
@@ -217,7 +207,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 et.setText(nixtapeUrl)
                 val padding = resources.getDimensionPixelSize(R.dimen.fab_margin)
 
-                val dialog = AlertDialog.Builder(context!!, R.style.AppTheme_Transparent)
+                val dialog = AlertDialog.Builder(context!!, R.style.DarkDialog)
                         .setTitle(R.string.pref_gnufm_title)
                         .setPositiveButton(android.R.string.ok) { dialog, id ->
                             var newUrl = et.text.toString()
@@ -261,7 +251,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 Stuff.PREF_LISTENBRAINZ_USERNAME, Stuff.PREF_LISTENBRAINZ_TOKEN
         )
 
-        initAuthConfirmation("lb_custom", {
+        initAuthConfirmation("lb", {
                 val b = Bundle()
                 b.putString(LoginFragment.HEADING, getString(R.string.custom_listenbrainz))
                 b.putString(LoginFragment.TEXTF1, getString(R.string.pref_user_label))
@@ -292,7 +282,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                     ss.setSpan(MyClickableSpan(start, end), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
                 }
             }
-            AlertDialog.Builder(context!!)
+            AlertDialog.Builder(context!!, R.style.DarkDialog)
                     .setTitle(R.string.pref_intents_dialog_title)
                     .setMessage(ss)
                     .setPositiveButton(android.R.string.ok) { _, _ -> }
@@ -337,9 +327,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                                      logout: (() -> Unit)? = null) {
         val elem = findPreference<Preference>(key)!!
         setAuthLabel(elem)
-        if (elem.key == "librefm" || elem.key == "gnufm")
-            elem.title = elem.title.toString()+ " " + getString(R.string.pref_scrobble_love_only)
-        else if (elem.key == "listenbrainz" || elem.key == "lb_custom")
+        if (elem.key == "listenbrainz" || elem.key == "lb")
             elem.title = elem.title.toString()+ " " + getString(R.string.pref_scrobble_only)
         elem.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
@@ -393,7 +381,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 if (data != null) {
                     val currentUri = data.data ?: return
                     val v = layoutInflater.inflate(R.layout.dialog_import, null)
-                    AlertDialog.Builder(context!!)
+                    AlertDialog.Builder(context!!, R.style.DarkDialog)
                             .setView(v)
                             .setTitle(R.string.import_options)
                             .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -435,7 +423,15 @@ class PrefFragment : PreferenceFragmentCompat(){
         listView.isNestedScrollingEnabled = false
 
         setAuthLabel("listenbrainz")
-        setAuthLabel("lb_custom")
+        setAuthLabel("lb")
+
+        val edits = findPreference<Preference>("edits")!!
+        AsyncTask.THREAD_POOL_EXECUTOR.execute {
+            activity?.let {
+                val numEdits = PendingScrobblesDb.getDb(it).getEditsDao().count
+                it.runOnUiThread { edits.title = getString(R.string.n_edits, numEdits) }
+            }
+        }
 
         val iF = IntentFilter()
         iF.addAction(NLService.iSESS_CHANGED)

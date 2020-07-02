@@ -13,9 +13,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_first_things.*
 import kotlinx.android.synthetic.main.content_first_things.view.*
 import kotlinx.android.synthetic.main.coordinator_main.*
@@ -153,8 +155,11 @@ class FirstThingsFragment: Fragment() {
         if (checkAppListExists(pref))
             markAsDone(R.id.first_things_3)
 
-        if(stepsNeeded == 0 || skipChecks)
+        if(stepsNeeded == 0 || skipChecks) {
             (activity as Main).showPager()
+            if (activity.coordinatorPadding == 0)
+                activity.drawer_layout.openDrawer(GravityCompat.START)
+        }
     }
 
     override fun onStart() {
@@ -243,10 +248,7 @@ class FirstThingsFragment: Fragment() {
                 try {
                     context.startActivity(startupMgrIntent)
                 } catch (e: SecurityException) {
-                    if (startupMgrIntent.component?.packageName == Stuff.STARTUPMGR_INTENTS[4])
-                        Stuff.toast(context, context.getString(R.string.fix_it_huawei_startup_mgr))
-                    else
-                        Stuff.openInBrowser("https://dontkillmyapp.com", context)
+                    Stuff.openInBrowser("https://dontkillmyapp.com", context)
                 }
             }
         }

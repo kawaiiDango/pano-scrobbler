@@ -8,6 +8,7 @@ import de.umass.lastfm.scrobble.ScrobbleResult
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -20,7 +21,7 @@ class ListenBrainz (private val token:String? = null) {
         return this
     }
 
-    private fun submitListens(scrobbledatas: MutableList<ScrobbleData>, listenType: String = "single"): ScrobbleResult {
+    private fun submitListens(scrobbledatas: List<ScrobbleData>, listenType: String = "single"): ScrobbleResult {
         token!!
         val payload = JSONArray()
         scrobbledatas.forEach {
@@ -38,7 +39,7 @@ class ListenBrainz (private val token:String? = null) {
                 .put("listen_type", listenType)
                 .put("payload", payload)
 
-        val url = URL("$apiRoot/1/submit-listens")
+        val url = URL("${apiRoot}1/submit-listens")
 
         try {
             val conn = url.openConnection() as HttpURLConnection
@@ -78,18 +79,20 @@ class ListenBrainz (private val token:String? = null) {
             return ScrobbleResult.createHttp200OKResult(conn.responseCode,
                     conn.responseMessage, errMsg)
 
+        } catch (e: InterruptedIOException) {
+            return ScrobbleResult.createHttp200OKResult(200, e.message, "ok") //suppress err notification
         } catch (e: Exception) {
             e.printStackTrace()
-            return ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+            return ScrobbleResult.createHttp200OKResult(0, e.message, "")
         }
     }
 
-    fun updateNowPlaying(scrobbledata: ScrobbleData) = submitListens(mutableListOf(scrobbledata), "playing_now")
-    fun scrobble(scrobbledata: ScrobbleData) = submitListens(mutableListOf(scrobbledata), "single")
+    fun updateNowPlaying(scrobbledata: ScrobbleData) = submitListens(listOf(scrobbledata), "playing_now")
+    fun scrobble(scrobbledata: ScrobbleData) = submitListens(listOf(scrobbledata), "single")
     fun scrobble(scrobbledatas: MutableList<ScrobbleData>) = submitListens(scrobbledatas, "import")
 
     fun recents(username:String, limit: Int): JSONObject? {
-        val url = URL("$apiRoot/1/user/$username/listens?count=$limit")
+        val url = URL("${apiRoot}1/user/$username/listens?count=$limit")
         try {
             val conn = url.openConnection() as HttpURLConnection
             conn.connectTimeout = Stuff.CONNECT_TIMEOUT
@@ -112,7 +115,7 @@ class ListenBrainz (private val token:String? = null) {
 
     fun checkAuth(context:Context, pref: MultiPreferences, username:String): Boolean {
         token!!
-        val url = URL("$apiRoot/1/validate-token?token=$token")
+        val url = URL("${apiRoot}1/validate-token?token=$token")
 
         var success = false
         try {

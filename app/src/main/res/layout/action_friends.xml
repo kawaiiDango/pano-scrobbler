@@ -11,7 +11,7 @@
     <Button
         android:id="@+id/friends_profile"
         style="@style/friendsLinks"
-        android:drawableTop="@drawable/vd_open_in_new"
+        android:drawableTop="@drawable/vd_profile"
         android:text="@string/user_profile"/>
 
     <Button

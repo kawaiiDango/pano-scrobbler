@@ -7,7 +7,7 @@
               android:background="?attr/selectableItemBackground"
               android:clickable="true"
               android:focusable="true"
-              android:gravity="right|center_vertical"
+              android:gravity="end|center_vertical"
               android:orientation="horizontal"
               android:paddingBottom="5dp"
               android:paddingLeft="@dimen/fab_margin"

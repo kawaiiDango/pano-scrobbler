@@ -2,13 +2,15 @@ package com.arn.scrobble.ui
 
 import android.view.View
 import android.widget.RelativeLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.Main
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pending.db.PendingScrobble
 import kotlinx.android.synthetic.main.list_item_recents.view.*
 
-class VHPending(view: View) : RecyclerView.ViewHolder(view) {
+class VHPendingScrobble(view: View, itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(view) {
 
     private val vMenu = view.recents_menu
     private val vOverlay = view.recents_img_overlay
@@ -19,15 +21,18 @@ class VHPending(view: View) : RecyclerView.ViewHolder(view) {
     private val vImg = view.recents_img
 
     init {
-        vMenu.visibility = View.INVISIBLE
         vPlaying.visibility = View.GONE
-        vOverlay.background = view.context.getDrawable(R.drawable.vd_hourglass)
+        vOverlay.background = ContextCompat.getDrawable(view.context, R.drawable.vd_hourglass)
         vImg.setImageResource(R.drawable.vd_wave_simple)
-
-        val margin = Stuff.dp2px(30, view.context)
-        (vOverlay.layoutParams as RelativeLayout.LayoutParams)
-                .setMargins(0, margin/4, 0, margin)
         vOverlay.visibility = View.VISIBLE
+        vOverlay.contentDescription = view.context.getString(R.string.pending_scrobble)
+        if (Main.isTV)
+            view.setOnClickListener {
+                itemClickListener.onItemClick(vMenu, adapterPosition)
+            }
+        vMenu.setOnClickListener {
+            itemClickListener.onItemClick(it, adapterPosition)
+        }
     }
 
     fun setItemData(ps: PendingScrobble) {

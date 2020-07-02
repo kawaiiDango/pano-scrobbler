@@ -16,7 +16,7 @@ interface EditsDao {
     @Query("SELECT * FROM $tableName WHERE hash =:hash")
     fun find(hash:String): Edit?
 
-    @get:Query("SELECT count(*) FROM $tableName")
+    @get:Query("SELECT count(1) FROM $tableName")
     val count: Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

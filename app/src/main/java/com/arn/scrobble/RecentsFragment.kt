@@ -379,11 +379,12 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         else
             track.getWebpImageURL(ImageSize.LARGE)
 
-        if (!fullSize && oldTrack?.name != track.name){
+        if (!fullSize &&
+                oldTrack?.artist != track.artist && oldTrack?.album != track.album && oldTrack?.name != track.name){
             viewModel.loadHero(track.url)
         }
 
-        if (imgUrl != null && imgUrl == oldTrack?.getWebpImageURL(ImageSize.LARGE))
+        if (!imgUrl.isNullOrEmpty() && imgUrl == oldTrack?.getWebpImageURL(ImageSize.LARGE))
             return
 
         //load img, animate colors

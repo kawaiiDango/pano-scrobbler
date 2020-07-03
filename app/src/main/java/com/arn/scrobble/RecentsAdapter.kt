@@ -266,8 +266,8 @@ class RecentsAdapter
                     return@forEach
                 if (!it.isNowPlaying || page == 1)
                     tracksList.add(it)
-                if (isShowingLoves && imgMap[it.artist.hashCode() + it.name.hashCode()] != null)
-                    it.imageUrlsMap = imgMap[it.artist.hashCode() + it.name.hashCode()]
+                if (isShowingLoves && imgMap[Stuff.genHashCode(it.artist, it.name)] != null)
+                    it.imageUrlsMap = imgMap[Stuff.genHashCode(it.artist, it.name)]
             }
             if (selectedPos >= nonTrackViewCount)
                 for (i in 0 until tracksList.size) {
@@ -296,7 +296,7 @@ class RecentsAdapter
         val idx = pos - nonTrackViewCount
         if(idx >= 0 && idx < tracksList.size){
             tracksList[idx].imageUrlsMap = imgMapp
-            this.imgMap[tracksList[idx].artist.hashCode() + tracksList[idx].name.hashCode()] = imgMapp
+            this.imgMap[Stuff.genHashCode(tracksList[idx].artist, tracksList[idx].name)] = imgMapp
             notifyItemChanged(pos)
             if (pos == selectedPos)
                 mSetHeroListener?.onSetHero(pos, tracksList[idx], true)
@@ -442,9 +442,9 @@ class RecentsAdapter
 
             } else {
                 vImg.setImageResource(R.drawable.vd_wave_simple)
-                vImg.setColorFilter(Stuff.getMatColor(vImg.context, "500", track.name.hashCode().toLong()))
+                vImg.setColorFilter(Stuff.getMatColor(vImg.context, "500", Stuff.genHashCode(track.artist, track.name).toLong()))
                 if (isShowingLoves){
-                    if(imgMap[track.artist.hashCode() + track.name.hashCode()] == null)
+                    if(imgMap[Stuff.genHashCode(track.artist, track.name)] == null)
                         handler.sendMessage(vImg.hashCode(), adapterPosition)
                 }
             }

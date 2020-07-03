@@ -414,7 +414,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             })
         } else {
             Picasso.get().cancelRequest(hero)
-            val color = Stuff.getMatColor(hero.context, "500", track.name.hashCode().toLong())
+            val color = Stuff.getMatColor(hero.context, "500", Stuff.genHashCode(track.artist, track.name).toLong())
             hero.setColorFilter(color)
             hero.setImageResource(R.drawable.vd_wave)
             setPaletteColors(color)

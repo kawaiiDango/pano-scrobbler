@@ -84,7 +84,7 @@ class LegacyMetaReceiver : BroadcastReceiver() {
                     duration *= 1000
                 }
 
-                val hash = artist.hashCode() + track.hashCode()
+                val hash = Stuff.genHashCode(artist, album, track)
                 try{
                     NLService.handler.postAtTime({
                         val timeDiff = System.currentTimeMillis() - SessListener.lastSessEventTime

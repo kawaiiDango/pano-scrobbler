@@ -634,4 +634,13 @@ object Stuff {
         }
         return caller
     }
+
+    fun genHashCode(vararg strings: String): Int {
+        val prime = 31
+        var result = 1
+        for (s in strings) {
+            result = result * prime + s.hashCode()
+        }
+        return result
+    }
 }

@@ -294,7 +294,7 @@ class RecFragment:Fragment(){
             rec_img.setImageResource(R.drawable.vd_check_simple)
             rec_status.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
             LFMRequester(Stuff.SCROBBLE, artist, album, title, "", System.currentTimeMillis().toString(),
-                    "0", (artist.hashCode() + title.hashCode()).toString())
+                    "0", Stuff.genHashCode(artist, album, title).toString())
                     .asSerialAsyncTask(context!!)
         } else {
             if (statusCode == 3003)

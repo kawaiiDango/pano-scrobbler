@@ -216,7 +216,7 @@ class NLService : NotificationListenerService() {
                 val title = n.extras.getString(Notification.EXTRA_TITLE) ?: return
                 val meta = Stuff.pixelNPExtractMeta(title, getString(R.string.song_format_string))
                 if (meta != null){
-                    val hash = meta[0].hashCode() + meta[1].hashCode()
+                    val hash = Stuff.genHashCode(meta[0], "", meta[1])
                     val packageNameArg =
                             if (pref.getStringSet(Stuff.PREF_WHITELIST, null)?.contains(sbn.packageName) == false)
                                 sbn.packageName

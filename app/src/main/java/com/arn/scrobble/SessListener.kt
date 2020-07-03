@@ -177,7 +177,7 @@ class SessListener constructor(private val pref: SharedPreferences,
             val isWhitelisted = whiteList.contains(packageName)
             val packageNameParam = if (!isWhitelisted) packageName else null
             handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN) //remove all from legacy receiver, to prevent duplicates
-            val hash = artist.hashCode() + title.hashCode()
+            val hash = Stuff.genHashCode(artist, album, title)
             if (isIgnoreArtistMeta) {
                 val splits = Stuff.sanitizeTitle(title)
                 handler.nowPlaying(splits[0], "", splits[1], "", duration, hash, false, packageNameParam)
@@ -218,7 +218,7 @@ class SessListener constructor(private val pref: SharedPreferences,
                 this.duration = duration
 
 //                lastSessEventTime = System.currentTimeMillis()
-                currHash = artist.hashCode() + title.hashCode()
+                currHash = Stuff.genHashCode(artist, album, title)
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes

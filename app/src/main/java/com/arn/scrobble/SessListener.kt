@@ -123,8 +123,10 @@ class SessListener constructor(private val pref: SharedPreferences,
                         !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
                     return
 
-                if (title != "" && artist != "") {
-                    if (state == PlaybackState.STATE_PAUSED) {
+                when (state) {
+                    PlaybackState.STATE_PAUSED,
+                    PlaybackState.STATE_NONE,
+                    PlaybackState.STATE_ERROR -> {
 //                    if (duration != 0.toLong() && pos == 0.toLong()) //this breaks phonograph
 //                        return
                         if (handler.hasMessages(lastHash)) //if it wasnt scrobbled, consider scrobling again
@@ -135,30 +137,33 @@ class SessListener constructor(private val pref: SharedPreferences,
                         }
                         handler.remove(lastHash)
                         Stuff.log("paused")
-                    } else if (state == PlaybackState.STATE_STOPPED) {
+                    }
+                    PlaybackState.STATE_STOPPED -> {
                         // a replay should count as another scrobble. Replay (in youtube app) is stop, buffer, then play
                         lastScrobblePos = 1
                         handler.remove(lastHash)
                         Stuff.log("stopped")
-                    } else if (state == PlaybackState.STATE_PLAYING
-                    // state.state == PlaybackState.STATE_BUFFERING || state == PlaybackState.STATE_NONE
-                    ) {
-//                if (state.state == PlaybackState.STATE_BUFFERING && state.position == 0.toLong())
-//                    return  //dont scrobble first buffering
-
-                        Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $isPossiblyAtStart $title")
-                        if ((isPossiblyAtStart || lastScrobblePos == 1L ||
-                                        lastState == PlaybackState.STATE_SKIPPING_TO_QUEUE_ITEM) && //amazon music needs this
-                                (!handler.hasMessages(currHash) ||
-                                        System.currentTimeMillis() - lastScrobbleTime > 2000)) {
-                            Stuff.log("scrobbleit")
-                            scrobble(artist, album, title, albumArtist, duration)
-                            lastScrobblePos = pos
-                        } else
-                            handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN)
-                    } else if (state == PlaybackState.STATE_CONNECTING || state == PlaybackState.STATE_BUFFERING) {
+                    }
+                    PlaybackState.STATE_PLAYING -> {
+                        if (title != "" && artist != "") {
+                            Stuff.log(state.toString() + " playing: pos=$pos, lastScrobblePos=$lastScrobblePos $isPossiblyAtStart $title")
+                            if ((isPossiblyAtStart || lastScrobblePos == 1L ||
+                                            lastState == PlaybackState.STATE_SKIPPING_TO_QUEUE_ITEM) && //amazon music needs this
+                                    (!handler.hasMessages(currHash))
+//                                            || System.currentTimeMillis() - lastScrobbleTime > 2000)
+                            ) {
+                                Stuff.log("scrobbleit")
+                                scrobble(artist, album, title, albumArtist, duration)
+                                lastScrobblePos = pos
+                            } else
+                                handler.removeCallbacksAndMessages(LegacyMetaReceiver.TOKEN)
+                        }
+                    }
+                    PlaybackState.STATE_CONNECTING,
+                    PlaybackState.STATE_BUFFERING -> {
                         Stuff.log("$state connecting $pos")
-                    } else {
+                    }
+                    else -> {
                         Stuff.log("other ($state) : $title")
                     }
                 }

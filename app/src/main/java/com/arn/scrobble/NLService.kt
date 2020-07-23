@@ -205,7 +205,8 @@ class NLService : NotificationListenerService() {
 
     private fun detectPixelNP(sbn: StatusBarNotification?, removed:Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && sbn != null &&
-                pref.getBoolean(Stuff.PREF_PIXEL_NP, true) && sbn.packageName == Stuff.PACKAGE_PIXEL_NP) {
+                pref.getBoolean(Stuff.PREF_PIXEL_NP, true) &&
+                (sbn.packageName == Stuff.PACKAGE_PIXEL_NP || sbn.packageName == Stuff.PACKAGE_PIXEL_NP_R)) {
             val n = sbn.notification
             if (n.channelId == Stuff.CHANNEL_PIXEL_NP) {
                 Stuff.log("detectPixelNP " + n.extras.getString(Notification.EXTRA_TITLE) + "removed=$removed")
@@ -293,7 +294,7 @@ class NLService : NotificationListenerService() {
                 pWHITELIST, pBLACKLIST -> {
                     //handle pixel_np blacklist in its own settings
                     val pkgName = intent.getStringExtra("packageName")
-                    if (pkgName == Stuff.PACKAGE_PIXEL_NP){
+                    if (pkgName == Stuff.PACKAGE_PIXEL_NP || pkgName == Stuff.PACKAGE_PIXEL_NP_R){
                         if (intent.action == pBLACKLIST) {
                             pref.edit().putBoolean(Stuff.PREF_PIXEL_NP, false).apply()
                             handler.remove(currentBundle.getInt(B_HASH))

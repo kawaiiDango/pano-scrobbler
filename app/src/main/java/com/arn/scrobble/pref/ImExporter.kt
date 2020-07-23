@@ -170,7 +170,7 @@ class ImExporter {
                                         skipValue()
                                     else if (settingsName == Stuff.PREF_PIXEL_NP) {
                                         try {
-                                            context.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
+                                            context.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
                                             pref.putBoolean(settingsName, nextBoolean())
                                         } catch (e: PackageManager.NameNotFoundException) {
                                             skipValue()

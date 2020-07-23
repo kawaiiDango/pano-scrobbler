@@ -186,6 +186,7 @@ object Stuff {
 
     const val CHANNEL_PIXEL_NP = "com.google.intelligence.sense.ambientmusic.MusicNotificationChannel"
     const val PACKAGE_PIXEL_NP = "com.google.intelligence.sense"
+    const val PACKAGE_PIXEL_NP_R = "com.google.android.as"
     const val PACKAGE_N7PLAYER = "com.n7mobile.nplayer"
     const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"

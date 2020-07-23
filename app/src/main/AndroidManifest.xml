@@ -23,7 +23,7 @@
             <data android:scheme="https" android:host="example.com" />
         </intent>
 
-        <package android:name="com.google.intelligence.sense" />
+        <package android:name="com.google.android.as" />
     </queries>
 -->
     <application

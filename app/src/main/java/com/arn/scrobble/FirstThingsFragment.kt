@@ -46,7 +46,10 @@ class FirstThingsFragment: Fragment() {
             view.first_things_0.visibility = View.VISIBLE
         }
         try {
-            context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
+            if (Build.VERSION.SDK_INT >= 30)
+                context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
+            else
+                context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
             view.first_things_1_desc.text = getString(R.string.grant_notification_access_desc, getString(R.string.except_pixel_np))
         } catch (e: PackageManager.NameNotFoundException) {
             view.first_things_1_desc.text = getString(R.string.grant_notification_access_desc, "")

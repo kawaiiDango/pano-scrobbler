@@ -86,6 +86,7 @@ class EditFragment: LoginFragment() {
         val origArtist = args.getString(NLService.B_ARTIST) ?: ""
         val timeMillis = args.getLong(NLService.B_TIME, System.currentTimeMillis())
         var errMsg: String? = null
+        val appContext = context?.applicationContext ?: return null
 
         if (track.isBlank() || artist.isBlank()) {
             errMsg = getString(R.string.required_fields_empty)
@@ -144,7 +145,7 @@ class EditFragment: LoginFragment() {
                                                 Track.scrobble(scrobbleData, lastfmSession)
                                         }
                                     }
-                                    .inBackground(context!!) // in this thread
+                                    .inBackground(appContext) // in this thread
                         }
 
                         //scrobble everywhere else
@@ -209,6 +210,9 @@ class EditFragment: LoginFragment() {
             i.putExtra(NLService.B_TITLE, track)
             i.putExtra(NLService.B_TIME, timeMillis)
             context?.sendBroadcast(i)
+            if (args.getLong(NLService.B_TIME) == 0L) { //now playing
+                context?.sendBroadcast(Intent(NLService.pCANCEL))
+            }
         }
         return errMsg
 

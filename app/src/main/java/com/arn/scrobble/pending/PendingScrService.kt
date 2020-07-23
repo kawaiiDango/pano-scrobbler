@@ -27,7 +27,8 @@ class PendingScrService: Service() {
             val js = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             js.cancel(PendingScrJob.JOB_ID)
             startForegroundService()
-        }
+        } else
+            stopSelf()
         return START_NOT_STICKY
     }
 

@@ -429,7 +429,10 @@ class PrefFragment : PreferenceFragmentCompat(){
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
             activity?.let {
                 val numEdits = PendingScrobblesDb.getDb(it).getEditsDao().count
-                it.runOnUiThread { edits.title = getString(R.string.n_edits, numEdits) }
+                it.runOnUiThread {
+                    if (context != null)
+                        edits.title = getString(R.string.n_edits, numEdits)
+                }
             }
         }
 

@@ -202,7 +202,7 @@ object Stuff {
     private val unwantedSeperators = arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
 
     private val metaSpam = arrayOf("downloaded", ".com", ".co.", "www.")
-    private val metaUnknown = arrayOf(/*"unknown",*/ "[unknown]", "unknown album", "[unknown album]")
+    private val metaUnknown = arrayOf("unknown", "[unknown]", "unknown album", "[unknown album]", "unknown artist", "[unknown artist]")
 
     val STARTUPMGR_INTENTS = arrayOf( //pkg, class
             "com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity",

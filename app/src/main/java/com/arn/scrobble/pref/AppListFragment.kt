@@ -66,7 +66,7 @@ class AppListFragment : Fragment() {
             app_list_done.setOnLongClickListener {
                 MultiPreferences(context ?: return@setOnLongClickListener false)
                         .putStringSet(Stuff.PREF_BLACKLIST, setOf())
-                Stuff.toast(activity, "Cleared blacklist")
+                Stuff.toast(activity, getString(R.string.cleared_disabled_apps))
                 true
             }
         }

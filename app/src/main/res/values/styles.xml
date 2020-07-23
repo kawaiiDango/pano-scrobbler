@@ -11,6 +11,8 @@
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:textDirection">locale</item>
         <item name="popupMenuStyle">@style/AppTheme.PopupOverlay</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
     </style>
 
     <style name="DarkDialog" parent="Theme.AppCompat.Dialog.Alert">

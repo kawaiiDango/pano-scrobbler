@@ -323,7 +323,7 @@ class NLService : NotificationListenerService() {
                     nm.cancel(NOTI_ID_APP, 0)
                 }
                 iOTHER_ERR -> {
-                    if (!handler.hasMessages(intent.getIntExtra(B_HASH, 0)) && currentBundle.getBoolean(B_IS_SCROBBLING))
+                    if (intent.getBooleanExtra(B_PENDING, false))
                         handler.notifyOtherError(getString(R.string.saved_as_pending), intent.getStringExtra(B_ERR_MSG)!!)
                     else
                         handler.notifyOtherError(" ", intent.getStringExtra(B_ERR_MSG)!!)
@@ -390,7 +390,7 @@ class NLService : NotificationListenerService() {
                 var album = Stuff.sanitizeAlbum(album)
                 var artist = Stuff.sanitizeArtist(artist)
                 var title = title
-                var albumArtist = albumArtist
+                var albumArtist = Stuff.sanitizeAlbum(albumArtist)
                 if (artist != "" && title == "") {
                     val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
                     try {
@@ -750,6 +750,7 @@ class NLService : NotificationListenerService() {
         const val B_USER_LOVED = "loved"
         const val B_HASH = "hash"
         const val B_ERR_MSG = "err"
+        const val B_PENDING = "pending_saved"
         const val B_STANDALONE = "alone"
         const val B_FORCEABLE = "forceable"
         const val B_DELAY = "delay"

@@ -198,6 +198,7 @@ Press back if you do not want this."</string>
     <string name="navigation_drawer_open">Open navigation drawer or go back</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="graph">Graph</string>
+    <string name="cleared_disabled_apps">Cleared disabled apps</string>
     <string name="fix_it_title">Possible fixes</string>
     <string name="fix_it_startup_title">Startup Managers</string>
     <string name="fix_it_startup_desc_default">If your system has startup managers or power managers, please whitelist this app, as they can prevent it from scrobbling in the background.</string>

@@ -362,6 +362,7 @@ class LFMRequester(var command: String, vararg args: String) {
                         scrobbleData.timestamp = (args[4].toLong()/1000).toInt() // in secs
                         scrobbleData.duration = (args[5].toLong()/1000).toInt() // in secs
                         val hash = args[6].toInt()
+                        var savedAsPending = false
 
                         if (scrobbleData.duration < 30)
                             scrobbleData.duration = -1 //default
@@ -545,6 +546,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                     if (scrobbleResults.isNotEmpty())
                                         entry.autoCorrected = 1
                                     dao.insert(entry)
+                                    savedAsPending = true
                                     PendingScrJob.checkAndSchedule(context)
                                 }
                             }
@@ -565,6 +567,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                 Stuff.log("failedText= $failedText")
                                 val i = Intent(NLService.iOTHER_ERR)
                                 i.putExtra(NLService.B_ERR_MSG, failedText)
+                                i.putExtra(NLService.B_PENDING, savedAsPending)
                                 i.putExtra(NLService.B_HASH, hash)
                                 context.sendBroadcast(i)
                             }

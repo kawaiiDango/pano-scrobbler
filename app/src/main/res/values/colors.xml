@@ -16,4 +16,5 @@
     <color name="statusBarScrim">#32000000</color>
     <color name="thumbnailHighlight">#60ffffff</color>
     <color name="dialogBg">#212121</color>
+    <color name="gradient_launcher_fg">#fff</color>
 </resources>

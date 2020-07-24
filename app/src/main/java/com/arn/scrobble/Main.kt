@@ -254,11 +254,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
         style.setShowActionsInCompactView(0, 1)
-        val icon = ContextCompat.getDrawable(this, R.mipmap.ic_launcher)
+        val icon = ContextCompat.getDrawable(this, R.drawable.ic_launcher)
 //        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
 
         val nb = NotificationCompat.Builder(applicationContext, NLService.NOTI_ID_SCR)
-                .setSmallIcon(R.drawable.ic_noti)
+                .setSmallIcon(R.drawable.vd_noti)
 //                .setLargeIcon(Stuff.drawableToBitmap(icon))
                 .setVisibility(NotificationCompat.VISIBILITY_SECRET)
                 .setAutoCancel(true)

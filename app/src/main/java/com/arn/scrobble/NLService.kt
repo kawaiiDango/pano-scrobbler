@@ -505,7 +505,7 @@ class NLService : NotificationListenerService() {
             val nb = buildNotification()
                     .setAutoCancel(false)
                     .setChannelId(NOTI_ID_SCR)
-                    .setSmallIcon(R.drawable.ic_noti)
+                    .setSmallIcon(R.drawable.vd_noti)
                     .setContentIntent(launchIntent)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setStyle(style)
@@ -557,7 +557,7 @@ class NLService : NotificationListenerService() {
             val nb = buildNotification()
                     .setAutoCancel(false)
                     .setChannelId(NOTI_ID_ERR)
-                    .setSmallIcon(R.drawable.ic_noti_err)
+                    .setSmallIcon(R.drawable.vd_noti_err)
                     .setContentIntent(editIntent)
                     .setContentText(artist)
                     .setContentTitle(
@@ -584,7 +584,7 @@ class NLService : NotificationListenerService() {
 
             val nb = buildNotification()
                     .setChannelId(NOTI_ID_SCR)
-                    .setSmallIcon(R.drawable.ic_noti_err)
+                    .setSmallIcon(R.drawable.vd_noti_err)
                     .setContentIntent(launchIntent)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setContentText(spanned) //required on recent oneplus devices
@@ -607,7 +607,7 @@ class NLService : NotificationListenerService() {
         fun notifyTempMsg(msg: String) {
             val nb = buildNotification()
                     .setChannelId(NOTI_ID_SCR)
-                    .setSmallIcon(R.drawable.ic_noti_err)
+                    .setSmallIcon(R.drawable.vd_noti_err)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setContentTitle(msg)
             nm.notify(NOTI_ID_SCR, 0, nb.build())
@@ -677,7 +677,7 @@ class NLService : NotificationListenerService() {
             val modNeeded = Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && mActions != null && mActions.isNotEmpty()
             if (modNeeded) {
                 if (notiIconBitmap == null || notiIconBitmap?.isRecycled == true){
-                    notiIconBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
+                    notiIconBitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_launcher)
                 }
 //                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
                 this.setLargeIcon(notiIconBitmap)

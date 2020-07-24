@@ -37,7 +37,7 @@ class PendingScrService: Service() {
         val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
         val nb = NotificationCompat.Builder(applicationContext, NOTI_ID_FG)
-                .setSmallIcon(R.drawable.ic_noti)
+                .setSmallIcon(R.drawable.vd_noti)
                 .setPriority(Notification.PRIORITY_MIN)
                 .setContentIntent(launchIntent)
                 .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))

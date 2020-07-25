@@ -4,10 +4,6 @@ package com.arn.scrobble
  * Created by arn on 20/09/2017.
  */
 
-import de.umass.lastfm.Session
-import de.umass.lastfm.Track
-import de.umass.lastfm.scrobble.ScrobbleData
-import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.net.URL
 
@@ -15,48 +11,61 @@ class MaiTest {
 
     @Test
     fun testParseTitle() {
-        val title =
-                "Lauren Aquilina | Sinners - Official MUsic Video (Download 'Sinners' EP on iTunes now!) "
-//                 "[MV] REOL - ちるちる HQ / ChiruChiru HD"
-//                "REOL -「mede:mede」 "
-//                "Sia - Cheap Thrills Ft. Sean Paul (Remix)"
-//                "【kradness×reol】Jitter Doll"
-//                "kradness - 零の位相 [Official Music Video]"
-//                "Lindsey Stirling Feat. Becky G - Christmas c' mon (official audio) .avi"
-//                "INNA - Tropical | Lyric Video"
-        val splits = Stuff.sanitizeTitle(title)
-        splits.forEach { print(it + ", ") }
-        println()
-//        assertEquals(8, 8)
+        val title = arrayOf(
+
+                "Lauren Aquilina | Sinners - Official MUsic Video (Download 'Sinners' EP on iTunes now!) ",//
+                "[MV] REOL - ちるちる HQ / ChiruChiru HD",
+                "REOL -「mede:mede」 ",
+                "Sia - Cheap Thrills Ft. Sean Paul (Remix)",
+                "【kradness×reol】Jitter Doll",
+                "kradness - 零の位相 [Official Music Video]",
+                "Lindsey Stirling Feat. Becky G - Christmas c' mon (official audio) .avi",
+                "INNA - Tropical | Lyric Video",
+
+                "【東方Jazz／Chillout】 Trip To Mourning 「C-CLAYS」",//
+                "【MIX300曲】世界中のパリピをブチアゲた洋楽たち大集結！Mushup Remix BGM 2018 #2",
+                "【東方Piano／Traditional】 Resentment 「流派未階堂／流派華劇団」",//
+                "[Future Core] Srav3R feat. shully - Hereafter",
+                "BEATLESS OP/Opening Full「Error - GARNiDELiA」cover by Kami",//
+                "RΞOL - New type Tokyo (ニュータイプトーキョー) 「 Reol - Endless EP 」",
+                "[東方Vocal]Resolution[Poplica]",//
+                "【東方ボーカル】 「Resolution」 【 Poplica＊】",
+                "【東方ボーカル】 「背徳のAgape」 【幽閉サテライト】",
+                "【東方ボーカル】「幽閉サテライト」 - 背徳のAgape",//
+                "【東方ボーカル】 「Please kiss my love」 【Syrufit】",
+                "【東方Vocalアレンジ】 Syrufit - Please kiss my love",
+
+                "[MV] 이달의 소녀/츄 (LOONA/Chuu) \"Heart Attack\"",
+                "【macaroom | Halozy】Song of an Anxious Galley【Subbed】",
+                "[Electro] - Au5 & Fractal - Smoke [Secret Weapon EP]",
+                "M|O|O|N - M|O|O|N",
+                "【NORISTRY】シニカルナイトプラン【歌ってみた】"
+
+        )
+        title.forEachIndexed { i, it ->
+            print("\n $i-> ")
+            val then = System.currentTimeMillis()
+            val splits = Stuff.sanitizeTitle(it)
+            val now = System.currentTimeMillis()
+           print(" ("+(now-then)+") ")
+            splits.forEach { print("$it, ") }
+        }
     }
 
     @Test
     fun testSanitizeAlbum() {
-        val txt = "op.i:"
-        val matches = txt.matches(".*\\w+\\.\\w+.*".toRegex())
-        println("regex: " + matches)
+        val txt = "http://99.9%"
+        val matches = txt.matches(".*\\w+\\.[\\w]{2,}".toRegex())
+        println("regex: $matches")
         val url = URL(txt)
         println(url.host)
+        println(Stuff.sanitizeAlbum(txt))
     }
 
     @Test
-    fun testScrobble() {
-        val key = ""
-        val session = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, key)
-
-        val scrobbleData = ScrobbleData()
-        scrobbleData.artist = "Tycho"
-//        scrobbleData.album = "Unknown"
-        scrobbleData.track = "Spectre"
-        scrobbleData.timestamp = (System.currentTimeMillis()/1000).toInt() // in secs
-        scrobbleData.duration = 10 // in secs
-
-        val npResult = Track.updateNowPlaying(scrobbleData, session)
-        println(npResult)
-        val scrobbleResult = Track.scrobble(scrobbleData, session)
-        println(scrobbleResult)
+    fun librefmArtistInfo(){
+        val a = LFMRequester.getArtistInfoLibreFM("れをる/ギガP");
+        println(a)
     }
-
-
 
 }

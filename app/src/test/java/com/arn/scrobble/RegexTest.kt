@@ -2,7 +2,7 @@ package com.arn.scrobble
 
 import org.junit.Test
 
-class TestRegex {
+class RegexTest {
 
     @Test
     fun regexTest() {

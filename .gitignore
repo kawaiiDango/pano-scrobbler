@@ -15,5 +15,6 @@
 /app/keys.gradle
 /app/version.txt
 /app/*.json
+/app/src/test/java/com/arn/scrobble/AuthTest.kt
 /app/release-public
 /misc/profilerDumps

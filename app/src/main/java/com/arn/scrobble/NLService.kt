@@ -256,10 +256,6 @@ class NLService : NotificationListenerService() {
                      } else
                          handler.notifyTempMsg(getString(R.string.state_unscrobbled))
                      handler.removeMessages(hash)
-                     handler.postDelayed({
-                         if(!handler.hasMessages(SessListener.lastHash)) //dont dismiss if it started showing another np
-                            handler.remove(0)
-                     }, 1000)
                  }
                 pLOVE, pUNLOVE -> {
                     val loved = intent.action == pLOVE
@@ -610,7 +606,10 @@ class NLService : NotificationListenerService() {
                     .setSmallIcon(R.drawable.vd_noti_err)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setContentTitle(msg)
+                    .setTimeoutAfter(1000)
             nm.notify(NOTI_ID_SCR, 0, nb.build())
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                handler.postDelayed({ nm.cancel(NOTI_ID_SCR, 0) }, 1000);
         }
 
         fun notifyApp(packageName:String) {

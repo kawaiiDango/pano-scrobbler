@@ -69,7 +69,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.2.0-rc01"
+    implementation "androidx.appcompat:appcompat:1.2.0-rc02"
     implementation "androidx.preference:preference:1.1.1"
     implementation "androidx.media:media:1.1.0"
     implementation "androidx.palette:palette:1.0.0"

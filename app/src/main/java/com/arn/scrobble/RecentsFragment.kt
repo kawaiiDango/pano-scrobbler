@@ -380,7 +380,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             track.getWebpImageURL(ImageSize.LARGE)
 
         if (!fullSize &&
-                oldTrack?.artist != track.artist && oldTrack?.album != track.album && oldTrack?.name != track.name){
+                (oldTrack?.artist != track.artist || oldTrack?.album != track.album || oldTrack?.name != track.name)){
             viewModel.loadHero(track.url)
         }
 

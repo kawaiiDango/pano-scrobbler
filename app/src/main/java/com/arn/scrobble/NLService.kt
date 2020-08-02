@@ -457,7 +457,10 @@ class NLService : NotificationListenerService() {
             LFMRequester(Stuff.SCROBBLE, artist, album, title, albumArtist, time.toString(), duration.toString(), hash.toString())
                     .skipContentProvider()
                     .asSerialAsyncTask(applicationContext)
-            notifyScrobble(artist, title, hash, false, currentBundle.getBoolean(B_USER_LOVED), currentBundle.getInt(B_USER_PLAY_COUNT))
+            var userPlayCount = currentBundle.getInt(B_USER_PLAY_COUNT)
+            if (userPlayCount > 0)
+                currentBundle.putInt(B_USER_PLAY_COUNT, ++userPlayCount)
+            notifyScrobble(artist, title, hash, false, currentBundle.getBoolean(B_USER_LOVED), userPlayCount)
         }
 
         fun buildNotification(): NotificationCompat.Builder {

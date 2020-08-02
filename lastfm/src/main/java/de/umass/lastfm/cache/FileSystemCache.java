@@ -117,9 +117,11 @@ public class FileSystemCache extends Cache implements ScrobbleCache {
 			os.close();
 			is.close();
 			File fm = new File(cacheDir, cacheEntryName + ".meta");
+            FileOutputStream fmos = new FileOutputStream(fm);
 			Properties p = new Properties();
 			p.setProperty("expiration-date", Long.toString(expirationDate));
-			p.store(new FileOutputStream(fm), null);
+			p.store(fmos, null);
+            fmos.close();
 		} catch (IOException e) {
 			// we ignore the exception. if something went wrong we just don't cache it.
 		}

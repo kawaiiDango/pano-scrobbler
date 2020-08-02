@@ -727,7 +727,7 @@ class LFMRequester(var command: String, vararg args: String) {
                 if (errCode != null && errCode != 6 && errCode != 7)
                     artistInfo = getArtistInfoLibreFM(artist)
                 else {
-                    artistInfo = Artist.getInfo(artist, false, Stuff.LAST_KEY)
+                    artistInfo = Artist.getInfo(artist, true, Stuff.LAST_KEY)
                     errCode = Caller.getInstance().lastError?.errorCode
                     if (artistInfo == null && errCode != null && errCode != 6 && errCode != 7)
                         artistInfo = getArtistInfoLibreFM(artist)
@@ -752,7 +752,7 @@ class LFMRequester(var command: String, vararg args: String) {
 
         fun getArtistInfoLibreFM(artist: String):Artist? {
             val result: Result = Caller.getInstance().call(Stuff.LIBREFM_API_ROOT, "artist.getInfo",
-                    "", mapOf("artist" to artist))
+                    "", mapOf("artist" to artist, "autocorrect" to "1"))
             return ResponseBuilder.buildItem(result, Artist::class.java)
         }
 

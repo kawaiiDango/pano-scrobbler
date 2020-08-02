@@ -40,6 +40,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -379,7 +380,9 @@ public class Caller {
 	}
 
 	private Result createResultFromInputStream(InputStream inputStream) throws SAXException, IOException {
-		Document document = newDocumentBuilder().parse(new InputSource(new InputStreamReader(inputStream, "UTF-8")));
+	    InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+		Document document = newDocumentBuilder().parse(new InputSource(isr));
+		isr.close();
 		Element root = document.getDocumentElement(); // lfm element
 		String statusString = root.getAttribute("status");
 		Status status = "ok".equals(statusString) ? Status.OK : Status.FAILED;

@@ -77,8 +77,10 @@ public class FileSystemCache extends Cache implements ScrobbleCache {
 			return false;
 		try {
 			Properties p = new Properties();
-			p.load(new FileInputStream(f));
+			FileInputStream fis = new FileInputStream(f);
+			p.load(fis);
 			long expirationDate = Long.valueOf(p.getProperty("expiration-date"));
+			fis.close();
 			return expirationDate < System.currentTimeMillis();
 		} catch (IOException e) {
 			return false;

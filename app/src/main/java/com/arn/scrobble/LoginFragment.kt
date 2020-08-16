@@ -163,48 +163,69 @@ open class LoginFragment: DialogFragment() {
         var t2 = login_textfield2.editText!!.text.toString()
         val tlast = login_textfield_last.editText!!.text.toString()
 
-        var success = true
+        var success = false
 
-        if (title == getString(R.string.listenbrainz) &&
-                t1.isNotBlank() && tlast.isNotBlank())
-            success = ListenBrainz(tlast).checkAuth(activity!!, pref, t1)
-        else if (title == getString(R.string.custom_listenbrainz) &&
-                t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()) {
-            if (URLUtil.isValidUrl(t2)) {
-                if (!t2.endsWith('/'))
-                    t2 += '/'
-            } else
-                Stuff.toast(activity!!, getString(R.string.failed_encode_url))
-
-        } else if (title == getString(R.string.lastfm) && tlast.isNotBlank()){
-            val unscrobbler = LastfmUnscrobbler(context!!)
-            unscrobbler.clearCookies()
-            unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
-            return unscrobbler.loginWithPassword(tlast)
-        } else if (title == getString(R.string.add_acr_key)) {
-            if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()){
-                val i = IdentifyProtocolV1()
-                try {
-                    val res = i.recognize(t1, t2, tlast, null, "audio", 10000)
-                    val j = JSONObject(res)
-                    val statusCode = j.getJSONObject("status").getInt("code")
-
-                    if (statusCode == 2004) {
-                        // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
-                        pref.putString(Stuff.PREF_ACR_HOST, t1)
-                        pref.putString(Stuff.PREF_ACR_KEY, t2)
-                        pref.putString(Stuff.PREF_ACR_SECRET, tlast)
+        when (title) {
+            getString(R.string.listenbrainz) -> {
+                if (t1.isNotBlank() && tlast.isNotBlank())
+                    success = ListenBrainz(tlast).checkAuth(activity!!, pref, t1)
+            }
+            getString(R.string.custom_listenbrainz) -> {
+                if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()) {
+                    if (URLUtil.isValidUrl(t2)) {
+                        if (!t2.endsWith('/'))
+                            t2 += '/'
+                        success = ListenBrainz(tlast)
+                                .setApiRoot(t2)
+                                .checkAuth(activity!!, pref, t1)
                     } else
-                        success = false
-                } catch (e: Exception) {
-                    success = false
+                        activity?.runOnUiThread {
+                            Stuff.toast(activity!!, getString(R.string.failed_encode_url))
+                        }
                 }
-            } else
-                success = false
+            }
+            getString(R.string.lastfm) -> {
+                if (tlast.isNotBlank()) {
+                    val unscrobbler = LastfmUnscrobbler(context!!)
+                    unscrobbler.clearCookies()
+                    unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
+                    return unscrobbler.loginWithPassword(tlast)
+                }
+            }
+            getString(R.string.add_acr_key) -> {
+                if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()){
+                    val i = IdentifyProtocolV1()
+                    try {
+                        if (!URLUtil.isValidUrl(t2)) {
+                            activity?.runOnUiThread {
+                                Stuff.toast(activity!!, getString(R.string.failed_encode_url))
+                            }
+                            throw Exception(getString(R.string.failed_encode_url))
+                        }
+                        val res = i.recognize(t1, t2, tlast, null, "audio", 10000)
+                        val j = JSONObject(res)
+                        val statusCode = j.getJSONObject("status").getInt("code")
+
+                        if (statusCode == 2004) {
+                            // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
+                            pref.putString(Stuff.PREF_ACR_HOST, t1)
+                            pref.putString(Stuff.PREF_ACR_KEY, t2)
+                            pref.putString(Stuff.PREF_ACR_SECRET, tlast)
+                            success = true
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            else -> activity?.runOnUiThread {
+                Stuff.toast(activity!!, "service not implemented")
+            }
         }
+        return if (success)
+            null
         else
-            Stuff.toast(activity!!, "service not implemented")
-        return if (success) null else ""
+            ""
     }
 
     protected fun hideKeyboard(){

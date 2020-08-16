@@ -227,7 +227,8 @@ class PrefFragment : PreferenceFragmentCompat(){
                                         .add(R.id.frame, wf)
                                         .addToBackStack(null)
                                         .commit()
-                            }
+                            } else
+                                Stuff.toast(activity!!, getString(R.string.failed_encode_url))
                         }
                         .setNegativeButton(android.R.string.cancel) { dialog, id ->
                         }

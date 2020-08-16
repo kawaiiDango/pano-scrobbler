@@ -20,7 +20,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.media.app.MediaStyleMod
 import com.arn.scrobble.pending.db.PendingScrobblesDb
-import com.arn.scrobble.receivers.LegacyMetaReceiver
 import org.codechimp.apprater.AppRater
 
 
@@ -28,7 +27,8 @@ class NLService : NotificationListenerService() {
     private lateinit var pref: SharedPreferences
     private lateinit var nm: NotificationManager
     private var sessListener: SessListener? = null
-    private var legacyMetaReceiver: LegacyMetaReceiver? = null
+    lateinit var handler: ScrobbleHandler
+//    private var legacyMetaReceiver: LegacyMetaReceiver? = null
     private var lastNpTask: LFMRequester.MyAsyncTask? = null
     private var currentBundle = Bundle()
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
@@ -108,8 +108,8 @@ class NLService : NotificationListenerService() {
             // Media controller needs notification listener service
             // permissions to be granted.
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) //ok this works
-            legacyMetaReceiver = LegacyMetaReceiver.regIntents(applicationContext)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) //ok this works
+//            legacyMetaReceiver = LegacyMetaReceiver.regIntents(applicationContext)
         initChannels()
 //        KeepNLSAliveJob.checkAndSchedule(applicationContext)
 
@@ -141,6 +141,7 @@ class NLService : NotificationListenerService() {
             sessListener = null
             handler.removeCallbacksAndMessages(null)
         }
+        /*
         if (legacyMetaReceiver != null) {
             try {
                 applicationContext.unregisterReceiver(legacyMetaReceiver)
@@ -149,6 +150,7 @@ class NLService : NotificationListenerService() {
                 Stuff.log("LegacyMetaReceiver wasn't registered")
             }
         }
+         */
         PendingScrobblesDb.destroyInstance()
     }
 
@@ -235,12 +237,22 @@ class NLService : NotificationListenerService() {
                         handler.notifyScrobble(meta[0], meta[1], hash, true, currentBundle.getBoolean(B_USER_LOVED))
                     } else if (currentBundle.getInt(B_HASH) == hash &&
                             System.currentTimeMillis() - currentBundle.getLong(B_TIME) < Stuff.PIXEL_NP_INTERVAL)
-                        Stuff.log("ignoring possible duplicate")
+                        Stuff.log("detectPixelNP ignoring possible duplicate")
                     else
-                        handler.nowPlaying(meta[0], "", meta[1], "", 0, hash, false, packageNameArg, true)
+                        handler.nowPlaying(meta[0], "", meta[1], "", 0, 0, hash, false, packageNameArg, true)
                 } else
                     Stuff.log("detectPixelNP parse failed")
             }
+        }
+    }
+
+    private fun markAsScrobbled(hash: Int) {
+        sessListener?.packageMap?.values?.any {
+            if (it.lastScrobbleHash == hash) {
+                it.lastScrobbledHash = hash
+                true
+            } else
+                false
         }
     }
 
@@ -248,19 +260,24 @@ class NLService : NotificationListenerService() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action){
                  pCANCEL -> {
-                     var hash = intent.getIntExtra(B_HASH, 0)
-                     if (hash == 0) {
-                         hash = currentBundle.getInt(B_HASH, 0)
-                         if (hash == 0 || !handler.hasMessages(hash))
+                     val hash: Int
+                     if (!intent.hasExtra(B_HASH)) {
+                         hash = currentBundle.getInt(B_HASH)
+                         if (currentBundle[B_HASH] == null || !handler.hasMessages(hash))
                              return
-                     } else
+                         nm.cancel(NOTI_ID_SCR, 0)
+                     } else {
+                         hash = intent.getIntExtra(B_HASH, 0)
                          handler.notifyTempMsg(getString(R.string.state_unscrobbled))
+                     }
                      handler.removeMessages(hash)
+                     markAsScrobbled(hash)
                  }
                 pLOVE, pUNLOVE -> {
                     val loved = intent.action == pLOVE
                     var artist = intent.getStringExtra(B_ARTIST)
                     var title = intent.getStringExtra(B_TITLE)
+                    val hash = currentBundle.getInt(B_HASH, 0)
                     if (artist == null && title == null) {
                         if (currentBundle.getBoolean(B_IS_SCROBBLING) && currentBundle.getString(B_ARTIST) != null &&
                                 currentBundle.getString(B_TITLE) != null) {
@@ -273,7 +290,7 @@ class NLService : NotificationListenerService() {
                                         "\uD83D\uDC94"
                                     ) + artist + " — " + title
                             )
-                            if (loved == intent.getBooleanExtra(B_USER_LOVED, false))
+                            if (loved == currentBundle.getBoolean(B_USER_LOVED, false))
                                 return
                         } else
                             return
@@ -282,10 +299,10 @@ class NLService : NotificationListenerService() {
                     LFMRequester(if (loved) Stuff.LOVE else Stuff.UNLOVE, artist!!, title!!)
                             .skipContentProvider()
                             .asSerialAsyncTask(applicationContext)
-                    val np = handler.hasMessages(SessListener.lastHash)
+                    val np = handler.hasMessages(hash)
                     currentBundle.putBoolean(B_USER_LOVED, loved)
                     handler.notifyScrobble(artist,
-                            title, SessListener.lastHash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT))
+                            title, hash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT))
                 }
                 pWHITELIST, pBLACKLIST -> {
                     //handle pixel_np blacklist in its own settings
@@ -326,13 +343,14 @@ class NLService : NotificationListenerService() {
                         handler.notifyOtherError(" ", intent.getStringExtra(B_ERR_MSG)!!)
                 }
                 iBAD_META -> {
-                    handler.remove(intent.getIntExtra(B_HASH, 0), false)
                     handler.notifyBadMeta(intent.getStringExtra(B_ARTIST)!!,
                             intent.getStringExtra(B_ALBUM)!!,
                             intent.getStringExtra(B_TITLE)!!,
                             intent.getLongExtra(B_TIME, System.currentTimeMillis()),
-                            intent.getStringExtra(B_ERR_MSG)
+                            intent.getStringExtra(B_ERR_MSG),
+                            intent.getIntExtra(B_HASH, 0)
                             )
+                    handler.remove(intent.getIntExtra(B_HASH, 0), false)
                 }
                 iMETA_UPDATE -> {
                     if (handler.hasMessages(intent.getIntExtra(B_HASH, 0))) {
@@ -375,13 +393,14 @@ class NLService : NotificationListenerService() {
             val albumArtist = m.data.getString(B_ALBUM_ARTIST)!!
             val time = m.data.getLong(B_TIME)
             val duration = m.data.getLong(B_DURATION)
+            val hash = m.data.getInt(B_HASH)
 
             submitScrobble(artist, album, title, albumArtist, time, duration, m.what)
+            markAsScrobbled(hash)
         }
 
-        fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, duration:Long,
+        fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, position: Long, duration:Long,
                        hash:Int, forcable:Boolean, packageName: String?, lessDelay: Boolean = false) {
-            removeMessages(SessListener.lastHash)
             if (artist != "" && !hasMessages(hash)){
                 val now = System.currentTimeMillis()
                 var album = Stuff.sanitizeAlbum(album)
@@ -420,16 +439,19 @@ class NLService : NotificationListenerService() {
                     b.putInt(B_HASH, hash)
                     b.putBoolean(B_IS_SCROBBLING, true)
 
-                    val delaySecs = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
+                    val delayMillis = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
                     val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
-                    val delay = if (duration > 10000 && duration*delayPer/100 < delaySecs) //dont scrobble <10 sec songs?
+                    var delay = if (duration > 10000 && duration*delayPer/100 < delayMillis) //dont scrobble <10 sec songs?
                         duration*delayPer/100
                     else {
                         if (lessDelay)
-                            delaySecs*2/3 //esp for pixel now playing
+                            delayMillis*2/3 //esp for pixel now playing
                         else
-                            delaySecs
+                            delayMillis
                     }
+                    //TODO: resume
+                    if (delay - position > 1000)
+                        delay -= position
                     b.putLong(B_DELAY, delay)
                     currentBundle = b
 
@@ -446,8 +468,8 @@ class NLService : NotificationListenerService() {
                     //for rating
                     AppRater.incrementScrobbleCount(applicationContext)
                 } else {
+                    notifyBadMeta(artist, album, title, now, getString(R.string.parse_error), hash)
                     currentBundle = Bundle()
-                    notifyBadMeta(artist, album, title, now, getString(R.string.parse_error))
                 }
             }
         }
@@ -539,7 +561,7 @@ class NLService : NotificationListenerService() {
             }
         }
 
-        fun notifyBadMeta(artist: String, album: String, title: String, timeMillis: Long, stateText: String?) {
+        fun notifyBadMeta(artist: String, album: String, title: String, timeMillis: Long, stateText: String?, hash: Int) {
             if (!pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
                 return
             val i = Intent(applicationContext, EditActivity::class.java)
@@ -573,6 +595,7 @@ class NLService : NotificationListenerService() {
                             NotificationCompat.PRIORITY_MIN
                     )
             nm.notify(NOTI_ID_SCR, 0, nb.build())
+            markAsScrobbled(hash)
         }
 
         fun notifyOtherError(title:String, errMsg: String) {
@@ -718,17 +741,16 @@ class NLService : NotificationListenerService() {
 
         fun remove(hash: Int, removeNoti: Boolean = true) {
             Stuff.log("$hash cancelled")
-            currentBundle.putBoolean(B_IS_SCROBBLING, false)
-            if (hash != 0)
-                removeMessages(hash)
-            if (removeNoti)
-                nm.cancel(NOTI_ID_SCR, 0)
+            removeMessages(hash)
+            if (hash == currentBundle.getInt(B_HASH)) {
+                currentBundle.putBoolean(B_IS_SCROBBLING, false)
+                if (removeNoti)
+                    nm.cancel(NOTI_ID_SCR, 0)
+            }
         }
     }
 
     companion object {
-
-        lateinit var handler: ScrobbleHandler
         const val pNLS = "com.arn.scrobble.NLS"
         const val pCANCEL = "com.arn.scrobble.CANCEL"
         const val pLOVE = "com.arn.scrobble.LOVE"

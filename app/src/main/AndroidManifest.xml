@@ -123,15 +123,15 @@
             android:name="com.arn.scrobble.pref.MultiPrefsProvider"
             android:process=":bgScrobbler"
             android:exported="false"/>
-
+<!--
         <receiver android:name=".receivers.LegacyMetaReceiver" android:exported="true"
                   android:process=":bgScrobbler">
-            <!--only for N (25) and below-->
             <intent-filter>
                 <action android:name="com.android.music.metachanged"/>
                 <action android:name="com.android.music.playstatechanged" />
             </intent-filter>
         </receiver>
+-->
     </application>
 
 </manifest>

@@ -29,7 +29,7 @@ interface PendingScrobblesDao {
     fun deleteInvalidArtist(artist: String)
 
     @get:Query("SELECT * FROM $tableName WHERE autoCorrected = 0 LIMIT 1")
-    val loadLastPending: PendingScrobble?
+    val oneNotAutocorrected: PendingScrobble?
 
     @get:Query("SELECT count(1) FROM $tableName")
     val count: Int

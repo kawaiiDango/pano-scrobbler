@@ -17,7 +17,7 @@ import com.arn.scrobble.Stuff
 /**
  * Created by arn on 11-03-2017.
  */
-
+/*
 class LegacyMetaReceiver : BroadcastReceiver() {
 //    private var lastHash: Int = 0
     private var serviceRunningCheckTime = 0L
@@ -158,3 +158,4 @@ class LegacyMetaReceiver : BroadcastReceiver() {
         const val TOKEN = 95
     }
 }
+*/

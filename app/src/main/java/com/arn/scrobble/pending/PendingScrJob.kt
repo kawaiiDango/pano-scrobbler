@@ -17,7 +17,6 @@ import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import org.xml.sax.SAXException
-import java.util.logging.Level
 
 
 /**
@@ -76,7 +75,7 @@ class PendingScrJob : JobService() {
             aneCount = dao.allNotAutocorrectedCount
 
             while (aneCount > 0){
-                val entry = dao.loadLastPending ?: break
+                val entry = dao.oneNotAutocorrected ?: break
 
                 publishProgress(context.getString(R.string.pending_n_remaining, aneCount))
                 var correctedArtist: String?

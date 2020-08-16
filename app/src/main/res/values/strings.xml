@@ -16,7 +16,7 @@
     <string name="state_scrobbled">Scrobbled</string>
     <string name="state_unscrobbled">Un-scrobbled</string>
     <string name="state_didnt_scrobble">Didn\'t scrobble</string>
-    <string name="state_invalid_artist">No such artist</string>
+    <string name="state_invalid_artist">Unrecognised artist</string>
     <string name="tap_to_edit">(Tap to edit)</string>
     <string name="tap_to_edit_force">(Tap to edit or force)</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>

@@ -406,7 +406,7 @@ class LFMRequester(var command: String, vararg args: String) {
                                         scrobbleData.track = track.name
                                     }
                                     correctedArtist =
-                                            if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT / 2)
+                                            if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT)
                                                 track.artist
                                             else
                                                 getValidArtist(args[0], prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))

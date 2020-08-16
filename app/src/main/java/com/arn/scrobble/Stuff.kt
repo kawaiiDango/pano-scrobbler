@@ -150,7 +150,7 @@ object Stuff {
     const val START_POS_LIMIT: Long = 1500
     const val DEBOUNCE_TIME = 100
     const val MAX_APPS = 30
-    const val MIN_LISTENER_COUNT = 7
+    const val MIN_LISTENER_COUNT = 5
     const val REQUEST_CODE_EXPORT = 10
     const val REQUEST_CODE_IMPORT = 11
     const val REQUEST_CODE_MIC_PERM = 20

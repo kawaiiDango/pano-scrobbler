@@ -57,16 +57,15 @@ class PendingScrJob : JobService() {
             dao.allEmptyAlbums.forEach {
                 publishProgress(context.getString(R.string.pending_n_remaining, aneCount--))
                 try {
-                    var track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
-                    if (track != null && track.listeners < Stuff.MIN_LISTENER_COUNT / 2)
-                        track = null
+                    val track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
                     if (track != null) {
                         if (!track.album.isNullOrEmpty()) {
                             it.album = track.album
                             if (!track.albumArtist.isNullOrEmpty())
                                 it.albumArtist = track.albumArtist
                         }
-                        it.autoCorrected = 1
+                        if (track.listeners >= Stuff.MIN_LISTENER_COUNT)
+                            it.autoCorrected = 1
                         dao.update(it)
                     }
                 } catch (e: Exception) {

@@ -173,7 +173,11 @@ class SessListener (private val pref: SharedPreferences, private val handler: NL
                 artist = artist.replace(";", "; ")
             else if (packageName == Stuff.PACKAGE_PANDORA)
                 artist = artist.replace("Ofln - ", "")
-            else if (packageName.startsWith(Stuff.PACKAGE_SONOS_PREFIX) &&
+            else if (packageName == Stuff.PACKAGE_PODCAST_ADDICT) {
+                val idx = artist.lastIndexOf(" • ")
+                if (idx != -1)
+                    artist = artist.substring(0, idx)
+            } else if (packageName.startsWith(Stuff.PACKAGE_SONOS_PREFIX) &&
                     metadata?.getString(MediaMetadata.METADATA_KEY_COMPOSER) != null) {
                 artist = metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)
                 albumArtist = ""

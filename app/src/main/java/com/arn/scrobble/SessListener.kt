@@ -7,6 +7,7 @@ import android.media.session.MediaController.Callback
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
+import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.util.Pair
@@ -181,6 +182,18 @@ class SessListener (private val pref: SharedPreferences, private val handler: NL
                     metadata?.getString(MediaMetadata.METADATA_KEY_COMPOSER) != null) {
                 artist = metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)
                 albumArtist = ""
+            } else if (packageName == Stuff.PACKAGE_HUAWEI_MUSIC &&
+                    Build.MANUFACTURER.toLowerCase() == Stuff.MANUFACTURER_HUAWEI) {
+                val delimiter = " - ";
+                // Extra check for the manufacturer, because 'com.android.mediacenter' could match other music players.
+                // Artist in Huawei native music player looks like: `artist + " - " + album`.
+                // We need to cut the "artist" variable - remove album length to remove album name and 3 extra symbols to remove ' - '.
+                if (artist.length > album.length + delimiter.length &&
+                        artist.contains(delimiter) && artist.contains(album)) {
+                    // This bug could be fixed by Huawei in the future.
+                    // We need to check, that the "artist" variable still contains this bug before performing its modification.
+                    artist = artist.substring(0, artist.length - album.length - delimiter.length);
+                }
             }
 
             val sameAsOld = artist == this.artist && title == this.title && album == this.album && albumArtist == this.albumArtist

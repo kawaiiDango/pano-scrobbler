@@ -184,6 +184,9 @@ object Stuff {
             "jp.nicovideo.nicobox"
     )
 
+    const val MANUFACTURER_HUAWEI = "huawei"
+    const val MANUFACTURER_SAMSUNG = "samsung"
+
     const val CHANNEL_PIXEL_NP = "com.google.intelligence.sense.ambientmusic.MusicNotificationChannel"
     const val PACKAGE_PIXEL_NP = "com.google.intelligence.sense"
     const val PACKAGE_PIXEL_NP_R = "com.google.android.as"
@@ -193,6 +196,7 @@ object Stuff {
     const val PACKAGE_BLACKPLAYER_PREFIX = "com.kodarkooperativet.blackplayer"
     const val PACKAGE_SONOS_PREFIX = "com.sonos.acr"
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
+    const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
 
     private val seperators = arrayOf(// in priority order
             "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", /*"ー", */" • ",
@@ -221,7 +225,7 @@ object Stuff {
     )
 
     val persistentNoti by lazy {
-        Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) in arrayOf("huawei", "samsung")
+        Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) in arrayOf(MANUFACTURER_HUAWEI, MANUFACTURER_SAMSUNG)
     }
 
     fun log(s: String) {

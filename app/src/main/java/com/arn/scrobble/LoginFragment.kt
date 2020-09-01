@@ -25,8 +25,6 @@ import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_login.view.*
 import kotlinx.android.synthetic.main.coordinator_main.*
 import org.json.JSONObject
-import java.net.MalformedURLException
-import java.net.URL
 
 
 
@@ -182,14 +180,6 @@ open class LoginFragment: DialogFragment() {
                         activity?.runOnUiThread {
                             Stuff.toast(activity!!, getString(R.string.failed_encode_url))
                         }
-                }
-            }
-            getString(R.string.lastfm) -> {
-                if (tlast.isNotBlank()) {
-                    val unscrobbler = LastfmUnscrobbler(context!!)
-                    unscrobbler.clearCookies()
-                    unscrobbler.checkCsrf(pref.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
-                    return unscrobbler.loginWithPassword(tlast)
                 }
             }
             getString(R.string.add_acr_key) -> {

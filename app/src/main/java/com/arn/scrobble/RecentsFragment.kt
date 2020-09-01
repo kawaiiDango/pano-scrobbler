@@ -18,6 +18,7 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
@@ -587,22 +588,25 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             val prefs = MultiPreferences(context!!)
             val exists = LastfmUnscrobbler(context)
                     .checkCsrf(prefs.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
-            return if (!exists) {
-                val b = Bundle()
-                b.putString(LoginFragment.HEADING, getString(R.string.lastfm))
-                b.putString(LoginFragment.INFO, getString(R.string.lastfm_login_info))
-                b.putString(LoginFragment.TEXTFL, getString(R.string.lastfm_password))
-
-                val lf = LoginFragment()
-                lf.arguments = b
-                activity!!.supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, lf)
-                        .addToBackStack(null)
-                        .commit()
-                false
-            } else {
-                true
+            if (!exists) {
+                //TODO: show a dialog and then open webview
+                AlertDialog.Builder(context!!, R.style.DarkDialog)
+                        .setMessage(R.string.lastfm_reauth)
+                        .setPositiveButton(android.R.string.ok) { _, _ ->
+                            val wf = WebViewFragment()
+                            val b = Bundle()
+                            b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
+                            b.putBoolean(Stuff.ARG_SAVE_COOKIES, true)
+                            wf.arguments = b
+                            activity!!.supportFragmentManager.beginTransaction()
+                                    .replace(R.id.frame, wf)
+                                    .addToBackStack(null)
+                                    .commit()
+                        }
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show()
             }
+            return exists
         }
         menuBuilder.setCallback(object : MenuBuilder.Callback {
             override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {

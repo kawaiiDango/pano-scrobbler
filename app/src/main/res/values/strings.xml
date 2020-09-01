@@ -74,7 +74,7 @@
     <string name="grant_notification_access_desc">Needed to retrieve music metadata even from non-music apps, such as youtube, browser etc. No actual notifications are read %1$s</string>
     <string name="except_pixel_np">except Pixel\'s Now Playing.</string>
     <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM and Listenbrainz can be authenticated after this, from settings</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM and Listenbrainz can be authenticated after this, from settings</string>
     <string name="swap">Swap</string>
     <string name="rate_msg">Enjoying this app?</string>
     <string name="rate_link">Rate it</string>
@@ -156,12 +156,7 @@ com.arn.scrobble.CANCEL
 They perform the same actions as the buttons in the notification. They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="pref_intents">Intents for Tasker etc</string>
     <string name="copied">Copied!</string>
-    <string name="lastfm_password">Lastfm Password</string>
-    <string name="lastfm_login_info">"Deleting and editing scrobbles are not a part of the lastFM API. The app can still simulate a non-API login to lastFM, for which, your password is needed.
-
-The password will NOT be stored, but your session will be.
-
-Press back if you do not want this."</string>
+    <string name="lastfm_reauth">You need to reauthenticate in order to edit or delete scrobbles</string>
     <string name="custom_listenbrainz">Custom Listenbrainz server</string>
     <string name="failed_encode_url">failed to encode URL</string>
     <string name="check_nls">Check %s</string>

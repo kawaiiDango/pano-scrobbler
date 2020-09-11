@@ -21,7 +21,7 @@ class ListenBrainz (private val token:String? = null) {
         return this
     }
 
-    private fun submitListens(scrobbledatas: List<ScrobbleData>, listenType: String = "single"): ScrobbleResult {
+    private fun submitListens(scrobbledatas: List<ScrobbleData>, listenType: String): ScrobbleResult {
         token!!
         val payload = JSONArray()
         scrobbledatas.forEach {

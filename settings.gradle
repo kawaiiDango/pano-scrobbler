@@ -1,2 +1,2 @@
+rootProject.name = "pScrobbler"
 include ':app', ':lastfm'
-

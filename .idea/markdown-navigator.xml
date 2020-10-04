@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="FlexmarkProjectSettings">
-    <FlexmarkHtmlSettings flexmarkSpecExampleRendering="0" flexmarkSpecExampleRenderHtml="false">
-      <flexmarkSectionLanguages>
-        <option name="1" value="Markdown" />
-        <option name="2" value="HTML" />
-        <option name="3" value="flexmark-ast:1" />
-      </flexmarkSectionLanguages>
-    </FlexmarkHtmlSettings>
-  </component>
   <component name="MarkdownProjectSettings">
     <PreviewSettings splitEditorLayout="SPLIT" splitEditorPreview="PREVIEW" useGrayscaleRendering="false" zoomFactor="1.25" maxImageWidth="0" synchronizePreviewPosition="true" highlightPreviewType="NONE" highlightFadeOut="5" highlightOnTyping="true" synchronizeSourcePosition="true" verticallyAlignSourceAndPreviewSyncPosition="true" showSearchHighlightsInPreview="false" showSelectionInPreview="true" lastLayoutSetsDefault="false">
       <PanelProvider>
@@ -17,7 +8,6 @@
     </PreviewSettings>
     <ParserSettings gitHubSyntaxChange="false" correctedInvalidSettings="false" emojiShortcuts="0" emojiImages="0">
       <PegdownExtensions>
-        <option name="ANCHORLINKS" value="true" />
         <option name="ATXHEADERSPACE" value="true" />
         <option name="AUTOLINKS" value="true" />
         <option name="FENCED_CODE_BLOCKS" value="true" />
@@ -37,7 +27,7 @@
         <option name="SIM_TOC_BLANK_LINE_SPACER" value="true" />
       </ParserOptions>
     </ParserSettings>
-    <HtmlSettings headerTopEnabled="false" headerBottomEnabled="false" bodyTopEnabled="false" bodyBottomEnabled="false" addPageHeader="true" imageUriSerials="false" addDocTypeHtml="true" noParaTags="false" plantUmlConversion="0">
+    <HtmlSettings headerTopEnabled="false" headerBottomEnabled="false" bodyTopEnabled="false" bodyBottomEnabled="false" addPageHeader="true" addAnchorLinks="true" anchorLinksWrapText="false" imageUriSerials="false" addDocTypeHtml="true" noParaTags="false" defaultUrlTitle="false" migratedPlantUml="true" migratedAnchorLinks="true" plantUmlConversion="0">
       <GeneratorProvider>
         <provider providerId="com.vladsch.md.nav.editor.swing.html.generator" providerName="Default Swing HTML Generator" />
       </GeneratorProvider>
@@ -45,8 +35,25 @@
       <headerBottom />
       <bodyTop />
       <bodyBottom />
+      <fencedCodeConversions>
+        <option name="c4plantuml" value="NONE" />
+        <option name="ditaa" value="NONE" />
+        <option name="erd" value="NONE" />
+        <option name="graphviz" value="NONE" />
+        <option name="latex" value="KATEX" />
+        <option name="math" value="KATEX" />
+        <option name="mermaid" value="NONE" />
+        <option name="nomnoml" value="NONE" />
+        <option name="plantuml" value="NONE" />
+        <option name="puml" value="NONE" />
+        <option name="svgbob" value="NONE" />
+        <option name="umlet" value="NONE" />
+        <option name="vega" value="NONE" />
+        <option name="vegalite" value="NONE" />
+        <option name="wavedrom" value="NONE" />
+      </fencedCodeConversions>
     </HtmlSettings>
-    <CssSettings previewScheme="UI_SCHEME" cssUri="" isCssUriEnabled="false" isCssUriSerial="false" isCssTextEnabled="false" isDynamicPageWidth="true">
+    <CssSettings previewScheme="UI_SCHEME" cssUri="" isCssUriEnabled="false" isCssUriSerial="true" isCssTextEnabled="false" isDynamicPageWidth="true">
       <StylesheetProvider>
         <provider providerId="com.vladsch.md.nav.editor.swing.html.css" providerName="Default Swing Stylesheet" />
       </StylesheetProvider>

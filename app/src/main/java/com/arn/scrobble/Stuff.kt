@@ -194,6 +194,7 @@ object Stuff {
     const val PACKAGE_SONOS_PREFIX = "com.sonos.acr"
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
+    const val PACKAGE_NETEASE_MUSIC = "com.netease.cloudmusic"
 
     private val seperators = arrayOf(// in priority order
             "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", /*"ー", */" • ",
@@ -617,14 +618,14 @@ object Stuff {
         }
     }
 
-    fun getBrowsers(pm: PackageManager): MutableList<ResolveInfo> {
+    fun getBrowsers(pm: PackageManager): List<ResolveInfo> {
         val browsersIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
         return pm.queryIntentActivities(browsersIntent,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                     PackageManager.MATCH_ALL
                 else
                     0
-        )
+        ).filter { it.activityInfo.applicationInfo.packageName != PACKAGE_NETEASE_MUSIC }
     }
 
     fun getBrowsersAsStrings(pm: PackageManager): MutableList<String> {

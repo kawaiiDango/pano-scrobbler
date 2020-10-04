@@ -14,11 +14,11 @@
 - Scrobble from anything which produces audio with metadata, including Youtube, Chrome, Telegram etc.
 - Scrobble to lastFM, LibreFM, GNU FM and Listenbrainz
 - View scrobble count in notification
-- Sanity check the metadata with lastFM's records. 
+- Verify the metadata with lastFM's records before scrobbling
 - View track info, such as listener count charts, album art etc
-- View recent scrobbles
-- Work with recent scrobbles (love a track, cancel a scrobble)
-- Edit scrobbles for free
+- View scrobbles from a specified date
+- Work with scrobbles (love a track, cancel a scrobble)
+- Edit recent scrobbles for free
 - Delete existing scrobbles
 - Offline cacheing and scrobbling
 - Check what your friends are listening to
@@ -28,6 +28,8 @@
 - Supports Pixel Now Playing
 - Import & export settings and saved edits
 - Intents for apps like Tasker, Macrodroid etc
+- View top artists, albums or tracks. Also works for friends
+- I'm feeling lucky, a shuffle all for your entire listening history
 
 #### This is not intended to:
 - be an app to browse lastfm.
@@ -40,7 +42,7 @@ See [instructions.md](instructions.md)
 ### Thanks to:
 - Musixmatch's FloatingLyrics for the idea and inspiration
 - https://github.com/jkovacs/lastfm-java (I added many missing lastfm api methods in a messy way, might make a pull request some time)
-- http://materialdesignicons.com
+- https://materialdesignicons.com
 - Other dependencies in build.gradle
 - **Kaycee da Ghost** for putting up with me while i tried to fix miui specific bugs
 - **memeko ヾ(\*・ω・)ノ** for the ui design

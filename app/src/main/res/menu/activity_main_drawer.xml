@@ -29,6 +29,14 @@
 
     <group android:id="@+id/nav_group_bottom">
         <item
+            android:id="@+id/nav_charts"
+            android:icon="@drawable/vd_charts"
+            android:title="@string/menu_charts"/>
+        <item
+            android:id="@+id/nav_random"
+            android:icon="@drawable/vd_die"
+            android:title="@string/menu_random"/>
+        <item
             android:id="@+id/nav_rec"
             android:icon="@drawable/vd_mic"
             android:title="@string/menu_rec"/>

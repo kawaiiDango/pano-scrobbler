@@ -3,10 +3,10 @@ package com.arn.scrobble
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Point
-import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.transition.ChangeBounds
 import android.transition.Fade
 import android.transition.Transition
@@ -16,15 +16,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.PopupWindow
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.arn.scrobble.charts.ChartsPagerFragment
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.SimpleHeaderDecoration
 import de.umass.lastfm.User
 import kotlinx.android.synthetic.main.action_friends.view.*
 import kotlinx.android.synthetic.main.content_friends.*
@@ -43,23 +42,28 @@ import kotlin.math.roundToInt
 
 class FriendsFragment : Fragment(), ItemClickListener {
 
-    private var adapter: FriendsAdapter? = null
-    private var runnable = Runnable { loadFriends(1) }
+    private lateinit var adapter: FriendsAdapter
+    private var runnable = Runnable {
+        if (viewModel.sorted)
+            refreshFriendsRecents()
+        else
+            loadFriends(1)
+        lastRefreshTime = System.currentTimeMillis()
+    }
     private var popupWr: WeakReference<PopupWindow>? = null
-    private lateinit var viewModel: FriendsVM
+    private val viewModel by lazy { VMFactory.getVM(this, FriendsVM::class.java) }
+    var lastRefreshTime = System.currentTimeMillis()
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.content_friends, container, false)
         view.isNestedScrollingEnabled = false
-        Stuff.setProgressCircleColor(view.friends_swipe_refresh)
-        view.friends_swipe_refresh.setOnRefreshListener { loadFriends(1) }
-
         return view
     }
 
     private fun loadFriends(page: Int):Boolean {
-        friends_grid ?: return false
-        val adapter = adapter ?: return false
+        friends_linear_layout ?: return false
+        friends_grid.layoutManager ?: return false
 
         if (Main.isOnline) {
             friends_linear_layout.header_text.visibility = View.GONE
@@ -68,15 +72,17 @@ class FriendsFragment : Fragment(), ItemClickListener {
             friends_linear_layout.header_text.visibility = View.VISIBLE
         }
 
-        return if (page <= adapter.totalPages || adapter.totalPages == 0) {
+        return if (page <= viewModel.totalPages || viewModel.totalPages == 0) {
             if ((page == 1 && (friends_grid.layoutManager as GridLayoutManager).findFirstVisibleItemPosition() < 15) || page > 1) {
-                viewModel.loadFriendsList(page, true)
+                viewModel.loadFriendsList(page)
             }
-            if (adapter.itemCount == 0 || page > 1)
+            if (adapter.itemCount == 0)
                 friends_linear_layout.friends_swipe_refresh.isRefreshing = true
             true
-        } else
+        } else {
+            adapter.loadMoreListener.isAllPagesLoaded = true
             false
+        }
     }
 
     override fun onStop() {
@@ -95,21 +101,32 @@ class FriendsFragment : Fragment(), ItemClickListener {
         super.onResume()
         if (friends_grid?.adapter == null)
             postInit()
+        else if (System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
+                (viewModel.page == 1 || viewModel.sorted))
+            runnable.run()
     }
 
     override fun onPause() {
-        adapter?.handler?.removeCallbacks(runnable)
+        adapter.handler.removeCallbacks(runnable)
         super.onPause()
     }
 
     private fun postInit() {
         Stuff.setTitle(activity, 0)
 
-        adapter = FriendsAdapter(view!!)
+        Stuff.setProgressCircleColor(friends_swipe_refresh)
+        friends_swipe_refresh.setOnRefreshListener {
+            viewModel.sorted = false
+            friends_sort.hide()
+            loadFriends(1)
+        }
+
         val glm = GridLayoutManager(context!!, getNumColumns())
         friends_grid.layoutManager = glm
         (friends_grid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        adapter = FriendsAdapter(view!!, viewModel)
         friends_grid.adapter = adapter
+        friends_grid.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
 
         val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
@@ -117,35 +134,87 @@ class FriendsFragment : Fragment(), ItemClickListener {
             }
         }
 
-        viewModel = VMFactory.getVM(this, FriendsVM::class.java)
-        val friendsListLd = viewModel.loadFriendsList(1, false)
-        if (!friendsListLd.hasActiveObservers()) {
-            friendsListLd.observe(viewLifecycleOwner, Observer {
-                it ?: return@Observer
-                adapter!!.populate(it, it.page)
-                loadMoreListener.currentPage = it.page
-                loadMoreListener.loading = false
+        loadMoreListener.currentPage = viewModel.page
+        adapter.loadMoreListener = loadMoreListener
+
+        if (!viewModel.receiver.hasActiveObservers()) {
+            viewModel.receiver.observe(viewLifecycleOwner, {
+                it ?: return@observe
+                viewModel.totalPages = it.totalPages
+                /*
+                val sortedRes = res.pageResults.sortedByDescending {
+                    if (it?.playcount == null || it.playcount == 0) //put users with 0 plays at the end
+                        0L
+                    else
+                        it.recentTrack?.playedWhen?.time ?: System.currentTimeMillis()
+                }
+                */
+                val newFriendsMap = mutableMapOf<String, User>()
+                it.pageResults.forEach {
+                    if (it.name != null)
+                        newFriendsMap[it.name] = it
+                }
+                val glm = friends_grid.layoutManager as GridLayoutManager
+                //get old now playing data to prevent flicker
+                val firstVisible = glm.findFirstVisibleItemPosition()
+                val lastVisible = glm.findLastVisibleItemPosition()
+                for (i in 0 until adapter.itemCount) {
+                    val friend = newFriendsMap[viewModel.friends[i].name]
+                    if (friend != null &&
+                            friend.recentTrack == null && viewModel.friends[i].recentTrack != null &&
+                            (i in firstVisible..lastVisible)) {
+                        friend.recentTrack = viewModel.friends[i].recentTrack
+                        friend.playcount = viewModel.friends[i].playcount
+                    }
+                }
+                refreshFriendsRecents()
                 if (it.page == 1)
-                    adapter!!.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL*2)
+                    viewModel.friends.clear()
+                viewModel.friends.addAll(it.pageResults)
+                adapter.populate()
+                viewModel.receiver.value = null
+                loadMoreListener.currentPage = it.page
+                if (it.page == 1) {
+                    adapter.handler.removeCallbacks(runnable)
+                    adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL * 2)
+                }
             })
-            viewModel.loadFriendsRecents(null)
-                    .observe(viewLifecycleOwner, Observer {
-                        it ?: return@Observer
-                        adapter!!.populateFriendsRecent(it.second, it.first)
+            viewModel.track.observe(viewLifecycleOwner, {
+                        it ?: return@observe
+                        adapter.populateFriendsRecent(it.second, it.first)
                     })
         }
-        adapter!!.setClickListener(this)
-        adapter!!.viewModel = viewModel
+        adapter.itemClickListener = this
 
-        loadFriends(1)
+        if (viewModel.friends.isEmpty())
+            loadFriends(1)
+        else
+            adapter.populate()
 
         friends_grid.addOnScrollListener(loadMoreListener)
     }
 
+    private fun refreshFriendsRecents() {
+        val glm = friends_grid.layoutManager as GridLayoutManager
+        val firstVisible = glm.findFirstVisibleItemPosition()
+        val lastVisible = glm.findLastVisibleItemPosition()
+        for (i in firstVisible..lastVisible) {
+            if (i < 0)
+                break
+            if (!adapter.handler.hasMessages(viewModel.friends[i].name.hashCode())) {
+                val msg = adapter.handler.obtainMessage(viewModel.friends[i].name.hashCode())
+                msg.arg1 = i
+                adapter.handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
+            }
+        }
+        adapter.handler.removeCallbacks(runnable)
+        adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL * 2)
+    }
+
     override fun onItemClick (view: View, position: Int) {
-        val user = adapter!!.getItem(position)
+        val user = adapter.getItem(position)
         if (user != null) {
-            val gridItem = adapter!!.getViewForPopup(context!!, position) as ViewGroup
+            val gridItem = adapter.getViewForPopup(context!!, position) as ViewGroup
             showPopupWindow(gridItem, view, user)
         }
     }
@@ -162,22 +231,22 @@ class FriendsFragment : Fragment(), ItemClickListener {
         fun postTransition() {
             TransitionManager.beginDelayedTransition(content, ChangeBounds().setDuration(150))
             val action = layoutInflater.inflate(R.layout.action_friends, content, false)
-            content.addView(action, 2)
-
-            action.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-
-            val point = Point()
-            activity!!.windowManager.defaultDisplay.getSize(point)
-            val screenW = point.x
-            val screenH = point.y
-            val w = min((0.8 * screenW).toInt(), Stuff.dp2px(400, context!!))
-            val h = popup.height + Stuff.dp2px(120-64, context!!) + action.measuredHeight
-            popup.update((screenW - w )/2, ((screenH - h )/1.2).toInt(), w,h)
+            content.addView(action, 4)
 
             content.friends_pic.layoutParams.width = Stuff.dp2px(120, context!!)
             content.friends_pic.layoutParams.height = Stuff.dp2px(120, context!!)
-            if (user.playcount > 0)
-                content.friends_name.text = getString(R.string.num_scrobbles, content.friends_name.text, user.playcount)
+            if (user.playcount > 0) {
+                val since = if (user.registeredDate == null || user.registeredDate.time == 0L)
+                    ""
+                else
+                    DateFormat.getMediumDateFormat(context).format(user.registeredDate.time)
+                content.friends_scrobbles_since.text = getString(R.string.num_scrobbles_since, user.playcount, since)
+                content.friends_scrobbles_since.visibility = View.VISIBLE
+            }
+            if (user.country != null && user.country != "None") {
+                content.friends_country.text = getString(R.string.from, user.country)
+                content.friends_country.visibility = View.VISIBLE
+            }
 
             action.friends_profile.setOnClickListener { v:View ->
                 Stuff.openInBrowser(userLink, activity, v)
@@ -185,13 +254,30 @@ class FriendsFragment : Fragment(), ItemClickListener {
             action.friends_loved.setOnClickListener { v:View ->
                 Stuff.openInBrowser("$userLink/loved", activity, v)
             }
-            action.friends_chart.setOnClickListener { v:View ->
-                Stuff.openInBrowser("$userLink/listening-report/week", activity, v)
+            action.friends_charts.setOnClickListener { v:View ->
+                val f = ChartsPagerFragment()
+                val b = Bundle()
+                b.putString(Stuff.ARG_USERNAME, user.name)
+                f.arguments = b
+                activity!!.supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.frame, f, Stuff.TAG_CHART_PAGER)
+                        .addToBackStack(null)
+                        .commit()
             }
+//            action.friends_week.setOnClickListener { v:View ->
+//                Stuff.openInBrowser("$userLink/listening-report/week", activity, v)
+//            }
+            action.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            content.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
-            drawableTintCompat(action.friends_profile)
-            drawableTintCompat(action.friends_loved)
-            drawableTintCompat(action.friends_chart)
+            val point = Point()
+            activity!!.windowManager.defaultDisplay.getSize(point)
+            val screenW = point.x
+            val screenH = point.y
+            val w = min((0.8 * screenW).toInt(), Stuff.dp2px(400, context!!))
+            val h = content.measuredHeight + action.measuredHeight
+            popup.update((screenW - w )/2, ((screenH - h )/1.2).toInt(), w,h)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -230,14 +316,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
         lp.flags = lp.flags or WindowManager.LayoutParams.FLAG_DIM_BEHIND
         lp.dimAmount = 0.4f
         wm.updateViewLayout(rootView, lp)
-    }
-
-    private fun drawableTintCompat(view: TextView, color:Int = ContextCompat.getColor(activity!!, R.color.colorAccentLight)){
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            view.compoundDrawables.forEach {
-                it?.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
-            }
-        }
     }
 
     private fun getNumColumns(): Int {

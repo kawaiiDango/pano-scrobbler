@@ -1,6 +1,7 @@
 package com.arn.scrobble
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,6 +12,7 @@ import android.transition.Fade
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import com.arn.scrobble.pending.db.Edit
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import de.umass.lastfm.CallException
@@ -20,6 +22,7 @@ import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_login.view.*
+import java.util.*
 
 class EditFragment: LoginFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -86,7 +89,19 @@ class EditFragment: LoginFragment() {
         val origArtist = args.getString(NLService.B_ARTIST) ?: ""
         val timeMillis = args.getLong(NLService.B_TIME, System.currentTimeMillis())
         var errMsg: String? = null
-        val appContext = context?.applicationContext ?: return null
+
+        fun saveEdit(context: Context) {
+            if(!(track == origTrack && artist == origArtist && album == origAlbum)) {
+                val dao = PendingScrobblesDb.getDb(context).getEditsDao()
+                val e = Edit()
+                e.artist = artist
+                e.album = album
+                e.albumArtist = albumArtist
+                e.track = track
+                e.hash = origArtist.hashCode().toString() + origAlbum.hashCode().toString() + origTrack.hashCode().toString()
+                dao.upsert(e)
+            }
+        }
 
         if (track.isBlank() || artist.isBlank()) {
             errMsg = getString(R.string.required_fields_empty)
@@ -137,15 +152,16 @@ class EditFragment: LoginFragment() {
                 if (result?.isSuccessful == true && !result.isIgnored) {
                     AsyncTask.THREAD_POOL_EXECUTOR.execute {
                         if (!standalone) {
-                            LFMRequester(Stuff.DELETE, origArtist, origTrack, timeMillis.toString())
-                                    .addCallback { succ ->
+                            val origTrackObj = Track(origTrack, null, origArtist)
+                            origTrackObj.playedWhen = Date(timeMillis)
+                            LFMRequester(context!!).delete(origTrackObj) { succ ->
                                         if (succ) {
                                             //editing just the album is a noop, scrobble again
                                             if (track == origTrack && artist == origArtist)
                                                 Track.scrobble(scrobbleData, lastfmSession)
                                         }
                                     }
-                                    .inBackground(appContext) // in this thread
+                                    .asSerialAsyncTask()
                         }
 
                         //scrobble everywhere else
@@ -181,23 +197,31 @@ class EditFragment: LoginFragment() {
                                     .scrobble(scrobbleData)
                         }
                     }
-                    if(!(track == origTrack && artist == origArtist && album == origAlbum)) {
-                        val dao = PendingScrobblesDb.getDb(context!!).getEditsDao()
-                        val e = Edit()
-                        e.artist = artist
-                        e.album = album
-                        e.albumArtist = albumArtist
-                        e.track = track
-                        e.hash = origArtist.hashCode().toString() + origAlbum.hashCode().toString() + origTrack.hashCode().toString()
-                        dao.upsert(e)
-                    }
+                    saveEdit(context!!)
                     if (login_force.isChecked){
                         val oldSet = pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, setOf())
                         pref.putStringSet(Stuff.PREF_ALLOWED_ARTISTS, oldSet + artist)
                     }
-                } else if (result.isIgnored)
-                    errMsg = getString(R.string.scrobble_ignored_or_old)
-                else if (!standalone)
+                } else if (result.isIgnored) {
+                    if (System.currentTimeMillis() - timeMillis < Stuff.LASTFM_MAX_PAST_SCROBBLE)
+                        errMsg = getString(R.string.scrobble_ignored_or_old)
+                    else {
+                        errMsg = ""
+                        val activity = activity!!
+                        activity.runOnUiThread {
+                            AlertDialog.Builder(context!!, R.style.DarkDialog)
+                                    .setMessage(R.string.scrobble_ignored_save_edit)
+                                    .setPositiveButton(android.R.string.yes) { dialogInterface, i ->
+                                        dismiss()
+                                        AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                                            saveEdit(activity)
+                                        }
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .show()
+                        }
+                    }
+                } else if (!standalone)
                     errMsg = getString(R.string.network_error)
             }
         } catch (e: Exception){

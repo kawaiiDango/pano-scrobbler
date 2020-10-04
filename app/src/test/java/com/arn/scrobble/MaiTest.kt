@@ -68,4 +68,10 @@ class MaiTest {
         println(a)
     }
 
+    @Test
+    fun spotifyArtistInfo(){
+        val a = LFMRequester.getArtistInfoSpotify("MYTH & ROID");
+        println(a)
+    }
+
 }

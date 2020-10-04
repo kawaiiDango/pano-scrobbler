@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.Color
@@ -24,7 +25,6 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
@@ -41,6 +41,8 @@ import kotlinx.android.synthetic.main.content_recents.*
 import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.coordinator_main.view.*
 import kotlinx.android.synthetic.main.list_item_recents.view.*
+import java.util.*
+import kotlin.math.max
 
 
 /**
@@ -50,19 +52,20 @@ import kotlinx.android.synthetic.main.list_item_recents.view.*
 open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener, RecentsAdapter.SetHeroTrigger {
     private lateinit var adapter: RecentsAdapter
     private lateinit var appPrefs: SharedPreferences
-    private var firstLoadCache = true
-    private var firstLoadNw = true
     private var timedRefresh = Runnable {
-        loadRecents(1)
+        if (viewModel.toTime == 0L)
+            loadRecents(1)
         val ps = activity?.coordinator?.paddingStart
         if (ps != null && ps > 0)
-            LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(context!!)
+            LFMRequester(context!!).getDrawerInfo().asAsyncTask()
+        lastRefreshTime = System.currentTimeMillis()
     }
+    private var lastRefreshTime = System.currentTimeMillis()
     private val refreshHandler by lazy { Handler(Looper.getMainLooper()) }
     private lateinit var viewModel: TracksVM
     private lateinit var animSet: AnimatorSet
     private var smoothScroller: LinearSmoothScroller? = null
-    var isShowingLoves = false
+    open var isShowingLoves = false
 
     private var colorPrimDark = 0
     private var colorLightWhite = 0
@@ -88,9 +91,21 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         if (recents_list?.adapter == null)
             postInit()
         else {
-            val holder = recents_list.findViewHolderForAdapterPosition(adapter.selectedPos)
+            val holder = recents_list.findViewHolderForAdapterPosition(viewModel.selectedPos)
             (holder as RecentsAdapter.VHTrack?)?.setSelected(true)
+            if (!isShowingLoves &&
+                    System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
+                    viewModel.page == 1)
+                timedRefresh.run()
         }
+        if (isShowingLoves) {
+            activity?.hero_calendar?.visibility = View.INVISIBLE
+            activity?.hero_calendar?.isEnabled = false
+        } else if (!Main.isTV){
+            activity?.hero_calendar?.visibility = View.VISIBLE
+            activity?.hero_calendar?.isEnabled = true
+        }
+        activity?.hero_calendar?.tag = !isShowingLoves
     }
 
     override fun onPause() {
@@ -102,24 +117,16 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
     }
 
     private fun postInit() {
-//        Stuff.setAppBarHeight(activity!!)
         val activity = activity as Main? ?: return
-        activity.ctl.setContentScrimColor(lastColorVibrantDark)
         activity.toolbar.title = null
         Stuff.setAppBarHeight(activity)
-
-            /*
-            if (Stuff.isDark(RecentsAdapter.lastColorDomPrimary))
-                activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorLightWhite)
-            else
-                activity.ctl.setCollapsedTitleTextColor(RecentsAdapter.lastColorMutedDark)
-            */
 
         val llm = LinearLayoutManager(context!!)
         recents_list.layoutManager = llm
 
+        viewModel = VMFactory.getVM(this, TracksVM::class.java)
         adapter = RecentsAdapter(view!!)
-
+        adapter.viewModel = viewModel
         adapter.isShowingLoves = isShowingLoves
         adapter.setStatusHeader()
 
@@ -128,7 +135,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             override fun onAnimationRepeat(p0: Animator?) {}
 
             override fun onAnimationEnd(p0: Animator?) {
-                lastColorVibrantDark = colorPrimDark
                 lastColorLightWhite = colorLightWhite
                 lastColorMutedDark = colorMutedDark
                 lastColorMutedBlack = colorMutedBlack
@@ -145,7 +151,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         recents_list.addItemDecoration(itemDecor)
         recents_list.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
         Stuff.setProgressCircleColor(recents_swipe_refresh)
-        recents_swipe_refresh.setOnRefreshListener { loadRecents(1) }
+        recents_swipe_refresh.setOnRefreshListener {
+            viewModel.toTime = 0
+            loadRecents(1)
+        }
         recents_swipe_refresh.isRefreshing = false
         recents_list.adapter = adapter
         (recents_list.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
@@ -155,8 +164,13 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 loadRecents(page)
             }
         }
-        loadMoreListener.loading = false
+        loadMoreListener.currentPage = viewModel.page
 
+        recents_list.addOnScrollListener(loadMoreListener)
+        adapter.loadMoreListener = loadMoreListener
+        adapter.itemClickListener = this
+        adapter.focusChangeListener = this
+        adapter.setHeroListener = this
         appPrefs = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
 
         val sparkline = activity.sparkline
@@ -164,54 +178,55 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             sparkline.sparkAnimator = MorphSparkAnimator()
             sparkline.adapter = SparkLineAdapter()
         }
-        viewModel = VMFactory.getVM(this, TracksVM::class.java)
-        adapter.viewmodel = viewModel
-        val ld = if (isShowingLoves)
-                viewModel.loadLovesList(1, false)
-            else
-                viewModel.loadRecentsList(1, false)
+        viewModel.tracksReceiver.observe(viewLifecycleOwner, {
+            it ?: return@observe
+            synchronized(viewModel.tracks) {
+                val oldList = mutableListOf<Track>()
+                oldList.addAll(viewModel.tracks)
+                viewModel.totalPages = max(1, it.totalPages) //dont let totalpages be 0
+                if (it.page == 1)
+                    viewModel.tracks.clear()
+                it.forEach { track ->
+                    if (viewModel.deletedTracksStringSet.contains(it.toString()))
+                        return@forEach
+                    if (!track.isNowPlaying || it.page == 1)
+                        viewModel.tracks.add(track)
+                    if (isShowingLoves && viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] != null)
+                        track.imageUrlsMap = viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)]
+                }
+                adapter.populate(oldList)
+            }
+            if (viewModel.page != it.page && Main.isTV)
+                loadRecents(1, true)
+            loadMoreListener.currentPage = it.page
 
-                ld.observe(viewLifecycleOwner, Observer {
-                    it ?: return@Observer
-                    adapter.populate(it, it.page)
-                    if (viewModel.page != it.page && Main.isTV)
-                        loadRecents(1, true)
-                    loadMoreListener.currentPage = it.page
-                    if (!firstLoadCache && firstLoadNw)
-                        firstLoadNw = false
-
-                    if (firstLoadCache) {
-                        firstLoadCache = false
-                        loadRecents(1)
-                        toggleGraphDetails(activity.sparkline, true)
-                    } else if (it.page == 1 && !isShowingLoves){
-                        viewModel.loadPending(2, false)
-                        refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
-                    }
-                })
+            if (!viewModel.loadedNw) {
+                loadRecents(1)
+                toggleGraphDetails(activity.sparkline, true)
+                viewModel.loadedNw = true
+            } else if (it.page == 1 && !isShowingLoves) {
+                viewModel.loadPending(2, false)
+                refreshHandler.removeCallbacks(timedRefresh)
+                refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
+            }
+        })
         viewModel.loadHero(null)
-                .observe(viewLifecycleOwner, Observer {
-                    it ?: return@Observer
+                .observe(viewLifecycleOwner, {
+                    it ?: return@observe
                     setGraph(it[0])
                 })
         if (isShowingLoves)
-            viewModel.trackInfo.observe(viewLifecycleOwner, Observer {
-                it ?: return@Observer
-                adapter.setImg(it.first, it.second.imageUrlsMap)
+            viewModel.trackInfo.observe(viewLifecycleOwner, {
+                it ?: return@observe
+                adapter.setImg(it.first, it.second?.imageUrlsMap)
             })
         else
             viewModel.loadPending(2, !activity.pendingSubmitAttempted)
-                    .observe(viewLifecycleOwner, Observer {
-                        it ?: return@Observer
+                    .observe(viewLifecycleOwner, {
+                        it ?: return@observe
                         activity.pendingSubmitAttempted = true
                         adapter.setPending(activity.supportFragmentManager, it)
                     })
-
-        recents_list.addOnScrollListener(loadMoreListener)
-        adapter.setLoadMoreReference(loadMoreListener)
-        adapter.setClickListener(this)
-        adapter.setFocusListener(this)
-        adapter.setHeroListener(this)
 
         sparkline.setOnClickListener{
             toggleGraphDetails(it as SparkView)
@@ -233,7 +248,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             }
         }
 
-        activity.hero_info.setOnClickListener { v:View ->
+        activity.hero_info.setOnClickListener {
             val t = activity.hero_img?.tag
             if (t is Track) {
                 if (t.url != null)
@@ -242,13 +257,13 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                     Stuff.toast(context!!, getString(R.string.no_track_url))
             }
         }
-        activity.hero_play.setOnClickListener { v:View ->
+        activity.hero_play.setOnClickListener {
             val t =  activity.hero_img?.tag
             if (t is Track)
                 Stuff.launchSearchIntent(t.artist, t.name, context!!)
         }
-        activity.hero_similar.setOnClickListener { v:View ->
-            v.isEnabled = false
+        activity.hero_similar.setOnClickListener {
+            it.isEnabled = false
             val t = activity.hero_img?.tag
             if (t is Track) {
                 val simFragment = SimilarTracksFragment()
@@ -258,12 +273,36 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 simFragment.arguments = b
 
                 activity.supportFragmentManager.beginTransaction()
-                        .hide(activity.supportFragmentManager.findFragmentByTag(Stuff.TAG_PAGER)!!)
+                        .hide(activity.supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)!!)
                         .add(R.id.frame, simFragment, Stuff.TAG_SIMILAR)
                         .addToBackStack(null)
                         .commit()
             }
         }
+        activity.hero_calendar.setOnClickListener {
+            val cal = Calendar.getInstance()
+            if (viewModel.toTime > 0) {
+                cal.time = Date(viewModel.toTime)
+            }
+            val dpd = DatePickerDialog(context!!, R.style.DarkDialog, {datePicker, year, month, dayOfMonth ->
+                datePicker ?: return@DatePickerDialog
+                cal.set(year, month, dayOfMonth, 23, 59, 59)
+                viewModel.toTime = cal.timeInMillis
+                loadRecents(1, true)
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            dpd.datePicker.maxDate = System.currentTimeMillis()
+            dpd.datePicker.minDate = appPrefs.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0)
+            dpd.setTitle(R.string.past_scrobbles)
+            dpd.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.reset)) { dialogInterface, i ->
+                viewModel.toTime = 0
+                loadRecents(1, true)
+            }
+            dpd.show()
+        }
+        if (viewModel.tracks.isEmpty())
+            loadRecents(1)
+        else
+            adapter.populate(viewModel.tracks)
     }
 
     private fun setGraph(pointsStr: String?) {
@@ -320,21 +359,22 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
     }
 
     private fun loadRecents(page: Int, force:Boolean = false): Boolean {
-        Stuff.log("loadRecents $page")
         recents_list ?: return false
 
-        if (page <= adapter.totalPages) {
-            val firstVisible = (recents_list.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+        if (page <= viewModel.totalPages) {
+            val firstVisible = ((recents_list.layoutManager ?: return false) as LinearLayoutManager)
+                    .findFirstVisibleItemPosition()
             if (force || (page == 1 && firstVisible < 5) || page > 1) {
                 if (isShowingLoves)
-                    viewModel.loadLovesList(page, true)
+                    viewModel.loadLoves(page)
                 else
-                    viewModel.loadRecentsList(page, true)
+                    viewModel.loadRecents(page)
             }
             if (adapter.itemCount == 0 || page > 1)
                 adapter.setLoading(true)
         } else {
             adapter.setLoading(false)
+            adapter.loadMoreListener.isAllPagesLoaded = true
             return false
         }
         return true
@@ -361,10 +401,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             Stuff.setAppBarHeight(activity!!)
     }
 
-//    private fun setHero(imgUrl: String?) {
-//        onSetHero(-1, null, imgUrl)
-//    }
-
     override fun onSetHero(position: Int, track: Track, fullSize: Boolean) {
         val ctl = activity?.ctl ?: return
         val hero = ctl.hero_img
@@ -376,7 +412,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         //TODO: check
         hero.tag = track
         val imgUrl = if(fullSize)
-            track.getWebpImageURL(ImageSize.EXTRALARGE)
+            track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600")
         else
             track.getWebpImageURL(ImageSize.LARGE)
 
@@ -385,9 +421,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             viewModel.loadHero(track.url)
         }
 
-        if (!imgUrl.isNullOrEmpty() && imgUrl == oldTrack?.getWebpImageURL(ImageSize.LARGE))
+        if (!imgUrl.isNullOrEmpty() && imgUrl == oldTrack?.getWebpImageURL(ImageSize.LARGE)) {
+            if ((activity?.ctl?.contentScrim as? ColorDrawable?)?.color != lastColorMutedBlack)
+                setPaletteColors()
             return
-
+        }
         //load img, animate colors
         if (!imgUrl.isNullOrEmpty()) {
             val req = Picasso.get()
@@ -436,22 +474,17 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 colorPrimDark = palette.getDarkVibrantColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
             colorLightWhite = palette.getLightMutedColor(ContextCompat.getColor(context!!, android.R.color.primary_text_dark))
             colorMutedDark = palette.getDarkMutedColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
-            colorMutedBlack = palette.getDarkMutedColor(ContextCompat.getColor(context!!, android.R.color.background_dark))
+            colorMutedBlack = palette.getDarkMutedColor(Color.BLACK)
 
-            ctl.setContentScrimColor(colorPrimDark)
+            ctl.setContentScrimColor(colorMutedBlack)
             ctl.hero_title.setTextColor(colorLightWhite)
-/*
-            if (Stuff.isDark(colorDomPrimary))
-                ctl.setCollapsedTitleTextColor(colorLightWhite)
-            else
-                ctl.setCollapsedTitleTextColor(colorMutedDark)
-*/
 
             val contentBgFrom = (content.background as ColorDrawable).color
             val contentBgAnimator = ObjectAnimator.ofArgb(content, "backgroundColor", contentBgFrom, colorMutedBlack)
             val navBgAnimator = ObjectAnimator.ofArgb(activity.nav_view, "backgroundColor", contentBgFrom, colorMutedBlack)
             val shareBgAnimator = ObjectAnimator.ofArgb(activity.hero_share, "colorFilter", lastColorLightWhite, colorLightWhite)
             val similarColorAnimator = ObjectAnimator.ofArgb(activity.hero_similar, "colorFilter", lastColorLightWhite, colorLightWhite)
+            val calendarColorAnimator = ObjectAnimator.ofArgb(activity.hero_calendar, "colorFilter", lastColorLightWhite, colorLightWhite)
             val infoBgAnimator = ObjectAnimator.ofArgb(activity.hero_info, "colorFilter", lastColorLightWhite, colorLightWhite)
             val searchBgAnimator = ObjectAnimator.ofArgb(activity.hero_play, "colorFilter", lastColorLightWhite, colorLightWhite)
             val sparklineTickTopAnimator = ObjectAnimator.ofArgb(activity.sparkline_tick_top, "textColor", lastColorLightWhite, colorLightWhite)
@@ -464,7 +497,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             }
 
             val animSetList = mutableListOf(contentBgAnimator,
-                    similarColorAnimator, shareBgAnimator, searchBgAnimator, infoBgAnimator,
+                    calendarColorAnimator, similarColorAnimator, shareBgAnimator,
+                    searchBgAnimator, infoBgAnimator,
                     navbarBgAnimator, sparklineAnimator, sparklineHorizontalLabel,
                     sparklineTickBottomAnimator, sparklineTickTopAnimator)
             if (activity.coordinator.paddingStart > 0)
@@ -489,8 +523,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             animSet.duration = 1500
             animSet.start()
         }
-
-
 
         val d = ctl.hero_img.drawable
         if (oneColor != null) {
@@ -519,8 +551,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             }
             else -> {
-                val lastClickedPos = adapter.selectedPos
-                adapter.selectedPos = position
+                val lastClickedPos = viewModel.selectedPos
+                viewModel.selectedPos = position
                 val lastHolder = recents_list.findViewHolderForAdapterPosition(lastClickedPos)
                 val curHolder = recents_list.findViewHolderForAdapterPosition(position)
                 if (lastHolder is RecentsAdapter.VHTrack? && curHolder is RecentsAdapter.VHTrack) {
@@ -589,7 +621,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             val exists = LastfmUnscrobbler(context)
                     .checkCsrf(prefs.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
             if (!exists) {
-                //TODO: show a dialog and then open webview
                 AlertDialog.Builder(context!!, R.style.DarkDialog)
                         .setMessage(R.string.lastfm_reauth)
                         .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -636,8 +667,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                         if (!Main.isOnline)
                             Stuff.toast(context!!, getString(R.string.unavailable_offline))
                         else if (csrfTokenExists()) {
-                            LFMRequester(Stuff.DELETE, track.artist, track.name, track.playedWhen.time.toString())
-                                    .addCallback { succ ->
+                            LFMRequester(context!!).delete(track) { succ ->
                                         if (succ) {
                                             view?.post {
                                                 adapter.removeTrack(track)
@@ -645,13 +675,14 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                                         } else
                                             Stuff.toast(context, getString(R.string.network_error))
                                     }
-                                    .asAsyncTask(context!!)
+                                    .asAsyncTask()
                         }
                     }
                     R.id.menu_play -> activity!!.hero_play.callOnClick()
                     R.id.menu_info -> activity!!.hero_info.callOnClick()
                     R.id.menu_share -> activity!!.hero_share.callOnClick()
                     R.id.menu_similar -> activity!!.hero_similar.callOnClick()
+                    R.id.menu_calendar -> activity!!.hero_calendar.callOnClick()
                     else -> return false
                 }
                 return true
@@ -673,7 +704,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
 
         val isRtl = resources.getBoolean(R.bool.is_rtl)
         if (track.isLoved) {
-            LFMRequester(Stuff.UNLOVE, track.artist, track.name).asAsyncTask(context!!)
+            LFMRequester(context!!).loveOrUnlove(false, track.artist, track.name).asAsyncTask()
 
             alphaAnimator.setFloatValues(0f)
             scalexAnimator.setFloatValues(1f, 0.5f)
@@ -685,7 +716,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             if (loveIcon.background == null)
                 loveIcon.background = ContextCompat.getDrawable(context!!, R.drawable.vd_heart_stroked)
 
-            LFMRequester(Stuff.LOVE, track.artist, track.name).asAsyncTask(context!!)
+            LFMRequester(context!!).loveOrUnlove(true, track.artist, track.name).asAsyncTask()
 
             loveIcon.alpha = 0f
             loveIcon.visibility = View.VISIBLE
@@ -706,7 +737,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
     }
 
     companion object {
-        private var lastColorVibrantDark: Int = Color.rgb(0x88, 0x0e, 0x4f)
         private var lastColorLightWhite = Color.WHITE
         private var lastColorMutedDark = Color.BLACK
         var lastColorMutedBlack = Color.BLACK

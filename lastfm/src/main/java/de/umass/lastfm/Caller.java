@@ -309,12 +309,12 @@ public class Caller {
                 lastError = null;
 //			this.lastResult = result;
 			return result;
-		} catch (IOException e) {
-			throw new CallException(e);
-		} catch (SAXException e) {
+		} catch (IOException | SAXException e) {
+		    if (cache != null)
+                cache.remove(cacheEntryName);
 			throw new CallException(e);
 		}
-	}
+    }
 
 	private InputStream getStreamFromCache(String cacheEntryName) {
 		if (cache != null && cache.contains(cacheEntryName) && !cache.isExpired(cacheEntryName)) {

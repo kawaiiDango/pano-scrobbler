@@ -20,6 +20,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.media.app.MediaStyleMod
 import com.arn.scrobble.pending.db.PendingScrobblesDb
+import de.umass.lastfm.scrobble.ScrobbleData
 import org.codechimp.apprater.AppRater
 
 
@@ -190,7 +191,7 @@ class NLService : NotificationListenerService() {
                     .remove("sesskey")
                     .remove("offline_scrobble")
                     .remove("search_url")
-                    .remove(Stuff.PREF_ACTIVITY_NUM_SCROBBLES)
+                    .remove(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES)
                     .remove(Stuff.PREF_ACTIVITY_PROFILE_PIC)
                     .apply()
     }
@@ -295,10 +296,10 @@ class NLService : NotificationListenerService() {
                         } else
                             return
                     }
-
-                    LFMRequester(if (loved) Stuff.LOVE else Stuff.UNLOVE, artist!!, title!!)
+                    LFMRequester(applicationContext)
                             .skipContentProvider()
-                            .asSerialAsyncTask(applicationContext)
+                            .loveOrUnlove(loved,  artist!!, title!!)
+                            .asSerialAsyncTask()
                     val np = handler.hasMessages(hash)
                     currentBundle.putBoolean(B_USER_LOVED, loved)
                     handler.notifyScrobble(artist,
@@ -423,10 +424,18 @@ class NLService : NotificationListenerService() {
                     }
                 }
                 if (artist != "" && title != "") {
+                    val scrobbleData = ScrobbleData()
+                    scrobbleData.artist = artist
+                    scrobbleData.album = album
+                    scrobbleData.track = title
+                    scrobbleData.albumArtist = albumArtist
+                    scrobbleData.timestamp = (now/1000).toInt() // in secs
+                    scrobbleData.duration = (duration/1000).toInt() // in secs
                     lastNpTask?.cancel(true)
-                    lastNpTask = LFMRequester(Stuff.NOW_PLAYING, artist, album, title, albumArtist, now.toString(), duration.toString(), hash.toString())
-                        .skipContentProvider()
-                        .asSerialAsyncTask(applicationContext)
+                    lastNpTask = LFMRequester(applicationContext)
+                            .skipContentProvider()
+                            .scrobble(true, scrobbleData, hash)
+                            .asAsyncTask()
 
                     val b = Bundle()
                     b.putString(B_ARTIST, artist)
@@ -449,7 +458,6 @@ class NLService : NotificationListenerService() {
                         else
                             delayMillis
                     }
-                    //TODO: resume
                     if (delay - position > 1000)
                         delay -= position
                     b.putLong(B_DELAY, delay)
@@ -475,10 +483,18 @@ class NLService : NotificationListenerService() {
         }
 
         private fun submitScrobble(artist:String, album:String, title: String, albumArtist: String, time:Long, duration:Long, hash:Int) {
-            lastNpTask = null
-            LFMRequester(Stuff.SCROBBLE, artist, album, title, albumArtist, time.toString(), duration.toString(), hash.toString())
+            val scrobbleData = ScrobbleData()
+            scrobbleData.artist = artist
+            scrobbleData.album = album
+            scrobbleData.track = title
+            scrobbleData.albumArtist = albumArtist
+            scrobbleData.timestamp = (time/1000).toInt() // in secs
+            scrobbleData.duration = (duration/1000).toInt() // in secs
+            LFMRequester(applicationContext)
                     .skipContentProvider()
-                    .asSerialAsyncTask(applicationContext)
+                    .scrobble(false, scrobbleData, hash)
+                    .asAsyncTask()
+
             var userPlayCount = currentBundle.getInt(B_USER_PLAY_COUNT)
             if (userPlayCount > 0)
                 currentBundle.putInt(B_USER_PLAY_COUNT, ++userPlayCount)
@@ -486,12 +502,16 @@ class NLService : NotificationListenerService() {
         }
 
         fun buildNotification(): NotificationCompat.Builder {
+            val visibility = if (pref.getBoolean(Stuff.PREF_LOCKSCREEN_NOTI, false))
+                    NotificationCompat.VISIBILITY_PUBLIC
+                else
+                    NotificationCompat.VISIBILITY_SECRET
             return NotificationCompat.Builder(applicationContext)
                     .setShowWhen(false)
                     .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))
                     .setAutoCancel(true)
                     .setCustomBigContentView(null)
-                    .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+                    .setVisibility(visibility)
         }
 
         fun notifyScrobble(artist: String, title: String, hash:Int, nowPlaying: Boolean, loved: Boolean = false, userPlayCount: Int = 0) {

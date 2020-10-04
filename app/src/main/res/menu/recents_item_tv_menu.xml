@@ -22,4 +22,9 @@
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_similar"
         android:title="@string/similar_tracks"/>
+    <item
+        android:id="@+id/menu_calendar"
+        app:iconTint="?android:colorForeground"
+        android:icon="@drawable/vd_calendar"
+        android:title="@string/past_scrobbles"/>
 </menu>

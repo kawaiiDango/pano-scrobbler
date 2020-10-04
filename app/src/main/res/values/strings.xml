@@ -7,11 +7,15 @@
     <string name="network_error">Network error</string>
     <string name="scrobble_ignored">ignored "%s"</string>
     <string name="scrobble_ignored_or_old">Artist ignored or scrobble is too old</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ignored the edit probably because the scrobble is too old. Would you like to save this edit for future scrobbles instead?</string>
     <string name="limit_exceeded_ignored">Daily scrobble limit exceeded</string>
     <string name="required_fields_empty">Required fields are empty</string>
     <string name="artist">Artist</string>
+    <string name="artists">Artists</string>
     <string name="album">Album (optional)</string>
+    <string name="albums">Albums</string>
     <string name="track">Track</string>
+    <string name="tracks">Tracks</string>
     <string name="state_scrobbling">Now scrobbling…</string>
     <string name="state_scrobbled">Scrobbled</string>
     <string name="state_unscrobbled">Un-scrobbled</string>
@@ -57,17 +61,14 @@
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobble">Pending scrobble</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
-    <plurals name="num_scrobbles">
-        <item quantity="one">%1$d scrobble today</item>
-        <item quantity="other">%1$d scrobbles today</item>
-    </plurals>
+    <string name="num_scrobbles_nav">%1$d scrobbles • %2$d today</string>
     <plurals name="num_scrobbles_noti">
         <item quantity="one">%1$d scrobble</item>
         <item quantity="other">%1$d scrobbles</item>
     </plurals>
     <string name="please_authorize">Please Authorize LastFM</string>
     <string name="friends">Friends</string>
-    <string name="num_scrobbles">%1$s (%2$d scrobbles)</string>
+    <string name="num_scrobbles_since">%1$d scrobbles, since %2$s</string>
     <string name="grant_autostart">Enable autostart</string>
     <string name="grant_autostart_desc">Needed on %1$s devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>
@@ -88,6 +89,7 @@
     <string name="force_remembered">Force scrobble (will remember)</string>
     <string name="force">Force</string>
     <string name="grant_rec_perm">Please grant permission to use the microphone</string>
+    <string name="menu_charts">Charts</string>
     <string name="menu_rec">Scrobble from mic</string>
     <string name="menu_rec_short">From mic</string>
     <string name="add_to_hs">Add to homescreen</string>
@@ -100,6 +102,30 @@
     <string name="details">Details</string>
     <string name="details_text">Will %1$s to %2$s</string>
     <string name="saved_as_pending">Saved as a pending scrobble</string>
+    <string name="sort">Sort</string>
+    <string name="reset">Reset</string>
+    <string name="past_scrobbles">Past scrobbles</string>
+    <string name="possesion">%1$s\'s</string>
+    <string name="my">My</string>
+    <string name="scrobbles_till">Scrobbles till %1$s</string>
+    <string name="from">From %1$s</string>
+    <string name="a_to_b">%1$s to %2$s</string>
+    <string name="weekly_range">weekly (%1$s to %2$s)</string>
+    <string name="share_this_chart">Share this chart</string>
+    <string name="charts_choose_week">Choose a week</string>
+    <string name="charts_7day">1 week</string>
+    <string name="charts_1month">1 month</string>
+    <string name="charts_3month">3 months</string>
+    <string name="charts_6month">6 months</string>
+    <string name="charts_12month">1 year</string>
+    <string name="charts_overall">Overall</string>
+    <string name="charts_no_data">No data for this period</string>
+    <string name="charts_num_text">%1$d. %2$s</string>
+    <string name="charts_share_text">%1$s %2$s top %3$s:\n%4$s</string>
+    <string name="menu_random">I\'m feeling lucky</string>
+    <string name="random_not_found">No track found</string>
+    <string name="random_scrobble">Random scrobble</string>
+    <string name="random_love">Random loved track</string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
     <string name="pref_master_on">Scrobbler active</string>
@@ -109,6 +135,7 @@
     <string name="pref_noti_on">…while scrobbling</string>
     <string name="pref_noti_q">You may want to promote the notification, if it shows up in Other Notifications</string>
     <string name="pref_noti">Notifications</string>
+    <string name="pref_lockscreen_noti">Lockscreen notifications</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from">Scrobble from</string>
     <string name="pref_enabled_apps_summary">Supports most apps that play music with metadata</string>

@@ -8,6 +8,7 @@ import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.grid_item_recents.view.*
 import kotlinx.android.synthetic.main.header_default.view.*
@@ -15,13 +16,15 @@ import kotlinx.android.synthetic.main.header_default.view.*
 /**
  * Created by arn on 29/12/2017.
  */
-class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Adapter<SimilarTracksAdapter.VHSimilar>() {
+class SimilarTracksAdapter (private val fragmentContent: View, private val viewModel: TracksVM) : RecyclerView.Adapter<SimilarTracksAdapter.VHSimilar>() {
 
-    private var clickListener: ItemClickListener? = null
-    private var focusChangeListener: FocusChangeListener? = null
-    private val tracks = mutableListOf<Track>()
-    private val tracksImg = mutableMapOf<Int,String>()
+    lateinit var clickListener: ItemClickListener
+    lateinit var focusChangeListener: FocusChangeListener
     var itemSizeDp = 150
+
+    init {
+        stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHSimilar{
         val inflater = LayoutInflater.from(parent.context)
@@ -29,41 +32,33 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
         return VHSimilar(view, itemSizeDp, clickListener, focusChangeListener)
     }
 
-    fun getItem(id: Int): Track {
-        return tracks[id]
-    }
+    fun getItem(id: Int) = viewModel.tracks[id]
 
-    fun setImg(pos:Int, url:String){
-        tracksImg[pos] = url
+    fun setImg(pos:Int, imgMapp: Map<ImageSize, String>?){
+        viewModel.imgMap[pos] = imgMapp ?: mapOf()
         notifyItemChanged(pos)
     }
 
-    override fun getItemCount() = tracks.size
+    override fun getItemCount() = viewModel.tracks.size
 
     override fun onBindViewHolder(holder:VHSimilar, position: Int) {
-        holder.setItemData(tracks[position], tracksImg[position])
+        holder.setItemData(viewModel.tracks[position], viewModel.imgMap[position]?.get(ImageSize.EXTRALARGE))
     }
 
-    fun setClickListener(itemClickListener: ItemClickListener) {
-        clickListener = itemClickListener
-    }
-
-    fun setFocusListener(itemFocusListener: FocusChangeListener) {
-        this.focusChangeListener = itemFocusListener
-    }
-
-    fun populate(res: List<Track>){
-        if (res.isEmpty())
+    fun populate(tracks: List<Track>){
+        if (tracks.isEmpty())
             fragmentContent.header_text?.text = fragmentContent.context.getString(R.string.no_similar_tracks)
         else {
-            tracks.clear()
-            tracks.addAll(res)
+            if (tracks != viewModel.tracks) {
+                viewModel.tracks.clear()
+                viewModel.tracks.addAll(tracks)
+            }
             notifyDataSetChanged()
         }
     }
 
-    class VHSimilar(view: View, sizeDp: Int, private val clickListener: ItemClickListener?,
-                    private val focusChangeListener: FocusChangeListener?) :
+    class VHSimilar(view: View, sizeDp: Int, private val clickListener: ItemClickListener,
+                    private val focusChangeListener: FocusChangeListener) :
             RecyclerView.ViewHolder(view), View.OnClickListener, View.OnFocusChangeListener {
         private val vTitle = view.recents_title
         private val vSubtitle = view.recents_subtitle
@@ -78,12 +73,12 @@ class SimilarTracksAdapter (private val fragmentContent: View) : RecyclerView.Ad
         }
 
         override fun onClick(view: View) {
-            clickListener?.onItemClick(view, adapterPosition)
+            clickListener.onItemClick(view, adapterPosition)
         }
 
         override fun onFocusChange(view: View?, focused: Boolean) {
             if (view != null && !view.isInTouchMode && focused)
-                focusChangeListener?.onFocus(itemView, adapterPosition)
+                focusChangeListener.onFocus(itemView, adapterPosition)
         }
 
         fun setItemData(track: Track, imgUrl:String?) {

@@ -9,20 +9,19 @@ import de.umass.lastfm.User
 
 
 class FriendsVM(app: Application): AndroidViewModel(app) {
-    private val friends = MutableLiveData<PaginatedResult<User>>()
-    private val track = MutableLiveData<Pair<String,PaginatedResult<Track>>>()
+    val friends = mutableListOf<User>()
+    val receiver = MutableLiveData<PaginatedResult<User>>()
+    val track = MutableLiveData<Pair<String,PaginatedResult<Track>>>()
+    val paletteColorsCache = mutableMapOf<String, Int>()
+    var page = 1
+    var totalPages = 1
+    var sorted = false
 
-    private var page = 1
-
-    fun loadFriendsList(page: Int, reload: Boolean): MutableLiveData<PaginatedResult<User>> {
+    fun loadFriendsList(page: Int) {
         this.page = page
-        if (reload)
-            LFMRequester(Stuff.GET_FRIENDS, page.toString()).asAsyncTask(getApplication(), friends)
-        return friends
+        LFMRequester(getApplication()).getFriends(page).asAsyncTask(receiver)
     }
-    fun loadFriendsRecents(user: String?): MutableLiveData<Pair<String,PaginatedResult<Track>>> {
-        if (user != null)
-            LFMRequester(Stuff.GET_FRIENDS_RECENTS, user).asAsyncTask(getApplication(), track)
-        return track
+    fun loadFriendsRecents(user: String) {
+        LFMRequester(getApplication()).getFriendsRecents(user).asAsyncTask(track)
     }
 }

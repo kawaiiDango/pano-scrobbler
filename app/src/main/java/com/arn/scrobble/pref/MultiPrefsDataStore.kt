@@ -19,7 +19,8 @@ class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
             Stuff.PREF_GNUFM_ROOT to "https://",
             Stuff.PREF_LASTFM_DISABLE to false,
             Stuff.PREF_NOW_PLAYING to true,
-            Stuff.PREF_PIXEL_NP to true
+            Stuff.PREF_PIXEL_NP to true,
+            Stuff.PREF_LOCKSCREEN_NOTI to false,
     )
 
     override fun getString(key: String, defValue: String?) =

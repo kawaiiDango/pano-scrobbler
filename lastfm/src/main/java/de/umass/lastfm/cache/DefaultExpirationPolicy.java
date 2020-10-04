@@ -49,6 +49,7 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 	 */
 	protected static final long ONE_WEEK = ONE_DAY * 7;
     public static final long NETWORK_AND_CACHE_CONST = ONE_WEEK + 1;
+    public static final long FIVE_MINUTES = 1000 * 60 * 5;
 
 	/**
 	 * Contains the lower case method names for all requests that should be cached 1 week
@@ -69,13 +70,17 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 		ONE_WEEK_METHODS.add("tag.gettopartists");
 		ONE_WEEK_METHODS.add("tag.gettoptags");
 		ONE_WEEK_METHODS.add("tag.gettoptracks");
-		ONE_WEEK_METHODS.add("user.gettopalbums");
-		ONE_WEEK_METHODS.add("user.gettopartists");
-		ONE_WEEK_METHODS.add("user.gettoptracks");
+//		ONE_WEEK_METHODS.add("user.gettopalbums");
+//		ONE_WEEK_METHODS.add("user.gettopartists");
+//		ONE_WEEK_METHODS.add("user.gettoptracks");
 		ONE_WEEK_METHODS.add("user.gettoptags");
 
 		//track info without username
         ONE_WEEK_METHODS.add("track.getinfo");
+        //album info without username
+        ONE_WEEK_METHODS.add("album.getinfo");
+
+        ONE_WEEK_METHODS.add("artist.getinfo.spotify");
 	}
 
 	/**
@@ -89,7 +94,7 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 	 * caching use the {@link #setCacheRecentWeeklyCharts(long)} method to set this value.
 	 * This variable also applies to the getWeeklyChartList method
 	 */
-	protected long cacheRecentWeeklyCharts = ONE_WEEK;
+	protected long cacheRecentWeeklyCharts = FIVE_MINUTES;
 
 	public long getExpirationTime(String method, Map<String, String> params) {
 		method = method.toLowerCase();
@@ -99,8 +104,11 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 			else
 				return cacheRecentWeeklyCharts;
 		}
-		if (method.equals("track.getinfo"))
+		if (method.equals("track.getinfo") || method.equals("album.getinfo"))
 			return !params.containsKey("username") ? ONE_WEEK : -1;
+
+		if (method.equals("user.gettopalbums") || method.equals("user.gettopartists") || method.equals("user.gettoptracks"))
+		    return FIVE_MINUTES;
 
 		return ONE_WEEK_METHODS.contains(method) ? ONE_WEEK : -1;
 	}

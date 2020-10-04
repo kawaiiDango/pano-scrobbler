@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.coordinator_main.view.*
 
 
 
-class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTabSelectedListener {
+class HomePagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTabSelectedListener {
 
     private val tabMeta = arrayOf(
             Pair(R.string.recents, R.drawable.vd_history),
@@ -30,29 +30,18 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
     private var backStackChecked = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.content_pager, container, false)
+        return inflater.inflate(R.layout.content_pager, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //https://stackoverflow.com/questions/12490963/replacing-viewpager-with-fragment-then-navigating-back
         if (!view.isInTouchMode)
             view.requestFocus()
         (view as ViewPager).addOnPageChangeListener(this)
         view.offscreenPageLimit = 2
-        view.adapter = PagerAdapter(childFragmentManager, 3)
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.adapter = HomePagerAdapter(childFragmentManager, 3)
         val tabBar = activity!!.ctl.tab_bar
         tabBar.setupWithViewPager(view.pager, false)
-
-        tabBar.getTabAt(0)!!.setText(tabMeta[0].first)
-        for (i in 1 until tabBar.tabCount)
-            tabBar.getTabAt(i)!!.setIcon(tabMeta[i].second)
-
-//        for (i in 0 until tabBar.tabCount)
-//            tabBar.getTabAt(i)!!.setIcon(tabMeta[i].second)
-
-        tabBar.addOnTabSelectedListener(this)
         backStackChecked = false
         setGestureExclusions(true)
         super.onViewCreated(view, savedInstanceState)
@@ -63,7 +52,7 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
         super.onDestroyView()
     }
 
-    private fun setGestureExclusions(set: Boolean){
+    fun setGestureExclusions(set: Boolean){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
                 !resources.getBoolean(R.bool.is_rtl)) {
             val list = if (set)
@@ -77,30 +66,34 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
 
     override fun onStart() {
         super.onStart()
+        val tabBar = activity!!.ctl.tab_bar
         if (!backStackChecked) { //dont invoke if coming from background/app switching
-            if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0) {
-                val lastTab = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+            val lastTab = if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_NOW_PLAYING)
+                0
+            else
+                context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
                         .getInt(Stuff.PREF_ACTIVITY_LAST_TAB, 0)
-                activity!!.ctl.tab_bar.getTabAt(lastTab)?.select()
+            tabBar.getTabAt(lastTab)?.select()
+            for (i in 0 until tabBar.tabCount) {
+                val tab = tabBar.getTabAt(i)!!
+                if (i == lastTab)
+                    tab.setText(tabMeta[i].first)
+                else
+                    tab.setIcon(tabMeta[i].second)
             }
             (activity as Main).onBackStackChanged()
             backStackChecked = true
         }
+        tabBar.addOnTabSelectedListener(this)
     }
 
     override fun onStop() {
-        if (isVisible && activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0) {
-            val pref = context?.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-            val pager = activity?.pager
-            if (pager != null && pref != null)
-                pref.edit().putInt(Stuff.PREF_ACTIVITY_LAST_TAB, pager.currentItem).apply()
-        }
+        activity?.ctl?.tab_bar?.removeOnTabSelectedListener(this)
         super.onStop()
     }
 
     override fun onDestroy() {
         pager?.removeOnPageChangeListener(this)
-        activity?.ctl?.tab_bar?.removeOnTabSelectedListener(this)
         super.onDestroy()
     }
 
@@ -125,5 +118,12 @@ class PagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.OnTab
     override fun onTabSelected(tab: TabLayout.Tab) {
         tab.setText(tabMeta[tab.position].first)
         tab.icon = null
+        if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0) {
+            context ?: return
+            context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+                    .edit()
+                    .putInt(Stuff.PREF_ACTIVITY_LAST_TAB, tab.position)
+                    .apply()
+        }
     }
 }

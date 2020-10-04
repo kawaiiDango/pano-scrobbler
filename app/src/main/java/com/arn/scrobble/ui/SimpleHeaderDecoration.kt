@@ -5,8 +5,8 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.RecentsAdapter
 import com.arn.scrobble.Stuff
 
 
@@ -26,11 +26,12 @@ class SimpleHeaderDecoration(private val headerHeight: Int, private val footerHe
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        if ((parent.adapter as RecentsAdapter).getLoading()) {
-            for (i in 0..parent.childCount) {
-                val view = parent.getChildAt(i)
+        val lm = (parent.adapter as LoadMoreGetter).loadMoreListener
+        if (lm.loading && !lm.isAllPagesLoaded) {
+            for (i in (parent.childCount - 1) downTo 0) {
+                val view = parent.getChildAt(i) ?: break
                 if (parent.getChildAdapterPosition(view) + 1 == parent.adapter?.itemCount){
-                    val center = view.width/2f
+                    val center = parent.width/2f
                     val step = Stuff.dp2px(20, parent.context)
                     val y = (view.bottom + footerHeight / 2).toFloat()
 
@@ -49,9 +50,15 @@ class SimpleHeaderDecoration(private val headerHeight: Int, private val footerHe
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView,
                                 state: RecyclerView.State) {
         val childAdapterPosition = parent.getChildAdapterPosition(view)
-        when (childAdapterPosition) {
-            0 -> outRect.top = headerHeight
-            parent.adapter!!.itemCount - 1 -> outRect.bottom = footerHeight
+        val span =
+            if (parent.layoutManager is GridLayoutManager)
+                (parent.layoutManager as GridLayoutManager).spanCount
+            else
+                1
+        when {
+            childAdapterPosition < span -> outRect.top = headerHeight
+            childAdapterPosition >= parent.adapter!!.itemCount - span ->
+                outRect.bottom = footerHeight
             else -> outRect.set(0, 0, 0, 0)
         }
     }

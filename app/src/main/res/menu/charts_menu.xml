@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/vd_share"
+        android:title="@string/share_this_chart"
+        app:iconTint="@color/colorAccent"
+        app:showAsAction="always" />
+</menu>

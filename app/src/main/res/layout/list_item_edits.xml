@@ -90,7 +90,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:contentDescription="@string/menu_delete"
         android:focusable="true"
         android:gravity="top|end"

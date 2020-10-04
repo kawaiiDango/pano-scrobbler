@@ -17,9 +17,10 @@
         android:layout_height="60dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:contentDescription="@string/album_art"
         android:duplicateParentState="true"
         android:foreground="@drawable/selector_recents_img"
-        tools:srcCompat="@tools:sample/avatars"/>
+        tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/recents_menu"
@@ -29,7 +30,7 @@
         android:layout_alignParentBottom="false"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
         android:gravity="top|end"
         android:paddingEnd="10dp"
@@ -50,6 +51,7 @@
         android:layout_marginStart="11dp"
         android:layout_toEndOf="@+id/recents_img"
         android:layout_toStartOf="@+id/date_frame"
+        android:layout_alignWithParentIfMissing="true"
         android:ellipsize="end"
         android:gravity="start"
         android:maxLines="1"
@@ -110,14 +112,9 @@
     </FrameLayout>
     <View
         android:id="@+id/recents_img_overlay"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@+id/recents_img"
-        android:layout_alignParentStart="true"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="35dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="40dp"
         android:layout_marginTop="5dp"
         android:layout_toStartOf="@+id/recents_title"
         android:alpha="0.9"

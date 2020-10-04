@@ -8,7 +8,6 @@ import android.graphics.drawable.VectorDrawable
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.LoadMoreGetter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
@@ -36,17 +37,15 @@ import java.lang.ref.WeakReference
  * Created by arn on 10/07/2017.
  */
 
-class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<FriendsAdapter.VHUser>() {
+class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM) : RecyclerView.Adapter<FriendsAdapter.VHUser>(), LoadMoreGetter {
 
-    private var users = mutableListOf<User>()
-    private var itemClickListener: ItemClickListener? = null
-    var totalPages: Int = 1
+    lateinit var itemClickListener: ItemClickListener
+    override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
     val handler by lazy { DelayHandler(WeakReference(this)) }
-    lateinit var viewModel: FriendsVM
-    private val paletteColorsCache = LruCache<String, Int>(50)
 
     init {
         setHasStableIds(true)
+        stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHUser {
@@ -60,98 +59,82 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
         val view = inflater.inflate(R.layout.grid_item_friend, fragmentContent as ViewGroup, false) as ViewGroup
 
         val holder = VHUser(view, false)
-        holder.setItemData(users[position])
+        holder.setItemData(viewModel.friends[position])
         return view
     }
 
     override fun onBindViewHolder(holder: VHUser, position: Int) {
-        holder.setItemData(users[position])
+        holder.setItemData(viewModel.friends[position])
     }
 
     // total number of cells
-    override fun getItemCount() = users.size
+    override fun getItemCount() = viewModel.friends.size
 
-    fun populate(res: PaginatedResult<User>, page: Int = 1) {
+    fun populate() {
         val refresh = fragmentContent.friends_swipe_refresh ?: return
-        if (!fragmentContent.isShown || fragmentContent.friends_grid == null)
-            return
+        fragmentContent.friends_grid ?: return
         refresh.isRefreshing = false
-        totalPages = res.totalPages
+        loadMoreListener.loading = false
+        val header = fragmentContent.header_text
+        if (viewModel.friends.isEmpty()) {
+            header.visibility = View.VISIBLE
+            header.text = header.context.getString(R.string.no_friends)
+        } else
+            header.visibility = View.GONE
 
-        val sortedRes = res.pageResults.sortedByDescending {
-            if (it?.playcount == null || it.playcount == 0) //put users with 0 plays at the end
-                0L
-            else
-                it.recentTrack?.playedWhen?.time ?: System.currentTimeMillis()
-        }
-        val glm = fragmentContent.friends_grid.layoutManager as GridLayoutManager? ?: return
-        //get old now playing data to prevent flicker
-        val firstVisible = glm.findFirstVisibleItemPosition()
-        val lastVisible = glm.findLastVisibleItemPosition()
-        for (i in 0 until itemCount)
-            for (j in i until sortedRes.size) {
-                if (users[i].name == sortedRes[j].name &&
-                        sortedRes[j].recentTrack == null && users[i].recentTrack != null &&
-                        (i in firstVisible..lastVisible)) {
-                    sortedRes[j].recentTrack = users[i].recentTrack
-                    sortedRes[j].playcount = users[i].playcount
-                    if (!handler.hasMessages(users[i].name.hashCode())) {
-                        val msg = handler.obtainMessage(users[i].name.hashCode())
-                        msg.arg1 = j
-                        handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
-                    }
-                }
-            }
-
-        if (page == 1) {
-            users.clear()
-            val header = fragmentContent.header_text
-            if (res.isEmpty) {
-                header.visibility = View.VISIBLE
-                header.text = header.context.getString(R.string.no_friends)
-            }
-        }
-        users.addAll(sortedRes)
         notifyDataSetChanged()
     }
 
     fun populateFriendsRecent(res: PaginatedResult<Track>, username: String) {
-        if (!res.isEmpty && users.isNotEmpty()) {
-            for (pos in 0..users.size) {
-                if (pos < users.size && users[pos].name == username){
-                    val oldRecent = users[pos].recentTrack
+        if (!res.isEmpty && viewModel.friends.isNotEmpty()) {
+            for (pos in 0..viewModel.friends.size) {
+                if (pos < viewModel.friends.size && viewModel.friends[pos].name == username){
+                    val oldRecent = viewModel.friends[pos].recentTrack
                     val newRecent = res.pageResults.first()
                     if (oldRecent?.playedWhen != newRecent?.playedWhen || oldRecent?.name != newRecent?.name) {
-                        users[pos].recentTrack = newRecent
-                        users[pos].playcount = res.totalPages
+                        viewModel.friends[pos].recentTrack = newRecent
+                        viewModel.friends[pos].playcount = res.totalPages
                         notifyItemChanged(pos, 0)
                     }
                     break
                 }
             }
         }
+        if (!Main.isTV && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.friends.size > 1 &&
+                !viewModel.friends.any { it.recentTrack == null }) {
+            val sortButton = fragmentContent.friends_sort
+            sortButton.show()
+            sortButton.setOnClickListener {
+                viewModel.friends.sortByDescending {
+                    if (it.playcount == 0) //put users with 0 plays at the end
+                        0L
+                    else
+                        it.recentTrack?.playedWhen?.time ?: System.currentTimeMillis()
+                }
+                viewModel.sorted = true
+                notifyDataSetChanged()
+                sortButton.hide()
+                fragmentContent.friends_grid.smoothScrollToPosition(0)
+            }
+        }
     }
 
     fun loadFriendsRecents(pos:Int) {
         val glm = fragmentContent.friends_grid.layoutManager as GridLayoutManager? ?: return
-        if (pos < users.size && (pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
+        if (pos < viewModel.friends.size && (pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
                 (pos - glm.spanCount) <= glm.findLastVisibleItemPosition())
-            viewModel.loadFriendsRecents(users[pos].name)
+            viewModel.loadFriendsRecents(viewModel.friends[pos].name)
     }
 
     fun getItem(id: Int): User? {
-        return if (id >= 0 && id < users.size)
-            users[id]
+        return if (id >= 0 && id < viewModel.friends.size)
+            viewModel.friends[id]
         else
             null
     }
 
     override fun getItemId(position: Int): Long {
-        return users[position].name.hashCode().toLong()
-    }
-
-    fun setClickListener(itemClickListener: ItemClickListener) {
-        this.itemClickListener = itemClickListener
+        return viewModel.friends[position].name.hashCode().toLong()
     }
 
     inner class VHUser(view: View, private val clickable: Boolean = true) : RecyclerView.ViewHolder(view), View.OnClickListener {
@@ -173,7 +156,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
 
         override fun onClick(view: View) {
             if (clickable)
-                itemClickListener?.onItemClick(itemView, adapterPosition)
+                itemClickListener.onItemClick(itemView, adapterPosition)
         }
 
         fun setItemData(user: User) {
@@ -221,10 +204,10 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
             val userImg = user.getWebpImageURL(ImageSize.EXTRALARGE)
             if (userImg != vImg.tag) {
                 vImg.tag = userImg
-                val bgDark = ContextCompat.getColor(itemView.context, android.R.color.background_dark)
-                val wasCached = paletteColorsCache[userImg] != null
+                val bgDark = ContextCompat.getColor(itemView.context, R.color.darkToolbar)
+                val wasCached = viewModel.paletteColorsCache[userImg] != null
                 if (wasCached)
-                    itemView.setBackgroundColor(paletteColorsCache[userImg])
+                    itemView.setBackgroundColor(viewModel.paletteColorsCache[userImg]!!)
                 else
                     itemView.setBackgroundColor(bgDark)
 
@@ -245,7 +228,7 @@ class FriendsAdapter(private val fragmentContent: View) : RecyclerView.Adapter<F
                                             anim.duration = 350
                                             anim.interpolator = AccelerateInterpolator()
                                             anim.start()
-                                            paletteColorsCache.put(userImg, colorMutedBlack)
+                                            viewModel.paletteColorsCache.put(userImg, colorMutedBlack)
                                         }
                                 }
 

@@ -17,7 +17,7 @@
             android:id="@+id/app_list_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="?selectableItemBackgroundBorderless"
             android:textColor="?android:attr/textColorSecondary"
             android:text="@string/pref_enabled_apps_title"
             app:drawableTopCompat="@drawable/vd_add" />

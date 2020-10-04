@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 class MasterSwitchQS: TileService() {
 
     override fun onClick() {
+        qsTile ?: return
         val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val isActive = qsTile.state == Tile.STATE_ACTIVE
         pref.edit().putBoolean(Stuff.PREF_MASTER, !isActive).apply()
@@ -17,6 +18,7 @@ class MasterSwitchQS: TileService() {
     }
 
     override fun onStartListening() {
+        qsTile ?: return
         val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         setActive(pref.getBoolean(Stuff.PREF_MASTER, true))
     }

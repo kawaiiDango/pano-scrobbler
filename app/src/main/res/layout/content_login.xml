@@ -20,20 +20,6 @@
         android:paddingTop="20dp">
 
         <TextView
-            android:id="@+id/login_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:gravity="start"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textColor="@color/colorAccent"
-            android:transitionName="login_title"
-            android:visibility="gone"
-            tools:text="Loggi"
-            tools:visibility="visible"
-            app:drawableBottomCompat="@drawable/shape_title_divider" />
-
-        <TextView
             android:id="@+id/login_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +38,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableTint="@color/colorAccent"
+                app:drawableTint="@color/colorAccent"
                 android:singleLine="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -74,7 +60,7 @@
                     android:id="@+id/login_textfield2_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableTint="@color/colorAccent"
+                    app:drawableTint="@color/colorAccent"
                     android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -83,7 +69,7 @@
                 android:id="@+id/edit_swap"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/swap"
                 android:nextFocusLeft="@id/login_textfield2_edittext"
                 android:nextFocusRight="@id/login_textfield2_edittext"
@@ -109,7 +95,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:drawableTint="@color/colorAccent"
+                app:drawableTint="@color/colorAccent"
                 android:imeActionId="6"
                 android:imeOptions="actionDone"
                 android:singleLine="true"/>

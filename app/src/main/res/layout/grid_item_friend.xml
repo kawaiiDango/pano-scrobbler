@@ -14,15 +14,37 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="name" />
+
+    <TextView
+        android:id="@+id/friends_country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:maxLines="1"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-        tools:text="name"/>
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="cunt ry"/>
+    <TextView
+        android:id="@+id/friends_scrobbles_since"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="10 scrobbles since 2010"/>
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/friends_pic"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginTop="4dp"
+        android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/profile_pic"
         android:elevation="20dp"
         android:focusable="true"
@@ -49,7 +71,7 @@
                 android:id="@+id/friends_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="-3sp"
+                android:layout_marginBottom="-1dp"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"

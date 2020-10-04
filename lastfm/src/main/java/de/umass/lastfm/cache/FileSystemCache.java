@@ -84,7 +84,10 @@ public class FileSystemCache extends Cache implements ScrobbleCache {
 			return expirationDate < System.currentTimeMillis();
 		} catch (IOException e) {
 			return false;
-		}
+		} catch (Exception e) {
+		    remove(cacheEntryName);
+		    return false;
+        }
 	}
 
 	public void clear() {

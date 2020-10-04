@@ -15,6 +15,12 @@
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
     </style>
 
+    <style name="AppThemeMaterial" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorAccentLight</item>
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
     <style name="DarkDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -60,7 +66,8 @@
     </style>
 
     <style name="firstThings">
-        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:padding">10dp</item>
         <item name="android:background">@drawable/selector_first_things</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -75,7 +82,7 @@
 
     <style name="friendsLinks">
         <item name="android:textSize">@dimen/button_caption</item>
-        <item name="android:drawableTint">@color/colorAccentLight</item>
+        <item name="drawableTint">@color/colorAccentLight</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:layout_width">wrap_content</item>

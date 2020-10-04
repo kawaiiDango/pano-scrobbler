@@ -3,7 +3,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:layout_marginHorizontal="15dp"
+              android:layout_marginHorizontal="@dimen/first_things_margin"
               android:gravity="center_vertical"
               android:orientation="vertical">
 
@@ -18,7 +18,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
-            android:text="0."
+            tools:text="0."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <LinearLayout
@@ -28,7 +28,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/grant_autostart"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
@@ -37,7 +37,7 @@
                 android:id="@+id/first_things_0_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
+                android:layout_marginTop="@dimen/list_item_padding"
                 android:text="@string/grant_autostart_desc"
                 android:textSize="13sp"/>
         </LinearLayout>
@@ -51,7 +51,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
-            android:text="1."
+            tools:text="1."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <LinearLayout
@@ -61,7 +61,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/grant_notification_access"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
@@ -70,7 +70,7 @@
                 android:id="@+id/first_things_1_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
+                android:layout_marginTop="@dimen/list_item_padding"
                 tools:text="@string/grant_notification_access_desc"
                 android:textSize="13sp"/>
         </LinearLayout>
@@ -88,7 +88,7 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
-            android:text="2."
+            tools:text="2."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -97,7 +97,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/authenticate_with_lastfm"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
@@ -105,7 +105,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
+                android:layout_marginTop="@dimen/list_item_padding"
                 android:text="@string/authenticate_with_lastfm_desc"
                 android:textSize="13sp"/>
         </LinearLayout>
@@ -120,12 +120,12 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
-            android:text="3."
+            tools:text="3."
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="60dp"
             android:gravity="center_vertical"
             android:text="@string/choose_apps"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>

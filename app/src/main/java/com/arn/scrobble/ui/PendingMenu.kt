@@ -73,8 +73,7 @@ object PendingMenu {
                     }
                     R.id.menu_love -> {
                         if (p is PendingScrobble) {
-                            LFMRequester(Stuff.LOVE, p.artist, p.track)
-                                    .addCallback {
+                            LFMRequester(context!!).loveOrUnlove(true, p.artist, p.track) {
                                         if (!it) {
                                             if (loveAction != null)
                                                 loveAction.invoke()
@@ -82,7 +81,7 @@ object PendingMenu {
                                                 deleteAction.invoke()
                                         }
                                     }
-                                    .asAsyncTask(context)
+                                    .asAsyncTask()
                         }
                     }
                 }

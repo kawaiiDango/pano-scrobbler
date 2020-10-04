@@ -37,6 +37,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.ViewPager
+import com.arn.scrobble.charts.ChartsPagerFragment
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
@@ -81,9 +82,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         actPref = getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
         coordinatorPadding = coordinator.paddingStart
         isTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
-//        NLService.migratePrefs(pref)
-//        app_bar.onStateChangeListener?.invoke(app_bar.state)
-//        tab_bar.visibility = View.GONE
+
         app_bar.onStateChangeListener = { state ->
 
             when (state) {
@@ -95,8 +94,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     tab_bar.visibility = View.GONE
                 }
                 StatefulAppBar.COLLAPSED -> {
-                    if (supportFragmentManager.findFragmentByTag(Stuff.TAG_PAGER)?.isVisible == true &&
-                            supportFragmentManager.findFragmentByTag(Stuff.TAG_SIMILAR) == null) {
+                    if (supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.isVisible == true &&
+                            supportFragmentManager.findFragmentByTag(Stuff.TAG_SIMILAR) == null ||
+                    supportFragmentManager.findFragmentByTag(Stuff.TAG_CHART_PAGER)?.isVisible == true) {
                         tab_bar.visibility = View.VISIBLE
                     } else {
                         tab_bar.visibility = View.GONE
@@ -114,6 +114,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         toggle.drawerArrowDrawable = ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
 
         if (isTV) {
+            hero_calendar.visibility = View.INVISIBLE
             hero_similar.visibility = View.INVISIBLE
             hero_share.visibility = View.INVISIBLE
             hero_info.visibility = View.INVISIBLE
@@ -159,18 +160,20 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             .replace(R.id.frame, RecFragment())
                             .addToBackStack(null)
                             .commit()
+                else if (directOpenExtra == Stuff.DL_CHARTS)
+                    supportFragmentManager.beginTransaction()
+                            .replace(R.id.frame, ChartsPagerFragment(), Stuff.TAG_CHART_PAGER)
+                            .addToBackStack(null)
+                            .commit()
                 else {
                     if (coordinatorPadding > 0)
                         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
-                    showPager()
+                    showHomePager()
 
                     val handler = Handler(mainLooper)
                     handler.post {
                         if (!KeepNLSAliveJob.ensureServiceRunning(this))
-                            handler.postDelayed({
-                                if (!KeepNLSAliveJob.ensureServiceRunning(this))
-                                    showNotRunning()
-                            },500)
+                            showNotRunning()
                         else if (!isTV)
                             AppRater.app_launched(this)
                     }
@@ -180,7 +183,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         } else {
             tab_bar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
-            if (supportFragmentManager.findFragmentByTag(Stuff.TAG_PAGER)?.isAdded == true &&
+            if (supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.isAdded == true &&
                     supportFragmentManager.backStackEntryCount == 0)
                 openLockDrawer()
         }
@@ -189,10 +192,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 //        test()
     }
 
-    fun showPager(){
+    fun showHomePager(){
         openLockDrawer()
         supportFragmentManager.beginTransaction()
-                .replace(R.id.frame, PagerFragment(), Stuff.TAG_PAGER)
+                .replace(R.id.frame, HomePagerFragment(), Stuff.TAG_HOME_PAGER)
                 .commit()
     }
 
@@ -307,8 +310,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
         nav_name.text = if (BuildConfig.DEBUG) "nobody" else username
-        val num = actPref.getInt(Stuff.PREF_ACTIVITY_NUM_SCROBBLES, 0)
-        nav_num_scrobbles.text = resources.getQuantityString(R.plurals.num_scrobbles, num, num)
+        val numToday = actPref.getInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, 0)
+        val numTotal = actPref.getInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, 0)
+        nav_num_scrobbles.text = getString(R.string.num_scrobbles_nav, numTotal, numToday)
 
         nav_profile_link.setOnClickListener { v:View ->
             Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
@@ -321,7 +325,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     .error(R.drawable.vd_wave)
                     .into(nav_profile_pic)
         if (!forceUpdate)
-            LFMRequester(Stuff.GET_DRAWER_INFO).asAsyncTask(applicationContext)
+            LFMRequester(applicationContext).getDrawerInfo().asAsyncTask()
         lastDrawerOpenTime = System.currentTimeMillis()
     }
 
@@ -343,13 +347,29 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             R.id.nav_friends -> {
                 tab_bar.getTabAt(2)?.select()
             }
+            R.id.nav_charts -> {
+                enableGestures()
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, ChartsPagerFragment(), Stuff.TAG_CHART_PAGER)
+                        .addToBackStack(null)
+                        .commit()
+            }
+            R.id.nav_random -> {
+                enableGestures()
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, RandomFragment())
+                        .addToBackStack(null)
+                        .commit()
+            }
             R.id.nav_rec -> {
+                enableGestures()
                 supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, RecFragment())
                         .addToBackStack(null)
                         .commit()
             }
             R.id.nav_settings -> {
+                enableGestures()
                 supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, PrefFragment())
                         .addToBackStack(null)
@@ -362,12 +382,18 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         return true
     }
 
+    private fun enableGestures() {
+        val hp = supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER) as? HomePagerFragment
+        hp?.setGestureExclusions(false)
+    }
+
     override fun onBackStackChanged() {
         if (app_bar != null) {
             if (supportFragmentManager.backStackEntryCount == 0) {
                 val firstThingsVisible = supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
                 // what the fuck, kotlin extensions? stop giving me old instances
-                if (findViewById<ViewPager>(R.id.pager)?.currentItem != 2 && firstThingsVisible != true)
+                val pager = findViewById<ViewPager>(R.id.pager)
+                if (pager != null && pager.currentItem != 2 && firstThingsVisible != true)
                     app_bar.setExpanded(true, true)
                 else
                     app_bar.setExpanded(false, true)
@@ -375,9 +401,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     showBackArrow(false)
 
                 if (supportFragmentManager.fragments.isEmpty()) //came back from direct open
-                    showPager()
+                    showHomePager()
             } else {
-                if (supportFragmentManager.findFragmentByTag(Stuff.GET_SIMILAR)?.isVisible != true)
+                if (supportFragmentManager.findFragmentByTag(Stuff.TAG_SIMILAR)?.isVisible != true)
                     app_bar.setExpanded(false, true)
                 showBackArrow(true)
             }
@@ -505,16 +531,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 Stuff.log("onNewIntent got token for $path")
                 when(path) {
                     "/lastfm" ->
-                            LFMRequester (Stuff.LASTFM_SESS_AUTH, token)
-                        .asAsyncTask(applicationContext)
-                    "/librefm" -> {
-                            LFMRequester (Stuff.LIBREFM_SESS_AUTH, token)
-                        .asAsyncTask(applicationContext)
-                    }
-                    "/gnufm" -> {
-                            LFMRequester (Stuff.GNUFM_SESS_AUTH, token)
-                        .asAsyncTask(applicationContext)
-                    }
+                        LFMRequester(applicationContext).doAuth(R.string.lastfm, token).asAsyncTask()
+                    "/librefm" ->
+                        LFMRequester(applicationContext).doAuth(R.string.librefm, token).asAsyncTask()
+                    "/gnufm" ->
+                        LFMRequester(applicationContext).doAuth(R.string.gnufm, token).asAsyncTask()
                     "/testFirstThings" -> {
                         pref.remove(Stuff.PREF_LASTFM_SESS_KEY)
                         for (i in 0..supportFragmentManager.backStackEntryCount)

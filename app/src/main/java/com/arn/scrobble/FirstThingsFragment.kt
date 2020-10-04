@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_first_things.*
 import kotlinx.android.synthetic.main.content_first_things.view.*
 import kotlinx.android.synthetic.main.coordinator_main.*
+import java.text.NumberFormat
 
 
 /**
@@ -32,30 +33,34 @@ class FirstThingsFragment: Fragment() {
     private var startupMgrIntent:Intent? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.content_first_things, container, false)
+        return inflater.inflate(R.layout.content_first_things, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         pref = MultiPreferences(context!!)
         startupMgrIntent = Stuff.getStartupIntent(context!!)
 
         if (startupMgrIntent != null) {
-            view.first_things_0.setOnClickListener {
+            first_things_0.setOnClickListener {
                 openStartupMgr(startupMgrIntent!!, context!!)
                 Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
             }
-            view.first_things_0.first_things_0_desc.text =
+            first_things_0.first_things_0_desc.text =
                     getString(R.string.grant_autostart_desc, Build.MANUFACTURER)
-            view.first_things_0.visibility = View.VISIBLE
+            first_things_0.visibility = View.VISIBLE
         }
         try {
             if (Build.VERSION.SDK_INT >= 30)
                 context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
             else
                 context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
-            view.first_things_1_desc.text = getString(R.string.grant_notification_access_desc, getString(R.string.except_pixel_np))
+            first_things_1_desc.text = getString(R.string.grant_notification_access_desc, getString(R.string.except_pixel_np))
         } catch (e: PackageManager.NameNotFoundException) {
-            view.first_things_1_desc.text = getString(R.string.grant_notification_access_desc, "")
+            first_things_1_desc.text = getString(R.string.grant_notification_access_desc, "")
         }
 
-        view.first_things_1.setOnClickListener {
+        first_things_1.setOnClickListener {
             val intent = if (Main.isTV && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 Intent().setComponent(ComponentName("com.android.tv.settings","com.android.tv.settings.device.apps.AppsActivity"))
             else
@@ -79,7 +84,7 @@ class FirstThingsFragment: Fragment() {
             }
 
         }
-        view.first_things_2.setOnClickListener {
+        first_things_2.setOnClickListener {
             val wf = WebViewFragment()
             val b = Bundle()
             b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
@@ -92,8 +97,8 @@ class FirstThingsFragment: Fragment() {
                     .commit()
 //            Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, activity)
         }
-        view.first_things_3.setOnClickListener {
-                parentFragmentManager.beginTransaction()
+        first_things_3.setOnClickListener {
+            parentFragmentManager.beginTransaction()
                     .hide(this)
                     .add(R.id.frame, AppListFragment())
                     .addToBackStack(null)
@@ -101,12 +106,13 @@ class FirstThingsFragment: Fragment() {
         }
 
         if (arguments?.getBoolean(Stuff.ARG_NOPASS) == true) {
-            view.testing_pass.visibility = View.GONE
+            testing_pass.visibility = View.GONE
+            first_things_2.visibility = View.GONE
         } else {
             if (Main.isTV)
-                view.testing_pass.isFocusable = false
-            view.testing_pass.showSoftInputOnFocus = false
-            view.testing_pass.addTextChangedListener(object : TextWatcher {
+                testing_pass.isFocusable = false
+            testing_pass.showSoftInputOnFocus = false
+            testing_pass.addTextChangedListener(object : TextWatcher {
 
                 override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
                 }
@@ -120,7 +126,7 @@ class FirstThingsFragment: Fragment() {
                         pref.putString(Stuff.PREF_LASTFM_USERNAME, splits[0])
                         pref.putString(Stuff.PREF_LASTFM_SESS_KEY, splits[1])
                         val imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-                        imm?.hideSoftInputFromWindow(view!!.windowToken, 0)
+                        imm?.hideSoftInputFromWindow(view.windowToken, 0)
                         checkAll(true)
                     } else
                         Stuff.log("bad pass")
@@ -128,7 +134,7 @@ class FirstThingsFragment: Fragment() {
 
             })
 
-            view.testing_pass.setOnTouchListener { v, event ->
+            testing_pass.setOnTouchListener { v, event ->
                 if (v != null) {
                     if (Main.isTV)
                         v.isFocusable = true
@@ -138,28 +144,30 @@ class FirstThingsFragment: Fragment() {
                 true
             }
         }
-
-        return view
+        if (startupMgrIntent != null)
+            putNumbers(first_things_0, first_things_1, first_things_2, first_things_3)
+        else
+            putNumbers(first_things_1, first_things_2, first_things_3)
     }
 
     private fun checkAll(skipChecks:Boolean = false){
         val activity = activity ?: return
         stepsNeeded = 4
         if (checkNLAccess(activity)) {
-            markAsDone(R.id.first_things_1)
+            markAsDone(first_things_1)
             if(startupMgrIntent != null && KeepNLSAliveJob.ensureServiceRunning(activity))
                 // needed for cases when a miui user enables autostart AFTER granting NLS permission
-                markAsDone(R.id.first_things_0)
+                markAsDone(first_things_0)
             else
                 stepsNeeded --
         }
         if (checkAuthTokenExists(pref))
-            markAsDone(R.id.first_things_2)
+            markAsDone(first_things_2)
         if (checkAppListExists(pref))
-            markAsDone(R.id.first_things_3)
+            markAsDone(first_things_3)
 
         if(stepsNeeded == 0 || skipChecks) {
-            (activity as Main).showPager()
+            (activity as Main).showHomePager()
             if (activity.coordinatorPadding == 0)
                 activity.drawer_layout.openDrawer(GravityCompat.START)
         }
@@ -201,14 +209,20 @@ class FirstThingsFragment: Fragment() {
         super.onDestroyView()
     }
 
-    private fun markAsDone(resId:Int){
-        val v= activity!!.findViewById<ViewGroup>(resId)
-        v.isEnabled = false
-        v.isFocusable = false
-        v.alpha = 0.4f
-        val tv = v.getChildAt(0) as TextView
-        tv.text = "✅ "
+    private fun markAsDone(vg: ViewGroup){
+        vg.isEnabled = false
+        vg.isFocusable = false
+        vg.alpha = 0.4f
+        val tv = vg.getChildAt(0) as TextView
+        tv.text = "✔ "
         stepsNeeded --
+    }
+
+    private fun putNumbers(vararg vgs: ViewGroup){
+        vgs.forEachIndexed { i, vg ->
+            val tv = vg.getChildAt(0) as TextView
+            tv.text = NumberFormat.getInstance().format(i + 1L)
+        }
     }
 
     private val receiver = object : BroadcastReceiver() {

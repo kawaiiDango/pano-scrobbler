@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -33,8 +32,8 @@ class PendingScrFragment: Fragment(), ItemClickListener {
 
         vm = VMFactory.getVM(this, TracksVM::class.java)
         vm.loadPending(1000, false)
-                .observe(viewLifecycleOwner, Observer {
-                    it ?: return@Observer
+                .observe(viewLifecycleOwner, {
+                    it ?: return@observe
                     adapter.clear()
                     adapter.addAll(it)
                 })

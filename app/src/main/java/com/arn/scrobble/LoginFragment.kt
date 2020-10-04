@@ -5,10 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
-import android.text.InputType
 import android.text.util.Linkify
 import android.transition.Slide
 import android.view.KeyEvent
@@ -20,13 +18,9 @@ import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
 import androidx.fragment.app.DialogFragment
 import com.arn.scrobble.pref.MultiPreferences
-import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_login.view.*
-import kotlinx.android.synthetic.main.coordinator_main.*
 import org.json.JSONObject
-
-
 
 
 /**
@@ -44,10 +38,6 @@ open class LoginFragment: DialogFragment() {
         val view = inflater.inflate(R.layout.content_login, container, false)
         pref = MultiPreferences(context!!)
         val args = arguments
-        args?.getString(HEADING)?.let {
-            view.login_title.text = it
-            view.login_title.visibility = View.VISIBLE
-        }
         args?.getString(INFO)?.let {
             view.login_info.autoLinkMask = Linkify.WEB_URLS
             view.login_info.text = it
@@ -65,12 +55,6 @@ open class LoginFragment: DialogFragment() {
         }
         args?.getString(TEXTFL)?.let {
             view.login_textfield_last.hint = it
-            if (args.getString(HEADING) == getString(R.string.lastfm)) {
-                view.login_textfield_last.editText!!.inputType = InputType.TYPE_CLASS_TEXT or
-                        InputType.TYPE_TEXT_VARIATION_PASSWORD
-                view.login_textfield_last.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
-            }
-
             view.login_textfield_last.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
                         (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)) {
@@ -156,7 +140,7 @@ open class LoginFragment: DialogFragment() {
     }
 
     open fun validateAsync(): String? {
-        val title = login_title.text.toString()
+        val title = arguments?.getString(HEADING)
         val t1 = login_textfield1.editText!!.text.toString()
         var t2 = login_textfield2.editText!!.text.toString()
         val tlast = login_textfield_last.editText!!.text.toString()
@@ -227,8 +211,7 @@ open class LoginFragment: DialogFragment() {
         super.onStart()
 
         if (checksLogin) {
-            Stuff.setTitle(activity, R.string.pref_login)
-            (activity!! as Main).ctl.setContentScrimColor(Color.BLACK)
+            Stuff.setTitle(activity, arguments?.getString(HEADING))
 
             val iF = IntentFilter()
             iF.addAction(NLService.iSESS_CHANGED)

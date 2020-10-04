@@ -12,13 +12,15 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // before loading more.
     private int visibleThreshold = 5;
     // The current offset index of data you have loaded
-    public int currentPage = 0;
+    private int currentPage = 0;
     // The total number of items in the dataset after the last load
     private int previousTotalItemCount = 0;
     // True if we are still waiting for the last set of data to load.
     private boolean loading = true;
     // Sets the starting page index
     private int startingPageIndex = 0;
+    // All pages loaded
+    private boolean allPagesLoaded = false;
 
     RecyclerView.LayoutManager mLayoutManager;
 
@@ -54,6 +56,8 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // but first we check if we are waiting for the previous load to finish.
     @Override
     public void onScrolled(RecyclerView view, int dx, int dy) {
+        if (allPagesLoaded)
+            return;
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
 
@@ -90,8 +94,8 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         // threshold should reflect how many total columns there are too
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
             currentPage++;
-            onLoadMore(currentPage, totalItemCount, view);
             loading = true;
+            onLoadMore(currentPage, totalItemCount, view);
         }
     }
 
@@ -100,6 +104,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         this.currentPage = this.startingPageIndex;
         this.previousTotalItemCount = 0;
         this.loading = true;
+        this.allPagesLoaded = false;
     }
 
     public void setLoading(boolean loading) {
@@ -113,4 +118,21 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // Defines the process for actually loading more data based on page
     public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
 
+    public boolean isAllPagesLoaded() {
+        return allPagesLoaded;
+    }
+
+    public void setAllPagesLoaded(boolean allPagesLoaded) {
+        this.allPagesLoaded = allPagesLoaded;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        if (currentPage < 2)
+            allPagesLoaded = false;
+        this.currentPage = currentPage;
+    }
 }

@@ -2,9 +2,7 @@ package com.arn.scrobble
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,14 +17,12 @@ import com.arn.scrobble.pending.db.PendingScrobble
 import com.arn.scrobble.ui.*
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
-import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.android.synthetic.main.content_recents.view.*
 import kotlinx.android.synthetic.main.header_pending.view.*
 import kotlinx.android.synthetic.main.list_item_recents.view.*
 import java.lang.ref.WeakReference
 import java.util.*
-import kotlin.math.max
 
 
 /**
@@ -35,38 +31,38 @@ import kotlin.math.max
 
 class RecentsAdapter
 
-(private val fragmentContent: View): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+(private val fragmentContent: View): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+        LoadImgInterface, LoadMoreGetter {
 
-    var totalPages:Int = 1
-    private var itemClickListener: ItemClickListener? = null
-    private var focusChangeListener: FocusChangeListener? = null
-    private var mSetHeroListener: SetHeroTrigger? = null
-    private val tracksList = mutableListOf<Track>()
+    lateinit var itemClickListener: ItemClickListener
+    lateinit var focusChangeListener: FocusChangeListener
+    lateinit var setHeroListener: SetHeroTrigger
     private val sectionHeaders = mutableMapOf<Int,String>()
     private val psMap = mutableMapOf<Int, PendingScrobble>()
     private val plMap = mutableMapOf<Int, PendingLove>()
-    var selectedPos = NP_ID
     private var actionHeaderPos = -1
     private var actionData = -1
-    private var nonTrackViewCount = 0
-    private var loadMoreListener: EndlessRecyclerViewScrollListener? = null
+    override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
     private var fm: FragmentManager? = null
     private val myUpdateCallback = MyUpdateCallback(this)
-    lateinit var viewmodel: TracksVM
+    lateinit var viewModel: TracksVM
     var isShowingLoves = false
-    val handler by lazy { TrackInfoHandler(WeakReference(this)) }
-    private val imgMap = mutableMapOf<Int, Map<ImageSize, String>>()
-
-//    init {
+    val handler by lazy { EntryInfoHandler(WeakReference(this)) }
+    private val nonTrackViewCount: Int
+        get() = sectionHeaders.size + psMap.size + plMap.size +
+                if (actionHeaderPos == -1) 0 else 1
+    
+    init {
 //        setHasStableIds(true) //causes some opengl OOM and new holders to be created for no reason
-//    }
+        stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_TRACK -> VHTrack(inflater.inflate(R.layout.list_item_recents, parent, false))
-            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener!!)
-            TYPE_PENDING_LOVE -> VHPendingLove(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener!!)
+            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener)
+            TYPE_PENDING_LOVE -> VHPendingLove(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener)
             TYPE_HEADER -> VHHeader(inflater.inflate(R.layout.header_default, parent, false))
             TYPE_ACTION -> VHAction(inflater.inflate(R.layout.header_pending, parent, false), fm)
             else -> throw RuntimeException("Invalid view type $viewType")
@@ -75,7 +71,7 @@ class RecentsAdapter
 
     override fun onBindViewHolder(holder:RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is VHTrack -> holder.setItemData(tracksList[position - nonTrackViewCount])
+            is VHTrack -> holder.setItemData(viewModel.tracks[position - nonTrackViewCount])
             is VHPendingScrobble -> holder.setItemData(psMap[position] ?: return)
             is VHPendingLove -> holder.setItemData(plMap[position] ?: return)
             is VHHeader -> holder.setHeaderText(sectionHeaders[position] ?: "...")
@@ -95,31 +91,13 @@ class RecentsAdapter
     }
 
     fun setLoading(b:Boolean){
-        loadMoreListener?.loading = b
+        loadMoreListener.loading = b
         fragmentContent.recents_swipe_refresh.isRefreshing = false
-    }
-
-    fun getLoading() = loadMoreListener?.loading == true
-
-    fun setClickListener(itemClickListener: ItemClickListener) {
-        this.itemClickListener = itemClickListener
-    }
-
-    fun setFocusListener(itemFocusListener: FocusChangeListener) {
-        this.focusChangeListener = itemFocusListener
-    }
-
-    fun setHeroListener(l: SetHeroTrigger) {
-        mSetHeroListener = l
-    }
-
-    fun setLoadMoreReference(lm: EndlessRecyclerViewScrollListener?){
-        loadMoreListener = lm
     }
 
     fun getItem(pos: Int): Any? {
         return when {
-            getItemViewType(pos) == TYPE_TRACK -> tracksList[pos - nonTrackViewCount]
+            getItemViewType(pos) == TYPE_TRACK -> viewModel.tracks[pos - nonTrackViewCount]
             getItemViewType(pos) == TYPE_PENDING_SCROBBLE -> psMap[pos]
             getItemViewType(pos) == TYPE_PENDING_LOVE -> plMap[pos]
             else -> null
@@ -127,11 +105,11 @@ class RecentsAdapter
     }
 
     fun removeTrack(track: Track) {
-        val idx = tracksList.indexOfFirst { it.playedWhen == track.playedWhen &&
+        val idx = viewModel.tracks.indexOfFirst { it.playedWhen == track.playedWhen &&
                     it.name == track.name && it.artist == track.artist }
         if (idx != -1) {
-            viewmodel.deletedTracksStringSet += track.toString()
-            tracksList.removeAt(idx)
+            viewModel.deletedTracksStringSet += track.toString()
+            viewModel.tracks.removeAt(idx)
             notifyItemRemoved(idx + nonTrackViewCount)
         }
     }
@@ -142,23 +120,24 @@ class RecentsAdapter
                 Date(timeMillis)
             else
                 null
-        val idx = tracksList.indexOfFirst { it.playedWhen == track.playedWhen }
+        val idx = viewModel.tracks.indexOfFirst { it.playedWhen == track.playedWhen }
         if (idx != -1) {
-            val prevTrack = tracksList[idx]
+            val prevTrack = viewModel.tracks[idx]
             if (prevTrack.artist == artist && prevTrack.album == album && prevTrack.name == title)
                 return
-            viewmodel.deletedTracksStringSet += prevTrack.toString()
-            tracksList[idx] = track
+            viewModel.deletedTracksStringSet += prevTrack.toString()
+            viewModel.tracks[idx] = track
             notifyItemChanged(idx + nonTrackViewCount)
         }
     }
 
-    override fun getItemCount() = tracksList.size + nonTrackViewCount
+    override fun getItemCount() = viewModel.tracks.size + nonTrackViewCount
 
     fun setPending(fm:FragmentManager?, pendingListData: PendingListData) {
         val headerText = fragmentContent.context.getString(R.string.pending_scrobbles)
         var shift = 0
         val lastDisplaySize = psMap.size + plMap.size
+        val oldNonTrackViewCount = nonTrackViewCount
         val totalCount = pendingListData.psCount + pendingListData.plCount
         var displayCount = 0
         if (pendingListData.psCount > 0)
@@ -185,14 +164,11 @@ class RecentsAdapter
                 actionHeaderPos = 3
                 actionData = totalCount - displayCount
             }
+            sectionHeaders[shift + displayCount] = sectionHeaders[sectionHeaders.keys.last()]!!
+            sectionHeaders[0] = headerText
             sectionHeaders.keys.toIntArray().forEach {
                 if (it != 0 && it != shift + displayCount)
                     sectionHeaders.remove(it)
-            }
-            Stuff.log(sectionHeaders.keys.toString())
-            if (sectionHeaders[0] !=  headerText) {
-                sectionHeaders[shift + displayCount] = sectionHeaders[0]!!
-                sectionHeaders[0] = headerText
             }
         }
         psMap.clear()
@@ -205,43 +181,45 @@ class RecentsAdapter
             pendingListData.psList.forEachIndexed { i, ps ->
                 psMap[1 + plMap.size + i] = ps
             }
-        val oldNonTrackViewCount = nonTrackViewCount
-        nonTrackViewCount = shift + 1 + displayCount
-        selectedPos += nonTrackViewCount - oldNonTrackViewCount
+        viewModel.selectedPos += nonTrackViewCount - oldNonTrackViewCount
         if (lastDisplaySize == displayCount)
             notifyItemRangeChanged(0, nonTrackViewCount, 0)
         else
             notifyDataSetChanged()
     }
+
     fun setStatusHeader(){
         val header =  if (isShowingLoves)
             fragmentContent.context.getString(R.string.recently_loved)
+        else if (viewModel.toTime > 0)
+            fragmentContent.context.getString(R.string.scrobbles_till,
+                    DateFormat.getLongDateFormat(fragmentContent.context).format(viewModel.toTime))
         else
             fragmentContent.context.getString(R.string.recently_scrobbled)
         setStatusHeader(header)
     }
+
     fun setStatusHeader(s:String){
-        if (nonTrackViewCount == 0)
-            nonTrackViewCount++
-        if (sectionHeaders[nonTrackViewCount-1] != s) {
-            sectionHeaders[nonTrackViewCount - 1] = s
-            notifyItemChanged(nonTrackViewCount - 1, 0)
+        var idx = nonTrackViewCount
+        if (idx == 0)
+            idx++
+        if (sectionHeaders[idx - 1] != s) {
+            sectionHeaders[idx - 1] = s
+            notifyItemChanged(idx - 1, 0)
         }
     }
 
     override fun getItemId(position: Int): Long {
         return if(position < nonTrackViewCount)
             position.toLong()
-        else if (position < tracksList.size)
-            tracksList[position - nonTrackViewCount].playedWhen?.time ?: NP_ID.toLong()
+        else if (position < viewModel.tracks.size)
+            viewModel.tracks[position - nonTrackViewCount].playedWhen?.time ?: Stuff.NP_ID.toLong()
         else
-            NP_ID.toLong()
+            Stuff.NP_ID.toLong()
     }
 
-    fun populate(res: PaginatedResult<Track>, page: Int) {
-        val refresh = fragmentContent.recents_swipe_refresh
-        if (refresh == null || !refresh.isShown)
-            return
+    fun populate(oldTracks: MutableList<Track>) {
+        val refresh = fragmentContent.recents_swipe_refresh ?: return
 
         if (Main.isOnline)
             setStatusHeader()
@@ -249,57 +227,43 @@ class RecentsAdapter
             setStatusHeader(fragmentContent.context.getString(R.string.offline))
 
         setLoading(false)
-        val selectedId = getItemId(selectedPos)
-        var selectedPos = nonTrackViewCount
-        synchronized(tracksList) {
-            val oldList = mutableListOf<Track>()
-            oldList.addAll(tracksList)
-            totalPages = max(1, res.totalPages) //dont let totalpages be 0
-            if (page == 1) {
-                tracksList.clear()
-                if (res.isEmpty) {
-                    setStatusHeader(refresh.context.getString(R.string.no_scrobbles))
+        val selectedId = getItemId(viewModel.selectedPos)
+        viewModel.selectedPos = nonTrackViewCount
+        if (viewModel.tracks.isEmpty()) {
+            setStatusHeader(refresh.context.getString(R.string.no_scrobbles))
+        }
+        if (viewModel.selectedPos >= nonTrackViewCount)
+            for (i in 0 until viewModel.tracks.size) {
+                if (viewModel.tracks[i].playedWhen?.time == selectedId) {
+                    viewModel.selectedPos = i + nonTrackViewCount
+                    break
                 }
             }
-            res.forEach {
-                if (viewmodel.deletedTracksStringSet.contains(it.toString()))
-                    return@forEach
-                if (!it.isNowPlaying || page == 1)
-                    tracksList.add(it)
-                if (isShowingLoves && imgMap[Stuff.genHashCode(it.artist, it.name)] != null)
-                    it.imageUrlsMap = imgMap[Stuff.genHashCode(it.artist, it.name)]
-            }
-            if (selectedPos >= nonTrackViewCount)
-                for (i in 0 until tracksList.size) {
-                    if (tracksList[i].playedWhen?.time == selectedId) {
-                        selectedPos = i + nonTrackViewCount
-                        break
-                    }
-                }
 
-            this.selectedPos = selectedPos
-            myUpdateCallback.offset = nonTrackViewCount
-            myUpdateCallback.selectedPos = selectedPos
-            val diff = DiffUtil.calculateDiff(DiffCallback(tracksList, oldList), false)
-            diff.dispatchUpdatesTo(myUpdateCallback)
+        this.viewModel.selectedPos = viewModel.selectedPos
+
+        myUpdateCallback.offset = nonTrackViewCount
+        myUpdateCallback.selectedPos = viewModel.selectedPos
+        val diff = DiffUtil.calculateDiff(DiffCallback(viewModel.tracks, oldTracks), false)
+        diff.dispatchUpdatesTo(myUpdateCallback)
+    }
+
+    override fun loadImg(pos: Int){
+        val idx = pos - nonTrackViewCount
+        if(idx >= 0 && idx < viewModel.tracks.size){
+            viewModel.loadInfo(viewModel.tracks[idx], pos)
         }
     }
 
-    fun  loadImg(pos: Int){
+    fun setImg(pos: Int, imgMapp: Map<ImageSize, String>?){
         val idx = pos - nonTrackViewCount
-        if(idx >= 0 && idx < tracksList.size){
-            viewmodel.loadInfo(tracksList[idx].artist, tracksList[idx].name, pos)
-        }
-    }
-
-    fun setImg(pos: Int, imgMapp: Map<ImageSize, String>){
-        val idx = pos - nonTrackViewCount
-        if(idx >= 0 && idx < tracksList.size){
-            tracksList[idx].imageUrlsMap = imgMapp
-            this.imgMap[Stuff.genHashCode(tracksList[idx].artist, tracksList[idx].name)] = imgMapp
+        if(idx >= 0 && idx < viewModel.tracks.size){
+            val track = viewModel.tracks[idx]
+            track.imageUrlsMap = imgMapp
+            viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] = imgMapp ?: mapOf()
             notifyItemChanged(pos)
-            if (pos == selectedPos)
-                mSetHeroListener?.onSetHero(pos, tracksList[idx], true)
+            if (pos == viewModel.selectedPos)
+                setHeroListener.onSetHero(pos, viewModel.tracks[idx], true)
         }
     }
 
@@ -382,31 +346,31 @@ class RecentsAdapter
 
         init {
             view.setOnClickListener {
-                itemClickListener?.onItemClick(itemView, adapterPosition)
+                itemClickListener.onItemClick(itemView, adapterPosition)
             }
             view.onFocusChangeListener = this
 
             vMenu.setOnClickListener {
-                itemClickListener?.onItemClick(it, adapterPosition)
+                itemClickListener.onItemClick(it, adapterPosition)
             }
             vOverlay.setOnClickListener {
-                itemClickListener?.onItemClick(it, adapterPosition)
+                itemClickListener.onItemClick(it, adapterPosition)
             }
             vOverlay.contentDescription = view.context.getString(R.string.loved)
         }
 
         override fun onFocusChange(view: View?, focused: Boolean) {
             if (view != null && !view.isInTouchMode && focused)
-                focusChangeListener?.onFocus(itemView, adapterPosition)
+                focusChangeListener.onFocus(itemView, adapterPosition)
         }
 
-        fun setSelected(selected:Boolean, track: Track = tracksList[selectedPos - nonTrackViewCount]) {
+        fun setSelected(selected:Boolean, track: Track = viewModel.tracks[viewModel.selectedPos - nonTrackViewCount]) {
             itemView.isActivated = selected
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 vImg.foreground = if (selected) ColorDrawable(vImg.context.getColor(R.color.thumbnailHighlight)) else null
             }
             if (selected)
-                mSetHeroListener?.onSetHero(adapterPosition, track, false)
+                setHeroListener.onSetHero(adapterPosition, track, false)
         }
 
         fun setItemData(track: Track) {
@@ -444,42 +408,18 @@ class RecentsAdapter
                 vImg.setImageResource(R.drawable.vd_wave_simple)
                 vImg.setColorFilter(Stuff.getMatColor(vImg.context, "500", Stuff.genHashCode(track.artist, track.name).toLong()))
                 if (isShowingLoves){
-                    if(imgMap[Stuff.genHashCode(track.artist, track.name)] == null)
+                    if(viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] == null)
                         handler.sendMessage(vImg.hashCode(), adapterPosition)
                 }
             }
-            setSelected(adapterPosition == selectedPos, track)
+            setSelected(adapterPosition == viewModel.selectedPos, track)
         }
     }
 
     interface SetHeroTrigger {
         fun onSetHero(position: Int, track: Track, fullSize: Boolean)
     }
-
-    class TrackInfoHandler(private val recentsAdapterWr: WeakReference<RecentsAdapter>) : Handler(Looper.getMainLooper()) {
-        private var count = 0
-        override fun handleMessage(m: Message) {
-            if (count > 0)
-                count --
-            val pos = m.arg1
-            recentsAdapterWr.get()?.loadImg(pos)
-        }
-        fun sendMessage(what:Int, pos:Int){
-            if (!hasMessages(what))
-                count ++
-            else
-                removeMessages(what)
-            val msg = obtainMessage(what, pos, 0)
-            sendMessageDelayed(msg, count * 100L)
-        }
-        fun cancelAll(){
-            removeCallbacksAndMessages(null)
-            count = 0
-        }
-    }
 }
-
-private const val NP_ID = -5
 
 private const val TYPE_TRACK = 0
 private const val TYPE_PENDING_SCROBBLE = 1

@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.snackbar.Snackbar
+import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.android.synthetic.main.content_rec.*
 import kotlinx.android.synthetic.main.content_rec.view.*
 import org.json.JSONException
@@ -293,9 +294,14 @@ class RecFragment:Fragment(){
         if(statusCode == 0) {
             rec_img.setImageResource(R.drawable.vd_check_simple)
             rec_status.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
-            LFMRequester(Stuff.SCROBBLE, artist, album, title, "", System.currentTimeMillis().toString(),
-                    "0", Stuff.genHashCode(artist, album, title).toString())
-                    .asSerialAsyncTask(context!!)
+            val scrobbleData = ScrobbleData()
+            scrobbleData.artist = artist
+            scrobbleData.album = album
+            scrobbleData.track = title
+            scrobbleData.timestamp = (System.currentTimeMillis()/1000).toInt() // in secs
+            LFMRequester(context!!)
+                    .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title))
+                    .asAsyncTask()
         } else {
             if (statusCode == 3003)
                 showSnackbar()

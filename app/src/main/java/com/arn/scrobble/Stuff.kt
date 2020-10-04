@@ -55,25 +55,19 @@ import kotlin.math.pow
  */
 
 object Stuff {
-    const val NOW_PLAYING = "np"
-    const val SCROBBLE = "scrobble"
-    const val LASTFM_SESS_AUTH = "lastfm_auth"
-    const val LIBREFM_SESS_AUTH = "librefm_auth"
-    const val GNUFM_SESS_AUTH = "gnufm_auth"
-    const val GET_RECENTS = "recents"
-    const val GET_RECENTS_CACHED = "recents_cached"
-    const val GET_LOVES = "loves"
-    const val GET_LOVES_CACHED = "loves_cached"
-    const val TAG_PAGER = "pager"
+    const val TAG_HOME_PAGER = "home_pager"
+    const val TAG_CHART_PAGER = "chart_pager"
     const val TAG_FIRST_THINGS = "first_things"
     const val ARG_URL = "url"
     const val ARG_SAVE_COOKIES = "cookies"
     const val ARG_NOPASS = "nopass"
-    const val DELETE = "delete"
-    const val GET_SIMILAR = "similar"
+    const val ARG_USERNAME = "username"
     const val TAG_SIMILAR = "similar"
-    const val GET_DRAWER_INFO = "profile"
-    const val GET_FRIENDS = "friends"
+    const val TYPE_ARTISTS = 1
+    const val TYPE_ALBUMS = 2
+    const val TYPE_TRACKS = 3
+    const val TYPE_LOVES = 4
+    const val NP_ID = -5
     const val LIBREFM_KEY = "panoScrobbler"
     const val LAST_KEY = Tokens.LAST_KEY
     const val LAST_SECRET = Tokens.LAST_SECRET
@@ -82,13 +76,10 @@ object Stuff {
     const val DL_APP_LIST = 32
     const val DL_NOW_PLAYING = 33
     const val DL_MIC = 34
+    const val DL_CHARTS = 35
     const val DIRECT_OPEN_KEY = "directopen"
-    const val LOVE = "loved"
-    const val UNLOVE = "unloved"
-    const val GET_FRIENDS_RECENTS = "get_friends_recent"
     const val FRIENDS_RECENTS_DELAY: Long = 800
-    const val GET_HERO_INFO = "heroinfo"
-    const val GET_INFO = "info"
+
     const val PREF_MASTER = "master"
     const val PREF_NOTIFICATIONS = "show_notifications"
     const val PREF_WHITELIST = "app_whitelist"
@@ -99,15 +90,6 @@ object Stuff {
     const val PREF_DELAY_PER = "delay_per"
     const val PREF_DELAY_PER_DEFAULT = 50
     const val PREF_ALLOWED_ARTISTS = "allowed_artists"
-
-    const val PREF_ACTIVITY_FIRST_RUN = "first_run"
-    const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
-    const val PREF_ACTIVITY_LAST_TAB = "last_tab"
-    const val PREF_ACTIVITY_NUM_SCROBBLES = "num_scrobbles_cached"
-    const val PREF_ACTIVITY_PROFILE_PIC = "profile_cached"
-    const val PREF_ACTIVITY_SHARE_SIG = "share_sig"
-    const val ACTIVITY_PREFS = "activity_preferences"
-
     const val PREF_LASTFM_SESS_KEY = "lastfm_sesskey"
     const val PREF_LASTFM_USERNAME = "lastfm_username"
     const val PREF_LIBREFM_USERNAME = "librefm_username"
@@ -126,9 +108,26 @@ object Stuff {
     const val PREF_ACR_KEY = "acr_key"
     const val PREF_ACR_SECRET = "acr_secret"
     const val PREF_PIXEL_NP = "pixel_np"
+    const val PREF_LOCKSCREEN_NOTI = "lockscreen_noti"
     const val PREF_IMPORT = "import"
     const val PREF_EXPORT = "export"
     const val PREF_INTENTS = "intents"
+
+    const val PREF_ACTIVITY_FIRST_RUN = "first_run"
+    const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
+    const val PREF_ACTIVITY_LAST_TAB = "last_tab"
+    const val PREF_ACTIVITY_LAST_CHARTS_TAB = "last_charts_tab"
+    const val PREF_ACTIVITY_LAST_CHARTS_PERIOD = "last_charts_period"
+    const val PREF_ACTIVITY_LAST_CHARTS_WEEK_TO = "last_charts_week_to"
+    const val PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM = "last_charts_week_from"
+    const val PREF_ACTIVITY_TODAY_SCROBBLES = "today_scrobbles_cached"
+    const val PREF_ACTIVITY_TOTAL_SCROBBLES = "total_scrobbles_cached"
+    const val PREF_ACTIVITY_SCROBBLING_SINCE = "scrobbling_since"
+    const val PREF_ACTIVITY_LAST_RANDOM_TYPE = "random_type"
+    const val PREF_ACTIVITY_PROFILE_PIC = "profile_cached"
+    const val PREF_ACTIVITY_SHARE_SIG = "share_sig"
+    const val ACTIVITY_PREFS = "activity_preferences"
+
     val SERVICE_BIT_POS = mapOf(
             R.string.lastfm to 0,
             R.string.librefm to 1,
@@ -143,13 +142,11 @@ object Stuff {
     const val PIXEL_NP_INTERVAL: Long = 5 * 60 * 1000
     const val CONNECT_TIMEOUT = 20 * 1000
     const val READ_TIMEOUT = 20 * 1000
-    const val CANCELLABLE_MSG = 9
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
     const val KEEPALIVE_JOB_INTERVAL: Long = 30 * 60 * 1000
+    const val LASTFM_MAX_PAST_SCROBBLE: Long = 15 * 24 * 60 * 60 * 1000
     const val META_WAIT: Long = 500
     const val START_POS_LIMIT: Long = 1500
-    const val DEBOUNCE_TIME = 100
-    const val MAX_APPS = 30
     const val MIN_LISTENER_COUNT = 5
     const val REQUEST_CODE_EXPORT = 10
     const val REQUEST_CODE_IMPORT = 11
@@ -378,15 +375,23 @@ object Stuff {
     }
 
     fun setTitle(activity: Activity?, strId: Int) {
+        val title = if (strId == 0)
+            null
+        else
+            activity?.getString(strId)
+        setTitle(activity, title)
+    }
+
+    fun setTitle(activity: Activity?, str: String?) {
         activity!!
         val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.ctl) ?: return
-        if (strId == 0) { // = clear title
+        if (str == null) { // = clear title
             ctl.findViewById<Toolbar>(R.id.toolbar).title = null
             activity.window.navigationBarColor = lastColorMutedBlack
         } else {
-            ctl.findViewById<Toolbar>(R.id.toolbar).title = activity.getString(strId)
+            ctl.findViewById<Toolbar>(R.id.toolbar).title = str
             activity.app_bar.setExpanded(false, true)
-            ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.colorPrimary))
+            ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.darkToolbar))
             ctl.setCollapsedTitleTextColor(Color.WHITE)
 
             val navbarBgAnimator = ValueAnimator.ofArgb(activity.window.navigationBarColor, 0)
@@ -398,7 +403,8 @@ object Stuff {
             for (i in 0..ctl.toolbar.childCount) {
                 val child = ctl.toolbar.getChildAt(i)
                 if (child is ImageButton) {
-                    (child.drawable as ShadowDrawerArrowDrawable).setColors(Color.WHITE, Color.TRANSPARENT)
+                    (child.drawable as ShadowDrawerArrowDrawable).
+                    setColors(ContextCompat.getColor(activity, R.color.colorAccent), Color.TRANSPARENT)
                     break
                 }
             }

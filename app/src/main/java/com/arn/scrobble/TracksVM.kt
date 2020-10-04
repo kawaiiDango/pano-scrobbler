@@ -2,68 +2,63 @@ package com.arn.scrobble
 
 import android.app.Application
 import android.content.Intent
-import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pending.db.PendingScrobblesDb
+import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import java.util.concurrent.Executors
 
 
 class TracksVM(application: Application) : AndroidViewModel(application) {
-    private val recents by lazy { MutableLiveData<PaginatedResult<Track>>() }
+    val tracksReceiver by lazy { MutableLiveData<PaginatedResult<Track>>() }
+    val tracks by lazy { mutableListOf<Track>() }
     val deletedTracksStringSet by lazy { mutableSetOf<String>() }
-    private val loves by lazy { MutableLiveData<PaginatedResult<Track>>() }
-    private val heroInfo by lazy { MutableLiveData<MutableList<String>>() }
+    val heroInfo by lazy { MutableLiveData<MutableList<String>>() }
     private var lastHeroInfoAsyncTask: LFMRequester.MyAsyncTask? = null
-    private val similar by lazy { MutableLiveData<List<Track>>() }
-    val trackInfo by lazy { MutableLiveData<Pair<Int,Track>>() }
+    val similarReceiver by lazy { MutableLiveData<List<Track>>() }
+    val trackInfo by lazy { MutableLiveData<Pair<Int,Track?>>() }
+    val imgMap = mutableMapOf<Int, Map<ImageSize, String>>()
     private val pendingTracks by lazy { MutableLiveData<PendingListData>() }
     private val executor by lazy { Executors.newSingleThreadExecutor() }
     //for room's built in livedata to work, data must be inserted, deleted from the same dao object
     var page = 1
-    private var loadedCachedRecents = false
-    private var loadedCachedLoves = false
+    var totalPages = 1
+    var loadedCached = false
+    var loadedNw = false
+    var selectedPos = Stuff.NP_ID
+    var toTime = 0L
 
-    fun loadRecentsList(page: Int, reload: Boolean): MutableLiveData<PaginatedResult<Track>> {
+
+    fun loadRecents(page: Int) {
         this.page = page
-        val command = if (loadedCachedRecents) Stuff.GET_RECENTS else Stuff.GET_RECENTS_CACHED
-        if (reload) {
-            LFMRequester(command, page.toString()).asAsyncTask(getApplication(), recents)
-            loadedCachedRecents = true
-        }
-        return recents
+        LFMRequester(getApplication()).getRecents(page, toTime, !loadedCached).asAsyncTask(tracksReceiver)
+        loadedCached = true
     }
-    fun loadLovesList(page: Int, reload: Boolean): MutableLiveData<PaginatedResult<Track>> {
+
+    fun loadLoves(page: Int) {
         this.page = page
-        val command = if (loadedCachedLoves) Stuff.GET_LOVES else Stuff.GET_LOVES_CACHED
-        if (reload) {
-            LFMRequester(command, page.toString()).asAsyncTask(getApplication(), loves)
-            loadedCachedLoves = true
-        }
-        return loves
+        LFMRequester(getApplication()).getLoves(page, !loadedCached).asAsyncTask(tracksReceiver)
+        loadedCached = true
     }
 
     fun loadHero(url: String?): MutableLiveData<MutableList<String>> {
         lastHeroInfoAsyncTask?.cancel(true)
         if (url != null) {
-            lastHeroInfoAsyncTask =
-                    LFMRequester(Stuff.GET_HERO_INFO, url, "").asAsyncTask(getApplication(), heroInfo)
+            lastHeroInfoAsyncTask = LFMRequester(getApplication()).getHeroInfo(url).asAsyncTask(heroInfo)
         }
         return heroInfo
     }
 
-    fun loadSimilar(artist: String, track: String, limit: Int): MutableLiveData<List<Track>> {
-        LFMRequester(Stuff.GET_SIMILAR, artist, track, limit.toString()).asAsyncTask(getApplication(), similar)
-        return similar
+    fun loadSimilar(artist: String, track: String, limit: Int) {
+        LFMRequester(getApplication()).getSimilar(artist, track, limit).asAsyncTask(similarReceiver)
     }
 
-    fun loadInfo(artist: String, track: String, pos:Int): MutableLiveData<Pair<Int,Track>> {
-        LFMRequester(Stuff.GET_INFO, artist, track, pos.toString()).asSerialAsyncTask(getApplication(), trackInfo)
-        return trackInfo
+    fun loadInfo(track: Track, pos:Int) {
+        LFMRequester(getApplication()).getTrackInfo(track, pos).asAsyncTask(trackInfo)
     }
 
     fun loadPending(limit: Int, submit: Boolean): MutableLiveData<PendingListData> {

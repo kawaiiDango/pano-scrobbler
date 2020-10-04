@@ -14,14 +14,7 @@ import com.squareup.picasso.RequestHandler
 class AppIconRequestHandler(context: Context) : RequestHandler() {
 
     private val pm = context.packageManager
-
-    //    private val dpi: Int
     private val isMIUI = Stuff.isMiui(context)
-
-//    init {
-//        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-//        dpi = am.launcherLargeIconDensity
-//    }
 
     override fun canHandleRequest(data: Request): Boolean {
         return data.uri != null && TextUtils.equals(data.uri.scheme, SCHEME_PNAME)

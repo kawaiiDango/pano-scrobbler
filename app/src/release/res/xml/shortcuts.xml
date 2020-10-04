@@ -28,4 +28,18 @@
             <extra android:name="directopen" android:value="34" />
         </intent>
     </shortcut>
+    <shortcut
+        android:shortcutId="charts"
+        android:enabled="true"
+        android:icon="@drawable/vd_charts"
+        android:shortcutShortLabel="@string/menu_charts"
+        android:shortcutLongLabel="@string/menu_charts"
+        android:shortcutDisabledMessage="@string/menu_charts">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.arn.scrobble"
+            android:targetClass="com.arn.scrobble.Main" >
+            <extra android:name="directopen" android:value="35" />
+        </intent>
+    </shortcut>
 </shortcuts>

@@ -2,4 +2,5 @@
 <resources>
     <dimen name="coordinator_padding">280dp</dimen>
     <dimen name="grid_size">200dp</dimen>
+    <dimen name="first_things_margin">200dp</dimen>
 </resources>

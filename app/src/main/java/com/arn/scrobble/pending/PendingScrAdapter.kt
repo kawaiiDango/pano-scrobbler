@@ -17,6 +17,10 @@ class PendingScrAdapter(private val itemClickListener: ItemClickListener) : Recy
     private val psList = mutableListOf<PendingScrobble>()
     private val plList = mutableListOf<PendingLove>()
 
+    init {
+        stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {

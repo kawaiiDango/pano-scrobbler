@@ -25,6 +25,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     private val pendingTracks by lazy { MutableLiveData<PendingListData>() }
     private val executor by lazy { Executors.newSingleThreadExecutor() }
     //for room's built in livedata to work, data must be inserted, deleted from the same dao object
+    var username: String? = null
     var page = 1
     var totalPages = 1
     var loadedCached = false
@@ -35,13 +36,13 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
 
     fun loadRecents(page: Int) {
         this.page = page
-        LFMRequester(getApplication()).getRecents(page, toTime, !loadedCached).asAsyncTask(tracksReceiver)
+        LFMRequester(getApplication()).getRecents(page, toTime, !loadedCached, username).asAsyncTask(tracksReceiver)
         loadedCached = true
     }
 
     fun loadLoves(page: Int) {
         this.page = page
-        LFMRequester(getApplication()).getLoves(page, !loadedCached).asAsyncTask(tracksReceiver)
+        LFMRequester(getApplication()).getLoves(page, !loadedCached, username).asAsyncTask(tracksReceiver)
         loadedCached = true
     }
 

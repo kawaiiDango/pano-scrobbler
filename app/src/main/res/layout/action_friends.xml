@@ -15,10 +15,10 @@
         android:text="@string/user_profile"/>
 
     <Button
-        android:id="@+id/friends_loved"
+        android:id="@+id/friends_scrobbles"
         style="@style/friendsLinks"
-        android:drawableTop="@drawable/vd_heart"
-        android:text="@string/loved"/>
+        android:drawableTop="@drawable/vd_note"
+        android:text="@string/scrobbles_friends"/>
 
     <Button
         android:id="@+id/friends_charts"

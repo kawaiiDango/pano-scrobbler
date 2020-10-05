@@ -16,12 +16,13 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
     private val infoAsyncTasks by lazy { mutableMapOf<Int, LFMRequester.MyAsyncTask>() }
     val info by lazy { MutableLiveData<Pair<Int, MusicEntry?>>() }
     var weeklyChart: Chart<MusicEntry>? = null
+    var username: String? = null
     var periodIdx = 1
     var page = 1
     var reachedEnd = false
 //    private var loadedCached = false
 
-    fun loadCharts(type: Int, page: Int, username: String){
+    fun loadCharts(type: Int, page: Int){
         if (periodIdx == 0)
             return
         this.page = page
@@ -32,11 +33,11 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
 //        loadedCached = true
     }
 
-    fun loadWeeklyChartsList(username: String){
+    fun loadWeeklyChartsList(){
         LFMRequester(getApplication()).getWeeklyChartsList(username).asAsyncTask(weeklyListReceiver)
     }
 
-    fun loadWeeklyCharts(type: Int, username: String) {
+    fun loadWeeklyCharts(type: Int) {
         page = 1
         reachedEnd = true
         lastChartsAsyncTask?.cancel(true)

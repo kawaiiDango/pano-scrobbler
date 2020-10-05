@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.text.Html
 import android.text.format.DateFormat
 import android.view.*
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import androidx.appcompat.app.AlertDialog
@@ -37,8 +36,8 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
     open val type = 0
     private val viewmodel by lazy { VMFactory.getVM(this, ChartsVM::class.java) }
     private val periodChipIds = arrayOf(R.id.charts_choose_week, R.id.charts_7day, R.id.charts_1month, R.id.charts_3month, R.id.charts_6month, R.id.charts_12month, R.id.charts_overall)
-    private val username: String
-        get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME, null) ?: ""
+    private val username: String?
+        get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
@@ -85,6 +84,7 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
         val periodIdx = pref?.getInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, 1) ?: 1
         var firstLoad = charts_period.checkedChipId == View.NO_ID
         adapter = ChartsAdapter(view!!)
+        viewmodel.username = username
         viewmodel.periodIdx = periodIdx
         charts_period.setOnCheckedChangeListener { group, checkedId ->
             adapter.removeHandlerCallbacks()
@@ -102,7 +102,7 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
                 val from = pref?.getLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM, 0) ?: 0
                 val to = pref?.getLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_TO, 0) ?: 0
                 viewmodel.weeklyChart = Chart(Date(from), Date(to), emptyList())
-                viewmodel.loadWeeklyCharts(type, username)
+                viewmodel.loadWeeklyCharts(type)
                 setWeeklyChipName(true)
             }
             firstLoad = false
@@ -122,7 +122,7 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
         charts_choose_week.setOnClickListener {
             if (Main.isOnline)
                 charts_progress.visibility = View.VISIBLE
-            viewmodel.loadWeeklyChartsList(username)
+            viewmodel.loadWeeklyChartsList()
         }
         charts_period.check(periodChipIds[periodIdx])
 
@@ -175,7 +175,7 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
                         val item = weeklyList[i]
                         viewmodel.weeklyChart = item
                         viewmodel.periodIdx = 0
-                        viewmodel.loadWeeklyCharts(type, username)
+                        viewmodel.loadWeeklyCharts(type)
                         pref?.edit()
                                 ?.putLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM, item.from.time)
                                 ?.putLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_TO, item.to.time)
@@ -227,7 +227,7 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
             adapter.loadMoreListener.isAllPagesLoaded = true
             return
         }
-        viewmodel.loadCharts(type, page, username)
+        viewmodel.loadCharts(type, page)
     }
 
     private fun setWeeklyChipName(set: Boolean) {
@@ -281,9 +281,8 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
                 else -> getString(R.string.charts_num_text, pos++, it.name)
             }
         }
-        var user = username
-        user = if (user != "")
-            getString(R.string.possesion, user)
+        val user = if (username != null)
+            getString(R.string.possesion, username)
         else
             getString(R.string.my)
         var shareText = getString(R.string.charts_share_text,

@@ -51,6 +51,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
         lastRefreshTime = System.currentTimeMillis()
     }
     private var popupWr: WeakReference<PopupWindow>? = null
+    private val username: String?
+        get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
     private val viewModel by lazy { VMFactory.getVM(this, FriendsVM::class.java) }
     var lastRefreshTime = System.currentTimeMillis()
 
@@ -124,6 +126,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         val glm = GridLayoutManager(context!!, getNumColumns())
         friends_grid.layoutManager = glm
         (friends_grid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        viewModel.username = username
         adapter = FriendsAdapter(view!!, viewModel)
         friends_grid.adapter = adapter
         friends_grid.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
@@ -251,8 +254,17 @@ class FriendsFragment : Fragment(), ItemClickListener {
             action.friends_profile.setOnClickListener { v:View ->
                 Stuff.openInBrowser(userLink, activity, v)
             }
-            action.friends_loved.setOnClickListener { v:View ->
-                Stuff.openInBrowser("$userLink/loved", activity, v)
+            action.friends_scrobbles.setOnClickListener { v:View ->
+                val f = HomePagerFragment()
+                val b = Bundle()
+                b.putString(Stuff.ARG_USERNAME, user.name)
+                b.putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
+                f.arguments = b
+                activity!!.supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
+                        .addToBackStack(null)
+                        .commit()
             }
             action.friends_charts.setOnClickListener { v:View ->
                 val f = ChartsPagerFragment()

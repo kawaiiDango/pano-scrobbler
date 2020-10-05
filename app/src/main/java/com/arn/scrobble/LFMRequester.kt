@@ -50,33 +50,31 @@ class LFMRequester(context: Context) {
         caller.cache.expirationPolicy = LFMCachePolicy(online)
     }
 
-    private fun checkSession() {
-        if (lastfmSessKey == null)
+    private fun checkSession(usernamep: String? = null) {
+        if (usernamep == null && lastfmSessKey == null)
             throw Exception("Login required")
         initCaller(Main.isOnline)
     }
 
-    fun getRecents(page: Int, to: Long, cached: Boolean): LFMRequester {
+    fun getRecents(page: Int, to: Long, cached: Boolean, usernamep: String?): LFMRequester {
         toExec = {
-            checkSession()
+            checkSession(usernamep)
             Stuff.log(this::getRecents.name + " " + page)
+            val from = if (to == 0L) 0L else 1L
             if (cached)
                 initCaller(false)
-            if (to == 0L)
-                User.getRecentTracks(null, page, 50, true, lastfmSession, null)
-            else
-                User.getRecentTracks(null, page, 50, 1, to/1000, lastfmSession, null)
+            User.getRecentTracks(usernamep, page, 50, true, from, to/1000, lastfmSession, null)
         }
         return this
     }
 
-    fun getLoves(page: Int, cached: Boolean): LFMRequester {
+    fun getLoves(page: Int, cached: Boolean, usernamep: String?): LFMRequester {
         toExec = {
-            checkSession()
+            checkSession(usernamep)
             Stuff.log(this::getLoves.name + " " + page)
             if (cached)
                 initCaller(false)
-            val pr = User.getLovedTracks(null, page, 50, lastfmSession, null)
+            val pr = User.getLovedTracks(usernamep, page, 50, lastfmSession, null)
             pr.pageResults.forEach {
                 it.isLoved = true
                 it.imageUrlsMap = null
@@ -98,7 +96,7 @@ class LFMRequester(context: Context) {
 
     fun getFriendsRecents(username: String): LFMRequester {
         toExec = {
-            checkSession()
+            initCaller(Main.isOnline)
             Stuff.log(this::getFriendsRecents.name + " " + username)
             Pair(username, User.getRecentTracks(username, 1, 1, false, null, Stuff.LAST_KEY))
         }
@@ -132,78 +130,73 @@ class LFMRequester(context: Context) {
         return this
     }
 
-    fun getFriends(page: Int): LFMRequester {
+    fun getFriends(page: Int, usernamep: String?): LFMRequester {
         toExec = {
             Stuff.log(this::getFriends.name + " " + page)
-            initCaller(Main.isOnline)
-            if (lastfmUsername != null) {
-                var pr: PaginatedResult<User>
+            checkSession(usernamep)
+            val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
+            var pr: PaginatedResult<User>
+            try {
+                pr = User.getFriends(username, page, 30, null, Stuff.LAST_KEY)
+            } catch (e: NullPointerException) {
+                val url = URL("https://www.last.fm/user/$username/following?page=$page")
+                var urlConnection: HttpURLConnection? = null
+                val users = mutableListOf<User>()
                 try {
-                    pr = User.getFriends(lastfmUsername, page, 30, null, Stuff.LAST_KEY)
-                } catch (e: NullPointerException) {
-                    val url = URL("https://www.last.fm/user/$lastfmUsername/following?page=$page")
-                    var urlConnection: HttpURLConnection? = null
-                    val users = mutableListOf<User>()
-                    try {
-                        var idx = 0
-                        urlConnection = url.openConnection() as HttpURLConnection
-                        urlConnection.setRequestProperty("Accept-Encoding", "gzip")
-                        urlConnection.instanceFollowRedirects = false
+                    var idx = 0
+                    urlConnection = url.openConnection() as HttpURLConnection
+                    urlConnection.setRequestProperty("Accept-Encoding", "gzip")
+                    urlConnection.instanceFollowRedirects = false
 
-                        if (urlConnection.responseCode != 200)
-                            idx = -1
-                        val resp = slurp(urlConnection, 1024)
-                        if (resp == "")
-                            idx = -1
-                        if (idx > -1)
-                            idx = resp.indexOf("<ul class=\"user-list\">", 50000)
-                        var idx2: Int
-                        if (idx > -1) {
-                            do {
-                                idx = resp.indexOf("  link-block-target", idx)
-                                if (idx > -1)
-                                    idx = resp.indexOf(">", idx + 1)
-                                if (idx > -1) {
-                                    idx += 1
-                                    idx2 = resp.indexOf("<", idx)
-                                    val uname = resp.substring(idx, idx2)
-                                    idx = resp.indexOf("<img", idx2)
-                                    idx = resp.indexOf("\"", idx)
-                                    idx2 = resp.indexOf("\"", idx + 1)
-                                    val imageUrl = resp.substring(idx + 1, idx2)
-                                    val user = User(uname, "https://www.last.fm/user/$uname")
-                                    user.imageURL = imageUrl
-                                    users.add(user)
-                                    idx = idx2
-                                }
-                            } while (idx > -1)
+                    if (urlConnection.responseCode != 200)
+                        idx = -1
+                    val resp = slurp(urlConnection, 1024)
+                    if (resp == "")
+                        idx = -1
+                    if (idx > -1)
+                        idx = resp.indexOf("<ul class=\"user-list\">", 50000)
+                    var idx2: Int
+                    if (idx > -1) {
+                        do {
+                            idx = resp.indexOf("  link-block-target", idx)
+                            if (idx > -1)
+                                idx = resp.indexOf(">", idx + 1)
+                            if (idx > -1) {
+                                idx += 1
+                                idx2 = resp.indexOf("<", idx)
+                                val uname = resp.substring(idx, idx2)
+                                idx = resp.indexOf("<img", idx2)
+                                idx = resp.indexOf("\"", idx)
+                                idx2 = resp.indexOf("\"", idx + 1)
+                                val imageUrl = resp.substring(idx + 1, idx2)
+                                val user = User(uname, "https://www.last.fm/user/$uname")
+                                user.imageURL = imageUrl
+                                users.add(user)
+                                idx = idx2
+                            }
+                        } while (idx > -1)
 
-                        }
-                    } catch (e: Exception) {
-                    } finally {
-                        urlConnection?.disconnect()
                     }
-                    val totalPages = if (users.isEmpty())
-                        page
-                    else
-                        10
-                    pr = PaginatedResult(page, totalPages, users, null)
+                } catch (e: Exception) {
+                } finally {
+                    urlConnection?.disconnect()
                 }
-                pr
-            } else
-                null
+                val totalPages = if (users.isEmpty())
+                    page
+                else
+                    10
+                pr = PaginatedResult(page, totalPages, users, null)
+            }
+            pr
         }
         return this
     }
 
-    fun getCharts(type: Int, period: Period, page: Int, usernamep: String): LFMRequester {
+    fun getCharts(type: Int, period: Period, page: Int, usernamep: String?): LFMRequester {
         toExec = {
             Stuff.log(this::getCharts.name + " " + page)
             initCaller(Main.isOnline)
-            val username = if (usernamep == "")
-                lastfmUsername ?: throw Exception("Login required")
-            else
-                usernamep
+            val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             val collection = when (type) {
                 Stuff.TYPE_ARTISTS -> User.getTopArtists(username, period, 50, page, Stuff.LAST_KEY)
                 Stuff.TYPE_ALBUMS -> User.getTopAlbums(username, period, 50, page, Stuff.LAST_KEY)
@@ -215,13 +208,13 @@ class LFMRequester(context: Context) {
         return this
     }
 
-    fun getWeeklyChartsList(usernamep: String): LFMRequester {
+    fun getWeeklyChartsList(usernamep: String?): LFMRequester {
         toExec = {
             Stuff.log(this::getWeeklyChartsList.name)
             initCaller(Main.isOnline)
             val username: String
             val scrobblingSince: Long
-            if (usernamep == "") {
+            if (usernamep == null) {
                 username = lastfmUsername ?: throw Exception("Login required")
                 scrobblingSince = getContext
                         .getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
@@ -238,14 +231,11 @@ class LFMRequester(context: Context) {
         return this
     }
 
-    fun getWeeklyCharts(type: Int, from: Long, to: Long, usernamep: String): LFMRequester {
+    fun getWeeklyCharts(type: Int, from: Long, to: Long, usernamep: String?): LFMRequester {
         toExec = {
             Stuff.log(this::getWeeklyCharts.name)
             initCaller(Main.isOnline)
-            val username = if (usernamep == "")
-                lastfmUsername ?: throw Exception("Login required")
-            else
-                usernamep
+            val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             val chart = when (type) {
                 Stuff.TYPE_ARTISTS -> User.getWeeklyArtistChart(username, from.toString(), to.toString(), 100, Stuff.LAST_KEY)
                 Stuff.TYPE_ALBUMS -> User.getWeeklyAlbumChart(username, from.toString(), to.toString(), 100, Stuff.LAST_KEY)

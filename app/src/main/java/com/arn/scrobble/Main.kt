@@ -389,24 +389,27 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onBackStackChanged() {
         if (app_bar != null) {
+            val animate = true
             if (supportFragmentManager.backStackEntryCount == 0) {
                 val firstThingsVisible = supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
                 // what the fuck, kotlin extensions? stop giving me old instances
-                val pager = findViewById<ViewPager>(R.id.pager)
-                if (pager != null && pager.currentItem != 2 && firstThingsVisible != true)
-                    app_bar.setExpanded(true, true)
-                else
-                    app_bar.setExpanded(false, true)
+
                 if (firstThingsVisible != true)
                     showBackArrow(false)
 
                 if (supportFragmentManager.fragments.isEmpty()) //came back from direct open
                     showHomePager()
             } else {
-                if (supportFragmentManager.findFragmentByTag(Stuff.TAG_SIMILAR)?.isVisible != true)
-                    app_bar.setExpanded(false, true)
                 showBackArrow(true)
             }
+
+            val pager = supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.view?.findViewById<ViewPager>(R.id.pager)
+
+            val expand = pager != null && pager.currentItem != 2 &&
+                    supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible != true ||
+                    supportFragmentManager.findFragmentByTag(Stuff.TAG_SIMILAR)?.isVisible == true
+
+            app_bar.setExpanded(expand, animate)
         }
     }
 

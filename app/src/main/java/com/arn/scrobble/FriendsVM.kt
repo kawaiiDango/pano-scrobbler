@@ -13,13 +13,14 @@ class FriendsVM(app: Application): AndroidViewModel(app) {
     val receiver = MutableLiveData<PaginatedResult<User>>()
     val track = MutableLiveData<Pair<String,PaginatedResult<Track>>>()
     val paletteColorsCache = mutableMapOf<String, Int>()
+    var username: String? = null
     var page = 1
     var totalPages = 1
     var sorted = false
 
     fun loadFriendsList(page: Int) {
         this.page = page
-        LFMRequester(getApplication()).getFriends(page).asAsyncTask(receiver)
+        LFMRequester(getApplication()).getFriends(page, username).asAsyncTask(receiver)
     }
     fun loadFriendsRecents(user: String) {
         LFMRequester(getApplication()).getFriendsRecents(user).asAsyncTask(track)

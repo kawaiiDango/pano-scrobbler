@@ -68,7 +68,9 @@ class HomePagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.O
         super.onStart()
         val tabBar = activity!!.ctl.tab_bar
         if (!backStackChecked) { //dont invoke if coming from background/app switching
-            val lastTab = if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_NOW_PLAYING)
+            val lastTab = if (arguments?.getString(Stuff.ARG_USERNAME) != null)
+                (view as ViewPager).currentItem
+            else if(activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_NOW_PLAYING)
                 0
             else
                 context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
@@ -118,7 +120,8 @@ class HomePagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.O
     override fun onTabSelected(tab: TabLayout.Tab) {
         tab.setText(tabMeta[tab.position].first)
         tab.icon = null
-        if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0) {
+        if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0 &&
+                arguments?.getString(Stuff.ARG_USERNAME) == null) {
             context ?: return
             context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
                     .edit()

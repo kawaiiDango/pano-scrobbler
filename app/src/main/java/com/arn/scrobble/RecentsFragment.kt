@@ -62,6 +62,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
     }
     private var lastRefreshTime = System.currentTimeMillis()
     private val refreshHandler by lazy { Handler(Looper.getMainLooper()) }
+    private val username: String?
+        get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
     private lateinit var viewModel: TracksVM
     private lateinit var animSet: AnimatorSet
     private var smoothScroller: LinearSmoothScroller? = null
@@ -125,6 +127,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         recents_list.layoutManager = llm
 
         viewModel = VMFactory.getVM(this, TracksVM::class.java)
+        viewModel.username = username
         adapter = RecentsAdapter(view!!)
         adapter.viewModel = viewModel
         adapter.isShowingLoves = isShowingLoves
@@ -205,7 +208,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 toggleGraphDetails(activity.sparkline, true)
                 viewModel.loadedNw = true
             } else if (it.page == 1 && !isShowingLoves) {
-                viewModel.loadPending(2, false)
+                if (username == null)
+                    viewModel.loadPending(2, false)
                 refreshHandler.removeCallbacks(timedRefresh)
                 refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
             }
@@ -220,7 +224,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 it ?: return@observe
                 adapter.setImg(it.first, it.second?.imageUrlsMap)
             })
-        else
+        else if (username == null)
             viewModel.loadPending(2, !activity.pendingSubmitAttempted)
                     .observe(viewLifecycleOwner, {
                         it ?: return@observe
@@ -235,10 +239,14 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         activity.hero_share.setOnClickListener{
             val track = activity.hero_img?.tag
             if (track is Track) {
-
-                var shareText = getString(R.string.share_text,
-                        track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
-                shareText += "\n" +appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
+                var shareText: String
+                if (username == null)
+                    shareText = getString(R.string.share_text,
+                            track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
+                else
+                    shareText = getString(R.string.share_text_username, username,
+                            track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
+                shareText += "\n\n" +appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
                         getString(R.string.share_sig, getString(R.string.share_link)))
                 val i = Intent(Intent.ACTION_SEND)
                 i.type = "text/plain"
@@ -273,7 +281,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 simFragment.arguments = b
 
                 activity.supportFragmentManager.beginTransaction()
-                        .hide(activity.supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)!!)
+                        .hide(parentFragment!!)
                         .add(R.id.frame, simFragment, Stuff.TAG_SIMILAR)
                         .addToBackStack(null)
                         .commit()
@@ -291,7 +299,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 loadRecents(1, true)
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
             dpd.datePicker.maxDate = System.currentTimeMillis()
-            dpd.datePicker.minDate = appPrefs.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0)
+            dpd.datePicker.minDate = if (username == null)
+                appPrefs.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0)
+            else
+                parentFragment!!.arguments?.getLong(Stuff.ARG_REGISTERED_TIME, 0) ?: 0
             dpd.setTitle(R.string.past_scrobbles)
             dpd.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.reset)) { dialogInterface, i ->
                 viewModel.toTime = 0
@@ -598,24 +609,24 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
     private fun openTrackPopupMenu (anchor: View, track: Track) {
         val menuBuilder = MenuBuilder(context)
         val inflater = SupportMenuInflater(context)
+        if (username == null) {
+            inflater.inflate(R.menu.recents_item_menu, menuBuilder)
+            val loveMenu = menuBuilder.findItem(R.id.menu_love)
 
-        inflater.inflate(R.menu.recents_item_menu, menuBuilder)
+            if (track.isLoved) {
+                loveMenu.title = getString(R.string.unlove)
+                loveMenu.icon = ContextCompat.getDrawable(context!!, R.drawable.vd_heart_break_outline)
+            }
+            if (track.playedWhen == null)
+                menuBuilder.removeItem(R.id.menu_delete)
+
+            if (isShowingLoves) {
+                menuBuilder.removeItem(R.id.menu_delete)
+                menuBuilder.removeItem(R.id.menu_edit)
+            }
+        }
         if (!anchor.isInTouchMode)
             inflater.inflate(R.menu.recents_item_tv_menu, menuBuilder)
-        val loveMenu = menuBuilder.findItem(R.id.menu_love)
-
-        if (track.isLoved) {
-            loveMenu.title = getString(R.string.unlove)
-            loveMenu.icon = ContextCompat.getDrawable(context!!, R.drawable.vd_heart_break_outline)
-        }
-        if (track.playedWhen == null)
-            menuBuilder.removeItem(R.id.menu_delete)
-
-        if (isShowingLoves){
-            menuBuilder.removeItem(R.id.menu_delete)
-            menuBuilder.removeItem(R.id.menu_edit)
-        }
-
         fun csrfTokenExists(): Boolean {
             val prefs = MultiPreferences(context!!)
             val exists = LastfmUnscrobbler(context)

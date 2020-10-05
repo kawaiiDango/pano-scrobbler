@@ -62,6 +62,7 @@ object Stuff {
     const val ARG_SAVE_COOKIES = "cookies"
     const val ARG_NOPASS = "nopass"
     const val ARG_USERNAME = "username"
+    const val ARG_REGISTERED_TIME = "registered"
     const val TAG_SIMILAR = "similar"
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2

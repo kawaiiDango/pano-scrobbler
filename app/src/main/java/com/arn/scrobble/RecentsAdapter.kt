@@ -189,13 +189,17 @@ class RecentsAdapter
     }
 
     fun setStatusHeader(){
-        val header =  if (isShowingLoves)
-            fragmentContent.context.getString(R.string.recently_loved)
-        else if (viewModel.toTime > 0)
-            fragmentContent.context.getString(R.string.scrobbles_till,
-                    DateFormat.getLongDateFormat(fragmentContent.context).format(viewModel.toTime))
+        val username = if (viewModel.username != null)
+            fragmentContent.context.getString(R.string.possesion, viewModel.username) + " "
         else
-            fragmentContent.context.getString(R.string.recently_scrobbled)
+            ""
+        val header =  if (isShowingLoves)
+            username + fragmentContent.context.getString(R.string.recently_loved)
+        else if (viewModel.toTime > 0)
+            username + fragmentContent.context.getString(R.string.scrobbles_till,
+                    DateFormat.getMediumDateFormat(fragmentContent.context).format(viewModel.toTime))
+        else
+            username + fragmentContent.context.getString(R.string.recently_scrobbled)
         setStatusHeader(header)
     }
 
@@ -349,14 +353,12 @@ class RecentsAdapter
                 itemClickListener.onItemClick(itemView, adapterPosition)
             }
             view.onFocusChangeListener = this
-
-            vMenu.setOnClickListener {
-                itemClickListener.onItemClick(it, adapterPosition)
-            }
-            vOverlay.setOnClickListener {
-                itemClickListener.onItemClick(it, adapterPosition)
-            }
-            vOverlay.contentDescription = view.context.getString(R.string.loved)
+            if (viewModel.username != null && !Main.isTV)
+                vMenu.visibility = View.INVISIBLE
+            else
+                vMenu.setOnClickListener {
+                    itemClickListener.onItemClick(it, adapterPosition)
+                }
         }
 
         override fun onFocusChange(view: View?, focused: Boolean) {

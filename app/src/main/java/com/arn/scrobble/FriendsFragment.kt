@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.coordinator_main.*
 import kotlinx.android.synthetic.main.grid_item_friend.view.*
 import kotlinx.android.synthetic.main.header_default.view.*
 import java.lang.ref.WeakReference
+import java.text.NumberFormat
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -243,7 +244,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     ""
                 else
                     DateFormat.getMediumDateFormat(context).format(user.registeredDate.time)
-                content.friends_scrobbles_since.text = getString(R.string.num_scrobbles_since, user.playcount, since)
+                content.friends_scrobbles_since.text = getString(R.string.num_scrobbles_since,
+                        NumberFormat.getInstance().format(user.playcount),
+                        since)
                 content.friends_scrobbles_since.visibility = View.VISIBLE
             }
             if (user.country != null && user.country != "None") {
@@ -255,6 +258,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 Stuff.openInBrowser(userLink, activity, v)
             }
             action.friends_scrobbles.setOnClickListener { v:View ->
+                (activity as Main).enableGestures()
                 val f = HomePagerFragment()
                 val b = Bundle()
                 b.putString(Stuff.ARG_USERNAME, user.name)
@@ -267,9 +271,11 @@ class FriendsFragment : Fragment(), ItemClickListener {
                         .commit()
             }
             action.friends_charts.setOnClickListener { v:View ->
+                (activity as Main).enableGestures()
                 val f = ChartsPagerFragment()
                 val b = Bundle()
                 b.putString(Stuff.ARG_USERNAME, user.name)
+                b.putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
                 f.arguments = b
                 activity!!.supportFragmentManager
                         .beginTransaction()

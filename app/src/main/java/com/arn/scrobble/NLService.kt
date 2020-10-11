@@ -22,6 +22,7 @@ import androidx.core.media.app.MediaStyleMod
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import de.umass.lastfm.scrobble.ScrobbleData
 import org.codechimp.apprater.AppRater
+import java.text.NumberFormat
 
 
 class NLService : NotificationListenerService() {
@@ -554,7 +555,9 @@ class NLService : NotificationListenerService() {
                     .setOngoing(Stuff.persistentNoti)
             if (userPlayCount > 0)
                 nb.setContentTitle("$artist — $title")
-                    .setContentText(resources.getQuantityString(R.plurals.num_scrobbles_noti, userPlayCount, userPlayCount))
+                    .setContentText(resources.getQuantityString(R.plurals.num_scrobbles_noti,
+                            userPlayCount,
+                            NumberFormat.getInstance().format(userPlayCount)))
             else
                 nb.setContentTitle(title)
                     .setContentText(artist)

@@ -43,7 +43,8 @@ class HomePagerFragment: Fragment(), ViewPager.OnPageChangeListener, TabLayout.O
         val tabBar = activity!!.ctl.tab_bar
         tabBar.setupWithViewPager(view.pager, false)
         backStackChecked = false
-        setGestureExclusions(true)
+        if (arguments?.getString(Stuff.ARG_USERNAME) == null)
+            setGestureExclusions(true)
         super.onViewCreated(view, savedInstanceState)
     }
 

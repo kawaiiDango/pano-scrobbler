@@ -19,4 +19,5 @@
     <dimen name="random_container_max_width">400dp</dimen>
     <dimen name="first_things_margin">10dp</dimen>
     <dimen name="recents_overlay_rotate">10</dimen>
+    <dimen name="bottom_sheet_width">0dp</dimen>
 </resources>

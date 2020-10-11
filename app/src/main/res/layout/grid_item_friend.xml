@@ -47,7 +47,6 @@
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/profile_pic"
         android:elevation="20dp"
-        android:focusable="true"
         app:shapeAppearanceOverlay="@style/circleImageView"
         tools:src="@drawable/vd_placeholder_user"/>
 

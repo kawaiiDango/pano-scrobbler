@@ -52,7 +52,7 @@ public class Album extends MusicEntry {
 	private Date releaseDate;
 	private Collection<Track> tracks;
 
-	private Album(String name, String url, String artist) {
+	public Album(String name, String url, String artist) {
 		super(name, url);
 		this.artist = artist;
 	}

@@ -50,7 +50,7 @@ public class Artist extends MusicEntry {
 
 	private Collection<Artist> similar = new ArrayList<Artist>();
 
-	protected Artist(String name, String url) {
+	public Artist(String name, String url) {
 		super(name, url);
 	}
 

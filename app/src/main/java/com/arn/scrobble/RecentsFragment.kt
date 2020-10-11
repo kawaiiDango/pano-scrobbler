@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.*
 import com.robinhood.spark.SparkView
@@ -94,7 +95,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             postInit()
         else {
             val holder = recents_list.findViewHolderForAdapterPosition(viewModel.selectedPos)
-            (holder as RecentsAdapter.VHTrack?)?.setSelected(true)
+            (holder as? RecentsAdapter.VHTrack)?.setSelected(true)
             if (!isShowingLoves &&
                     System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
                     viewModel.page == 1)
@@ -259,10 +260,15 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         activity.hero_info.setOnClickListener {
             val t = activity.hero_img?.tag
             if (t is Track) {
-                if (t.url != null)
-                    Stuff.openInBrowser(t.url, activity, null)
-                else
-                    Stuff.toast(context!!, getString(R.string.no_track_url))
+                val info = InfoFragment()
+                val b = Bundle()
+                b.putString(NLService.B_ARTIST, t.artist)
+                if (!t.album.isNullOrEmpty())
+                    b.putString(NLService.B_ALBUM, t.album)
+                b.putString(NLService.B_TITLE, t.name)
+                b.putString(Stuff.ARG_USERNAME, username)
+                info.arguments = b
+                info.show(activity.supportFragmentManager, null)
             }
         }
         activity.hero_play.setOnClickListener {
@@ -630,7 +636,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         fun csrfTokenExists(): Boolean {
             val prefs = MultiPreferences(context!!)
             val exists = LastfmUnscrobbler(context)
-                    .checkCsrf(prefs.getString(Stuff.PREF_LASTFM_USERNAME, null)!!)
+                    .checkCsrf(prefs.getString(Stuff.PREF_LASTFM_USERNAME, null))
             if (!exists) {
                 AlertDialog.Builder(context!!, R.style.DarkDialog)
                         .setMessage(R.string.lastfm_reauth)
@@ -658,7 +664,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                     }
                     R.id.menu_edit -> {
                         if (!Main.isOnline)
-                            Stuff.toast(context!!, getString(R.string.unavailable_offline))
+                            Stuff.toast(context, getString(R.string.unavailable_offline))
                         else if (csrfTokenExists()) {
                             val b = Bundle()
                             b.putString(NLService.B_ARTIST, track.artist)
@@ -676,7 +682,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                     }
                     R.id.menu_delete -> {
                         if (!Main.isOnline)
-                            Stuff.toast(context!!, getString(R.string.unavailable_offline))
+                            Stuff.toast(context, getString(R.string.unavailable_offline))
                         else if (csrfTokenExists()) {
                             LFMRequester(context!!).delete(track) { succ ->
                                         if (succ) {

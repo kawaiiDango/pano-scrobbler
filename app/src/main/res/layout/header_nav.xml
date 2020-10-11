@@ -52,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:alpha="0.8"
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/user_profile"
         android:nextFocusRight="@id/pager"

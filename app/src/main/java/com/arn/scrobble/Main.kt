@@ -55,6 +55,7 @@ import kotlinx.android.synthetic.main.coordinator_main.view.*
 import kotlinx.android.synthetic.main.header_nav.*
 import org.codechimp.apprater.AppRater
 import java.io.File
+import java.text.NumberFormat
 
 class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         FragmentManager.OnBackStackChangedListener{
@@ -312,7 +313,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         nav_name.text = if (BuildConfig.DEBUG) "nobody" else username
         val numToday = actPref.getInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, 0)
         val numTotal = actPref.getInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, 0)
-        nav_num_scrobbles.text = getString(R.string.num_scrobbles_nav, numTotal, numToday)
+        nav_num_scrobbles.text = getString(R.string.num_scrobbles_nav,
+                NumberFormat.getInstance().format(numTotal),
+                NumberFormat.getInstance().format(numToday))
 
         nav_profile_link.setOnClickListener { v:View ->
             Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
@@ -382,7 +385,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         return true
     }
 
-    private fun enableGestures() {
+    fun enableGestures() {
         val hp = supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER) as? HomePagerFragment
         hp?.setGestureExclusions(false)
     }

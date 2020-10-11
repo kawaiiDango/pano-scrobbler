@@ -33,8 +33,8 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
 //        loadedCached = true
     }
 
-    fun loadWeeklyChartsList(){
-        LFMRequester(getApplication()).getWeeklyChartsList(username).asAsyncTask(weeklyListReceiver)
+    fun loadWeeklyChartsList(scrobblingSince: Long){
+        LFMRequester(getApplication()).getWeeklyChartsList(username, scrobblingSince).asAsyncTask(weeklyListReceiver)
     }
 
     fun loadWeeklyCharts(type: Int) {

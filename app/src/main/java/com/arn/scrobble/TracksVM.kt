@@ -30,7 +30,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     var totalPages = 1
     var loadedCached = false
     var loadedNw = false
-    var selectedPos = Stuff.NP_ID
+    var selectedPos = 1
     var toTime = 0L
 
 

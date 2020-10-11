@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.app.Activity
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
@@ -208,12 +209,12 @@ class LFMRequester(context: Context) {
         return this
     }
 
-    fun getWeeklyChartsList(usernamep: String?): LFMRequester {
+    fun getWeeklyChartsList(usernamep: String?, scrobblingSincep: Long): LFMRequester {
         toExec = {
             Stuff.log(this::getWeeklyChartsList.name)
             initCaller(Main.isOnline)
             val username: String
-            val scrobblingSince: Long
+            var scrobblingSince = scrobblingSincep
             if (usernamep == null) {
                 username = lastfmUsername ?: throw Exception("Login required")
                 scrobblingSince = getContext
@@ -221,7 +222,8 @@ class LFMRequester(context: Context) {
                         ?.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0) ?: 0
             } else {
                 username = usernamep
-                scrobblingSince = User.getInfo(username, Stuff.LAST_KEY)?.registeredDate?.time ?: 0
+                if (scrobblingSincep == 0L)
+                    scrobblingSince = User.getInfo(username, Stuff.LAST_KEY)?.registeredDate?.time ?: 0
             }
 
             User.getWeeklyChartListAsCharts(username, Stuff.LAST_KEY)
@@ -331,6 +333,61 @@ class LFMRequester(context: Context) {
         return this
     }
 
+    fun getInfo(artist: String, albump: String?, track: String?, usernamep: String?,
+             activity: Activity, mld: MutableLiveData<Pair<String, MusicEntry?>>): LFMRequester {
+        toExec = {
+            Stuff.log(this::getInfo.name)
+            initCaller(Main.isOnline)
+            val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
+            var album = albump
+            var albumArtist: String? = null
+            if (!track.isNullOrEmpty()) {
+                val t = try {
+                    Track.getInfo(artist, track, null, username, null, Stuff.LAST_KEY)
+                } catch (e: Exception) {
+                    null
+                }
+                if (albump == null)
+                    album = t?.album
+                albumArtist = t?.albumArtist
+                activity.runOnUiThread {
+                    mld.value = NLService.B_TITLE to t
+                }
+            }
+            val a = try {
+                Artist.getInfo(artist, null, username, true, Stuff.LAST_KEY)
+            } catch (e: Exception) {
+                null
+            }
+            activity.runOnUiThread {
+                mld.value = NLService.B_ARTIST to a
+            }
+            if (!albumArtist.isNullOrEmpty() && albumArtist != artist) {
+                val aa = try {
+                    Artist.getInfo(albumArtist, null, username, true, Stuff.LAST_KEY)
+                } catch (e: Exception) {
+                    null
+                }
+                activity.runOnUiThread {
+                    mld.value = NLService.B_ALBUM_ARTIST to aa
+                }
+            }
+            val al = try {
+                if (!album.isNullOrEmpty())
+                    Album.getInfo(albumArtist ?: artist, album, username, Stuff.LAST_KEY)
+                else
+                    null
+            } catch (e: Exception) {
+                null
+            }
+            activity.runOnUiThread {
+                mld.value = NLService.B_ALBUM to al
+            }
+            null
+        }
+        return this
+    }
+
 
     fun getHeroInfo(url: String): LFMRequester {
         toExec = {
@@ -432,7 +489,11 @@ class LFMRequester(context: Context) {
                 val dao = PendingScrobblesDb.getDb(getContext).getEditsDao()
                 val edit =
                         try {
-                            dao.find(scrobbleData.artist.hashCode().toString() +
+                            if (track != null)
+                                dao.find(track.artist.hashCode().toString() +
+                                    scrobbleData.album.hashCode().toString() + track.name.hashCode().toString())
+                            else
+                                dao.find(scrobbleData.artist.hashCode().toString() +
                                     scrobbleData.album.hashCode().toString() + scrobbleData.track.hashCode().toString())
                         } catch (e: Exception) {
                             null

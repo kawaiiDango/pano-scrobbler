@@ -148,20 +148,25 @@ class EditFragment: LoginFragment() {
                 scrobbleData.album = album
                 scrobbleData.albumArtist = albumArtist
                 val result = Track.scrobble(scrobbleData, lastfmSession)
+                val activity = activity!!
 
                 if (result?.isSuccessful == true && !result.isIgnored) {
                     AsyncTask.THREAD_POOL_EXECUTOR.execute {
                         if (!standalone) {
-                            val origTrackObj = Track(origTrack, null, origArtist)
-                            origTrackObj.playedWhen = Date(timeMillis)
-                            LFMRequester(context!!).delete(origTrackObj) { succ ->
-                                        if (succ) {
-                                            //editing just the album is a noop, scrobble again
-                                            if (track == origTrack && artist == origArtist)
-                                                Track.scrobble(scrobbleData, lastfmSession)
-                                        }
+                            if (args.getLong(NLService.B_TIME) == 0L)
+                                Track.updateNowPlaying(scrobbleData, lastfmSession)
+                            else {
+                                val origTrackObj = Track(origTrack, null, origArtist)
+                                origTrackObj.playedWhen = Date(timeMillis)
+                                LFMRequester(activity).delete(origTrackObj) { succ ->
+                                    if (succ) {
+                                        //editing just the album is a noop, scrobble again
+                                        if (track == origTrack && artist == origArtist)
+                                            Track.scrobble(scrobbleData, lastfmSession)
                                     }
-                                    .asSerialAsyncTask()
+                                }
+                                        .asSerialAsyncTask()
+                            }
                         }
 
                         //scrobble everywhere else
@@ -207,7 +212,6 @@ class EditFragment: LoginFragment() {
                         errMsg = getString(R.string.scrobble_ignored_or_old)
                     else {
                         errMsg = ""
-                        val activity = activity!!
                         activity.runOnUiThread {
                             AlertDialog.Builder(context!!, R.style.DarkDialog)
                                     .setMessage(R.string.scrobble_ignored_save_edit)

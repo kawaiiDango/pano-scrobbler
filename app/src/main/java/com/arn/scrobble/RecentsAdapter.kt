@@ -232,19 +232,19 @@ class RecentsAdapter
 
         setLoading(false)
         val selectedId = getItemId(viewModel.selectedPos)
-        viewModel.selectedPos = nonTrackViewCount
+        var selectedPos = nonTrackViewCount
         if (viewModel.tracks.isEmpty()) {
             setStatusHeader(refresh.context.getString(R.string.no_scrobbles))
         }
-        if (viewModel.selectedPos >= nonTrackViewCount)
+        if (selectedPos >= nonTrackViewCount)
             for (i in 0 until viewModel.tracks.size) {
                 if (viewModel.tracks[i].playedWhen?.time == selectedId) {
-                    viewModel.selectedPos = i + nonTrackViewCount
+                    selectedPos = i + nonTrackViewCount
                     break
                 }
             }
 
-        this.viewModel.selectedPos = viewModel.selectedPos
+        viewModel.selectedPos = selectedPos
 
         myUpdateCallback.offset = nonTrackViewCount
         myUpdateCallback.selectedPos = viewModel.selectedPos

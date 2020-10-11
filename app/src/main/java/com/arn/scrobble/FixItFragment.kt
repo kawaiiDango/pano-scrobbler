@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
@@ -44,6 +45,16 @@ class FixItFragment: BottomSheetDialogFragment() {
             addTouchDelegate(view.fix_it_battery_action, 24, 10)
         }
         return view
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.setOnShowListener {
+            val width = resources.getDimension(R.dimen.bottom_sheet_width)
+            if (width > 0)
+                dialog.window!!.setLayout(width.toInt(), ViewGroup.LayoutParams.MATCH_PARENT)
+        }
+        return dialog
     }
 
     override fun onStart() {

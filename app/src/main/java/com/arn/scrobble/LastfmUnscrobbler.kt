@@ -82,13 +82,13 @@ class LastfmUnscrobbler(context: Context?) {
         (cookieJar as PersistentCookieJar).clear()
     }
 
-    fun checkCsrf(username: String): Boolean {
-        this.username = username
+    fun checkCsrf(username: String?): Boolean {
         csrfToken = cookieCache.find {
             it.name() == COOKIE_CSRFTOKEN && it.expiresAt() > System.currentTimeMillis()
         }?.value()
-        if (csrfToken == null)
+        if (csrfToken == null || username == null)
             return false
+        this.username = username
         return true
     }
 

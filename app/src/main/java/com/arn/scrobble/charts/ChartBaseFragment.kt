@@ -5,23 +5,20 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Bundle
-import android.text.Html
 import android.text.format.DateFormat
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.Main
-import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.VMFactory
+import com.arn.scrobble.*
+import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.ListViewItemHighlightTvHack
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.google.android.material.chip.Chip
 import de.umass.lastfm.*
@@ -122,7 +119,7 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
         charts_choose_week.setOnClickListener {
             if (Main.isOnline)
                 charts_progress.visibility = View.VISIBLE
-            viewmodel.loadWeeklyChartsList()
+            viewmodel.loadWeeklyChartsList(parentFragment!!.arguments?.getLong(Stuff.ARG_REGISTERED_TIME, 0) ?: 0)
         }
         charts_period.check(periodChipIds[periodIdx])
 
@@ -149,9 +146,11 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
             if (it.second.isEmpty())
                 viewmodel.reachedEnd = true
             val page = it.first
-            if (page == 1)
-                viewmodel.chartsData.clear()
-            viewmodel.chartsData.addAll(it.second)
+            synchronized(viewmodel.chartsData) {
+                if (page == 1)
+                    viewmodel.chartsData.clear()
+                viewmodel.chartsData.addAll(it.second)
+            }
             loadMoreListener.currentPage = page
             adapter.populate()
             viewmodel.chartsReceiver.value = null
@@ -166,11 +165,8 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
                         DateFormat.getMediumDateFormat(context).format(it.to.time)
                 )
             }
-            val colorAccent = ContextCompat.getColor(context!!, R.color.colorAccent)
-            val hex = "#" + Integer.toHexString(colorAccent).substring(2)
-            val title = "<font color=\"$hex\">" + getString(R.string.charts_choose_week) + "</font>"
             val dialog = AlertDialog.Builder(context!!, R.style.DarkDialog)
-                    .setTitle(Html.fromHtml(title))
+                    .setTitle(Stuff.getColoredTitle(context!!, getString(R.string.charts_choose_week)))
                     .setItems(weeklyStrList.toTypedArray()) { dialogInterface, i ->
                         val item = weeklyList[i]
                         viewmodel.weeklyChart = item
@@ -184,10 +180,10 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
                         setWeeklyChipName(true)
                     }
                     .setOnCancelListener {
-                        charts_period.check(periodChipIds[viewmodel.periodIdx])
+                        charts_period?.check(periodChipIds[viewmodel.periodIdx])
                     }
                     .setNegativeButton(android.R.string.cancel) { dialogInterface, i ->
-                        charts_period.check(periodChipIds[viewmodel.periodIdx])
+                        charts_period?.check(periodChipIds[viewmodel.periodIdx])
                     }
                     .show()
             var pos = 0
@@ -202,6 +198,7 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
             }
             if (pos < weeklyList.size)
                 dialog.listView.setSelection(pos)
+            dialog.listView.onItemSelectedListener = ListViewItemHighlightTvHack()
 
             charts_progress.visibility = View.GONE
         })
@@ -298,13 +295,35 @@ open class ChartBaseFragment: Fragment(), ItemClickListener {
     }
 
     override fun onItemClick(view: View, position: Int) {
-        val item = adapter.getItem(position)
-        if (item is Artist && item.url != null)
-            Stuff.openInBrowser(item.url, context, view)
-        else if (item is Album && item.url != null)
-            Stuff.openInBrowser(item.url, context, view)
-        else if (item is Track)
-            Stuff.launchSearchIntent(item.artist, item.name, context!!)
+        when (val item = adapter.getItem(position)) {
+            is Artist -> {
+                val info = InfoFragment()
+                val b = Bundle()
+                b.putString(NLService.B_ARTIST, item.name)
+                b.putString(Stuff.ARG_USERNAME, username)
+                info.arguments = b
+                info.show(activity!!.supportFragmentManager, null)
+            }
+            is Album -> {
+                val info = InfoFragment()
+                val b = Bundle()
+                b.putString(NLService.B_ARTIST, item.artist)
+                b.putString(NLService.B_ALBUM, item.name)
+                b.putString(Stuff.ARG_USERNAME, username)
+                info.arguments = b
+                info.show(activity!!.supportFragmentManager, null)
+            }
+            is Track -> {
+                val info = InfoFragment()
+                val b = Bundle()
+                b.putString(NLService.B_ARTIST, item.artist)
+                b.putString(NLService.B_ALBUM, item.album)
+                b.putString(NLService.B_TITLE, item.name)
+                b.putString(Stuff.ARG_USERNAME, username)
+                info.arguments = b
+                info.show(activity!!.supportFragmentManager, null)
+            }
+        }
     }
 
     private fun getNumColumns(): Int {

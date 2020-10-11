@@ -343,7 +343,7 @@ public class Caller {
 	}
 
 	private HttpURLConnection openPostConnection(String apiRootUrl, String method, Map<String, String> params) throws IOException {
-	    if (method.equals("track.getInfo")){
+	    if (method.equals("track.getInfo") || method.equals("album.getInfo") || method.equals("artist.getInfo")){
             String post = buildPostBody(method, params);
             log.info("Post body: " + post);
             HttpURLConnection urlConnection = openConnection(apiRootUrl+"?"+post);

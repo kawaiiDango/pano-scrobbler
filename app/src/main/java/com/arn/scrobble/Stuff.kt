@@ -19,6 +19,8 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+import android.text.Html
+import android.text.Spanned
 import android.text.format.DateUtils
 import android.util.DisplayMetrics
 import android.util.Log
@@ -447,6 +449,12 @@ object Stuff {
 
             }
         }
+    }
+
+    fun getColoredTitle(context: Context, title: String): Spanned {
+        val colorAccent = ContextCompat.getColor(context, R.color.colorAccent)
+        val hex = "#" + Integer.toHexString(colorAccent).substring(2)
+        return Html.fromHtml("<font color=\"$hex\">$title</font>")
     }
 
     fun getMatColor(c: Context, typeColor: String, hash: Long = 0): Int {

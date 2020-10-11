@@ -62,14 +62,18 @@
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobble">Pending scrobble</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
-    <string name="num_scrobbles_nav">%1$d scrobbles • %2$d today</string>
+    <string name="num_scrobbles_nav">%1$s scrobbles • %2$s today</string>
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$d scrobble</item>
-        <item quantity="other">%1$d scrobbles</item>
+        <item quantity="one">%1$s scrobble</item>
+        <item quantity="other">%1$s scrobbles</item>
+    </plurals>
+    <plurals name="num_songs">
+        <item quantity="one">%1$d song</item>
+        <item quantity="other">%1$d songs</item>
     </plurals>
     <string name="please_authorize">Please Authorize LastFM</string>
     <string name="friends">Friends</string>
-    <string name="num_scrobbles_since">%1$d scrobbles, since %2$s</string>
+    <string name="num_scrobbles_since">%1$s scrobbles, since %2$s</string>
     <string name="grant_autostart">Enable autostart</string>
     <string name="grant_autostart_desc">Needed on %1$s devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>
@@ -109,6 +113,13 @@
     <string name="past_scrobbles">Past scrobbles</string>
     <string name="possesion">%1$s\'s</string>
     <string name="my">My</string>
+    <string name="my_scrobbles">My scrobbles</string>
+    <string name="user_scrobbles">%1$s\'s scrobbles</string>
+    <string name="listeners">Listeners</string>
+    <string name="scrobbles">Scrobbles</string>
+    <string name="album_artist">Album artist</string>
+    <string name="expand">Expand</string>
+    <string name="user_loved">%1$s loved this</string>
     <string name="scrobbles_till">Scrobbles till %1$s</string>
     <string name="from">From %1$s</string>
     <string name="a_to_b">%1$s to %2$s</string>

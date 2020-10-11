@@ -150,7 +150,8 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
         init {
             if (clickable) {
                 itemView.setOnClickListener(this)
-                vImg.setOnClickListener { onClick(itemView) }
+                vImg.setOnClickListener(this)
+                vImg.isFocusable = true
             }
         }
 
@@ -228,7 +229,7 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
                                             anim.duration = 350
                                             anim.interpolator = AccelerateInterpolator()
                                             anim.start()
-                                            viewModel.paletteColorsCache.put(userImg, colorMutedBlack)
+                                            viewModel.paletteColorsCache[userImg] = colorMutedBlack
                                         }
                                 }
 

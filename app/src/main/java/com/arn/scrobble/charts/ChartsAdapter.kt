@@ -14,6 +14,7 @@ import de.umass.lastfm.*
 import kotlinx.android.synthetic.main.content_charts.view.*
 import kotlinx.android.synthetic.main.grid_item_chart.view.*
 import java.lang.ref.WeakReference
+import java.text.NumberFormat
 
 
 class ChartsAdapter (private val fragmentContent: View) :
@@ -137,7 +138,8 @@ class ChartsAdapter (private val fragmentContent: View) :
 
             vTitle.text = itemView.context.getString(R.string.charts_num_text, (pos + 1), entry.name)
             vScrobbles.text = itemView.context.resources.
-                    getQuantityString(R.plurals.num_scrobbles_noti, entry.playcount, entry.playcount)
+                    getQuantityString(R.plurals.num_scrobbles_noti, entry.playcount,
+                            NumberFormat.getInstance().format(entry.playcount))
             val maxCount = getMaxCount()
             if (maxCount == 0)
                 vBar.visibility = View.GONE

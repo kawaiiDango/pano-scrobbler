@@ -31,6 +31,7 @@ class FirstThingsFragment: Fragment() {
     private var stepsNeeded = 4
     private lateinit var pref: MultiPreferences
     private var startupMgrIntent:Intent? = null
+    private var isOnTop = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.content_first_things, container, false)
@@ -187,12 +188,17 @@ class FirstThingsFragment: Fragment() {
             testing_pass.postDelayed({
                 testing_pass?.visibility = View.VISIBLE
             }, 200)
-
     }
 
     override fun onResume() {
         super.onResume()
+        isOnTop = true
         checkAll()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isOnTop = false
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -201,7 +207,7 @@ class FirstThingsFragment: Fragment() {
             checkAll()
             activity?.toolbar?.title = getString(R.string.first_things)
         }
-        }
+    }
 
     override fun onDestroyView() {
         activity!!.unregisterReceiver(receiver)
@@ -230,9 +236,8 @@ class FirstThingsFragment: Fragment() {
             when (intent.action) {
                 NLService.iSESS_CHANGED -> checkAll()
                 NLService.iNLS_STARTED -> {
-                    val i = Intent(context, Main::class.java)
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(i)
+                    if (isOnTop)
+                        checkAll()
                 }
             }
         }

@@ -3,12 +3,10 @@ package com.arn.scrobble.pref
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.util.JsonReader
 import android.util.JsonWriter
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.Main
-import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pending.db.Edit
 import com.arn.scrobble.pending.db.PendingScrobblesDb
@@ -50,6 +48,7 @@ class ImExporter {
             return false
         }
         val context = context!!
+        var written = false
         try {
             JsonWriter(writer!!).use {
                 it.apply {
@@ -74,11 +73,12 @@ class ImExporter {
                     val pref = MultiPreferences(context)
                     name(Stuff.PREF_MASTER).value(pref.getBoolean(Stuff.PREF_MASTER, true))
                     name(Stuff.PREF_NOTIFICATIONS).value(pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
+                    name(Stuff.PREF_LOCKSCREEN_NOTI).value(pref.getBoolean(Stuff.PREF_LOCKSCREEN_NOTI, false))
                     name(Stuff.PREF_PIXEL_NP).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
-                    name(Stuff.PREF_AUTO_DETECT).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
                     name(Stuff.PREF_DELAY_SECS).value(pref.getInt(Stuff.PREF_DELAY_SECS, Stuff.PREF_DELAY_SECS_DEFAULT))
                     name(Stuff.PREF_DELAY_PER).value(pref.getInt(Stuff.PREF_DELAY_PER, Stuff.PREF_DELAY_PER_DEFAULT))
                     name(Stuff.PREF_NOW_PLAYING).value(pref.getBoolean(Stuff.PREF_NOW_PLAYING, true))
+                    name(Stuff.PREF_FETCH_AA).value(pref.getBoolean(Stuff.PREF_FETCH_AA, false))
                     name(Stuff.PREF_AUTO_DETECT).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
                     name(Stuff.PREF_WHITELIST).beginArray()
                     pref.getStringSet(Stuff.PREF_WHITELIST, setOf())
@@ -95,13 +95,13 @@ class ImExporter {
                     endObject()
 
                     endObject()
-                    return true
+                    written = true
                 }
             }
         } catch (e: Exception){
             e.printStackTrace()
         }
-        return false
+        return written
     }
 
     fun import(editsMode: Int, settings: Boolean): Boolean {

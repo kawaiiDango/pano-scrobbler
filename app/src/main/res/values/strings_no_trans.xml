@@ -14,7 +14,7 @@
     <string name="librefm" translatable="false">LibreFM</string>
     <string name="gnufm" translatable="false">GNU FM</string>
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
-    <string name="export_file_name" translatable="false">pano_scrobbler_export %1$s.json</string>
+    <string name="export_file_name" translatable="false">pano_scrobbler_export_%1$s.json</string>
 
     <string name="song_format_string">%1$s by %2$s</string>
 </resources>

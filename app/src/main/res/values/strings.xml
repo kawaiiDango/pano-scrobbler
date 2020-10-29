@@ -5,7 +5,7 @@
     <string name="album_art">Album art</string>
     <string name="parse_error">Couldn\'t parse title</string>
     <string name="network_error">Network error</string>
-    <string name="scrobble_ignored">ignored "%s"</string>
+    <string name="scrobble_ignored">ignored "%1$s"</string>
     <string name="scrobble_ignored_or_old">Artist ignored or scrobble is too old</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignored the edit probably because the scrobble is too old. Would you like to save this edit for future scrobbles instead?</string>
     <string name="limit_exceeded_ignored">Daily scrobble limit exceeded</string>
@@ -45,13 +45,13 @@
     <string name="user_profile">Profile</string>
     <string name="profile_pic">Profile picture</string>
     <string name="item_options">Options for this item</string>
-    <string name="new_player">%s detected</string>
+    <string name="new_player">%1$s detected</string>
     <string name="new_player_prompt">Keep scrobbling this app?</string>
     <string name="no_track_url">This song doesn\'t have a page on lastFM</string>
     <string name="no_scrobbles">"No songs here yet…  😫
     Let\'s make some noise!"
     </string>
-    <string name="no_friends">No lastFM friends yet… or LastFM\'s friends API is down, which we have no control over.</string>
+    <string name="no_friends">No lastFM friends yet…</string>
     <string name="channel_scrobbling">Now scrobbling</string>
     <string name="channel_err">Scrobble errors</string>
     <string name="channel_new_app">New app detected</string>
@@ -120,6 +120,7 @@
     <string name="album_artist">Album artist</string>
     <string name="expand">Expand</string>
     <string name="user_loved">%1$s loved this</string>
+    <string name="last_updated">Last updated on %1$s</string>
     <string name="scrobbles_till">Scrobbles till %1$s</string>
     <string name="from">From %1$s</string>
     <string name="a_to_b">%1$s to %2$s</string>
@@ -199,8 +200,8 @@ They perform the same actions as the buttons in the notification. They can be us
     <string name="lastfm_reauth">You need to reauthenticate in order to edit or delete scrobbles</string>
     <string name="custom_listenbrainz">Custom Listenbrainz server</string>
     <string name="failed_encode_url">failed to encode URL</string>
-    <string name="check_nls">Check %s</string>
-    <string name="check_nls_tv">Special app access > Notification Access > %s</string>
+    <string name="check_nls">Check %1$s</string>
+    <string name="check_nls_tv">Special app access > Notification Access > %1$s</string>
     <string name="similar_tracks">Similar songs</string>
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="no_browser">No browser is installed.</string>

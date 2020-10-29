@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import com.arn.scrobble.info.InfoFragment
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
@@ -131,8 +132,16 @@ class RandomFragment: Fragment() {
             Stuff.launchSearchIntent(track.artist, track.name, context!!)
         }
         random_info.setOnClickListener {
-            if (track.url != null)
-                Stuff.openInBrowser(track.url, context!!)
+            if (track.url != null) {
+                val info = InfoFragment()
+                val b = Bundle()
+                b.putString(NLService.B_ARTIST, track.artist)
+                if (!track.album.isNullOrEmpty())
+                    b.putString(NLService.B_ALBUM, track.album)
+                b.putString(NLService.B_TITLE, track.name)
+                info.arguments = b
+                info.show(parentFragmentManager, null)
+            }
         }
         var imgUrl = track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600")
         if (imgUrl?.isEmpty() == true)

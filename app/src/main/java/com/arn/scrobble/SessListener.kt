@@ -148,6 +148,13 @@ class SessListener (private val pref: SharedPreferences, private val handler: NL
         }
 
         fun scrobble() {
+            if ((packageName == Stuff.PACKAGE_BLACKPLAYER || packageName == Stuff.PACKAGE_BLACKPLAYEREX) && duration > 0) {
+                stateHandler.removeCallbacksAndMessages("bp")
+                stateHandler.sendMessageDelayed(
+                        stateHandler.obtainMessage(0, PlaybackState.STATE_PLAYING, 0, "bp"),
+                        duration
+                )
+            }
             hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
             val isWhitelisted = whiteList.contains(packageName)
             val packageNameParam = if (!isWhitelisted) packageName else null
@@ -233,6 +240,8 @@ class SessListener (private val pref: SharedPreferences, private val handler: NL
                 else
                     hashesAndTimes.timePlayed = 0
             }
+            if (packageName == Stuff.PACKAGE_BLACKPLAYER || packageName == Stuff.PACKAGE_BLACKPLAYEREX)
+                stateHandler.removeCallbacksAndMessages("bp")
             handler.remove(hashesAndTimes.lastScrobbleHash)
         }
 

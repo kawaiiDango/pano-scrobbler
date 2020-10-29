@@ -68,7 +68,6 @@ class NLService : NotificationListenerService() {
 
     private fun init(){
         val filter = IntentFilter()
-        filter.addAction(pNLS)
         filter.addAction(pCANCEL)
         filter.addAction(pLOVE)
         filter.addAction(pUNLOVE)
@@ -409,7 +408,7 @@ class NLService : NotificationListenerService() {
                 var artist = Stuff.sanitizeArtist(artist)
                 var title = title
                 var albumArtist = Stuff.sanitizeAlbum(albumArtist)
-                if (artist != "" && title == "") {
+                if (artist != "") {
                     val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
                     try {
                         dao.find(artist.hashCode().toString() +
@@ -774,7 +773,6 @@ class NLService : NotificationListenerService() {
     }
 
     companion object {
-        const val pNLS = "com.arn.scrobble.NLS"
         const val pCANCEL = "com.arn.scrobble.CANCEL"
         const val pLOVE = "com.arn.scrobble.LOVE"
         const val pUNLOVE = "com.arn.scrobble.UNLOVE"

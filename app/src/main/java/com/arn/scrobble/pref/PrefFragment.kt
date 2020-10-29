@@ -7,7 +7,6 @@ import android.graphics.Typeface
 import android.os.*
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.format.DateFormat
 import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
@@ -26,6 +25,7 @@ import com.arn.scrobble.*
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.ui.MyClickableSpan
 import kotlinx.android.synthetic.main.dialog_import.view.*
+import java.util.*
 
 
 /**
@@ -153,8 +153,9 @@ class PrefFragment : PreferenceFragmentCompat(){
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "application/json"
+            val cal = Calendar.getInstance()
             intent.putExtra(Intent.EXTRA_TITLE, getString(R.string.export_file_name,
-                    DateFormat.getMediumDateFormat(context).format(System.currentTimeMillis())
+                    "" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
                     ))
             startActivityForResult(intent, Stuff.REQUEST_CODE_EXPORT)
             true
@@ -363,8 +364,6 @@ class PrefFragment : PreferenceFragmentCompat(){
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK){
             if (requestCode == Stuff.REQUEST_CODE_EXPORT) {
                 if (data != null) {

@@ -215,7 +215,6 @@ open class LoginFragment: DialogFragment() {
 
             val iF = IntentFilter()
             iF.addAction(NLService.iSESS_CHANGED)
-            iF.addAction(NLService.iNLS_STARTED)
             activity!!.registerReceiver(sessChangeReceiver, iF)
         }
 

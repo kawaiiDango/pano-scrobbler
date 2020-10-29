@@ -171,6 +171,8 @@
     <string name="pref_user_label">User</string>
     <string name="pref_token_label">Authentication token</string>
     <string name="pref_now_playing">Submit now playing</string>
+    <string name="pref_fetch_aa">Fetch album artists from lastFM</string>
+    <string name="pref_fetch_aa_desc">For players that do not provide this data. The data from lastFM may be unavailable for some songs or may differ from your tags.</string>
     <string name="pref_pixel_np">Scrobble Pixel\'s Now Playing</string>
     <string name="pref_pixel_np_nope">Available only on eligible Pixel devices</string>
     <string name="pref_share_sig">Share signature</string>

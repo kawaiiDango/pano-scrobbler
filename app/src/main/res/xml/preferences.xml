@@ -104,6 +104,14 @@
             android:persistent="true"
             android:title="@string/pref_now_playing"/>
 
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"
+            android:key="fetch_album_artist"
+            android:persistent="true"
+            android:title="@string/pref_fetch_aa"
+            android:summary="@string/pref_fetch_aa_desc"/>
+
         <Preference
             app:iconSpaceReserved="false"
             android:title="@string/pref_share_sig"

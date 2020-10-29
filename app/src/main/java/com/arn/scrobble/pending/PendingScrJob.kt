@@ -51,18 +51,24 @@ class PendingScrJob : JobService() {
 
             var done = submitLoves()
 
-            var aneCount = dao.allNotAutocorrectedCount
-
-            dao.allEmptyAlbums.forEach {
+            var aneCount = dao.getAutoCorrectedCount(false)
+            var scrobbles = dao.allEmptyAlbumORAlbumArtist(1000)
+            if (!prefs.getBoolean(Stuff.PREF_FETCH_AA, false))
+                scrobbles = scrobbles.filter { it.album == "" }
+            scrobbles.forEach {
                 publishProgress(context.getString(R.string.pending_n_remaining, aneCount--))
                 try {
                     val track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
                     if (track != null) {
-                        if (!track.album.isNullOrEmpty()) {
+                        if (it.album == "" && !track.album.isNullOrEmpty()) {
                             it.album = track.album
                             if (!track.albumArtist.isNullOrEmpty())
                                 it.albumArtist = track.albumArtist
-                        }
+                        } else if (!track.albumArtist.isNullOrEmpty() &&
+                                prefs.getBoolean(Stuff.PREF_FETCH_AA, false) &&
+                                it.album.toLowerCase() == track.album.toLowerCase() &&
+                                (it.albumArtist == "" || it.artist == it.albumArtist))
+                            it.albumArtist = track.albumArtist
                         if (track.listeners >= Stuff.MIN_LISTENER_COUNT)
                             it.autoCorrected = 1
                         dao.update(it)
@@ -72,7 +78,7 @@ class PendingScrJob : JobService() {
                 Thread.sleep(DELAY)
             }
 
-            aneCount = dao.allNotAutocorrectedCount
+            aneCount = dao.getAutoCorrectedCount(false)
 
             while (aneCount > 0){
                 val entry = dao.oneNotAutocorrected ?: break
@@ -99,12 +105,12 @@ class PendingScrJob : JobService() {
                 }
 
                 if (!MOCK)
-                    aneCount = dao.allNotAutocorrectedCount
+                    aneCount = dao.getAutoCorrectedCount(false)
                 else
                     aneCount--
             }
 
-            while (dao.allAutocorrectedCount > 0) {
+            while (dao.getAutoCorrectedCount(true) > 0) {
                 done = submitScrobbleBatch()
                 if (!done) //err
                     break

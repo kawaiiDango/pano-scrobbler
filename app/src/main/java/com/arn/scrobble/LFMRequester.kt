@@ -362,7 +362,7 @@ class LFMRequester(context: Context) {
             activity.runOnUiThread {
                 mld.value = NLService.B_ARTIST to a
             }
-            if (!albumArtist.isNullOrEmpty() && albumArtist != artist) {
+            if (!albumArtist.isNullOrEmpty() && albumArtist.toLowerCase() != artist.toLowerCase()) {
                 val aa = try {
                     Artist.getInfo(albumArtist, null, username, true, Stuff.LAST_KEY)
                 } catch (e: Exception) {
@@ -470,13 +470,19 @@ class LFMRequester(context: Context) {
                     }
                     if (Thread.interrupted())
                         throw InterruptedException()
-                    if (track != null && scrobbleData.album == "") {
-                        scrobbleData.artist = track.artist
-                        if (track.album != null)
-                            scrobbleData.album = track.album
-                        if (track.albumArtist != null)
+                    if (track != null) {
+                        if (scrobbleData.album == "") {
+                            scrobbleData.artist = track.artist
+                            if (track.album != null)
+                                scrobbleData.album = track.album
+                            if (track.albumArtist != null)
+                                scrobbleData.albumArtist = track.albumArtist
+                            scrobbleData.track = track.name
+                        } else if (!track.albumArtist.isNullOrEmpty() &&
+                                prefs.getBoolean(Stuff.PREF_FETCH_AA, false) &&
+                                scrobbleData.album.toLowerCase() == track.album.toLowerCase() &&
+                                (scrobbleData.albumArtist.isNullOrEmpty() || scrobbleData.artist == scrobbleData.albumArtist))
                             scrobbleData.albumArtist = track.albumArtist
-                        scrobbleData.track = track.name
                     }
                     correctedArtist =
                             if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT)

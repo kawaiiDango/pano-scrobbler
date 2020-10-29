@@ -30,6 +30,7 @@
 - Intents for apps like Tasker, Macrodroid etc
 - View top artists, albums or tracks. Also works for friends
 - I'm feeling lucky, a shuffle all for your entire listening history
+- Fetch albums and album artists from lastfm, if missing, before scrobbling.
 
 #### This is not intended to:
 - be an app to browse lastfm.

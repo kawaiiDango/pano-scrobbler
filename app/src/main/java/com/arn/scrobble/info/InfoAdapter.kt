@@ -3,6 +3,7 @@ package com.arn.scrobble.info
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.text.format.DateFormat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -174,9 +175,15 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                         wikiText = wikiText.substring(0, idx).trim()
                     if (!wikiText.isNullOrBlank()) {
                         wikiText = wikiText.replace("\n", "<br>")
+                        if (entry.wikiLastChanged != null && entry.wikiLastChanged.time != 0L)
+                            wikiText += "<br><br><i>" + itemView.context.getString(R.string.last_updated,
+                                    DateFormat.getLongDateFormat(itemView.context).format(entry.wikiLastChanged)) +
+                                    "</i>"
                         itemView.info_wiki.visibility = View.VISIBLE
                         itemView.info_wiki.text = Html.fromHtml(wikiText)
                         itemView.info_wiki.post{
+                            if (itemView.info_wiki == null)
+                                return@post
                             if (itemView.info_wiki.lineCount > 2 ||
                                     itemView.info_wiki.layout.getEllipsisCount(itemView.info_wiki.lineCount - 1) > 0) {
                                 val clickListener = { view: View ->

@@ -241,7 +241,8 @@ public abstract class MusicEntry extends ImageHolder {
 			} catch (ParseException e) {
 				// try parsing it with current locale
 				try {
-					DateFormat clFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ", Locale.getDefault());
+//					DateFormat clFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ", Locale.getDefault());
+					DateFormat clFormat = new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault());
 					entry.wikiLastChanged = clFormat.parse(publishedText);
 				} catch (ParseException e2) {
 					// cannot parse date, wrong locale. wait for last.fm to fix.

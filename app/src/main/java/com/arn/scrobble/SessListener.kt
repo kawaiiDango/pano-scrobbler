@@ -17,7 +17,7 @@ import java.util.Locale
  * Created by arn on 04/07/2017.
  */
 
-class SessListener (private val pref: SharedPreferences, private val handler: NLService.ScrobbleHandler) :
+class SessListener (pref: SharedPreferences, private val handler: NLService.ScrobbleHandler) :
         OnActiveSessionsChangedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val controllersMap = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
@@ -180,9 +180,10 @@ class SessListener (private val pref: SharedPreferences, private val handler: NL
 
             if (packageName == Stuff.PACKAGE_XIAMI)
                 artist = artist.replace(";", "; ")
-            else if (packageName == Stuff.PACKAGE_PANDORA)
+            else if (packageName == Stuff.PACKAGE_PANDORA) {
                 artist = artist.replace("Ofln - ", "")
-            else if (packageName == Stuff.PACKAGE_PODCAST_ADDICT) {
+                albumArtist = ""
+            } else if (packageName == Stuff.PACKAGE_PODCAST_ADDICT) {
                 val idx = artist.lastIndexOf(" • ")
                 if (idx != -1)
                     artist = artist.substring(0, idx)
@@ -193,7 +194,7 @@ class SessListener (private val pref: SharedPreferences, private val handler: NL
             } else if (packageName == Stuff.PACKAGE_HUAWEI_MUSIC &&
                     Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) == Stuff.MANUFACTURER_HUAWEI) {
                 // Extra check for the manufacturer, because 'com.android.mediacenter' could match other music players.
-                val extra = " - " + album
+                val extra = " - $album"
                 if (artist.endsWith(extra))
                     artist = artist.substring(0, artist.length - extra.length)
             }

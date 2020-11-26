@@ -110,7 +110,7 @@
             android:layout_height="20sp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
-            android:contentDescription="@string/hero_search"
+            android:contentDescription="@string/search"
             tools:srcCompat="@drawable/vd_music_circle"/>
 
     </FrameLayout>

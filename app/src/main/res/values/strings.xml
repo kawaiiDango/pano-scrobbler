@@ -12,10 +12,16 @@
     <string name="required_fields_empty">Required fields are empty</string>
     <string name="artist">Artist</string>
     <string name="artists">Artists</string>
-    <string name="album">Album (optional)</string>
+    <string name="top_artists">Top artists</string>
+    <string name="album_optional">Album (optional)</string>
+    <string name="album">Album</string>
     <string name="albums">Albums</string>
+    <string name="top_albums">Top albums</string>
     <string name="track">Track</string>
     <string name="tracks">Tracks</string>
+    <string name="top_tracks">Top tracks</string>
+    <string name="similar_artists">Similar artists</string>
+    <string name="similar">Similar</string>
     <string name="state_scrobbling">Now scrobbling…</string>
     <string name="state_scrobbled">Scrobbled</string>
     <string name="state_unscrobbled">Un-scrobbled</string>
@@ -41,16 +47,14 @@
     <string name="share_sig">(Shared with %1$s )</string>
     <string name="share_this_song">Share this song</string>
     <string name="hero_info">More info</string>
-    <string name="hero_search">Search</string>
+    <string name="search">Search</string>
     <string name="user_profile">Profile</string>
     <string name="profile_pic">Profile picture</string>
     <string name="item_options">Options for this item</string>
     <string name="new_player">%1$s detected</string>
     <string name="new_player_prompt">Keep scrobbling this app?</string>
     <string name="no_track_url">This song doesn\'t have a page on lastFM</string>
-    <string name="no_scrobbles">"No songs here yet…  😫
-    Let\'s make some noise!"
-    </string>
+    <string name="no_scrobbles">No songs here yet…</string>
     <string name="no_friends">No lastFM friends yet…</string>
     <string name="channel_scrobbling">Now scrobbling</string>
     <string name="channel_err">Scrobble errors</string>
@@ -66,6 +70,10 @@
     <plurals name="num_scrobbles_noti">
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s listener</item>
+        <item quantity="other">%1$s listeners</item>
     </plurals>
     <plurals name="num_songs">
         <item quantity="one">%1$d song</item>
@@ -87,7 +95,6 @@
     <string name="time_now">now</string>
     <string name="time_now_long">just now</string>
     <string name="no_mail_apps">No email client is installed.</string>
-    <string name="scrobbles_friends">Scrobbles &amp; friends</string>
     <string name="loved">Loved</string>
     <string name="unloved">Unloved</string>
     <string name="edits">Edits</string>
@@ -118,13 +125,14 @@
     <string name="listeners">Listeners</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="album_artist">Album artist</string>
+    <string name="collapse">Collapse</string>
     <string name="expand">Expand</string>
     <string name="user_loved">%1$s loved this</string>
-    <string name="last_updated">Last updated on %1$s</string>
     <string name="scrobbles_till">Scrobbles till %1$s</string>
     <string name="from">From %1$s</string>
     <string name="a_to_b">%1$s to %2$s</string>
     <string name="weekly_range">weekly (%1$s to %2$s)</string>
+    <string name="not_found">Not found</string>
     <string name="share_this_chart">Share this chart</string>
     <string name="charts_choose_week">Choose a week</string>
     <string name="charts_7day">1 week</string>
@@ -140,6 +148,16 @@
     <string name="random_not_found">No track found</string>
     <string name="random_scrobble">Random scrobble</string>
     <string name="random_love">Random loved track</string>
+    <string name="graph_daily">Daily scrobble counts</string>
+    <string name="graph_weekly">Weekly scrobble counts</string>
+    <string name="graph_monthly">Monthly scrobble counts</string>
+    <string name="graph_yearly">Yearly scrobble counts</string>
+    <string name="graph_scrub_msg">Times are in your timezone \nHold or scrub the graph to see the exact counts</string>
+    <string name="original">Original</string>
+    <string name="corrected">Corrected</string>
+    <string name="taggers">Taggers</string>
+    <string name="taggings">Tags</string>
+    <string name="similar_tags">Similar to</string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
     <string name="pref_master_on">Scrobbler active</string>
@@ -204,7 +222,8 @@ They perform the same actions as the buttons in the notification. They can be us
     <string name="failed_encode_url">failed to encode URL</string>
     <string name="check_nls">Check %1$s</string>
     <string name="check_nls_tv">Special app access > Notification Access > %1$s</string>
-    <string name="similar_tracks">Similar songs</string>
+    <string name="similar_tracks">Similar tracks</string>
+    <string name="artist_extra">Tracks, albums &amp; similar</string>
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="no_browser">No browser is installed.</string>
     <string name="no_player">No music player is installed.</string>

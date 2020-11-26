@@ -38,7 +38,7 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp"
                 android:layout_gravity="center_vertical"
-                android:visibility="visible"
+                android:visibility="gone"
                 tools:srcCompat="@drawable/vd_heart"
                 app:tint="@color/colorAccentLight"
                 tools:visibility="visible" />
@@ -49,10 +49,10 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp"
                 android:layout_gravity="center_vertical"
-                android:contentDescription="@string/hero_search"
-                android:tooltipText="@string/hero_search"
+                android:contentDescription="@string/search"
+                android:tooltipText="@string/search"
                 android:visibility="gone"
-                app:srcCompat="@drawable/vd_search"
+                app:srcCompat="@drawable/vd_search_play"
                 app:tint="@color/colorAccentLight"
                 tools:visibility="visible" />
 
@@ -160,29 +160,13 @@
 
             </LinearLayout>
 
-        <TextView
-            android:id="@+id/info_album_tracks"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_gravity="end"
-            app:drawableTint="@color/colorAccentLight"
-            app:drawableEndCompat="@drawable/vd_arrow_right"
-            android:background="?selectableItemBackground"
-            android:padding="6dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/colorAccentLight"
-            android:visibility="gone"
-            tools:text="n tracks"
-            tools:visibility="visible" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
+<!-- justify doesnt work if text contains formatting -->
             <TextView
                 android:id="@+id/info_wiki"
                 android:layout_width="0dp"
@@ -194,6 +178,7 @@
                 android:layout_marginStart="5dp"
                 android:maxLines="2"
                 android:visibility="gone"
+                android:justificationMode="inter_word"
                 tools:text="wiki"
                 tools:visibility="visible" />
 
@@ -207,6 +192,22 @@
                 app:srcCompat="@drawable/vd_arrow_down"
                 tools:visibility="visible" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/info_extra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="end"
+            app:drawableTint="@color/colorAccentLight"
+            app:drawableEndCompat="@drawable/vd_arrow_right"
+            android:background="?selectableItemBackground"
+            android:padding="6dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/colorAccentLight"
+            android:textDirection="firstStrong"
+            tools:text="n tracks"/>
 
     </LinearLayout>
 </LinearLayout>

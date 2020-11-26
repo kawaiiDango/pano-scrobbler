@@ -37,7 +37,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.ViewPager
-import com.arn.scrobble.charts.ChartsPagerFragment
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
@@ -95,8 +94,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     tab_bar.visibility = View.GONE
                 }
                 StatefulAppBar.COLLAPSED -> {
-                    if (supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.isVisible == true &&
-                            supportFragmentManager.findFragmentByTag(Stuff.TAG_SIMILAR) == null ||
+                    if (supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.isVisible == true ||
                     supportFragmentManager.findFragmentByTag(Stuff.TAG_CHART_PAGER)?.isVisible == true) {
                         tab_bar.visibility = View.VISIBLE
                     } else {
@@ -116,7 +114,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         if (isTV) {
             hero_calendar.visibility = View.INVISIBLE
-            hero_similar.visibility = View.INVISIBLE
             hero_share.visibility = View.INVISIBLE
             hero_info.visibility = View.INVISIBLE
             hero_play.visibility = View.INVISIBLE
@@ -161,9 +158,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             .replace(R.id.frame, RecFragment())
                             .addToBackStack(null)
                             .commit()
-                else if (directOpenExtra == Stuff.DL_CHARTS)
+                else if (directOpenExtra == Stuff.DL_SEARCH)
                     supportFragmentManager.beginTransaction()
-                            .replace(R.id.frame, ChartsPagerFragment(), Stuff.TAG_CHART_PAGER)
+                            .replace(R.id.frame, SearchFragment())
                             .addToBackStack(null)
                             .commit()
                 else {
@@ -313,9 +310,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         nav_name.text = if (BuildConfig.DEBUG) "nobody" else username
         val numToday = actPref.getInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, 0)
         val numTotal = actPref.getInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, 0)
+        val nf = NumberFormat.getInstance()
         nav_num_scrobbles.text = getString(R.string.num_scrobbles_nav,
-                NumberFormat.getInstance().format(numTotal),
-                NumberFormat.getInstance().format(numToday))
+                nf.format(numTotal), nf.format(numToday))
 
         nav_profile_link.setOnClickListener { v:View ->
             Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
@@ -351,11 +348,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 tab_bar.getTabAt(2)?.select()
             }
             R.id.nav_charts -> {
-                enableGestures()
-                supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, ChartsPagerFragment(), Stuff.TAG_CHART_PAGER)
-                        .addToBackStack(null)
-                        .commit()
+                tab_bar.getTabAt(3)?.select()
             }
             R.id.nav_random -> {
                 enableGestures()
@@ -368,6 +361,13 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 enableGestures()
                 supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, RecFragment())
+                        .addToBackStack(null)
+                        .commit()
+            }
+            R.id.nav_search -> {
+                enableGestures()
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, SearchFragment())
                         .addToBackStack(null)
                         .commit()
             }
@@ -408,9 +408,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
             val pager = supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.view?.findViewById<ViewPager>(R.id.pager)
 
-            val expand = pager != null && pager.currentItem != 2 &&
-                    supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible != true ||
-                    supportFragmentManager.findFragmentByTag(Stuff.TAG_SIMILAR)?.isVisible == true
+            val expand = pager != null && pager.currentItem != 2 && pager.currentItem != 3 &&
+                    supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible != true
 
             app_bar.setExpanded(expand, animate)
         }

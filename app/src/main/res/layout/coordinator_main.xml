@@ -144,8 +144,8 @@
                 </FrameLayout>
                 <ImageButton
                     android:id="@+id/hero_calendar"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:padding="3dp"
                     android:scaleType="centerInside"
@@ -154,20 +154,9 @@
                     app:srcCompat="@drawable/vd_calendar"/>
 
                 <ImageButton
-                    android:id="@+id/hero_similar"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:padding="3dp"
-                    android:scaleType="centerInside"
-                    android:tooltipText="@string/similar_tracks"
-                    android:contentDescription="@string/similar_tracks"
-                    app:srcCompat="@drawable/vd_similar"/>
-
-                <ImageButton
                     android:id="@+id/hero_share"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:padding="3dp"
                     android:scaleType="centerInside"
@@ -177,8 +166,8 @@
 
                 <ImageButton
                     android:id="@+id/hero_info"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:padding="3dp"
                     android:scaleType="centerInside"
@@ -188,14 +177,14 @@
 
                 <ImageButton
                     android:id="@+id/hero_play"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:padding="3dp"
                     android:scaleType="centerInside"
-                    android:tooltipText="@string/hero_search"
-                    android:contentDescription="@string/hero_search"
-                    app:srcCompat="@drawable/vd_search"/>
+                    android:tooltipText="@string/search"
+                    android:contentDescription="@string/search"
+                    app:srcCompat="@drawable/vd_search_play"/>
             </LinearLayout>
 
             <androidx.appcompat.widget.Toolbar
@@ -217,6 +206,7 @@
                     app:tabIconTint="@color/colorAccentTrans"
                     app:tabIndicatorColor="@color/colorAccent"
                     app:tabSelectedTextColor="@color/colorAccent"
+                    app:tabMinWidth="100dp"
                     />
             </androidx.appcompat.widget.Toolbar>
 

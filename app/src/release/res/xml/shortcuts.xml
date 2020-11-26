@@ -29,12 +29,12 @@
         </intent>
     </shortcut>
     <shortcut
-        android:shortcutId="charts"
+        android:shortcutId="search"
         android:enabled="true"
-        android:icon="@drawable/vd_charts"
-        android:shortcutShortLabel="@string/menu_charts"
-        android:shortcutLongLabel="@string/menu_charts"
-        android:shortcutDisabledMessage="@string/menu_charts">
+        android:icon="@drawable/vd_search"
+        android:shortcutShortLabel="@string/search"
+        android:shortcutLongLabel="@string/search"
+        android:shortcutDisabledMessage="@string/search">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"

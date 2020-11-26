@@ -60,10 +60,10 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 		// similar data
 		ONE_WEEK_METHODS.add("artist.getsimilar");
 		ONE_WEEK_METHODS.add("tag.getsimilar");
-		ONE_WEEK_METHODS.add("track.getsimilar");
+//		ONE_WEEK_METHODS.add("track.getsimilar");  //scrobble counts get outdated
 		// top chart data
-		ONE_WEEK_METHODS.add("artist.gettopalbums");
-		ONE_WEEK_METHODS.add("artist.gettoptracks");
+//		ONE_WEEK_METHODS.add("artist.gettopalbums");
+//		ONE_WEEK_METHODS.add("artist.gettoptracks");
 		ONE_WEEK_METHODS.add("geo.gettopartists");
 		ONE_WEEK_METHODS.add("geo.gettoptracks");
 		ONE_WEEK_METHODS.add("tag.gettopalbums");

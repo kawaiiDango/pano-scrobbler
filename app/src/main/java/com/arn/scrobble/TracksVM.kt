@@ -54,10 +54,6 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
         return heroInfo
     }
 
-    fun loadSimilar(artist: String, track: String, limit: Int) {
-        LFMRequester(getApplication()).getSimilar(artist, track, limit).asAsyncTask(similarReceiver)
-    }
-
     fun loadInfo(track: Track, pos:Int) {
         LFMRequester(getApplication()).getTrackInfo(track, pos).asAsyncTask(trackInfo)
     }

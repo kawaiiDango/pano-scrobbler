@@ -5,8 +5,8 @@
     <item
         android:id="@+id/menu_play"
         app:iconTint="?android:colorForeground"
-        android:icon="@drawable/vd_search"
-        android:title="@string/hero_search"/>
+        android:icon="@drawable/vd_search_play"
+        android:title="@string/search"/>
     <item
         android:id="@+id/menu_info"
         app:iconTint="?android:colorForeground"
@@ -17,11 +17,6 @@
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_share"
         android:title="@string/share_this_song"/>
-    <item
-        android:id="@+id/menu_similar"
-        app:iconTint="?android:colorForeground"
-        android:icon="@drawable/vd_similar"
-        android:title="@string/similar_tracks"/>
     <item
         android:id="@+id/menu_calendar"
         app:iconTint="?android:colorForeground"

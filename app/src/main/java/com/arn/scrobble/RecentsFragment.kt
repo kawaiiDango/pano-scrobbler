@@ -276,23 +276,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             if (t is Track)
                 Stuff.launchSearchIntent(t.artist, t.name, context!!)
         }
-        activity.hero_similar.setOnClickListener {
-            it.isEnabled = false
-            val t = activity.hero_img?.tag
-            if (t is Track) {
-                val simFragment = SimilarTracksFragment()
-                val b = Bundle()
-                b.putString("artist", t.artist)
-                b.putString("track", t.name)
-                simFragment.arguments = b
 
-                activity.supportFragmentManager.beginTransaction()
-                        .hide(parentFragment!!)
-                        .add(R.id.frame, simFragment, Stuff.TAG_SIMILAR)
-                        .addToBackStack(null)
-                        .commit()
-            }
-        }
         activity.hero_calendar.setOnClickListener {
             val cal = Calendar.getInstance()
             if (viewModel.toTime > 0) {
@@ -327,10 +311,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         if (pointsStr.isNullOrBlank()) {
             frame.visibility = View.INVISIBLE
         } else {
-            val points = arrayListOf<Float>()
+            val points = mutableListOf<Int>()
             pointsStr.split(", ")
                     .forEach {
-                        points.add(it.toFloat())
+                        points.add(it.toInt())
                     }
             if (points.isEmpty())
                 frame.visibility = View.INVISIBLE
@@ -500,7 +484,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             val contentBgAnimator = ObjectAnimator.ofArgb(content, "backgroundColor", contentBgFrom, colorMutedBlack)
             val navBgAnimator = ObjectAnimator.ofArgb(activity.nav_view, "backgroundColor", contentBgFrom, colorMutedBlack)
             val shareBgAnimator = ObjectAnimator.ofArgb(activity.hero_share, "colorFilter", lastColorLightWhite, colorLightWhite)
-            val similarColorAnimator = ObjectAnimator.ofArgb(activity.hero_similar, "colorFilter", lastColorLightWhite, colorLightWhite)
             val calendarColorAnimator = ObjectAnimator.ofArgb(activity.hero_calendar, "colorFilter", lastColorLightWhite, colorLightWhite)
             val infoBgAnimator = ObjectAnimator.ofArgb(activity.hero_info, "colorFilter", lastColorLightWhite, colorLightWhite)
             val searchBgAnimator = ObjectAnimator.ofArgb(activity.hero_play, "colorFilter", lastColorLightWhite, colorLightWhite)
@@ -514,7 +497,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             }
 
             val animSetList = mutableListOf(contentBgAnimator,
-                    calendarColorAnimator, similarColorAnimator, shareBgAnimator,
+                    calendarColorAnimator, shareBgAnimator,
                     searchBgAnimator, infoBgAnimator,
                     navbarBgAnimator, sparklineAnimator, sparklineHorizontalLabel,
                     sparklineTickBottomAnimator, sparklineTickTopAnimator)
@@ -698,7 +681,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                     R.id.menu_play -> activity!!.hero_play.callOnClick()
                     R.id.menu_info -> activity!!.hero_info.callOnClick()
                     R.id.menu_share -> activity!!.hero_share.callOnClick()
-                    R.id.menu_similar -> activity!!.hero_similar.callOnClick()
                     R.id.menu_calendar -> activity!!.hero_calendar.callOnClick()
                     else -> return false
                 }

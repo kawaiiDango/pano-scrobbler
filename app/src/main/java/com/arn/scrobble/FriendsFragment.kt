@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.charts.ChartsPagerFragment
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
@@ -107,6 +108,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         else if (System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
                 (viewModel.page == 1 || viewModel.sorted))
             runnable.run()
+        Stuff.setTitle(activity, 0)
     }
 
     override fun onPause() {
@@ -272,14 +274,15 @@ class FriendsFragment : Fragment(), ItemClickListener {
             }
             action.friends_charts.setOnClickListener { v:View ->
                 (activity as Main).enableGestures()
-                val f = ChartsPagerFragment()
+                val f = HomePagerFragment()
                 val b = Bundle()
                 b.putString(Stuff.ARG_USERNAME, user.name)
                 b.putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
+                b.putInt(Stuff.ARG_TYPE, 3)
                 f.arguments = b
                 activity!!.supportFragmentManager
                         .beginTransaction()
-                        .replace(R.id.frame, f, Stuff.TAG_CHART_PAGER)
+                        .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
                         .addToBackStack(null)
                         .commit()
             }

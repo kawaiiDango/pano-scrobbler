@@ -3,16 +3,16 @@ package com.arn.scrobble.info
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
-import android.text.format.DateFormat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
-import com.arn.scrobble.ui.ListViewItemHighlightTvHack
+import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import de.umass.lastfm.Album
@@ -94,54 +94,102 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                             }
                         }
                     }
+                    itemView.info_extra.text = itemView.context.getString(R.string.similar)
+                    itemView.info_extra.setOnClickListener {
+                        val infoExtra = InfoExtraFragment()
+                        val b = Bundle()
+                        b.putString(NLService.B_ARTIST, entry.artist)
+                        b.putString(NLService.B_TITLE, entry.name)
+                        infoExtra.arguments = b
+                        infoExtra.show(fragment.parentFragmentManager, null)
+                    }
                 }
                 NLService.B_ALBUM -> {
                     itemView.info_type.setImageResource(R.drawable.vd_album)
-                    itemView.info_type.contentDescription = itemView.context.getString(R.string.album)
+                    itemView.info_type.contentDescription = itemView.context.getString(R.string.album_optional)
                     val tracks = (entry as? Album)?.tracks?.toList()
                     if (!tracks.isNullOrEmpty()) {
-                        itemView.info_album_tracks.visibility = View.VISIBLE
-                        itemView.info_album_tracks.text = itemView.context.resources.getQuantityString(R.plurals.num_songs, tracks.size, tracks.size)
-                        val tracksStr = arrayOfNulls<String>(tracks.size)
+                        var totalDuration = 0
+                        var plus = ""
                         tracks.forEachIndexed { i, track ->
-                            tracksStr[i] = NumberFormat.getInstance().format(i + 1) + ". " + track.name
                             val duration = track.duration
-                            if (duration > 0)
-                                tracksStr[i] += String.format(" (%02d:%02d)", duration / 60, (duration % 60))
+                            if (duration > 0) {
+                                totalDuration += duration
+                            } else
+                                plus = "+"
                         }
-                        itemView.info_album_tracks.setOnClickListener {
+
+                        itemView.info_extra.visibility = View.VISIBLE
+                        itemView.info_extra.text = itemView.context.resources.getQuantityString(R.plurals.num_songs, tracks.size, tracks.size) +
+                                if (totalDuration > 0)
+                                    " • " + Stuff.humanReadableDuration(totalDuration) + plus
+                                else
+                                    ""
+
+                        itemView.info_extra.setOnClickListener {
+                            val rv = LayoutInflater.from(itemView.context).inflate(R.layout.content_simple_list, null) as RecyclerView
+                            rv.layoutManager = LinearLayoutManager(itemView.context)
                             val dialog = AlertDialog.Builder(itemView.context, R.style.DarkDialog)
                                     .setTitle(Stuff.getColoredTitle(itemView.context, entry.name))
                                     .setIcon(R.drawable.vd_album)
-                                    .setItems(tracksStr) { _, i ->
+                                    .setView(rv)
+                                    .setNegativeButton(android.R.string.cancel, null)
+                                    .create()
+
+                            val adapter = AlbumTracksAdapter(tracks)
+                            adapter.itemClickListener = object : ItemClickListener {
+                                override fun onItemClick(view: View, position: Int) {
+                                    if (position > -1) {
+                                        dialog.dismiss()
                                         fragment.dismiss()
                                         val info = InfoFragment()
                                         val b = Bundle()
                                         b.putString(NLService.B_ARTIST, entry.artist)
                                         b.putString(NLService.B_ALBUM, entry.name)
-                                        b.putString(NLService.B_TITLE, tracks[i].name)
+                                        b.putString(NLService.B_TITLE, tracks[position].name)
                                         b.putString(Stuff.ARG_USERNAME, username)
                                         info.arguments = b
                                         info.show(fragment.parentFragmentManager, null)
                                     }
-                                    .setNegativeButton(android.R.string.cancel, null)
-                                    .create()
-                            dialog.listView.onItemSelectedListener = ListViewItemHighlightTvHack()
+                                }
+                            }
+                            rv.adapter = adapter
+
                             val window = dialog.window
                             val wlp = window!!.attributes
                             wlp.gravity = Gravity.BOTTOM
                             window.attributes = wlp
                             dialog.show()
                         }
-                    }
+                    } else
+                        itemView.info_extra.visibility = View.GONE
                 }
                 NLService.B_ARTIST -> {
                     itemView.info_type.setImageResource(R.drawable.vd_mic)
                     itemView.info_type.contentDescription = itemView.context.getString(R.string.artist)
+
+                    itemView.info_extra.text = itemView.context.getString(R.string.artist_extra)
+                    itemView.info_extra.setOnClickListener {
+                        val infoExtra = InfoExtraFragment()
+                        val b = Bundle()
+                        b.putString(NLService.B_ARTIST, entry!!.name)
+                        infoExtra.arguments = b
+                        infoExtra.show(fragment.parentFragmentManager, null)
+                    }
                 }
                 NLService.B_ALBUM_ARTIST -> {
                     itemView.info_type.setImageResource(R.drawable.vd_album_artist)
                     itemView.info_type.contentDescription = itemView.context.getString(R.string.album_artist)
+
+                    itemView.info_extra.visibility = View.VISIBLE
+                    itemView.info_extra.text = itemView.context.getString(R.string.artist_extra)
+                    itemView.info_extra.setOnClickListener {
+                        val infoExtra = InfoExtraFragment()
+                        val b = Bundle()
+                        b.putString(NLService.B_ARTIST, entry!!.name)
+                        infoExtra.arguments = b
+                        infoExtra.show(fragment.parentFragmentManager, null)
+                    }
                 }
             }
             itemView.info_name.text = entry?.name
@@ -162,8 +210,13 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                 entry.tags?.forEach {
                     val chip = Chip(itemView.context)
                     chip.text = it
-                    chip.isClickable = false
-                    chip.isFocusable = false
+                    chip.setOnClickListener { _ ->
+                        val tif = TagInfoFragment()
+                        val b = Bundle()
+                        b.putString(Stuff.ARG_TAG, it)
+                        tif.arguments = b
+                        tif.show(fragment.parentFragmentManager, null)
+                    }
                     itemView.info_tags.addView(chip)
                 }
                 var wikiText = entry.wikiText ?: entry.wikiSummary
@@ -175,14 +228,15 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                         wikiText = wikiText.substring(0, idx).trim()
                     if (!wikiText.isNullOrBlank()) {
                         wikiText = wikiText.replace("\n", "<br>")
-                        if (entry.wikiLastChanged != null && entry.wikiLastChanged.time != 0L)
-                            wikiText += "<br><br><i>" + itemView.context.getString(R.string.last_updated,
-                                    DateFormat.getLongDateFormat(itemView.context).format(entry.wikiLastChanged)) +
-                                    "</i>"
+//                        if (entry.wikiLastChanged != null && entry.wikiLastChanged.time != 0L)
+//                            wikiText += "<br><br><i>" + itemView.context.getString(R.string.last_updated,
+//                                    DateFormat.getLongDateFormat(itemView.context).format(entry.wikiLastChanged)) +
+//                                    "</i>"
+//                        This is the first published date and not the last updated date
                         itemView.info_wiki.visibility = View.VISIBLE
                         itemView.info_wiki.text = Html.fromHtml(wikiText)
                         itemView.info_wiki.post{
-                            if (itemView.info_wiki == null)
+                            if (itemView.info_wiki == null || itemView.info_wiki.layout == null)
                                 return@post
                             if (itemView.info_wiki.lineCount > 2 ||
                                     itemView.info_wiki.layout.getEllipsisCount(itemView.info_wiki.lineCount - 1) > 0) {

@@ -30,6 +30,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -46,6 +47,7 @@ import kotlinx.android.synthetic.main.coordinator_main.view.*
 import java.io.IOException
 import java.text.DateFormat
 import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.util.*
 import java.util.logging.Level
 import kotlin.math.ln
@@ -65,11 +67,13 @@ object Stuff {
     const val ARG_NOPASS = "nopass"
     const val ARG_USERNAME = "username"
     const val ARG_REGISTERED_TIME = "registered"
-    const val TAG_SIMILAR = "similar"
+    const val ARG_TYPE = "type"
+    const val ARG_TAG = "tag"
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
     const val TYPE_TRACKS = 3
     const val TYPE_LOVES = 4
+    const val TYPE_SC = 5
     const val NP_ID = -5
     const val LIBREFM_KEY = "panoScrobbler"
     const val LAST_KEY = Tokens.LAST_KEY
@@ -79,7 +83,7 @@ object Stuff {
     const val DL_APP_LIST = 32
     const val DL_NOW_PLAYING = 33
     const val DL_MIC = 34
-    const val DL_CHARTS = 35
+    const val DL_SEARCH = 35
     const val DIRECT_OPEN_KEY = "directopen"
     const val FRIENDS_RECENTS_DELAY: Long = 800
 
@@ -120,7 +124,6 @@ object Stuff {
     const val PREF_ACTIVITY_FIRST_RUN = "first_run"
     const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
     const val PREF_ACTIVITY_LAST_TAB = "last_tab"
-    const val PREF_ACTIVITY_LAST_CHARTS_TAB = "last_charts_tab"
     const val PREF_ACTIVITY_LAST_CHARTS_PERIOD = "last_charts_period"
     const val PREF_ACTIVITY_LAST_CHARTS_WEEK_TO = "last_charts_week_to"
     const val PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM = "last_charts_week_from"
@@ -130,6 +133,8 @@ object Stuff {
     const val PREF_ACTIVITY_LAST_RANDOM_TYPE = "random_type"
     const val PREF_ACTIVITY_PROFILE_PIC = "profile_cached"
     const val PREF_ACTIVITY_SHARE_SIG = "share_sig"
+    const val PREF_ACTIVITY_SEARCH_HISTORY = "search_history"
+    const val PREF_ACTIVITY_SCRUB_LEARNT = "scrub_learnt"
     const val ACTIVITY_PREFS = "activity_preferences"
 
     val SERVICE_BIT_POS = mapOf(
@@ -308,7 +313,7 @@ object Stuff {
 
 
         if (musicInfo == null || musicInfo.size < 2) {
-            return arrayOf(titleContent, "")
+            return arrayOf("", titleContent)
         }
 
         //remove ", ', 」, 』 from musicInfo
@@ -379,7 +384,7 @@ object Stuff {
         }
     }
 
-    fun setTitle(activity: Activity?, strId: Int) {
+    fun setTitle(activity: Activity?, @StringRes strId: Int) {
         val title = if (strId == 0)
             null
         else
@@ -405,15 +410,16 @@ object Stuff {
                 activity.window.navigationBarColor = it.animatedValue as Int
             }
             navbarBgAnimator.start()
-            for (i in 0..ctl.toolbar.childCount) {
-                val child = ctl.toolbar.getChildAt(i)
-                if (child is ImageButton) {
-                    (child.drawable as ShadowDrawerArrowDrawable).
-                    setColors(ContextCompat.getColor(activity, R.color.colorAccent), Color.TRANSPARENT)
-                    break
-                }
+        }
+        for (i in 0..ctl.toolbar.childCount) {
+            val child = ctl.toolbar.getChildAt(i)
+            if (child is ImageButton) {
+                (child.drawable as ShadowDrawerArrowDrawable).
+                setColors(ContextCompat.getColor(activity, R.color.colorAccent), Color.TRANSPARENT)
+                break
             }
         }
+
     }
 
     fun setAppBarHeight(activity: Activity, additionalHeight: Int = 0) {
@@ -489,8 +495,7 @@ object Stuff {
     fun sp2px(sp: Int, c: Context): Int =
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), c.resources.displayMetrics).toInt()
 
-    fun humanReadableNum(f: Float): String {
-        val n = f.toLong()
+    fun humanReadableNum(n: Int): String {
         val k = 1000
         if (n < k) return DecimalFormat("#").format(n) //localise
         val exp = (ln(n.toDouble()) / ln(k.toDouble())).toInt()
@@ -499,6 +504,22 @@ object Stuff {
 
         val decimal = DecimalFormat("#.#").format(dec)
         return decimal + unit
+    }
+
+    fun humanReadableDuration(secs: Int): String {
+        val s = secs % 60
+        val m = (secs / 60) % 60
+        val h = secs / 3600
+        val str = StringBuilder()
+        val nf = NumberFormat.getInstance()
+        nf.minimumIntegerDigits = 2
+        if (h > 0)
+            str.append(nf.format(h))
+                    .append(':')
+        str.append(nf.format(m))
+                .append(':')
+                .append(nf.format(s))
+        return str.toString()
     }
 
     fun myRelativeTime(context: Context, date: Date?): CharSequence =
@@ -647,6 +668,7 @@ object Stuff {
         return browserPackages
     }
 
+    @Synchronized
     fun initCaller(context: Context): Caller {
         val caller = Caller.getInstance()
         if (caller.userAgent != USER_AGENT) { // static instance not inited

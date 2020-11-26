@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * Created by arn on 11/09/2017.
  */
 
-@Database(entities = [PendingScrobble::class, PendingLove::class, Edit::class], version = 7)
+@Database(entities = [PendingScrobble::class, PendingLove::class, Edit::class], version = 8)
 abstract class PendingScrobblesDb : RoomDatabase() {
     abstract fun getScrobblesDao(): PendingScrobblesDao
     abstract fun getLovesDao(): PendingLovesDao
@@ -24,7 +24,7 @@ abstract class PendingScrobblesDb : RoomDatabase() {
         fun getDb(context: Context): PendingScrobblesDb {
             if (INSTANCE == null || INSTANCE?.isOpen == false) {
                 INSTANCE = Room.databaseBuilder(context.applicationContext, PendingScrobblesDb::class.java, fileName)
-                        .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                        .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                         // allow queries on the main thread.
                         // Don't do this on a real app! See PersistenceBasicSample for an example.
                         // Just dont do this on a UI thread
@@ -42,27 +42,7 @@ abstract class PendingScrobblesDb : RoomDatabase() {
 
         private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                /*
-                val TABLE_NAME_TEMP = "tmp"
-
-                // 1. Create new table
-                database.execSQL("CREATE TABLE IF NOT EXISTS `$TABLE_NAME_TEMP` " +
-                        "(`game_name` TEXT NOT NULL, " +
-                        "PRIMARY KEY(`game_name`))")
-
-                // 2. Copy the data
-                database.execSQL("INSERT INTO $TABLE_NAME_TEMP (game_name) "
-                        + "SELECT game_name "
-                        + "FROM $TABLE_NAME")
-
-                // 3. Remove the old table
-                database.execSQL("DROP TABLE $TABLE_NAME")
-
-                // 4. Change the table name to the correct one
-                database.execSQL("ALTER TABLE $TABLE_NAME_TEMP RENAME TO $TABLE_NAME")
-                */
                 database.execSQL("ALTER TABLE $fileName ADD albumArtist TEXT NOT NULL DEFAULT \"\"")
-
             }
         }
         private val MIGRATION_4_5 = object : Migration(4, 5) {
@@ -84,6 +64,17 @@ abstract class PendingScrobblesDb : RoomDatabase() {
                 database.execSQL("ALTER TABLE $tableName ADD state INTEGER NOT NULL DEFAULT 7") //111
                 database.execSQL("ALTER TABLE $tableName ADD state_timestamp INTEGER NOT NULL DEFAULT ${System.currentTimeMillis()}")
                 database.execSQL("UPDATE $fileName SET state = 31 WHERE state <= 0") //11111
+            }
+        }
+
+        private val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                val tableName = "edits"
+                database.execSQL("ALTER TABLE $tableName RENAME TO edits2")
+                database.execSQL("CREATE TABLE $tableName (`legacyHash` TEXT, `origTrack` TEXT NOT NULL, `origAlbum` TEXT NOT NULL, `origArtist` TEXT NOT NULL, `track` TEXT NOT NULL, `album` TEXT NOT NULL, `albumArtist` TEXT NOT NULL, `artist` TEXT NOT NULL, PRIMARY KEY (origArtist, origAlbum, origTrack))")
+                database.execSQL("CREATE INDEX legacyIdx ON $tableName (legacyHash)")
+                database.execSQL("INSERT INTO $tableName SELECT hash, hash, hash, hash, track, album, albumArtist, artist FROM edits2")
+                database.execSQL("DROP TABLE edits2")
             }
         }
 

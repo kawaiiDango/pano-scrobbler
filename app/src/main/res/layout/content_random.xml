@@ -80,10 +80,10 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/hero_search"
-                android:tooltipText="@string/hero_search"
+                android:contentDescription="@string/search"
+                android:tooltipText="@string/search"
                 app:drawableTint="@color/colorAccent"
-                app:srcCompat="@drawable/vd_search" />
+                app:srcCompat="@drawable/vd_search_play" />
 
         </LinearLayout>
 

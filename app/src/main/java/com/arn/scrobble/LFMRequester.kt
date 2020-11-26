@@ -10,6 +10,7 @@ import android.preference.PreferenceManager
 import android.util.LruCache
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
+import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.db.PendingLove
 import com.arn.scrobble.pending.db.PendingScrobble
@@ -25,6 +26,8 @@ import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.zip.GZIPInputStream
 import kotlin.random.Random
 
@@ -85,12 +88,33 @@ class LFMRequester(context: Context) {
         return this
     }
 
-    fun getSimilar(artist: String, track: String, limit: Int): LFMRequester {
+    fun getSimilarTracks(artist: String, track: String): LFMRequester {
         toExec = {
-            Stuff.log(this::getSimilar.name + " " + track)
             initCaller(Main.isOnline)
-            Stuff.log(this::getSimilar.name + " " +  artist + " - " + track)
-            Track.getSimilar(artist, track, Stuff.LAST_KEY, limit)
+            Track.getSimilar(artist, track, Stuff.LAST_KEY, 50)
+        }
+        return this
+    }
+
+    fun getSimilarArtists(artist: String): LFMRequester {
+        toExec = {
+            initCaller(Main.isOnline)
+            Artist.getSimilar(artist, 50, Stuff.LAST_KEY)
+        }
+        return this
+    }
+
+    fun getArtistTopTracks(artist: String): LFMRequester {
+        toExec = {
+            initCaller(Main.isOnline)
+            Artist.getTopTracks(artist, Stuff.LAST_KEY)
+        }
+        return this
+    }
+    fun getArtistTopAlbums(artist: String): LFMRequester {
+        toExec = {
+            initCaller(Main.isOnline)
+            Artist.getTopAlbums(artist, Stuff.LAST_KEY)
         }
         return this
     }
@@ -186,7 +210,7 @@ class LFMRequester(context: Context) {
                     page
                 else
                     10
-                pr = PaginatedResult(page, totalPages, users, null)
+                pr = PaginatedResult(page, totalPages, users.size, users, null)
             }
             pr
         }
@@ -198,13 +222,12 @@ class LFMRequester(context: Context) {
             Stuff.log(this::getCharts.name + " " + page)
             initCaller(Main.isOnline)
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
-            val collection = when (type) {
+            val pr = when (type) {
                 Stuff.TYPE_ARTISTS -> User.getTopArtists(username, period, 50, page, Stuff.LAST_KEY)
                 Stuff.TYPE_ALBUMS -> User.getTopAlbums(username, period, 50, page, Stuff.LAST_KEY)
                 else -> User.getTopTracks(username, period, 50, page, Stuff.LAST_KEY)
             }
-            Pair(page, collection)
-
+            pr
         }
         return this
     }
@@ -243,8 +266,7 @@ class LFMRequester(context: Context) {
                 Stuff.TYPE_ALBUMS -> User.getWeeklyAlbumChart(username, from.toString(), to.toString(), 100, Stuff.LAST_KEY)
                 else -> User.getWeeklyTrackChart(username, from.toString(), to.toString(), 100, Stuff.LAST_KEY)
             }
-            Pair(1, chart.entries)
-
+            PaginatedResult(1, 1, chart.entries.size, chart.entries, username)
         }
         return this
     }
@@ -283,6 +305,56 @@ class LFMRequester(context: Context) {
                 }
             }
             RandomVM.RandomTrackData(total, track, type)
+        }
+        return this
+    }
+
+    fun getSearches(term:String): LFMRequester {
+        toExec = {
+            Stuff.log(this::getSearches.name + " " + term)
+            initCaller(Main.isOnline)
+            val artists = mutableListOf<Artist>()
+            val albums = mutableListOf<Album>()
+            val tracks = mutableListOf<Track>()
+            val es = Executors.newCachedThreadPool()
+            es.execute {
+                try {
+                    artists += Artist.search(term, Stuff.LAST_KEY)
+                } catch (e: Exception) {}
+            }
+            es.execute {
+                try {
+                    albums += Album.search(term, Stuff.LAST_KEY)
+                } catch (e: Exception) {}
+            }
+            es.execute {
+                try {
+                    tracks += Track.search(term, Stuff.LAST_KEY)
+                } catch (e: Exception) {}
+            }
+            es.shutdown()
+            es.awaitTermination(20, TimeUnit.SECONDS)
+            SearchVM.SearchResults(term, artists, albums, tracks)
+        }
+        return this
+    }
+
+    fun getScrobbleCounts(periods: List<ChartsOverviewFragment.ScrobbleCount>, usernamep: String?): LFMRequester {
+        toExec = {
+            checkSession(usernamep)
+            Stuff.log(this::getScrobbleCounts.name)
+            val es = Executors.newCachedThreadPool()
+            periods.forEach {
+                es.execute {
+                    try {
+                        val pr = User.getRecentTracks(usernamep, 1, 1, false, it.from / 1000, it.to / 1000, lastfmSession, null)
+                        it.count = pr.total
+                    } catch (e: Exception) {}
+                }
+            }
+            es.shutdown()
+            es.awaitTermination(30, TimeUnit.SECONDS)
+            periods
         }
         return this
     }
@@ -333,6 +405,16 @@ class LFMRequester(context: Context) {
         return this
     }
 
+    fun getTagInfo(tag: String): LFMRequester {
+        toExec = {
+            initCaller(Main.isOnline)
+            Tag.getInfo(tag, Stuff.LAST_KEY) to
+//                        Tag.getSimilar(tag, Stuff.LAST_KEY) //this doesn't work anymore
+                    null
+        }
+        return this
+    }
+
     fun getInfo(artist: String, albump: String?, track: String?, usernamep: String?,
              activity: Activity, mld: MutableLiveData<Pair<String, MusicEntry?>>): LFMRequester {
         toExec = {
@@ -354,33 +436,45 @@ class LFMRequester(context: Context) {
                     mld.value = NLService.B_TITLE to t
                 }
             }
-            val a = try {
-                Artist.getInfo(artist, null, username, true, Stuff.LAST_KEY)
-            } catch (e: Exception) {
-                null
-            }
-            activity.runOnUiThread {
-                mld.value = NLService.B_ARTIST to a
-            }
-            if (!albumArtist.isNullOrEmpty() && albumArtist.toLowerCase() != artist.toLowerCase()) {
-                val aa = try {
-                    Artist.getInfo(albumArtist, null, username, true, Stuff.LAST_KEY)
+            val es = Executors.newCachedThreadPool()
+            var a: Artist? = null
+            var aa: Artist? = null
+            var al: Album? = null
+            es.execute {
+                a = try {
+                    Artist.getInfo(artist, null, username, true, Stuff.LAST_KEY)
                 } catch (e: Exception) {
                     null
                 }
-                activity.runOnUiThread {
-                    mld.value = NLService.B_ALBUM_ARTIST to aa
+            }
+            if (!albumArtist.isNullOrEmpty() && albumArtist.toLowerCase() != artist.toLowerCase()) {
+                es.execute {
+                    aa = try {
+                        Artist.getInfo(albumArtist, null, username, true, Stuff.LAST_KEY)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    activity.runOnUiThread {
+                        mld.value = NLService.B_ALBUM_ARTIST to aa
+                    }
                 }
             }
-            val al = try {
-                if (!album.isNullOrEmpty())
-                    Album.getInfo(albumArtist ?: artist, album, username, Stuff.LAST_KEY)
-                else
+            es.execute {
+                al = try {
+                    if (!album.isNullOrEmpty())
+                        Album.getInfo(albumArtist ?: artist, album, username, Stuff.LAST_KEY)
+                    else
+                        null
+                } catch (e: Exception) {
                     null
-            } catch (e: Exception) {
-                null
+                }
             }
+            es.shutdown()
+            es.awaitTermination(20, TimeUnit.SECONDS)
             activity.runOnUiThread {
+                mld.value = NLService.B_ARTIST to a
+                if (aa != null)
+                    mld.value = NLService.B_ALBUM_ARTIST to aa
                 mld.value = NLService.B_ALBUM to al
             }
             null
@@ -496,11 +590,9 @@ class LFMRequester(context: Context) {
                 val edit =
                         try {
                             if (track != null)
-                                dao.find(track.artist.hashCode().toString() +
-                                    scrobbleData.album.hashCode().toString() + track.name.hashCode().toString())
+                                dao.find(track.artist, scrobbleData.album, track.name)
                             else
-                                dao.find(scrobbleData.artist.hashCode().toString() +
-                                    scrobbleData.album.hashCode().toString() + scrobbleData.track.hashCode().toString())
+                                dao.find(scrobbleData.artist, scrobbleData.album, scrobbleData.track)
                         } catch (e: Exception) {
                             null
                         }

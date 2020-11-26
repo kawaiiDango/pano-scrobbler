@@ -44,7 +44,7 @@ import java.util.Locale;
  */
 public abstract class MusicEntry extends ImageHolder {
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ",
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd MMM yyyy, HH:mm",
 			Locale.ENGLISH);
 
 	protected String name;
@@ -238,7 +238,7 @@ public abstract class MusicEntry extends ImageHolder {
 			String publishedText = wiki.getChildText("published");
 			try {
 				entry.wikiLastChanged = DATE_FORMAT.parse(publishedText);
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				// try parsing it with current locale
 				try {
 //					DateFormat clFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ", Locale.getDefault());

@@ -3,6 +3,8 @@ package com.arn.scrobble.charts
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.Main
 import com.arn.scrobble.R
@@ -17,14 +19,34 @@ import java.lang.ref.WeakReference
 import java.text.NumberFormat
 
 
-class ChartsAdapter (private val fragmentContent: View) :
+open class ChartsAdapter (protected val fragmentContent: View) :
         RecyclerView.Adapter<ChartsAdapter.VHChart>(), LoadImgInterface, LoadMoreGetter {
 
-    lateinit var clickListener: ItemClickListener
+    lateinit var clickListener: EntryItemClickListener
     lateinit var viewModel: ChartsVM
     private val handler by lazy { EntryInfoHandler(WeakReference(this)) }
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
-    var itemSizeDp = 180
+    open val itemSizeDp = 185
+    open val forceDimensions = false
+    private var maxCount = -2
+    var checkAllForMax = false
+    @StringRes
+    var emptyTextRes = R.string.charts_no_data
+    var showArtists = true
+    var requestAlbumInfo = true
+
+    private val queueEntryInfo = { pos: Int, imageView: ImageView ->
+        if (!viewModel.imgMap.containsKey(getItemId(pos).toInt()))
+            handler.sendMessage(imageView.hashCode(), pos)
+    }
+    private val getMaxCount = {
+        if (checkAllForMax) {
+            if (maxCount == -2)
+                maxCount = viewModel.chartsData.maxOfOrNull { it.playcount } ?: -1
+            maxCount
+        } else
+            getItem(0).playcount
+    }
 
     init {
         setHasStableIds(true)
@@ -34,7 +56,19 @@ class ChartsAdapter (private val fragmentContent: View) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHChart {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.grid_item_chart, parent, false)
-        return VHChart(view)
+        if (forceDimensions) {
+            val lp = view.layoutParams
+            lp.width = Stuff.dp2px(itemSizeDp, parent.context)
+            lp.height = Stuff.dp2px(itemSizeDp, parent.context)
+            view.layoutParams = lp
+        }
+        return VHChart(
+                view,
+                itemSizeDp,
+                clickListener,
+                queueEntryInfo,
+                getMaxCount
+        )
     }
 
     fun getItem(pos: Int) = viewModel.chartsData[pos]
@@ -43,8 +77,6 @@ class ChartsAdapter (private val fragmentContent: View) :
         val id = getItemId(pos).toInt()
         return viewModel.imgMap[id]
     }
-
-    fun getMaxCount() = getItem(0).playcount
 
     override fun loadImg(pos:Int){
         if(pos >= 0 && pos < viewModel.chartsData.size){
@@ -78,16 +110,16 @@ class ChartsAdapter (private val fragmentContent: View) :
     override fun onBindViewHolder(holder: VHChart, position: Int) {
         val item =  getItem(position)
         val imgUrl =  getImgUrl(position)
-        holder.setItemData(position, item, imgUrl)
+        holder.setItemData(position, item, imgUrl, showArtists, requestAlbumInfo)
     }
 
-    fun populate(){
+    open fun populate(){
         if (viewModel.chartsData.isEmpty()) {
             if (itemCount == 0) {
                 if (!Main.isOnline)
                     fragmentContent.charts_status?.text = fragmentContent.context.getString(R.string.unavailable_offline)
                 else
-                    fragmentContent.charts_status?.text = fragmentContent.context.getString(R.string.charts_no_data)
+                    fragmentContent.charts_status?.text = fragmentContent.context.getString(emptyTextRes)
                 fragmentContent.charts_status?.visibility = View.VISIBLE
                 fragmentContent.charts_progress?.visibility = View.GONE
             }
@@ -103,13 +135,20 @@ class ChartsAdapter (private val fragmentContent: View) :
         handler.cancelAll()
     }
 
-    inner class VHChart(view: View) :
-            RecyclerView.ViewHolder(view), View.OnClickListener{
+    class VHChart(
+            view: View,
+            itemSizeDp: Int,
+            private val clickListener: EntryItemClickListener,
+            private val queueEntryInfo: (Int, ImageView) -> Unit,
+            private val getMaxCount: () -> Int
+    ) : RecyclerView.ViewHolder(view), View.OnClickListener {
+
         private val vTitle = view.chart_info_title
         private val vSubtitle = view.chart_info_subtitle
         private val vScrobbles = view.chart_info_scrobbles
         private val vBar = view.chart_info_bar
         private val vImg = view.chart_img
+        var entryData: MusicEntry? = null
 
         init {
             itemView.setOnClickListener(this)
@@ -119,10 +158,13 @@ class ChartsAdapter (private val fragmentContent: View) :
         }
 
         override fun onClick(view: View) {
-            clickListener.onItemClick(view, adapterPosition)
+            entryData?.let {
+                clickListener.onItemClick(view, it)
+            }
         }
 
-        fun setItemData(pos: Int, entry: MusicEntry, imgUrlp:String?) {
+        fun setItemData(pos: Int, entry: MusicEntry, imgUrlp:String?, showArtists: Boolean, requestAlbumInfo: Boolean) {
+            entryData = entry
             var imgUrl = imgUrlp
             when (entry) {
                 is Artist -> {
@@ -140,12 +182,17 @@ class ChartsAdapter (private val fragmentContent: View) :
             vScrobbles.text = itemView.context.resources.
                     getQuantityString(R.plurals.num_scrobbles_noti, entry.playcount,
                             NumberFormat.getInstance().format(entry.playcount))
+            if (!showArtists)
+                vSubtitle.visibility = View.GONE
+
             val maxCount = getMaxCount()
-            if (maxCount == 0)
-                vBar.visibility = View.GONE
-            else {
+            if (maxCount <= 0) {
+                vBar.visibility = View.INVISIBLE //so that it acts as a padding
+                vScrobbles.visibility = View.GONE
+            } else {
                 vBar.progress = entry.playcount*100 / maxCount
                 vBar.visibility = View.VISIBLE
+                vScrobbles.visibility = View.VISIBLE
             }
             if (imgUrl != null && imgUrl != "") {
                 Picasso.get()
@@ -164,8 +211,8 @@ class ChartsAdapter (private val fragmentContent: View) :
             } else {
                 vImg.setImageResource(R.drawable.vd_wave_simple)
                 vImg.setColorFilter(Stuff.getMatColor(itemView.context, "500", entry.name.hashCode().toLong()))
-                if (!viewModel.imgMap.containsKey(getItemId(adapterPosition).toInt()))
-                    handler.sendMessage(vImg.hashCode(), adapterPosition)
+                if (!(entry is Album && !requestAlbumInfo))
+                    queueEntryInfo(adapterPosition, vImg)
             }
         }
     }

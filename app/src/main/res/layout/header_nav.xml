@@ -44,6 +44,7 @@
         android:layout_marginBottom="@dimen/nav_header_vertical_spacing"
         android:layout_toStartOf="@+id/nav_profile_link"
         android:gravity="end"
+        android:textDirection="firstStrong"
         tools:text="nav_num_scrobbles"/>
 
     <ImageButton

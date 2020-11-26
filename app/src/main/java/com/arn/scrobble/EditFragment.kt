@@ -9,9 +9,11 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.text.InputType
 import android.transition.Fade
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import com.arn.scrobble.pending.db.Edit
 import com.arn.scrobble.pending.db.PendingScrobblesDb
@@ -27,7 +29,7 @@ import java.util.*
 class EditFragment: LoginFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         arguments?.putString(TEXTF1, getString(R.string.track))
-        arguments?.putString(TEXTF2, getString(R.string.album))
+        arguments?.putString(TEXTF2, getString(R.string.album_optional))
         arguments?.putString(TEXTFL, getString(R.string.artist))
         val view = super.onCreateView(inflater, container, savedInstanceState)
 
@@ -60,12 +62,33 @@ class EditFragment: LoginFragment() {
             view.login_textfield_last.editText!!.setText(it)
             view.login_textfield_last.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
         }
+        arguments?.getString(NLService.B_ALBUM_ARTIST)?.let {
+            view.login_textfield_last2.editText!!.setText(it)
+        }
 
         view.edit_swap.visibility = View.VISIBLE
         view.edit_swap.setOnClickListener {
             val tmp = view.login_textfield1.editText?.text
             view.login_textfield1.editText!!.text = view.login_textfield_last.editText!!.text
             view.login_textfield_last.editText!!.text = tmp
+        }
+
+        view.edit_album_artist.visibility = View.VISIBLE
+        view.edit_album_artist.setOnClickListener {
+            it.visibility = View.GONE
+            view.login_textfield_last2.hint = getString(R.string.album_artist)
+            view.login_textfield_last2.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            view.login_textfield_last.editText!!.imeOptions = EditorInfo.IME_NULL
+            view.login_textfield_last2.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
+                if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)) {
+                    view.login_submit.callOnClick()
+                    true
+                } else
+                    false
+            }
+            view.login_textfield_last2.visibility = View.VISIBLE
+            view.login_textfield_last2.requestFocus()
         }
         view.login_submit.text = getString(R.string.menu_edit)
         return view
@@ -83,7 +106,7 @@ class EditFragment: LoginFragment() {
         val track = login_textfield1.editText!!.text.toString()
         val origTrack = args.getString(NLService.B_TITLE) ?: ""
         var album = login_textfield2.editText!!.text.toString()
-        var albumArtist = ""//login_textfield2.editText!!.text.toString()
+        var albumArtist = login_textfield_last2.editText!!.text.toString()
         val origAlbum = args.getString(NLService.B_ALBUM) ?: ""
         val artist = login_textfield_last.editText!!.text.toString()
         val origArtist = args.getString(NLService.B_ARTIST) ?: ""
@@ -91,15 +114,18 @@ class EditFragment: LoginFragment() {
         var errMsg: String? = null
 
         fun saveEdit(context: Context) {
-            if(!(track == origTrack && artist == origArtist && album == origAlbum)) {
+            if(!(track == origTrack && artist == origArtist && album == origAlbum && albumArtist == "")) {
                 val dao = PendingScrobblesDb.getDb(context).getEditsDao()
                 val e = Edit()
                 e.artist = artist
                 e.album = album
                 e.albumArtist = albumArtist
                 e.track = track
-                e.hash = origArtist.hashCode().toString() + origAlbum.hashCode().toString() + origTrack.hashCode().toString()
-                dao.upsert(e)
+                e.origArtist = origArtist
+                e.origAlbum = origAlbum
+                e.origTrack = origTrack
+                dao.insertReplaceLowerCase(e)
+                dao.deleteLegacy(origArtist.hashCode().toString() + origAlbum.hashCode().toString() + origTrack.hashCode().toString())
             }
         }
 
@@ -115,6 +141,7 @@ class EditFragment: LoginFragment() {
 
         try {
             var validArtist:String? = null
+            var validAlbumArtist:String? = ""
             var validTrack:Track? = null
 
             Stuff.initCaller(context!!)
@@ -127,19 +154,23 @@ class EditFragment: LoginFragment() {
                             } catch (e: Exception) {
                                 null
                             }
-                if (validTrack == null)
+                if (validTrack == null) {
                     validArtist = LFMRequester.getValidArtist(artist, pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
-                else {
+                    if (albumArtist.isNotEmpty())
+                        validAlbumArtist = LFMRequester.getValidArtist(albumArtist, pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+
+                } else {
                     if (album.isBlank() && validTrack.album != null) {
                         album = validTrack.album
                         activity!!.runOnUiThread { login_textfield2.editText!!.setText(validTrack.album) }
                     }
                     if (albumArtist.isBlank() && validTrack.albumArtist != null) {
                         albumArtist = validTrack.albumArtist
+                        activity!!.runOnUiThread { login_textfield_last2.editText!!.setText(validTrack.albumArtist) }
                     }
                 }
             }
-            if (validTrack == null && validArtist == null && !login_force.isChecked) {
+            if (validTrack == null && (validArtist == null || validAlbumArtist == null) && !login_force.isChecked) {
                 errMsg = getString(R.string.state_invalid_artist)
             } else {
                 val lastfmSessKey: String? = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)

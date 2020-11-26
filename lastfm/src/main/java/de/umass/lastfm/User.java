@@ -225,34 +225,34 @@ public class User extends ImageHolder {
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
-	public static Collection<Album> getTopAlbums(String user, String apiKey) {
+	public static PaginatedResult<Album> getTopAlbums(String user, String apiKey) {
 		return getTopAlbums(user, Period.OVERALL, 50, 1, apiKey);
 	}
 
-	public static Collection<Album> getTopAlbums(String user, Period period, int limit, int page, String apiKey) {
+	public static PaginatedResult<Album> getTopAlbums(String user, Period period, int limit, int page, String apiKey) {
 		Result result = Caller.getInstance().call("user.getTopAlbums", apiKey,
                 "user", user, "period", period.getString(), "limit", Integer.toString(limit), "page", Integer.toString(page));
-		return ResponseBuilder.buildCollection(result, Album.class);
+		return ResponseBuilder.buildPaginatedResult(result, Album.class);
 	}
 
-	public static Collection<Artist> getTopArtists(String user, String apiKey) {
+	public static PaginatedResult<Artist> getTopArtists(String user, String apiKey) {
 		return getTopArtists(user, Period.OVERALL, 50, 1, apiKey);
 	}
 
-	public static Collection<Artist> getTopArtists(String user, Period period, int limit, int page, String apiKey) {
+	public static PaginatedResult<Artist> getTopArtists(String user, Period period, int limit, int page, String apiKey) {
 		Result result = Caller.getInstance().call("user.getTopArtists", apiKey,
                 "user", user, "period", period.getString(), "limit", Integer.toString(limit), "page", Integer.toString(page));
-		return ResponseBuilder.buildCollection(result, Artist.class);
+		return ResponseBuilder.buildPaginatedResult(result, Artist.class);
 	}
 
-	public static Collection<Track> getTopTracks(String user, String apiKey) {
+	public static PaginatedResult<Track> getTopTracks(String user, String apiKey) {
 		return getTopTracks(user, Period.OVERALL, 50, 1, apiKey);
 	}
 
-	public static Collection<Track> getTopTracks(String user, Period period, int limit, int page, String apiKey) {
+	public static PaginatedResult<Track> getTopTracks(String user, Period period, int limit, int page, String apiKey) {
 		Result result = Caller.getInstance().call("user.getTopTracks", apiKey,
                 "user", user, "period", period.getString(), "limit", Integer.toString(limit), "page", Integer.toString(page));
-		return ResponseBuilder.buildCollection(result, Track.class);
+		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
 	public static Collection<Tag> getTopTags(String user, String apiKey) {
@@ -646,7 +646,7 @@ public class User extends ImageHolder {
 
 		Result result = Caller.getInstance().call("user.getPersonalTags", apiKey, params);
 		if (!result.isSuccessful())
-			return new PaginatedResult<T>(0, 0, Collections.<T>emptyList(), null);
+			return new PaginatedResult<T>(0, 0, 0, Collections.<T>emptyList(), null);
 
 		String childElementName = params.get(taggingTypeParam) + "s";
 		DomElement contentElement = result.getContentElement();

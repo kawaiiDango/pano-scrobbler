@@ -18,7 +18,7 @@
         android:id="@+id/friends_scrobbles"
         style="@style/friendsLinks"
         android:drawableTop="@drawable/vd_note"
-        android:text="@string/scrobbles_friends"/>
+        android:text="@string/scrobbles"/>
 
     <Button
         android:id="@+id/friends_charts"

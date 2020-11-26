@@ -36,6 +36,7 @@
             tools:visibility="visible">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_textfield1_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:drawableTint="@color/colorAccent"
@@ -66,12 +67,29 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageButton
+                android:id="@+id/edit_album_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/album_artist"
+                android:nextFocusLeft="@id/login_textfield2_edittext"
+                android:nextFocusRight="@id/edit_swap"
+                android:nextFocusDown="@id/login_textfield_last_edittext"
+                android:paddingStart="7dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="7dp"
+                android:tooltipText="@string/album_artist"
+                android:visibility="gone"
+                app:srcCompat="@drawable/vd_album_artist"
+                tools:visibility="visible" />
+
+            <ImageButton
                 android:id="@+id/edit_swap"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/swap"
-                android:nextFocusLeft="@id/login_textfield2_edittext"
+                android:nextFocusLeft="@id/edit_album_artist"
                 android:nextFocusRight="@id/login_textfield2_edittext"
                 android:nextFocusDown="@id/login_textfield_last_edittext"
                 android:paddingStart="7dp"
@@ -96,7 +114,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:drawableTint="@color/colorAccent"
-                android:imeActionId="6"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_textfield_last2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_textfield_last2_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:drawableTint="@color/colorAccent"
                 android:imeOptions="actionDone"
                 android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>

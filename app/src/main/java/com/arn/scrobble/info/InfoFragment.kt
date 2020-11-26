@@ -100,10 +100,10 @@ class InfoFragment: BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-
-        val bottomSheetView = dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-        if (view?.isInTouchMode == false)
+        if (view?.isInTouchMode == false) {
+            val bottomSheetView = dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
+        }
     }
 
     override fun onDestroyView() {

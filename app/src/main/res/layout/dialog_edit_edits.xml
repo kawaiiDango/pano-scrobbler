@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:text="@string/original"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorAccent" />
+
+        <include layout="@layout/text_input_edit" android:id="@+id/edit_track_orig" />
+        <include layout="@layout/text_input_edit" android:id="@+id/edit_album_orig" />
+        <include layout="@layout/text_input_edit" android:id="@+id/edit_artist_orig" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/corrected"
+            android:textColor="@color/colorAccent"
+            android:layout_marginVertical="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+        <include layout="@layout/text_input_edit" android:id="@+id/edit_track" />
+        <include layout="@layout/text_input_edit" android:id="@+id/edit_album" />
+        <include layout="@layout/text_input_edit" android:id="@+id/edit_artist" />
+        <include layout="@layout/text_input_edit" android:id="@+id/edit_album_artist" />
+    </LinearLayout>
+</ScrollView>

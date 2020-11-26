@@ -3,6 +3,7 @@ package com.arn.scrobble.pref
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.util.JsonReader
 import android.util.JsonWriter
 import com.arn.scrobble.BuildConfig
@@ -18,26 +19,27 @@ import java.io.OutputStreamWriter
 class ImExporter {
     private var writer: OutputStreamWriter? = null
     private var reader: InputStreamReader? = null
+    private var pfd: ParcelFileDescriptor? = null
     private var context: Context? = null
 
     fun setOutputUri(context: Context, uri: Uri){
-        val pfd = context.contentResolver.openFileDescriptor(uri, "w")
+        pfd = context.contentResolver.openFileDescriptor(uri, "w")
         if (pfd == null){
             Stuff.log("pfd was null")
             return
         }
-        val fos = FileOutputStream(pfd.fileDescriptor)
+        val fos = FileOutputStream(pfd!!.fileDescriptor)
         writer = OutputStreamWriter(fos, "UTF-8")
         this.context = context
     }
 
     fun setInputUri(context: Context, uri: Uri){
-        val pfd = context.contentResolver.openFileDescriptor(uri, "r")
+        pfd = context.contentResolver.openFileDescriptor(uri, "r")
         if (pfd == null){
             Stuff.log("pfd was null")
             return
         }
-        val fis = FileInputStream(pfd.fileDescriptor)
+        val fis = FileInputStream(pfd!!.fileDescriptor)
         reader = InputStreamReader(fis, "UTF-8")
         this.context = context
     }
@@ -60,7 +62,13 @@ class ImExporter {
                     val edits = PendingScrobblesDb.getDb(context).getEditsDao().all
                     edits.forEach {
                         beginObject()
-                        name("hash").value(it.hash)
+                        if (it.legacyHash != null)
+                            name("hash").value(it.legacyHash)
+                        else {
+                            name("origTrack").value(it.origTrack)
+                            name("origAlbum").value(it.origAlbum)
+                            name("origArtist").value(it.origArtist)
+                        }
                         name("track").value(it.track)
                         name("album").value(it.album)
                         name("albumArtist").value(it.albumArtist)
@@ -129,18 +137,27 @@ class ImExporter {
                                     val editName = nextName()
                                     val editVal = nextString()
                                     when (editName) {
-                                        "hash" -> edit.hash = editVal
+                                        "hash" -> edit.legacyHash = editVal
                                         "track" -> edit.track = editVal
                                         "album" -> edit.album = editVal
                                         "albumArtist" -> edit.albumArtist = editVal
                                         "artist" -> edit.artist = editVal
+                                        "origTrack" -> edit.origTrack = editVal
+                                        "origAlbum" -> edit.origAlbum = editVal
+                                        "origArtist" -> edit.origArtist = editVal
                                         else -> return false
                                     }
-                                    if (editsMode == Stuff.EDITS_REPLACE_EXISTING || editsMode == Stuff.EDITS_REPLACE_ALL)
-                                        editsDao.insert(edit)
-                                    else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
-                                        editsDao.insertIgnore(edit)
                                 }
+                                if (edit.legacyHash != null) {
+                                    edit.origTrack = edit.legacyHash!!
+                                    edit.origAlbum = edit.legacyHash!!
+                                    edit.origArtist = edit.legacyHash!!
+                                }
+                                if (editsMode == Stuff.EDITS_REPLACE_EXISTING || editsMode == Stuff.EDITS_REPLACE_ALL)
+                                    editsDao.insert(edit)
+                                else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
+                                    editsDao.insertIgnore(edit)
+
                                 endObject()
                             }
                             endArray()
@@ -207,7 +224,12 @@ class ImExporter {
             reader?.close()
         } catch (e: Exception){
         }
+        try {
+            pfd?.close()
+        } catch (e: Exception){
+        }
         writer = null
         reader = null
+        pfd = null
     }
 }

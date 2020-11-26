@@ -46,7 +46,7 @@ public class Tag implements Comparable<Tag> {
 	 */
 	static final ItemFactory<Tag> FACTORY = new TagFactory();
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ", Locale.ENGLISH);
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.ENGLISH);
 
 	private String name;
 	private String url;
@@ -251,7 +251,9 @@ public class Tag implements Comparable<Tag> {
 			Tag t = new Tag(element.getChildText("name"));
 			t.url = element.getChildText("url");
 
-			if (element.hasChild("count"))
+            if (element.hasChild("total"))
+                t.count = Integer.parseInt(element.getChildText("total"));
+			else if (element.hasChild("count"))
 				t.count = Integer.parseInt(element.getChildText("count"));
 			else if (element.hasChild("taggings"))
 				t.count = Integer.parseInt(element.getChildText("taggings"));
@@ -264,18 +266,23 @@ public class Tag implements Comparable<Tag> {
 			// wiki
 			DomElement wiki = element.getChild("wiki");
 			if (wiki != null) {
+			    // Attempt to invoke virtual method 'int java.lang.String.length()' on a null object reference
+                // at java.text.SimpleDateFormat.parseInternal(SimpleDateFormat.java:1739)
+                /*
 				String publishedText = wiki.getChildText("published");
 				try {
 					t.wikiLastChanged = DATE_FORMAT.parse(publishedText);
-				} catch (ParseException e) {
+				} catch (Exception e) {
 					// try parsing it with current locale
 					try {
-						DateFormat clFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ", Locale.getDefault());
+//						DateFormat clFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ", Locale.getDefault());
+						DateFormat clFormat = new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault());
 						t.wikiLastChanged = clFormat.parse(publishedText);
 					} catch (ParseException e2) {
 						// cannot parse date, wrong locale. wait for last.fm to fix.
 					}
 				}
+                 */
 				t.wikiSummary = wiki.getChildText("summary");
 				t.wikiText = wiki.getChildText("content");
 			}

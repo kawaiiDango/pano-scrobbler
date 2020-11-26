@@ -347,6 +347,7 @@ class NLService : NotificationListenerService() {
                     handler.notifyBadMeta(intent.getStringExtra(B_ARTIST)!!,
                             intent.getStringExtra(B_ALBUM)!!,
                             intent.getStringExtra(B_TITLE)!!,
+                            intent.getStringExtra(B_ALBUM_ARTIST)!!,
                             intent.getLongExtra(B_TIME, System.currentTimeMillis()),
                             intent.getStringExtra(B_ERR_MSG),
                             intent.getIntExtra(B_HASH, 0)
@@ -402,17 +403,16 @@ class NLService : NotificationListenerService() {
 
         fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, position: Long, duration:Long,
                        hash:Int, forcable:Boolean, packageName: String?, lessDelay: Boolean = false) {
-            if (artist != "" && !hasMessages(hash)){
+            if (title != "" && !hasMessages(hash)){
                 val now = System.currentTimeMillis()
                 var album = Stuff.sanitizeAlbum(album)
                 var artist = Stuff.sanitizeArtist(artist)
                 var title = title
                 var albumArtist = Stuff.sanitizeAlbum(albumArtist)
-                if (artist != "") {
+                if (title != "") {
                     val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
                     try {
-                        dao.find(artist.hashCode().toString() +
-                                album.hashCode().toString() + title.hashCode().toString())
+                        dao.find(artist, album, title)
                         ?.let {
                             artist = it.artist
                             album = it.album
@@ -476,7 +476,7 @@ class NLService : NotificationListenerService() {
                     //for rating
                     AppRater.incrementScrobbleCount(applicationContext)
                 } else {
-                    notifyBadMeta(artist, album, title, now, getString(R.string.parse_error), hash)
+                    notifyBadMeta(artist, album, title, albumArtist, now, getString(R.string.parse_error), hash)
                     currentBundle = Bundle()
                 }
             }
@@ -583,11 +583,12 @@ class NLService : NotificationListenerService() {
             }
         }
 
-        fun notifyBadMeta(artist: String, album: String, title: String, timeMillis: Long, stateText: String?, hash: Int) {
+        fun notifyBadMeta(artist: String, album: String, title: String, albumArtist: String, timeMillis: Long, stateText: String?, hash: Int) {
             if (!pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
                 return
             val i = Intent(applicationContext, EditActivity::class.java)
             i.putExtra(B_ARTIST, artist)
+            i.putExtra(B_ALBUM_ARTIST, albumArtist)
             i.putExtra(B_ALBUM, album)
             i.putExtra(B_TITLE, title)
             i.putExtra(B_TIME, timeMillis)
@@ -602,7 +603,12 @@ class NLService : NotificationListenerService() {
                     .setChannelId(NOTI_ID_ERR)
                     .setSmallIcon(R.drawable.vd_noti_err)
                     .setContentIntent(editIntent)
-                    .setContentText(artist)
+                    .setContentText(
+                        if (stateText == null)
+                            artist
+                        else
+                            title
+                    )
                     .setContentTitle(
                             (stateText ?: getString(R.string.state_invalid_artist)) + " " +
                                     (if (currentBundle.getBoolean(B_FORCEABLE))

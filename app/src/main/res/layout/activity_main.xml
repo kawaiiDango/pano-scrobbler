@@ -26,6 +26,6 @@
         app:itemBackground="@drawable/selector_nav_bg"
         app:itemIconTint="@color/colorAccent"
         app:itemTextColor="@drawable/selector_nav_text"
-        app:menu="@menu/activity_main_drawer"/>
+        app:menu="@menu/nav_menu"/>
 
 </com.arn.scrobble.ui.MyDrawerLayout>

@@ -28,6 +28,7 @@ package de.umass.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -41,19 +42,10 @@ import java.util.regex.Pattern;
  */
 public final class StringUtilities {
 
-	private static MessageDigest digest;
 	private static Pattern MBID_PATTERN = Pattern
 			.compile("^[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}$",
 					Pattern.CASE_INSENSITIVE);
 	private static final Pattern MD5_PATTERN = Pattern.compile("[a-fA-F0-9]{32}");
-
-	static {
-		try {
-			digest = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			// better never happens
-		}
-	}
 
 	/**
 	 * Returns a 32 chararacter hexadecimal representation of an MD5 hash of the given String.
@@ -63,7 +55,9 @@ public final class StringUtilities {
 	 */
 	public static String md5(String s) {
 		try {
-			byte[] bytes = digest.digest(s.getBytes("UTF-8"));
+		    //MessageDigest is not thread safe AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+			byte[] bytes = digest.digest(s.getBytes(StandardCharsets.UTF_8));
 			StringBuilder b = new StringBuilder(32);
 			for (byte aByte : bytes) {
 				String hex = Integer.toHexString((int) aByte & 0xFF);
@@ -72,7 +66,7 @@ public final class StringUtilities {
 				b.append(hex);
 			}
 			return b.toString();
-		} catch (UnsupportedEncodingException e) {
+		} catch (NoSuchAlgorithmException e) {
 			// utf-8 always available
 		}
 		return null;

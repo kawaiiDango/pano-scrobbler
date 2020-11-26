@@ -40,12 +40,14 @@ public class PaginatedResult<T> implements Iterable<T> {
 
 	private int page;
 	private int totalPages;
+	private int total;
 	private String username;
 	private Collection<T> pageResults;
 
-	public PaginatedResult(int page, int totalPages, Collection<T> pageResults, String username) {
+	public PaginatedResult(int page, int totalPages, int total, Collection<T> pageResults, String username) {
 		this.page = page;
 		this.totalPages = totalPages;
+		this.total = total;
 		this.pageResults = pageResults;
 		this.username = username;
 	}
@@ -75,6 +77,10 @@ public class PaginatedResult<T> implements Iterable<T> {
 	 */
 	public int getTotalPages() {
 		return totalPages;
+	}
+
+	public int getTotal() {
+		return total;
 	}
 
 	/**

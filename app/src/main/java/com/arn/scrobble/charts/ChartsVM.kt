@@ -10,7 +10,11 @@ import de.umass.lastfm.*
 class ChartsVM(application: Application) : AndroidViewModel(application) {
     val chartsData by lazy { mutableListOf<MusicEntry>() }
     val imgMap by lazy { mutableMapOf<Int,String>() }
-    val chartsReceiver by lazy { MutableLiveData<Pair<Int,Collection<MusicEntry>>>() }
+    val chartsReceiver by lazy { MutableLiveData<PaginatedResult<MusicEntry>>() }
+    val listReceiver by lazy { MutableLiveData<List<MusicEntry>>() }
+    val periodCountReceiver by lazy { MutableLiveData<List<ChartsOverviewFragment.ScrobbleCount>>() }
+    var periodCountRequested = false
+    var periodCountHeader: String? = null
     val weeklyListReceiver by lazy { MutableLiveData<List<Chart<MusicEntry>>>() }
     private var lastChartsAsyncTask: LFMRequester.MyAsyncTask? = null
     private val infoAsyncTasks by lazy { mutableMapOf<Int, LFMRequester.MyAsyncTask>() }
@@ -19,10 +23,12 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
     var username: String? = null
     var periodIdx = 1
     var page = 1
+    var totalCount = 0
     var reachedEnd = false
+    var type = 1
 //    private var loadedCached = false
 
-    fun loadCharts(type: Int, page: Int){
+    fun loadCharts(page: Int){
         if (periodIdx == 0)
             return
         this.page = page
@@ -37,12 +43,18 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
         LFMRequester(getApplication()).getWeeklyChartsList(username, scrobblingSince).asAsyncTask(weeklyListReceiver)
     }
 
-    fun loadWeeklyCharts(type: Int) {
+    fun loadWeeklyCharts() {
         page = 1
         reachedEnd = true
         lastChartsAsyncTask?.cancel(true)
         lastChartsAsyncTask = LFMRequester(getApplication()).getWeeklyCharts(type, weeklyChart!!.from.time/1000, weeklyChart!!.to.time/1000, username)
                 .asAsyncTask(chartsReceiver)
+    }
+
+    fun loadScrobbleCounts(periods: List<ChartsOverviewFragment.ScrobbleCount>) {
+        lastChartsAsyncTask?.cancel(true)
+        lastChartsAsyncTask = LFMRequester(getApplication()).getScrobbleCounts(periods, username)
+                .asAsyncTask(periodCountReceiver)
     }
 
     fun loadTrackInfo(track: Track, pos: Int) {

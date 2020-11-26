@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/chips_charts_period" />
+    <include android:id="@+id/chips_charts_period" layout="@layout/chips_charts_period" />
 
     <ScrollView
         android:id="@+id/charts_overview_scrollview"

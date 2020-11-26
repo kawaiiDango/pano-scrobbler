@@ -11,40 +11,40 @@ import android.view.LayoutInflater
 import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
+import com.arn.scrobble.databinding.DialogFixItBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.dialog_fix_it.view.*
 
 
 class FixItFragment: BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.dialog_fix_it, container, false)
+        val binding = DialogFixItBinding.inflate(inflater, container, false)
 
-        view.fix_it_startup_action.setOnClickListener {
+        binding.fixItStartupAction.setOnClickListener {
             val startupMgrIntent = Stuff.getStartupIntent(context!!)
             FirstThingsFragment.openStartupMgr(startupMgrIntent, context!!)
         }
-        addTouchDelegate(view.fix_it_startup_action, 24, 10)
+        addTouchDelegate(binding.fixItStartupAction, 24, 10)
         if (!Main.isTV) {
-            view.fix_it_nls.visibility = View.VISIBLE
-            view.fix_it_nls_action.setOnClickListener {
+            binding.fixItNls.visibility = View.VISIBLE
+            binding.fixItNlsAction.setOnClickListener {
                 startActivity(Intent(Stuff.NLS_SETTINGS))
             }
-            addTouchDelegate(view.fix_it_nls_action, 24, 10)
+            addTouchDelegate(binding.fixItNlsAction, 24, 10)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val batteryIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
             if (activity!!.packageManager.queryIntentActivities(batteryIntent,
                             PackageManager.MATCH_DEFAULT_ONLY).isNotEmpty()) {
-                view.fix_it_battery.visibility = View.VISIBLE
-                view.fix_it_battery_action.setOnClickListener {
+                binding.fixItBattery.visibility = View.VISIBLE
+                binding.fixItBatteryAction.setOnClickListener {
                     startActivity(batteryIntent)
                 }
             }
-            addTouchDelegate(view.fix_it_battery_action, 24, 10)
+            addTouchDelegate(binding.fixItBatteryAction, 24, 10)
         }
-        return view
+        return binding.root
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

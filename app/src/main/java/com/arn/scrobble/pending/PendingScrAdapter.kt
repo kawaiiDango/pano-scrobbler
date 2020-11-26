@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
+import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.pending.db.PendingLove
 import com.arn.scrobble.pending.db.PendingScrobble
 import com.arn.scrobble.ui.ItemClickListener
@@ -25,9 +26,9 @@ class PendingScrAdapter(private val itemClickListener: ItemClickListener) : Recy
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_PENDING_SCROBBLE ->
-                VHPendingScrobble(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener)
+                VHPendingScrobble(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener)
             TYPE_PENDING_LOVE ->
-                VHPendingLove(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener)
+                VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener)
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }

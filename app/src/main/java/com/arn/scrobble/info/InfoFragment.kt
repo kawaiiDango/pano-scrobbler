@@ -14,17 +14,17 @@ import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.VMFactory
+import com.arn.scrobble.databinding.ContentInfoBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
-import kotlinx.android.synthetic.main.content_info.*
 
 
 class InfoFragment: BottomSheetDialogFragment() {
 
-    val viewModel by lazy { VMFactory.getVM(this, InfoVM::class.java) }
+    private val viewModel by lazy { VMFactory.getVM(this, InfoVM::class.java) }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -37,11 +37,7 @@ class InfoFragment: BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.content_info, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        val binding = ContentInfoBinding.inflate(inflater, container, false)
 
         val artist = arguments!!.getString(NLService.B_ARTIST)!!
         val album = arguments!!.getString(NLService.B_ALBUM)
@@ -49,13 +45,13 @@ class InfoFragment: BottomSheetDialogFragment() {
         val username = arguments!!.getString(Stuff.ARG_USERNAME)
 
         val adapter = InfoAdapter(viewModel, this, username)
-        info_list.layoutManager = LinearLayoutManager(context!!)
-        (info_list.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        binding.infoList.layoutManager = LinearLayoutManager(context!!)
+        (binding.infoList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
 
         val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
         itemDecor.setDrawable(ColorDrawable(ContextCompat.getColor(context!!, R.color.lightInfoDivider)))
-        info_list.addItemDecoration(itemDecor)
-        info_list.adapter = adapter
+        binding.infoList.addItemDecoration(itemDecor)
+        binding.infoList.adapter = adapter
         adapter.notifyDataSetChanged()
         if (viewModel.loadedTypes.isEmpty()) {
             if (!track.isNullOrEmpty())
@@ -96,6 +92,7 @@ class InfoFragment: BottomSheetDialogFragment() {
                 viewModel.receiver.value = null
             }
         }
+        return binding.root
     }
 
     override fun onStart() {

@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply from: 'keys.gradle'
 
@@ -41,6 +40,9 @@ android {
                 arg("room.incremental", "true")
             }
         }
+    }
+    buildFeatures {
+        viewBinding true
     }
     buildTypes {
         release {

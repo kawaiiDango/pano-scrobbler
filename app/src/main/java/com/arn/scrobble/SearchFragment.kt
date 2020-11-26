@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.charts.ChartsVM
+import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.ItemClickListener
@@ -16,27 +17,34 @@ import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
-import kotlinx.android.synthetic.main.content_search.*
-import kotlinx.android.synthetic.main.content_search.search_term
 
 
 class SearchFragment: Fragment() {
     private val pref by lazy { MultiPreferences(context!!) }
     private val viewModel by lazy { VMFactory.getVM(this, SearchVM::class.java) }
     private val chartsVM by lazy { VMFactory.getVM(this, ChartsVM::class.java) }
+    private var _binding: ContentSearchBinding? = null
+    private val binding
+        get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.content_search, container, false)
+        _binding = ContentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        search_term.editText?.requestFocus()
-        search_term.postDelayed({
-            imm?.showSoftInput(search_term.editText, 0)
+        binding.searchTerm.editText!!.requestFocus()
+        binding.searchTerm.postDelayed({
+            imm?.showSoftInput(binding.searchTerm.editText, 0)
         }, 100)
-        search_term.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
+        binding.searchTerm.editText!!.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 loadSearches(textView.text.toString())
                 imm?.hideSoftInputFromWindow(view.windowToken, 0)
@@ -46,31 +54,31 @@ class SearchFragment: Fragment() {
                 false
         }
 
-        search_term.editText?.setOnClickListener {
-            search_results_list.visibility = View.GONE
-            search_history_list.visibility = View.VISIBLE
+        binding.searchTerm.editText!!.setOnClickListener {
+            binding.searchResultsList.visibility = View.GONE
+            binding.searchHistoryList.visibility = View.VISIBLE
         }
 
         loadHistory()
 
-        val historyAdapter = SearchHistoryAdapter(view)
+        val historyAdapter = SearchHistoryAdapter(binding)
         historyAdapter.viewModel = viewModel
         val historyItemClickListener = object : ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
-                search_term.clearFocus()
+                binding.searchTerm.clearFocus()
                 imm?.hideSoftInputFromWindow(view.windowToken, 0)
                 val term = viewModel.history[viewModel.history.size - position - 1]
-                search_term.editText?.setText(term)
-                search_term.editText?.setSelection(search_term.editText!!.text.toString().length)
+                binding.searchTerm.editText?.setText(term)
+                binding.searchTerm.editText?.setSelection(binding.searchTerm.editText!!.text.toString().length)
                 loadSearches(term)
             }
         }
         historyAdapter.clickListener = historyItemClickListener
-        search_history_list.adapter = historyAdapter
-        search_history_list.layoutManager = LinearLayoutManager(context)
+        binding.searchHistoryList.adapter = historyAdapter
+        binding.searchHistoryList.layoutManager = LinearLayoutManager(context)
         historyAdapter.populate()
 
-        val resultsAdapter = SearchResultsAdapter(view)
+        val resultsAdapter = SearchResultsAdapter(binding)
         resultsAdapter.chartsVM = chartsVM
         val resultsItemClickListener = object : ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
@@ -112,20 +120,20 @@ class SearchFragment: Fragment() {
         }
 
         val touchListener = View.OnTouchListener { p0, p1 ->
-            if (search_term.editText!!.isFocused) {
-                search_term.clearFocus()
+            if (binding.searchTerm.editText!!.isFocused) {
+                binding.searchTerm.clearFocus()
                 imm?.hideSoftInputFromWindow(view.windowToken, 0)
             }
             false
         }
 
-        search_results_list.setOnTouchListener(touchListener)
-        search_history_list.setOnTouchListener(touchListener)
+        binding.searchResultsList.setOnTouchListener(touchListener)
+        binding.searchHistoryList.setOnTouchListener(touchListener)
 
         resultsAdapter.clickListener = resultsItemClickListener
-        search_results_list.adapter = resultsAdapter
-        search_results_list.layoutManager = LinearLayoutManager(context)
-        (search_results_list.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
+        binding.searchResultsList.adapter = resultsAdapter
+        binding.searchResultsList.layoutManager = LinearLayoutManager(context)
+        (binding.searchResultsList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
 
         viewModel.searchResults.observe(viewLifecycleOwner) {
             it ?: return@observe
@@ -161,9 +169,9 @@ class SearchFragment: Fragment() {
     }
 
     private fun loadSearches(term: String) {
-        search_history_list.visibility = View.GONE
-        search_results_list.visibility = View.GONE
-        search_progress.visibility = View.VISIBLE
+        binding.searchHistoryList.visibility = View.GONE
+        binding.searchResultsList.visibility = View.GONE
+        binding.searchProgress.visibility = View.VISIBLE
         viewModel.loadSearches(term)
         chartsVM.imgMap.clear()
     }

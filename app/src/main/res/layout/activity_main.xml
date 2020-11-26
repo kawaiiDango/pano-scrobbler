@@ -11,6 +11,7 @@
     tools:openDrawer="start">
 
     <include
+        android:id="@+id/coordinator_main"
         layout="@layout/coordinator_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -22,7 +23,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         android:maxWidth="280dp"
-        app:headerLayout="@layout/header_nav"
         app:itemBackground="@drawable/selector_nav_bg"
         app:itemIconTint="@color/colorAccent"
         app:itemTextColor="@drawable/selector_nav_text"

@@ -31,7 +31,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -39,11 +38,8 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.arn.scrobble.RecentsFragment.Companion.lastColorMutedBlack
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.arn.scrobble.ui.StatefulAppBar
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import de.umass.lastfm.Caller
 import de.umass.lastfm.cache.FileSystemCache
-import kotlinx.android.synthetic.main.coordinator_main.*
-import kotlinx.android.synthetic.main.coordinator_main.view.*
 import java.io.IOException
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -393,16 +389,17 @@ object Stuff {
     }
 
     fun setTitle(activity: Activity?, str: String?) {
-        activity!!
-        val ctl = activity.findViewById<CollapsingToolbarLayout>(R.id.ctl) ?: return
+        activity as Main
+        if (activity.isDestroyed || activity.isFinishing)
+            return
         if (str == null) { // = clear title
-            ctl.findViewById<Toolbar>(R.id.toolbar).title = null
+            activity.binding.coordinatorMain.toolbar.title = null
             activity.window.navigationBarColor = lastColorMutedBlack
         } else {
-            ctl.findViewById<Toolbar>(R.id.toolbar).title = str
-            activity.app_bar.setExpanded(false, true)
-            ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.darkToolbar))
-            ctl.setCollapsedTitleTextColor(Color.WHITE)
+            activity.binding.coordinatorMain.toolbar.title = str
+            activity.binding.coordinatorMain.appBar.setExpanded(false, true)
+            activity.binding.coordinatorMain.ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.darkToolbar))
+            activity.binding.coordinatorMain.ctl.setCollapsedTitleTextColor(Color.WHITE)
 
             val navbarBgAnimator = ValueAnimator.ofArgb(activity.window.navigationBarColor, 0)
             navbarBgAnimator.duration *= 2
@@ -411,8 +408,8 @@ object Stuff {
             }
             navbarBgAnimator.start()
         }
-        for (i in 0..ctl.toolbar.childCount) {
-            val child = ctl.toolbar.getChildAt(i)
+        for (i in 0..activity.binding.coordinatorMain.toolbar.childCount) {
+            val child = activity.binding.coordinatorMain.toolbar.getChildAt(i)
             if (child is ImageButton) {
                 (child.drawable as ShadowDrawerArrowDrawable).
                 setColors(ContextCompat.getColor(activity, R.color.colorAccent), Color.TRANSPARENT)
@@ -423,6 +420,7 @@ object Stuff {
     }
 
     fun setAppBarHeight(activity: Activity, additionalHeight: Int = 0) {
+        activity as Main
         val sHeightPx: Int
         val dm = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(dm)
@@ -430,7 +428,7 @@ object Stuff {
 
         val abHeightPx = activity.resources.getDimension(R.dimen.app_bar_height)
         val targetAbHeight: Int
-        val lp = activity.app_bar.layoutParams
+        val lp = activity.binding.coordinatorMain.appBar.layoutParams
         val margin = dp2px(65, activity)
 
         targetAbHeight = if (sHeightPx < abHeightPx + additionalHeight + margin)
@@ -440,7 +438,7 @@ object Stuff {
         if (targetAbHeight != lp.height) {
             activity.findViewById<StatefulAppBar>(R.id.app_bar).isCollapsed
             activity.findViewById<StatefulAppBar>(R.id.app_bar).isExpanded
-            if (!activity.app_bar.isExpanded) {
+            if (!activity.binding.coordinatorMain.appBar.isExpanded) {
                 lp.height = targetAbHeight
 //                activity.app_bar.setExpanded(false, false)
             } else {
@@ -448,7 +446,7 @@ object Stuff {
                 val anim = ValueAnimator.ofInt(start, targetAbHeight)
                 anim.addUpdateListener { valueAnimator ->
                     lp.height = valueAnimator.animatedValue as Int
-                    activity.app_bar.layoutParams = lp
+                    activity.binding.coordinatorMain.appBar.layoutParams = lp
                 }
                 anim.interpolator = DecelerateInterpolator()
                 anim.duration = 300

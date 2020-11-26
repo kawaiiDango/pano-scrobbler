@@ -9,8 +9,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.databinding.PrefAppIconsBinding
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.pref_app_icons.view.*
 
 
 /**
@@ -43,11 +43,11 @@ class AppIconsPref : Preference {
         super.onBindViewHolder(holder)
 
         holder.isDividerAllowedAbove = false
-        val v = holder.itemView
+        val binding = PrefAppIconsBinding.bind(holder.itemView)
         val packageNames = preferenceDataStore!!.getStringSet(key, setOf())!!
 
         if (packageNames.isNotEmpty()) {
-            v.app_icons_container.removeAllViews()
+            binding.appIconsContainer.removeAllViews()
 
             val scrW = context.resources.displayMetrics.widthPixels
 
@@ -60,19 +60,19 @@ class AppIconsPref : Preference {
                 picasso.load(uri)
                         .resize(wPx, wPx)
                         .into(icon)
-                v.app_icons_container.addView(icon)
+                binding.appIconsContainer.addView(icon)
             }
 
             if (packageNames.size > nIcons) {
-                v.app_list_summary.visibility = View.VISIBLE
-                v.app_list_summary.text = context.getString(R.string.n_more, packageNames.size - nIcons)
+                binding.appListSummary.visibility = View.VISIBLE
+                binding.appListSummary.text = context.getString(R.string.n_more, packageNames.size - nIcons)
             } else
-                v.app_list_summary.visibility = View.GONE
+                binding.appListSummary.visibility = View.GONE
         } else {
-            v.app_list_summary.visibility = View.VISIBLE
-            v.app_list_summary.text = context.getString(R.string.no_apps_enabled)
+            binding.appListSummary.visibility = View.VISIBLE
+            binding.appListSummary.text = context.getString(R.string.no_apps_enabled)
         }
         if (isIconSpaceReserved)
-            v.setPaddingRelative(Stuff.dp2px(48, context), 0, 0, 0)
+            binding.root.setPaddingRelative(Stuff.dp2px(48, context), 0, 0, 0)
     }
 }

@@ -22,8 +22,6 @@ import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
-import kotlinx.android.synthetic.main.content_login.*
-import kotlinx.android.synthetic.main.content_login.view.*
 import java.util.*
 
 class EditFragment: LoginFragment() {
@@ -41,56 +39,56 @@ class EditFragment: LoginFragment() {
             standalone = true
 
         if (arguments?.getBoolean(NLService.B_FORCEABLE) == true) {
-            view.login_force.visibility = View.VISIBLE
-            view.login_force.setOnCheckedChangeListener { compoundButton, checked ->
+            binding.loginForce.visibility = View.VISIBLE
+            binding.loginForce.setOnCheckedChangeListener { compoundButton, checked ->
                 if (checked)
-                    login_submit.setText(R.string.force)
+                    binding.loginSubmit.setText(R.string.force)
                 else
-                    login_submit.setText(R.string.menu_edit)
+                    binding.loginSubmit.setText(R.string.menu_edit)
             }
         }
 
         arguments?.getString(NLService.B_TITLE)?.let {
-            view.login_textfield1.editText!!.setText(it)
-            view.login_textfield1.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            binding.loginTextfield1.editText!!.setText(it)
+            binding.loginTextfield1.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
         }
         arguments?.getString(NLService.B_ALBUM)?.let {
-            view.login_textfield2.editText!!.setText(it)
-            view.login_textfield2.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            binding.loginTextfield2.editText!!.setText(it)
+            binding.loginTextfield2.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
         }
         arguments?.getString(NLService.B_ARTIST)?.let {
-            view.login_textfield_last.editText!!.setText(it)
-            view.login_textfield_last.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            binding.loginTextfieldLast.editText!!.setText(it)
+            binding.loginTextfieldLast.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
         }
         arguments?.getString(NLService.B_ALBUM_ARTIST)?.let {
-            view.login_textfield_last2.editText!!.setText(it)
+            binding.loginTextfieldLast2.editText!!.setText(it)
         }
 
-        view.edit_swap.visibility = View.VISIBLE
-        view.edit_swap.setOnClickListener {
-            val tmp = view.login_textfield1.editText?.text
-            view.login_textfield1.editText!!.text = view.login_textfield_last.editText!!.text
-            view.login_textfield_last.editText!!.text = tmp
+        binding.editSwap.visibility = View.VISIBLE
+        binding.editSwap.setOnClickListener {
+            val tmp = binding.loginTextfield1.editText?.text
+            binding.loginTextfield1.editText!!.text = binding.loginTextfieldLast.editText!!.text
+            binding.loginTextfieldLast.editText!!.text = tmp
         }
 
-        view.edit_album_artist.visibility = View.VISIBLE
-        view.edit_album_artist.setOnClickListener {
+        binding.editAlbumArtist.visibility = View.VISIBLE
+        binding.editAlbumArtist.setOnClickListener {
             it.visibility = View.GONE
-            view.login_textfield_last2.hint = getString(R.string.album_artist)
-            view.login_textfield_last2.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
-            view.login_textfield_last.editText!!.imeOptions = EditorInfo.IME_NULL
-            view.login_textfield_last2.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
+            binding.loginTextfieldLast2.hint = getString(R.string.album_artist)
+            binding.loginTextfieldLast2.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            binding.loginTextfieldLast.editText!!.imeOptions = EditorInfo.IME_NULL
+            binding.loginTextfieldLast2.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
                         (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)) {
-                    view.login_submit.callOnClick()
+                    binding.loginSubmit.callOnClick()
                     true
                 } else
                     false
             }
-            view.login_textfield_last2.visibility = View.VISIBLE
-            view.login_textfield_last2.requestFocus()
+            binding.loginTextfieldLast2.visibility = View.VISIBLE
+            binding.loginTextfieldLast2.requestFocus()
         }
-        view.login_submit.text = getString(R.string.menu_edit)
+        binding.loginSubmit.text = getString(R.string.menu_edit)
         return view
     }
 
@@ -103,12 +101,12 @@ class EditFragment: LoginFragment() {
 
     override fun validateAsync(): String? {
         val args = arguments ?: return null
-        val track = login_textfield1.editText!!.text.toString()
+        val track = binding.loginTextfield1.editText!!.text.toString()
         val origTrack = args.getString(NLService.B_TITLE) ?: ""
-        var album = login_textfield2.editText!!.text.toString()
-        var albumArtist = login_textfield_last2.editText!!.text.toString()
+        var album = binding.loginTextfield1.editText!!.text.toString()
+        var albumArtist = binding.loginTextfieldLast2.editText!!.text.toString()
         val origAlbum = args.getString(NLService.B_ALBUM) ?: ""
-        val artist = login_textfield_last.editText!!.text.toString()
+        val artist = binding.loginTextfieldLast.editText!!.text.toString()
         val origArtist = args.getString(NLService.B_ARTIST) ?: ""
         val timeMillis = args.getLong(NLService.B_TIME, System.currentTimeMillis())
         var errMsg: String? = null
@@ -146,7 +144,7 @@ class EditFragment: LoginFragment() {
 
             Stuff.initCaller(context!!)
 
-            if (!login_force.isChecked) {
+            if (!binding.loginForce.isChecked) {
                 if (album.isBlank() && origAlbum.isBlank())
                     validTrack =
                             try {
@@ -162,15 +160,15 @@ class EditFragment: LoginFragment() {
                 } else {
                     if (album.isBlank() && validTrack.album != null) {
                         album = validTrack.album
-                        activity!!.runOnUiThread { login_textfield2.editText!!.setText(validTrack.album) }
+                        activity!!.runOnUiThread { binding.loginTextfield2.editText!!.setText(validTrack.album) }
                     }
                     if (albumArtist.isBlank() && validTrack.albumArtist != null) {
                         albumArtist = validTrack.albumArtist
-                        activity!!.runOnUiThread { login_textfield_last2.editText!!.setText(validTrack.albumArtist) }
+                        activity!!.runOnUiThread { binding.loginTextfieldLast2.editText!!.setText(validTrack.albumArtist) }
                     }
                 }
             }
-            if (validTrack == null && (validArtist == null || validAlbumArtist == null) && !login_force.isChecked) {
+            if (validTrack == null && (validArtist == null || validAlbumArtist == null) && !binding.loginForce.isChecked) {
                 errMsg = getString(R.string.state_invalid_artist)
             } else {
                 val lastfmSessKey: String? = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
@@ -234,7 +232,7 @@ class EditFragment: LoginFragment() {
                         }
                     }
                     saveEdit(context!!)
-                    if (login_force.isChecked){
+                    if (binding.loginForce.isChecked){
                         val oldSet = pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, setOf())
                         pref.putStringSet(Stuff.PREF_ALLOWED_ARTISTS, oldSet + artist)
                     }

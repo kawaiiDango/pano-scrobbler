@@ -15,12 +15,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import com.arn.scrobble.databinding.ContentFirstThingsBinding
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_first_things.*
-import kotlinx.android.synthetic.main.content_first_things.view.*
-import kotlinx.android.synthetic.main.coordinator_main.*
 import java.text.NumberFormat
 
 
@@ -32,9 +29,13 @@ class FirstThingsFragment: Fragment() {
     private lateinit var pref: MultiPreferences
     private var startupMgrIntent:Intent? = null
     private var isOnTop = false
+    private var _binding: ContentFirstThingsBinding? = null
+    private val binding
+        get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.content_first_things, container, false)
+        _binding = ContentFirstThingsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,25 +44,25 @@ class FirstThingsFragment: Fragment() {
         startupMgrIntent = Stuff.getStartupIntent(context!!)
 
         if (startupMgrIntent != null) {
-            first_things_0.setOnClickListener {
+            binding.firstThings0.setOnClickListener {
                 openStartupMgr(startupMgrIntent!!, context!!)
                 Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
             }
-            first_things_0.first_things_0_desc.text =
+            binding.firstThings0Desc.text =
                     getString(R.string.grant_autostart_desc, Build.MANUFACTURER)
-            first_things_0.visibility = View.VISIBLE
+            binding.firstThings0.visibility = View.VISIBLE
         }
         try {
             if (Build.VERSION.SDK_INT >= 30)
                 context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
             else
                 context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
-            first_things_1_desc.text = getString(R.string.grant_notification_access_desc, getString(R.string.except_pixel_np))
+            binding.firstThings1Desc.text = getString(R.string.grant_notification_access_desc, getString(R.string.except_pixel_np))
         } catch (e: PackageManager.NameNotFoundException) {
-            first_things_1_desc.text = getString(R.string.grant_notification_access_desc, "")
+            binding.firstThings1Desc.text = getString(R.string.grant_notification_access_desc, "")
         }
 
-        first_things_1.setOnClickListener {
+        binding.firstThings1.setOnClickListener {
             val intent = if (Main.isTV && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 Intent().setComponent(ComponentName("com.android.tv.settings","com.android.tv.settings.device.apps.AppsActivity"))
             else
@@ -85,7 +86,7 @@ class FirstThingsFragment: Fragment() {
             }
 
         }
-        first_things_2.setOnClickListener {
+        binding.firstThings2.setOnClickListener {
             val wf = WebViewFragment()
             val b = Bundle()
             b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
@@ -98,7 +99,7 @@ class FirstThingsFragment: Fragment() {
                     .commit()
 //            Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, activity)
         }
-        first_things_3.setOnClickListener {
+        binding.firstThings3.setOnClickListener {
             parentFragmentManager.beginTransaction()
                     .hide(this)
                     .add(R.id.frame, AppListFragment())
@@ -107,13 +108,13 @@ class FirstThingsFragment: Fragment() {
         }
 
         if (arguments?.getBoolean(Stuff.ARG_NOPASS) == true) {
-            testing_pass.visibility = View.GONE
-            first_things_2.visibility = View.GONE
+            binding.testingPass.visibility = View.GONE
+            binding.firstThings2.visibility = View.GONE
         } else {
             if (Main.isTV)
-                testing_pass.isFocusable = false
-            testing_pass.showSoftInputOnFocus = false
-            testing_pass.addTextChangedListener(object : TextWatcher {
+                binding.testingPass.isFocusable = false
+            binding.testingPass.showSoftInputOnFocus = false
+            binding.testingPass.addTextChangedListener(object : TextWatcher {
 
                 override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
                 }
@@ -135,7 +136,7 @@ class FirstThingsFragment: Fragment() {
 
             })
 
-            testing_pass.setOnTouchListener { v, event ->
+            binding.testingPass.setOnTouchListener { v, event ->
                 if (v != null) {
                     if (Main.isTV)
                         v.isFocusable = true
@@ -146,31 +147,31 @@ class FirstThingsFragment: Fragment() {
             }
         }
         if (startupMgrIntent != null)
-            putNumbers(first_things_0, first_things_1, first_things_2, first_things_3)
+            putNumbers(binding.firstThings0, binding.firstThings1, binding.firstThings2, binding.firstThings3)
         else
-            putNumbers(first_things_1, first_things_2, first_things_3)
+            putNumbers(binding.firstThings1, binding.firstThings2, binding.firstThings3)
     }
 
     private fun checkAll(skipChecks:Boolean = false){
         val activity = activity ?: return
         stepsNeeded = 4
         if (checkNLAccess(activity)) {
-            markAsDone(first_things_1)
+            markAsDone(binding.firstThings1)
             if(startupMgrIntent != null && KeepNLSAliveJob.ensureServiceRunning(activity))
                 // needed for cases when a miui user enables autostart AFTER granting NLS permission
-                markAsDone(first_things_0)
+                markAsDone(binding.firstThings0)
             else
                 stepsNeeded --
         }
         if (checkAuthTokenExists(pref))
-            markAsDone(first_things_2)
+            markAsDone(binding.firstThings2)
         if (checkAppListExists(pref))
-            markAsDone(first_things_3)
+            markAsDone(binding.firstThings3)
 
         if(stepsNeeded == 0 || skipChecks) {
             (activity as Main).showHomePager()
             if (activity.coordinatorPadding == 0)
-                activity.drawer_layout.openDrawer(GravityCompat.START)
+                activity.binding.drawerLayout.openDrawer(GravityCompat.START)
         }
     }
 
@@ -185,8 +186,9 @@ class FirstThingsFragment: Fragment() {
 
         if (arguments?.getBoolean(Stuff.ARG_NOPASS) != true)
         //prevent keyboard from showing up on start
-            testing_pass.postDelayed({
-                testing_pass?.visibility = View.VISIBLE
+            binding.testingPass.postDelayed({
+                _binding ?: return@postDelayed
+                binding.testingPass.visibility = View.VISIBLE
             }, 200)
     }
 
@@ -205,13 +207,14 @@ class FirstThingsFragment: Fragment() {
         super.onHiddenChanged(hidden)
         if (!hidden) {
             checkAll()
-            activity?.toolbar?.title = getString(R.string.first_things)
+            (activity as Main?)?.binding?.coordinatorMain?.toolbar?.title = getString(R.string.first_things)
         }
     }
 
     override fun onDestroyView() {
         activity!!.unregisterReceiver(receiver)
         (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        _binding = null
         super.onDestroyView()
     }
 

@@ -37,6 +37,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.ViewPager
+import com.arn.scrobble.databinding.ActivityMainBinding
+import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
@@ -48,10 +50,6 @@ import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.coordinator_main.*
-import kotlinx.android.synthetic.main.coordinator_main.view.*
-import kotlinx.android.synthetic.main.header_nav.*
 import org.codechimp.apprater.AppRater
 import java.io.File
 import java.text.NumberFormat
@@ -67,45 +65,50 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     var coordinatorPadding = 0
     private var drawerInited = false
     var pendingSubmitAttempted = false
+    lateinit var binding: ActivityMainBinding
+    private lateinit var navHeaderbinding: HeaderNavBinding
     private lateinit var connectivityCb: ConnectivityManager.NetworkCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Stuff.timeIt("onCreate start")
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        navHeaderbinding = HeaderNavBinding.inflate(layoutInflater, binding.navView, false)
+        binding.navView.addHeaderView(navHeaderbinding.root)
+        setContentView(binding.root)
         Stuff.timeIt("onCreate setContentView")
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.coordinatorMain.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         pref = MultiPreferences(applicationContext)
         actPref = getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-        coordinatorPadding = coordinator.paddingStart
+        coordinatorPadding = binding.coordinatorMain.coordinator.paddingStart
         isTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
 
-        app_bar.onStateChangeListener = { state ->
+        binding.coordinatorMain.appBar.onStateChangeListener = { state ->
 
             when (state) {
                 StatefulAppBar.EXPANDED -> {
-                    toolbar.title = null
-                    tab_bar.visibility = View.GONE
+                    binding.coordinatorMain.toolbar.title = null
+                    binding.coordinatorMain.tabBar.visibility = View.GONE
                 }
                 StatefulAppBar.IDLE -> {
-                    tab_bar.visibility = View.GONE
+                    binding.coordinatorMain.tabBar.visibility = View.GONE
                 }
                 StatefulAppBar.COLLAPSED -> {
                     if (supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.isVisible == true ||
                     supportFragmentManager.findFragmentByTag(Stuff.TAG_CHART_PAGER)?.isVisible == true) {
-                        tab_bar.visibility = View.VISIBLE
+                        binding.coordinatorMain.tabBar.visibility = View.VISIBLE
                     } else {
-                        tab_bar.visibility = View.GONE
+                        binding.coordinatorMain.tabBar.visibility = View.GONE
                     }
                 }
             }
         }
 
         toggle = object: ActionBarDrawerToggle(
-                this, drawer_layout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+                this, binding.drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             override fun onDrawerOpened(drawerView: View) {
                 this@Main.onDrawerOpened()
             }
@@ -113,22 +116,22 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         toggle.drawerArrowDrawable = ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
 
         if (isTV) {
-            hero_calendar.visibility = View.INVISIBLE
-            hero_share.visibility = View.INVISIBLE
-            hero_info.visibility = View.INVISIBLE
-            hero_play.visibility = View.INVISIBLE
+            binding.coordinatorMain.heroCalendar.visibility = View.INVISIBLE
+            binding.coordinatorMain.heroShare.visibility = View.INVISIBLE
+            binding.coordinatorMain.heroInfo.visibility = View.INVISIBLE
+            binding.coordinatorMain.heroPlay.visibility = View.INVISIBLE
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                for (i in 0..ctl.toolbar.childCount) {
-                    val child = ctl.toolbar.getChildAt(i)
+                for (i in 0..binding.coordinatorMain.toolbar.childCount) {
+                    val child = binding.coordinatorMain.toolbar.getChildAt(i)
                     if (child is ImageButton) {
                         child.setFocusable(false)
                         break
                     }
                 }
         }
-        drawer_layout.addDrawerListener(toggle)
-        nav_view.setNavigationItemSelectedListener(this)
+        binding.drawerLayout.addDrawerListener(toggle)
+        binding.navView.setNavigationItemSelectedListener(this)
 
         val hidePassBox =
             if (intent.data?.isHierarchical == true && intent.data?.path == "/testFirstThings"){
@@ -165,7 +168,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                             .commit()
                 else {
                     if (coordinatorPadding > 0)
-                        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
+                        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
                     showHomePager()
 
                     val handler = Handler(mainLooper)
@@ -180,7 +183,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 showFirstThings(hidePassBox)
             }
         } else {
-            tab_bar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
+            binding.coordinatorMain.tabBar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
             if (supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.isAdded == true &&
                     supportFragmentManager.backStackEntryCount == 0)
                 openLockDrawer()
@@ -205,16 +208,16 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         supportFragmentManager.beginTransaction()
                 .replace(R.id.frame, f, Stuff.TAG_FIRST_THINGS)
                 .commit()
-        app_bar.setExpanded(false, true)
+        binding.coordinatorMain.appBar.setExpanded(false, true)
         closeLockDrawer()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         toggle.syncState()
-        val lockMode = drawer_layout.getDrawerLockMode(GravityCompat.START)
+        val lockMode = binding.drawerLayout.getDrawerLockMode(GravityCompat.START)
         backArrowShown = lockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-        toggle.onDrawerSlide(drawer_layout, if (backArrowShown) 1f else 0f)
+        toggle.onDrawerSlide(binding.drawerLayout, if (backArrowShown) 1f else 0f)
 
         Stuff.timeIt("onPostCreate")
     }
@@ -302,19 +305,19 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun onDrawerOpened(forceUpdate: Boolean = false){
-        if (drawer_layout?.isDrawerVisible(GravityCompat.START) != true || (!forceUpdate &&
+        if (!binding.drawerLayout.isDrawerVisible(GravityCompat.START) || (!forceUpdate &&
                         System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL))
             return
 
         val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
-        nav_name.text = if (BuildConfig.DEBUG) "nobody" else username
+        navHeaderbinding.navName.text = if (BuildConfig.DEBUG) "nobody" else username
         val numToday = actPref.getInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, 0)
         val numTotal = actPref.getInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, 0)
         val nf = NumberFormat.getInstance()
-        nav_num_scrobbles.text = getString(R.string.num_scrobbles_nav,
+        navHeaderbinding.navNumScrobbles.text = getString(R.string.num_scrobbles_nav,
                 nf.format(numTotal), nf.format(numToday))
 
-        nav_profile_link.setOnClickListener { v:View ->
+        navHeaderbinding.navProfileLink.setOnClickListener { v:View ->
             Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
         }
         val picUrl = actPref.getString(Stuff.PREF_ACTIVITY_PROFILE_PIC,"")
@@ -323,7 +326,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     .load(picUrl)
                     .noPlaceholder()
                     .error(R.drawable.vd_wave)
-                    .into(nav_profile_pic)
+                    .into(navHeaderbinding.navProfilePic)
         if (!forceUpdate)
             LFMRequester(applicationContext).getDrawerInfo().asAsyncTask()
         lastDrawerOpenTime = System.currentTimeMillis()
@@ -331,24 +334,24 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         if (coordinatorPadding == 0)
-            drawer_layout.closeDrawer(GravityCompat.START)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
 
         when (item.itemId) {
             R.id.nav_last_week -> {
                 val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
-                Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, frame, 10, 200)
+                Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, binding.coordinatorMain.frame, 10, 200)
             }
             R.id.nav_recents -> {
-                tab_bar.getTabAt(0)?.select()
+                binding.coordinatorMain.tabBar.getTabAt(0)?.select()
             }
             R.id.nav_loved -> {
-                tab_bar.getTabAt(1)?.select()
+                binding.coordinatorMain.tabBar.getTabAt(1)?.select()
             }
             R.id.nav_friends -> {
-                tab_bar.getTabAt(2)?.select()
+                binding.coordinatorMain.tabBar.getTabAt(2)?.select()
             }
             R.id.nav_charts -> {
-                tab_bar.getTabAt(3)?.select()
+                binding.coordinatorMain.tabBar.getTabAt(3)?.select()
             }
             R.id.nav_random -> {
                 enableGestures()
@@ -391,7 +394,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onBackStackChanged() {
-        if (app_bar != null) {
+//        if (app_bar != null) {
             val animate = true
             if (supportFragmentManager.backStackEntryCount == 0) {
                 val firstThingsVisible = supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
@@ -411,20 +414,20 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             val expand = pager != null && pager.currentItem != 2 && pager.currentItem != 3 &&
                     supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible != true
 
-            app_bar.setExpanded(expand, animate)
-        }
+            binding.coordinatorMain.appBar.setExpanded(expand, animate)
+//        }
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START) && coordinatorPadding == 0)
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START) && coordinatorPadding == 0)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         else
             super.onBackPressed()
     }
 
     private fun showNotRunning(){
         val snackbar = Snackbar
-                .make(frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
+                .make(binding.coordinatorMain.frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.not_running_fix_action) {
                     FixItFragment().show(supportFragmentManager, null)
                 }
@@ -522,7 +525,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         if (backArrowShown)
             supportFragmentManager.popBackStack()
         else
-            drawer_layout.openDrawer(GravityCompat.START)
+            binding.drawerLayout.openDrawer(GravityCompat.START)
         return true
     }
 
@@ -558,7 +561,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             val anim = ValueAnimator.ofFloat(start, 1 - start)
             anim.addUpdateListener { valueAnimator ->
                 val slideOffset = valueAnimator.animatedValue as Float
-                toggle.onDrawerSlide(drawer_layout, slideOffset)
+                toggle.onDrawerSlide(binding.drawerLayout, slideOffset)
             }
             anim.interpolator = DecelerateInterpolator()
             anim.startDelay = 200
@@ -568,7 +571,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             when {
                 show -> closeLockDrawer()
                 coordinatorPadding > 0 -> openLockDrawer()
-                else -> drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                else -> binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             }
 
             backArrowShown = show
@@ -612,25 +615,25 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun closeLockDrawer(){
-        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         if (coordinatorPadding > 0)
-            coordinator.setPadding(0,0,0,0)
+            binding.coordinatorMain.coordinator.setPadding(0,0,0,0)
     }
 
 
     private fun openLockDrawer(){
         if(coordinatorPadding > 0) {
-            drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
             if (!drawerInited) {
-                nav_view.addOnLayoutChangeListener { view, left, top, right, bottom,
+                binding.navView.addOnLayoutChangeListener { view, left, top, right, bottom,
                                                      leftWas, topWas, rightWas, bottomWas ->
                     if (left != leftWas || right != rightWas)
                         onDrawerOpened()
                 }
                 drawerInited = true
             }
-            if (coordinator.paddingStart != coordinatorPadding)
-                coordinator.setPaddingRelative(coordinatorPadding,0,0,0)
+            if (binding.coordinatorMain.coordinator.paddingStart != coordinatorPadding)
+                binding.coordinatorMain.coordinator.setPaddingRelative(coordinatorPadding,0,0,0)
         }
     }
 
@@ -656,9 +659,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        if (drawer_layout.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
-            drawer_layout.isSaveEnabled = false
-        outState.putInt("tab_bar_visible", tab_bar.visibility)
+        if (binding.drawerLayout.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+            binding.drawerLayout.isSaveEnabled = false
+        outState.putInt("tab_bar_visible", binding.coordinatorMain.tabBar.visibility)
         super.onSaveInstanceState(outState)
     }
 

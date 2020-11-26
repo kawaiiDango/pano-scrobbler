@@ -19,8 +19,7 @@
         android:id="@+id/charts_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"
-        android:orientation="horizontal"/>
+        android:nestedScrollingEnabled="false"/>
 
     <ProgressBar
         android:id="@+id/charts_progress"

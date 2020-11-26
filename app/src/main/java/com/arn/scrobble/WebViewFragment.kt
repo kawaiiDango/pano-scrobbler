@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.webkit.*
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.content_webview.*
+import com.arn.scrobble.databinding.ContentWebviewBinding
 import okhttp3.Cookie
 import okhttp3.HttpUrl
 
@@ -18,23 +18,27 @@ import okhttp3.HttpUrl
  */
 class WebViewFragment: Fragment() {
     private var saveCookies = false
+    private var _binding: ContentWebviewBinding? = null
+    private val binding
+        get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.content_webview, container, false)
+        _binding = ContentWebviewBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        webview.webViewClient = WebViewClient()
-        webview.settings.saveFormData = false
+        binding.webview.webViewClient = WebViewClient()
+        binding.webview.settings.saveFormData = false
         // In Android O and afterwards, this function does not have any effect, the form data will be saved to platform's autofill service if applicable.
 //        webview.settings.javaScriptEnabled =true
 
         val url = arguments?.getString(Stuff.ARG_URL) ?: "https://example.com"
         saveCookies = arguments?.getBoolean(Stuff.ARG_SAVE_COOKIES) ?: false
-        webview.loadUrl(url)
-        webview.webViewClient = MyWebViewClient()
-        if (!webview.isInTouchMode)
-            webview.requestFocus()
+        binding.webview.loadUrl(url)
+        binding.webview.webViewClient = MyWebViewClient()
+        if (!binding.webview.isInTouchMode)
+            binding.webview.requestFocus()
         super.onViewCreated(view, savedInstanceState)
     }
 /*
@@ -52,9 +56,10 @@ class WebViewFragment: Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
-        webview.clearCache(true)
+        binding.webview.clearCache(true)
         CookieManager.getInstance().removeAllCookies(null)
+        _binding = null
+        super.onDestroyView()
     }
 
     inner class MyWebViewClient : WebViewClient() {
@@ -104,12 +109,12 @@ class WebViewFragment: Fragment() {
 
         override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
             //deprecated but required for lolipop
-            if(webview!=null){
+            if(binding.webview!=null){
                 val htmlData = "<html><body><div align=\"center\" >"+getString(R.string.webview_error)+"<br>"+
                         description+ "</div></body>"
-                webview.loadUrl("about:blank")
-                webview.loadDataWithBaseURL(null,htmlData, "text/html", "UTF-8",null)
-                webview.invalidate()
+                binding.webview.loadUrl("about:blank")
+                binding.webview.loadDataWithBaseURL(null,htmlData, "text/html", "UTF-8",null)
+                binding.webview.invalidate()
 
             }
         }

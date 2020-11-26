@@ -13,15 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
+import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
+import com.arn.scrobble.databinding.ContentChartsOverviewBinding
+import com.arn.scrobble.databinding.HeaderWithActionBinding
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
-import kotlinx.android.synthetic.main.chips_charts_period.*
-import kotlinx.android.synthetic.main.content_charts_overview.*
-import kotlinx.android.synthetic.main.content_charts_overview.view.*
-import kotlinx.android.synthetic.main.frame_charts_list.view.*
-import kotlinx.android.synthetic.main.header_with_action.view.*
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,19 +31,34 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
     private lateinit var albumsFragment: FakeAlbumFragment
     private lateinit var tracksFragment: FakeTrackFragment
 
+    private var _binding: ContentChartsOverviewBinding? = null
+    private val binding
+        get() = _binding!!
+    private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
+    override val periodChipsBinding
+        get() = _periodChipsBinding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.content_charts_overview, container, false)
+        _binding = ContentChartsOverviewBinding.inflate(inflater, container, false)
+        _periodChipsBinding = binding.chipsChartsPeriod
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        _periodChipsBinding = null
+        super.onDestroyView()
     }
 
     override fun onResume() {
         super.onResume()
-        if (charts_artists_frame.charts_list?.adapter == null)
+        if (binding.chartsArtistsFrame.chartsList.adapter == null)
             postInit()
         Stuff.setTitle(activity, 0)
     }
 
     override fun onPause() {
-        if (charts_artists_frame.charts_list?.adapter == null) {
+        if (binding.chartsArtistsFrame.chartsList.adapter == null) {
             artistsFragment.viewModel.removeAllInfoTasks()
             albumsFragment.viewModel.removeAllInfoTasks()
             tracksFragment.viewModel.removeAllInfoTasks()
@@ -56,7 +69,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        charts_sparkline_labels?.invalidate = true
+        binding.chartsSparklineLabels.invalidate = true
     }
 
     override fun removeHandlerCallbacks() {
@@ -95,8 +108,8 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
 
     override fun postInit() {
         if (Main.isTV)
-            for (i in 0 .. charts_period.childCount)
-                charts_period.getChildAt(i)?.nextFocusDownId = R.id.charts_overview_scrollview
+            for (i in 0 .. periodChipsBinding.chartsPeriod.childCount)
+                periodChipsBinding.chartsPeriod.getChildAt(i)?.nextFocusDownId = R.id.charts_overview_scrollview
 
         artistsFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_ARTISTS.toString()) as? FakeArtistFragment ?: FakeArtistFragment()
         albumsFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_ALBUMS.toString()) as? FakeAlbumFragment ?: FakeAlbumFragment()
@@ -105,48 +118,48 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         initFragment(albumsFragment, Stuff.TYPE_ALBUMS)
         initFragment(tracksFragment, Stuff.TYPE_TRACKS)
 
-        charts_artists_header.header_action.setOnClickListener { launchChartsPager(Stuff.TYPE_ARTISTS) }
+        binding.chartsArtistsHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_ARTISTS) }
         setHeader(Stuff.TYPE_ARTISTS)
-        charts_artists_header.header_text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_mic, 0, 0, 0)
+        binding.chartsArtistsHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_mic, 0, 0, 0)
 
-        charts_albums_header.header_action.setOnClickListener { launchChartsPager(Stuff.TYPE_ALBUMS) }
+        binding.chartsAlbumsHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_ALBUMS) }
         setHeader(Stuff.TYPE_ALBUMS)
-        charts_albums_header.header_text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_album, 0, 0, 0)
+        binding.chartsAlbumsHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_album, 0, 0, 0)
 
-        charts_tracks_header.header_action.setOnClickListener { launchChartsPager(Stuff.TYPE_TRACKS) }
+        binding.chartsTracksHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_TRACKS) }
         setHeader(Stuff.TYPE_TRACKS)
-        charts_tracks_header.header_text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
+        binding.chartsTracksHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
 
         setHeader(Stuff.TYPE_SC)
-        charts_sparkline_header.header_action.visibility = View.GONE
-        charts_sparkline_header.header_text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_line_chart, 0, 0, 0)
+        binding.chartsSparklineHeader.headerAction.visibility = View.GONE
+        binding.chartsSparklineHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_line_chart, 0, 0, 0)
 
-        charts_sparkline_labels.justifyLastLine = true
-        charts_sparkline_frame.charts_sparkline.adapter = SparkLineAdapter().apply { baseline = true }
-        charts_sparkline_frame.charts_sparkline.setScrubListener { intVal ->
+        binding.chartsSparklineLabels.justifyLastLine = true
+        binding.chartsSparkline.adapter = SparkLineAdapter().apply { baseline = true }
+        binding.chartsSparkline.setScrubListener { intVal ->
             if (intVal == null) {
-                charts_sparkline_frame.charts_sparkline_scrub_info.visibility = View.GONE
+                binding.chartsSparklineScrubInfo.visibility = View.GONE
                 return@setScrubListener
             }
             intVal as Int
-            charts_sparkline_frame.charts_sparkline_scrub_info.visibility = View.VISIBLE
-            charts_sparkline_frame.charts_sparkline_scrub_info.text =
+            binding.chartsSparklineScrubInfo.visibility = View.VISIBLE
+            binding.chartsSparklineScrubInfo.text =
                     resources.getQuantityString(R.plurals.num_scrobbles_noti, intVal, NumberFormat.getInstance().format(intVal))
-            if (charts_scrub_message.visibility == View.VISIBLE) {
+            if (binding.chartsScrubMessage.visibility == View.VISIBLE) {
                 activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
                         .edit()
                         .putBoolean(Stuff.PREF_ACTIVITY_SCRUB_LEARNT, true)
                         .apply()
-                charts_scrub_message.visibility = View.GONE
+                binding.chartsScrubMessage.visibility = View.GONE
             }
         }
-        charts_overview_scrollview.viewTreeObserver.addOnScrollChangedListener {
+        binding.chartsOverviewScrollview.viewTreeObserver.addOnScrollChangedListener {
             loadSparklineIfNeeded()
         }
 
         if (!Main.isTV && !activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
                         .getBoolean(Stuff.PREF_ACTIVITY_SCRUB_LEARNT, false))
-            charts_scrub_message.visibility = View.VISIBLE
+            binding.chartsScrubMessage.visibility = View.VISIBLE
         viewModel.periodCountReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
             val labels = StringBuilder()
@@ -156,23 +169,23 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
                 intList += it.count
             }
 
-            val sAdapter = charts_sparkline_frame.charts_sparkline.adapter as SparkLineAdapter
+            val sAdapter = binding.chartsSparkline.adapter as SparkLineAdapter
             sAdapter.setData(intList)
 
-            charts_sparkline_frame.charts_sparkline_progress.visibility = View.GONE
-            charts_sparkline_labels.text = labels.trimEnd()
-            charts_sparkline_frame.charts_sparkline.adapter.notifyDataSetChanged()
-            charts_sparkline_frame.charts_sparkline_tick_top.text = NumberFormat.getInstance().format(sAdapter.max())
-            charts_sparkline_frame.charts_sparkline_tick_bottom.text = NumberFormat.getInstance().format(0)
+            binding.chartsSparklineProgress.visibility = View.GONE
+            binding.chartsSparklineLabels.text = labels.trimEnd()
+            binding.chartsSparkline.adapter.notifyDataSetChanged()
+            binding.chartsSparklineTickTop.text = NumberFormat.getInstance().format(sAdapter.max())
+            binding.chartsSparklineTickBottom.text = NumberFormat.getInstance().format(0)
         }
         super.postInit()
     }
 
     private fun initFragment(fragment: ShittyArchitectureFragment, type: Int) {
         val rootView = when(type) {
-            Stuff.TYPE_ARTISTS -> charts_artists_frame
-            Stuff.TYPE_ALBUMS -> charts_albums_frame
-            else -> charts_tracks_frame
+            Stuff.TYPE_ARTISTS -> binding.chartsArtistsFrame
+            Stuff.TYPE_ALBUMS -> binding.chartsAlbumsFrame
+            else -> binding.chartsTracksFrame
         }
         if (!fragment.isAdded)
             childFragmentManager.beginTransaction().add(fragment, type.toString()).commitNow()
@@ -188,11 +201,11 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
 
         val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
-        rootView.charts_list.addItemDecoration(itemDecor)
+        rootView.chartsList.addItemDecoration(itemDecor)
 
-        rootView.charts_list.layoutManager = LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
-        (rootView.charts_list.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
-        rootView.charts_list.adapter = adapter
+        rootView.chartsList.layoutManager = LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+        (rootView.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        rootView.chartsList.adapter = adapter
 
         fragment.viewModel.chartsReceiver.observe(viewLifecycleOwner, {
             if (it == null && !Main.isOnline && fragment.viewModel.chartsData.size == 0)
@@ -229,25 +242,25 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
     private fun setHeader(type: Int) {
         var count = 0
         var text = ""
-        lateinit var headerView: View
+        lateinit var header: HeaderWithActionBinding
         when (type) {
             Stuff.TYPE_ARTISTS -> {
                 count = artistsFragment.viewModel.totalCount
                 text = getString(R.string.artists)
-                headerView = charts_artists_header
+                header = binding.chartsArtistsHeader
             }
             Stuff.TYPE_ALBUMS -> {
                 count = albumsFragment.viewModel.totalCount
                 text = getString(R.string.albums)
-                headerView = charts_albums_header
+                header = binding.chartsAlbumsHeader
             }
             Stuff.TYPE_TRACKS -> {
                 count = tracksFragment.viewModel.totalCount
                 text = getString(R.string.tracks)
-                headerView = charts_tracks_header
+                header = binding.chartsTracksHeader
             }
             Stuff.TYPE_SC -> {
-                charts_sparkline_header.header_text.text = viewModel.periodCountHeader ?: getString(R.string.menu_charts)
+                binding.chartsSparklineHeader.headerText.text = viewModel.periodCountHeader ?: getString(R.string.menu_charts)
                 return
             }
         }
@@ -256,22 +269,22 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         else
             ""
         if (count != 0) {
-            headerView.header_text.text =
+            header.headerText.text =
                     NumberFormat.getInstance().format(count) + plus + " " + text.toLowerCase()
-            headerView.header_action.visibility = View.VISIBLE
+            header.headerAction.visibility = View.VISIBLE
         }
         else {
-            headerView.header_text.text = text
-            headerView.header_action.visibility = View.GONE
+            header.headerText.text = text
+            header.headerAction.visibility = View.GONE
         }
     }
 
     private fun loadSparklineIfNeeded() {
-        charts_overview_scrollview ?: return
+        _binding ?: return
         if (!viewModel.periodCountRequested) {
             val scrollBounds = Rect()
-            charts_overview_scrollview.getHitRect(scrollBounds)
-            val partiallyVisible = charts_sparkline_frame.getLocalVisibleRect(scrollBounds)
+            binding.chartsOverviewScrollview.getHitRect(scrollBounds)
+            val partiallyVisible = binding.chartsSparklineFrame.getLocalVisibleRect(scrollBounds)
             if (partiallyVisible)
                 calcSparklineDurations()
         }

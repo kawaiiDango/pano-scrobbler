@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.content_pager.*
 
 
 class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
@@ -65,7 +64,8 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
     }
 
     override fun onDestroy() {
-        pager?.removeOnPageChangeListener(this)
+        if (_binding != null)
+            binding.pager.removeOnPageChangeListener(this)
         super.onDestroy()
     }
 

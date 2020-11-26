@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
+import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
+import com.arn.scrobble.databinding.ContentChartsBinding
+import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.google.android.material.chip.Chip
 import de.umass.lastfm.*
-import kotlinx.android.synthetic.main.chips_charts_period.*
-import kotlinx.android.synthetic.main.content_charts.*
 import kotlin.math.roundToInt
 
 
@@ -23,19 +24,36 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
 
     lateinit var adapter: ChartsAdapter
 
+    private var _chartsBinding: FrameChartsListBinding? = null
+    private val chartsBinding
+        get() = _chartsBinding!!
+    private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
+    override val periodChipsBinding
+        get() = _periodChipsBinding!!
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.content_charts, container, false)
+        val binding = ContentChartsBinding.inflate(inflater, container, false)
+        _chartsBinding = binding.frameChartsList
+        _periodChipsBinding = binding.chipsChartsPeriod
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _chartsBinding = null
+        _periodChipsBinding = null
+        super.onDestroyView()
     }
 
     override fun onResume() {
         super.onResume()
-        if (charts_grid?.adapter == null)
+        if (chartsBinding.chartsList.adapter == null)
             postInit()
     }
 
     override fun onPause() {
-        if (charts_grid?.adapter != null) {
+        if (chartsBinding.chartsList.adapter != null) {
             adapter.removeHandlerCallbacks()
             viewModel.removeAllInfoTasks()
         }
@@ -44,7 +62,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        val glm = charts_grid?.layoutManager as GridLayoutManager?
+        val glm = chartsBinding.chartsList.layoutManager as GridLayoutManager?
         glm?.spanCount = getNumColumns()
     }
 
@@ -71,13 +89,13 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
 
     override fun postInit() {
         super.postInit()
-        adapter = ChartsAdapter(view!!)
+        adapter = ChartsAdapter(chartsBinding)
 
         val glm = GridLayoutManager(context!!, getNumColumns())
-        charts_grid.layoutManager = glm
-        (charts_grid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
-        charts_grid.adapter = adapter
-        charts_grid.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
+        chartsBinding.chartsList.layoutManager = glm
+        (chartsBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        chartsBinding.chartsList.adapter = adapter
+        chartsBinding.chartsList.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
 
         val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
@@ -85,7 +103,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             }
         }
         loadMoreListener.currentPage = viewModel.page
-        charts_grid.addOnScrollListener(loadMoreListener)
+        chartsBinding.chartsList.addOnScrollListener(loadMoreListener)
         adapter.loadMoreListener = loadMoreListener
         adapter.clickListener = this
         adapter.viewModel = viewModel
@@ -123,7 +141,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
     }
 
     private fun loadCharts(page: Int) {
-        charts_grid ?: return
+        _chartsBinding ?: return
         if (viewModel.reachedEnd) {
             adapter.loadMoreListener.isAllPagesLoaded = true
             return
@@ -141,7 +159,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             is Album -> getString(R.string.albums)
             else -> getString(R.string.tracks)
         }
-        val checkedChip = charts_period.findViewById<Chip>(charts_period.checkedChipId)
+        val checkedChip = periodChipsBinding.chartsPeriod.findViewById<Chip>(periodChipsBinding.chartsPeriod.checkedChipId)
         val period = if (checkedChip.id == R.id.charts_choose_week) {
             viewModel.weeklyChart ?: return
             getString(

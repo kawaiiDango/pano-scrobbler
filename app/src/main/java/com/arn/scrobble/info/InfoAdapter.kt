@@ -12,13 +12,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
+import com.arn.scrobble.databinding.ListItemInfoBinding
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import de.umass.lastfm.Album
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
-import kotlinx.android.synthetic.main.list_item_info.view.*
 import java.text.NumberFormat
 
 
@@ -30,8 +30,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHInfo{
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.list_item_info, parent, false)
-        return VHInfo(view)
+        return VHInfo(ListItemInfoBinding.inflate(inflater, parent, false))
     }
 
     override fun getItemCount() = viewModel.info.size
@@ -40,23 +39,23 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
         holder.setItemData(viewModel.info[position], username)
     }
 
-    inner class VHInfo(view: View): RecyclerView.ViewHolder(view){
+    inner class VHInfo(private val binding: ListItemInfoBinding): RecyclerView.ViewHolder(binding.root){
         init {
             setIsRecyclable(false)
         }
 
         private fun setLoved(track: Track) {
             if (track.isLoved) {
-                itemView.info_heart.setImageResource(R.drawable.vd_heart_filled)
-                itemView.info_heart.contentDescription = itemView.context.getString(R.string.loved)
+                binding.infoHeart.setImageResource(R.drawable.vd_heart_filled)
+                binding.infoHeart.contentDescription = itemView.context.getString(R.string.loved)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    itemView.info_heart.tooltipText = itemView.context.getString(R.string.loved)
+                    binding.infoHeart.tooltipText = itemView.context.getString(R.string.loved)
                 }
             } else {
-                itemView.info_heart.setImageResource(R.drawable.vd_heart)
-                itemView.info_heart.contentDescription = itemView.context.getString(R.string.unloved)
+                binding.infoHeart.setImageResource(R.drawable.vd_heart)
+                binding.infoHeart.contentDescription = itemView.context.getString(R.string.unloved)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    itemView.info_heart.tooltipText = itemView.context.getString(R.string.unloved)
+                    binding.infoHeart.tooltipText = itemView.context.getString(R.string.unloved)
                 }
             }
         }
@@ -67,17 +66,17 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
             when (key) {
                 NLService.B_TITLE -> {
                     entry as Track
-                    itemView.info_play.visibility = View.VISIBLE
-                    itemView.info_play.setOnClickListener {
+                    binding.infoPlay.visibility = View.VISIBLE
+                    binding.infoPlay.setOnClickListener {
                         Stuff.launchSearchIntent(entry.artist, entry.name, itemView.context)
                     }
-                    itemView.info_type.setImageResource(R.drawable.vd_note)
-                    itemView.info_type.contentDescription = itemView.context.getString(R.string.track)
+                    binding.infoType.setImageResource(R.drawable.vd_note)
+                    binding.infoType.contentDescription = itemView.context.getString(R.string.track)
                     if (entry.url != null) {
                         if (username == null) {
                             setLoved(entry)
-                            itemView.info_heart.visibility = View.VISIBLE
-                            itemView.info_heart.setOnClickListener {
+                            binding.infoHeart.visibility = View.VISIBLE
+                            binding.infoHeart.setOnClickListener {
                                 entry.isLoved = !entry.isLoved
                                 LFMRequester(itemView.context).loveOrUnlove(entry.isLoved, entry.artist, entry.name)
                                         .asSerialAsyncTask()
@@ -86,16 +85,16 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                         } else {
                             if (entry.isLoved) {
                                 setLoved(entry)
-                                itemView.info_heart.alpha = 0.5f
-                                itemView.info_heart.visibility = View.VISIBLE
-                                itemView.info_heart.setOnClickListener {
+                                binding.infoHeart.alpha = 0.5f
+                                binding.infoHeart.visibility = View.VISIBLE
+                                binding.infoHeart.setOnClickListener {
                                     Stuff.toast(itemView.context, itemView.context.getString(R.string.user_loved, username))
                                 }
                             }
                         }
                     }
-                    itemView.info_extra.text = itemView.context.getString(R.string.similar)
-                    itemView.info_extra.setOnClickListener {
+                    binding.infoExtra.text = itemView.context.getString(R.string.similar)
+                    binding.infoExtra.setOnClickListener {
                         val infoExtra = InfoExtraFragment()
                         val b = Bundle()
                         b.putString(NLService.B_ARTIST, entry.artist)
@@ -105,8 +104,8 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                     }
                 }
                 NLService.B_ALBUM -> {
-                    itemView.info_type.setImageResource(R.drawable.vd_album)
-                    itemView.info_type.contentDescription = itemView.context.getString(R.string.album_optional)
+                    binding.infoType.setImageResource(R.drawable.vd_album)
+                    binding.infoType.contentDescription = itemView.context.getString(R.string.album_optional)
                     val tracks = (entry as? Album)?.tracks?.toList()
                     if (!tracks.isNullOrEmpty()) {
                         var totalDuration = 0
@@ -119,14 +118,14 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                                 plus = "+"
                         }
 
-                        itemView.info_extra.visibility = View.VISIBLE
-                        itemView.info_extra.text = itemView.context.resources.getQuantityString(R.plurals.num_songs, tracks.size, tracks.size) +
+                        binding.infoExtra.visibility = View.VISIBLE
+                        binding.infoExtra.text = itemView.context.resources.getQuantityString(R.plurals.num_songs, tracks.size, tracks.size) +
                                 if (totalDuration > 0)
                                     " • " + Stuff.humanReadableDuration(totalDuration) + plus
                                 else
                                     ""
 
-                        itemView.info_extra.setOnClickListener {
+                        binding.infoExtra.setOnClickListener {
                             val rv = LayoutInflater.from(itemView.context).inflate(R.layout.content_simple_list, null) as RecyclerView
                             rv.layoutManager = LinearLayoutManager(itemView.context)
                             val dialog = AlertDialog.Builder(itemView.context, R.style.DarkDialog)
@@ -162,14 +161,14 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                             dialog.show()
                         }
                     } else
-                        itemView.info_extra.visibility = View.GONE
+                        binding.infoExtra.visibility = View.GONE
                 }
                 NLService.B_ARTIST -> {
-                    itemView.info_type.setImageResource(R.drawable.vd_mic)
-                    itemView.info_type.contentDescription = itemView.context.getString(R.string.artist)
+                    binding.infoType.setImageResource(R.drawable.vd_mic)
+                    binding.infoType.contentDescription = itemView.context.getString(R.string.artist)
 
-                    itemView.info_extra.text = itemView.context.getString(R.string.artist_extra)
-                    itemView.info_extra.setOnClickListener {
+                    binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
+                    binding.infoExtra.setOnClickListener {
                         val infoExtra = InfoExtraFragment()
                         val b = Bundle()
                         b.putString(NLService.B_ARTIST, entry!!.name)
@@ -178,12 +177,12 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                     }
                 }
                 NLService.B_ALBUM_ARTIST -> {
-                    itemView.info_type.setImageResource(R.drawable.vd_album_artist)
-                    itemView.info_type.contentDescription = itemView.context.getString(R.string.album_artist)
+                    binding.infoType.setImageResource(R.drawable.vd_album_artist)
+                    binding.infoType.contentDescription = itemView.context.getString(R.string.album_artist)
 
-                    itemView.info_extra.visibility = View.VISIBLE
-                    itemView.info_extra.text = itemView.context.getString(R.string.artist_extra)
-                    itemView.info_extra.setOnClickListener {
+                    binding.infoExtra.visibility = View.VISIBLE
+                    binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
+                    binding.infoExtra.setOnClickListener {
                         val infoExtra = InfoExtraFragment()
                         val b = Bundle()
                         b.putString(NLService.B_ARTIST, entry!!.name)
@@ -192,21 +191,21 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                     }
                 }
             }
-            itemView.info_name.text = entry?.name
+            binding.infoName.text = entry?.name
             
             if (entry?.url == null && (viewModel.loadedTypes.contains(key) || !Main.isOnline)) {
-                itemView.info_progress.visibility = View.GONE
+                binding.infoProgress.visibility = View.GONE
                 return
             }
             if (entry?.url != null) {
-                itemView.info_progress.visibility = View.GONE
-                itemView.info_content.visibility = View.VISIBLE
+                binding.infoProgress.visibility = View.GONE
+                binding.infoContent.visibility = View.VISIBLE
                 if (username != null)
-                    itemView.info_user_scrobbles_label.text = itemView.context.getString(R.string.user_scrobbles, username)
-                itemView.info_user_scrobbles.text = NumberFormat.getInstance().format(entry.userPlaycount)
-                itemView.info_listeners.text = NumberFormat.getInstance().format(entry.listeners)
-                itemView.info_scrobbles.text = NumberFormat.getInstance().format(entry.playcount)
-                itemView.info_tags.removeAllViews()
+                    binding.infoUserScrobblesLabel.text = itemView.context.getString(R.string.user_scrobbles, username)
+                binding.infoUserScrobbles.text = NumberFormat.getInstance().format(entry.userPlaycount)
+                binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
+                binding.infoScrobbles.text = NumberFormat.getInstance().format(entry.playcount)
+                binding.infoTags.removeAllViews()
                 entry.tags?.forEach {
                     val chip = Chip(itemView.context)
                     chip.text = it
@@ -217,7 +216,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                         tif.arguments = b
                         tif.show(fragment.parentFragmentManager, null)
                     }
-                    itemView.info_tags.addView(chip)
+                    binding.infoTags.addView(chip)
                 }
                 var wikiText = entry.wikiText ?: entry.wikiSummary
                 if (!wikiText.isNullOrBlank()) {
@@ -233,34 +232,34 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
 //                                    DateFormat.getLongDateFormat(itemView.context).format(entry.wikiLastChanged)) +
 //                                    "</i>"
 //                        This is the first published date and not the last updated date
-                        itemView.info_wiki.visibility = View.VISIBLE
-                        itemView.info_wiki.text = Html.fromHtml(wikiText)
-                        itemView.info_wiki.post{
-                            if (itemView.info_wiki == null || itemView.info_wiki.layout == null)
+                        binding.infoWiki.visibility = View.VISIBLE
+                        binding.infoWiki.text = Html.fromHtml(wikiText)
+                        binding.infoWiki.post{
+                            if (binding.infoWiki.layout == null)
                                 return@post
-                            if (itemView.info_wiki.lineCount > 2 ||
-                                    itemView.info_wiki.layout.getEllipsisCount(itemView.info_wiki.lineCount - 1) > 0) {
+                            if (binding.infoWiki.lineCount > 2 ||
+                                    binding.infoWiki.layout.getEllipsisCount(binding.infoWiki.lineCount - 1) > 0) {
                                 val clickListener = { view: View ->
                                     if (!(view is TextView && (view.selectionStart != -1 || view.selectionEnd != -1))) {
-                                        if (itemView.info_wiki.maxLines == 2) {
-                                            itemView.info_wiki.maxLines = 1000
-                                            itemView.info_wiki_expand.rotation = 180f
+                                        if (binding.infoWiki.maxLines == 2) {
+                                            binding.infoWiki.maxLines = 1000
+                                            binding.infoWikiExpand.rotation = 180f
                                         } else {
-                                            itemView.info_wiki.maxLines = 2
-                                            itemView.info_wiki_expand.rotation = 0f
+                                            binding.infoWiki.maxLines = 2
+                                            binding.infoWikiExpand.rotation = 0f
                                         }
                                     }
                                 }
-                                itemView.info_wiki.setOnClickListener(clickListener)
-                                itemView.info_wiki_expand.setOnClickListener(clickListener)
-                                itemView.info_wiki_expand.visibility = View.VISIBLE
+                                binding.infoWiki.setOnClickListener(clickListener)
+                                binding.infoWikiExpand.setOnClickListener(clickListener)
+                                binding.infoWikiExpand.visibility = View.VISIBLE
                             }
                         }
                     }
                 }
 
-                itemView.info_link.visibility = View.VISIBLE
-                itemView.info_link.setOnClickListener {
+                binding.infoLink.visibility = View.VISIBLE
+                binding.infoLink.setOnClickListener {
                     if (entry.url != null)
                         Stuff.openInBrowser(entry.url, itemView.context)
                 }

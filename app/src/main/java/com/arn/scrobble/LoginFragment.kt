@@ -17,9 +17,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
 import androidx.fragment.app.DialogFragment
+import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.pref.MultiPreferences
-import kotlinx.android.synthetic.main.content_login.*
-import kotlinx.android.synthetic.main.content_login.view.*
 import org.json.JSONObject
 
 
@@ -31,47 +30,55 @@ open class LoginFragment: DialogFragment() {
     protected var checksLogin = true
     protected var standalone = false
     private var asyncTask: AsyncTask<Int, Unit, String?>? = null
+    private var _binding: ContentLoginBinding? = null
+    protected val binding
+        get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         returnTransition = Slide()
         showsDialog = false
-        val view = inflater.inflate(R.layout.content_login, container, false)
+        _binding = ContentLoginBinding.inflate(inflater, container, false)
         pref = MultiPreferences(context!!)
         val args = arguments
         args?.getString(INFO)?.let {
-            view.login_info.autoLinkMask = Linkify.WEB_URLS
-            view.login_info.text = it
-            view.login_info.visibility = View.VISIBLE
+            binding.loginInfo.autoLinkMask = Linkify.WEB_URLS
+            binding.loginInfo.text = it
+            binding.loginInfo.visibility = View.VISIBLE
         }
         args?.getString(TEXTF1)?.let {
-            view.login_textfield1.hint = it
-            if (!view.isInTouchMode)
-                view.login_textfield1.requestFocus()
-            view.login_textfield1.visibility = View.VISIBLE
+            binding.loginTextfield1.hint = it
+            if (!binding.root.isInTouchMode)
+                binding.loginTextfield1.requestFocus()
+            binding.loginTextfield1.visibility = View.VISIBLE
         }
         args?.getString(TEXTF2)?.let {
-            view.login_textfield2.hint = it
-            view.login_textfield2.visibility = View.VISIBLE
+            binding.loginTextfield2.hint = it
+            binding.loginTextfield2.visibility = View.VISIBLE
         }
         args?.getString(TEXTFL)?.let {
-            view.login_textfield_last.hint = it
-            view.login_textfield_last.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
+            binding.loginTextfieldLast.hint = it
+            binding.loginTextfieldLast.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
                         (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)) {
-                    view.login_submit.callOnClick()
+                    binding.loginSubmit.callOnClick()
                     true
                 } else
                     false
             }
         }
 
-        view.login_submit.setOnClickListener {
+        binding.loginSubmit.setOnClickListener {
             it.visibility = View.GONE
-            view.login_progress.visibility = View.VISIBLE
+            binding.loginProgress.visibility = View.VISIBLE
             validate()
         }
 
-        return view
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     private val sessChangeReceiver = object : BroadcastReceiver() {
@@ -85,10 +92,10 @@ open class LoginFragment: DialogFragment() {
     protected open fun success() {
         if (context == null || !isAdded)
             return
-        login_progress.visibility = View.GONE
-        login_status.setImageResource(R.drawable.vd_check)
-        login_status.visibility = View.VISIBLE
-        login_progress.postDelayed(
+        binding.loginProgress.visibility = View.GONE
+        binding.loginStatus.setImageResource(R.drawable.vd_check)
+        binding.loginStatus.visibility = View.VISIBLE
+        binding.loginProgress.postDelayed(
                 {
                     if (showsDialog)
                         try {
@@ -109,15 +116,15 @@ open class LoginFragment: DialogFragment() {
             Stuff.toast(context, errMsg)
         if (context == null || !isAdded)
             return
-        login_progress.visibility = View.GONE
-        login_status.setImageResource(R.drawable.vd_ban)
-        login_status.visibility = View.VISIBLE
-        login_progress.postDelayed(
+        binding.loginProgress.visibility = View.GONE
+        binding.loginStatus.setImageResource(R.drawable.vd_ban)
+        binding.loginStatus.visibility = View.VISIBLE
+        binding.loginProgress.postDelayed(
                 {
-                    login_status ?: return@postDelayed
-                    login_status.visibility = View.GONE
-                    login_submit.visibility = View.VISIBLE
-                    login_progress.visibility = View.GONE
+                    _binding ?: return@postDelayed
+                    binding.loginStatus.visibility = View.GONE
+                    binding.loginSubmit.visibility = View.VISIBLE
+                    binding.loginProgress.visibility = View.GONE
                 },
                 1500
         )
@@ -141,9 +148,9 @@ open class LoginFragment: DialogFragment() {
 
     open fun validateAsync(): String? {
         val title = arguments?.getString(HEADING)
-        val t1 = login_textfield1.editText!!.text.toString()
-        var t2 = login_textfield2.editText!!.text.toString()
-        val tlast = login_textfield_last.editText!!.text.toString()
+        val t1 = binding.loginTextfield1.editText!!.text.toString()
+        var t2 = binding.loginTextfield2.editText!!.text.toString()
+        val tlast = binding.loginTextfieldLast.editText!!.text.toString()
 
         var success = false
 

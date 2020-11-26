@@ -10,10 +10,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.databinding.HeaderDefaultBinding
+import com.arn.scrobble.databinding.ListItemAppBinding
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.VHHeader
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.list_item_app.view.*
 
 
 /**
@@ -36,8 +37,8 @@ class AppListAdapter
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TYPE_ITEM -> VHItem(inflater.inflate(R.layout.list_item_app, parent, false))
-            TYPE_HEADER -> VHHeader(inflater.inflate(R.layout.header_default, parent, false))
+            TYPE_ITEM -> VHItem(ListItemAppBinding.inflate(inflater, parent, false))
+            TYPE_HEADER -> VHHeader(HeaderDefaultBinding.inflate(inflater, parent, false))
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }
@@ -93,14 +94,10 @@ class AppListAdapter
     }
     override fun getItemCount() = appList.size
 
-    inner class VHItem(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener{
-        private val vName = view.app_list_name
-        private val vIcon = view.app_list_icon
-        private val vCheckBox = view.app_list_checkbox
-
+    inner class VHItem(private val binding: ListItemAppBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
         init {
-            view.setOnClickListener(this)
-            vCheckBox.setOnCheckedChangeListener(null)
+            binding.root.setOnClickListener(this)
+            binding.appListCheckbox.setOnCheckedChangeListener(null)
         }
 
         override fun onClick(view: View) {
@@ -108,22 +105,22 @@ class AppListAdapter
         }
 
         fun setItemData(app: ApplicationInfo) {
-            vName.text = app.loadLabel(packageManager)
+            binding.appListName.text = app.loadLabel(packageManager)
             val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME + ":" + app.packageName)
 
             picasso.load(uri)
                     .fit()
-                    .into(vIcon)
+                    .into(binding.appListIcon)
             setChecked(true)
         }
 
         private fun setChecked(animate: Boolean) {
             val isSelected = selectedItems.contains(adapterPosition)
             if (!animate){
-                vCheckBox.setOnCheckedChangeListener(null)
+                binding.appListCheckbox.setOnCheckedChangeListener(null)
             }
             itemView.isActivated = isSelected
-            vCheckBox.isChecked = isSelected
+            binding.appListCheckbox.isChecked = isSelected
 
         }
     }

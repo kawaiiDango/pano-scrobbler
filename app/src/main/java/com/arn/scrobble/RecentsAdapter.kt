@@ -11,6 +11,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.databinding.ContentRecentsBinding
+import com.arn.scrobble.databinding.HeaderDefaultBinding
+import com.arn.scrobble.databinding.HeaderPendingBinding
+import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.pending.PendingScrFragment
 import com.arn.scrobble.pending.db.PendingLove
 import com.arn.scrobble.pending.db.PendingScrobble
@@ -18,9 +22,6 @@ import com.arn.scrobble.ui.*
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
-import kotlinx.android.synthetic.main.content_recents.view.*
-import kotlinx.android.synthetic.main.header_pending.view.*
-import kotlinx.android.synthetic.main.list_item_recents.view.*
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -31,7 +32,7 @@ import java.util.*
 
 class RecentsAdapter
 
-(private val fragmentContent: View): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+(private val fragmentBinding: ContentRecentsBinding): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
         LoadImgInterface, LoadMoreGetter {
 
     lateinit var itemClickListener: ItemClickListener
@@ -60,11 +61,11 @@ class RecentsAdapter
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TYPE_TRACK -> VHTrack(inflater.inflate(R.layout.list_item_recents, parent, false))
-            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener)
-            TYPE_PENDING_LOVE -> VHPendingLove(inflater.inflate(R.layout.list_item_recents, parent, false), itemClickListener)
-            TYPE_HEADER -> VHHeader(inflater.inflate(R.layout.header_default, parent, false))
-            TYPE_ACTION -> VHAction(inflater.inflate(R.layout.header_pending, parent, false), fm)
+            TYPE_TRACK -> VHTrack(ListItemRecentsBinding.inflate(inflater, parent, false))
+            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener)
+            TYPE_PENDING_LOVE -> VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener)
+            TYPE_HEADER -> VHHeader(HeaderDefaultBinding.inflate(inflater, parent, false))
+            TYPE_ACTION -> VHAction(HeaderPendingBinding.inflate(inflater, parent, false), fm)
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }
@@ -92,7 +93,7 @@ class RecentsAdapter
 
     fun setLoading(b:Boolean){
         loadMoreListener.loading = b
-        fragmentContent.recents_swipe_refresh.isRefreshing = false
+        fragmentBinding.recentsSwipeRefresh.isRefreshing = false
     }
 
     fun getItem(pos: Int): Any? {
@@ -134,7 +135,7 @@ class RecentsAdapter
     override fun getItemCount() = viewModel.tracks.size + nonTrackViewCount
 
     fun setPending(fm:FragmentManager?, pendingListData: PendingListData) {
-        val headerText = fragmentContent.context.getString(R.string.pending_scrobbles)
+        val headerText = fragmentBinding.root.context.getString(R.string.pending_scrobbles)
         var shift = 0
         val lastDisplaySize = psMap.size + plMap.size
         val oldNonTrackViewCount = nonTrackViewCount
@@ -190,16 +191,16 @@ class RecentsAdapter
 
     fun setStatusHeader(){
         val username = if (viewModel.username != null)
-            fragmentContent.context.getString(R.string.possesion, viewModel.username) + " "
+            fragmentBinding.root.context.getString(R.string.possesion, viewModel.username) + " "
         else
             ""
         val header =  if (isShowingLoves)
-            username + fragmentContent.context.getString(R.string.recently_loved)
+            username + fragmentBinding.root.context.getString(R.string.recently_loved)
         else if (viewModel.toTime > 0)
-            username + fragmentContent.context.getString(R.string.scrobbles_till,
-                    DateFormat.getMediumDateFormat(fragmentContent.context).format(viewModel.toTime))
+            username + fragmentBinding.root.context.getString(R.string.scrobbles_till,
+                    DateFormat.getMediumDateFormat(fragmentBinding.root.context).format(viewModel.toTime))
         else
-            username + fragmentContent.context.getString(R.string.recently_scrobbled)
+            username + fragmentBinding.root.context.getString(R.string.recently_scrobbled)
         setStatusHeader(header)
     }
 
@@ -223,18 +224,16 @@ class RecentsAdapter
     }
 
     fun populate(oldTracks: MutableList<Track>) {
-        val refresh = fragmentContent.recents_swipe_refresh ?: return
-
         if (Main.isOnline)
             setStatusHeader()
         else
-            setStatusHeader(fragmentContent.context.getString(R.string.offline))
+            setStatusHeader(fragmentBinding.root.context.getString(R.string.offline))
 
         setLoading(false)
         val selectedId = getItemId(viewModel.selectedPos)
         var selectedPos = nonTrackViewCount
         if (viewModel.tracks.isEmpty()) {
-            setStatusHeader(refresh.context.getString(R.string.no_scrobbles))
+            setStatusHeader(fragmentBinding.root.context.getString(R.string.no_scrobbles))
         }
         if (selectedPos >= nonTrackViewCount)
             for (i in 0 until viewModel.tracks.size) {
@@ -318,13 +317,10 @@ class RecentsAdapter
         }
     }
 
-    class VHAction(view: View, fm: FragmentManager?) : RecyclerView.ViewHolder(view){
-        private val vText = view.pending_more
-        private val vAction = view.pending_expand
-
+    class VHAction(private val binding: HeaderPendingBinding, fm: FragmentManager?) : RecyclerView.ViewHolder(binding.root){
         init {
             if (fm!= null)
-                    view.pending_summary.setOnClickListener {
+                binding.root.setOnClickListener {
                     fm.beginTransaction()
                             .replace(R.id.frame, PendingScrFragment())
                             .addToBackStack(null)
@@ -333,30 +329,21 @@ class RecentsAdapter
         }
 
         fun setItemData(n: Int) {
-            vAction.text = itemView.context.getString(R.string.show_all)
-            vText.text = itemView.context.getString(R.string.n_more, n)
+            binding.pendingAction.text = itemView.context.getString(R.string.show_all)
+            binding.pendingText.text = itemView.context.getString(R.string.n_more, n)
         }
     }
 
-    inner class VHTrack(view: View) : RecyclerView.ViewHolder(view), View.OnFocusChangeListener {
-
-        private val vOverlay = view.recents_img_overlay
-        private val vMenu = view.recents_menu
-        private val vPlaying = view.recents_playing
-        private val vDate = view.recents_date
-        private val vTitle = view.recents_title
-        private val vSubtitle = view.recents_subtitle
-        private val vImg = view.recents_img
-
+    inner class VHTrack(private val binding: ListItemRecentsBinding) : RecyclerView.ViewHolder(binding.root), View.OnFocusChangeListener {
         init {
-            view.setOnClickListener {
+            binding.root.setOnClickListener {
                 itemClickListener.onItemClick(itemView, adapterPosition)
             }
-            view.onFocusChangeListener = this
+            binding.root.onFocusChangeListener = this
             if (viewModel.username != null && !Main.isTV)
-                vMenu.visibility = View.INVISIBLE
+                binding.recentsMenu.visibility = View.INVISIBLE
             else
-                vMenu.setOnClickListener {
+                binding.recentsMenu.setOnClickListener {
                     itemClickListener.onItemClick(it, adapterPosition)
                 }
         }
@@ -369,49 +356,49 @@ class RecentsAdapter
         fun setSelected(selected:Boolean, track: Track = viewModel.tracks[viewModel.selectedPos - nonTrackViewCount]) {
             itemView.isActivated = selected
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                vImg.foreground = if (selected) ColorDrawable(vImg.context.getColor(R.color.thumbnailHighlight)) else null
+                binding.recentsImg.foreground = if (selected) ColorDrawable(binding.recentsImg.context.getColor(R.color.thumbnailHighlight)) else null
             }
             if (selected)
                 setHeroListener.onSetHero(adapterPosition, track, false)
         }
 
         fun setItemData(track: Track) {
-            vTitle.text = track.name
-            vSubtitle.text = track.artist
+            binding.recentsTitle.text = track.name
+            binding.recentsSubtitle.text = track.artist
 
             if (track.isNowPlaying) {
-                vDate.visibility = View.GONE
-                Stuff.nowPlayingAnim(vPlaying, true)
+                binding.recentsDate.visibility = View.GONE
+                Stuff.nowPlayingAnim(binding.recentsPlaying, true)
             } else {
-                vDate.visibility = View.VISIBLE
-                vDate.text = Stuff.myRelativeTime(itemView.context, track.playedWhen?.time ?: 0, true)
-                Stuff.nowPlayingAnim(vPlaying, false)
+                binding.recentsDate.visibility = View.VISIBLE
+                binding.recentsDate.text = Stuff.myRelativeTime(itemView.context, track.playedWhen?.time ?: 0, true)
+                Stuff.nowPlayingAnim(binding.recentsPlaying, false)
             }
 
             if (track.isLoved) {
-                if (vOverlay.background == null)
-                    vOverlay.background = ContextCompat.getDrawable(vOverlay.context, R.drawable.vd_heart_stroked)
-                vOverlay.visibility = View.VISIBLE
+                if (binding.recentsImgOverlay.background == null)
+                    binding.recentsImgOverlay.background = ContextCompat.getDrawable(binding.recentsImgOverlay.context, R.drawable.vd_heart_stroked)
+                binding.recentsImgOverlay.visibility = View.VISIBLE
             } else {
-                vOverlay.visibility = View.INVISIBLE
+                binding.recentsImgOverlay.visibility = View.INVISIBLE
             }
 
             val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
 
             if (imgUrl != null && imgUrl != "") {
-                vImg.clearColorFilter()
+                binding.recentsImg.clearColorFilter()
                 Picasso.get()
                         .load(imgUrl)
                         .placeholder(R.drawable.vd_wave_simple)
                         .error(R.drawable.vd_wave_simple)
-                        .into(vImg)
+                        .into(binding.recentsImg)
 
             } else {
-                vImg.setImageResource(R.drawable.vd_wave_simple)
-                vImg.setColorFilter(Stuff.getMatColor(vImg.context, "500", Stuff.genHashCode(track.artist, track.name).toLong()))
+                binding.recentsImg.setImageResource(R.drawable.vd_wave_simple)
+                binding.recentsImg.setColorFilter(Stuff.getMatColor(binding.recentsImg.context, "500", Stuff.genHashCode(track.artist, track.name).toLong()))
                 if (isShowingLoves){
                     if(viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] == null)
-                        handler.sendMessage(vImg.hashCode(), adapterPosition)
+                        handler.sendMessage(binding.recentsImg.hashCode(), adapterPosition)
                 }
             }
             setSelected(adapterPosition == viewModel.selectedPos, track)

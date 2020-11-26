@@ -1,18 +1,14 @@
 package com.arn.scrobble.ui
 
-import android.view.View
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.header_default.view.*
+import com.arn.scrobble.databinding.HeaderDefaultBinding
 
-class VHHeader(view: View) : RecyclerView.ViewHolder(view) {
-    private val vText = view.header_text
-
+class VHHeader(private val binding: HeaderDefaultBinding) : RecyclerView.ViewHolder(binding.root) {
     fun setHeaderText(s:String) {
-        vText.text = s
+        binding.headerText.text = s
     }
 
     fun setHeaderTextColor(color:Int){
-        vText.setTextColor(color)
+        binding.headerText.setTextColor(color)
     }
 }

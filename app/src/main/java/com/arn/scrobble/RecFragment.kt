@@ -15,11 +15,10 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.snackbar.Snackbar
 import de.umass.lastfm.scrobble.ScrobbleData
-import kotlinx.android.synthetic.main.content_rec.*
-import kotlinx.android.synthetic.main.content_rec.view.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -35,26 +34,29 @@ class RecFragment:Fragment(){
     private var progressAnimator: ObjectAnimator? = null
     private var asyncTask: SubmitAsync? = null
     private val pref: MultiPreferences by lazy { MultiPreferences(context!!) }
+    private var _binding: ContentRecBinding? = null
+    private val binding
+        get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.content_rec, container, false)
+        _binding = ContentRecBinding.inflate(inflater, container, false)
         if (!Main.isTV)
             setHasOptionsMenu(true)
-        if (!view.rec_progress.isInTouchMode) {
+        else {
             val outValue = TypedValue()
             context!!.theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)
-            view.rec_progress.setBackgroundResource(outValue.resourceId)
+            binding.recProgress.setBackgroundResource(outValue.resourceId)
         }
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         path = activity!!.filesDir.absolutePath+"/sample.rec"
         handler.postDelayed({
-            if (rec_progress!= null) {
+            if (_binding != null) {
                 startOrCancel()
-                rec_progress.setOnClickListener { startOrCancel() }
+                binding.recProgress.setOnClickListener { startOrCancel() }
             }
         }, 300)
 
@@ -67,9 +69,10 @@ class RecFragment:Fragment(){
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         if(started)
             startOrCancel()
+        _binding = null
+        super.onDestroyView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -153,25 +156,25 @@ class RecFragment:Fragment(){
         }
 
         if (!Main.isOnline){
-            rec_status.setText(R.string.unavailable_offline)
+            binding.recStatus.setText(R.string.unavailable_offline)
             return
         }
         if(!started) {
 
-            if(!startRecording() || rec_status == null)
+            if(!startRecording() || _binding == null)
                 return
-            rec_status.setText(R.string.listening)
-            rec_img.setImageResource(R.drawable.vd_wave_simple)
+            binding.recStatus.setText(R.string.listening)
+            binding.recImg.setImageResource(R.drawable.vd_wave_simple)
             if (fadeAnimator?.isRunning == true)
                 fadeAnimator?.cancel()
-            fadeAnimator = ObjectAnimator.ofFloat(rec_img, "alpha", 0.5f, 1f)
+            fadeAnimator = ObjectAnimator.ofFloat(binding.recImg, "alpha", 0.5f, 1f)
             fadeAnimator!!.duration = 500
             fadeAnimator!!.interpolator = AccelerateInterpolator()
             fadeAnimator!!.start()
 
             if (progressAnimator?.isRunning == true)
                 progressAnimator?.cancel()
-            progressAnimator = ObjectAnimator.ofFloat(rec_progress, "progress", 0f, 100f)
+            progressAnimator = ObjectAnimator.ofFloat(binding.recProgress, "progress", 0f, 100f)
             progressAnimator!!.duration = duration + 2000
             progressAnimator!!.interpolator = LinearInterpolator()
             progressAnimator!!.start()
@@ -189,11 +192,11 @@ class RecFragment:Fragment(){
             } catch (e:Exception) {}
             asyncTask?.cancel(true)
             asyncTask = null
-            rec_status.text = ""
+            binding.recStatus.text = ""
 
             if (fadeAnimator?.isRunning == true)
                 fadeAnimator?.cancel()
-            fadeAnimator = ObjectAnimator.ofFloat(rec_img, "alpha", 0.5f)
+            fadeAnimator = ObjectAnimator.ofFloat(binding.recImg, "alpha", 0.5f)
             fadeAnimator!!.duration = 300
             fadeAnimator!!.interpolator = AccelerateInterpolator()
             fadeAnimator!!.start()
@@ -201,7 +204,7 @@ class RecFragment:Fragment(){
             if (progressAnimator?.isRunning == true)
                 progressAnimator?.cancel()
 
-            progressAnimator = ObjectAnimator.ofFloat(rec_progress, "progress", 0f)
+            progressAnimator = ObjectAnimator.ofFloat(binding.recProgress, "progress", 0f)
             progressAnimator!!.duration = 300
             progressAnimator!!.interpolator = AccelerateInterpolator()
             progressAnimator!!.start()
@@ -232,7 +235,7 @@ class RecFragment:Fragment(){
                 recorder!!.start()
             } catch (e: Exception) {
                 Stuff.log("prepare/start failed VOICE_RECOGNITION")
-                rec_status.setText(R.string.recording_failed)
+                binding.recStatus.setText(R.string.recording_failed)
                 return false
             }
         }
@@ -247,7 +250,7 @@ class RecFragment:Fragment(){
         } catch (e:Exception) {}
 
         recorder = null
-        rec_status.setText(R.string.uploading)
+        binding.recStatus.setText(R.string.uploading)
 
         asyncTask = SubmitAsync()
         asyncTask!!.execute(path)
@@ -292,8 +295,8 @@ class RecFragment:Fragment(){
             startOrCancel()
 
         if(statusCode == 0) {
-            rec_img.setImageResource(R.drawable.vd_check_simple)
-            rec_status.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
+            binding.recImg.setImageResource(R.drawable.vd_check_simple)
+            binding.recStatus.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
             val scrobbleData = ScrobbleData()
             scrobbleData.artist = artist
             scrobbleData.album = album
@@ -305,7 +308,7 @@ class RecFragment:Fragment(){
         } else {
             if (statusCode == 3003)
                 showSnackbar()
-            rec_status.text = statusMsg
+            binding.recStatus.text = statusMsg
         }
     }
 

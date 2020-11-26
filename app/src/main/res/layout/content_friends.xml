@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <include android:visibility="gone"
+        <include android:id="@+id/friends_header"
+            android:visibility="gone"
             layout="@layout/header_default"/>
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/friends_swipe_refresh"

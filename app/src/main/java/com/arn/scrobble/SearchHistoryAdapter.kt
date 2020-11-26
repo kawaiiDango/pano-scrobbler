@@ -4,19 +4,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.databinding.ContentSearchBinding
+import com.arn.scrobble.databinding.ListItemSearchHistoryBinding
 import com.arn.scrobble.ui.ItemClickListener
-import kotlinx.android.synthetic.main.content_search.view.*
-import kotlinx.android.synthetic.main.list_item_search_history.view.*
 
 
-class SearchHistoryAdapter(private val fragmentContent: View):
+class SearchHistoryAdapter(private val fragmentBinding: ContentSearchBinding):
         RecyclerView.Adapter<SearchHistoryAdapter.VHSearchHistory>() {
     lateinit var clickListener: ItemClickListener
     lateinit var viewModel: SearchVM
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHSearchHistory {
         val inflater = LayoutInflater.from(parent.context)
-        return VHSearchHistory(inflater.inflate(R.layout.list_item_search_history, parent, false), clickListener)
+        return VHSearchHistory(ListItemSearchHistoryBinding.inflate(inflater, parent, false), clickListener)
     }
 
     override fun onBindViewHolder(holder: VHSearchHistory, position: Int) {
@@ -27,17 +27,17 @@ class SearchHistoryAdapter(private val fragmentContent: View):
 
     fun populate() {
         notifyDataSetChanged()
-        fragmentContent.search_progress.visibility = View.GONE
-        fragmentContent.search_results_list.visibility = View.GONE
-        fragmentContent.search_history_list.visibility = View.VISIBLE
+        fragmentBinding.searchProgress.visibility = View.GONE
+        fragmentBinding.searchResultsList.visibility = View.GONE
+        fragmentBinding.searchHistoryList.visibility = View.VISIBLE
     }
 
-    class VHSearchHistory(view: View, private val itemClickListener: ItemClickListener): RecyclerView.ViewHolder(view) {
-        private val vText = view.search_history_item
+    class VHSearchHistory(private val binding: ListItemSearchHistoryBinding, private val itemClickListener: ItemClickListener):
+            RecyclerView.ViewHolder(binding.root) {
 
         fun setData(text: String) {
-            vText.text = text
-            vText.setOnClickListener { itemClickListener.onItemClick(itemView, adapterPosition) }
+            binding.searchHistoryItem.text = text
+            binding.searchHistoryItem.setOnClickListener { itemClickListener.onItemClick(itemView, adapterPosition) }
         }
     }
 }

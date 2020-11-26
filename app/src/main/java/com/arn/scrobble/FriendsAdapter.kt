@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.arn.scrobble.databinding.ContentFriendsBinding
+import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
@@ -27,9 +29,6 @@ import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import de.umass.lastfm.User
-import kotlinx.android.synthetic.main.content_friends.view.*
-import kotlinx.android.synthetic.main.grid_item_friend.view.*
-import kotlinx.android.synthetic.main.header_default.view.*
 import java.lang.ref.WeakReference
 
 
@@ -37,7 +36,7 @@ import java.lang.ref.WeakReference
  * Created by arn on 10/07/2017.
  */
 
-class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM) : RecyclerView.Adapter<FriendsAdapter.VHUser>(), LoadMoreGetter {
+class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private val viewModel: FriendsVM) : RecyclerView.Adapter<FriendsAdapter.VHUser>(), LoadMoreGetter {
 
     lateinit var itemClickListener: ItemClickListener
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
@@ -50,17 +49,16 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHUser {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.grid_item_friend, parent, false)
-        return VHUser(view)
+        return VHUser(GridItemFriendBinding.inflate(inflater, parent, false))
     }
 
-    fun getViewForPopup(context: Context, position: Int): View {
+    fun getViewBindingForPopup(context: Context, position: Int): GridItemFriendBinding {
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.grid_item_friend, fragmentContent as ViewGroup, false) as ViewGroup
+        val binding = GridItemFriendBinding.inflate(inflater, fragmentBinding.root, false)
 
-        val holder = VHUser(view, false)
+        val holder = VHUser(binding, false)
         holder.setItemData(viewModel.friends[position])
-        return view
+        return binding
     }
 
     override fun onBindViewHolder(holder: VHUser, position: Int) {
@@ -71,11 +69,9 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
     override fun getItemCount() = viewModel.friends.size
 
     fun populate() {
-        val refresh = fragmentContent.friends_swipe_refresh ?: return
-        fragmentContent.friends_grid ?: return
-        refresh.isRefreshing = false
+        fragmentBinding.friendsSwipeRefresh.isRefreshing = false
         loadMoreListener.loading = false
-        val header = fragmentContent.header_text
+        val header = fragmentBinding.friendsHeader.headerText
         if (viewModel.friends.isEmpty()) {
             header.visibility = View.VISIBLE
             header.text = header.context.getString(R.string.no_friends)
@@ -102,7 +98,7 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
         }
         if (!Main.isTV && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.friends.size > 1 &&
                 !viewModel.friends.any { it.recentTrack == null }) {
-            val sortButton = fragmentContent.friends_sort
+            val sortButton = fragmentBinding.friendsSort
             sortButton.show()
             sortButton.setOnClickListener {
                 viewModel.friends.sortByDescending {
@@ -114,13 +110,13 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
                 viewModel.sorted = true
                 notifyDataSetChanged()
                 sortButton.hide()
-                fragmentContent.friends_grid.smoothScrollToPosition(0)
+                fragmentBinding.friendsGrid.smoothScrollToPosition(0)
             }
         }
     }
 
     fun loadFriendsRecents(pos:Int) {
-        val glm = fragmentContent.friends_grid.layoutManager as GridLayoutManager? ?: return
+        val glm = fragmentBinding.friendsGrid.layoutManager as GridLayoutManager? ?: return
         if (pos < viewModel.friends.size && (pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
                 (pos - glm.spanCount) <= glm.findLastVisibleItemPosition())
             viewModel.loadFriendsRecents(viewModel.friends[pos].name)
@@ -137,21 +133,12 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
         return viewModel.friends[position].name.hashCode().toLong()
     }
 
-    inner class VHUser(view: View, private val clickable: Boolean = true) : RecyclerView.ViewHolder(view), View.OnClickListener {
-        private val vName = view.friends_name
-        private val vMusIcon = view.friends_music_icon
-        private val vTrackFrame = view.friends_track_frame
-        private val vTrackLL = view.friends_track_ll
-        private val vDate = view.friends_date
-        private val vTitle = view.friends_title
-        private val vSubtitle = view.friends_subtitle
-        private val vImg = view.friends_pic
-
+    inner class VHUser(private val binding: GridItemFriendBinding, private val clickable: Boolean = true) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         init {
             if (clickable) {
                 itemView.setOnClickListener(this)
-                vImg.setOnClickListener(this)
-                vImg.isFocusable = true
+                binding.friendsPic.setOnClickListener(this)
+                binding.friendsPic.isFocusable = true
             }
         }
 
@@ -161,39 +148,39 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
         }
 
         fun setItemData(user: User) {
-            vName.text = if (user.realname == null || user.realname == "")
+            binding.friendsName.text = if (user.realname == null || user.realname == "")
                     user.name
             else
                 user.realname
 
             val track = user.recentTrack
             if (track != null && track.name != null && track.name != "") {
-                vTrackLL.visibility = View.VISIBLE
-                vTitle.text = track.name
-                vSubtitle.text = track.artist
-                vDate.text = Stuff.myRelativeTime(itemView.context, track.playedWhen)
+                binding.friendsTrackLl.visibility = View.VISIBLE
+                binding.friendsTitle.text = track.name
+                binding.friendsSubtitle.text = track.artist
+                binding.friendsDate.text = Stuff.myRelativeTime(itemView.context, track.playedWhen)
 
                 if (track.isNowPlaying) {
-                    if (vMusIcon.drawable == null ||
-                            vMusIcon.drawable is VectorDrawable || vMusIcon.drawable is VectorDrawableCompat) {
-                        Stuff.nowPlayingAnim(vMusIcon, true)
+                    if (binding.friendsMusicIcon.drawable == null ||
+                            binding.friendsMusicIcon.drawable is VectorDrawable || binding.friendsMusicIcon.drawable is VectorDrawableCompat) {
+                        Stuff.nowPlayingAnim(binding.friendsMusicIcon, true)
                     }
                 } else {
-                    if (vMusIcon.drawable == null ||
-                            vMusIcon.drawable is AnimatedVectorDrawable || vMusIcon.drawable is AnimatedVectorDrawableCompat)
-                        vMusIcon.setImageResource(R.drawable.vd_music_circle)
+                    if (binding.friendsMusicIcon.drawable == null ||
+                            binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat)
+                        binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
                 }
 
-                vTrackFrame.setOnClickListener { v: View ->
+                binding.friendsTrackFrame.setOnClickListener { v: View ->
                     Stuff.launchSearchIntent(track.artist, track.name, itemView.context)
                 }
             } else {
-                vTrackLL.visibility = View.INVISIBLE
-                vTrackFrame.setOnClickListener(null)
+                binding.friendsTrackLl.visibility = View.INVISIBLE
+                binding.friendsTrackFrame.setOnClickListener(null)
 
-                if (vMusIcon.drawable == null ||
-                        vMusIcon.drawable is AnimatedVectorDrawable || vMusIcon.drawable is AnimatedVectorDrawableCompat)
-                    vMusIcon.setImageResource(R.drawable.vd_music_circle)
+                if (binding.friendsMusicIcon.drawable == null ||
+                        binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat)
+                    binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
 
                 if (!handler.hasMessages(user.name.hashCode()) && adapterPosition > -1) {
                     val msg = handler.obtainMessage(user.name.hashCode())
@@ -203,8 +190,8 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
             }
 
             val userImg = user.getWebpImageURL(ImageSize.EXTRALARGE)
-            if (userImg != vImg.tag) {
-                vImg.tag = userImg
+            if (userImg != binding.friendsPic.tag) {
+                binding.friendsPic.tag = userImg
                 val bgDark = ContextCompat.getColor(itemView.context, R.color.darkToolbar)
                 val wasCached = viewModel.paletteColorsCache[userImg] != null
                 if (wasCached)
@@ -217,9 +204,9 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
                             .load(userImg)
                             .placeholder(R.drawable.vd_placeholder_user)
                             .error(R.drawable.vd_placeholder_user)
-                            .into(vImg, object : Callback {
+                            .into(binding.friendsPic, object : Callback {
                                 override fun onSuccess() {
-                                    val b = (vImg?.drawable as BitmapDrawable).bitmap
+                                    val b = (binding.friendsPic.drawable as BitmapDrawable).bitmap
                                     if (!wasCached)
                                         Palette.from(b).generate { palette ->
                                             palette ?: return@generate
@@ -237,7 +224,7 @@ class FriendsAdapter(val fragmentContent: View, private val viewModel: FriendsVM
                                 }
                             })
                 } else {
-                    vImg.setImageResource(R.drawable.vd_placeholder_user)
+                    binding.friendsPic.setImageResource(R.drawable.vd_placeholder_user)
                 }
             }
         }

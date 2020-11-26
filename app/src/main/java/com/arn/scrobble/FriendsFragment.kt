@@ -20,18 +20,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.charts.ChartsOverviewFragment
-import com.arn.scrobble.charts.ChartsPagerFragment
+import com.arn.scrobble.databinding.ActionFriendsBinding
+import com.arn.scrobble.databinding.ContentFriendsBinding
+import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import de.umass.lastfm.User
-import kotlinx.android.synthetic.main.action_friends.view.*
-import kotlinx.android.synthetic.main.content_friends.*
-import kotlinx.android.synthetic.main.content_friends.view.*
-import kotlinx.android.synthetic.main.coordinator_main.*
-import kotlinx.android.synthetic.main.grid_item_friend.view.*
-import kotlinx.android.synthetic.main.header_default.view.*
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
 import kotlin.math.min
@@ -57,31 +52,39 @@ class FriendsFragment : Fragment(), ItemClickListener {
         get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
     private val viewModel by lazy { VMFactory.getVM(this, FriendsVM::class.java) }
     var lastRefreshTime = System.currentTimeMillis()
+    private var _binding: ContentFriendsBinding? = null
+    private val binding
+        get() = _binding!!
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.content_friends, container, false)
-        view.isNestedScrollingEnabled = false
-        return view
+        _binding = ContentFriendsBinding.inflate(inflater, container, false)
+        binding.root.isNestedScrollingEnabled = false
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun loadFriends(page: Int):Boolean {
-        friends_linear_layout ?: return false
-        friends_grid.layoutManager ?: return false
+        _binding ?: return false
+        binding.friendsGrid.layoutManager ?: return false
 
         if (Main.isOnline) {
-            friends_linear_layout.header_text.visibility = View.GONE
+            binding.friendsHeader.headerText.visibility = View.GONE
         } else {
-            friends_linear_layout.header_text.text = getString(R.string.offline)
-            friends_linear_layout.header_text.visibility = View.VISIBLE
+            binding.friendsHeader.headerText.text = getString(R.string.offline)
+            binding.friendsHeader.headerText.visibility = View.VISIBLE
         }
 
         return if (page <= viewModel.totalPages || viewModel.totalPages == 0) {
-            if ((page == 1 && (friends_grid.layoutManager as GridLayoutManager).findFirstVisibleItemPosition() < 15) || page > 1) {
+            if ((page == 1 && (binding.friendsGrid.layoutManager as GridLayoutManager).findFirstVisibleItemPosition() < 15) || page > 1) {
                 viewModel.loadFriendsList(page)
             }
             if (adapter.itemCount == 0)
-                friends_linear_layout.friends_swipe_refresh.isRefreshing = true
+                binding.friendsSwipeRefresh.isRefreshing = true
             true
         } else {
             adapter.loadMoreListener.isAllPagesLoaded = true
@@ -97,13 +100,13 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        val glm = friends_grid?.layoutManager as GridLayoutManager?
+        val glm = binding.friendsGrid.layoutManager as GridLayoutManager?
         glm?.spanCount = getNumColumns()
     }
 
     override fun onResume() {
         super.onResume()
-        if (friends_grid?.adapter == null)
+        if (binding.friendsGrid.adapter == null)
             postInit()
         else if (System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
                 (viewModel.page == 1 || viewModel.sorted))
@@ -119,20 +122,20 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private fun postInit() {
         Stuff.setTitle(activity, 0)
 
-        Stuff.setProgressCircleColor(friends_swipe_refresh)
-        friends_swipe_refresh.setOnRefreshListener {
+        Stuff.setProgressCircleColor(binding.friendsSwipeRefresh)
+        binding.friendsSwipeRefresh.setOnRefreshListener {
             viewModel.sorted = false
-            friends_sort.hide()
+            binding.friendsSort.hide()
             loadFriends(1)
         }
 
         val glm = GridLayoutManager(context!!, getNumColumns())
-        friends_grid.layoutManager = glm
-        (friends_grid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        binding.friendsGrid.layoutManager = glm
+        (binding.friendsGrid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
         viewModel.username = username
-        adapter = FriendsAdapter(view!!, viewModel)
-        friends_grid.adapter = adapter
-        friends_grid.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
+        adapter = FriendsAdapter(binding, viewModel)
+        binding.friendsGrid.adapter = adapter
+        binding.friendsGrid.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
 
         val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
@@ -160,7 +163,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     if (it.name != null)
                         newFriendsMap[it.name] = it
                 }
-                val glm = friends_grid.layoutManager as GridLayoutManager
+                val glm = binding.friendsGrid.layoutManager as GridLayoutManager
                 //get old now playing data to prevent flicker
                 val firstVisible = glm.findFirstVisibleItemPosition()
                 val lastVisible = glm.findLastVisibleItemPosition()
@@ -197,11 +200,11 @@ class FriendsFragment : Fragment(), ItemClickListener {
         else
             adapter.populate()
 
-        friends_grid.addOnScrollListener(loadMoreListener)
+        binding.friendsGrid.addOnScrollListener(loadMoreListener)
     }
 
     private fun refreshFriendsRecents() {
-        val glm = friends_grid.layoutManager as GridLayoutManager
+        val glm = binding.friendsGrid.layoutManager as GridLayoutManager
         val firstVisible = glm.findFirstVisibleItemPosition()
         val lastVisible = glm.findLastVisibleItemPosition()
         for (i in firstVisible..lastVisible) {
@@ -220,14 +223,14 @@ class FriendsFragment : Fragment(), ItemClickListener {
     override fun onItemClick (view: View, position: Int) {
         val user = adapter.getItem(position)
         if (user != null) {
-            val gridItem = adapter.getViewForPopup(context!!, position) as ViewGroup
+            val gridItem = adapter.getViewBindingForPopup(context!!, position)
             showPopupWindow(gridItem, view, user)
         }
     }
 
-    private fun showPopupWindow(content: ViewGroup, anchor: View, user: User) {
+    private fun showPopupWindow(contentBinding: GridItemFriendBinding, anchor: View, user: User) {
         val userLink = user.url ?: return
-        val popup = PopupWindow(content, anchor.measuredWidth, anchor.measuredHeight, true)
+        val popup = PopupWindow(contentBinding.root, anchor.measuredWidth, anchor.measuredHeight, true)
         popupWr = WeakReference(popup)
         popup.elevation = Stuff.dp2px(10, context!!).toFloat()
         popup.isTouchable = true
@@ -235,31 +238,31 @@ class FriendsFragment : Fragment(), ItemClickListener {
         popup.setBackgroundDrawable(ColorDrawable())
 
         fun postTransition() {
-            TransitionManager.beginDelayedTransition(content, ChangeBounds().setDuration(150))
-            val action = layoutInflater.inflate(R.layout.action_friends, content, false)
-            content.addView(action, 4)
+            TransitionManager.beginDelayedTransition(contentBinding.root, ChangeBounds().setDuration(150))
+            val actionsBinding = ActionFriendsBinding.inflate(layoutInflater, contentBinding.root, false)
+            contentBinding.root.addView(actionsBinding.root, 4)
 
-            content.friends_pic.layoutParams.width = Stuff.dp2px(120, context!!)
-            content.friends_pic.layoutParams.height = Stuff.dp2px(120, context!!)
+            contentBinding.friendsPic.layoutParams.width = Stuff.dp2px(120, context!!)
+            contentBinding.friendsPic.layoutParams.height = Stuff.dp2px(120, context!!)
             if (user.playcount > 0) {
                 val since = if (user.registeredDate == null || user.registeredDate.time == 0L)
                     ""
                 else
                     DateFormat.getMediumDateFormat(context).format(user.registeredDate.time)
-                content.friends_scrobbles_since.text = getString(R.string.num_scrobbles_since,
+                contentBinding.friendsScrobblesSince.text = getString(R.string.num_scrobbles_since,
                         NumberFormat.getInstance().format(user.playcount),
                         since)
-                content.friends_scrobbles_since.visibility = View.VISIBLE
+                contentBinding.friendsScrobblesSince.visibility = View.VISIBLE
             }
             if (user.country != null && user.country != "None") {
-                content.friends_country.text = getString(R.string.from, user.country)
-                content.friends_country.visibility = View.VISIBLE
+                contentBinding.friendsCountry.text = getString(R.string.from, user.country)
+                contentBinding.friendsCountry.visibility = View.VISIBLE
             }
 
-            action.friends_profile.setOnClickListener { v:View ->
+            actionsBinding.friendsProfile.setOnClickListener { v:View ->
                 Stuff.openInBrowser(userLink, activity, v)
             }
-            action.friends_scrobbles.setOnClickListener { v:View ->
+            actionsBinding.friendsScrobbles.setOnClickListener { v:View ->
                 (activity as Main).enableGestures()
                 val f = HomePagerFragment()
                 val b = Bundle()
@@ -272,7 +275,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                         .addToBackStack(null)
                         .commit()
             }
-            action.friends_charts.setOnClickListener { v:View ->
+            actionsBinding.friendsCharts.setOnClickListener { v:View ->
                 (activity as Main).enableGestures()
                 val f = HomePagerFragment()
                 val b = Bundle()
@@ -289,15 +292,15 @@ class FriendsFragment : Fragment(), ItemClickListener {
 //            action.friends_week.setOnClickListener { v:View ->
 //                Stuff.openInBrowser("$userLink/listening-report/week", activity, v)
 //            }
-            action.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-            content.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            actionsBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            contentBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
             val point = Point()
             activity!!.windowManager.defaultDisplay.getSize(point)
             val screenW = point.x
             val screenH = point.y
             val w = min((0.8 * screenW).toInt(), Stuff.dp2px(400, context!!))
-            val h = content.measuredHeight + action.measuredHeight
+            val h = contentBinding.root.measuredHeight + actionsBinding.root.measuredHeight
             popup.update((screenW - w )/2, ((screenH - h )/1.2).toInt(), w,h)
         }
 
@@ -324,7 +327,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             })
             popup.enterTransition = enterTrans
         } else
-            content.postDelayed( { postTransition() }, 10)
+            contentBinding.root.postDelayed( { postTransition() }, 10)
 
         val coords = IntArray(2)
         anchor.getLocationInWindow(coords)
@@ -340,7 +343,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun getNumColumns(): Int {
-        return (resources.displayMetrics.widthPixels - activity!!.coordinator!!.paddingStart) /
+        return (resources.displayMetrics.widthPixels - (activity as Main).coordinatorPadding) /
                 resources.getDimension(R.dimen.grid_size).roundToInt()
     }
 }

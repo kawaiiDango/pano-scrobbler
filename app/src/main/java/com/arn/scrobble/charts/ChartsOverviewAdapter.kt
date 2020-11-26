@@ -3,26 +3,27 @@ package com.arn.scrobble.charts
 import android.view.View
 import com.arn.scrobble.Main
 import com.arn.scrobble.R
-import kotlinx.android.synthetic.main.frame_charts_list.view.*
+import com.arn.scrobble.databinding.FrameChartsListBinding
 
 
-class ChartsOverviewAdapter(rootView: View): ChartsAdapter(rootView) {
+class ChartsOverviewAdapter(rootViewBinding: FrameChartsListBinding): ChartsAdapter(rootViewBinding) {
     
     override val forceDimensions = true
 
     override fun populate(){
+        binding as FrameChartsListBinding
         if (viewModel.chartsData.isEmpty()) {
             if (itemCount == 0) {
                 if (!Main.isOnline)
-                    fragmentContent.charts_status?.text = fragmentContent.context.getString(R.string.unavailable_offline)
+                    binding.chartsStatus.text = binding.root.context.getString(R.string.unavailable_offline)
                 else
-                    fragmentContent.charts_status?.text = fragmentContent.context.getString(emptyTextRes)
-                fragmentContent.charts_status?.visibility = View.VISIBLE
-                fragmentContent.charts_progress?.visibility = View.GONE
+                    binding.chartsStatus.text = binding.root.context.getString(emptyTextRes)
+                binding.chartsStatus.visibility = View.VISIBLE
+                binding.chartsProgress.visibility = View.GONE
             }
         } else {
-            fragmentContent.charts_status?.visibility = View.GONE
-            fragmentContent.charts_progress?.visibility = View.GONE
+            binding.chartsStatus.visibility = View.GONE
+            binding.chartsProgress.visibility = View.GONE
         }
 
         notifyDataSetChanged()

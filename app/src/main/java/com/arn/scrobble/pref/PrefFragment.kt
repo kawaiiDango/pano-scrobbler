@@ -22,9 +22,9 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
 import androidx.preference.SwitchPreference
 import com.arn.scrobble.*
+import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.ui.MyClickableSpan
-import kotlinx.android.synthetic.main.dialog_import.view.*
 import java.util.*
 
 
@@ -383,9 +383,9 @@ class PrefFragment : PreferenceFragmentCompat(){
             } else if (requestCode == Stuff.REQUEST_CODE_IMPORT) {
                 if (data != null) {
                     val currentUri = data.data ?: return
-                    val v = layoutInflater.inflate(R.layout.dialog_import, null)
+                    val binding = DialogImportBinding.inflate(layoutInflater)
                     AlertDialog.Builder(context!!, R.style.DarkDialog)
-                            .setView(v)
+                            .setView(binding.root)
                             .setTitle(R.string.import_options)
                             .setPositiveButton(android.R.string.ok) { _, _ ->
                                 val editsModeMap = mapOf(
@@ -394,8 +394,8 @@ class PrefFragment : PreferenceFragmentCompat(){
                                         R.id.import_edits_replace_existing to Stuff.EDITS_REPLACE_EXISTING,
                                         R.id.import_edits_keep to Stuff.EDITS_KEEP_EXISTING
                                 )
-                                val editsMode = editsModeMap[v.import_radio_group.checkedRadioButtonId]!!
-                                val settingsMode = v.import_settings.isChecked
+                                val editsMode = editsModeMap[binding.importRadioGroup.checkedRadioButtonId]!!
+                                val settingsMode = binding.importSettings.isChecked
                                 if (editsMode == Stuff.EDITS_NOPE && !settingsMode)
                                     return@setPositiveButton
                                 AsyncTask.THREAD_POOL_EXECUTOR.execute {

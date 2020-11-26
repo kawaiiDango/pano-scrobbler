@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.Main
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import kotlinx.android.synthetic.main.content_app_list.*
+import com.arn.scrobble.databinding.ContentAppListBinding
 import java.util.*
 
 
@@ -25,6 +25,9 @@ import java.util.*
 class AppListFragment : Fragment() {
     private var firstRun = false
     private var appListLoaded = false
+    private var _binding: ContentAppListBinding? = null
+    private val binding
+        get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,38 +35,43 @@ class AppListFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.content_app_list, container, false)
+        _binding = ContentAppListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if (!app_list.isInTouchMode)
-            app_list.requestFocus()
+        if (!binding.appList.isInTouchMode)
+            binding.appList.requestFocus()
 
         if (Main.isTV){
-            app_list_done.visibility = View.GONE
+            binding.appListDone.visibility = View.GONE
             Stuff.toast(context, getString(R.string.press_back))
         }
 
-        app_list.layoutManager = LinearLayoutManager(context)
+        binding.appList.layoutManager = LinearLayoutManager(context)
         val adapter = AppListAdapter(activity!!)
-        app_list.adapter = adapter
+        binding.appList.adapter = adapter
         if (!Main.isTV) {
-            app_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            binding.appList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
                     if (scrollState == 0) { //scrolling stopped
-                        app_list_done.show()
+                        binding.appListDone.show()
                     } else //scrolling
-                        app_list_done.hide()
+                        binding.appListDone.hide()
                 }
             })
 
-            app_list_done.setOnClickListener {
+            binding.appListDone.setOnClickListener {
                 parentFragmentManager.popBackStack()
             }
-            app_list_done.setOnLongClickListener {
+            binding.appListDone.setOnLongClickListener {
                 MultiPreferences(context ?: return@setOnLongClickListener false)
                         .putStringSet(Stuff.PREF_BLACKLIST, setOf())
                 Stuff.toast(activity, getString(R.string.cleared_disabled_apps))
@@ -132,7 +140,7 @@ class AppListFragment : Fragment() {
             val oldCount = adapter.itemCount
 
             appListLoaded = true
-            app_list?.post {
+            activity?.runOnUiThread {
                 adapter.notifyItemRangeChanged(oldCount-1, adapter.itemCount, 0)
             }
         }
@@ -146,10 +154,10 @@ class AppListFragment : Fragment() {
         val prefs = MultiPreferences(context ?: return)
         if (firstRun)
             prefs.putBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, false)
-        if (app_list != null) {
+        if (_binding != null) {
             val wSet = mutableSetOf<String>()
 
-            val adapter = app_list.adapter as AppListAdapter
+            val adapter = binding.appList.adapter as AppListAdapter
             wSet.addAll(adapter.getSelectedPackages())
 
             //BL = old WL - new WL

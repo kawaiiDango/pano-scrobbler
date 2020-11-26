@@ -12,13 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
 import com.arn.scrobble.charts.*
+import com.arn.scrobble.databinding.ContentInfoExtraBinding
+import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.ui.EntryItemClickListener
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.umass.lastfm.*
-import kotlinx.android.synthetic.main.content_info_extra.*
-import kotlinx.android.synthetic.main.frame_charts_list.view.*
-import kotlinx.android.synthetic.main.header_with_action.view.*
 
 
 class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
@@ -40,11 +39,7 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.content_info_extra, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        val binding = ContentInfoExtraBinding.inflate(inflater, container, false)
 
         val artist = arguments!!.getString(NLService.B_ARTIST)!!
         val track = arguments!!.getString(NLService.B_TITLE)
@@ -61,25 +56,25 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             if (!albumsFragment.isAdded)
                 childFragmentManager.beginTransaction().add(albumsFragment, Stuff.TYPE_ALBUMS.toString()).commitNow()
 
-            initFragment(artistsFragment, info_extra_frame3)
-            initFragment(albumsFragment, info_extra_frame2)
-            initFragment(tracksFragment, info_extra_frame1)
+            initFragment(artistsFragment, binding.infoExtraFrame3)
+            initFragment(albumsFragment, binding.infoExtraFrame2)
+            initFragment(tracksFragment, binding.infoExtraFrame1)
 
             albumsFragment.adapter.showArtists = false
             albumsFragment.adapter.requestAlbumInfo = false
             tracksFragment.adapter.showArtists = false
 
-            info_extra_header3.header_text.text = getString(R.string.similar_artists)
-            info_extra_header3.header_action.visibility = View.GONE
-            info_extra_header3.header_text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_mic, 0, 0, 0)
-            info_extra_header2.header_text.text = getString(R.string.top_albums)
-            info_extra_header2.header_action.visibility = View.GONE
-            info_extra_header2.header_text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_album, 0, 0, 0)
-            info_extra_header1.header_text.text = getString(R.string.top_tracks)
-            info_extra_header1.header_action.visibility = View.GONE
-            info_extra_header1.header_text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
+            binding.infoExtraHeader3.headerText.text = getString(R.string.similar_artists)
+            binding.infoExtraHeader3.headerAction.visibility = View.GONE
+            binding.infoExtraHeader3.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_mic, 0, 0, 0)
+            binding.infoExtraHeader2.headerText.text = getString(R.string.top_albums)
+            binding.infoExtraHeader2.headerAction.visibility = View.GONE
+            binding.infoExtraHeader2.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_album, 0, 0, 0)
+            binding.infoExtraHeader1.headerText.text = getString(R.string.top_tracks)
+            binding.infoExtraHeader1.headerAction.visibility = View.GONE
+            binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
 
-            info_extra_title.text = artist
+            binding.infoExtraTitle.text = artist
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
                 LFMRequester(context!!).getSimilarArtists(artist).asAsyncTask(artistsFragment.viewModel.listReceiver)
@@ -87,27 +82,28 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
                 LFMRequester(context!!).getArtistTopTracks(artist).asAsyncTask(tracksFragment.viewModel.listReceiver)
             }
         } else {
-            initFragment(tracksFragment, info_extra_frame1)
-            info_extra_header1.header_text.text = getString(R.string.similar_tracks)
-            info_extra_header1.header_action.visibility = View.GONE
-            info_extra_header1.header_text.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
-            info_extra_header2.visibility = View.GONE
-            info_extra_frame2.visibility = View.GONE
-            info_extra_header3.visibility = View.GONE
-            info_extra_frame3.visibility = View.GONE
+            initFragment(tracksFragment, binding.infoExtraFrame1)
+            binding.infoExtraHeader1.headerText.text = getString(R.string.similar_tracks)
+            binding.infoExtraHeader1.headerAction.visibility = View.GONE
+            binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
+            binding.infoExtraHeader2.root.visibility = View.GONE
+            binding.infoExtraFrame2.root.visibility = View.GONE
+            binding.infoExtraHeader3.root.visibility = View.GONE
+            binding.infoExtraFrame3.root.visibility = View.GONE
 
-            info_extra_title.text = "$artist — $track"
+            binding.infoExtraTitle.text = "$artist — $track"
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
                 LFMRequester(context!!).getSimilarTracks(artist, track).asAsyncTask(tracksFragment.viewModel.listReceiver)
             }
         }
+        return binding.root
     }
 
-    private fun initFragment(fragment: ShittyArchitectureFragment, rootView: View) {
+    private fun initFragment(fragment: ShittyArchitectureFragment, rootViewBinding: FrameChartsListBinding) {
         fragment.viewModel = VMFactory.getVM(fragment, ChartsVM::class.java)
 
-        val adapter = ChartsOverviewAdapter(rootView)
+        val adapter = ChartsOverviewAdapter(rootViewBinding)
         adapter.viewModel = fragment.viewModel
         adapter.clickListener = this
         adapter.emptyTextRes = R.string.not_found
@@ -116,11 +112,11 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
 
         val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
-        rootView.charts_list.addItemDecoration(itemDecor)
+        rootViewBinding.chartsList.addItemDecoration(itemDecor)
 
-        rootView.charts_list.layoutManager = LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
-        (rootView.charts_list.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
-        rootView.charts_list.adapter = adapter
+        rootViewBinding.chartsList.layoutManager = LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+        (rootViewBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        rootViewBinding.chartsList.adapter = adapter
 
         fragment.viewModel.listReceiver.observe(viewLifecycleOwner, {
             if (it == null && !Main.isOnline && fragment.viewModel.chartsData.size == 0)

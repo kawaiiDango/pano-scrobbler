@@ -10,18 +10,20 @@ import android.widget.TextView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.VMFactory
+import com.arn.scrobble.databinding.ContentTagInfoBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
-import kotlinx.android.synthetic.main.content_info.*
-import kotlinx.android.synthetic.main.content_tag_info.*
 import java.net.URLEncoder
 import java.text.NumberFormat
 
 
 class TagInfoFragment: BottomSheetDialogFragment() {
 
-    val viewModel by lazy { VMFactory.getVM(this, TagInfoVM::class.java) }
+    private val viewModel by lazy { VMFactory.getVM(this, TagInfoVM::class.java) }
+    private var _binding: ContentTagInfoBinding? = null
+    private val binding
+        get() = _binding!!
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -34,15 +36,21 @@ class TagInfoFragment: BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.content_tag_info, container, false)
+        _binding = ContentTagInfoBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val tag = arguments!!.getString(Stuff.ARG_TAG)!!
-        tag_info_title.text = tag
-        tag_info_link.setOnClickListener { Stuff.openInBrowser("https://www.last.fm/tag/" +
+        binding.tagInfoTitle.text = tag
+        binding.tagInfoLink.setOnClickListener { Stuff.openInBrowser("https://www.last.fm/tag/" +
                 URLEncoder.encode(tag, "UTF-8")
                 , context!!) }
 
@@ -51,11 +59,11 @@ class TagInfoFragment: BottomSheetDialogFragment() {
             val tagInfo = it.first
             val similarTags = it.second
 
-            tag_info_progress.visibility = View.GONE
-            tag_info_content.visibility = View.VISIBLE
+            binding.tagInfoProgress.visibility = View.GONE
+            binding.tagInfoContent.visibility = View.VISIBLE
 
-            tag_info_taggers.text = NumberFormat.getInstance().format(tagInfo.reach)
-            tag_info_taggings.text = NumberFormat.getInstance().format(tagInfo.count)
+            binding.tagInfoTaggers.text = NumberFormat.getInstance().format(tagInfo.reach)
+            binding.tagInfoTaggings.text = NumberFormat.getInstance().format(tagInfo.count)
 
             var wikiText = tagInfo.wikiText ?: tagInfo.wikiSummary
             if (!wikiText.isNullOrBlank()) {
@@ -66,35 +74,35 @@ class TagInfoFragment: BottomSheetDialogFragment() {
                     wikiText = wikiText.substring(0, idx).trim()
                 if (!wikiText.isNullOrBlank()) {
                     wikiText = wikiText.replace("\n", "<br>")
-                    tag_info_wiki.visibility = View.VISIBLE
-                    tag_info_wiki.text = Html.fromHtml(wikiText)
-                    tag_info_wiki.post{
-                        if (tag_info_wiki == null || tag_info_wiki.layout == null)
+                    binding.tagInfoWiki.visibility = View.VISIBLE
+                    binding.tagInfoWiki.text = Html.fromHtml(wikiText)
+                    binding.tagInfoWiki.post{
+                        if (_binding == null || binding.tagInfoWiki.layout == null)
                             return@post
-                        if (tag_info_wiki.lineCount > 4 ||
-                                tag_info_wiki.layout.getEllipsisCount(tag_info_wiki.lineCount - 1) > 0) {
+                        if (binding.tagInfoWiki.lineCount > 4 ||
+                                binding.tagInfoWiki.layout.getEllipsisCount(binding.tagInfoWiki.lineCount - 1) > 0) {
                             val clickListener = { view: View ->
                                 if (!(view is TextView && (view.selectionStart != -1 || view.selectionEnd != -1))) {
-                                    if (tag_info_wiki.maxLines == 4) {
-                                        tag_info_wiki.maxLines = 1000
-                                        tag_info_wiki_expand.rotation = 180f
+                                    if (binding.tagInfoWiki.maxLines == 4) {
+                                        binding.tagInfoWiki.maxLines = 1000
+                                        binding.tagInfoWikiExpand.rotation = 180f
                                     } else {
-                                        tag_info_wiki.maxLines = 4
-                                        tag_info_wiki_expand.rotation = 0f
+                                        binding.tagInfoWiki.maxLines = 4
+                                        binding.tagInfoWikiExpand.rotation = 0f
                                     }
                                 }
                             }
-                            tag_info_wiki.setOnClickListener(clickListener)
-                            tag_info_wiki_expand.setOnClickListener(clickListener)
-                            tag_info_wiki_expand.visibility = View.VISIBLE
+                            binding.tagInfoWiki.setOnClickListener(clickListener)
+                            binding.tagInfoWikiExpand.setOnClickListener(clickListener)
+                            binding.tagInfoWikiExpand.visibility = View.VISIBLE
                         }
                     }
                 }
             }
 
             if (!similarTags.isNullOrEmpty()) {
-                tag_info_similar_title.visibility = View.VISIBLE
-                tag_info_tags.removeAllViews()
+                binding.tagInfoSimilarTitle.visibility = View.VISIBLE
+                binding.tagInfoTags.removeAllViews()
                 similarTags.forEach {
                     val chip = Chip(context!!)
                     chip.text = it.name
@@ -105,7 +113,7 @@ class TagInfoFragment: BottomSheetDialogFragment() {
                         tif.arguments = b
                         tif.show(parentFragmentManager, null)
                     }
-                    tag_info_tags.addView(chip)
+                    binding.tagInfoTags.addView(chip)
                 }
             }
         }

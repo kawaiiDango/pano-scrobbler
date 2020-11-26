@@ -8,14 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.databinding.ContentEditsBinding
+import com.arn.scrobble.databinding.ListItemEditsBinding
 import com.arn.scrobble.pending.db.Edit
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.ui.ItemClickListener
-import kotlinx.android.synthetic.main.content_edits.view.*
-import kotlinx.android.synthetic.main.list_item_edits.view.*
 
 
-class EditsAdapter(context: Context, private val fragmentContent: View) : RecyclerView.Adapter<EditsAdapter.VHEdits>() {
+class EditsAdapter(context: Context, private val fragmentBinding: ContentEditsBinding) : RecyclerView.Adapter<EditsAdapter.VHEdits>() {
 
     private val editsList = mutableListOf<Edit>()
     private val filteredIndices = mutableListOf<Int>()
@@ -25,7 +25,7 @@ class EditsAdapter(context: Context, private val fragmentContent: View) : Recycl
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHEdits {
         val inflater = LayoutInflater.from(parent.context)
-        return VHEdits(inflater.inflate(R.layout.list_item_edits, parent, false), itemClickListener)
+        return VHEdits(ListItemEditsBinding.inflate(inflater, parent, false), itemClickListener)
     }
 
     override fun onBindViewHolder(holder:VHEdits, position: Int) {
@@ -54,14 +54,14 @@ class EditsAdapter(context: Context, private val fragmentContent: View) : Recycl
 
             if (filteredIndices.isEmpty()) {
                 handler.post {
-                    fragmentContent.edits_empty.visibility = View.VISIBLE
-                    fragmentContent.edits_empty.text = fragmentContent.context.getString(R.string.not_found)
-                    fragmentContent.edits_list.visibility = View.GONE
+                    fragmentBinding.editsEmpty.visibility = View.VISIBLE
+                    fragmentBinding.editsEmpty.text = fragmentBinding.root.context.getString(R.string.not_found)
+                    fragmentBinding.editsList.visibility = View.GONE
                 }
             } else {
                 handler.post {
-                    fragmentContent.edits_empty.visibility = View.GONE
-                    fragmentContent.edits_list.visibility = View.VISIBLE
+                    fragmentBinding.editsEmpty.visibility = View.GONE
+                    fragmentBinding.editsList.visibility = View.VISIBLE
                 }
             }
             handler.post { notifyDataSetChanged() }
@@ -87,15 +87,15 @@ class EditsAdapter(context: Context, private val fragmentContent: View) : Recycl
             filteredIndices.addAll(edits.indices)
             handler.post {
                 if (editsList.isEmpty()){
-                    fragmentContent.edits_empty.visibility = View.VISIBLE
-                    fragmentContent.edits_empty.text = fragmentContent.context.getString(R.string.n_edits, 0)
-                    fragmentContent.edits_list.visibility = View.GONE
-                    fragmentContent.search_term.visibility = View.GONE
+                    fragmentBinding.editsEmpty.visibility = View.VISIBLE
+                    fragmentBinding.editsEmpty.text = fragmentBinding.root.context.getString(R.string.n_edits, 0)
+                    fragmentBinding.editsList.visibility = View.GONE
+                    fragmentBinding.searchTerm.visibility = View.GONE
                 } else {
-                    fragmentContent.edits_empty.visibility = View.GONE
-                    fragmentContent.edits_list.visibility = View.VISIBLE
+                    fragmentBinding.editsEmpty.visibility = View.GONE
+                    fragmentBinding.editsList.visibility = View.VISIBLE
                     if (edits.size > 7)
-                        fragmentContent.search_term.visibility = View.VISIBLE
+                        fragmentBinding.searchTerm.visibility = View.VISIBLE
                 }
                 notifyDataSetChanged() }
         }
@@ -105,32 +105,26 @@ class EditsAdapter(context: Context, private val fragmentContent: View) : Recycl
 
     override fun getItemCount() = filteredIndices.size
 
-    class VHEdits(view: View, private val itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(view) {
-        private val vTrack = view.edits_track
-        private val vAlbum = view.edits_album
-        private val vArtist = view.edits_artist
-        private val vDel = view.edits_delete
-        private val vImg = view.edits_img
-
+    class VHEdits(private val binding: ListItemEditsBinding, private val itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener { itemClickListener.onItemClick(it, adapterPosition) }
         }
 
         fun setItemData(e: Edit) {
-            vTrack.text = e.track
+            binding.editsTrack.text = e.track
             if (e.album.isNotBlank()) {
-                vAlbum.visibility = View.VISIBLE
-                vAlbum.text = "(" + e.album + ")"
+                binding.editsAlbum.visibility = View.VISIBLE
+                binding.editsAlbum.text = "(" + e.album + ")"
             } else
-                vAlbum.visibility = View.GONE
-            vArtist.text = e.artist
-            vDel.setOnClickListener {
+                binding.editsAlbum.visibility = View.GONE
+            binding.editsArtist.text = e.artist
+            binding.editsDelete.setOnClickListener {
                 itemClickListener.onItemClick(it, adapterPosition)
             }
             if (e.legacyHash != null)
-                vImg.visibility = View.INVISIBLE
+                binding.editsImg.visibility = View.INVISIBLE
             else
-                vImg.visibility = View.VISIBLE
+                binding.editsImg.visibility = View.VISIBLE
         }
     }
 }

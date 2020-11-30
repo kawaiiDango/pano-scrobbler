@@ -260,7 +260,7 @@ class EditFragment: LoginFragment() {
         } catch (e: Exception){
             errMsg = e.message
         }
-        if (errMsg == null) {
+        if (errMsg == null && !standalone) {
             val i = Intent(NLService.iEDITED)
             i.putExtra(NLService.B_ARTIST, artist)
             i.putExtra(NLService.B_ALBUM, album)

@@ -64,8 +64,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|top"
-                    android:background="@android:color/black"
+                    android:paddingVertical="4dp"
+                    android:paddingHorizontal="8dp"
+                    android:background="@drawable/shape_rounded_bg"
+                    android:alpha="0.85"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="#fff"
                     android:visibility="gone"
                     tools:text="000 scrobbles" />
                 <ProgressBar

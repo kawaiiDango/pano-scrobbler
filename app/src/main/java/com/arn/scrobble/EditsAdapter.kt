@@ -72,6 +72,8 @@ class EditsAdapter(context: Context, private val fragmentBinding: ContentEditsBi
 
     fun remove(pos: Int) {
         editsList.removeAt(filteredIndices.removeAt(pos))
+        for (i in pos until filteredIndices.size)
+            filteredIndices[i]--
         notifyItemRemoved(pos)
     }
 

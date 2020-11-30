@@ -9,37 +9,43 @@
     android:padding="10dp">
     <LinearLayout
         android:orientation="vertical"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tag_info_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginTop="10dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/colorAccent"
-                tools:text="title"
-                android:drawablePadding="10dp"
-                app:drawableTint="@color/colorAccent"
-                app:drawableStartCompat="@drawable/vd_tag" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <ImageButton
-                android:id="@+id/tag_info_link"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/hero_info"
-                android:tooltipText="@string/hero_info"
-                app:srcCompat="@drawable/vd_open_in_new"
-                app:tint="@color/colorAccentLight" />
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/info_type"
+                android:layout_width="20sp"
+                android:layout_height="20sp"
+                android:layout_marginEnd="10dp"
+                app:tint="?colorPrimary"
+                app:srcCompat="@drawable/vd_tag" />
+
+                <TextView
+                    android:id="@+id/tag_info_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textColor="@color/colorAccent"
+                    tools:text="title"/>
+
+                <ImageButton
+                    android:id="@+id/tag_info_link"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:contentDescription="@string/hero_info"
+                    android:tooltipText="@string/hero_info"
+                    app:srcCompat="@drawable/vd_open_in_new"
+                    app:tint="@color/colorAccentLight" />
+        </LinearLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -110,9 +116,12 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/tag_info_wiki_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:orientation="horizontal">
 
                     <TextView
@@ -124,11 +133,8 @@
                         android:autoLink="web"
                         android:background="?selectableItemBackground"
                         android:ellipsize="end"
-                        android:justificationMode="inter_word"
                         android:maxLines="4"
-                        android:visibility="gone"
-                        tools:text="wiki"
-                        tools:visibility="visible" />
+                        tools:text="wiki" />
 
                     <ImageButton
                         android:id="@+id/tag_info_wiki_expand"
@@ -136,7 +142,7 @@
                         android:layout_width="40dp"
                         android:layout_height="match_parent"
                         android:contentDescription="@string/expand"
-                        android:visibility="gone"
+                        android:visibility="invisible"
                         app:srcCompat="@drawable/vd_arrow_down"
                         tools:visibility="visible" />
                 </LinearLayout>

@@ -163,7 +163,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     if (it.name != null)
                         newFriendsMap[it.name] = it
                 }
-                val glm = binding.friendsGrid.layoutManager as GridLayoutManager
                 //get old now playing data to prevent flicker
                 val firstVisible = glm.findFirstVisibleItemPosition()
                 val lastVisible = glm.findLastVisibleItemPosition()

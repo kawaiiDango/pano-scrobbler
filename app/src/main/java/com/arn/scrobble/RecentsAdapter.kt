@@ -110,7 +110,9 @@ class RecentsAdapter
                     it.name == track.name && it.artist == track.artist }
         if (idx != -1) {
             viewModel.deletedTracksStringSet += track.toString()
-            viewModel.tracks.removeAt(idx)
+            synchronized(viewModel.tracks) {
+                viewModel.tracks.removeAt(idx)
+            }
             notifyItemRemoved(idx + nonTrackViewCount)
         }
     }

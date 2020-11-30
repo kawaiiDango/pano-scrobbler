@@ -11,7 +11,7 @@
     <color name="colorAccentLightTrans">#bbe1bee7</color>
 <!--    <color name="colorAccentLightTrans">#bbFFD2E7</color>-->
     <color name="lightDivider">#11ffffff</color>
-    <color name="lightInfoDivider">#29FFFFFF</color>
+    <color name="lightInfoDivider">#38FFFFFF</color>
     <color name="darkBg">#80000000</color>
     <color name="darkToolbar">#000</color>
     <color name="shadow">#fff</color>

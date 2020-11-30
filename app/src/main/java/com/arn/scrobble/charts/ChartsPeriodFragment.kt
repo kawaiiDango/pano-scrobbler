@@ -98,7 +98,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         ccl.onCheckedChanged(periodChipsBinding.chartsPeriod, periodChipsBinding.chartsPeriod.checkedChipId)
         periodChipsBinding.chartsChooseWeek.setOnClickListener {
             if (Main.isOnline)
-                periodChipsBinding.chartsPeriod.alpha = 0.7f
+                periodChipsBinding.chartsPeriod.alpha = Stuff.LOADING_ALPHA
             viewModel.loadWeeklyChartsList(registeredTime)
         }
 

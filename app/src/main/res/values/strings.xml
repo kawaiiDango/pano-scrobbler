@@ -1,7 +1,6 @@
 <resources>
     <string name="action_settings">Configure</string>
     <string name="action_report">Bug report</string>
-    <string name="authorize">Authorize</string>
     <string name="album_art">Album art</string>
     <string name="parse_error">Couldn\'t parse title</string>
     <string name="network_error">Network error</string>
@@ -156,7 +155,7 @@
     <string name="original">Original</string>
     <string name="corrected">Corrected</string>
     <string name="taggers">Taggers</string>
-    <string name="taggings">Tags</string>
+    <string name="taggings">Taggings</string>
     <string name="similar_tags">Similar to</string>
 
     <string name="pref_master_off">Scrobbler disabled</string>

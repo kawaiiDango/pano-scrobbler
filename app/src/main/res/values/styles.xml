@@ -94,7 +94,7 @@
         <item name="android:paddingBottom">@dimen/fab_margin</item>
     </style>
 
-    <style name="circleImageView" parent="">
+    <style name="circleImageView">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>

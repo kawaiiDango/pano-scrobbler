@@ -161,6 +161,8 @@ object Stuff {
     const val EDITS_REPLACE_EXISTING = 2
     const val EDITS_KEEP_EXISTING = 3
 
+    const val LOADING_ALPHA = 0.7f
+
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
     const val LISTENBRAINZ_API_ROOT = "https://api.listenbrainz.org/"

@@ -122,7 +122,6 @@ class LFMRequester(context: Context) {
     fun getFriendsRecents(username: String): LFMRequester {
         toExec = {
             initCaller(Main.isOnline)
-            Stuff.log(this::getFriendsRecents.name + " " + username)
             Pair(username, User.getRecentTracks(username, 1, 1, false, null, Stuff.LAST_KEY))
         }
         return this

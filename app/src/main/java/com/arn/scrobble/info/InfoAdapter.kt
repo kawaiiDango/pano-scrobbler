@@ -3,6 +3,9 @@ package com.arn.scrobble.info
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.text.Layout
+import android.text.Spanned
+import android.text.style.URLSpan
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -105,7 +108,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                 }
                 NLService.B_ALBUM -> {
                     binding.infoType.setImageResource(R.drawable.vd_album)
-                    binding.infoType.contentDescription = itemView.context.getString(R.string.album_optional)
+                    binding.infoType.contentDescription = itemView.context.getString(R.string.album)
                     val tracks = (entry as? Album)?.tracks?.toList()
                     if (!tracks.isNullOrEmpty()) {
                         var totalDuration = 0
@@ -232,8 +235,14 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
 //                                    DateFormat.getLongDateFormat(itemView.context).format(entry.wikiLastChanged)) +
 //                                    "</i>"
 //                        This is the first published date and not the last updated date
-                        binding.infoWiki.visibility = View.VISIBLE
+                        binding.infoWikiContainer.visibility = View.VISIBLE
                         binding.infoWiki.text = Html.fromHtml(wikiText)
+
+                        //text gets cut off to the right if justified and has links
+                        val urls = (binding.infoWiki.text as? Spanned)?.getSpans(0, binding.infoWiki.text.length, URLSpan::class.java)
+                        if (urls.isNullOrEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                            binding.infoWiki.justificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD
+
                         binding.infoWiki.post{
                             if (binding.infoWiki.layout == null)
                                 return@post

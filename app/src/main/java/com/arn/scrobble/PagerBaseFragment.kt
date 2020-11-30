@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.arn.scrobble.databinding.ContentPagerBinding
+import com.arn.scrobble.databinding.NavTabBinding
 import com.google.android.material.tabs.TabLayout
 
 
@@ -53,16 +53,14 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
     protected fun initTabs(selectedTab: Int) {
         val tabBar = (activity as Main).binding.coordinatorMain.tabBar
         for (i in 0 until tabBar.tabCount) {
-            val tab = LayoutInflater.from(context).inflate(R.layout.nav_tab, null) as LinearLayout
-            val tabLabel = tab.findViewById<TextView>(R.id.tab_label)
-            val tabIcon = tab.findViewById<ImageView>(R.id.tab_icon)
-            tabLabel.text = resources.getString(tabMeta[i].first)
-            tabIcon.setImageResource(tabMeta[i].second)
-            tabIcon.imageTintList = tabBar.tabIconTint
+            val tabBinding = NavTabBinding.inflate(layoutInflater)
+            tabBinding.tabLabel.text = resources.getString(tabMeta[i].first)
+            tabBinding.tabIcon.setImageResource(tabMeta[i].second)
+            tabBinding.tabIcon.imageTintList = tabBar.tabIconTint
             if (selectedTab == i) {
-                tabLabel.visibility = View.VISIBLE
+                tabBinding.tabLabel.visibility = View.VISIBLE
             }
-            tabBar.getTabAt(i)?.customView = tab
+            tabBar.getTabAt(i)?.customView = tabBinding.root
         }
         tabBar.getTabAt(selectedTab)?.select()
     }
@@ -81,12 +79,12 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab) {
-        TransitionManager.beginDelayedTransition(tab.customView as ViewGroup)
-        tab.customView?.findViewById<TextView>(R.id.tab_label)?.visibility = View.GONE
+        TransitionManager.beginDelayedTransition(tab.customView as ViewGroup, AutoTransition().setDuration(200))
+        tab.customView!!.findViewById<TextView>(R.id.tab_label)?.visibility = View.GONE
     }
 
     override fun onTabSelected(tab: TabLayout.Tab) {
-        TransitionManager.beginDelayedTransition(tab.customView as ViewGroup)
-        tab.customView?.findViewById<TextView>(R.id.tab_label)?.visibility = View.VISIBLE
+        TransitionManager.beginDelayedTransition(tab.customView as ViewGroup, AutoTransition().setDuration(200))
+        tab.customView!!.findViewById<TextView>(R.id.tab_label)?.visibility = View.VISIBLE
     }
 }

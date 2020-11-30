@@ -9,9 +9,9 @@ import com.arn.scrobble.databinding.FrameChartsListBinding
 class ChartsOverviewAdapter(rootViewBinding: FrameChartsListBinding): ChartsAdapter(rootViewBinding) {
     
     override val forceDimensions = true
+    override val roundCorners = true
 
     override fun populate(){
-        binding as FrameChartsListBinding
         if (viewModel.chartsData.isEmpty()) {
             if (itemCount == 0) {
                 if (!Main.isOnline)

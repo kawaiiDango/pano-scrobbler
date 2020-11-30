@@ -1,8 +1,12 @@
 package com.arn.scrobble.info
 
 import android.app.Dialog
+import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.text.Layout
+import android.text.Spanned
+import android.text.style.URLSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,8 +78,13 @@ class TagInfoFragment: BottomSheetDialogFragment() {
                     wikiText = wikiText.substring(0, idx).trim()
                 if (!wikiText.isNullOrBlank()) {
                     wikiText = wikiText.replace("\n", "<br>")
-                    binding.tagInfoWiki.visibility = View.VISIBLE
+                    binding.tagInfoWikiContainer.visibility = View.VISIBLE
                     binding.tagInfoWiki.text = Html.fromHtml(wikiText)
+
+                    val urls = (binding.tagInfoWiki.text as? Spanned)?.getSpans(0, binding.tagInfoWiki.text.length, URLSpan::class.java)
+                    if (urls.isNullOrEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                        binding.tagInfoWiki.justificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD
+
                     binding.tagInfoWiki.post{
                         if (_binding == null || binding.tagInfoWiki.layout == null)
                             return@post

@@ -8,7 +8,7 @@
         <item
             app:actionLayout="@layout/action_external"
             android:id="@+id/nav_last_week"
-            android:icon="@drawable/vd_bar_chart"
+            android:icon="@drawable/vd_week"
             android:title="@string/last_week"/>
     </group>
 

@@ -29,6 +29,7 @@ import androidx.fragment.app.Fragment
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.CoordinatorMainBinding
 import com.arn.scrobble.info.InfoFragment
@@ -133,8 +134,16 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         val activity = activity as Main? ?: return
         coordinatorBinding.toolbar.title = null
         Stuff.setAppBarHeight(activity)
-
-        val llm = LinearLayoutManager(context!!)
+//      https://stackoverflow.com/questions/31759171/recyclerview-and-java-lang-indexoutofboundsexception-inconsistency-detected-in
+        val llm = object : LinearLayoutManager(context!!) {
+            override fun onLayoutChildren(recycler: Recycler?, state: RecyclerView.State?) {
+                try {
+                    super.onLayoutChildren(recycler, state)
+                } catch (e: IndexOutOfBoundsException) {
+                    Stuff.log("meet a IOOBE in RecyclerView")
+                }
+            }
+        }
         binding.recentsList.layoutManager = llm
 
         viewModel = VMFactory.getVM(this, TracksVM::class.java)
@@ -145,7 +154,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         adapter.setStatusHeader()
 
         animSet = AnimatorSet()
-        animSet.addListener(object : Animator.AnimatorListener{
+        animSet.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(p0: Animator?) {}
 
             override fun onAnimationEnd(p0: Animator?) {
@@ -291,7 +300,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             if (viewModel.toTime > 0) {
                 cal.time = Date(viewModel.toTime)
             }
-            val dpd = DatePickerDialog(context!!, R.style.DarkDialog, {datePicker, year, month, dayOfMonth ->
+            val dpd = DatePickerDialog(context!!, R.style.DarkDialog, { datePicker, year, month, dayOfMonth ->
                 datePicker ?: return@DatePickerDialog
                 cal.set(year, month, dayOfMonth, 23, 59, 59)
                 viewModel.toTime = cal.timeInMillis
@@ -312,7 +321,9 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         if (viewModel.tracks.isEmpty())
             loadRecents(1)
         else
-            adapter.populate(viewModel.tracks)
+            synchronized(viewModel.tracks) {
+                adapter.populate(viewModel.tracks)
+            }
     }
 
     private fun setGraph(pointsStr: String?) {
@@ -352,14 +363,14 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             show = !show
 
         if (show) {
-            sparkline.setPadding(2*resources.getDimensionPixelSize(R.dimen.graph_margin_details),
-                    0,0,
+            sparkline.setPadding(2 * resources.getDimensionPixelSize(R.dimen.graph_margin_details),
+                    0, 0,
                     resources.getDimensionPixelSize(R.dimen.graph_margin_details))
             coordinatorBinding.sparklineHorizontalLabel.visibility = View.VISIBLE
             coordinatorBinding.sparklineTickTop.visibility = View.VISIBLE
             coordinatorBinding.sparklineTickBottom.visibility = View.VISIBLE
         } else {
-            sparkline.setPadding(0,0,0,0)
+            sparkline.setPadding(0, 0, 0, 0)
             coordinatorBinding.sparklineHorizontalLabel.visibility = View.GONE
             coordinatorBinding.sparklineTickTop.visibility = View.GONE
             coordinatorBinding.sparklineTickBottom.visibility = View.GONE
@@ -369,7 +380,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 .apply()
     }
 
-    private fun loadRecents(page: Int, force:Boolean = false): Boolean {
+    private fun loadRecents(page: Int, force: Boolean = false): Boolean {
         _binding ?: return false
 
         if (page <= viewModel.totalPages) {
@@ -543,7 +554,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             Palette.from(d.bitmap).generate{ set(it) }
     }
 
-    override fun onItemClick (view: View, position: Int) {
+    override fun onItemClick(view: View, position: Int) {
         val item = adapter.getItem(position) ?: return
         val dateFrame = (view.parent as ViewGroup).findViewById<FrameLayout>(R.id.date_frame)
         if (item !is Track) {
@@ -605,7 +616,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
     }
 
     @SuppressLint("RestrictedApi")
-    private fun openTrackPopupMenu (anchor: View, track: Track) {
+    private fun openTrackPopupMenu(anchor: View, track: Track) {
         val menuBuilder = MenuBuilder(context)
         val inflater = SupportMenuInflater(context)
         if (username == null) {
@@ -678,13 +689,13 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                             Stuff.toast(context, getString(R.string.unavailable_offline))
                         else if (csrfTokenExists()) {
                             LFMRequester(context!!).delete(track) { succ ->
-                                        if (succ) {
-                                            view?.post {
-                                                adapter.removeTrack(track)
-                                            }
-                                        } else
-                                            Stuff.toast(context, getString(R.string.network_error))
+                                if (succ) {
+                                    view?.post {
+                                        adapter.removeTrack(track)
                                     }
+                                } else
+                                    Stuff.toast(context, getString(R.string.network_error))
+                            }
                                     .asAsyncTask()
                         }
                     }
@@ -705,7 +716,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         popupMenu.show()
     }
 
-    private fun loveToggle(loveIcon:View, track: Track) {
+    private fun loveToggle(loveIcon: View, track: Track) {
         val alphaAnimator = ObjectAnimator.ofFloat(loveIcon, "alpha", 0f)
         val scalexAnimator = ObjectAnimator.ofFloat(loveIcon, "scaleX", 0f)
         val scaleyAnimator = ObjectAnimator.ofFloat(loveIcon, "scaleY", 0f)

@@ -53,6 +53,7 @@ import com.squareup.picasso.Picasso
 import org.codechimp.apprater.AppRater
 import java.io.File
 import java.text.NumberFormat
+import java.util.*
 
 class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         FragmentManager.OnBackStackChangedListener{
@@ -310,7 +311,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             return
 
         val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
-        navHeaderbinding.navName.text = if (BuildConfig.DEBUG) "nobody" else username
+        val displayUsername = if (BuildConfig.DEBUG) "nobody" else username
+        if (navHeaderbinding.navName.tag == null)
+            navHeaderbinding.navName.text = displayUsername
         val numToday = actPref.getInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, 0)
         val numTotal = actPref.getInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, 0)
         val nf = NumberFormat.getInstance()
@@ -330,6 +333,26 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         if (!forceUpdate)
             LFMRequester(applicationContext).getDrawerInfo().asAsyncTask()
         lastDrawerOpenTime = System.currentTimeMillis()
+
+        if (navHeaderbinding.navName.tag == null) {
+            val cal = Calendar.getInstance()
+            val c = (cal[Calendar.MONTH] == 11 && cal[Calendar.DAY_OF_MONTH] >= 25) ||
+                    (cal[Calendar.MONTH] == 0 && cal[Calendar.DAY_OF_MONTH] <= 5)
+            if (!c)
+                return
+            navHeaderbinding.navName.tag = "☃️"
+            val runnable = object : Runnable {
+                override fun run() {
+                    if (navHeaderbinding.navName.tag == "☃️")
+                        navHeaderbinding.navName.tag = "⛄️"
+                    else
+                        navHeaderbinding.navName.tag = "☃️"
+                    navHeaderbinding.navName.text = (navHeaderbinding.navName.tag as String) + displayUsername + "\uD83C\uDF84"
+                    navHeaderbinding.navName.postDelayed(this, 500)
+                }
+            }
+            runnable.run()
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

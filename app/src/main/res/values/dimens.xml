@@ -15,9 +15,10 @@
     <dimen name="coordinator_padding">0dp</dimen>
     <dimen name="grid_size">160dp</dimen>
     <dimen name="big_grid_size">180dp</dimen>
-    <dimen name="gradient_container_top_padding">30dp</dimen>
+    <dimen name="gradient_container_top_padding">40dp</dimen>
     <dimen name="random_container_max_width">400dp</dimen>
     <dimen name="first_things_margin">10dp</dimen>
     <dimen name="recents_overlay_rotate">10</dimen>
     <dimen name="bottom_sheet_width">0dp</dimen>
+    <dimen name="charts_corner_radius">10dp</dimen>
 </resources>

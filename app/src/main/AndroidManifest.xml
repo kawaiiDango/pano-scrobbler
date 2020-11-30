@@ -50,7 +50,7 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES"/>
             </intent-filter>
 
-            <intent-filter android:label="@string/authorize">
+            <intent-filter android:label="@string/pref_login">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />

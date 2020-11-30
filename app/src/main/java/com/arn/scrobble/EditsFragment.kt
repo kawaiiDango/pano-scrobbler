@@ -105,24 +105,24 @@ class EditsFragment: Fragment(), ItemClickListener {
                         .setView(dialogBinding.root)
                         .setPositiveButton(android.R.string.ok){ dialogInterface, i ->
                             val ne = Edit()
-                            ne.origTrack = dialogBinding.editTrackOrig.edittext.text.toString()
-                            ne.track = dialogBinding.editTrack.edittext.text.toString()
-                            ne.origAlbum = dialogBinding.editAlbumOrig.edittext.text.toString()
-                            ne.album = dialogBinding.editAlbum.edittext.text.toString()
-                            ne.origArtist = dialogBinding.editArtistOrig.edittext.text.toString()
-                            ne.artist = dialogBinding.editArtist.edittext.text.toString()
-                            ne.albumArtist = dialogBinding.editAlbumArtist.edittext.text.toString()
+                            ne.origTrack = dialogBinding.editTrackOrig.edittext.text.toString().trim()
+                            ne.track = dialogBinding.editTrack.edittext.text.toString().trim()
+                            ne.origAlbum = dialogBinding.editAlbumOrig.edittext.text.toString().trim()
+                            ne.album = dialogBinding.editAlbum.edittext.text.toString().trim()
+                            ne.origArtist = dialogBinding.editArtistOrig.edittext.text.toString().trim()
+                            ne.artist = dialogBinding.editArtist.edittext.text.toString().trim()
+                            ne.albumArtist = dialogBinding.editAlbumArtist.edittext.text.toString().trim()
 
                             if (
-                                    ne.origTrack.trim().isEmpty() ||
-                                    ne.artist.trim().isEmpty() ||
-                                    ne.track.trim().isEmpty()
+                                    ne.origTrack.isEmpty() ||
+                                    ne.artist.isEmpty() ||
+                                    ne.track.isEmpty()
                                     ) {
                                 Stuff.toast(context, getString(R.string.required_fields_empty))
                                 return@setPositiveButton
                             }
                             if (e != ne) {
-                                val checkArtist = e.artist.toLowerCase() != ne.artist.toLowerCase()
+                                val checkArtist = ne.artist.isNotEmpty() && e.artist.toLowerCase() != ne.artist.toLowerCase()
                                 adapter.update(position, ne)
                                 AsyncTask.THREAD_POOL_EXECUTOR.execute {
                                     if (checkArtist) {

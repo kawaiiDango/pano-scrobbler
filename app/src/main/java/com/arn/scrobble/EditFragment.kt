@@ -101,12 +101,12 @@ class EditFragment: LoginFragment() {
 
     override fun validateAsync(): String? {
         val args = arguments ?: return null
-        val track = binding.loginTextfield1.editText!!.text.toString()
+        val track = binding.loginTextfield1.editText!!.text.toString().trim()
         val origTrack = args.getString(NLService.B_TITLE) ?: ""
-        var album = binding.loginTextfield1.editText!!.text.toString()
-        var albumArtist = binding.loginTextfieldLast2.editText!!.text.toString()
+        var album = binding.loginTextfield2.editText!!.text.toString().trim()
+        var albumArtist = binding.loginTextfieldLast2.editText!!.text.toString().trim()
         val origAlbum = args.getString(NLService.B_ALBUM) ?: ""
-        val artist = binding.loginTextfieldLast.editText!!.text.toString()
+        val artist = binding.loginTextfieldLast.editText!!.text.toString().trim()
         val origArtist = args.getString(NLService.B_ARTIST) ?: ""
         val timeMillis = args.getLong(NLService.B_TIME, System.currentTimeMillis())
         var errMsg: String? = null

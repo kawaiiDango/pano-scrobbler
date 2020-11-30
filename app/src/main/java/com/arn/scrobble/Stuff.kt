@@ -309,7 +309,7 @@ object Stuff {
 
 
         if (musicInfo == null || musicInfo.size < 2) {
-            return arrayOf("", titleContent)
+            return arrayOf("", titleContent.trim())
         }
 
         //remove ", ', 」, 』 from musicInfo

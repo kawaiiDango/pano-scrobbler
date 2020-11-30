@@ -12,7 +12,7 @@ android {
         verCode = line.toInteger()
         List<String> runTasks = gradle.startParameter.getTaskNames()
         for (String item : runTasks)
-            if (item.contains("publishReleaseApk")) {
+            if (item.contains("publishReleaseApk") || item.contains("publish")) {
                 verCode++
                 versionFile.text = verCode.toString()
                 break

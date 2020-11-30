@@ -11,31 +11,28 @@
 <a href="https://bit.ly/Pscrdl">Download latest apk</a> (Do not use this if the play store link works for you and you want automatic updates)
 
 #### Features:
+- No ADs ever
 - Scrobble from anything which produces audio with metadata, including Youtube, Chrome, Telegram etc.
 - Scrobble to lastFM, LibreFM, GNU FM and Listenbrainz
 - View scrobble count in notification
 - Verify the metadata with lastFM's records before scrobbling
-- View track info, such as listener count charts, album art etc
+- View track, album, artist and album artist details
 - View scrobbles from a specified date
 - Work with scrobbles (love a track, cancel a scrobble)
 - Edit recent scrobbles for free
 - Delete existing scrobbles
 - Offline cacheing and scrobbling
 - Check what your friends are listening to
-- View and play songs similar to a given one
 - Identify and scrobble a song from mic
 - Supports TVs (Oreo and lower needs adb commands)
 - Supports Pixel Now Playing
 - Import & export settings and saved edits
 - Intents for apps like Tasker, Macrodroid etc
 - View top artists, albums or tracks. Also works for friends
+- View daily, weekly, monthly or yearly scrobble count graphs
 - I'm feeling lucky, a shuffle all for your entire listening history
 - Fetch albums and album artists from lastfm, if missing, before scrobbling.
-
-#### This is not intended to:
-- be an app to browse lastfm.
-- use webviews except the first steps. Other links would rather open in the browser
-- contain any kind of ADs
+- Search
 
 ### Building:
 See [instructions.md](instructions.md)

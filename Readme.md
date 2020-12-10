@@ -8,7 +8,7 @@
 <img alt='GIF' src='https://media.giphy.com/media/WvikAmG3iseJoFun1A/giphy.gif' width="240"/>
 <i>Thats the GIF of a much older version.</i>
 
-<a href="https://bit.ly/Pscrdl">Download latest apk</a> (Do not use this if the play store link works for you and you want automatic updates)
+<a href="https://www.dropbox.com/sh/8saq9h4m2744x55/AABwpqEKbpTLWoZ8-vXvA5vda?dl=0">Download latest apk</a> (Do not use this if the play store link works for you)
 
 #### Features:
 - No ADs ever

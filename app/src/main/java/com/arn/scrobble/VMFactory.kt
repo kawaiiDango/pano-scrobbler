@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.info.InfoVM
 import com.arn.scrobble.info.TagInfoVM
+import com.arn.scrobble.info.UserTagsVM
 
 
 object VMFactory: ViewModelProvider.Factory {
@@ -27,6 +28,7 @@ object VMFactory: ViewModelProvider.Factory {
             modelClass.isAssignableFrom(InfoVM::class.java) -> InfoVM(application!!) as T
             modelClass.isAssignableFrom(SearchVM::class.java) -> SearchVM(application!!) as T
             modelClass.isAssignableFrom(TagInfoVM::class.java) -> TagInfoVM(application!!) as T
+            modelClass.isAssignableFrom(UserTagsVM::class.java) -> UserTagsVM(application!!) as T
             else -> throw RuntimeException("Unknown VM class")
         }
     }

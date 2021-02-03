@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
@@ -19,6 +18,7 @@ import com.arn.scrobble.databinding.ListItemInfoBinding
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
@@ -43,9 +43,6 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
     }
 
     inner class VHInfo(private val binding: ListItemInfoBinding): RecyclerView.ViewHolder(binding.root){
-        init {
-            setIsRecyclable(false)
-        }
 
         private fun setLoved(track: Track) {
             if (track.isLoved) {
@@ -66,6 +63,8 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
         fun setItemData(pair: Pair<String, MusicEntry?>, username: String?) {
             val key = pair.first
             val entry = pair.second
+            val b = Bundle()
+
             when (key) {
                 NLService.B_TITLE -> {
                     entry as Track
@@ -96,20 +95,26 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                             }
                         }
                     }
+
+                    b.putString(NLService.B_ARTIST, entry.artist)
+                    b.putString(NLService.B_TITLE, entry.name)
+
                     binding.infoExtra.text = itemView.context.getString(R.string.similar)
                     binding.infoExtra.setOnClickListener {
-                        val infoExtra = InfoExtraFragment()
-                        val b = Bundle()
-                        b.putString(NLService.B_ARTIST, entry.artist)
-                        b.putString(NLService.B_TITLE, entry.name)
-                        infoExtra.arguments = b
-                        infoExtra.show(fragment.parentFragmentManager, null)
+                        InfoExtraFragment()
+                                .apply { arguments = b }
+                                .show(fragment.parentFragmentManager, null)
                     }
                 }
                 NLService.B_ALBUM -> {
                     binding.infoType.setImageResource(R.drawable.vd_album)
                     binding.infoType.contentDescription = itemView.context.getString(R.string.album)
-                    val tracks = (entry as? Album)?.tracks?.toList()
+
+                    val tracks = (entry as Album).tracks?.toList()
+
+                    b.putString(NLService.B_ARTIST, entry.artist)
+                    b.putString(NLService.B_ALBUM, entry.name)
+
                     if (!tracks.isNullOrEmpty()) {
                         var totalDuration = 0
                         var plus = ""
@@ -131,7 +136,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                         binding.infoExtra.setOnClickListener {
                             val rv = LayoutInflater.from(itemView.context).inflate(R.layout.content_simple_list, null) as RecyclerView
                             rv.layoutManager = LinearLayoutManager(itemView.context)
-                            val dialog = AlertDialog.Builder(itemView.context, R.style.DarkDialog)
+                            val dialog = MaterialAlertDialogBuilder(itemView.context)
                                     .setTitle(Stuff.getColoredTitle(itemView.context, entry.name))
                                     .setIcon(R.drawable.vd_album)
                                     .setView(rv)
@@ -145,12 +150,10 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                                         dialog.dismiss()
                                         fragment.dismiss()
                                         val info = InfoFragment()
-                                        val b = Bundle()
-                                        b.putString(NLService.B_ARTIST, entry.artist)
-                                        b.putString(NLService.B_ALBUM, entry.name)
-                                        b.putString(NLService.B_TITLE, tracks[position].name)
-                                        b.putString(Stuff.ARG_USERNAME, username)
-                                        info.arguments = b
+                                        val thisBundle = b.clone() as Bundle
+                                        thisBundle.putString(NLService.B_TITLE, tracks[position].name)
+                                        thisBundle.putString(Stuff.ARG_USERNAME, username)
+                                        info.arguments = thisBundle
                                         info.show(fragment.parentFragmentManager, null)
                                     }
                                 }
@@ -165,32 +168,38 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                         }
                     } else
                         binding.infoExtra.visibility = View.GONE
+
+                    binding.infoUserTags.setOnClickListener {
+                        UserTagsFragment()
+                                .apply { arguments = b }
+                                .show(fragment.childFragmentManager, null)
+                    }
                 }
                 NLService.B_ARTIST -> {
                     binding.infoType.setImageResource(R.drawable.vd_mic)
                     binding.infoType.contentDescription = itemView.context.getString(R.string.artist)
 
+                    b.putString(NLService.B_ARTIST, entry!!.name)
+
                     binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
                     binding.infoExtra.setOnClickListener {
-                        val infoExtra = InfoExtraFragment()
-                        val b = Bundle()
-                        b.putString(NLService.B_ARTIST, entry!!.name)
-                        infoExtra.arguments = b
-                        infoExtra.show(fragment.parentFragmentManager, null)
+                        InfoExtraFragment()
+                                .apply { arguments = b }
+                                .show(fragment.parentFragmentManager, null)
                     }
                 }
                 NLService.B_ALBUM_ARTIST -> {
                     binding.infoType.setImageResource(R.drawable.vd_album_artist)
                     binding.infoType.contentDescription = itemView.context.getString(R.string.album_artist)
 
+                    b.putString(NLService.B_ARTIST, entry!!.name)
+
                     binding.infoExtra.visibility = View.VISIBLE
                     binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
                     binding.infoExtra.setOnClickListener {
-                        val infoExtra = InfoExtraFragment()
-                        val b = Bundle()
-                        b.putString(NLService.B_ARTIST, entry!!.name)
-                        infoExtra.arguments = b
-                        infoExtra.show(fragment.parentFragmentManager, null)
+                        InfoExtraFragment()
+                                .apply { arguments = b }
+                                .show(fragment.parentFragmentManager, null)
                     }
                 }
             }
@@ -202,25 +211,36 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
             }
             if (entry?.url != null) {
                 binding.infoProgress.visibility = View.GONE
+
+                binding.infoUserTags.visibility = View.VISIBLE
+                binding.infoUserTags.setOnClickListener {
+                    UserTagsFragment()
+                            .apply { arguments = b }
+                            .show(fragment.childFragmentManager, null)
+                }
+
                 binding.infoContent.visibility = View.VISIBLE
+
                 if (username != null)
                     binding.infoUserScrobblesLabel.text = itemView.context.getString(R.string.user_scrobbles, username)
                 binding.infoUserScrobbles.text = NumberFormat.getInstance().format(entry.userPlaycount)
                 binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
                 binding.infoScrobbles.text = NumberFormat.getInstance().format(entry.playcount)
+
                 binding.infoTags.removeAllViews()
                 entry.tags?.forEach {
                     val chip = Chip(itemView.context)
                     chip.text = it
+                    chip.setChipBackgroundColorResource(R.color.chipBgOnBlack)
+                    // default/translucent colors increase the brightness probably due to the elevation of the dialog
                     chip.setOnClickListener { _ ->
                         val tif = TagInfoFragment()
-                        val b = Bundle()
-                        b.putString(Stuff.ARG_TAG, it)
-                        tif.arguments = b
+                        tif.arguments = Bundle().apply { putString(Stuff.ARG_TAG, it) }
                         tif.show(fragment.parentFragmentManager, null)
                     }
                     binding.infoTags.addView(chip)
                 }
+
                 var wikiText = entry.wikiText ?: entry.wikiSummary
                 if (!wikiText.isNullOrBlank()) {
                     var idx = wikiText.indexOf("<a href=\"http://www.last.fm")
@@ -272,7 +292,8 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                     if (entry.url != null)
                         Stuff.openInBrowser(entry.url, itemView.context)
                 }
-            }
+            } else
+                binding.infoProgress.show()
         }
     }
 }

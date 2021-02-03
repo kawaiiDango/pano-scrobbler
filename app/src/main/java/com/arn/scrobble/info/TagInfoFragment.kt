@@ -17,7 +17,6 @@ import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentTagInfoBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.chip.Chip
 import java.net.URLEncoder
 import java.text.NumberFormat
 
@@ -39,7 +38,7 @@ class TagInfoFragment: BottomSheetDialogFragment() {
         return dialog
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentTagInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -57,13 +56,14 @@ class TagInfoFragment: BottomSheetDialogFragment() {
         binding.tagInfoLink.setOnClickListener { Stuff.openInBrowser("https://www.last.fm/tag/" +
                 URLEncoder.encode(tag, "UTF-8")
                 , context!!) }
+        binding.tagInfoProgress.show()
 
         viewModel.info.observe(viewLifecycleOwner) {
             it ?: return@observe
             val tagInfo = it.first
             val similarTags = it.second
 
-            binding.tagInfoProgress.visibility = View.GONE
+            binding.tagInfoProgress.hide()
             binding.tagInfoContent.visibility = View.VISIBLE
 
             binding.tagInfoTaggers.text = NumberFormat.getInstance().format(tagInfo.reach)
@@ -108,7 +108,7 @@ class TagInfoFragment: BottomSheetDialogFragment() {
                     }
                 }
             }
-
+/*
             if (!similarTags.isNullOrEmpty()) {
                 binding.tagInfoSimilarTitle.visibility = View.VISIBLE
                 binding.tagInfoTags.removeAllViews()
@@ -125,6 +125,8 @@ class TagInfoFragment: BottomSheetDialogFragment() {
                     binding.tagInfoTags.addView(chip)
                 }
             }
+
+ */
         }
 
         if (viewModel.info.value == null)

@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -36,7 +35,7 @@ class InfoFragment: BottomSheetDialogFragment() {
         return dialog
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = ContentInfoBinding.inflate(inflater, container, false)
 
         val artist = arguments!!.getString(NLService.B_ARTIST)!!
@@ -46,7 +45,7 @@ class InfoFragment: BottomSheetDialogFragment() {
 
         val adapter = InfoAdapter(viewModel, this, username)
         binding.infoList.layoutManager = LinearLayoutManager(context!!)
-        (binding.infoList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        binding.infoList.itemAnimator = null
 
         val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
         itemDecor.setDrawable(ColorDrawable(ContextCompat.getColor(context!!, R.color.lightInfoDivider)))

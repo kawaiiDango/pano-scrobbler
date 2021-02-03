@@ -22,29 +22,25 @@
 - Edit recent scrobbles for free
 - Delete existing scrobbles
 - Offline cacheing and scrobbling
-- Check what your friends are listening to
+- Check what your friends are listening to and view their profiles
 - Identify and scrobble a song from mic
 - Supports TVs (Oreo and lower needs adb commands)
 - Supports Pixel Now Playing
 - Import & export settings and saved edits
 - Intents for apps like Tasker, Macrodroid etc
-- View top artists, albums or tracks. Also works for friends
+- View top artists, albums or tracks
 - View daily, weekly, monthly or yearly scrobble count graphs
 - I'm feeling lucky, a shuffle all for your entire listening history
-- Fetch albums and album artists from lastfm, if missing, before scrobbling.
+- Fetch albums and album artists from lastfm, if missing, before scrobbling
 - Search
+- Weekly/monthly top scrobble notifications
+- Add/remove personal tags
 
 ### Building:
 See [instructions.md](instructions.md)
 
-### Thanks to:
-- Musixmatch's FloatingLyrics for the idea and inspiration
-- https://github.com/jkovacs/lastfm-java (I added many missing lastfm api methods in a messy way, might make a pull request some time)
-- https://materialdesignicons.com
-- Other dependencies in build.gradle
-- **Kaycee da Ghost** for putting up with me while i tried to fix miui specific bugs
-- **memeko ヾ(\*・ω・)ノ** for the ui design
-- **My username is true** as a long time dedicated tester and spotting lots of bugs
-- **nabz** for ui and graphics design ideas
-- **nomad** for ui and graphics design ideas and fixes
-- everyone who reported bugs in-app, and helped me fix crashes and scrobbling issues
+- Inspiration from: Musixmatch's FloatingLyrics
+- Lastfm API wrapper: Based on https://github.com/jkovacs/lastfm-java
+- Icons: https://materialdesignicons.com and https://material.io
+
+Thanks to everyone who reported bugs and helped me with this project.

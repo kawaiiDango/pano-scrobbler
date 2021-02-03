@@ -1,7 +1,5 @@
 package com.arn.scrobble
 
-import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +34,7 @@ class RecentsAdapter
         LoadImgInterface, LoadMoreGetter {
 
     lateinit var itemClickListener: ItemClickListener
+    lateinit var itemLongClickListener: ItemLongClickListener
     lateinit var focusChangeListener: FocusChangeListener
     lateinit var setHeroListener: SetHeroTrigger
     private val sectionHeaders = mutableMapOf<Int,String>()
@@ -140,7 +139,7 @@ class RecentsAdapter
         val headerText = fragmentBinding.root.context.getString(R.string.pending_scrobbles)
         var shift = 0
         val lastDisplaySize = psMap.size + plMap.size
-        val oldNonTrackViewCount = nonTrackViewCount
+        var oldNonTrackViewCount = nonTrackViewCount
         val totalCount = pendingListData.psCount + pendingListData.plCount
         var displayCount = 0
         if (pendingListData.psCount > 0)
@@ -157,6 +156,10 @@ class RecentsAdapter
                 sectionHeaders[0] = lastval
             }
         } else {
+            if (sectionHeaders.isEmpty()) {
+                setStatusHeader()
+                oldNonTrackViewCount = nonTrackViewCount
+            }
             this.fm = fm
             if (totalCount < 3) {
                 shift = 1
@@ -231,7 +234,6 @@ class RecentsAdapter
         else
             setStatusHeader(fragmentBinding.root.context.getString(R.string.offline))
 
-        setLoading(false)
         val selectedId = getItemId(viewModel.selectedPos)
         var selectedPos = nonTrackViewCount
         if (viewModel.tracks.isEmpty()) {
@@ -251,6 +253,12 @@ class RecentsAdapter
         myUpdateCallback.selectedPos = viewModel.selectedPos
         val diff = DiffUtil.calculateDiff(DiffCallback(viewModel.tracks, oldTracks), false)
         diff.dispatchUpdatesTo(myUpdateCallback)
+        if (!viewModel.loadedNw || fragmentBinding.recentsSwipeRefresh.isRefreshing) {
+            fragmentBinding.recentsList.scheduleLayoutAnimation()
+            if (isShowingLoves)
+                notifyItemChanged(0, 0) //animation gets delayed otherwise
+        }
+        setLoading(false)
     }
 
     override fun loadImg(pos: Int){
@@ -341,6 +349,10 @@ class RecentsAdapter
             binding.root.setOnClickListener {
                 itemClickListener.onItemClick(itemView, adapterPosition)
             }
+            binding.root.setOnLongClickListener {
+                itemLongClickListener.onItemLongClick(itemView, adapterPosition)
+                true
+            }
             binding.root.onFocusChangeListener = this
             if (viewModel.username != null && !Main.isTV)
                 binding.recentsMenu.visibility = View.INVISIBLE
@@ -355,11 +367,8 @@ class RecentsAdapter
                 focusChangeListener.onFocus(itemView, adapterPosition)
         }
 
-        fun setSelected(selected:Boolean, track: Track = viewModel.tracks[viewModel.selectedPos - nonTrackViewCount]) {
+        private fun setSelected(selected:Boolean, track: Track = viewModel.tracks[viewModel.selectedPos - nonTrackViewCount]) {
             itemView.isActivated = selected
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                binding.recentsImg.foreground = if (selected) ColorDrawable(binding.recentsImg.context.getColor(R.color.thumbnailHighlight)) else null
-            }
             if (selected)
                 setHeroListener.onSetHero(adapterPosition, track, false)
         }

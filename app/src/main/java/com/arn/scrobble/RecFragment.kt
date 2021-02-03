@@ -9,6 +9,7 @@ import android.content.pm.ShortcutManager
 import android.graphics.Color
 import android.media.MediaRecorder
 import android.os.*
+import android.transition.Fade
 import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateInterpolator
@@ -37,6 +38,11 @@ class RecFragment:Fragment(){
     private var _binding: ContentRecBinding? = null
     private val binding
         get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = Fade()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentRecBinding.inflate(inflater, container, false)
@@ -128,7 +134,7 @@ class RecFragment:Fragment(){
     }
 
     private fun showSnackbar(){
-        val snackbar = Snackbar
+        Snackbar
                 .make(view!!, R.string.add_acr_consider, 8*1000)
                 .setAction(R.string.add) {
                     openAddKey()
@@ -144,8 +150,7 @@ class RecFragment:Fragment(){
                     }, 200)
             }
         })
-        snackbar.view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
-        snackbar.show()
+        .show()
     }
 
     private fun startOrCancel(){

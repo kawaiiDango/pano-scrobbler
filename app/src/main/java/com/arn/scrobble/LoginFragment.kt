@@ -8,7 +8,7 @@ import android.content.IntentFilter
 import android.os.AsyncTask
 import android.os.Bundle
 import android.text.util.Linkify
-import android.transition.Slide
+import android.transition.Fade
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -27,15 +27,19 @@ import org.json.JSONObject
  */
 open class LoginFragment: DialogFragment() {
     protected lateinit var pref: MultiPreferences
-    protected var checksLogin = true
+    open val checksLogin = true
     protected var standalone = false
     private var asyncTask: AsyncTask<Int, Unit, String?>? = null
-    private var _binding: ContentLoginBinding? = null
+    protected var _binding: ContentLoginBinding? = null
     protected val binding
         get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        returnTransition = Slide()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = Fade()
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         showsDialog = false
         _binding = ContentLoginBinding.inflate(inflater, container, false)
         pref = MultiPreferences(context!!)
@@ -69,7 +73,7 @@ open class LoginFragment: DialogFragment() {
 
         binding.loginSubmit.setOnClickListener {
             it.visibility = View.GONE
-            binding.loginProgress.visibility = View.VISIBLE
+            binding.loginProgress.show()
             validate()
         }
 
@@ -92,7 +96,7 @@ open class LoginFragment: DialogFragment() {
     protected open fun success() {
         if (context == null || !isAdded)
             return
-        binding.loginProgress.visibility = View.GONE
+        binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_check)
         binding.loginStatus.visibility = View.VISIBLE
         binding.loginProgress.postDelayed(
@@ -116,7 +120,7 @@ open class LoginFragment: DialogFragment() {
             Stuff.toast(context, errMsg)
         if (context == null || !isAdded)
             return
-        binding.loginProgress.visibility = View.GONE
+        binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_ban)
         binding.loginStatus.visibility = View.VISIBLE
         binding.loginProgress.postDelayed(
@@ -124,7 +128,7 @@ open class LoginFragment: DialogFragment() {
                     _binding ?: return@postDelayed
                     binding.loginStatus.visibility = View.GONE
                     binding.loginSubmit.visibility = View.VISIBLE
-                    binding.loginProgress.visibility = View.GONE
+                    binding.loginProgress.hide()
                 },
                 1500
         )

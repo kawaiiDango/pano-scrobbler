@@ -1,65 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/charts_period_scrollview"
     android:scrollbars="none"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
 
-    <com.google.android.material.chip.ChipGroup
-        android:theme="@style/AppThemeMaterial"
-        android:layout_gravity="start"
-        app:singleLine="true"
-        app:singleSelection="true"
-        app:selectionRequired="true"
-        android:id="@+id/charts_period"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
 
-        <com.google.android.material.chip.Chip
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:id="@+id/charts_choose_week"
+        <com.google.android.material.chip.ChipGroup
+            app:singleLine="true"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            android:id="@+id/charts_period"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:chipIconEnabled="true"
-            app:chipIcon="@drawable/vd_drop_down"
-            app:chipIconTint="@color/colorAccentLight"
-            android:text="@string/charts_choose_week" />
-        <com.google.android.material.chip.Chip
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:id="@+id/charts_7day"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/charts_7day" />
-        <com.google.android.material.chip.Chip
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:id="@+id/charts_1month"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/charts_1month" />
-        <com.google.android.material.chip.Chip
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:id="@+id/charts_3month"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/charts_3month" />
-        <com.google.android.material.chip.Chip
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:id="@+id/charts_6month"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/charts_6month" />
-        <com.google.android.material.chip.Chip
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:id="@+id/charts_12month"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/charts_12month" />
-        <com.google.android.material.chip.Chip
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:id="@+id/charts_overall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/charts_overall" />
-    </com.google.android.material.chip.ChipGroup>
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/charts_week_prev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="false"
+                android:visibility="gone"
+                app:chipIcon="@drawable/vd_arrow_left"
+                app:chipIconEnabled="true"
+                app:chipIconTint="?colorSecondary"
+                app:textEndPadding="0dp"
+                app:textStartPadding="0dp"
+                tools:visibility="visible" />
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/charts_choose_week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:chipIconEnabled="true"
+                app:chipIcon="@drawable/vd_drop_down"
+                app:chipIconTint="?colorSecondary"
+                android:text="@string/charts_choose_week" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/charts_week_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="false"
+                android:visibility="gone"
+                app:chipIcon="@drawable/vd_arrow_right"
+                app:chipIconEnabled="true"
+                app:chipIconTint="?colorSecondary"
+                app:textEndPadding="0dp"
+                app:textStartPadding="0dp"
+                tools:visibility="visible" />
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/charts_7day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/charts_7day" />
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/charts_1month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/charts_1month" />
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/charts_3month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/charts_3month" />
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/charts_6month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/charts_6month" />
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/charts_12month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/charts_12month" />
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:id="@+id/charts_overall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/charts_overall" />
+        </com.google.android.material.chip.ChipGroup>
+    </LinearLayout>
 </HorizontalScrollView>

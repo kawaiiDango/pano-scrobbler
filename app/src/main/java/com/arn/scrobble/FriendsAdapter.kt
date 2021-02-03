@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
-import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +22,7 @@ import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
+import com.google.android.material.color.MaterialColors
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
@@ -69,7 +69,10 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
     override fun getItemCount() = viewModel.friends.size
 
     fun populate() {
-        fragmentBinding.friendsSwipeRefresh.isRefreshing = false
+        if (fragmentBinding.friendsSwipeRefresh.isRefreshing) {
+            fragmentBinding.friendsGrid.scheduleLayoutAnimation()
+            fragmentBinding.friendsSwipeRefresh.isRefreshing = false
+        }
         loadMoreListener.loading = false
         val header = fragmentBinding.friendsHeader.headerText
         if (viewModel.friends.isEmpty()) {
@@ -192,7 +195,7 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
             val userImg = user.getWebpImageURL(ImageSize.EXTRALARGE)
             if (userImg != binding.friendsPic.tag) {
                 binding.friendsPic.tag = userImg
-                val bgDark = ContextCompat.getColor(itemView.context, R.color.darkToolbar)
+                val bgDark = MaterialColors.getColor(binding.root, android.R.attr.colorBackground)
                 val wasCached = viewModel.paletteColorsCache[userImg] != null
                 if (wasCached)
                     itemView.setBackgroundColor(viewModel.paletteColorsCache[userImg]!!)

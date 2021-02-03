@@ -11,20 +11,21 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.transition.Fade
+import android.view.View
+import android.view.animation.AnimationUtils
 import android.webkit.URLUtil
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SeekBarPreference
-import androidx.preference.SwitchPreference
+import androidx.preference.*
+import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
+import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.pending.db.PendingScrobblesDb
 import com.arn.scrobble.ui.MyClickableSpan
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.*
 
 
@@ -43,6 +44,7 @@ class PrefFragment : PreferenceFragmentCompat(){
 
         reenterTransition = Fade()
         exitTransition = Fade()
+
         addPreferencesFromResource(R.xml.preferences)
 
         val hideOnTV = mutableListOf<Preference>()
@@ -67,12 +69,6 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        val spotifyNotice = findPreference<Preference>("spotify_notice")!!
-        spotifyNotice.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            Stuff.openInBrowser("https://www.last.fm/settings/applications", activity)
-            true
-        }
-
         val pixelNp = findPreference<SwitchPreference>(Stuff.PREF_PIXEL_NP)!!
         hideOnTV.add(pixelNp)
         try {
@@ -88,55 +84,12 @@ class PrefFragment : PreferenceFragmentCompat(){
         }
         val autoDetect = findPreference<SwitchPreference>(Stuff.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
-/*
-        val searchSite = findPreference(Stuff.PREF_ACTIVITY_SEARCH_URL) as ListPreference
-        val searchSiteVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SEARCH_URL,
-                Stuff.PREF_ACTIVITY_SEARCH_URL_DEFAULT)
-        val idx = searchSite.findIndexOfValue(searchSiteVal)
-        searchSite.summary = searchSite.entries[idx]
-        searchSite.value = searchSiteVal
 
-        searchSite.onPreferenceChangeListener = Preference.OnPreferenceChangeListener{ pref: Preference, newVal: Any ->
-            newVal as String
-            val idx = searchSite.findIndexOfValue(newVal)
-            searchSite.summary = searchSite.entries[idx]
-            appPrefs.edit()
-                    .putString(Stuff.PREF_ACTIVITY_SEARCH_URL, newVal)
-                    .apply()
-            true
-        }
-*/
         val delaySecs = findPreference<SeekBarPreference>(Stuff.PREF_DELAY_SECS)!!
         delaySecs.min = 20
 
         val delayPer = findPreference<SeekBarPreference>(Stuff.PREF_DELAY_PER)!!
         delayPer.min = 30
-
-        val shareSig = findPreference<Preference>(Stuff.PREF_ACTIVITY_SHARE_SIG)!!
-
-        shareSig.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-
-            val shareSigVal = appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
-                getString(R.string.share_sig, getString(R.string.share_link)))
-            val et = EditText(context)
-            et.setText(shareSigVal)
-            val padding = resources.getDimensionPixelSize(R.dimen.fab_margin)
-
-            val dialog = AlertDialog.Builder(context!!, R.style.DarkDialog)
-                    .setTitle(R.string.pref_share_sig)
-                    .setPositiveButton(android.R.string.ok) { dialog, id ->
-                        appPrefs.edit()
-                                .putString(Stuff.PREF_ACTIVITY_SHARE_SIG, et.text.toString().take(50))
-                                .apply()
-                    }
-                    .setNegativeButton(android.R.string.cancel) { dialog, id ->
-                    }
-                    .create()
-            dialog.setView(et,padding,padding/3,padding,0)
-            dialog.show()
-            true
-
-        }
 
         val edits = findPreference<Preference>("edits")!!
         edits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -211,7 +164,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 et.setText(nixtapeUrl)
                 val padding = resources.getDimensionPixelSize(R.dimen.fab_margin)
 
-                val dialog = AlertDialog.Builder(context!!, R.style.DarkDialog)
+                val dialog = MaterialAlertDialogBuilder(context!!)
                         .setTitle(R.string.pref_gnufm_title)
                         .setPositiveButton(android.R.string.ok) { dialog, id ->
                             var newUrl = et.text.toString()
@@ -245,6 +198,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 val b = Bundle()
                 b.putString(LoginFragment.HEADING, getString(R.string.listenbrainz))
                 b.putString(LoginFragment.TEXTF1, getString(R.string.pref_user_label))
+                b.putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
 
                 val loginFragment = LoginFragment()
                 loginFragment.arguments = b
@@ -261,6 +215,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 b.putString(LoginFragment.HEADING, getString(R.string.custom_listenbrainz))
                 b.putString(LoginFragment.TEXTF1, getString(R.string.pref_user_label))
                 b.putString(LoginFragment.TEXTF2, "API URL")
+                b.putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
 
                 val loginFragment = LoginFragment()
                 loginFragment.arguments = b
@@ -287,7 +242,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                     ss.setSpan(MyClickableSpan(start, end), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
                 }
             }
-            AlertDialog.Builder(context!!, R.style.DarkDialog)
+            MaterialAlertDialogBuilder(context!!)
                     .setTitle(R.string.pref_intents_dialog_title)
                     .setMessage(ss)
                     .setPositiveButton(android.R.string.ok) { _, _ -> }
@@ -313,6 +268,13 @@ class PrefFragment : PreferenceFragmentCompat(){
             }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val rv = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
+        rv.layoutAnimation = AnimationUtils.loadLayoutAnimation(context!!, R.anim.layout_animation_slide_up)
+        rv.scheduleLayoutAnimation()
+    }
+
     private fun setAuthLabel(elem: Preference) {
         val username =
                 preferenceManager.preferenceDataStore?.getString(elem.key + "_username", null)
@@ -326,7 +288,7 @@ class PrefFragment : PreferenceFragmentCompat(){
         }
     }
 
-    private fun setAuthLabel(elemKey: String) = setAuthLabel(findPreference<Preference>(elemKey)!!)
+    private fun setAuthLabel(elemKey: String) = setAuthLabel(findPreference(elemKey)!!)
 
     private fun initAuthConfirmation(key:String, login: () -> Unit, vararg keysToClear: String,
                                      logout: (() -> Unit)? = null) {
@@ -343,7 +305,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                             setAuthLabel(it)
                         }, CONFIRM_TIME)
                         val span = SpannableString(getString(R.string.pref_confirm_logout))
-                        span.setSpan(ForegroundColorSpan(ContextCompat.getColor(context!!, R.color.colorAccent)),
+                        span.setSpan(ForegroundColorSpan(MaterialColors.getColor(context!!, R.attr.colorPrimary, null)),
                                 0, span.length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
                         span.setSpan(StyleSpan(Typeface.BOLD_ITALIC), 0, span.length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
 
@@ -384,7 +346,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 if (data != null) {
                     val currentUri = data.data ?: return
                     val binding = DialogImportBinding.inflate(layoutInflater)
-                    AlertDialog.Builder(context!!, R.style.DarkDialog)
+                    MaterialAlertDialogBuilder(context!!)
                             .setView(binding.root)
                             .setTitle(R.string.import_options)
                             .setPositiveButton(android.R.string.ok) { _, _ ->

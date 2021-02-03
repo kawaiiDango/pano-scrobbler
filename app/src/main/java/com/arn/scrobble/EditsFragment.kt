@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.databinding.ContentEditsBinding
@@ -18,6 +17,7 @@ import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.pending.db.Edit
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.ItemClickListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 class EditsFragment: Fragment(), ItemClickListener {
@@ -101,7 +101,7 @@ class EditsFragment: Fragment(), ItemClickListener {
                 dialogBinding.editAlbumArtist.root.hint = getString(R.string.album_artist)
                 dialogBinding.editAlbumArtist.edittext.setText(e.albumArtist)
 
-                AlertDialog.Builder(context!!, R.style.DarkDialog)
+                MaterialAlertDialogBuilder(context!!)
                         .setView(dialogBinding.root)
                         .setPositiveButton(android.R.string.ok){ dialogInterface, i ->
                             val ne = Edit()

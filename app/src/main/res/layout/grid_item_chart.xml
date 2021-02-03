@@ -32,7 +32,7 @@
             android:gravity="bottom"
             android:maxLines="1"
             android:paddingHorizontal="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:textSize="14sp"
             tools:text="Title title"/>
 
@@ -44,7 +44,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:paddingHorizontal="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:textSize="13sp"
             tools:text="subtit subtit"/>
 
@@ -55,8 +55,7 @@
             android:layout_marginTop="-1dp"
             android:maxLines="1"
             android:paddingHorizontal="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textSize="13sp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
             tools:text="39 scrobbles" />
 
         <ProgressBar

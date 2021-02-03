@@ -5,7 +5,7 @@
     android:id="@+id/edits_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_recents_list"
+    android:background="@drawable/selector_list"
     android:orientation="horizontal"
     android:paddingVertical="6dp"
     android:paddingLeft="1dp"
@@ -21,10 +21,10 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:paddingStart="10dp"
-        app:tint="@color/colorAccentLight"
+        app:tint="?colorSecondary"
         app:srcCompat="@drawable/vd_edit"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/edits_track"
         android:layout_width="0dp"
         android:layout_height="27dp"
@@ -36,8 +36,8 @@
         android:gravity="start"
         android:maxLines="1"
         android:padding="1sp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/colorAccentLight"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        android:textColor="?colorSecondary"
         android:textSize="24sp"
         app:autoSizeMaxTextSize="24sp"
         app:autoSizeMinTextSize="14sp"
@@ -45,7 +45,7 @@
         app:autoSizeTextType="uniform"
         tools:text="Title title"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/edits_artist"
         android:layout_width="0dp"
         android:layout_height="23dp"
@@ -57,7 +57,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:padding="1sp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textSize="20sp"
         app:autoSizeMaxTextSize="20sp"
         app:autoSizeMinTextSize="12sp"
@@ -65,7 +65,7 @@
         app:autoSizeTextType="uniform"
         tools:text="subtit subtit"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/edits_album"
         android:layout_width="0dp"
         android:layout_height="23dp"
@@ -77,7 +77,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:padding="1sp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textSize="20sp"
         app:autoSizeMaxTextSize="20sp"
         app:autoSizeMinTextSize="12sp"

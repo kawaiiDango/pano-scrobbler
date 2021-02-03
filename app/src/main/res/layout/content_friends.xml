@@ -21,6 +21,7 @@
                 android:id="@+id/friends_grid"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layoutAnimation="@anim/layout_animation_slide_up"
                 tools:listitem="@layout/grid_item_friend"
                 />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -36,6 +37,7 @@
         android:contentDescription="@string/sort"
         android:visibility="gone"
         tools:visibility="visible"
-        app:backgroundTint="@color/colorPrimaryLight"
+        app:backgroundTint="?colorPrimaryVariant"
+        app:tint="?colorSecondary"
         app:srcCompat="@drawable/vd_sort_clock" />
 </FrameLayout>

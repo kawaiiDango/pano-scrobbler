@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="@dimen/elevation_hero_btn"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         tools:text="@string/n_more"/>
 
     <TextView
@@ -28,7 +28,7 @@
         android:clickable="false"
         android:text="@string/show_all"
         android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/colorAccent"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textColor="?colorPrimary"
         android:textStyle="bold"/>
 </LinearLayout>

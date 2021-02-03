@@ -2,6 +2,7 @@ package com.arn.scrobble.pref
 
 import android.content.Context
 import androidx.preference.PreferenceDataStore
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 
 class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
@@ -22,6 +23,9 @@ class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
             Stuff.PREF_PIXEL_NP to true,
             Stuff.PREF_LOCKSCREEN_NOTI to false,
             Stuff.PREF_FETCH_AA to false,
+            Stuff.PREF_DIGEST_WEEKLY to true,
+            Stuff.PREF_DIGEST_MONTHLY to true,
+            Stuff.PREF_SHARE_SIG to context.getString(R.string.share_sig)
     )
 
     override fun getString(key: String, defValue: String?) =

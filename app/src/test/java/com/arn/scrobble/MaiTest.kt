@@ -45,7 +45,7 @@ class MaiTest {
         title.forEachIndexed { i, it ->
             print("\n $i-> ")
             val then = System.currentTimeMillis()
-            val splits = Stuff.sanitizeTitle(it)
+            val splits = MetadataUtils.sanitizeTitle(it)
             val now = System.currentTimeMillis()
            print(" ("+(now-then)+") ")
             splits.forEach { print("$it, ") }
@@ -59,18 +59,18 @@ class MaiTest {
         println("regex: $matches")
         val url = URL(txt)
         println(url.host)
-        println(Stuff.sanitizeAlbum(txt))
+        println(MetadataUtils.sanitizeAlbum(txt))
     }
 
     @Test
     fun librefmArtistInfo(){
-        val a = LFMRequester.getArtistInfoLibreFM("れをる/ギガP");
+        val a = LFMRequester.getArtistInfoLibreFM("れをる/ギガP")
         println(a)
     }
 
     @Test
     fun spotifyArtistInfo(){
-        val a = LFMRequester.getArtistInfoSpotify("MYTH & ROID");
+        val a = LFMRequester.getArtistInfoSpotify("MYTH & ROID")
         println(a)
     }
 

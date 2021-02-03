@@ -43,8 +43,9 @@
     <string name="scrobble_services">Services</string>
     <string name="share_text">I was listening to\n %1$s, %2$s</string> <!-- %1= artist - track, %2= relative time, -->
     <string name="share_text_username">%1$s was listening to\n %2$s, %3$s</string>
-    <string name="share_sig">(Shared with %1$s )</string>
+    <string name="share_sig">(Shared with bit.ly/Pscr )</string>
     <string name="share_this_song">Share this song</string>
+    <string name="share">Share</string>
     <string name="hero_info">More info</string>
     <string name="search">Search</string>
     <string name="user_profile">Profile</string>
@@ -58,8 +59,8 @@
     <string name="channel_scrobbling">Now scrobbling</string>
     <string name="channel_err">Scrobble errors</string>
     <string name="channel_new_app">New app detected</string>
-    <string name="channel_fg">Foreground Service (shown only when needed)</string>
-    <string name="no_apps_enabled">No apps are enabled for scrobbling</string>
+    <string name="channel_fg">Foreground Service</string>
+    <string name="no_apps_enabled">No apps are enabled</string>
     <string name="n_more">%1$d more. </string>
     <string name="show_all">See all</string>
     <string name="pending_scrobbles">Pending Scrobbles</string>
@@ -108,7 +109,6 @@
     <string name="listening">Listening to music playing around you…</string>
     <string name="uploading">Uploading…</string>
     <string name="recording_failed">Failed to start recording. Mic might be busy or unavailable on this device</string>
-    <string name="loading">…</string>
     <string name="press_back">Press back when done</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Details</string>
@@ -145,8 +145,8 @@
     <string name="charts_share_text">%1$s %2$s top %3$s:\n%4$s</string>
     <string name="menu_random">I\'m feeling lucky</string>
     <string name="random_not_found">No track found</string>
-    <string name="random_scrobble">Random scrobble</string>
-    <string name="random_love">Random loved track</string>
+    <string name="loved_track">Loved track</string>
+    <string name="randomize">Randomize</string>
     <string name="graph_daily">Daily scrobble counts</string>
     <string name="graph_weekly">Weekly scrobble counts</string>
     <string name="graph_monthly">Monthly scrobble counts</string>
@@ -157,21 +157,27 @@
     <string name="taggers">Taggers</string>
     <string name="taggings">Taggings</string>
     <string name="similar_tags">Similar to</string>
+    <string name="digest_weekly">Last week\'s top scrobbles</string>
+    <string name="digest_monthly">Last month\'s top scrobbles</string>
+    <string name="channel_digests">Top scrobbles</string>
+    <string name="my_tags">My tags</string>
+    <string name="close">Close</string>
+    <string name="user_tags_hint">New tag</string>
+    <string name="user_tags_empty">You haven\'t added any tags</string>
+    <string name="info_long_press_guide">You can also long press on a song to open this</string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
     <string name="pref_master_on">Scrobbler active</string>
     <string name="pref_master">Scrobble music</string>
     <string name="pref_master_qs_hint">Can also be toggled from the quick settings tile.</string>
-    <string name="pref_noti_off">Check your scrobbbles from the app only</string>
-    <string name="pref_noti_on">…while scrobbling</string>
     <string name="pref_noti_q">You may want to promote the notification, if it shows up in Other Notifications</string>
     <string name="pref_noti">Notifications</string>
+    <string name="pref_scrobble_noti">Scrobble notifications</string>
     <string name="pref_lockscreen_noti">Lockscreen notifications</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from">Scrobble from</string>
-    <string name="pref_enabled_apps_summary">Supports most apps that play music with metadata</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Supports most apps that play music with metadata. To avoid double scrobbles from Spotify, enable it only in one place.</string>
     <string name="pref_enabled_apps_title">Choose apps</string>
-    <string name="pref_spotify_notice">ℹ️ To avoid duplicate scrobbles from Spotify, disable it above and enable it on lastFM website by clicking here.</string>
     <string name="pref_auto_detect_summary">…we will still ask you to confirm/ignore that app</string>
     <string name="pref_auto_detect">Auto detect new music-like apps</string>
     <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
@@ -192,6 +198,7 @@
     <string name="pref_fetch_aa_desc">For players that do not provide this data. The data from lastFM may be unavailable for some songs or may differ from your tags.</string>
     <string name="pref_pixel_np">Scrobble Pixel\'s Now Playing</string>
     <string name="pref_pixel_np_nope">Available only on eligible Pixel devices</string>
+    <string name="pref_misc">Misc.</string>
     <string name="pref_share_sig">Share signature</string>
     <string name="pref_share_sig_desc">Tap to edit</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
@@ -226,7 +233,7 @@ They perform the same actions as the buttons in the notification. They can be us
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="no_browser">No browser is installed.</string>
     <string name="no_player">No music player is installed.</string>
-    <string name="not_running">The scrobbler was killed by your system.</string>
+    <string name="not_running">⚠The scrobbler was killed by your system.</string>
     <string name="not_running_fix_action">Fix it</string>
     <string name="login_submit">Verify</string>
     <string name="qs_master_on">@string/pref_master_on</string>
@@ -262,5 +269,6 @@ They perform the same actions as the buttons in the notification. They can be us
     <string name="fix_it_noti_desc">This is a temporary fix</string>
     <string name="fix_it_battery_title">Disable battery optimizations</string>
     <string name="fix_it_battery_desc">Only if nothing else worked</string>
-    <string name="fix_it_action">OPEN</string>
+    <string name="fix_it_action">Open</string>
+
 </resources>

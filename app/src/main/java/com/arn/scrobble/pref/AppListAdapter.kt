@@ -6,7 +6,6 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -14,6 +13,7 @@ import com.arn.scrobble.databinding.HeaderDefaultBinding
 import com.arn.scrobble.databinding.ListItemAppBinding
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.VHHeader
+import com.google.android.material.color.MaterialColors
 import com.squareup.picasso.Picasso
 
 
@@ -57,7 +57,7 @@ class AppListAdapter
             }
             is VHHeader -> {
                 holder.setHeaderText(sectionHeaders[position] ?: "...")
-                holder.setHeaderTextColor(ContextCompat.getColor(holder.itemView.context, R.color.colorAccent))
+                holder.setHeaderTextColor(MaterialColors.getColor(holder.itemView, R.attr.colorSecondary))
             }
             else -> throw RuntimeException("Invalid view type $holder")
         }

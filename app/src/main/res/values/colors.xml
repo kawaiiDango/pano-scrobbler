@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimaryLight">#880e4f</color>
-    <color name="colorPrimary">#5a0934</color>
-    <color name="colorAccent">#f06292</color>
-    <color name="colorAccentTrans">#aaf06292</color>
-    <color name="colorNoti">#ec407a</color>
+    <color name="pinkDark">#880e4f</color>
+    <color name="pinkNoti">#ec407a</color>
+    <color name="pinkSecondary">#e1bee7</color>
+    <color name="pinkPrimary">#f06292</color>
+    <color name="pinkHighlight">#26F06292</color> <!-- primary -->
 
-<!--    <color name="colorAccentLight">#FFD2E7</color>-->
-    <color name="colorAccentLight">#e1bee7</color>
-    <color name="colorAccentLightTrans">#bbe1bee7</color>
-<!--    <color name="colorAccentLightTrans">#bbFFD2E7</color>-->
+
+    <color name="pinkExtraDark">#5a0934</color>
     <color name="lightDivider">#11ffffff</color>
     <color name="lightInfoDivider">#38FFFFFF</color>
     <color name="darkBg">#80000000</color>
-    <color name="darkToolbar">#000</color>
-    <color name="shadow">#fff</color>
-    <color name="highlightPink">#22f06292</color> <!-- accent -->
-    <color name="highlightGreen">#5aaed581</color> <!-- green 300 -->
+    <color name="chipBgOnBlack">#1a1a1a</color>
     <color name="statusBarScrim">#32000000</color>
-    <color name="thumbnailHighlight">#60ffffff</color>
     <color name="dialogBg">#212121</color>
     <color name="gradient_launcher_fg">#fff</color>
 </resources>

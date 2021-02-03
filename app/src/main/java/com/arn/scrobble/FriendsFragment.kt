@@ -288,9 +288,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
                         .addToBackStack(null)
                         .commit()
             }
-//            action.friends_week.setOnClickListener { v:View ->
-//                Stuff.openInBrowser("$userLink/listening-report/week", activity, v)
-//            }
             actionsBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
             contentBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
@@ -299,7 +296,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             val screenW = point.x
             val screenH = point.y
             val w = min((0.8 * screenW).toInt(), Stuff.dp2px(400, context!!))
-            val h = contentBinding.root.measuredHeight + actionsBinding.root.measuredHeight
+            val h = contentBinding.root.measuredHeight
             popup.update((screenW - w )/2, ((screenH - h )/1.2).toInt(), w,h)
         }
 

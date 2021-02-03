@@ -18,7 +18,7 @@
         android:layout_marginBottom="10dp"
         android:contentDescription="@string/menu_rec"
         app:progressBarThickness="4dp"
-        app:progressbarColor="@color/colorAccent" />
+        app:progressbarColor="?colorPrimary" />
 
     <TextView
         android:id="@+id/rec_status"
@@ -29,7 +29,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="16sp"
         tools:text="status" />
 
     <TextView
@@ -49,7 +49,7 @@
         android:alpha="0.5"
         android:importantForAccessibility="no"
         android:scaleType="fitCenter"
-        app:tint="@color/colorAccent"
+        app:tint="?colorPrimary"
         app:srcCompat="@drawable/vd_wave_simple" />
 
 </RelativeLayout>

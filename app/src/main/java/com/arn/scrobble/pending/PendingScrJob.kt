@@ -66,7 +66,7 @@ class PendingScrJob : JobService() {
                                 it.albumArtist = track.albumArtist
                         } else if (!track.albumArtist.isNullOrEmpty() &&
                                 prefs.getBoolean(Stuff.PREF_FETCH_AA, false) &&
-                                it.album.toLowerCase() == track.album.toLowerCase() &&
+                                it.album.equals(track.album, ignoreCase = true) &&
                                 (it.albumArtist == "" || it.artist == it.albumArtist))
                             it.albumArtist = track.albumArtist
                         if (track.listeners >= Stuff.MIN_LISTENER_COUNT)
@@ -250,7 +250,7 @@ class PendingScrJob : JobService() {
         }
 
         private fun submitLoves(): Boolean {
-            val lastfmSessKey: String? = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+            val lastfmSessKey = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
                     ?: return true //user logged out
             val lastfmEnabled = !prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
 

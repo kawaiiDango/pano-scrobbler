@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
         tools:text="name" />
 
     <TextView
@@ -74,9 +74,8 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="@color/colorAccentLight"
-                android:textSize="13sp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textColor="?colorSecondary"
                 tools:text="tit"
                 app:drawableEndCompat="@drawable/vd_rounded_corner" />
 
@@ -88,7 +87,7 @@
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:paddingEnd="4dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:textSize="12sp"
                 tools:text="subtit"/>
 

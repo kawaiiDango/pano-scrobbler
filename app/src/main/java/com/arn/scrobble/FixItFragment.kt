@@ -18,7 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class FixItFragment: BottomSheetDialogFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = DialogFixItBinding.inflate(inflater, container, false)
 
         binding.fixItStartupAction.setOnClickListener {

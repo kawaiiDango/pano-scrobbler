@@ -7,8 +7,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.info.InfoFragment
 import com.squareup.picasso.Picasso
@@ -27,6 +31,11 @@ class RandomFragment: Fragment() {
     private var _binding: ContentRandomBinding? = null
     private val binding
         get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = android.transition.Fade()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentRandomBinding.inflate(inflater, container, false)
@@ -64,11 +73,15 @@ class RandomFragment: Fragment() {
         }
         binding.randomTrack.recentsMenu.visibility = View.INVISIBLE
         binding.randomTrack.recentsPlaying.visibility = View.INVISIBLE
-        binding.randomTrack.recentsImg.visibility = View.GONE
-        binding.randomTrack.recentsImgOverlay.visibility = View.GONE
+        (binding.randomTrack.recentsImg.parent as FrameLayout).visibility = View.GONE
         binding.randomTrack.recentsDate.setTextColor(Color.WHITE)
         binding.randomTrack.root.setBackgroundResource(R.drawable.layer_random_track)
         binding.randomTrack.root.setPaddingRelative(0, resources.getDimension(R.dimen.gradient_container_top_padding).toInt(), 0, 0)
+        binding.randomBigImg.shapeAppearanceModel = binding.randomBigImg
+                .shapeAppearanceModel
+                .toBuilder()
+                .setAllCornerSizes(resources.getDimension(R.dimen.charts_corner_radius))
+                .build()
 
         viewModel.track.observe(viewLifecycleOwner) {
             it ?: return@observe
@@ -101,16 +114,18 @@ class RandomFragment: Fragment() {
             if (!Main.isOnline) {
                 binding.randomStatus.text = getString(R.string.unavailable_offline)
                 binding.randomStatus.visibility = View.VISIBLE
-                binding.randomProgress.visibility = View.GONE
+                binding.randomProgress.hide()
                 isLoading = false
             } else {
                 binding.randomStatus.visibility = View.GONE
-                binding.randomProgress.visibility = View.VISIBLE
+                binding.randomProgress.show()
             }
+            TransitionManager.beginDelayedTransition(binding.root,
+                    Fade().setInterpolator(DecelerateInterpolator()))
             binding.randomTrackContainer.visibility = View.INVISIBLE
             binding.randomTrackButtons.visibility = View.INVISIBLE
         } else {
-            binding.randomProgress.visibility = View.GONE
+            binding.randomProgress.hide()
         }
     }
 
@@ -122,6 +137,8 @@ class RandomFragment: Fragment() {
             return
         }
         binding.randomStatus.visibility = View.GONE
+        TransitionManager.beginDelayedTransition(binding.root,
+                Fade().setInterpolator(DecelerateInterpolator()))
         binding.randomTrackContainer.visibility = View.VISIBLE
         binding.randomTrackButtons.visibility = View.VISIBLE
 
@@ -159,6 +176,7 @@ class RandomFragment: Fragment() {
                 .placeholder(R.drawable.vd_wave_simple)
                 .error(R.drawable.vd_wave_simple)
                 .into(binding.randomBigImg)
+
     }
 
     private fun setContainerWidth() {

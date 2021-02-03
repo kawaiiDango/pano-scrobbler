@@ -10,6 +10,7 @@ import android.preference.PreferenceManager
 import android.util.LruCache
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
+import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.db.PendingLove
@@ -133,9 +134,7 @@ class LFMRequester(context: Context) {
             Stuff.log(this::getDrawerInfo.name)
             val profile = User.getInfo(lastfmSession)
             val cal = Calendar.getInstance()
-            cal.set(Calendar.HOUR_OF_DAY, 0)
-            cal.set(Calendar.MINUTE, 0)
-            cal.set(Calendar.SECOND, 0)
+            cal.setMidnight()
             val recents = User.getRecentTracks(null, 1, 1,
                     cal.timeInMillis/1000, System.currentTimeMillis()/1000, lastfmSession, null)
 
@@ -216,15 +215,15 @@ class LFMRequester(context: Context) {
         return this
     }
 
-    fun getCharts(type: Int, period: Period, page: Int, usernamep: String?): LFMRequester {
+    fun getCharts(type: Int, period: Period, page: Int, usernamep: String?, limit: Int = 50): LFMRequester {
         toExec = {
             Stuff.log(this::getCharts.name + " " + page)
             initCaller(Main.isOnline)
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             val pr = when (type) {
-                Stuff.TYPE_ARTISTS -> User.getTopArtists(username, period, 50, page, Stuff.LAST_KEY)
-                Stuff.TYPE_ALBUMS -> User.getTopAlbums(username, period, 50, page, Stuff.LAST_KEY)
-                else -> User.getTopTracks(username, period, 50, page, Stuff.LAST_KEY)
+                Stuff.TYPE_ARTISTS -> User.getTopArtists(username, period, limit, page, Stuff.LAST_KEY)
+                Stuff.TYPE_ALBUMS -> User.getTopAlbums(username, period, limit, page, Stuff.LAST_KEY)
+                else -> User.getTopTracks(username, period, limit, page, Stuff.LAST_KEY)
             }
             pr
         }
@@ -266,6 +265,61 @@ class LFMRequester(context: Context) {
                 else -> User.getWeeklyTrackChart(username, from.toString(), to.toString(), 100, Stuff.LAST_KEY)
             }
             PaginatedResult(1, 1, chart.entries.size, chart.entries, username)
+        }
+        return this
+    }
+
+    fun getDigest(period: Period): LFMRequester {
+        toExec = {
+            val digestArr = mutableListOf<String>()
+            var artists: PaginatedResult<Artist>? = null
+            var albums: PaginatedResult<Album>? = null
+            var tracks: PaginatedResult<Track>? = null
+
+            val es = Executors.newCachedThreadPool()
+            es.execute {
+                try {
+                    artists = LFMRequester(getContext).getCharts(Stuff.TYPE_ARTISTS, period, 1, null, 3)
+                            .toExec() as? PaginatedResult<Artist>?
+                } catch (e: CallException) {}
+            }
+            es.execute {
+                try {
+                    albums = LFMRequester(getContext).getCharts(Stuff.TYPE_ALBUMS, period, 1, null, 3)
+                            .toExec() as? PaginatedResult<Album>?
+                } catch (e: CallException) {}
+            }
+            es.execute {
+                try {
+                    tracks = LFMRequester(getContext).getCharts(Stuff.TYPE_TRACKS, period, 1, null, 3)
+                            .toExec() as? PaginatedResult<Track>?
+                } catch (e: CallException) {}
+            }
+            es.shutdown()
+            es.awaitTermination(30, TimeUnit.SECONDS)
+
+            artists?.let {
+                if (!it.isEmpty) {
+                    digestArr += getContext.getString(R.string.top_artists) + ":"
+                    digestArr += it.pageResults.joinToString { it.name }
+                }
+            }
+
+            albums?.let {
+                if (!it.isEmpty) {
+                    digestArr += getContext.getString(R.string.top_albums) + ":"
+                    digestArr += it.pageResults.joinToString { it.name }
+                }
+            }
+
+            tracks?.let {
+                if (!it.isEmpty) {
+                    digestArr += getContext.getString(R.string.top_tracks) + ":"
+                    digestArr += it.pageResults.joinToString { it.name }
+                }
+            }
+
+            digestArr
         }
         return this
     }
@@ -378,7 +432,7 @@ class LFMRequester(context: Context) {
             initCaller(Main.isOnline)
             val info = try {
                 val info = getArtistInfoSpotify(artist.name)
-                if (info?.name?.toLowerCase() == artist.name.toLowerCase())
+                if (info?.name.equals(artist.name, ignoreCase = true))
                     info
                 else
                     null
@@ -410,6 +464,46 @@ class LFMRequester(context: Context) {
             Tag.getInfo(tag, Stuff.LAST_KEY) to
 //                        Tag.getSimilar(tag, Stuff.LAST_KEY) //this doesn't work anymore
                     null
+        }
+        return this
+    }
+
+    fun getUserTagsForEntry(entry: MusicEntry): LFMRequester {
+        toExec = {
+            initCaller(Main.isOnline)
+            val list = when(entry) {
+                is Artist -> Artist.getTags(entry.name, lastfmSession)
+                is Album -> Album.getTags(entry.artist, entry.name, lastfmSession)
+                is Track -> Track.getTags(entry.artist, entry.name, lastfmSession)
+                else -> throw RuntimeException("invalid type")
+            }
+            list.toMutableSet()
+        }
+        return this
+    }
+
+    fun addUserTagsForEntry(entry: MusicEntry, tags: String): LFMRequester {
+        toExec = {
+            initCaller(Main.isOnline)
+            when(entry) {
+                is Artist -> Artist.addTags(entry.name, tags, lastfmSession)
+                is Album -> Album.addTags(entry.artist, entry.name, tags, lastfmSession)
+                is Track -> Track.addTags(entry.artist, entry.name, tags, lastfmSession)
+                else -> throw RuntimeException("invalid type")
+            }
+        }
+        return this
+    }
+
+    fun deleteUserTagsForEntry(entry: MusicEntry, tag: String): LFMRequester {
+        toExec = {
+            initCaller(Main.isOnline)
+            when(entry) {
+                is Artist -> Artist.removeTag(entry.name, tag, lastfmSession)
+                is Album -> Album.removeTag(entry.artist, tag, entry.name, lastfmSession)
+                is Track -> Track.removeTag(entry.artist, tag, entry.name, lastfmSession)
+                else -> throw RuntimeException("invalid type")
+            }
         }
         return this
     }
@@ -452,9 +546,6 @@ class LFMRequester(context: Context) {
                         Artist.getInfo(albumArtist, null, username, true, Stuff.LAST_KEY)
                     } catch (e: Exception) {
                         null
-                    }
-                    activity.runOnUiThread {
-                        mld.value = NLService.B_ALBUM_ARTIST to aa
                     }
                 }
             }
@@ -573,7 +664,7 @@ class LFMRequester(context: Context) {
                             scrobbleData.track = track.name
                         } else if (!track.albumArtist.isNullOrEmpty() &&
                                 prefs.getBoolean(Stuff.PREF_FETCH_AA, false) &&
-                                scrobbleData.album.toLowerCase() == track.album.toLowerCase() &&
+                                scrobbleData.album.equals(track.album, ignoreCase = true) &&
                                 (scrobbleData.albumArtist.isNullOrEmpty() || scrobbleData.artist == scrobbleData.albumArtist))
                             scrobbleData.albumArtist = track.albumArtist
                     }

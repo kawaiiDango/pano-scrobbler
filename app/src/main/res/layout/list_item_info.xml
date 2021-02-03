@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:animateLayoutChanges="true"
-    android:padding="10dp">
+    android:paddingTop="10dp"
+    android:paddingHorizontal="10dp"
+    android:paddingBottom="3dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -26,9 +27,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:textColor="?colorPrimary"
-                android:textSize="20sp"
                 tools:text="@string/track" />
 
             <ImageButton
@@ -38,7 +38,7 @@
                 android:layout_height="38dp"
                 android:visibility="gone"
                 tools:srcCompat="@drawable/vd_heart"
-                app:tint="@color/colorAccentLight"
+                app:tint="?colorSecondary"
                 tools:visibility="visible" />
 
             <ImageButton
@@ -50,7 +50,19 @@
                 android:tooltipText="@string/search"
                 android:visibility="gone"
                 app:srcCompat="@drawable/vd_search_play"
-                app:tint="@color/colorAccentLight"
+                app:tint="?colorSecondary"
+                tools:visibility="visible" />
+
+            <ImageButton
+                android:id="@+id/info_user_tags"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:contentDescription="@string/my_tags"
+                android:tooltipText="@string/my_tags"
+                android:visibility="gone"
+                app:srcCompat="@drawable/vd_user_tag"
+                app:tint="?colorSecondary"
                 tools:visibility="visible" />
 
             <ImageButton
@@ -62,22 +74,25 @@
                 android:tooltipText="@string/hero_info"
                 android:visibility="gone"
                 app:srcCompat="@drawable/vd_open_in_new"
-                app:tint="@color/colorAccentLight"
+                app:tint="?colorSecondary"
                 tools:visibility="visible" />
         </LinearLayout>
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/info_progress"
-        style="?android:attr/progressBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminateTint="?colorPrimary" />
+        android:visibility="invisible"
+        style="@style/Widget.MaterialComponents.CircularProgressIndicator.Small"
+        app:hideAnimationBehavior="none"
+        android:layout_gravity="center"/>
 
     <LinearLayout
             android:id="@+id/info_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layoutAnimation="@anim/layout_animation_slide_up"
             android:visibility="gone"
             tools:visibility="visible">
 
@@ -97,8 +112,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:textColor="#fff"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     tools:text="1" />
 
@@ -108,8 +123,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:textColor="#fff"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:textSize="18sp"
                     tools:text="1" />
 
                 <TextView
@@ -118,9 +133,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    tools:text="1"
-                    android:textColor="#fff" />
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:textSize="18sp"
+                    tools:text="1" />
             </LinearLayout>
 
             <LinearLayout
@@ -135,7 +150,6 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="@string/my_scrobbles"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textStyle="bold" />
 
                 <TextView
@@ -144,7 +158,7 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="@string/listeners"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                    />
 
                 <TextView
                     android:layout_width="0dp"
@@ -152,7 +166,7 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="@string/scrobbles"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                    />
 
             </LinearLayout>
 
@@ -161,6 +175,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:background="@drawable/selector_border_gentle"
+            android:addStatesFromChildren="true"
+            android:padding="@dimen/list_item_padding"
             android:visibility="gone"
             tools:visibility="visible"
             android:orientation="horizontal">
@@ -172,18 +189,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:autoLink="web"
-                android:background="?selectableItemBackground"
                 android:ellipsize="end"
                 android:layout_marginStart="5dp"
-                android:maxLines="2" />
+                android:maxLines="2"
+                android:scrollbars="none"/>
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/info_wiki_expand"
-                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:visibility="invisible"
                 android:contentDescription="@string/expand"
+                android:scaleType="center"
                 app:srcCompat="@drawable/vd_arrow_down"
                 tools:visibility="visible" />
         </LinearLayout>
@@ -195,12 +212,12 @@
             android:clickable="true"
             android:focusable="true"
             android:layout_gravity="end"
-            app:drawableTint="@color/colorAccentLight"
+            app:drawableTint="?colorSecondary"
             app:drawableEndCompat="@drawable/vd_arrow_right"
             android:background="?selectableItemBackground"
             android:padding="6dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/colorAccentLight"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+            android:textColor="?colorSecondary"
             android:textDirection="firstStrong"
             tools:text="n tracks"/>
 

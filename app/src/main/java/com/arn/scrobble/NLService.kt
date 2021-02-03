@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.*
 import android.content.Intent.ACTION_PACKAGE_ADDED
+import android.content.Intent.ACTION_TIME_CHANGED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.session.MediaSessionManager
@@ -16,10 +17,14 @@ import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.text.Html
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.core.media.app.MediaStyleMod
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.google.android.material.color.MaterialColors
+import de.umass.lastfm.Period
 import de.umass.lastfm.scrobble.ScrobbleData
 import org.codechimp.apprater.AppRater
 import java.text.NumberFormat
@@ -28,9 +33,9 @@ import java.text.NumberFormat
 class NLService : NotificationListenerService() {
     private lateinit var pref: SharedPreferences
     private lateinit var nm: NotificationManager
+    private lateinit var themeContext: ContextThemeWrapper
     private var sessListener: SessListener? = null
     lateinit var handler: ScrobbleHandler
-//    private var legacyMetaReceiver: LegacyMetaReceiver? = null
     private var lastNpTask: LFMRequester.MyAsyncTask? = null
     private var currentBundle = Bundle()
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
@@ -39,7 +44,6 @@ class NLService : NotificationListenerService() {
         if (BuildConfig.DEBUG)
             Stuff.toast(applicationContext,getString(R.string.pref_master_on))
         super.onCreate()
-        Stuff.log("onCreate")
         // lollipop and mm bug
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
             init()
@@ -77,6 +81,9 @@ class NLService : NotificationListenerService() {
         filter.addAction(iOTHER_ERR)
         filter.addAction(iMETA_UPDATE)
         filter.addAction(iDISMISS_MAIN_NOTI)
+        filter.addAction(iDIGEST_WEEKLY)
+        filter.addAction(iDIGEST_MONTHLY)
+        filter.addAction(ACTION_TIME_CHANGED)
         filter.addAction(CONNECTIVITY_ACTION)
         applicationContext.registerReceiver(nlservicereciver, filter)
 
@@ -88,6 +95,8 @@ class NLService : NotificationListenerService() {
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         migratePrefs()
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        themeContext = ContextThemeWrapper(applicationContext, R.style.ColorPatch_Pink)
 
         handler = ScrobbleHandler(mainLooper)
         val sessManager = applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
@@ -116,7 +125,7 @@ class NLService : NotificationListenerService() {
 
 //        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 //        isOnline = cm.activeNetworkInfo?.isConnected == true
-
+        Stuff.scheduleDigests(applicationContext)
         sendBroadcast(Intent(iNLS_STARTED))
     }
 
@@ -180,6 +189,8 @@ class NLService : NotificationListenerService() {
                 getString(R.string.channel_new_app), NotificationManager.IMPORTANCE_LOW))
         nm.createNotificationChannel(NotificationChannel(NOTI_ID_FG,
                 getString(R.string.channel_fg), NotificationManager.IMPORTANCE_MIN))
+        nm.createNotificationChannel(NotificationChannel(NOTI_ID_DIGESTS,
+                getString(R.string.channel_digests), NotificationManager.IMPORTANCE_LOW))
     }
 
     private fun migratePrefs() {
@@ -218,7 +229,7 @@ class NLService : NotificationListenerService() {
                     return
                 }
                 val title = n.extras.getString(Notification.EXTRA_TITLE) ?: return
-                val meta = Stuff.pixelNPExtractMeta(title, getString(R.string.song_format_string))
+                val meta = MetadataUtils.pixelNPExtractMeta(title, getString(R.string.song_format_string))
                 if (meta != null){
                     val hash = Stuff.genHashCode(meta[0], "", meta[1])
                     val packageNameArg =
@@ -365,11 +376,23 @@ class NLService : NotificationListenerService() {
                 iDISMISS_MAIN_NOTI -> {
                     nm.cancel(NOTI_ID_SCR, 0)
                 }
+                iDIGEST_WEEKLY -> {
+                    Stuff.scheduleDigests(applicationContext)
+                    if (pref.getBoolean(Stuff.PREF_DIGEST_WEEKLY, true))
+                        handler.notifyDigest(Period.WEEK)
+                }
+                iDIGEST_MONTHLY -> {
+                    Stuff.scheduleDigests(applicationContext)
+                    if (pref.getBoolean(Stuff.PREF_DIGEST_MONTHLY, true))
+                        handler.notifyDigest(Period.ONE_MONTH)
+                }
                 CONNECTIVITY_ACTION -> {
                     val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                     Main.isOnline =  cm.activeNetworkInfo?.isConnected == true
                 }
-
+                ACTION_TIME_CHANGED -> {
+                    Stuff.scheduleDigests(applicationContext)
+                }
             }
         }
     }
@@ -405,10 +428,10 @@ class NLService : NotificationListenerService() {
                        hash:Int, forcable:Boolean, packageName: String?, lessDelay: Boolean = false) {
             if (title != "" && !hasMessages(hash)){
                 val now = System.currentTimeMillis()
-                var album = Stuff.sanitizeAlbum(album)
-                var artist = Stuff.sanitizeArtist(artist)
+                var album = MetadataUtils.sanitizeAlbum(album)
+                var artist = MetadataUtils.sanitizeArtist(artist)
                 var title = title
-                var albumArtist = Stuff.sanitizeAlbum(albumArtist)
+                var albumArtist = MetadataUtils.sanitizeAlbum(albumArtist)
                 if (title != "") {
                     val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
                     try {
@@ -508,7 +531,7 @@ class NLService : NotificationListenerService() {
                     NotificationCompat.VISIBILITY_SECRET
             return NotificationCompat.Builder(applicationContext)
                     .setShowWhen(false)
-                    .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))
+                    .setColor(MaterialColors.getColor(themeContext, R.attr.colorNoti, null))
                     .setAutoCancel(true)
                     .setCustomBigContentView(null)
                     .setVisibility(visibility)
@@ -533,7 +556,7 @@ class NLService : NotificationListenerService() {
             }
 
             i = Intent(applicationContext, Main::class.java)
-                    .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_NOW_PLAYING)
+                    .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_RECENTS)
             val launchIntent = PendingIntent.getActivity(applicationContext, 8, i,
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
@@ -663,7 +686,7 @@ class NLService : NotificationListenerService() {
                     .setTimeoutAfter(1000)
             nm.notify(NOTI_ID_SCR, 0, nb.build())
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                handler.postDelayed({ nm.cancel(NOTI_ID_SCR, 0) }, 1000);
+                handler.postDelayed({ nm.cancel(NOTI_ID_SCR, 0) }, 1000)
         }
 
         fun notifyApp(packageName:String) {
@@ -705,6 +728,77 @@ class NLService : NotificationListenerService() {
                     )
                     .buildMediaStyleMod()
             nm.notify(NOTI_ID_APP, 0, n)
+        }
+
+        fun notifyDigest(period: Period) {
+            val digestMld = MutableLiveData<List<String>>()
+            val wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+                        newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.arn.scrobble::digest").apply {
+                            acquire(30000)
+                        }
+                    }
+
+            digestMld.observeForever(object : Observer<List<String>>{
+
+                override fun onChanged(digestArr: List<String>?) {
+                    digestArr ?: return
+                    digestMld.removeObserver(this)
+                    if (digestArr.isEmpty())
+                        return
+
+                    val title = getString(R.string.my) + " " + if (period == Period.WEEK)
+                        getString(R.string.digest_weekly).toLowerCase()
+                    else
+                        getString(R.string.digest_monthly).toLowerCase()
+                    var intent = Intent(Intent.ACTION_SEND)
+                            .putExtra("packageName", packageName)
+                    val shareText = title + "\n\n" +
+                            digestArr.joinToString(separator = "\n") +
+                            "\n\n" +
+                            pref.getString(Stuff.PREF_SHARE_SIG, getString(R.string.share_sig))
+                    val i = Intent(Intent.ACTION_SEND)
+                    i.type = "text/plain"
+                    i.putExtra(Intent.EXTRA_SUBJECT, shareText)
+                    i.putExtra(Intent.EXTRA_TEXT, shareText)
+                    intent.type = "text/plain"
+                    intent.putExtra(Intent.EXTRA_TEXT, shareText)
+                    val shareIntent = PendingIntent.getActivity(applicationContext, 10,
+                            Intent.createChooser(intent, title),
+                            PendingIntent.FLAG_UPDATE_CURRENT)
+                    intent = Intent(applicationContext, Main::class.java)
+                            .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_CHARTS)
+                    val launchIntent = PendingIntent.getActivity(applicationContext, 11, intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT)
+
+                    var digestHtml = ""
+                    digestArr.forEachIndexed { index, s ->
+                        digestHtml += if (index % 2 == 0)
+                            "<b>$s</b>"
+                        else if (index == digestArr.size - 1)
+                            " $s"
+                        else
+                            " $s<br>"
+                    }
+                    val spanned = Html.fromHtml(digestHtml)
+                    val nb = buildNotification()
+                            .setChannelId(NOTI_ID_DIGESTS)
+                            .setSmallIcon(R.drawable.vd_charts)
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setContentTitle(title)
+                            .setContentIntent(launchIntent)
+                            .addAction(getAction(R.drawable.vd_share, "↗", getString(R.string.share), shareIntent))
+                            .setContentText(spanned)
+                            .setShowWhen(true)
+                            .setStyle(NotificationCompat.BigTextStyle()
+                                    .setBigContentTitle(title)
+                                    .bigText(spanned))
+                    nm.notify(NOTI_ID_DIGESTS, period.ordinal, nb.build())
+                    wakeLock.release()
+                }
+            })
+            LFMRequester(applicationContext)
+                    .getDigest(period)
+                    .asAsyncTask(digestMld)
         }
 
         private fun getAction(icon:Int, emoji:String, text:String, pIntent:PendingIntent): NotificationCompat.Action {
@@ -792,6 +886,8 @@ class NLService : NotificationListenerService() {
         const val iMETA_UPDATE = "com.arn.scrobble.iMETA_UPDATE"
         const val iOTHER_ERR = "com.arn.scrobble.OTHER_ERR"
         const val iBAD_META = "com.arn.scrobble.BAD_META"
+        const val iDIGEST_WEEKLY = "com.arn.scrobble.DIGEST_WEEKLY"
+        const val iDIGEST_MONTHLY = "com.arn.scrobble.DIGEST_MONTHLY"
         const val B_TITLE = "title"
         const val B_ALBUM_ARTIST = "albumartist"
         const val B_TIME = "time"
@@ -811,5 +907,6 @@ class NLService : NotificationListenerService() {
         const val NOTI_ID_ERR = "err"
         const val NOTI_ID_APP = "new_app"
         const val NOTI_ID_FG = "fg"
+        const val NOTI_ID_DIGESTS = "digests"
     }
 }

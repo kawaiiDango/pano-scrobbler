@@ -5,7 +5,6 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.Color
@@ -14,13 +13,14 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Parcel
 import android.util.DisplayMetrics
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageButton
-import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
@@ -35,7 +35,10 @@ import com.arn.scrobble.databinding.CoordinatorMainBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.*
-import com.robinhood.spark.SparkView
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.robinhood.spark.animation.MorphSparkAnimator
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -49,7 +52,8 @@ import kotlin.math.max
  * Created by arn on 09/07/2017.
  */
 
-open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener, RecentsAdapter.SetHeroTrigger {
+open class RecentsFragment : Fragment(),
+        ItemClickListener, ItemLongClickListener, FocusChangeListener, RecentsAdapter.SetHeroTrigger {
     private lateinit var adapter: RecentsAdapter
     private lateinit var appPrefs: SharedPreferences
     private var timedRefresh = Runnable {
@@ -104,8 +108,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         if (binding.recentsList.adapter == null)
             postInit()
         else {
-            val holder = binding.recentsList.findViewHolderForAdapterPosition(viewModel.selectedPos)
-            (holder as? RecentsAdapter.VHTrack)?.setSelected(true)
+            if (viewModel.selectedPos > -1 && viewModel.selectedPos < adapter.itemCount) {
+                val track = adapter.getItem(viewModel.selectedPos) as? Track
+                if (track != null)
+                    onSetHero(viewModel.selectedPos, track, false)
+            }
             if (!isShowingLoves &&
                     System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
                     viewModel.page == 1)
@@ -119,7 +126,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             coordinatorBinding.heroCalendar.visibility = View.VISIBLE
             coordinatorBinding.heroCalendar.isEnabled = true
         }
-        coordinatorBinding.heroCalendar.tag = !isShowingLoves
     }
 
     override fun onPause() {
@@ -151,7 +157,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         adapter = RecentsAdapter(binding)
         adapter.viewModel = viewModel
         adapter.isShowingLoves = isShowingLoves
-        adapter.setStatusHeader()
+//        adapter.setStatusHeader()
 
         animSet = AnimatorSet()
         animSet.addListener(object : Animator.AnimatorListener {
@@ -192,6 +198,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         binding.recentsList.addOnScrollListener(loadMoreListener)
         adapter.loadMoreListener = loadMoreListener
         adapter.itemClickListener = this
+        adapter.itemLongClickListener = this
         adapter.focusChangeListener = this
         adapter.setHeroListener = this
         appPrefs = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
@@ -199,6 +206,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         if (coordinatorBinding.sparkline.adapter == null) { // not inited
             coordinatorBinding.sparkline.sparkAnimator = MorphSparkAnimator()
             coordinatorBinding.sparkline.adapter = SparkLineAdapter()
+            toggleGraphDetails(true)
         }
         viewModel.tracksReceiver.observe(viewLifecycleOwner, {
             it ?: return@observe
@@ -224,7 +232,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
 
             if (!viewModel.loadedNw) {
                 loadRecents(1)
-                toggleGraphDetails(coordinatorBinding.sparkline, true)
                 viewModel.loadedNw = true
             } else if (it.page == 1 && !isShowingLoves) {
                 if (username == null)
@@ -252,12 +259,13 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                     })
 
         coordinatorBinding.sparkline.setOnClickListener{
-            toggleGraphDetails(it as SparkView)
+            toggleGraphDetails()
         }
 
         coordinatorBinding.heroShare.setOnClickListener{
             val track = coordinatorBinding.heroImg.tag
             if (track is Track) {
+                val multiPrefs = MultiPreferences(context!!)
                 var shareText: String
                 if (username == null)
                     shareText = getString(R.string.share_text,
@@ -265,8 +273,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 else
                     shareText = getString(R.string.share_text_username, username,
                             track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
-                shareText += "\n\n" +appPrefs.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
-                        getString(R.string.share_sig, getString(R.string.share_link)))
+                shareText += "\n\n" + multiPrefs.getString(Stuff.PREF_SHARE_SIG, getString(R.string.share_sig))
                 val i = Intent(Intent.ACTION_SEND)
                 i.type = "text/plain"
                 i.putExtra(Intent.EXTRA_SUBJECT, shareText)
@@ -287,6 +294,12 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 b.putString(Stuff.ARG_USERNAME, username)
                 info.arguments = b
                 info.show(activity.supportFragmentManager, null)
+                if (!Main.isTV && !appPrefs.getBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, false)) {
+                    Stuff.toast(context, getString(R.string.info_long_press_guide), Toast.LENGTH_LONG)
+                    appPrefs.edit()
+                            .putBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, true)
+                            .apply()
+                }
             }
         }
         coordinatorBinding.heroPlay.setOnClickListener {
@@ -295,28 +308,59 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 Stuff.launchSearchIntent(t.artist, t.name, context!!)
         }
 
-        coordinatorBinding.heroCalendar.setOnClickListener {
-            val cal = Calendar.getInstance()
-            if (viewModel.toTime > 0) {
-                cal.time = Date(viewModel.toTime)
-            }
-            val dpd = DatePickerDialog(context!!, R.style.DarkDialog, { datePicker, year, month, dayOfMonth ->
-                datePicker ?: return@DatePickerDialog
-                cal.set(year, month, dayOfMonth, 23, 59, 59)
-                viewModel.toTime = cal.timeInMillis
-                loadRecents(1, true)
-            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
-            dpd.datePicker.maxDate = System.currentTimeMillis()
-            dpd.datePicker.minDate = if (username == null)
+        coordinatorBinding.heroCalendar.setOnClickListener { view ->
+            view.isEnabled = false
+            val time = if (viewModel.toTime > 0)
+                viewModel.toTime
+            else
+                System.currentTimeMillis()
+            val startTime = if (username == null)
                 appPrefs.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0)
             else
                 parentFragment!!.arguments?.getLong(Stuff.ARG_REGISTERED_TIME, 0) ?: 0
-            dpd.setTitle(R.string.past_scrobbles)
-            dpd.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.reset)) { dialogInterface, i ->
-                viewModel.toTime = 0
+            val endTime = System.currentTimeMillis()
+            val dpd = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText(R.string.past_scrobbles)
+                    .setCalendarConstraints(
+                            CalendarConstraints.Builder()
+                                    .setStart(startTime)
+                                    .setEnd(endTime)
+                                    .setOpenAt(time)
+                                    .setValidator(object: CalendarConstraints.DateValidator{
+                                        override fun describeContents(): Int {
+                                            return 0
+                                        }
+
+                                        override fun writeToParcel(p0: Parcel?, p1: Int) {
+                                        }
+
+                                        override fun isValid(date: Long): Boolean {
+                                            return date in startTime..endTime
+                                        }
+                                    })
+                                    .build()
+                    )
+                    .setSelection(time)
+                    .build()
+            dpd.addOnPositiveButtonClickListener {
+                val tzOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis())
+                viewModel.toTime = it  - tzOffset + (24 * 60 * 60 - 1) * 1000
+//                Stuff.log("time=" + Date(viewModel.toTime))
                 loadRecents(1, true)
+                view.isEnabled = true
             }
-            dpd.show()
+            dpd.addOnNegativeButtonClickListener {
+                if (viewModel.toTime != 0L) {
+                    viewModel.toTime = 0
+                    loadRecents(1, true)
+                }
+                view.isEnabled = true
+            }
+            dpd.addOnDismissListener {
+                view.isEnabled = true
+            }
+
+            dpd.show(parentFragmentManager, null)
         }
         if (viewModel.tracks.isEmpty())
             loadRecents(1)
@@ -324,6 +368,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             synchronized(viewModel.tracks) {
                 adapter.populate(viewModel.tracks)
             }
+        if (!Main.isTV) {
+            coordinatorBinding.heroInfo.visibility = View.VISIBLE
+            coordinatorBinding.heroPlay.visibility = View.VISIBLE
+            coordinatorBinding.heroShare.visibility = View.VISIBLE
+        }
     }
 
     private fun setGraph(pointsStr: String?) {
@@ -356,21 +405,21 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
         }
     }
 
-    private fun toggleGraphDetails(sparkline: SparkView, init: Boolean = false){
-        val activity = activity ?: return
+    private fun toggleGraphDetails(init: Boolean = false){
+        _binding ?: return
         var show = appPrefs.getBoolean(Stuff.PREF_ACTIVITY_GRAPH_DETAILS, true)
         if (!init)
             show = !show
 
         if (show) {
-            sparkline.setPadding(2 * resources.getDimensionPixelSize(R.dimen.graph_margin_details),
+            coordinatorBinding.sparkline.setPadding(2 * resources.getDimensionPixelSize(R.dimen.graph_margin_details),
                     0, 0,
                     resources.getDimensionPixelSize(R.dimen.graph_margin_details))
             coordinatorBinding.sparklineHorizontalLabel.visibility = View.VISIBLE
             coordinatorBinding.sparklineTickTop.visibility = View.VISIBLE
             coordinatorBinding.sparklineTickBottom.visibility = View.VISIBLE
         } else {
-            sparkline.setPadding(0, 0, 0, 0)
+            coordinatorBinding.sparkline.setPadding(0, 0, 0, 0)
             coordinatorBinding.sparklineHorizontalLabel.visibility = View.GONE
             coordinatorBinding.sparklineTickTop.visibility = View.GONE
             coordinatorBinding.sparklineTickBottom.visibility = View.GONE
@@ -424,12 +473,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
     }
 
     override fun onSetHero(position: Int, track: Track, fullSize: Boolean) {
-        activity ?: return
+        _binding ?: return
 
         //check diff
         val oldTrack = coordinatorBinding.heroImg.tag as Track?
 
-        coordinatorBinding.heroTitle.text = track.name
         //TODO: check
         coordinatorBinding.heroImg.tag = track
         val imgUrl = if(fullSize)
@@ -492,13 +540,12 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
 
             colorPrimDark = palette.getDominantColor(Color.WHITE)
             if (!Stuff.isDark(colorPrimDark))
-                colorPrimDark = palette.getDarkVibrantColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
+                colorPrimDark = palette.getDarkVibrantColor(MaterialColors.getColor(context, R.attr.colorPrimaryVariant, null))
             colorLightWhite = palette.getLightMutedColor(ContextCompat.getColor(context!!, android.R.color.primary_text_dark))
-            colorMutedDark = palette.getDarkMutedColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
+            colorMutedDark = palette.getDarkMutedColor(MaterialColors.getColor(context, R.attr.colorPrimaryVariant, null))
             colorMutedBlack = palette.getDarkMutedColor(Color.BLACK)
 
             activityBinding.coordinatorMain.ctl.setContentScrimColor(colorMutedBlack)
-            activityBinding.coordinatorMain.heroTitle.setTextColor(colorLightWhite)
 
             val contentBgFrom = (content.background as ColorDrawable).color
             val contentBgAnimator = ObjectAnimator.ofArgb(content, "backgroundColor", contentBgFrom, colorMutedBlack)
@@ -516,7 +563,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                 val activity = activity ?: return@addUpdateListener
                 activity.window.navigationBarColor = it.animatedValue as Int
             }
-
+            //setNavigationBarColor uses binders and lags
             val animSetList = mutableListOf(contentBgAnimator,
                     calendarColorAnimator, shareBgAnimator,
                     searchBgAnimator, infoBgAnimator,
@@ -575,13 +622,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             else -> {
                 val lastClickedPos = viewModel.selectedPos
                 viewModel.selectedPos = position
-                val lastHolder = binding.recentsList.findViewHolderForAdapterPosition(lastClickedPos)
-                val curHolder = binding.recentsList.findViewHolderForAdapterPosition(position)
-                if (lastHolder is RecentsAdapter.VHTrack? && curHolder is RecentsAdapter.VHTrack) {
-                    if (lastClickedPos != position)
-                        lastHolder?.setSelected(false, item)
-                    curHolder.setSelected(true, item)
-                }
+                adapter.notifyItemChanged(lastClickedPos)
+                adapter.notifyItemChanged(viewModel.selectedPos)
 
                 if (!coordinatorBinding.appBar.isExpanded) {
 //                  recents_list.smoothScrollToPosition(position) //wont work even witrh smoothscroller
@@ -602,6 +644,19 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
                     openTrackPopupMenu(dateFrame, item)
             }
         }
+    }
+
+    override fun onItemLongClick(view: View, position: Int) {
+        val t = adapter.getItem(position) as? Track ?: return
+        val info = InfoFragment()
+        val b = Bundle()
+        b.putString(NLService.B_ARTIST, t.artist)
+        if (!t.album.isNullOrEmpty())
+            b.putString(NLService.B_ALBUM, t.album)
+        b.putString(NLService.B_TITLE, t.name)
+        b.putString(Stuff.ARG_USERNAME, username)
+        info.arguments = b
+        info.show(activity!!.supportFragmentManager, null)
     }
 
     //only called when !view.isInTouchMode
@@ -642,7 +697,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             val exists = LastfmUnscrobbler(context)
                     .checkCsrf(prefs.getString(Stuff.PREF_LASTFM_USERNAME, null))
             if (!exists) {
-                AlertDialog.Builder(context!!, R.style.DarkDialog)
+                MaterialAlertDialogBuilder(context!!)
                         .setMessage(R.string.lastfm_reauth)
                         .setPositiveButton(android.R.string.ok) { _, _ ->
                             val wf = WebViewFragment()
@@ -727,10 +782,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, FocusChangeListener,
             LFMRequester(context!!).loveOrUnlove(false, track.artist, track.name).asAsyncTask()
 
             alphaAnimator.setFloatValues(0f)
-            scalexAnimator.setFloatValues(1f, 0.5f)
-            scaleyAnimator.setFloatValues(1f, 0.5f)
+            scalexAnimator.setFloatValues(1f, 2f)
+            scaleyAnimator.setFloatValues(1f, 2f)
             val startRot = if (isRtl) -10f else 10f
-            val toRot = if (isRtl) -60f else 60f
+            val toRot = if (isRtl) 50f else -50f
             rotAnimator.setFloatValues(startRot, toRot)
         } else {
             if (loveIcon.background == null)

@@ -4,7 +4,6 @@ package com.arn.scrobble.charts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import com.arn.scrobble.DummyFragment
 
 class ChartsPagerAdapter(fm: FragmentManager):
         FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

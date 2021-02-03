@@ -7,9 +7,9 @@
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
     android:paddingHorizontal="20dp"
-    android:paddingVertical="20dp"
-    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+    android:paddingVertical="10dp"
+    android:textSize="18sp"
     tools:text="Despacito"
     app:drawableStartCompat="@drawable/vd_history"
-    app:drawableTint="@color/colorAccentLight"
+    app:drawableTint="?colorSecondary"
     android:drawablePadding="20dp"/>

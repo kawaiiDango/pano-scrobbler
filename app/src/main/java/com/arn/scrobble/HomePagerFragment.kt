@@ -51,8 +51,10 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
                 arguments!!.getInt(Stuff.ARG_TYPE)
             else if (arguments?.getString(Stuff.ARG_USERNAME) != null)
                 (view as ViewPager).currentItem
-            else if(activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_NOW_PLAYING)
+            else if(activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_RECENTS)
                 0
+            else if(activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_CHARTS)
+                3
             else
                 context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
                         .getInt(Stuff.PREF_ACTIVITY_LAST_TAB, 0)

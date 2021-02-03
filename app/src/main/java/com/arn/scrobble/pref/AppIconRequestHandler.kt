@@ -14,7 +14,6 @@ import com.squareup.picasso.RequestHandler
 class AppIconRequestHandler(context: Context) : RequestHandler() {
 
     private val pm = context.packageManager
-    private val isMIUI = Stuff.isMiui(context)
 
     override fun canHandleRequest(data: Request): Boolean {
         return data.uri != null && TextUtils.equals(data.uri.scheme, SCHEME_PNAME)
@@ -23,7 +22,7 @@ class AppIconRequestHandler(context: Context) : RequestHandler() {
     override fun load(request: Request, networkPolicy: Int): Result? {
         return try {
             val info = pm.getApplicationInfo(request.uri.toString().split(":")[1], 0)
-            val b = Stuff.drawableToBitmap(info.loadIcon(pm), request.targetWidth, request.targetHeight, isMIUI)
+            val b = Stuff.drawableToBitmap(info.loadIcon(pm), request.targetWidth, request.targetHeight)
             Result(b, LoadedFrom.DISK)
         } catch (e: Exception) { //catch miui security exceptions too
             e.printStackTrace()

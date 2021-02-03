@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
@@ -172,7 +173,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             val sAdapter = binding.chartsSparkline.adapter as SparkLineAdapter
             sAdapter.setData(intList)
 
-            binding.chartsSparklineProgress.visibility = View.GONE
+            binding.chartsSparklineProgress.hide()
             binding.chartsSparklineLabels.text = labels.trimEnd()
             binding.chartsSparkline.adapter.notifyDataSetChanged()
             binding.chartsSparklineTickTop.text = NumberFormat.getInstance().format(sAdapter.max())
@@ -260,7 +261,8 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
                 header = binding.chartsTracksHeader
             }
             Stuff.TYPE_SC -> {
-                binding.chartsSparklineHeader.headerText.text = viewModel.periodCountHeader ?: getString(R.string.menu_charts)
+                binding.chartsSparklineHeader.headerText.text = viewModel.periodCountHeader
+                        ?: getString(R.string.menu_charts)
                 return
             }
         }
@@ -312,10 +314,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         if (periodChipIds[viewModel.periodIdx] == R.id.charts_choose_week)
             cal.timeInMillis = viewModel.weeklyChart!!.to.time
         var lastTime = cal.timeInMillis
-        cal.set(Calendar.MILLISECOND, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.setMidnight()
         if (periodChipIds[viewModel.periodIdx] == R.id.charts_choose_week) {
             cal.add(Calendar.DAY_OF_YEAR, 1)
             lastTime = cal.timeInMillis

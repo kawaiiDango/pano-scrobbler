@@ -26,9 +26,4 @@
         android:drawableTop="@drawable/vd_charts"
         android:text="@string/menu_charts"/>
 
-<!--    <Button-->
-<!--        android:id="@+id/friends_week"-->
-<!--        style="@style/friendsLinks"-->
-<!--        android:drawableTop="@drawable/vd_bar_chart"-->
-<!--        android:text="@string/last_week"/>-->
 </LinearLayout>

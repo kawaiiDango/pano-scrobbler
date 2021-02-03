@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:theme="@style/AppTheme"
-            app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:scrollbarAlwaysDrawVerticalTrack="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/colorBackground"
         android:isScrollContainer="true"
         android:orientation="vertical"
-        android:paddingBottom="17dp"
+        android:paddingBottom="0dp"
         android:paddingEnd="20dp"
         android:paddingStart="20dp"
         android:paddingTop="20dp">
@@ -39,7 +41,7 @@
                 android:id="@+id/login_textfield1_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:drawableTint="@color/colorAccent"
+                app:drawableTint="?colorPrimary"
                 android:singleLine="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -47,7 +49,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="#1f1f1f">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/login_textfield2"
@@ -55,29 +58,29 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:visibility="gone"
+                tools:hint="@string/album_optional"
                 tools:visibility="visible">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/login_textfield2_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:drawableTint="@color/colorAccent"
+                    app:drawableTint="?colorPrimary"
+                    tools:text="@string/album_optional"
                     android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageButton
                 android:id="@+id/edit_album_artist"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="?selectableItemBackgroundBorderless"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
                 android:contentDescription="@string/album_artist"
                 android:nextFocusLeft="@id/login_textfield2_edittext"
                 android:nextFocusRight="@id/edit_swap"
                 android:nextFocusDown="@id/login_textfield_last_edittext"
-                android:paddingStart="7dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="7dp"
                 android:tooltipText="@string/album_artist"
                 android:visibility="gone"
                 app:srcCompat="@drawable/vd_album_artist"
@@ -85,16 +88,14 @@
 
             <ImageButton
                 android:id="@+id/edit_swap"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="?selectableItemBackgroundBorderless"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
                 android:contentDescription="@string/swap"
                 android:nextFocusLeft="@id/edit_album_artist"
                 android:nextFocusRight="@id/login_textfield2_edittext"
                 android:nextFocusDown="@id/login_textfield_last_edittext"
-                android:paddingStart="7dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="7dp"
                 android:tooltipText="@string/swap"
                 android:visibility="gone"
                 app:srcCompat="@drawable/vd_swap"
@@ -106,14 +107,14 @@
             android:id="@+id/login_textfield_last"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/pref_token_label">
+            tools:hint="@string/pref_token_label"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_textfield_last_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:drawableTint="@color/colorAccent"
+                app:drawableTint="?colorPrimary"
                 android:imeOptions="actionDone"
                 android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -129,7 +130,7 @@
                 android:id="@+id/login_textfield_last2_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:drawableTint="@color/colorAccent"
+                app:drawableTint="?colorPrimary"
                 android:imeOptions="actionDone"
                 android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -141,43 +142,43 @@
             android:text="@string/force_remembered"
             android:visibility="gone"
             tools:text="@string/force_remembered"/>
+        </LinearLayout>
+    </ScrollView>
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_gravity="end"
+        android:layout_marginHorizontal="15dp"
+        android:animateLayoutChanges="true">
 
-        <FrameLayout
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/login_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="2dp"
-            android:layout_marginTop="2dp"
-            android:animateLayoutChanges="true">
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
-            <ProgressBar
-                android:id="@+id/login_progress"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:visibility="gone"
-                tools:visibility="visible"/>
+        <ImageView
+            android:id="@+id/login_status"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:tint="?colorPrimary"
+            tools:alpha="0.5"
+            tools:src="@drawable/vd_check"
+            tools:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/login_status"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:scaleType="fitCenter"
-                app:tint="@color/colorAccent"
-                android:visibility="gone"
-                tools:src="@drawable/vd_check"/>
+        <Button
+            android:id="@+id/login_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/login_submit"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog" />
+    </FrameLayout>
 
-            <Button
-                android:id="@+id/login_submit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:padding="16dp"
-                android:text="@string/login_submit"
-                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                android:textStyle="bold"/>
-        </FrameLayout>
 
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

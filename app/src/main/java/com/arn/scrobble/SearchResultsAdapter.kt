@@ -80,10 +80,9 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
         }
     }
 
-    fun populate(searchResults: SearchVM.SearchResults, expandType: Int, animate: Boolean) {
+    fun populate(searchResults: SearchVM.SearchResults, expandType: Int, diffAnimate: Boolean) {
         this.expandType = expandType
-        fragmentBinding.searchProgress.visibility = View.GONE
-        fragmentBinding.searchHistoryList.visibility = View.GONE
+        fragmentBinding.searchProgress.hide()
         fragmentBinding.searchResultsList.visibility = View.VISIBLE
         val oldData = data.toList()
         data.clear()
@@ -115,11 +114,13 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
                         data += searchResults.tracks[i]
             }
         }
-        if (animate) {
+        if (diffAnimate) {
             val diff = DiffUtil.calculateDiff(DiffCallback(data, oldData), false)
             diff.dispatchUpdatesTo(this)
-        } else
+        } else {
+            fragmentBinding.searchResultsList.scheduleLayoutAnimation()
             notifyDataSetChanged()
+        }
     }
 
     fun queueEntryInfo(pos: Int, imageView: ImageView) {

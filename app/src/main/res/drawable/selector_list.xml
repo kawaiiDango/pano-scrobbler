@@ -3,7 +3,7 @@
     <item android:drawable="?selectableItemBackground" />
     <item>
         <selector android:enterFadeDuration="@android:integer/config_shortAnimTime" android:exitFadeDuration="@android:integer/config_mediumAnimTime" >
-            <item android:state_activated="true" android:drawable="@color/highlightGreen" />
+            <item android:state_activated="true" android:drawable="@drawable/color_highlight"/>
         </selector>
     </item>
 </layer-list>

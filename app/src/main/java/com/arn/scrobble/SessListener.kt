@@ -160,7 +160,7 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
             val packageNameParam = if (!isWhitelisted) packageName else null
             handler.removeMessages(hashesAndTimes.lastScrobbleHash)
             if (isIgnoreArtistMeta) {
-                val splits = Stuff.sanitizeTitle(title)
+                val splits = MetadataUtils.sanitizeTitle(title)
                 handler.nowPlaying(splits[0], "", splits[1], "", hashesAndTimes.timePlayed, duration, currHash, false, packageNameParam)
             } else
                 handler.nowPlaying(artist, album, title, albumArtist, hashesAndTimes.timePlayed, duration, currHash, true, packageNameParam)
@@ -253,12 +253,11 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
         }
     }
 
-    fun shouldScrobble(packageName: String): Boolean {
-        val shouldScrobble = scrobblingEnabled && loggedIn &&
+    private fun shouldScrobble(packageName: String): Boolean {
+
+        return scrobblingEnabled && loggedIn &&
                 (whiteList.contains(packageName) ||
                 (autoDetectApps && !blackList.contains(packageName)))
-
-        return shouldScrobble
     }
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {

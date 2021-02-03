@@ -6,14 +6,15 @@
             android:width="30dp"
             android:height="20dp"
             android:viewportWidth="30"
-            android:viewportHeight="20">
+            android:viewportHeight="20"
+            android:tint="?colorSecondary">
             <group
                 android:name="group"
                 android:pivotY="20">
                 <path
                     android:name="path"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="@color/colorAccentLight"/>
+                    android:fillColor="#fff"/>
             </group>
             <group
                 android:name="group_1"
@@ -22,7 +23,7 @@
                 <path
                     android:name="path_1"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="@color/colorAccentLight"/>
+                    android:fillColor="#fff"/>
             </group>
             <group
                 android:name="group_2"
@@ -31,7 +32,7 @@
                 <path
                     android:name="path_2"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="@color/colorAccentLight"/>
+                    android:fillColor="#fff"/>
             </group>
             <group
                 android:name="group_3"
@@ -40,7 +41,7 @@
                 <path
                     android:name="path_3"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="@color/colorAccentLight"/>
+                    android:fillColor="#fff"/>
             </group>
             <group
                 android:name="group_4"
@@ -49,7 +50,7 @@
                 <path
                     android:name="path_4"
                     android:pathData="M 0 0 L 5 0 L 5 20 L 0 20 Z"
-                    android:fillColor="@color/colorAccentLight"/>
+                    android:fillColor="#fff"/>
             </group>
         </vector>
     </aapt:attr>

@@ -292,7 +292,7 @@ public class Caller {
 						}
 					}
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new CallException(e);
 			}
 		}
@@ -309,7 +309,7 @@ public class Caller {
                 lastError = null;
 //			this.lastResult = result;
 			return result;
-		} catch (IOException | SAXException e) {
+		} catch (Exception e) {
 		    if (cache != null)
                 cache.remove(cacheEntryName);
 			throw new CallException(e);

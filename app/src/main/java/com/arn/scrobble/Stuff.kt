@@ -1,13 +1,8 @@
 package com.arn.scrobble
 
 import android.animation.ValueAnimator
-import android.app.Activity
-import android.app.ActivityOptions
-import android.app.SearchManager
-import android.content.ActivityNotFoundException
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
+import android.app.*
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
@@ -31,13 +26,12 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.arn.scrobble.RecentsFragment.Companion.lastColorMutedBlack
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
-import com.arn.scrobble.ui.StatefulAppBar
+import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.Caller
 import de.umass.lastfm.cache.FileSystemCache
 import java.io.IOException
@@ -77,9 +71,10 @@ object Stuff {
     const val TAG = "scrobbler"
     const val DL_SETTINGS = 31
     const val DL_APP_LIST = 32
-    const val DL_NOW_PLAYING = 33
+    const val DL_RECENTS = 33
     const val DL_MIC = 34
     const val DL_SEARCH = 35
+    const val DL_CHARTS = 36
     const val DIRECT_OPEN_KEY = "directopen"
     const val FRIENDS_RECENTS_DELAY: Long = 800
 
@@ -116,6 +111,9 @@ object Stuff {
     const val PREF_EXPORT = "export"
     const val PREF_INTENTS = "intents"
     const val PREF_FETCH_AA = "fetch_album_artist"
+    const val PREF_DIGEST_WEEKLY = "digest_weekly"
+    const val PREF_DIGEST_MONTHLY = "digest_monthly"
+    const val PREF_SHARE_SIG = "share_sig"
 
     const val PREF_ACTIVITY_FIRST_RUN = "first_run"
     const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
@@ -128,9 +126,10 @@ object Stuff {
     const val PREF_ACTIVITY_SCROBBLING_SINCE = "scrobbling_since"
     const val PREF_ACTIVITY_LAST_RANDOM_TYPE = "random_type"
     const val PREF_ACTIVITY_PROFILE_PIC = "profile_cached"
-    const val PREF_ACTIVITY_SHARE_SIG = "share_sig"
     const val PREF_ACTIVITY_SEARCH_HISTORY = "search_history"
+    const val PREF_ACTIVITY_TAG_HISTORY = "tag_history"
     const val PREF_ACTIVITY_SCRUB_LEARNT = "scrub_learnt"
+    const val PREF_ACTIVITY_LONG_PRESS_LEARNT = "long_press_learnt"
     const val ACTIVITY_PREFS = "activity_preferences"
 
     val SERVICE_BIT_POS = mapOf(
@@ -203,18 +202,6 @@ object Stuff {
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
     const val PACKAGE_NETEASE_MUSIC = "com.netease.cloudmusic"
 
-    private val seperators = arrayOf(// in priority order
-            "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", /*"ー", */" • ",
-
-            "【", "〖", "〔",
-            "】", "〗", "』", "」", "〕",
-            // ":",
-            " \"", " / ", "／")
-    private val unwantedSeperators = arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
-
-    private val metaSpam = arrayOf("downloaded", ".com", ".co.", "www.")
-    private val metaUnknown = arrayOf("unknown", "[unknown]", "unknown album", "[unknown album]", "unknown artist", "[unknown artist]")
-
     val STARTUPMGR_INTENTS = arrayOf( //pkg, class
             "com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity",
             "com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity",
@@ -251,11 +238,11 @@ object Stuff {
         }
     }
 
-    fun bundleDump(bundle: Bundle?): String {
-        bundle ?: return "null"
+    fun Bundle?.dump(): String {
+        this ?: return "null"
         var s = ""
-        for (key in bundle.keySet().sortedDescending()) {
-            val value = bundle.get(key) ?: "null"
+        for (key in keySet().sortedDescending()) {
+            val value = get(key) ?: "null"
             s += String.format("%s= %s, ", key, value.toString())
         }
         return s
@@ -269,117 +256,6 @@ object Stuff {
         } catch (e: IOException) {
         }
         return resp
-    }
-
-    fun sanitizeTitle(titleContentOriginal: String): Array<String> {
-        //New detection of trackinformation
-        //remove (*) and/or [*] to remove unimportant data
-        val titleContent = titleContentOriginal.replace(" *\\([^)]*?\\) *".toRegex(), " ")
-                .replace(" *\\[[^)]*?] *".toRegex(), " ")
-
-                //remove HD info
-                .replace("\\W* HD|HQ|4K|MV|M/V|Official Music Video|Music Video|Lyric Video|Official Audio( \\W*)?"
-                        .toRegex(RegexOption.IGNORE_CASE)
-                        , " ")
-
-//        get remix info
-        val remixInfo = "\\([^)]*(?:remix|mix|cover|version|edit|booty?leg)\\)".toRegex(RegexOption.IGNORE_CASE).find(titleContentOriginal)
-
-        var musicInfo: Array<String>? = null
-        for (s in seperators) {
-            //parsing artist - title
-            musicInfo = titleContent.split(s).filter { it.isNotBlank() }.toTypedArray()
-            if (s == "／")
-                musicInfo.reverse()
-
-//            println("musicInfo= "+musicInfo[0] + (if (musicInfo.size >1) "," + musicInfo[1] else "") + "|" + musicInfo.size)
-            //got artist, parsing title - audio (cover) [blah]
-            if (musicInfo.size > 1) {
-                for (j in 0 until seperators.size - 2) {
-                    val splits = musicInfo[1].split(seperators[j]).filter { it.isNotEmpty() }
-//                    println("splits= $splits |" + splits.size + "|" + seperators[j])
-                    if (splits.size > 1) {
-                        musicInfo[1] = splits[0]
-                        break
-                    }
-//                    else if (splits.size == 1)
-//                        break
-                }
-                break
-            }
-        }
-
-
-        if (musicInfo == null || musicInfo.size < 2) {
-            return arrayOf("", titleContent.trim())
-        }
-
-        //remove ", ', 」, 』 from musicInfo
-        val allUnwantedSeperators = "(" + unwantedSeperators.joinToString("|") + ")"
-        for (i in musicInfo.indices) {
-            musicInfo[i] = musicInfo[i].replace("^\\s*$allUnwantedSeperators|$allUnwantedSeperators\\s*$".toRegex(), " ")
-        }
-
-        musicInfo[1] = musicInfo[1].replace("\\.(avi|wmv|mp4|mpeg4|mov|3gpp|flv|webm)$".toRegex(RegexOption.IGNORE_CASE), " ")
-                .replace("Full Album".toRegex(RegexOption.IGNORE_CASE), "")
-        //Full Album Video
-//        println("mi1="+musicInfo[1])
-        //move feat. info from artist to
-        musicInfo[0] = musicInfo[0].replace(" (ft\\.?) ".toRegex(), " feat. ")
-        if (musicInfo[0].contains(" feat.* .*".toRegex(RegexOption.IGNORE_CASE))) {
-            val m = " feat.* .*".toRegex(RegexOption.IGNORE_CASE).find(musicInfo[0])
-            musicInfo[1] = musicInfo[1].trim() + " " + (m!!.groups[0]?.value ?: "").trim()
-            musicInfo[0] = musicInfo[0].replace(" feat.* .*".toRegex(RegexOption.IGNORE_CASE), "")
-        }
-//        println("mi2="+musicInfo[1])
-        //add remix info
-        if (remixInfo?.groups?.isNotEmpty() == true) {
-            musicInfo[1] = musicInfo[1].trim() + " " + remixInfo.groups[0]?.value
-        }
-
-        //delete spaces
-        musicInfo[0] = musicInfo[0].trim()
-        musicInfo[1] = musicInfo[1].trim()
-
-        return musicInfo
-    }
-
-    fun sanitizeAlbum(albumOrig: String): String {
-        val albumLower = albumOrig.toLowerCase(Locale.ENGLISH)
-        if (metaSpam.any { albumLower.contains(it) } || metaUnknown.any { albumLower == it })
-            return ""
-
-        return albumOrig
-    }
-
-    fun sanitizeArtist(artistOrig: String): String {
-        val splits = artistOrig.split("; ").filter { !it.isBlank() }
-        if (splits.isEmpty())
-            return ""
-        return splits[0]
-    }
-
-    fun pixelNPExtractMeta(titleStr: String, formatStr: String):Array<String>? {
-        val tpos = formatStr.indexOf("%1\$s")
-        val apos = formatStr.indexOf("%2\$s")
-        val regex = formatStr.replace("(", "\\(")
-                .replace(")", "\\)")
-                .replace("%1\$s", "(.*)")
-                .replace("%2\$s", "(.*)")
-        return try {
-            val m = regex.toRegex().find(titleStr)!!
-            val g = m.groupValues
-            if (g.size != 3)
-                throw Exception("group size != 3")
-            if (tpos > apos)
-                arrayOf(g[1],g[2])
-            else
-                arrayOf(g[2],g[1])
-
-        } catch (e:Exception) {
-            print("err in $titleStr $formatStr")
-            null
-        }
     }
 
     fun setTitle(activity: Activity?, @StringRes strId: Int) {
@@ -400,8 +276,6 @@ object Stuff {
         } else {
             activity.binding.coordinatorMain.toolbar.title = str
             activity.binding.coordinatorMain.appBar.setExpanded(false, true)
-            activity.binding.coordinatorMain.ctl.setContentScrimColor(ContextCompat.getColor(activity, R.color.darkToolbar))
-            activity.binding.coordinatorMain.ctl.setCollapsedTitleTextColor(Color.WHITE)
 
             val navbarBgAnimator = ValueAnimator.ofArgb(activity.window.navigationBarColor, 0)
             navbarBgAnimator.duration *= 2
@@ -410,11 +284,13 @@ object Stuff {
             }
             navbarBgAnimator.start()
         }
+        activity.binding.coordinatorMain.ctl.setContentScrimColor(MaterialColors.getColor(activity, android.R.attr.colorBackground, null))
+
         for (i in 0..activity.binding.coordinatorMain.toolbar.childCount) {
             val child = activity.binding.coordinatorMain.toolbar.getChildAt(i)
             if (child is ImageButton) {
                 (child.drawable as ShadowDrawerArrowDrawable).
-                setColors(ContextCompat.getColor(activity, R.color.colorAccent), Color.TRANSPARENT)
+                setColors(MaterialColors.getColor(activity, R.attr.colorPrimary, null), Color.TRANSPARENT)
                 break
             }
         }
@@ -438,8 +314,6 @@ object Stuff {
         else
             activity.resources.getDimensionPixelSize(R.dimen.app_bar_height)
         if (targetAbHeight != lp.height) {
-            activity.findViewById<StatefulAppBar>(R.id.app_bar).isCollapsed
-            activity.findViewById<StatefulAppBar>(R.id.app_bar).isExpanded
             if (!activity.binding.coordinatorMain.appBar.isExpanded) {
                 lp.height = targetAbHeight
 //                activity.app_bar.setExpanded(false, false)
@@ -459,7 +333,7 @@ object Stuff {
     }
 
     fun getColoredTitle(context: Context, title: String): Spanned {
-        val colorAccent = ContextCompat.getColor(context, R.color.colorAccent)
+        val colorAccent = MaterialColors.getColor(context, R.attr.colorPrimary, null)
         val hex = "#" + Integer.toHexString(colorAccent).substring(2)
         return Html.fromHtml("<font color=\"$hex\">$title</font>")
     }
@@ -502,7 +376,7 @@ object Stuff {
         val unit = "KMB"[exp - 1] //kilo, million, bilion
         val dec = n / k.toDouble().pow(exp.toDouble())
 
-        val decimal = DecimalFormat("#.#").format(dec)
+        val decimal = DecimalFormat(if (dec >= 100) "#" else "#.#").format(dec)
         return decimal + unit
     }
 
@@ -556,19 +430,6 @@ object Stuff {
         return bitmap
     }
 
-    fun isMiui(context: Context?): Boolean {
-        return try {
-            if (context != null) {
-                val pm = context.packageManager
-                pm.getPackageInfo("com.miui.securitycenter", PackageManager.GET_META_DATA)
-                true
-            } else
-                false
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
-    }
-
     fun getStartupIntent(context: Context): Intent? {
         // https://stackoverflow.com/questions/48166206/how-to-start-power-manager-of-all-android-manufactures-to-enable-background-and/48166241#48166241
         for (i in STARTUPMGR_INTENTS.indices step 2) {
@@ -614,7 +475,10 @@ object Stuff {
     }
 
     fun setProgressCircleColor(swl: SwipeRefreshLayout) {
-        swl.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimaryLight)
+        swl.setColorSchemeColors(
+                MaterialColors.getColor(swl, R.attr.colorPrimary),
+                MaterialColors.getColor(swl, R.attr.colorSecondary)
+        )
         swl.setProgressBackgroundColorSchemeResource(R.color.darkBg)
     }
 
@@ -687,5 +551,49 @@ object Stuff {
             result = result * prime + s.hashCode()
         }
         return result
+    }
+
+    fun Calendar.setMidnight() {
+        this[Calendar.HOUR_OF_DAY] = 0
+        this[Calendar.MINUTE] = 0
+        this[Calendar.SECOND] = 0
+        this[Calendar.MILLISECOND] = 0
+    }
+
+    fun scheduleDigests(context: Context) {
+        val weeklyIntent = PendingIntent.getBroadcast(context, 20,
+                Intent(NLService.iDIGEST_WEEKLY), PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val monthlyIntent = PendingIntent.getBroadcast(context, 21,
+                Intent(NLService.iDIGEST_MONTHLY), PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val cal = Calendar.getInstance()
+        cal.setMidnight()
+
+        cal[Calendar.DAY_OF_WEEK] = Calendar.MONDAY
+        cal.add(Calendar.WEEK_OF_YEAR, 1)
+        val nextWeek = cal.timeInMillis
+
+        cal.timeInMillis = System.currentTimeMillis()
+        cal.setMidnight()
+
+        cal[Calendar.DAY_OF_MONTH] = 1
+        cal.add(Calendar.MONTH, 1)
+        val nextMonth = cal.timeInMillis
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.RTC, nextWeek, weeklyIntent)
+        alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
+
+        if (BuildConfig.DEBUG) {
+            val dailyIntent = PendingIntent.getBroadcast(context, 22,
+                    Intent(NLService.iDIGEST_WEEKLY), PendingIntent.FLAG_UPDATE_CURRENT)
+
+            cal.timeInMillis = System.currentTimeMillis()
+            cal.setMidnight()
+            cal.add(Calendar.DAY_OF_YEAR, 1)
+            val nextDay = cal.timeInMillis
+            alarmManager.set(AlarmManager.RTC, nextDay, dailyIntent)
+        }
     }
 }

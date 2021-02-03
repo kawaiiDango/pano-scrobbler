@@ -5,8 +5,19 @@
               android:focusable="true"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="@drawable/selector_app_list"
+              android:background="@drawable/selector_list"
               android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/app_list_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_marginEnd="5dp"
+        android:clickable="false"
+        android:duplicateParentState="false"
+        android:focusable="false"
+        android:gravity="center_vertical" />
 
     <ImageView
         android:id="@+id/app_list_icon"
@@ -25,17 +36,6 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         tools:text="app"/>
-
-    <CheckBox
-        android:id="@+id/app_list_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:layout_marginEnd="5dp"
-        android:clickable="false"
-        android:duplicateParentState="false"
-        android:focusable="false"
-        android:gravity="center_vertical"/>
 
 
 </LinearLayout>

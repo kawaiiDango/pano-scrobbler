@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
+import kotlin.math.abs
 
 /**
  * Created by arn on 03/01/2018.
@@ -44,7 +45,7 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
         val oldState = state
         state = when {
             verticalOffset == 0 -> EXPANDED
-            Math.abs(verticalOffset) >= appBarLayout.totalScrollRange -> COLLAPSED
+            abs(verticalOffset) >= appBarLayout.totalScrollRange -> COLLAPSED
             else -> IDLE
         }
         if (state != oldState)

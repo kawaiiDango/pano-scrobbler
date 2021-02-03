@@ -5,7 +5,6 @@ import android.os.AsyncTask
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
@@ -15,6 +14,7 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.pending.db.PendingLove
 import com.arn.scrobble.pending.db.PendingScrobble
 import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.lang.RuntimeException
 
 object PendingMenu {
@@ -52,7 +52,7 @@ object PendingMenu {
                             if (state and (1 shl pos) != 0)
                                 servicesList += context.getString(id)
                         }
-                        AlertDialog.Builder(context, R.style.DarkDialog)
+                        MaterialAlertDialogBuilder(context)
                                 .setMessage(context.getString(R.string.details_text,
                                         context.getString(actionRes).toLowerCase(),
                                         servicesList.joinToString(", ")))

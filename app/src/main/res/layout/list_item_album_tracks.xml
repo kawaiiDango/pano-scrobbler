@@ -15,7 +15,7 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="18sp"
         tools:text="1" />
 
     <TextView
@@ -24,8 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#fff"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         tools:text="Title" />
 
     <TextView

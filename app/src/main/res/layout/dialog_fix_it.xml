@@ -4,8 +4,7 @@
             android:layout_height="match_parent"
             android:nestedScrollingEnabled="true"
             xmlns:tools="http://schemas.android.com/tools"
-            android:background="#222"
-            android:theme="@style/AppTheme">
+            android:background="#222">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +21,7 @@
             android:layout_marginBottom="@dimen/fab_margin"
             android:layout_marginTop="@dimen/fab_margin"
             android:text="@string/fix_it_title"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
 
         <LinearLayout
             style="@style/bottomSheetContent"
@@ -37,7 +36,7 @@
                 android:gravity="center_vertical"
                 android:paddingBottom="@dimen/elevation_hero_btn"
                 android:text="@string/fix_it_startup_title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
             <TextView
                 android:id="@+id/fix_it_startup_desc"
@@ -56,8 +55,9 @@
                 android:paddingEnd="@dimen/fab_done_margin"
                 android:paddingStart="@dimen/fab_done_margin"
                 android:text="@string/fix_it_action"
-                android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:textColor="@color/colorAccent" />
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:textColor="?colorPrimary" />
 
 
         </LinearLayout>
@@ -78,7 +78,7 @@
                 android:gravity="center_vertical"
                 android:paddingBottom="@dimen/elevation_hero_btn"
                 android:text="@string/fix_it_noti_title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -96,8 +96,9 @@
                 android:paddingEnd="@dimen/fab_done_margin"
                 android:paddingStart="@dimen/fab_done_margin"
                 android:text="@string/fix_it_action"
-                android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:textColor="@color/colorAccent"/>
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:textColor="?colorPrimary"/>
 
         </LinearLayout>
 
@@ -117,7 +118,7 @@
                 android:gravity="center_vertical"
                 android:paddingBottom="@dimen/elevation_hero_btn"
                 android:text="@string/fix_it_battery_title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -135,8 +136,9 @@
                 android:paddingEnd="@dimen/fab_done_margin"
                 android:paddingStart="@dimen/fab_done_margin"
                 android:text="@string/fix_it_action"
-                android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:textColor="@color/colorAccent"/>
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:textColor="?colorPrimary"/>
 
         </LinearLayout>
 

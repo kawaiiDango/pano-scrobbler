@@ -16,12 +16,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            app:hintEnabled="false"
             app:layout_scrollFlags="enterAlways|scroll|snap"
-            app:endIconMode="clear_text"
-            app:endIconDrawable="@drawable/vd_cancel"
+            app:endIconMode="dropdown_menu"
             app:startIconDrawable="@drawable/vd_search">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <AutoCompleteTextView
                 android:id="@+id/search_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,13 +38,12 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/search_progress"
-            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="gone"
+            android:visibility="invisible"
             tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -51,12 +51,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
+            android:layoutAnimation="@anim/layout_animation_slide_up"
             android:scrollbars="vertical"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_history_list"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

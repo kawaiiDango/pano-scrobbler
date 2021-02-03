@@ -13,6 +13,7 @@ import com.arn.scrobble.databinding.ContentWebviewBinding
 import okhttp3.Cookie
 import okhttp3.HttpUrl
 
+
 /**
  * Created by arn on 06/09/2017.
  */
@@ -22,7 +23,11 @@ class WebViewFragment: Fragment() {
     private val binding
         get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentWebviewBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -73,12 +78,12 @@ class WebViewFragment: Fragment() {
 
                     cookieString.split("; ")
                             .forEach {
-                                val nvpair = it.split("=", limit=2)
+                                val nvpair = it.split("=", limit = 2)
                                 if (nvpair[0] == LastfmUnscrobbler.COOKIE_CSRFTOKEN ||
                                         nvpair[0] == LastfmUnscrobbler.COOKIE_SESSIONID) {
                                     val okCookie = Cookie.Builder()
                                             .domain("last.fm")
-                                            .expiresAt(System.currentTimeMillis() + 1000L*60*60*24*30*11)
+                                            .expiresAt(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 11)
                                             //somewhat less than 1y, similar to what lastfm does
                                             .name(nvpair[0])
                                             .value(nvpair[1])
@@ -94,7 +99,11 @@ class WebViewFragment: Fragment() {
                     unscrobbler.putCookies(httpUrl, cookies)
                 }
             }
-            if (url.startsWith("pscrobble://auth/")) {
+            if (
+                    url.startsWith("pscrobble://auth/") ||
+                    url.startsWith("https://www.last.fm/join") ||
+                    url.startsWith("https://secure.last.fm/settings/lostpassword")
+                    ) {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 view.context.startActivity(intent)
                 try {
@@ -107,13 +116,18 @@ class WebViewFragment: Fragment() {
             return false
         }
 
-        override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
-            //deprecated but required for lolipop
-            if(binding.webview!=null){
+        override fun onReceivedError(
+            view: WebView?,
+            errorCode: Int,
+            description: String?,
+            failingUrl: String?
+        ) {
+            //deprecated but required for lollipop
+            if(_binding != null){
                 val htmlData = "<html><body><div align=\"center\" >"+getString(R.string.webview_error)+"<br>"+
                         description+ "</div></body>"
                 binding.webview.loadUrl("about:blank")
-                binding.webview.loadDataWithBaseURL(null,htmlData, "text/html", "UTF-8",null)
+                binding.webview.loadDataWithBaseURL(null, htmlData, "text/html", "UTF-8", null)
                 binding.webview.invalidate()
 
             }

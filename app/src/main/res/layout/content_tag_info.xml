@@ -2,7 +2,6 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:theme="@style/AppThemeMaterial"
     android:background="#000"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -32,8 +31,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textColor="@color/colorAccent"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textColor="?colorPrimary"
                     tools:text="title"/>
 
                 <ImageButton
@@ -44,24 +43,28 @@
                     android:contentDescription="@string/hero_info"
                     android:tooltipText="@string/hero_info"
                     app:srcCompat="@drawable/vd_open_in_new"
-                    app:tint="@color/colorAccentLight" />
+                    app:tint="?colorSecondary" />
         </LinearLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <ProgressBar
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/tag_info_progress"
-                style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:indeterminateTint="?colorPrimary" />
+                android:visibility="invisible"
+                style="@style/Widget.MaterialComponents.CircularProgressIndicator.Small"
+                app:hideAnimationBehavior="none"
+                android:layout_gravity="center"/>
 
             <LinearLayout
                 android:id="@+id/tag_info_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:layoutAnimation="@anim/layout_animation_slide_up"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -76,8 +79,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center_horizontal"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                        android:textColor="#fff"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textSize="18sp"
                         tools:text="1" />
 
                     <TextView
@@ -86,8 +89,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center_horizontal"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                        android:textColor="#fff"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textSize="18sp"
                         tools:text="1" />
 
                 </LinearLayout>
@@ -103,7 +106,7 @@
                         android:layout_weight="1"
                         android:gravity="center_horizontal"
                         android:text="@string/taggers"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                        />
 
                     <TextView
                         android:layout_width="0dp"
@@ -111,7 +114,7 @@
                         android:layout_weight="1"
                         android:gravity="center_horizontal"
                         android:text="@string/taggings"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                        />
 
                 </LinearLayout>
 
@@ -121,6 +124,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:visibility="gone"
+                    android:padding="@dimen/list_item_padding"
+                    android:background="@drawable/selector_border_gentle"
+                    android:addStatesFromChildren="true"
                     tools:visibility="visible"
                     android:orientation="horizontal">
 
@@ -131,30 +137,30 @@
                         android:layout_marginStart="5dp"
                         android:layout_weight="1"
                         android:autoLink="web"
-                        android:background="?selectableItemBackground"
                         android:ellipsize="end"
                         android:maxLines="4"
-                        tools:text="wiki" />
+                        tools:text="wiki"
+                        android:scrollbars="none"/>
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/tag_info_wiki_expand"
-                        style="@style/Widget.AppCompat.Button.Borderless"
                         android:layout_width="40dp"
                         android:layout_height="match_parent"
                         android:contentDescription="@string/expand"
+                        android:scaleType="center"
                         android:visibility="invisible"
                         app:srcCompat="@drawable/vd_arrow_down"
                         tools:visibility="visible" />
                 </LinearLayout>
-
+<!--
                 <TextView
                     android:id="@+id/tag_info_similar_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@string/similar_tags"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:textColor="@color/colorAccent"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:textColor="?colorPrimary"
                     android:visibility="gone"
                     tools:visibility="visible" />
 
@@ -162,6 +168,7 @@
                     android:id="@+id/tag_info_tags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+-->
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>

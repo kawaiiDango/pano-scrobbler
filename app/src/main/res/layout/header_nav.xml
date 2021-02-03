@@ -6,7 +6,6 @@
     android:id="@+id/nav_header"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
-    android:background="@drawable/gradient_nav_side"
     android:orientation="vertical"
     >
 

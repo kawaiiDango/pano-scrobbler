@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
             tools:text="0."
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/grant_autostart"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
 
             <TextView
                 android:id="@+id/first_things_0_desc"
@@ -52,7 +52,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
             tools:text="1."
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/grant_notification_access"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
             <TextView
                 android:id="@+id/first_things_1_desc"
@@ -89,7 +89,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
             tools:text="2."
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/authenticate_with_lastfm"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -121,14 +121,14 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
             tools:text="3."
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:text="@string/choose_apps"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
     </LinearLayout>
     <EditText
         android:id="@+id/testing_pass"

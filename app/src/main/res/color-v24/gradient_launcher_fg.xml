@@ -2,7 +2,7 @@
 
 <gradient xmlns:android="http://schemas.android.com/apk/res/android"
     android:startColor="#fff"
-    android:endColor="@color/colorAccentLight"
+    android:endColor="@color/pinkSecondary"
     android:type="linear"
     android:startX="40"
     android:endX="108"

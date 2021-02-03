@@ -2,17 +2,22 @@ package com.arn.scrobble
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.transition.Fade
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.info.InfoFragment
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.ui.ItemClickListener
+import com.google.android.material.textfield.TextInputLayout
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.ImageSize
@@ -20,12 +25,21 @@ import de.umass.lastfm.Track
 
 
 class SearchFragment: Fragment() {
-    private val pref by lazy { MultiPreferences(context!!) }
     private val viewModel by lazy { VMFactory.getVM(this, SearchVM::class.java) }
     private val chartsVM by lazy { VMFactory.getVM(this, ChartsVM::class.java) }
+    private val historyPref by lazy { HistoryPref(
+            activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE),
+            Stuff.PREF_ACTIVITY_SEARCH_HISTORY,
+            20
+    ) }
     private var _binding: ContentSearchBinding? = null
     private val binding
         get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enterTransition = Fade()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentSearchBinding.inflate(inflater, container, false)
@@ -42,8 +56,13 @@ class SearchFragment: Fragment() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         binding.searchTerm.editText!!.requestFocus()
         binding.searchTerm.postDelayed({
-            imm?.showSoftInput(binding.searchTerm.editText, 0)
+            if (_binding != null)
+                imm?.showSoftInput(binding.searchTerm.editText, 0)
         }, 100)
+        binding.searchTerm.postDelayed({
+            if (_binding != null)
+                binding.searchEdittext.showDropDown()
+        }, 500)
         binding.searchTerm.editText!!.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 loadSearches(textView.text.toString())
@@ -54,29 +73,39 @@ class SearchFragment: Fragment() {
                 false
         }
 
-        binding.searchTerm.editText!!.setOnClickListener {
-            binding.searchResultsList.visibility = View.GONE
-            binding.searchHistoryList.visibility = View.VISIBLE
-        }
+        binding.searchTerm.editText!!.addTextChangedListener(object : TextWatcher {
 
-        loadHistory()
-
-        val historyAdapter = SearchHistoryAdapter(binding)
-        historyAdapter.viewModel = viewModel
-        val historyItemClickListener = object : ItemClickListener {
-            override fun onItemClick(view: View, position: Int) {
-                binding.searchTerm.clearFocus()
-                imm?.hideSoftInputFromWindow(view.windowToken, 0)
-                val term = viewModel.history[viewModel.history.size - position - 1]
-                binding.searchTerm.editText?.setText(term)
-                binding.searchTerm.editText?.setSelection(binding.searchTerm.editText!!.text.toString().length)
-                loadSearches(term)
+            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
             }
+
+            override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+            }
+
+            override fun afterTextChanged(editable: Editable) {
+                if (editable.isNotEmpty()) {
+//                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
+//                    bug https://github.com/material-components/material-components-android/issues/503
+                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                    binding.searchTerm.setEndIconDrawable(R.drawable.vd_cancel)
+                    binding.searchTerm.setEndIconOnClickListener { binding.searchTerm.editText?.text?.clear() }
+                } else {
+                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
+                }
+            }
+
+        })
+
+        historyPref.load()
+
+        val arrayAdapter = ArrayAdapter<String>(context!!, R.layout.list_item_history)
+        arrayAdapter.addAll(historyPref.history)
+        binding.searchEdittext.setAdapter(arrayAdapter)
+        binding.searchEdittext.setOnItemClickListener { adapterView, v, pos, l ->
+            binding.searchTerm.clearFocus()
+            imm?.hideSoftInputFromWindow(view.windowToken, 0)
+            val term = arrayAdapter.getItem(pos) as String
+            loadSearches(term)
         }
-        historyAdapter.clickListener = historyItemClickListener
-        binding.searchHistoryList.adapter = historyAdapter
-        binding.searchHistoryList.layoutManager = LinearLayoutManager(context)
-        historyAdapter.populate()
 
         val resultsAdapter = SearchResultsAdapter(binding)
         resultsAdapter.chartsVM = chartsVM
@@ -128,7 +157,6 @@ class SearchFragment: Fragment() {
         }
 
         binding.searchResultsList.setOnTouchListener(touchListener)
-        binding.searchHistoryList.setOnTouchListener(touchListener)
 
         resultsAdapter.clickListener = resultsItemClickListener
         binding.searchResultsList.adapter = resultsAdapter
@@ -138,9 +166,10 @@ class SearchFragment: Fragment() {
         viewModel.searchResults.observe(viewLifecycleOwner) {
             it ?: return@observe
             if (!(it.artists.isEmpty() && it.albums.isEmpty() && it.tracks.isEmpty())) {
-                viewModel.history.remove(it.term)
-                viewModel.history += it.term
-                historyAdapter.notifyDataSetChanged()
+                historyPref.add(it.term)
+                arrayAdapter.remove(it.term)
+                arrayAdapter.insert(it.term, 0)
+                arrayAdapter.notifyDataSetChanged()
             }
             resultsAdapter.populate(it, -1, false)
         }
@@ -164,37 +193,14 @@ class SearchFragment: Fragment() {
     }
 
     override fun onStop() {
-        saveHistory()
+        historyPref.save()
         super.onStop()
     }
 
     private fun loadSearches(term: String) {
-        binding.searchHistoryList.visibility = View.GONE
         binding.searchResultsList.visibility = View.GONE
-        binding.searchProgress.visibility = View.VISIBLE
+        binding.searchProgress.show()
         viewModel.loadSearches(term)
         chartsVM.imgMap.clear()
-    }
-
-    private fun loadHistory() {
-        val historySet = pref.getStringSet(Stuff.PREF_ACTIVITY_SEARCH_HISTORY, setOf())
-        val historyList = mutableListOf<Pair<Int,String>>()
-        historySet.forEach {
-            val parts = it.split('\n')
-            historyList += parts[0].toInt() to parts[1]
-        }
-        historyList.sortBy { it.first }
-        viewModel.history.clear()
-        historyList.forEach {
-            viewModel.history += it.second
-        }
-    }
-
-    private fun saveHistory() {
-        val historyPrefsSet = mutableSetOf<String>()
-        viewModel.history.takeLast(7).forEachIndexed { i, it ->
-            historyPrefsSet += "" + i + "\n" + it.replace(',', ' ')
-        }
-        pref.putStringSet(Stuff.PREF_ACTIVITY_SEARCH_HISTORY, historyPrefsSet)
     }
 }

@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import com.arn.scrobble.Main
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -52,6 +54,7 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
     init {
         setHasStableIds(true)
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        binding.chartsProgress.show()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHChart {
@@ -116,20 +119,28 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
     }
 
     open fun populate(){
+        binding.chartsList.layoutAnimation = null
         if (viewModel.chartsData.isEmpty()) {
             if (itemCount == 0) {
                 if (!Main.isOnline)
                     binding.chartsStatus.text = binding.root.context.getString(R.string.unavailable_offline)
                 else
                     binding.chartsStatus.text = binding.root.context.getString(emptyTextRes)
+                TransitionManager.beginDelayedTransition(binding.root, Fade())
                 binding.chartsStatus.visibility = View.VISIBLE
-                binding.chartsProgress.visibility = View.GONE
+                binding.chartsProgress.hide()
+                binding.chartsList.visibility = View.INVISIBLE
             }
         } else {
+            if (binding.chartsList.visibility != View.VISIBLE) {
+                TransitionManager.beginDelayedTransition(binding.root, Fade())
+                binding.chartsList.visibility = View.VISIBLE
+            }
             binding.chartsStatus.visibility = View.GONE
-            binding.chartsProgress.visibility = View.GONE
+            binding.chartsProgress.hide()
         }
         loadMoreListener.loading = false
+        binding.chartsList.smoothScrollToPosition(0)
         notifyDataSetChanged()
     }
 

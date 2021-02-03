@@ -10,16 +10,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:padding="15dp"
-        app:drawableTint="@color/colorAccent"
-        android:textColor="#fff"
         android:drawablePadding="10dp"
-        tools:text="@string/recently_scrobbled"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:padding="15dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textSize="18sp"
+        app:drawableTint="?colorPrimary"
+        tools:text="@string/recently_scrobbled" />
 
     <Button
         android:id="@+id/header_action"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"

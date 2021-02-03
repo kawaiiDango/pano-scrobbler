@@ -5,12 +5,14 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.PrefAppIconsBinding
 import com.squareup.picasso.Picasso
+import java.text.NumberFormat
 
 
 /**
@@ -32,13 +34,6 @@ class AppIconsPref : Preference {
     }
     private val wPx by lazy { Stuff.dp2px(48, context) }
 
-
-//    override fun onCreateView(parent: ViewGroup): View {
-//        super.onCreateView(parent)
-//        val li = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-//        return li.inflate(R.layout.pref_app_icons, parent, false)
-//    }
-
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
 
@@ -48,29 +43,33 @@ class AppIconsPref : Preference {
 
         if (packageNames.isNotEmpty()) {
             binding.appIconsContainer.removeAllViews()
+            binding.appListAdd.measure(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
 
-            val scrW = context.resources.displayMetrics.widthPixels
+            val totalWidth = context.resources.displayMetrics.widthPixels -
+                    binding.root.paddingLeft - binding.root.paddingRight - binding.appListAdd.measuredWidth
 
-            val nIcons = (scrW / (wPx * 1.16)).toInt() - 1
+            val nIcons = (totalWidth / wPx) - 1
             for (i in 0 until minOf(nIcons, packageNames.count())) {
                 val icon = ImageView(context)
                 icon.scaleType = ImageView.ScaleType.FIT_CENTER
-                icon.setPadding(wPx / 6, 0, wPx / 6, wPx / 6)
+                icon.layoutParams = LinearLayout.LayoutParams(wPx, wPx)
+                val padding = wPx / 8
+                icon.setPadding(padding, padding, padding, padding)
                 val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME + ":" + packageNames.elementAt(i))
                 picasso.load(uri)
-                        .resize(wPx, wPx)
+                        .resize(wPx - padding, wPx - padding)
                         .into(icon)
                 binding.appIconsContainer.addView(icon)
             }
 
             if (packageNames.size > nIcons) {
-                binding.appListSummary.visibility = View.VISIBLE
-                binding.appListSummary.text = context.getString(R.string.n_more, packageNames.size - nIcons)
+                binding.appListNMore.visibility = View.VISIBLE
+                binding.appListNMore.text = "+" + NumberFormat.getInstance().format(packageNames.size - nIcons)
             } else
-                binding.appListSummary.visibility = View.GONE
+                binding.appListNMore.visibility = View.GONE
         } else {
-            binding.appListSummary.visibility = View.VISIBLE
-            binding.appListSummary.text = context.getString(R.string.no_apps_enabled)
+            binding.appListNMore.visibility = View.VISIBLE
+            binding.appListNMore.text = context.getString(R.string.no_apps_enabled)
         }
         if (isIconSpaceReserved)
             binding.root.setPaddingRelative(Stuff.dp2px(48, context), 0, 0, 0)

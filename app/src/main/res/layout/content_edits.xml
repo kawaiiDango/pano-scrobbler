@@ -15,6 +15,8 @@
             android:id="@+id/search_term"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            app:hintEnabled="false"
             android:layout_marginHorizontal="10dp"
             app:layout_scrollFlags="enterAlways|scroll|snap"
             android:visibility="gone"
@@ -47,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
             android:visibility="gone"
             tools:text="0 saved edits"
             tools:visibility="visible" />
@@ -56,8 +58,8 @@
             android:id="@+id/edits_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical"
+            android:layoutAnimation="@anim/layout_animation_slide_up"/>
 
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

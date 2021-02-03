@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.arn.scrobble"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.arn.scrobble">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <uses-feature android:name="android.software.leanback" android:required="false" />
-    <uses-feature android:name="android.hardware.microphone" android:required="false"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 <!--
     <queries>
         <intent>
@@ -26,112 +24,113 @@
         <package android:name="com.google.android.as" />
     </queries>
 -->
-    <application
-        android:allowBackup="true"
-        android:banner="@drawable/tv_banner"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".App">
-        <activity
-            android:name=".Main"
+        <uses-feature
+            android:name="android.hardware.touchscreen"
+            android:required="false" />
+        <uses-feature
+            android:name="android.software.leanback"
+            android:required="false" />
+        <uses-feature
+            android:name="android.hardware.microphone"
+            android:required="false" />
+
+        <application
+            android:name=".App"
+            android:allowBackup="true"
+            android:banner="@drawable/tv_banner"
+            android:fullBackupContent="@xml/backup_rules"
+            android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:configChanges="orientation|keyboardHidden|screenSize|navigation"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-                <category android:name="android.intent.category.NOTIFICATION_PREFERENCES" />
-                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES"/>
-            </intent-filter>
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme">
+            <activity
+                android:name=".Main"
+                android:configChanges="orientation|keyboardHidden|screenSize|navigation"
+                android:label="@string/app_name"
+                android:launchMode="singleTop"
+                android:windowSoftInputMode="adjustPan">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
 
-            <intent-filter android:label="@string/pref_login">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.LAUNCHER" />
+                    <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                    <category android:name="android.intent.category.NOTIFICATION_PREFERENCES" />
 
-                <data android:scheme="pscrobble"
-                      android:host="auth" />
+                    <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+                </intent-filter>
+                <intent-filter android:label="@string/pref_login">
+                    <action android:name="android.intent.action.VIEW" />
 
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+                    <category android:name="android.intent.category.DEFAULT" />
 
-        </activity>
-        <activity
-            android:label="@string/menu_edit"
-            android:name=".EditActivity"
-            android:theme="@style/AppTheme.Transparent"
-            android:excludeFromRecents="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
+                    <data
+                        android:host="auth"
+                        android:scheme="pscrobble" />
+                </intent-filter>
 
-        <service android:name=".NLService"
-                 android:label="@string/app_name"
-                 android:process=":bgScrobbler"
-                 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
-        <intent-filter>
-            <action android:name="android.service.notification.NotificationListenerService" />
-        </intent-filter>
-        </service>
-        <service
-            android:name=".pending.PendingScrJob"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true" />
-        <service
-            android:name=".pending.PendingScrService"/>
+                <meta-data
+                    android:name="android.app.shortcuts"
+                    android:resource="@xml/shortcuts" />
+            </activity>
+            <activity
+                android:name=".EditActivity"
+                android:excludeFromRecents="true"
+                android:label="@string/menu_edit"
+                android:theme="@style/AppThemeDialog"
+                android:windowSoftInputMode="adjustPan">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
+                </intent-filter>
+            </activity>
 
-        <service
-            android:name=".KeepNLSAliveJob"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true"/>
+            <service
+                android:name=".NLService"
+                android:label="@string/app_name"
+                android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+                android:process=":bgScrobbler">
+                <intent-filter>
+                    <action android:name="android.service.notification.NotificationListenerService" />
+                </intent-filter>
+            </service>
+            <service
+                android:name=".pending.PendingScrJob"
+                android:exported="true"
+                android:permission="android.permission.BIND_JOB_SERVICE" />
+            <service android:name=".pending.PendingScrService" />
+            <service
+                android:name=".KeepNLSAliveJob"
+                android:exported="true"
+                android:permission="android.permission.BIND_JOB_SERVICE" />
+            <service
+                android:name=".MasterSwitchQS"
+                android:icon="@drawable/vd_noti"
+                android:label="@string/qs_master_disabled"
+                android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+                android:process=":bgScrobbler">
+                <intent-filter>
+                    <action android:name="android.service.quicksettings.action.QS_TILE" />
+                </intent-filter>
 
-        <service
-            android:name=".MasterSwitchQS"
-            android:process=":bgScrobbler"
-            android:icon="@drawable/vd_noti"
-            android:label="@string/qs_master_disabled"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+                <meta-data
+                    android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                    android:value="true" />
+            </service>
 
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE"/>
-            </intent-filter>
+            <provider
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="com.arn.scrobble.fileprovider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+                <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/provider_path" />
+            </provider>
+            <provider
+                android:name=".pref.MultiPrefsProvider"
+                android:authorities="com.arn.scrobble.pref.MultiPrefsProvider"
+                android:exported="false"
+                android:process=":bgScrobbler" />
+        </application>
 
-            <meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE"
-                android:value="true" />
-        </service>
-
-        <provider
-            android:authorities="com.arn.scrobble.fileprovider"
-            android:grantUriPermissions="true"
-            android:name="androidx.core.content.FileProvider"
-            android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_path" />
-        </provider>
-
-        <provider
-            android:authorities="com.arn.scrobble.pref.MultiPrefsProvider"
-            android:name="com.arn.scrobble.pref.MultiPrefsProvider"
-            android:process=":bgScrobbler"
-            android:exported="false"/>
-<!--
-        <receiver android:name=".receivers.LegacyMetaReceiver" android:exported="true"
-                  android:process=":bgScrobbler">
-            <intent-filter>
-                <action android:name="com.android.music.metachanged"/>
-                <action android:name="com.android.music.playstatechanged" />
-            </intent-filter>
-        </receiver>
--->
-    </application>
-
-</manifest>
+    </manifest>

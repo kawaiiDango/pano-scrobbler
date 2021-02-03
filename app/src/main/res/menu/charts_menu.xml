@@ -6,6 +6,6 @@
         android:id="@+id/menu_share"
         android:icon="@drawable/vd_share"
         android:title="@string/share_this_chart"
-        app:iconTint="@color/colorAccent"
+        app:iconTint="?colorPrimary"
         app:showAsAction="always" />
 </menu>

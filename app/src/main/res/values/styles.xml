@@ -1,68 +1,63 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowContentTransitions">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
-        <item name="android:windowBackground">@android:color/black</item>
+        <item name="colorNoti">@color/pinkNoti</item>
+        <item name="colorPrimaryVariant">@color/pinkDark</item>
+        <item name="colorPrimary">@color/pinkPrimary</item>
+        <item name="colorSecondary">@color/pinkSecondary</item>
+        <item name="colorHighlight">@color/pinkHighlight</item>
+
+        <item name="colorOnPrimary">@android:color/black</item>
+        <item name="colorOnSecondary">@android:color/black</item>
+        <item name="colorSurface">#010101</item>
         <item name="android:colorBackground">@android:color/black</item>
-        <item name="android:textDirection">locale</item>
-        <item name="popupMenuStyle">@style/AppTheme.PopupOverlay</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-    </style>
-
-    <style name="AppThemeMaterial" parent="Theme.MaterialComponents">
-        <item name="colorPrimary">@color/colorAccent</item>
-        <item name="colorSecondary">@color/colorAccentLight</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="android:textDirection">locale</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <!-- bug https://stackoverflow.com/a/48328471/1067596-->
+
+        <item name="snackbarStyle">@style/snackbarStyle</item>
+        <item name="snackbarTextViewStyle">@style/snackbarText</item>
+        <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
     </style>
 
-    <style name="DarkDialog" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+
+    <style name="snackbarStyle" parent="@style/Widget.MaterialComponents.Snackbar">
         <item name="android:background">@color/dialogBg</item>
-        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="actionTextColorAlpha">1.0</item>
     </style>
 
-    <style name="AppTheme.Transparent" parent="Base.Theme.AppCompat.Dialog">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="snackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Widget.App.CircularProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="hideAnimationBehavior">inward</item>
+        <item name="showAnimationBehavior">outward</item>
+        <item name="showDelay">100</item>
+        <item name="android:indeterminate">true</item>
+    </style>
+
+    <style name="AppThemeDialog" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="colorSurface">#010101</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowMinWidthMajor">60%</item>
         <item name="android:windowMinWidthMinor">95%</item>
-        <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="android:windowEnterTransition">@android:transition/fade</item>
         <item name="android:windowExitTransition">@android:transition/fade</item>
         <item name="android:windowActivityTransitions">true</item>
 
-        <!--<item name="android:windowIsTranslucent">true</item>-->
-        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
-        <!--<item name="android:windowContentOverlay">@null</item>-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
         <!--<item name="android:windowNoTitle">true</item>-->
         <!--<item name="android:windowIsFloating">false</item>-->
         <!--<item name="android:backgroundDimEnabled">true</item>-->
-    </style>
-
-
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <!--<item name="android:windowContentOverlay">@null</item>-->
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
-    <style name="AppTheme.PopupOverlay" parent="Widget.AppCompat.PopupMenu">
-        <item name="android:colorBackground">@android:color/black</item>
     </style>
 
     <style name="firstThings">
@@ -80,11 +75,10 @@
         <item name="android:translationZ">@dimen/tz_hero_btn</item>
     </style>
 
-    <style name="friendsLinks">
-        <item name="android:textSize">@dimen/button_caption</item>
-        <item name="drawableTint">@color/colorAccentLight</item>
+    <style name="friendsLinks" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">12sp</item>
+        <item name="drawableTint">@color/pinkSecondary</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
-        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -99,4 +93,14 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="ColorPatch">
+    </style>
+
+    <style name="ColorPatch.Pink">
+        <item name="colorNoti">@color/pinkNoti</item>
+        <item name="colorPrimaryVariant">@color/pinkDark</item>
+        <item name="colorPrimary">@color/pinkPrimary</item>
+        <item name="colorSecondary">@color/pinkSecondary</item>
+        <item name="colorHighlight">@color/pinkHighlight</item>
+    </style>
 </resources>

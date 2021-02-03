@@ -46,6 +46,7 @@ import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.arn.scrobble.ui.StatefulAppBar
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -117,11 +118,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         toggle.drawerArrowDrawable = ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
 
         if (isTV) {
-            binding.coordinatorMain.heroCalendar.visibility = View.INVISIBLE
-            binding.coordinatorMain.heroShare.visibility = View.INVISIBLE
-            binding.coordinatorMain.heroInfo.visibility = View.INVISIBLE
-            binding.coordinatorMain.heroPlay.visibility = View.INVISIBLE
-
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 for (i in 0..binding.coordinatorMain.toolbar.childCount) {
                     val child = binding.coordinatorMain.toolbar.getChildAt(i)
@@ -191,7 +187,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         }
         supportFragmentManager.addOnBackStackChangedListener(this)
 //        showNotRunning()
-//        test()
+//        testNoti()
     }
 
     fun showHomePager(){
@@ -275,7 +271,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 .setContentTitle("setContentTitle")
                 .setContentText("longDescription")
                 .setSubText("setSubText")
-                .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))
+                .setColor(MaterialColors.getColor(this, R.attr.colorNoti, null))
                 .setStyle(style)
 //                .setCustomBigContentView(null)
 //                .setCustomContentView(null)
@@ -454,8 +450,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 .setAction(R.string.not_running_fix_action) {
                     FixItFragment().show(supportFragmentManager, null)
                 }
-                .setActionTextColor(Color.YELLOW)
-        snackbar.view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+
         snackbar.addCallback(object : Snackbar.Callback() {
             override fun onShown(sb: Snackbar?) {
                 super.onShown(sb)

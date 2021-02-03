@@ -4,22 +4,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true">
+    android:layout_height="match_parent">
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/random_progress"
-        style="?android:attr/progressBarStyle"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/random_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="@string/random_not_found"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
         android:layout_gravity="center"
         android:visibility="gone" />
 
@@ -42,7 +41,7 @@
             android:visibility="invisible"
             tools:visibility="visible">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/random_big_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -53,7 +52,7 @@
             <include
                 android:id="@+id/random_track"
                 layout="@layout/list_item_recents"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom" />
         </FrameLayout>
@@ -72,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/hero_info"
                 android:tooltipText="@string/hero_info"
-                app:drawableTint="@color/colorAccent"
+                app:drawableTint="?colorPrimary"
                 app:srcCompat="@drawable/vd_info" />
 
             <ImageButton
@@ -82,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/search"
                 android:tooltipText="@string/search"
-                app:drawableTint="@color/colorAccent"
+                app:drawableTint="?colorPrimary"
                 app:srcCompat="@drawable/vd_search_play" />
 
         </LinearLayout>
@@ -91,7 +90,13 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1"/>
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/randomize"
+            android:layout_gravity="center_horizontal"
+            android:alpha="0.7"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Button" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -100,21 +105,23 @@
 
             <Button
                 android:id="@+id/random_get_scrobble"
-                style="@style/Widget.AppCompat.Button.Borderless"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/vd_note"
-                android:text="@string/random_scrobble"
-                app:drawableTint="@color/colorAccent" />
+                android:text="@string/scrobble"
+                android:paddingHorizontal="20dp"
+                app:drawableTint="?colorPrimary" />
 
             <Button
                 android:id="@+id/random_get_loved"
-                style="@style/Widget.AppCompat.Button.Borderless"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/vd_heart"
-                android:text="@string/random_love"
-                app:drawableTint="@color/colorAccent" />
+                android:text="@string/loved_track"
+                android:paddingHorizontal="20dp"
+                app:drawableTint="?colorPrimary" />
         </LinearLayout>
     </LinearLayout>
 

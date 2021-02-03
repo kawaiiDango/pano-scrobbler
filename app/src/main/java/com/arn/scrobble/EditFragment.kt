@@ -2,21 +2,18 @@ package com.arn.scrobble
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.AsyncTask
 import android.os.Bundle
 import android.text.InputType
-import android.transition.Fade
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.EditorInfo
-import androidx.appcompat.app.AlertDialog
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import com.arn.scrobble.pending.db.Edit
 import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.CallException
 import de.umass.lastfm.Session
 import de.umass.lastfm.Track
@@ -24,18 +21,25 @@ import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import java.util.*
 
+
 class EditFragment: LoginFragment() {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
+    override val checksLogin = false
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return null
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arguments?.putString(TEXTF1, getString(R.string.track))
         arguments?.putString(TEXTF2, getString(R.string.album_optional))
         arguments?.putString(TEXTFL, getString(R.string.artist))
-        val view = super.onCreateView(inflater, container, savedInstanceState)
 
-        checksLogin = false
-        returnTransition = Fade()
-        if (arguments?.getBoolean(NLService.B_STANDALONE) != true)
-            showsDialog = true
-        else
+        super.onCreateView(layoutInflater, null, null)
+
+        showsDialog = true
+
+        if (arguments?.getBoolean(NLService.B_STANDALONE) == true)
             standalone = true
 
         if (arguments?.getBoolean(NLService.B_FORCEABLE) == true) {
@@ -85,18 +89,28 @@ class EditFragment: LoginFragment() {
                 } else
                     false
             }
+            TransitionManager.beginDelayedTransition(binding.root, Fade())
+
             binding.loginTextfieldLast2.visibility = View.VISIBLE
             binding.loginTextfieldLast2.requestFocus()
         }
         binding.loginSubmit.text = getString(R.string.menu_edit)
-        return view
+
+        return MaterialAlertDialogBuilder(context!!)
+        .setView(binding.root)
+        .create()
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        setStyle(STYLE_NO_TITLE, R.style.AppTheme_Transparent)
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        return dialog
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (standalone)
+            activity?.finish()
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        if (standalone)
+            activity?.finish()
     }
 
     override fun validateAsync(): String? {
@@ -133,7 +147,7 @@ class EditFragment: LoginFragment() {
         }
 
         if(!standalone && track == origTrack &&
-                artist == origArtist && album == origAlbum && album != "") {
+                artist == origArtist && album == origAlbum && album != "" && albumArtist == "") {
             return errMsg
         }
 
@@ -190,7 +204,8 @@ class EditFragment: LoginFragment() {
                                 LFMRequester(activity).delete(origTrackObj) { succ ->
                                     if (succ) {
                                         //editing just the album is a noop, scrobble again
-                                        if (track == origTrack && artist == origArtist)
+                                        if (track.equals(origTrack, ignoreCase = true) &&
+                                                artist.equals(origArtist, ignoreCase = true))
                                             Track.scrobble(scrobbleData, lastfmSession)
                                     }
                                 }
@@ -242,7 +257,7 @@ class EditFragment: LoginFragment() {
                     else {
                         errMsg = ""
                         activity.runOnUiThread {
-                            AlertDialog.Builder(context!!, R.style.DarkDialog)
+                            MaterialAlertDialogBuilder(context!!)
                                     .setMessage(R.string.scrobble_ignored_save_edit)
                                     .setPositiveButton(android.R.string.yes) { dialogInterface, i ->
                                         dismiss()

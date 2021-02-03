@@ -6,12 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
-import kotlin.random.Random
 
 
 class SearchVM(app: Application): AndroidViewModel(app) {
     val searchResults by lazy { MutableLiveData<SearchResults>() }
-    val history = mutableListOf<String>()
 
     fun loadSearches(term: String) {
         LFMRequester(getApplication()).getSearches(term).asAsyncTask(searchResults)

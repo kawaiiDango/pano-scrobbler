@@ -1,15 +1,11 @@
 package com.arn.scrobble.charts
 
 import android.content.Context
-import android.content.res.Configuration
+import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.format.DateFormat
-import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.HorizontalScrollView
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.*
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
@@ -17,6 +13,7 @@ import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.ui.*
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.*
 import java.util.*
 
@@ -29,16 +26,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
     open val registeredTime: Long
         get() = parentFragment!!.arguments?.getLong(Stuff.ARG_REGISTERED_TIME, 0) ?: 0
     protected abstract val periodChipsBinding: ChipsChartsPeriodBinding
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        periodChipsBinding.chartsPeriod.post { setChipGroupGravity() }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        setChipGroupGravity()
-    }
+    private var showPeriodsDialog = false
 
     open fun removeHandlerCallbacks() {}
 
@@ -47,8 +35,9 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
     open fun loadWeeklyCharts() {}
 
     open fun postInit() {
-        val pref = context?.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-        val periodIdx = pref?.getInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, 1) ?: 1
+        context ?: return
+        val pref = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+        val periodIdx = pref.getInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, 1)
         var firstLoad = periodChipsBinding.chartsPeriod.checkedChipId == View.NO_ID ||
                 periodChipsBinding.chartsPeriod.checkedChipId != periodChipIds.indexOf(periodIdx)
 
@@ -71,26 +60,27 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                     loadFirstPage()
                     pref?.edit()?.putInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, idx)?.apply()
                 }
-                setWeeklyChipName(false)
+                setWeeklyChipName(pref, false)
             } else if (firstLoad) {
                 val from = pref?.getLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM, 0) ?: 0
                 val to = pref?.getLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_TO, 0) ?: 0
                 viewModel.weeklyChart = Chart(Date(from), Date(to), emptyList())
                 loadWeeklyCharts()
-                setWeeklyChipName(true)
+                if (viewModel.weeklyListReceiver.value == null)
+                    viewModel.loadWeeklyChartsList(registeredTime)
+                setWeeklyChipName(pref, true)
             }
             firstLoad = false
 
-            val hsv = group.parent as HorizontalScrollView
             val chip = group.findViewById<Chip>(checkedId)
             group.post {
                 val scrollBounds = Rect()
-                hsv.getDrawingRect(scrollBounds)
+                periodChipsBinding.chartsPeriodScrollview.getDrawingRect(scrollBounds)
                 val left = chip.x
                 val right = left + chip.width
                 val isChipVisible = scrollBounds.left < left && scrollBounds.right > right
                 if (!isChipVisible)
-                    hsv.smoothScrollTo(chip.left, chip.top)
+                    periodChipsBinding.chartsPeriodScrollview.smoothScrollTo(chip.left, chip.top)
             }
         }
 
@@ -99,11 +89,39 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         periodChipsBinding.chartsChooseWeek.setOnClickListener {
             if (Main.isOnline)
                 periodChipsBinding.chartsPeriod.alpha = Stuff.LOADING_ALPHA
+            showPeriodsDialog = true
             viewModel.loadWeeklyChartsList(registeredTime)
+        }
+
+        periodChipsBinding.chartsWeekNext.setOnClickListener {
+            if (viewModel.weeklyListReceiver.value != null && viewModel.weeklyChartIdx > 0) {
+                viewModel.weeklyChart = viewModel.weeklyListReceiver.value!![--viewModel.weeklyChartIdx]
+                loadWeeklyCharts()
+                setWeeklyChipName(pref, true)
+            }
+        }
+
+        periodChipsBinding.chartsWeekPrev.setOnClickListener {
+            if (viewModel.weeklyListReceiver.value != null &&
+                    viewModel.weeklyChartIdx != -1 && viewModel.weeklyChartIdx < viewModel.weeklyListReceiver.value!!.size) {
+                viewModel.weeklyChart = viewModel.weeklyListReceiver.value!![++viewModel.weeklyChartIdx]
+                loadWeeklyCharts()
+                setWeeklyChipName(pref, true)
+            }
         }
 
         viewModel.weeklyListReceiver.observe(viewLifecycleOwner, { weeklyList ->
             weeklyList ?: return@observe
+            if (!showPeriodsDialog) {
+                if (viewModel.periodIdx == 0 &&
+                        viewModel.weeklyChart != null &&
+                        viewModel.weeklyListReceiver.value != null) {
+                    viewModel.weeklyChartIdx = viewModel.weeklyListReceiver.value!!.indexOfFirst { viewModel.weeklyChart!!.to == it.to}
+                    showArrows(true)
+                }
+                return@observe
+            }
+            showPeriodsDialog = false
             val weeklyStrList = arrayListOf<String>()
             weeklyList.forEach {
                 weeklyStrList += getString(
@@ -112,19 +130,16 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                         DateFormat.getMediumDateFormat(context).format(it.to.time)
                 )
             }
-            val dialog = AlertDialog.Builder(context!!, R.style.DarkDialog)
+            val dialog = MaterialAlertDialogBuilder(context!!)
                     .setTitle(Stuff.getColoredTitle(context!!, getString(R.string.charts_choose_week)))
+                    .setIcon(R.drawable.vd_week)
                     .setItems(weeklyStrList.toTypedArray()) { dialogInterface, i ->
                         val item = weeklyList[i]
                         viewModel.weeklyChart = item
                         viewModel.periodIdx = 0
+                        viewModel.weeklyChartIdx = i
                         loadWeeklyCharts()
-                        pref?.edit()
-                                ?.putLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM, item.from.time)
-                                ?.putLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_TO, item.to.time)
-                                ?.putInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, 0)
-                                ?.apply()
-                        setWeeklyChipName(true)
+                        setWeeklyChipName(pref, true)
                     }
                     .setOnCancelListener {
                         periodChipsBinding.chartsPeriod.check(periodChipIds[viewModel.periodIdx])
@@ -145,10 +160,8 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             }
             if (pos < weeklyList.size)
                 dialog.listView.setSelection(pos)
-            dialog.listView.onItemSelectedListener = ListViewItemHighlightTvHack()
 
             periodChipsBinding.chartsPeriod.alpha = 1f
-            viewModel.weeklyListReceiver.value = null
         })
     }
 
@@ -184,26 +197,34 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         }
     }
 
-    private fun setWeeklyChipName(set: Boolean) {
-        if (set)
+    private fun setWeeklyChipName(pref: SharedPreferences, set: Boolean) {
+        if (set) {
             periodChipsBinding.chartsChooseWeek.text = getString(
                     R.string.a_to_b,
                     DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.from.time),
                     DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.to.time)
             )
-        else
+            showArrows(true)
+            pref.edit()
+                    ?.putLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM, viewModel.weeklyChart!!.from.time)
+                    ?.putLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_TO, viewModel.weeklyChart!!.to.time)
+                    ?.putInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, 0)
+                    ?.apply()
+        } else {
             periodChipsBinding.chartsChooseWeek.text = getString(R.string.charts_choose_week)
+            showArrows(false)
+        }
         periodChipsBinding.chartsChooseWeek.invalidate()
     }
 
-    private fun setChipGroupGravity() {
-        val lp = periodChipsBinding.chartsPeriod.layoutParams as FrameLayout.LayoutParams
-        if (resources.displayMetrics.widthPixels > periodChipsBinding.chartsPeriod.width && lp.gravity != Gravity.CENTER_HORIZONTAL) {
-            lp.gravity = Gravity.CENTER_HORIZONTAL
-            periodChipsBinding.chartsPeriod.layoutParams = lp
-        } else if (resources.displayMetrics.widthPixels <= periodChipsBinding.chartsPeriod.width && lp.gravity != Gravity.START) {
-            lp.gravity = Gravity.START
-            periodChipsBinding.chartsPeriod.layoutParams = lp
-        }
+    private fun showArrows(show: Boolean) {
+        periodChipsBinding.chartsWeekNext.visibility = if (show && viewModel.weeklyChartIdx > 0)
+            View.VISIBLE
+        else
+            View.GONE
+        periodChipsBinding.chartsWeekPrev.visibility = if (show && viewModel.weeklyChartIdx < viewModel.weeklyListReceiver.value?.size ?: 0)
+            View.VISIBLE
+        else
+            View.GONE
     }
 }

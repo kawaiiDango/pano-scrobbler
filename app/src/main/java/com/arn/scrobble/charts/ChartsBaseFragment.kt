@@ -13,6 +13,7 @@ import com.arn.scrobble.*
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
+import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.google.android.material.chip.Chip
@@ -181,11 +182,12 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             getString(R.string.possesion, username)
         else
             getString(R.string.my)
+
+        val multiPrefs = MultiPreferences(context!!)
         var shareText = getString(R.string.charts_share_text,
                 user, period.toLowerCase(), type.toLowerCase(), list)
 
-        shareText += "\n\n" + pref.getString(Stuff.PREF_ACTIVITY_SHARE_SIG,
-                getString(R.string.share_sig, getString(R.string.share_link)))
+        shareText += "\n\n" + multiPrefs.getString(Stuff.PREF_SHARE_SIG, getString(R.string.share_sig))
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
         i.putExtra(Intent.EXTRA_SUBJECT, shareText)

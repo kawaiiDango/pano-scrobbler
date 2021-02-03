@@ -20,6 +20,7 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
     private val infoAsyncTasks by lazy { mutableMapOf<Int, LFMRequester.MyAsyncTask>() }
     val info by lazy { MutableLiveData<Pair<Int, MusicEntry?>>() }
     var weeklyChart: Chart<MusicEntry>? = null
+    var weeklyChartIdx: Int = -1
     var username: String? = null
     var periodIdx = 1
     var page = 1

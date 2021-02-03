@@ -9,11 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.IBinder
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import com.arn.scrobble.Main
 import com.arn.scrobble.NLService.Companion.NOTI_ID_FG
 import com.arn.scrobble.R
+import com.google.android.material.color.MaterialColors
 
 
 class PendingScrService: Service() {
@@ -40,7 +41,9 @@ class PendingScrService: Service() {
                 .setSmallIcon(R.drawable.vd_noti)
                 .setPriority(Notification.PRIORITY_MIN)
                 .setContentIntent(launchIntent)
-                .setColor(ContextCompat.getColor(applicationContext, R.color.colorNoti))
+                .setColor(MaterialColors.getColor(
+                        ContextThemeWrapper(applicationContext, R.style.ColorPatch_Pink),
+                        R.attr.colorNoti, null))
                 .setContentTitle(getString(R.string.pending_scrobbles_noti))
 
         startForeground(PendingScrJob.JOB_ID, nb.build())

@@ -56,12 +56,10 @@ class EditsAdapter(context: Context, private val fragmentBinding: ContentEditsBi
                 handler.post {
                     fragmentBinding.editsEmpty.visibility = View.VISIBLE
                     fragmentBinding.editsEmpty.text = fragmentBinding.root.context.getString(R.string.not_found)
-                    fragmentBinding.editsList.visibility = View.GONE
                 }
             } else {
                 handler.post {
                     fragmentBinding.editsEmpty.visibility = View.GONE
-                    fragmentBinding.editsList.visibility = View.VISIBLE
                 }
             }
             handler.post { notifyDataSetChanged() }
@@ -91,14 +89,13 @@ class EditsAdapter(context: Context, private val fragmentBinding: ContentEditsBi
                 if (editsList.isEmpty()){
                     fragmentBinding.editsEmpty.visibility = View.VISIBLE
                     fragmentBinding.editsEmpty.text = fragmentBinding.root.context.getString(R.string.n_edits, 0)
-                    fragmentBinding.editsList.visibility = View.GONE
                     fragmentBinding.searchTerm.visibility = View.GONE
                 } else {
                     fragmentBinding.editsEmpty.visibility = View.GONE
-                    fragmentBinding.editsList.visibility = View.VISIBLE
                     if (edits.size > 7)
                         fragmentBinding.searchTerm.visibility = View.VISIBLE
                 }
+                fragmentBinding.editsList.scheduleLayoutAnimation()
                 notifyDataSetChanged() }
         }
     }

@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:scaleType="fitCenter"
         android:id="@+id/tab_icon"
-        app:tint="@color/colorAccentTrans"
+        app:tint="?colorPrimary"
+        android:alpha="0.7"
         tools:srcCompat="@drawable/vd_heart"/>
 
     <TextView
@@ -21,7 +22,7 @@
         android:maxLines="1"
         android:textAlignment="center"
         android:textAllCaps="true"
-        android:textColor="@color/colorAccent"
+        android:textColor="?colorPrimary"
         android:textSize="12dp"
         android:visibility="gone"
         tools:text="title"

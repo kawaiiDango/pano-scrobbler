@@ -14,21 +14,6 @@
                 android:selectable="false"
                 android:summary="@string/pref_offline_info" />
 
-    <SwitchPreference
-        app:iconSpaceReserved="false"
-        android:defaultValue="true"
-        android:key="show_notifications"
-        android:persistent="true"
-        android:summaryOff="@string/pref_noti_off"
-        android:summaryOn="@string/pref_noti_on"
-        android:title="@string/pref_noti"/>
-
-    <SwitchPreference
-        app:iconSpaceReserved="false"
-        android:defaultValue="false"
-        android:key="lockscreen_noti"
-        android:persistent="true"
-        android:title="@string/pref_lockscreen_noti"/>
 <!--
     <ListPreference
         app:iconSpaceReserved="false"
@@ -49,11 +34,6 @@
             app:iconSpaceReserved="false"
             android:selectable="false"
             android:summary="@string/pref_enabled_apps_summary"
-            />
-        <Preference
-            app:iconSpaceReserved="false"
-            android:key="spotify_notice"
-            android:summary="@string/pref_spotify_notice"
             />
 
         <SwitchPreference
@@ -96,7 +76,38 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:iconSpaceReserved="false">
+        app:iconSpaceReserved="false"
+        android:title="@string/pref_noti">
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="true"
+            android:key="show_notifications"
+            android:persistent="true"
+            android:title="@string/pref_scrobble_noti"/>
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="true"
+            android:key="digest_weekly"
+            android:persistent="true"
+            android:title="@string/digest_weekly"/>
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="true"
+            android:key="digest_monthly"
+            android:persistent="true"
+            android:title="@string/digest_monthly"/>
+
+        <SwitchPreference
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"
+            android:key="lockscreen_noti"
+            android:persistent="true"
+            android:title="@string/pref_lockscreen_noti"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        android:title="@string/pref_misc">
         <SwitchPreference
             app:iconSpaceReserved="false"
             android:defaultValue="true"
@@ -112,10 +123,11 @@
             android:title="@string/pref_fetch_aa"
             android:summary="@string/pref_fetch_aa_desc"/>
 
-        <Preference
+        <EditTextPreference
             app:iconSpaceReserved="false"
             android:title="@string/pref_share_sig"
             android:summary="@string/pref_share_sig_desc"
+            android:persistent="true"
             android:key="share_sig"
             />
         <Preference

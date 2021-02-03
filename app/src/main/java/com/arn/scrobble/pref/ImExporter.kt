@@ -81,6 +81,8 @@ class ImExporter {
                     val pref = MultiPreferences(context)
                     name(Stuff.PREF_MASTER).value(pref.getBoolean(Stuff.PREF_MASTER, true))
                     name(Stuff.PREF_NOTIFICATIONS).value(pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
+                    name(Stuff.PREF_DIGEST_WEEKLY).value(pref.getBoolean(Stuff.PREF_DIGEST_WEEKLY, true))
+                    name(Stuff.PREF_DIGEST_MONTHLY).value(pref.getBoolean(Stuff.PREF_DIGEST_MONTHLY, true))
                     name(Stuff.PREF_LOCKSCREEN_NOTI).value(pref.getBoolean(Stuff.PREF_LOCKSCREEN_NOTI, false))
                     name(Stuff.PREF_PIXEL_NP).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
                     name(Stuff.PREF_DELAY_SECS).value(pref.getInt(Stuff.PREF_DELAY_SECS, Stuff.PREF_DELAY_SECS_DEFAULT))

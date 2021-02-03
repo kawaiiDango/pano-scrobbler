@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
         android:visibility="gone"
         tools:text="@string/charts_no_data" />
 
@@ -19,12 +19,15 @@
         android:id="@+id/charts_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"/>
+        android:layoutAnimation="@anim/layout_animation_slide_left"
+        android:nestedScrollingEnabled="false"
+        android:visibility="invisible"
+        tools:visibility="visible" />
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/charts_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:indeterminateTint="@color/colorAccent"/>
+        android:visibility="invisible"/>
 </FrameLayout>

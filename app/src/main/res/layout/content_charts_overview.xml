@@ -25,19 +25,19 @@
             <include android:id="@+id/charts_tracks_header" layout="@layout/header_with_action" />
             <include android:id="@+id/charts_tracks_frame" layout="@layout/frame_charts_list" />
             <include android:id="@+id/charts_sparkline_header" layout="@layout/header_with_action" />
-
             <FrameLayout
                 android:id="@+id/charts_sparkline_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp">
+
                 <com.robinhood.spark.SparkView
                     android:id="@+id/charts_sparkline"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:layout_marginStart="40dp"
                     android:contentDescription="@string/graph"
-                    app:spark_lineColor="@color/colorAccentLight"
+                    app:spark_lineColor="?colorSecondary"
                     app:spark_animateChanges="true"
                     app:spark_scrubEnabled="true"
                     app:spark_lineWidth="6dp"
@@ -48,7 +48,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|start"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     tools:text="10000"/>
 
                 <TextView
@@ -56,7 +55,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|start"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     tools:text="000"/>
 
                 <TextView
@@ -68,23 +66,25 @@
                     android:paddingHorizontal="8dp"
                     android:background="@drawable/shape_rounded_bg"
                     android:alpha="0.85"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:textColor="#fff"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                     android:visibility="gone"
                     tools:text="000 scrobbles" />
-                <ProgressBar
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/charts_sparkline_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    app:showAnimationBehavior="none"
+                    />
+
             </FrameLayout>
             <com.uncopt.android.widget.text.justify.JustifiedTextView
                 android:id="@+id/charts_sparkline_labels"
                 android:layout_marginStart="60dp"
                 android:layout_marginEnd="20dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+                android:layout_height="wrap_content" />
             <TextView
                 android:id="@+id/charts_scrub_message"
                 android:visibility="gone"
@@ -93,7 +93,6 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="10dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:text="@string/graph_scrub_msg"/>
         </LinearLayout>
     </ScrollView>

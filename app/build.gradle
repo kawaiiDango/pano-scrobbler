@@ -83,7 +83,7 @@ dependencies {
     implementation "androidx.room:room-runtime:2.2.6"
     // viewpager2 doesnt respond to left/right press on TVs, don't migrate
 
-    implementation "com.google.android.material:material:1.3.0-rc01"
+    implementation "com.google.android.material:material:1.3.0"
 
     implementation "com.squareup.picasso:picasso:2.71828"
     implementation "com.robinhood.spark:spark:1.2.0"

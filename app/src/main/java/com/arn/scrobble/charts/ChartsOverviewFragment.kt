@@ -213,6 +213,8 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
                 adapter.populate()
             it ?: return@observe
             fragment.viewModel.totalCount = it.total
+            if (it.total > 0)
+                viewModel.totalCount = it.total
             setHeader(type)
             fragment.viewModel.reachedEnd = true
             synchronized(fragment.viewModel.chartsData) {
@@ -221,6 +223,8 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
                 fragment.viewModel.chartsData.addAll(it.pageResults)
             }
             adapter.populate()
+            if (it.page == 1)
+                rootView.chartsList.smoothScrollToPosition(0)
             fragment.viewModel.chartsReceiver.value = null
         })
 
@@ -266,13 +270,9 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
                 return
             }
         }
-        val plus = if (periodChipIds[viewModel.periodIdx] == R.id.charts_choose_week && count == 100)
-            "+"
-        else
-            ""
         if (count != 0) {
             header.headerText.text =
-                    NumberFormat.getInstance().format(count) + plus + " " + text.toLowerCase()
+                    NumberFormat.getInstance().format(count) + " " + text.toLowerCase()
             header.headerAction.visibility = View.VISIBLE
         }
         else {

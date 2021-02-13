@@ -140,7 +140,6 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
             binding.chartsProgress.hide()
         }
         loadMoreListener.loading = false
-        binding.chartsList.smoothScrollToPosition(0)
         notifyDataSetChanged()
     }
 

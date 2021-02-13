@@ -118,8 +118,6 @@ class NLService : NotificationListenerService() {
             // Media controller needs notification listener service
             // permissions to be granted.
         }
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) //ok this works
-//            legacyMetaReceiver = LegacyMetaReceiver.regIntents(applicationContext)
         initChannels()
 //        KeepNLSAliveJob.checkAndSchedule(applicationContext)
 
@@ -731,6 +729,9 @@ class NLService : NotificationListenerService() {
         }
 
         fun notifyDigest(period: Period) {
+            if (pref.getString(Stuff.PREF_LASTFM_USERNAME, null) == null)
+                return
+
             val digestMld = MutableLiveData<List<String>>()
             val wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
                         newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.arn.scrobble::digest").apply {
@@ -797,6 +798,7 @@ class NLService : NotificationListenerService() {
                 }
             })
             LFMRequester(applicationContext)
+                    .skipContentProvider()
                     .getDigest(period)
                     .asAsyncTask(digestMld)
         }

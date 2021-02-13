@@ -34,7 +34,6 @@ class ChartsOverviewAdapter(rootViewBinding: FrameChartsListBinding): ChartsAdap
             binding.chartsStatus.visibility = View.GONE
             binding.chartsProgress.hide()
         }
-        binding.chartsList.smoothScrollToPosition(0)
         notifyDataSetChanged()
     }
 

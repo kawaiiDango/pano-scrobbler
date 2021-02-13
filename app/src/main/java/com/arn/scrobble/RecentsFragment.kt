@@ -294,7 +294,7 @@ open class RecentsFragment : Fragment(),
                 b.putString(Stuff.ARG_USERNAME, username)
                 info.arguments = b
                 info.show(activity.supportFragmentManager, null)
-                if (!Main.isTV && !appPrefs.getBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, false)) {
+                if (!appPrefs.getBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, false)) {
                     Stuff.toast(context, getString(R.string.info_long_press_guide), Toast.LENGTH_LONG)
                     appPrefs.edit()
                             .putBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, true)

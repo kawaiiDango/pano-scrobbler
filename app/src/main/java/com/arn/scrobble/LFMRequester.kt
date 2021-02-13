@@ -260,9 +260,9 @@ class LFMRequester(context: Context) {
             initCaller(Main.isOnline)
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             val chart = when (type) {
-                Stuff.TYPE_ARTISTS -> User.getWeeklyArtistChart(username, from.toString(), to.toString(), 100, Stuff.LAST_KEY)
-                Stuff.TYPE_ALBUMS -> User.getWeeklyAlbumChart(username, from.toString(), to.toString(), 100, Stuff.LAST_KEY)
-                else -> User.getWeeklyTrackChart(username, from.toString(), to.toString(), 100, Stuff.LAST_KEY)
+                Stuff.TYPE_ARTISTS -> User.getWeeklyArtistChart(username, from.toString(), to.toString(), -1, Stuff.LAST_KEY)
+                Stuff.TYPE_ALBUMS -> User.getWeeklyAlbumChart(username, from.toString(), to.toString(), -1, Stuff.LAST_KEY)
+                else -> User.getWeeklyTrackChart(username, from.toString(), to.toString(), -1, Stuff.LAST_KEY)
             }
             PaginatedResult(1, 1, chart.entries.size, chart.entries, username)
         }
@@ -279,19 +279,25 @@ class LFMRequester(context: Context) {
             val es = Executors.newCachedThreadPool()
             es.execute {
                 try {
-                    artists = LFMRequester(getContext).getCharts(Stuff.TYPE_ARTISTS, period, 1, null, 3)
+                    artists = LFMRequester(getContext)
+                            .skipContentProvider()
+                            .getCharts(Stuff.TYPE_ARTISTS, period, 1, null, 3)
                             .toExec() as? PaginatedResult<Artist>?
                 } catch (e: CallException) {}
             }
             es.execute {
                 try {
-                    albums = LFMRequester(getContext).getCharts(Stuff.TYPE_ALBUMS, period, 1, null, 3)
+                    albums = LFMRequester(getContext)
+                            .skipContentProvider()
+                            .getCharts(Stuff.TYPE_ALBUMS, period, 1, null, 3)
                             .toExec() as? PaginatedResult<Album>?
                 } catch (e: CallException) {}
             }
             es.execute {
                 try {
-                    tracks = LFMRequester(getContext).getCharts(Stuff.TYPE_TRACKS, period, 1, null, 3)
+                    tracks = LFMRequester(getContext)
+                            .skipContentProvider()
+                            .getCharts(Stuff.TYPE_TRACKS, period, 1, null, 3)
                             .toExec() as? PaginatedResult<Track>?
                 } catch (e: CallException) {}
             }

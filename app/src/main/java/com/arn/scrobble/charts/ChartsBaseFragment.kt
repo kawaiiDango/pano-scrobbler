@@ -113,6 +113,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             if (it == null && !Main.isOnline && viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
+            viewModel.totalCount = it.total
             if (it.page >= it.totalPages)
                 viewModel.reachedEnd = true
             synchronized(viewModel.chartsData) {
@@ -122,6 +123,8 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             }
             loadMoreListener.currentPage = it.page
             adapter.populate()
+            if (it.page == 1)
+                chartsBinding.chartsList.smoothScrollToPosition(0)
             viewModel.chartsReceiver.value = null
         })
 

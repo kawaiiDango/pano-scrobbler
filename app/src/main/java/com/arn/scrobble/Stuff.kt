@@ -148,7 +148,7 @@ object Stuff {
     const val READ_TIMEOUT = 20 * 1000
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
     const val KEEPALIVE_JOB_INTERVAL: Long = 30 * 60 * 1000
-    const val LASTFM_MAX_PAST_SCROBBLE: Long = 15 * 24 * 60 * 60 * 1000
+    const val LASTFM_MAX_PAST_SCROBBLE: Long = 14 * 24 * 60 * 60 * 1000
     const val META_WAIT: Long = 500
     const val START_POS_LIMIT: Long = 1500
     const val MIN_LISTENER_COUNT = 5

@@ -42,7 +42,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                 periodChipsBinding.chartsPeriod.checkedChipId != periodChipIds.indexOf(periodIdx)
 
         viewModel.username = username
-        viewModel.periodIdx = periodIdx
+//        viewModel.periodIdx = periodIdx
         viewModel.type = type
 
         periodChipsBinding.chartsPeriod.check(periodChipIds[periodIdx])
@@ -56,16 +56,22 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             val idx = periodChipIds.indexOf(checkedId)
             if (checkedId != R.id.charts_choose_week) {
                 if (viewModel.periodIdx != idx || firstLoad) {
-                    viewModel.periodIdx = idx
-                    loadFirstPage()
+                    if (!firstLoad || viewModel.totalCount == 0 || viewModel.periodIdx != idx) {
+                        viewModel.periodIdx = idx
+                        loadFirstPage()
+                    }
                     pref?.edit()?.putInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, idx)?.apply()
                 }
                 setWeeklyChipName(pref, false)
             } else if (firstLoad) {
+                viewModel.periodIdx = idx
                 val from = pref?.getLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM, 0) ?: 0
                 val to = pref?.getLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_TO, 0) ?: 0
-                viewModel.weeklyChart = Chart(Date(from), Date(to), emptyList())
-                loadWeeklyCharts()
+
+                if (!firstLoad || viewModel.totalCount == 0 || viewModel.weeklyChart?.from?.time != from) {
+                    viewModel.weeklyChart = Chart(Date(from), Date(to), emptyList())
+                    loadWeeklyCharts()
+                }
                 if (viewModel.weeklyListReceiver.value == null)
                     viewModel.loadWeeklyChartsList(registeredTime)
                 setWeeklyChipName(pref, true)
@@ -103,7 +109,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
 
         periodChipsBinding.chartsWeekPrev.setOnClickListener {
             if (viewModel.weeklyListReceiver.value != null &&
-                    viewModel.weeklyChartIdx != -1 && viewModel.weeklyChartIdx < viewModel.weeklyListReceiver.value!!.size) {
+                    viewModel.weeklyChartIdx != -1 && viewModel.weeklyChartIdx < viewModel.weeklyListReceiver.value!!.size - 1) {
                 viewModel.weeklyChart = viewModel.weeklyListReceiver.value!![++viewModel.weeklyChartIdx]
                 loadWeeklyCharts()
                 setWeeklyChipName(pref, true)
@@ -222,7 +228,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             View.VISIBLE
         else
             View.GONE
-        periodChipsBinding.chartsWeekPrev.visibility = if (show && viewModel.weeklyChartIdx < viewModel.weeklyListReceiver.value?.size ?: 0)
+        periodChipsBinding.chartsWeekPrev.visibility = if (show && viewModel.weeklyChartIdx < (viewModel.weeklyListReceiver.value?.size ?: 0) - 1)
             View.VISIBLE
         else
             View.GONE

@@ -5,12 +5,12 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.Main
 import com.arn.scrobble.R
+import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.snackbar.Snackbar
 
 object AppRater {
@@ -157,8 +157,8 @@ object AppRater {
             scrobbles = scrobblesUntilPrompt
         }
 
-        val scrobble_count = PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt(SCROBBLE_COUNT, 0)
+        val scrobble_count = MultiPreferences(context)
+            .getLong(SCROBBLE_COUNT, 0)
         // Get date of first launch
         var date_firstLaunch: Long? = prefs.getLong(PREF_FIRST_LAUNCHED, 0)
         if (date_firstLaunch == 0L) {
@@ -260,19 +260,16 @@ object AppRater {
         val editor = prefs.edit()
         editor.putBoolean(PREF_DONT_SHOW_AGAIN, false)
         editor.putBoolean(PREF_REMIND_LATER, false)
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putLong(SCROBBLE_COUNT, 0)
-                .apply()
+        MultiPreferences(context)
+            .putLong(SCROBBLE_COUNT, 0)
         val date_firstLaunch = System.currentTimeMillis()
         editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch)
         commitOrApply(editor)
     }
 
-    fun incrementScrobbleCount(context: Context) {
-        val defPref = PreferenceManager.getDefaultSharedPreferences(context)
+    fun incrementScrobbleCount(defPref: SharedPreferences) {
         val scrobbles = defPref.getInt(SCROBBLE_COUNT, 0)
-        if (scrobbles < AppRater.MIN_SCROBBLES_UNTIL_PROMPT)
+        if (scrobbles < MIN_SCROBBLES_UNTIL_PROMPT)
             defPref.edit().putInt(SCROBBLE_COUNT, scrobbles + 1).apply()
     }
 }

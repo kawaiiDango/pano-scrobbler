@@ -37,7 +37,6 @@
         android:contentDescription="@string/sort"
         android:visibility="gone"
         tools:visibility="visible"
-        app:backgroundTint="?colorPrimaryVariant"
-        app:tint="?colorSecondary"
+        app:backgroundTint="?colorPrimary"
         app:srcCompat="@drawable/vd_sort_clock" />
 </FrameLayout>

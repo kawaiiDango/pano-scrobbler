@@ -74,12 +74,12 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
         removeSessions(tokens)
     }
 
-    fun removeSessions(tokens: MutableSet<MediaSession.Token>? = null, packageNames: Set<String>? = null) {
+    fun removeSessions(tokens: Set<MediaSession.Token>, packageNames: Set<String>? = null) {
         val it = controllersMap.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
             if (pair.first.packageName != Stuff.IGNORE_ARTIST_META[0] && pair.first.packageName != Stuff.IGNORE_ARTIST_META[1]
-                    && ((tokens != null && !tokens.contains(token)) ||
+                    && (!tokens.contains(token) ||
                             (packageNames != null && packageNames.contains(pair.first.packageName)))) {
                 pair.second.stop()
                 pair.first.unregisterCallback(pair.second)
@@ -197,6 +197,7 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
                 val extra = " - $album"
                 if (artist.endsWith(extra))
                     artist = artist.substring(0, artist.length - extra.length)
+                albumArtist = ""
             }
 
             val sameAsOld = artist == this.artist && title == this.title && album == this.album && albumArtist == this.albumArtist
@@ -272,7 +273,7 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
             }
             Stuff.PREF_AUTO_DETECT -> autoDetectApps = pref.getBoolean(key, true)
             Stuff.PREF_MASTER -> scrobblingEnabled = pref.getBoolean(key, true)
-            Stuff.PREF_LASTFM_SESS_KEY -> loggedIn = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null) != null
+            Stuff.PREF_LASTFM_SESS_KEY -> loggedIn = pref.getString(key, null) != null
         }
         if (key == Stuff.PREF_WHITELIST ||
                 key == Stuff.PREF_BLACKLIST ||

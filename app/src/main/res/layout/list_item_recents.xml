@@ -7,22 +7,22 @@
     android:layout_height="wrap_content"
     android:background="@drawable/selector_list"
     android:orientation="horizontal"
-    android:paddingBottom="1dp"
-    android:paddingLeft="1dp"
-    android:paddingRight="1dp"
     android:baselineAligned="false">
 
     <FrameLayout
-        android:layout_width="71dp"
-        android:layout_height="60dp">
+        android:layout_width="84dp"
+        android:layout_height="68dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/recents_img"
+            app:shapeAppearance="@style/roundedImageView"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:contentDescription="@string/album_art"
             android:duplicateParentState="true"
             android:foreground="@drawable/selector_recents_img"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginVertical="4dp"
             tools:srcCompat="@tools:sample/avatars" />
 
         <View
@@ -30,7 +30,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="top|end"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="11dp"
             android:alpha="0.9"
             android:elevation="@dimen/elevation_hero_btn"
@@ -68,8 +68,7 @@
             android:id="@+id/recents_subtitle"
             android:layout_width="match_parent"
             android:layout_height="21sp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="42dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="-2dp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -89,28 +88,46 @@
         android:layout_gravity="center_vertical"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/recents_date"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="3dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="3dp"
-            android:paddingBottom="5dp"
-            android:textAppearance="@android:style/TextAppearance.Material.Caption"
-            tools:text="date date yay" />
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical|end">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/recents_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    android:textAppearance="@android:style/TextAppearance.Material.Caption"
+                    tools:text="date date yay" />
 
-        <ImageView
-            android:id="@+id/recents_playing"
-            android:layout_width="wrap_content"
-            android:layout_height="14sp"
-            android:layout_gravity="end"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp"
-            android:contentDescription="@string/state_scrobbling"
-            tools:srcCompat="@drawable/avd_eq" />
-
-        <TextView
+                <ImageView
+                    android:id="@+id/recents_playing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="14sp"
+                    android:layout_gravity="end"
+                    android:layout_marginHorizontal="4dp"
+                    android:contentDescription="@string/state_scrobbling"
+                    tools:srcCompat="@drawable/avd_eq" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/recents_menu_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:contentDescription="@string/item_options"
+                android:gravity="bottom|end"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="5dp"
+                android:text="⋮"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+        <View
             android:id="@+id/recents_menu"
             android:layout_width="50dp"
             android:layout_height="match_parent"
@@ -120,12 +137,8 @@
             android:contentDescription="@string/item_options"
             android:gravity="bottom|end"
             android:paddingStart="20dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="8dp"
-            android:text="⋮"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
+            android:paddingEnd="15dp"
+            android:paddingBottom="10dp"/>
     </FrameLayout>
 
 

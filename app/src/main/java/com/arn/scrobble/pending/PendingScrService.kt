@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import com.arn.scrobble.Main
 import com.arn.scrobble.NLService.Companion.NOTI_ID_FG
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.google.android.material.color.MaterialColors
 
 
@@ -36,7 +37,7 @@ class PendingScrService: Service() {
     private fun startForegroundService() {
         val intent = Intent(applicationContext, Main::class.java)
         val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT)
+            Stuff.updateCurrentOrImmutable)
         val nb = NotificationCompat.Builder(applicationContext, NOTI_ID_FG)
                 .setSmallIcon(R.drawable.vd_noti)
                 .setPriority(Notification.PRIORITY_MIN)

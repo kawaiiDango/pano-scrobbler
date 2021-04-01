@@ -354,9 +354,10 @@ class RecentsAdapter
                 true
             }
             binding.root.onFocusChangeListener = this
-            if (viewModel.username != null && !Main.isTV)
+            if (viewModel.username != null && !Main.isTV) {
                 binding.recentsMenu.visibility = View.INVISIBLE
-            else
+                binding.recentsMenuText.visibility = View.GONE
+            } else
                 binding.recentsMenu.setOnClickListener {
                     itemClickListener.onItemClick(it, adapterPosition)
                 }
@@ -400,13 +401,13 @@ class RecentsAdapter
                 binding.recentsImg.clearColorFilter()
                 Picasso.get()
                         .load(imgUrl)
-                        .placeholder(R.drawable.vd_wave_simple)
-                        .error(R.drawable.vd_wave_simple)
+                        .placeholder(R.drawable.vd_wave_simple_filled)
+                        .error(R.drawable.vd_wave_simple_filled)
                         .into(binding.recentsImg)
 
             } else {
-                binding.recentsImg.setImageResource(R.drawable.vd_wave_simple)
-                binding.recentsImg.setColorFilter(Stuff.getMatColor(binding.recentsImg.context, "500", Stuff.genHashCode(track.artist, track.name).toLong()))
+                binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
+                binding.recentsImg.setColorFilter(Stuff.getMatColor(binding.recentsImg.context, Stuff.genHashCode(track.artist, track.name).toLong()))
                 if (isShowingLoves){
                     if(viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] == null)
                         handler.sendMessage(binding.recentsImg.hashCode(), adapterPosition)

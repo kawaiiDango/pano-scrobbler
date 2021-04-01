@@ -83,6 +83,7 @@
                 android:nextFocusDown="@id/login_textfield_last_edittext"
                 android:tooltipText="@string/album_artist"
                 android:visibility="gone"
+                app:tint="?colorPrimary"
                 app:srcCompat="@drawable/vd_album_artist"
                 tools:visibility="visible" />
 
@@ -98,6 +99,7 @@
                 android:nextFocusDown="@id/login_textfield_last_edittext"
                 android:tooltipText="@string/swap"
                 android:visibility="gone"
+                app:tint="?colorPrimary"
                 app:srcCompat="@drawable/vd_swap"
                 tools:visibility="visible" />
 

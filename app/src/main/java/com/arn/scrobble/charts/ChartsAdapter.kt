@@ -11,6 +11,7 @@ import androidx.transition.TransitionManager
 import com.arn.scrobble.Main
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.GridItemChartBinding
 import com.arn.scrobble.ui.*
@@ -62,8 +63,8 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
         val holderBinding = GridItemChartBinding.inflate(inflater, parent, false)
         if (forceDimensions) {
             val lp = holderBinding.root.layoutParams
-            lp.width = Stuff.dp2px(itemSizeDp, parent.context)
-            lp.height = Stuff.dp2px(itemSizeDp, parent.context)
+            lp.width = itemSizeDp.dp
+            lp.height = itemSizeDp.dp
             holderBinding.root.layoutParams = lp
         }
         return VHChart(
@@ -160,9 +161,8 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
 
         init {
             itemView.setOnClickListener(this)
-            val px = Stuff.dp2px(itemSizeDp, itemView.context)
-            itemView.minimumWidth = px
-            itemView.minimumHeight = px
+            itemView.minimumWidth = itemSizeDp.dp
+            itemView.minimumHeight = itemSizeDp.dp
             if (roundCorners)
                 binding.chartImg.shapeAppearanceModel = binding.chartImg
                         .shapeAppearanceModel
@@ -211,8 +211,8 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
             if (imgUrl != null && imgUrl != "") {
                 Picasso.get()
                         .load(imgUrl)
-                        .placeholder(R.drawable.vd_wave_simple)
-                        .error(R.drawable.vd_wave_simple)
+                        .placeholder(R.drawable.vd_wave_simple_filled)
+                        .error(R.drawable.vd_wave_simple_filled)
                         .into(binding.chartImg, object : Callback{
                             override fun onSuccess() {
                                 binding.chartImg.clearColorFilter()
@@ -223,8 +223,8 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
                         })
 
             } else {
-                binding.chartImg.setImageResource(R.drawable.vd_wave_simple)
-                binding.chartImg.setColorFilter(Stuff.getMatColor(itemView.context, "500", entry.name.hashCode().toLong()))
+                binding.chartImg.setImageResource(R.drawable.vd_wave_simple_filled)
+                binding.chartImg.setColorFilter(Stuff.getMatColor(itemView.context, entry.name.hashCode().toLong()))
                 if (!(entry is Album && !requestAlbumInfo))
                     queueEntryInfo(adapterPosition, binding.chartImg)
             }

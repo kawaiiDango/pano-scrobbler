@@ -85,12 +85,6 @@ class PrefFragment : PreferenceFragmentCompat(){
         val autoDetect = findPreference<SwitchPreference>(Stuff.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
 
-        val delaySecs = findPreference<SeekBarPreference>(Stuff.PREF_DELAY_SECS)!!
-        delaySecs.min = 20
-
-        val delayPer = findPreference<SeekBarPreference>(Stuff.PREF_DELAY_PER)!!
-        delayPer.min = 30
-
         val edits = findPreference<Preference>("edits")!!
         edits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             parentFragmentManager.beginTransaction()

@@ -13,7 +13,7 @@ class VHPendingScrobble(private val binding: ListItemRecentsBinding, itemClickLi
     init {
         binding.recentsPlaying.visibility = View.GONE
         binding.recentsImgOverlay.background = ContextCompat.getDrawable(itemView.context, R.drawable.vd_hourglass)
-        binding.recentsImg.setImageResource(R.drawable.vd_wave_simple)
+        binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
         binding.recentsImgOverlay.visibility = View.VISIBLE
         binding.recentsImgOverlay.contentDescription = itemView.context.getString(R.string.pending_scrobble)
         if (Main.isTV)

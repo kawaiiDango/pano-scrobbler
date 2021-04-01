@@ -168,8 +168,8 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
             if (imgUrl != null && imgUrl != "") {
                 Picasso.get()
                         .load(imgUrl)
-                        .placeholder(R.drawable.vd_wave_simple)
-                        .error(R.drawable.vd_wave_simple)
+                        .placeholder(R.drawable.vd_wave_simple_filled)
+                        .error(R.drawable.vd_wave_simple_filled)
                         .into(binding.recentsImg, object : Callback {
                             override fun onSuccess() {
                                 binding.recentsImg.clearColorFilter()
@@ -180,8 +180,8 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
                         })
 
             } else {
-                binding.recentsImg.setImageResource(R.drawable.vd_wave_simple)
-                binding.recentsImg.setColorFilter(Stuff.getMatColor(itemView.context, "500", entry.name.hashCode().toLong()))
+                binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
+                binding.recentsImg.setColorFilter(Stuff.getMatColor(itemView.context, entry.name.hashCode().toLong()))
                 if (entry !is Album)
                     queueEntryInfo(adapterPosition, binding.recentsImg)
             }

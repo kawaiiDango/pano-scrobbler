@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Parcel
 import android.text.format.DateFormat
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -13,6 +14,8 @@ import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.ui.*
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.*
 import java.util.*
@@ -26,7 +29,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
     open val registeredTime: Long
         get() = parentFragment!!.arguments?.getLong(Stuff.ARG_REGISTERED_TIME, 0) ?: 0
     protected abstract val periodChipsBinding: ChipsChartsPeriodBinding
-    private var showPeriodsDialog = false
+    private var showWeekPicker = false
 
     open fun removeHandlerCallbacks() {}
 
@@ -95,7 +98,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         periodChipsBinding.chartsChooseWeek.setOnClickListener {
             if (Main.isOnline)
                 periodChipsBinding.chartsPeriod.alpha = Stuff.LOADING_ALPHA
-            showPeriodsDialog = true
+            showWeekPicker = true
             viewModel.loadWeeklyChartsList(registeredTime)
         }
 
@@ -118,7 +121,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
 
         viewModel.weeklyListReceiver.observe(viewLifecycleOwner, { weeklyList ->
             weeklyList ?: return@observe
-            if (!showPeriodsDialog) {
+            if (!showWeekPicker) {
                 if (viewModel.periodIdx == 0 &&
                         viewModel.weeklyChart != null &&
                         viewModel.weeklyListReceiver.value != null) {
@@ -127,45 +130,62 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                 }
                 return@observe
             }
-            showPeriodsDialog = false
-            val weeklyStrList = arrayListOf<String>()
-            weeklyList.forEach {
-                weeklyStrList += getString(
-                        R.string.a_to_b,
-                        DateFormat.getMediumDateFormat(context).format(it.from.time),
-                        DateFormat.getMediumDateFormat(context).format(it.to.time)
+            showWeekPicker = false
+
+
+            val time = if (viewModel.weeklyChart != null)
+                viewModel.weeklyChart!!.from.time
+            else
+                weeklyList.first().from.time
+            val startTime = weeklyList.last().from.time
+            val endTime = weeklyList.first().from.time
+            val weekStartMap = mutableMapOf<Long, Chart<MusicEntry>>()
+            weeklyList.forEach{
+                weekStartMap[it.from.time] = it
+            }
+
+            val dpd = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(R.string.charts_choose_week)
+                .setCalendarConstraints(
+                    CalendarConstraints.Builder()
+                        .setStart(startTime)
+                        .setEnd(endTime)
+                        .setOpenAt(time)
+                        .setValidator(object: CalendarConstraints.DateValidator{
+                            override fun describeContents(): Int {
+                                return 0
+                            }
+
+                            override fun writeToParcel(p0: Parcel?, p1: Int) {
+                            }
+
+                            override fun isValid(date: Long): Boolean {
+                                val utcDate = date + 12 * 3600 * 1000
+                                return date in startTime..endTime &&
+                                        (weekStartMap.contains(date) || weekStartMap.contains(utcDate))
+                            }
+                        })
+                        .build()
                 )
+                .setSelection(time)
+                .build()
+
+            dpd.addOnPositiveButtonClickListener {
+                val item = weekStartMap[it + 12 * 3600 * 1000]
+                viewModel.weeklyChart = item
+                viewModel.periodIdx = 0
+                viewModel.weeklyChartIdx = weeklyList.indexOf(item)
+                loadWeeklyCharts()
+                setWeeklyChipName(pref, true)
             }
-            val dialog = MaterialAlertDialogBuilder(context!!)
-                    .setTitle(Stuff.getColoredTitle(context!!, getString(R.string.charts_choose_week)))
-                    .setIcon(R.drawable.vd_week)
-                    .setItems(weeklyStrList.toTypedArray()) { dialogInterface, i ->
-                        val item = weeklyList[i]
-                        viewModel.weeklyChart = item
-                        viewModel.periodIdx = 0
-                        viewModel.weeklyChartIdx = i
-                        loadWeeklyCharts()
-                        setWeeklyChipName(pref, true)
-                    }
-                    .setOnCancelListener {
-                        periodChipsBinding.chartsPeriod.check(periodChipIds[viewModel.periodIdx])
-                    }
-                    .setNegativeButton(android.R.string.cancel) { dialogInterface, i ->
-                        periodChipsBinding.chartsPeriod.check(periodChipIds[viewModel.periodIdx])
-                    }
-                    .show()
-            var pos = 0
-            for (i in weeklyList.indices) {
-                val chart = weeklyList[i]
-                if (viewModel.weeklyChart == null)
-                    break
-                if (chart.from.time == viewModel.weeklyChart!!.from.time && chart.to.time == viewModel.weeklyChart!!.to.time) {
-                    pos = i
-                    break
-                }
+            dpd.addOnNegativeButtonClickListener {
+                periodChipsBinding.chartsPeriod.check(periodChipIds[viewModel.periodIdx])
             }
-            if (pos < weeklyList.size)
-                dialog.listView.setSelection(pos)
+            dpd.addOnCancelListener {
+                periodChipsBinding.chartsPeriod.check(periodChipIds[viewModel.periodIdx])
+            }
+
+            dpd.show(parentFragmentManager, null)
 
             periodChipsBinding.chartsPeriod.alpha = 1f
         })

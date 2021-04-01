@@ -10,6 +10,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.PrefAppIconsBinding
 import com.squareup.picasso.Picasso
 import java.text.NumberFormat
@@ -32,7 +33,7 @@ class AppIconsPref : Preference {
                 .addRequestHandler(AppIconRequestHandler(context))
                 .build()!!
     }
-    private val wPx by lazy { Stuff.dp2px(48, context) }
+    private val wPx = 48.dp
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
@@ -40,6 +41,9 @@ class AppIconsPref : Preference {
         holder.isDividerAllowedAbove = false
         val binding = PrefAppIconsBinding.bind(holder.itemView)
         val packageNames = preferenceDataStore!!.getStringSet(key, setOf())!!
+
+        if (isIconSpaceReserved)
+            binding.root.setPaddingRelative(72.dp, 0, 0, 0)
 
         if (packageNames.isNotEmpty()) {
             binding.appIconsContainer.removeAllViews()
@@ -71,7 +75,5 @@ class AppIconsPref : Preference {
             binding.appListNMore.visibility = View.VISIBLE
             binding.appListNMore.text = context.getString(R.string.no_apps_enabled)
         }
-        if (isIconSpaceReserved)
-            binding.root.setPaddingRelative(Stuff.dp2px(48, context), 0, 0, 0)
     }
 }

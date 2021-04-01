@@ -251,7 +251,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val launchIntent = PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, Main::class.java)
                 .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST),
-                PendingIntent.FLAG_UPDATE_CURRENT)
+                Stuff.updateCurrentOrImmutable)
 
         val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
         style.setShowActionsInCompactView(0, 1)

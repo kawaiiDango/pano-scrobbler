@@ -5,6 +5,7 @@ import android.app.*
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -220,6 +221,20 @@ object Stuff {
         Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) in arrayOf(MANUFACTURER_HUAWEI, MANUFACTURER_SAMSUNG)
     }
 
+    val updateCurrentOrImmutable: Int
+        get() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            return PendingIntent.FLAG_UPDATE_CURRENT
+        }
+
+    val Int.dp
+        get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    val Int.sp
+        get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this.toFloat(),
+            Resources.getSystem().displayMetrics).toInt()
+
     fun log(s: String) {
         Log.i(TAG, s)
     }
@@ -307,7 +322,7 @@ object Stuff {
         val abHeightPx = activity.resources.getDimension(R.dimen.app_bar_height)
         val targetAbHeight: Int
         val lp = activity.binding.coordinatorMain.appBar.layoutParams
-        val margin = dp2px(65, activity)
+        val margin = 65.dp
 
         targetAbHeight = if (sHeightPx < abHeightPx + additionalHeight + margin)
             ((sHeightPx - additionalHeight) * 0.6).toInt()
@@ -338,17 +353,16 @@ object Stuff {
         return Html.fromHtml("<font color=\"$hex\">$title</font>")
     }
 
-    fun getMatColor(c: Context, typeColor: String, hash: Long = 0): Int {
+    fun getMatColor(c: Context, hash: Long, typeColor: String = "500"): Int {
         var hash = hash
         var returnColor = Color.BLACK
         val arrayId = c.resources.getIdentifier("mdcolor_$typeColor", "array", c.packageName)
 
         if (arrayId != 0) {
             val colors = c.resources.obtainTypedArray(arrayId)
-            val index: Int
             if (hash < 0)
                 hash = -hash
-            index = if (hash.toInt() == 0)
+            val index = if (hash.toInt() == 0)
                 (Math.random() * colors.length()).toInt()
             else
                 (hash % colors.length()).toInt()
@@ -362,12 +376,6 @@ object Stuff {
         val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
         return darkness >= 0.5
     }
-
-    fun dp2px(dp: Int, c: Context): Int =
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), c.resources.displayMetrics).toInt()
-
-    fun sp2px(sp: Int, c: Context): Int =
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), c.resources.displayMetrics).toInt()
 
     fun humanReadableNum(n: Int): String {
         val k = 1000
@@ -562,10 +570,10 @@ object Stuff {
 
     fun scheduleDigests(context: Context) {
         val weeklyIntent = PendingIntent.getBroadcast(context, 20,
-                Intent(NLService.iDIGEST_WEEKLY), PendingIntent.FLAG_UPDATE_CURRENT)
+                Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable)
 
         val monthlyIntent = PendingIntent.getBroadcast(context, 21,
-                Intent(NLService.iDIGEST_MONTHLY), PendingIntent.FLAG_UPDATE_CURRENT)
+                Intent(NLService.iDIGEST_MONTHLY), updateCurrentOrImmutable)
 
         val cal = Calendar.getInstance()
         cal.setMidnight()
@@ -587,7 +595,7 @@ object Stuff {
 
         if (BuildConfig.DEBUG) {
             val dailyIntent = PendingIntent.getBroadcast(context, 22,
-                    Intent(NLService.iDIGEST_WEEKLY), PendingIntent.FLAG_UPDATE_CURRENT)
+                    Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable)
 
             cal.timeInMillis = System.currentTimeMillis()
             cal.setMidnight()

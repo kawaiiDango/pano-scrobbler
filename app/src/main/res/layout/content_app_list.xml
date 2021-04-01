@@ -21,8 +21,7 @@
         android:clickable="true"
         android:contentDescription="@android:string/ok"
         android:focusable="true"
-        app:backgroundTint="?colorPrimaryVariant"
-        app:tint="?colorSecondary"
+        app:backgroundTint="?colorPrimary"
         app:srcCompat="@drawable/vd_check_simple" />
 
 </FrameLayout>

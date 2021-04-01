@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.info.InfoFragment
 import com.squareup.picasso.Picasso
@@ -72,11 +73,17 @@ class RandomFragment: Fragment() {
             }
         }
         binding.randomTrack.recentsMenu.visibility = View.INVISIBLE
+        binding.randomTrack.recentsMenuText.visibility = View.GONE
         binding.randomTrack.recentsPlaying.visibility = View.INVISIBLE
         (binding.randomTrack.recentsImg.parent as FrameLayout).visibility = View.GONE
         binding.randomTrack.recentsDate.setTextColor(Color.WHITE)
         binding.randomTrack.root.setBackgroundResource(R.drawable.layer_random_track)
-        binding.randomTrack.root.setPaddingRelative(0, resources.getDimension(R.dimen.gradient_container_top_padding).toInt(), 0, 0)
+        binding.randomTrack.root.setPaddingRelative(
+            16.dp,
+            resources.getDimension(R.dimen.gradient_container_top_padding).toInt(),
+            16.dp,
+            16.dp
+        )
         binding.randomBigImg.shapeAppearanceModel = binding.randomBigImg
                 .shapeAppearanceModel
                 .toBuilder()
@@ -173,8 +180,8 @@ class RandomFragment: Fragment() {
             imgUrl = null
         Picasso.get()
                 .load(imgUrl)
-                .placeholder(R.drawable.vd_wave_simple)
-                .error(R.drawable.vd_wave_simple)
+                .placeholder(R.drawable.vd_wave_simple_filled)
+                .error(R.drawable.vd_wave_simple_filled)
                 .into(binding.randomBigImg)
 
     }

@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.TouchDelegate
 import android.view.View
 import android.view.ViewGroup
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.DialogFixItBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -25,13 +26,13 @@ class FixItFragment: BottomSheetDialogFragment() {
             val startupMgrIntent = Stuff.getStartupIntent(context!!)
             FirstThingsFragment.openStartupMgr(startupMgrIntent, context!!)
         }
-        addTouchDelegate(binding.fixItStartupAction, 24, 10)
+        addTouchDelegate(binding.fixItStartupAction, 24.dp, 10.dp)
         if (!Main.isTV) {
             binding.fixItNls.visibility = View.VISIBLE
             binding.fixItNlsAction.setOnClickListener {
                 startActivity(Intent(Stuff.NLS_SETTINGS))
             }
-            addTouchDelegate(binding.fixItNlsAction, 24, 10)
+            addTouchDelegate(binding.fixItNlsAction, 24.dp, 10.dp)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val batteryIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
@@ -42,7 +43,7 @@ class FixItFragment: BottomSheetDialogFragment() {
                     startActivity(batteryIntent)
                 }
             }
-            addTouchDelegate(binding.fixItBatteryAction, 24, 10)
+            addTouchDelegate(binding.fixItBatteryAction, 24.dp, 10.dp)
         }
         return binding.root
     }
@@ -66,9 +67,7 @@ class FixItFragment: BottomSheetDialogFragment() {
             BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    private fun addTouchDelegate(child:View, vertAreaDp: Int, horzAreaDp: Int) {
-        val vertArea = Stuff.dp2px(vertAreaDp, context!!)
-        val horzArea = Stuff.dp2px(horzAreaDp, context!!)
+    private fun addTouchDelegate(child:View, vertArea: Int, horzArea: Int) {
         val parent = child.parent as View
 
         parent.post {

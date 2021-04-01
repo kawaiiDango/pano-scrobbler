@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
@@ -96,7 +97,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         chartsBinding.chartsList.layoutManager = glm
         (chartsBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
         chartsBinding.chartsList.adapter = adapter
-        chartsBinding.chartsList.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
+        chartsBinding.chartsList.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
 
         val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {

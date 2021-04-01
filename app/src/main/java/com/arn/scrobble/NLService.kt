@@ -142,7 +142,7 @@ class NLService : NotificationListenerService() {
             Stuff.log("pkgInstallReceiver wasn't registered")
         }
         if (sessListener != null) {
-            sessListener?.removeSessions(mutableSetOf())
+            sessListener?.removeSessions(setOf())
             (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
                     .removeOnActiveSessionsChangedListener(sessListener!!)
             pref.unregisterOnSharedPreferenceChangeListener(sessListener)
@@ -495,7 +495,7 @@ class NLService : NotificationListenerService() {
                         notifyApp(packageName)
                     }
                     //for rating
-                    AppRater.incrementScrobbleCount(applicationContext)
+                    AppRater.incrementScrobbleCount(pref)
                 } else {
                     notifyBadMeta(artist, album, title, albumArtist, now, getString(R.string.parse_error), hash)
                     currentBundle = Bundle()
@@ -544,24 +544,24 @@ class NLService : NotificationListenerService() {
             val loveAction = if (loved) {
                 i.action = pUNLOVE
                 val loveIntent = PendingIntent.getBroadcast(applicationContext, 4, i,
-                        PendingIntent.FLAG_UPDATE_CURRENT)
+                        Stuff.updateCurrentOrImmutable)
                 getAction(R.drawable.vd_heart_break, "\uD83D\uDC94", getString(R.string.unlove), loveIntent)
             } else {
                 i.action = pLOVE
                 val loveIntent = PendingIntent.getBroadcast(applicationContext, 3, i,
-                        PendingIntent.FLAG_UPDATE_CURRENT)
+                        Stuff.updateCurrentOrImmutable)
                 getAction(R.drawable.vd_heart, "❤", getString(R.string.love), loveIntent)
             }
 
             i = Intent(applicationContext, Main::class.java)
                     .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_RECENTS)
             val launchIntent = PendingIntent.getActivity(applicationContext, 8, i,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    Stuff.updateCurrentOrImmutable)
 
             i = Intent(pCANCEL)
                     .putExtra(B_HASH, hash)
             val cancelToastIntent = PendingIntent.getBroadcast(applicationContext, 5, i,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    Stuff.updateCurrentOrImmutable)
 
             val style= MediaStyleMod()
             val nb = buildNotification()
@@ -617,7 +617,7 @@ class NLService : NotificationListenerService() {
             i.putExtra(B_FORCEABLE, currentBundle.getBoolean(B_FORCEABLE))
 
             val editIntent = PendingIntent.getActivity(applicationContext, 9, i,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    Stuff.updateCurrentOrImmutable)
 
             val nb = buildNotification()
                     .setAutoCancel(false)
@@ -650,7 +650,7 @@ class NLService : NotificationListenerService() {
         fun notifyOtherError(title:String, errMsg: String) {
             val intent = Intent(applicationContext, Main::class.java)
             val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    Stuff.updateCurrentOrImmutable)
             val spanned = Html.fromHtml(errMsg)
 
             val nb = buildNotification()
@@ -700,15 +700,15 @@ class NLService : NotificationListenerService() {
             var intent = Intent(pBLACKLIST)
                     .putExtra("packageName", packageName)
             val ignoreIntent = PendingIntent.getBroadcast(applicationContext, 1, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    Stuff.updateCurrentOrImmutable)
             intent = Intent(pWHITELIST)
                     .putExtra("packageName", packageName)
             val okayIntent = PendingIntent.getBroadcast(applicationContext, 2, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    Stuff.updateCurrentOrImmutable)
             intent = Intent(applicationContext, Main::class.java)
                     .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST)
             val launchIntent = PendingIntent.getActivity(applicationContext, 7, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    Stuff.updateCurrentOrImmutable)
 
             val n = buildNotification()
                     .setContentTitle(getString(R.string.new_player, appName))
@@ -765,11 +765,11 @@ class NLService : NotificationListenerService() {
                     intent.putExtra(Intent.EXTRA_TEXT, shareText)
                     val shareIntent = PendingIntent.getActivity(applicationContext, 10,
                             Intent.createChooser(intent, title),
-                            PendingIntent.FLAG_UPDATE_CURRENT)
+                            Stuff.updateCurrentOrImmutable)
                     intent = Intent(applicationContext, Main::class.java)
                             .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_CHARTS)
                     val launchIntent = PendingIntent.getActivity(applicationContext, 11, intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT)
+                            Stuff.updateCurrentOrImmutable)
 
                     var digestHtml = ""
                     digestArr.forEachIndexed { index, s ->

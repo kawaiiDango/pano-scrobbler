@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ActionFriendsBinding
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
@@ -135,7 +136,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         viewModel.username = username
         adapter = FriendsAdapter(binding, viewModel)
         binding.friendsGrid.adapter = adapter
-        binding.friendsGrid.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
+        binding.friendsGrid.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
 
         val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
@@ -231,7 +232,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         val userLink = user.url ?: return
         val popup = PopupWindow(contentBinding.root, anchor.measuredWidth, anchor.measuredHeight, true)
         popupWr = WeakReference(popup)
-        popup.elevation = Stuff.dp2px(10, context!!).toFloat()
+        popup.elevation = 10.dp.toFloat()
         popup.isTouchable = true
         popup.isOutsideTouchable = true
         popup.setBackgroundDrawable(ColorDrawable())
@@ -241,8 +242,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
             val actionsBinding = ActionFriendsBinding.inflate(layoutInflater, contentBinding.root, false)
             contentBinding.root.addView(actionsBinding.root, 4)
 
-            contentBinding.friendsPic.layoutParams.width = Stuff.dp2px(120, context!!)
-            contentBinding.friendsPic.layoutParams.height = Stuff.dp2px(120, context!!)
+            contentBinding.friendsPic.layoutParams.width = 120.dp
+            contentBinding.friendsPic.layoutParams.height = 120.dp
             if (user.playcount > 0) {
                 val since = if (user.registeredDate == null || user.registeredDate.time == 0L)
                     ""
@@ -295,7 +296,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             activity!!.windowManager.defaultDisplay.getSize(point)
             val screenW = point.x
             val screenH = point.y
-            val w = min((0.8 * screenW).toInt(), Stuff.dp2px(400, context!!))
+            val w = min((0.8 * screenW).toInt(), 400.dp)
             val h = contentBinding.root.measuredHeight
             popup.update((screenW - w )/2, ((screenH - h )/1.2).toInt(), w,h)
         }

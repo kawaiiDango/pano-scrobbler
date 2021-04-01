@@ -4,7 +4,6 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorNoti">@color/pinkNoti</item>
-        <item name="colorPrimaryVariant">@color/pinkDark</item>
         <item name="colorPrimary">@color/pinkPrimary</item>
         <item name="colorSecondary">@color/pinkSecondary</item>
         <item name="colorHighlight">@color/pinkHighlight</item>
@@ -55,6 +54,7 @@
 
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
         <!--<item name="android:windowNoTitle">true</item>-->
         <!--<item name="android:windowIsFloating">false</item>-->
         <!--<item name="android:backgroundDimEnabled">true</item>-->
@@ -93,12 +93,16 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="roundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
+
     <style name="ColorPatch">
     </style>
 
     <style name="ColorPatch.Pink">
         <item name="colorNoti">@color/pinkNoti</item>
-        <item name="colorPrimaryVariant">@color/pinkDark</item>
         <item name="colorPrimary">@color/pinkPrimary</item>
         <item name="colorSecondary">@color/pinkSecondary</item>
         <item name="colorHighlight">@color/pinkHighlight</item>

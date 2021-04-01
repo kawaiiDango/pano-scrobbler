@@ -30,6 +30,7 @@ import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.CoordinatorMainBinding
 import com.arn.scrobble.info.InfoFragment
@@ -178,7 +179,7 @@ open class RecentsFragment : Fragment(),
         val itemDecor = DividerItemDecoration(context!!, VERTICAL)
         itemDecor.setDrawable(ColorDrawable(ContextCompat.getColor(context!!, R.color.lightDivider)))
         binding.recentsList.addItemDecoration(itemDecor)
-        binding.recentsList.addItemDecoration(SimpleHeaderDecoration(0, Stuff.dp2px(25, context!!)))
+        binding.recentsList.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
         Stuff.setProgressCircleColor(binding.recentsSwipeRefresh)
         binding.recentsSwipeRefresh.setOnRefreshListener {
             viewModel.toTime = 0
@@ -522,7 +523,7 @@ open class RecentsFragment : Fragment(),
             })
         } else {
             Picasso.get().cancelRequest(coordinatorBinding.heroImg)
-            val color = Stuff.getMatColor(coordinatorBinding.heroImg.context, "500", Stuff.genHashCode(track.artist, track.name).toLong())
+            val color = Stuff.getMatColor(coordinatorBinding.heroImg.context, Stuff.genHashCode(track.artist, track.name).toLong())
             coordinatorBinding.heroImg.setColorFilter(color)
             coordinatorBinding.heroImg.setImageResource(R.drawable.vd_wave)
             setPaletteColors(color)
@@ -540,9 +541,9 @@ open class RecentsFragment : Fragment(),
 
             colorPrimDark = palette.getDominantColor(Color.WHITE)
             if (!Stuff.isDark(colorPrimDark))
-                colorPrimDark = palette.getDarkVibrantColor(MaterialColors.getColor(context, R.attr.colorPrimaryVariant, null))
+                colorPrimDark = palette.getDarkVibrantColor(MaterialColors.getColor(context, R.attr.colorPrimary, null))
             colorLightWhite = palette.getLightMutedColor(ContextCompat.getColor(context!!, android.R.color.primary_text_dark))
-            colorMutedDark = palette.getDarkMutedColor(MaterialColors.getColor(context, R.attr.colorPrimaryVariant, null))
+            colorMutedDark = palette.getDarkMutedColor(MaterialColors.getColor(context, R.attr.colorPrimary, null))
             colorMutedBlack = palette.getDarkMutedColor(Color.BLACK)
 
             activityBinding.coordinatorMain.ctl.setContentScrimColor(colorMutedBlack)

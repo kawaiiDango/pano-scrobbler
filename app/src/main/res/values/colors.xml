@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="pinkDark">#880e4f</color>
     <color name="pinkNoti">#ec407a</color>
     <color name="pinkSecondary">#e1bee7</color>
     <color name="pinkPrimary">#f06292</color>
     <color name="pinkHighlight">#26F06292</color> <!-- primary -->
 
-
+    <color name="pinkDark">#880e4f</color>
     <color name="pinkExtraDark">#5a0934</color>
     <color name="lightDivider">#11ffffff</color>
     <color name="lightInfoDivider">#38FFFFFF</color>

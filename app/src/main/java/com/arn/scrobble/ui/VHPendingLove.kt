@@ -11,7 +11,7 @@ import com.arn.scrobble.pending.db.PendingLove
 class VHPendingLove(private val binding: ListItemRecentsBinding, itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(binding.root) {
     init {
         binding.recentsPlaying.visibility = View.GONE
-        binding.recentsImg.setImageResource(R.drawable.vd_wave_simple)
+        binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
         binding.recentsImgOverlay.visibility = View.VISIBLE
         if (Main.isTV)
             binding.root.setOnClickListener {

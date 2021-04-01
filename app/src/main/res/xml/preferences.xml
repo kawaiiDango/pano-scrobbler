@@ -4,19 +4,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
-        app:iconSpaceReserved="false"
         android:defaultValue="true"
         android:persistent="true"
         android:key="master"
         android:title="@string/pref_master"/>
 
-    <Preference app:iconSpaceReserved="false"
-                android:selectable="false"
-                android:summary="@string/pref_offline_info" />
+    <Preference
+        android:selectable="false"
+        android:summary="@string/pref_offline_info" />
 
 <!--
     <ListPreference
-        app:iconSpaceReserved="false"
         android:title="@string/pref_search_title"
         android:entries="@array/search_sites_title"
         android:entryValues="@array/search_sites_url"
@@ -26,25 +24,23 @@
     />
     -->
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:icon="@drawable/vd_apps"
         android:title="@string/pref_scrobble_from">
         <com.arn.scrobble.pref.AppIconsPref
+            app:iconSpaceReserved="true"
             android:key="app_whitelist"/>
         <Preference
-            app:iconSpaceReserved="false"
             android:selectable="false"
             android:summary="@string/pref_enabled_apps_summary"
             />
 
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="true"
             android:key="pixel_np"
             android:persistent="true"
             android:title="@string/pref_pixel_np"/>
 
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="true"
             android:key="auto_detect"
             android:persistent="true"
@@ -55,50 +51,48 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:icon="@drawable/vd_hourglass"
         android:title="@string/pref_delay">
 
         <SeekBarPreference
-            app:iconSpaceReserved="false"
             app:showSeekBarValue="true"
             android:key="delay_per"
             android:title="@string/pref_delay_per"
             android:defaultValue="50"
-            android:max="75"/>
+            android:max="95"
+            app:min="30"
+            />
 
         <SeekBarPreference
-            app:iconSpaceReserved="false"
             app:showSeekBarValue="true"
             android:key="delay_secs"
             android:title="@string/pref_delay_secs"
             android:defaultValue="240"
-            android:max="360"/>
+            android:max="360"
+            app:min="30"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:icon="@drawable/vd_bell"
         android:title="@string/pref_noti">
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="true"
             android:key="show_notifications"
             android:persistent="true"
             android:title="@string/pref_scrobble_noti"/>
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="true"
             android:key="digest_weekly"
             android:persistent="true"
             android:title="@string/digest_weekly"/>
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="true"
             android:key="digest_monthly"
             android:persistent="true"
             android:title="@string/digest_monthly"/>
 
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="false"
             android:key="lockscreen_noti"
             android:persistent="true"
@@ -106,17 +100,15 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:icon="@drawable/vd_more_horiz"
         android:title="@string/pref_misc">
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="true"
             android:key="now_playing"
             android:persistent="true"
             android:title="@string/pref_now_playing"/>
 
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="false"
             android:key="fetch_album_artist"
             android:persistent="true"
@@ -124,7 +116,6 @@
             android:summary="@string/pref_fetch_aa_desc"/>
 
         <EditTextPreference
-            app:iconSpaceReserved="false"
             android:title="@string/pref_share_sig"
             android:summary="@string/pref_share_sig_desc"
             android:persistent="true"
@@ -132,56 +123,47 @@
             />
         <Preference
             android:title="@string/edits"
-            app:iconSpaceReserved="false"
             android:key="edits"
             />
     </PreferenceCategory>
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:icon="@drawable/vd_swap"
         android:key="imexport"
         android:title="@string/pref_imexport">
         <Preference
-            app:iconSpaceReserved="false"
             android:title="@string/pref_export"
             android:summary="@string/pref_export_desc"
             android:key="export"
             />
         <Preference
             android:title="@string/pref_import"
-            app:iconSpaceReserved="false"
             android:key="import"
             />
     </PreferenceCategory>
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:icon="@drawable/ic_web"
         android:title="@string/scrobble_services">
         <Preference
-            app:iconSpaceReserved="false"
             android:title="@string/lastfm"
             android:key="lastfm"
             />
         <Preference
-            app:iconSpaceReserved="false"
             android:title="@string/librefm"
             android:key="librefm"
             />
         <Preference
-            app:iconSpaceReserved="false"
             android:title="@string/gnufm"
             android:key="gnufm"
             />
         <Preference
-            app:iconSpaceReserved="false"
             android:title="@string/listenbrainz"
             android:key="listenbrainz"
             />
         <Preference
-            app:iconSpaceReserved="false"
             android:title="@string/custom_listenbrainz"
             android:key="lb"
             />
         <SwitchPreference
-            app:iconSpaceReserved="false"
             android:defaultValue="false"
             android:persistent="true"
             android:key="lastfm_disable"
@@ -189,15 +171,13 @@
             android:title="Don't scrobble to lastFM"/>
     </PreferenceCategory>
     <PreferenceCategory
-        app:iconSpaceReserved="false"
+        app:icon="@drawable/vd_info"
         android:title="@string/pref_about">
         <Preference
-            app:iconSpaceReserved="false"
             android:title="@string/pref_intents"
             android:key="intents"
             />
         <Preference
-            app:iconSpaceReserved="false"
             android:title="@string/pref_about_title"
             android:summary="@string/github_link"
             android:key="about"

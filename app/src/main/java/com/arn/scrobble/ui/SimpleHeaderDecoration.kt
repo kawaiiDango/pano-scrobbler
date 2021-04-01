@@ -8,6 +8,7 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.dp
 
 
 /**
@@ -32,7 +33,7 @@ class SimpleHeaderDecoration(private val headerHeight: Int, private val footerHe
                 val view = parent.getChildAt(i) ?: break
                 if (parent.getChildAdapterPosition(view) + 1 == parent.adapter?.itemCount){
                     val center = parent.width/2f
-                    val step = Stuff.dp2px(20, parent.context)
+                    val step = 20.dp
                     val y = (view.bottom + footerHeight / 2).toFloat()
 
                     path.reset()

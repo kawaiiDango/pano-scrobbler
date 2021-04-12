@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.Stuff
 import de.umass.lastfm.*
 
 
@@ -16,7 +17,7 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
     var periodCountRequested = false
     var periodCountHeader: String? = null
     val weeklyListReceiver by lazy { MutableLiveData<List<Chart<MusicEntry>>>() }
-    private var lastChartsAsyncTask: LFMRequester.MyAsyncTask? = null
+    private var lastChartsAsyncTasks = mutableMapOf<Int,LFMRequester.MyAsyncTask>()
     private val infoAsyncTasks by lazy { mutableMapOf<Int, LFMRequester.MyAsyncTask>() }
     val info by lazy { MutableLiveData<Pair<Int, MusicEntry?>>() }
     var weeklyChart: Chart<MusicEntry>? = null
@@ -33,9 +34,9 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
         if (periodIdx == 0)
             return
         this.page = page
-        lastChartsAsyncTask?.cancel(true)
+        lastChartsAsyncTasks[type]?.cancel(true)
 //        val command = if (loadedCached) Stuff.GET_RECENTS else Stuff.GET_RECENTS_CACHED
-        lastChartsAsyncTask = LFMRequester(getApplication()).getCharts(type, Period.values()[periodIdx - 1], page, username)
+        lastChartsAsyncTasks[type] = LFMRequester(getApplication()).getCharts(type, Period.values()[periodIdx - 1], page, username)
                 .asAsyncTask(chartsReceiver)
 //        loadedCached = true
     }
@@ -47,14 +48,14 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
     fun loadWeeklyCharts() {
         page = 1
         reachedEnd = true
-        lastChartsAsyncTask?.cancel(true)
-        lastChartsAsyncTask = LFMRequester(getApplication()).getWeeklyCharts(type, weeklyChart!!.from.time/1000, weeklyChart!!.to.time/1000, username)
+        lastChartsAsyncTasks[type]?.cancel(true)
+        lastChartsAsyncTasks[type] = LFMRequester(getApplication()).getWeeklyCharts(type, weeklyChart!!.from.time/1000, weeklyChart!!.to.time/1000, username)
                 .asAsyncTask(chartsReceiver)
     }
 
     fun loadScrobbleCounts(periods: List<ChartsOverviewFragment.ScrobbleCount>) {
-        lastChartsAsyncTask?.cancel(true)
-        lastChartsAsyncTask = LFMRequester(getApplication()).getScrobbleCounts(periods, username)
+        lastChartsAsyncTasks[Stuff.TYPE_SC]?.cancel(true)
+        lastChartsAsyncTasks[Stuff.TYPE_SC] = LFMRequester(getApplication()).getScrobbleCounts(periods, username)
                 .asAsyncTask(periodCountReceiver)
     }
 
@@ -82,5 +83,9 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
         infoAsyncTasks.keys.toList().forEach {
             removeInfoTask(it)
         }
+    }
+
+    fun resetRequestedState() {
+        periodCountRequested = false
     }
 }

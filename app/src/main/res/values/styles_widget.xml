@@ -1,0 +1,43 @@
+<resources>
+
+    <style name="AppWidgetTheme" />
+
+    <style name="AppWidgetTheme.Dark">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="colorSecondary">@android:color/transparent</item>
+        <item name="fakeShadowAlpha">0</item>
+        <item name="android:textViewStyle">@style/WidgetTextShadow</item>
+    </style>
+    <style name="AppWidgetTheme.Light">
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="colorSecondary">@android:color/transparent</item>
+        <item name="fakeShadowAlpha">0</item>
+        <item name="android:textViewStyle">@style/WidgetTextShadow</item>
+    </style>
+    <style name="AppWidgetTheme.Dark.Shadow">
+        <item name="colorSecondary">@android:color/black</item>
+        <item name="fakeShadowAlpha">1</item>
+    </style>
+    <style name="AppWidgetTheme.Light.Shadow">
+        <item name="colorSecondary">@android:color/white</item>
+        <item name="fakeShadowAlpha">1</item>
+    </style>
+
+    <style name="WidgetTextShadow">
+        <item name="android:shadowColor">?colorSecondary</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">6</item>
+        <item name="android:textColor">?colorPrimary</item>
+    </style>
+
+    <style name="WidgetTabIndicator">
+        <item name="android:src">@drawable/shape_widget_tab_indicator</item>
+    </style>
+    <style name="WidgetTabIndicator.Shadow">
+        <item name="android:tint">?colorSecondary</item>
+        <item name="android:alpha">?fakeShadowAlpha</item>
+    </style>
+</resources>

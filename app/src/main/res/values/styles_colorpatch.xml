@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="ColorPatch" />
+
+    <style name="ColorPatch.Pink">
+        <item name="colorNoti">@color/pinkNoti</item>
+        <item name="colorPrimary">@color/pinkPrimary</item>
+        <item name="colorSecondary">@color/pinkSecondary</item>
+        <item name="colorHighlight">@color/pinkHighlight</item>
+    </style>
+
+</resources>

@@ -5,9 +5,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.arn.scrobble.charts.ChartsVM
+import com.arn.scrobble.friends.FriendsVM
 import com.arn.scrobble.info.InfoVM
 import com.arn.scrobble.info.TagInfoVM
 import com.arn.scrobble.info.UserTagsVM
+import com.arn.scrobble.recents.TracksVM
+import com.arn.scrobble.search.SearchVM
 
 
 object VMFactory: ViewModelProvider.Factory {

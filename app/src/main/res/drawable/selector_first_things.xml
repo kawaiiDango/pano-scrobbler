@@ -7,5 +7,5 @@
             <item android:state_enabled="true" android:drawable="@color/pinkHighlight"/>
         </selector>
     </item>
-    <item android:drawable="?selectableItemBackground" />
+    <item android:drawable="@drawable/ripple_rounded" />
 </layer-list>

@@ -6,7 +6,7 @@
     android:paddingVertical="10dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?selectableItemBackground"
+    android:background="@drawable/ripple_rounded"
     android:clickable="true"
     android:focusable="true">
 

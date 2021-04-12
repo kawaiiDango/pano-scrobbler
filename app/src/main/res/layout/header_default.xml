@@ -4,7 +4,6 @@
         android:id="@+id/header_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/darkBg"
         android:paddingBottom="10dp"
         android:paddingStart="40dp"
         android:paddingEnd="10dp"

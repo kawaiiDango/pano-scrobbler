@@ -30,7 +30,7 @@ import androidx.annotation.StringRes
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.arn.scrobble.RecentsFragment.Companion.lastColorMutedBlack
+import com.arn.scrobble.recents.RecentsFragment.Companion.lastColorMutedBlack
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.Caller
@@ -114,7 +114,7 @@ object Stuff {
     const val PREF_FETCH_AA = "fetch_album_artist"
     const val PREF_DIGEST_WEEKLY = "digest_weekly"
     const val PREF_DIGEST_MONTHLY = "digest_monthly"
-    const val PREF_SHARE_SIG = "share_sig"
+    const val PREF_SHOW_RECENTS_ALBUM = "show_album"
 
     const val PREF_ACTIVITY_FIRST_RUN = "first_run"
     const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
@@ -132,6 +132,16 @@ object Stuff {
     const val PREF_ACTIVITY_SCRUB_LEARNT = "scrub_learnt"
     const val PREF_ACTIVITY_LONG_PRESS_LEARNT = "long_press_learnt"
     const val ACTIVITY_PREFS = "activity_preferences"
+
+    const val WIDGET_PREFS = "widget_preferences"
+    const val PREF_WIDGET_TAB = "tab"
+    const val PREF_WIDGET_BG_ALPHA = "bg_alpha"
+    const val PREF_WIDGET_DARK = "dark"
+    const val PREF_WIDGET_PERIOD = "period"
+    const val PREF_WIDGET_SHADOW = "shadow"
+    const val PREF_WIDGET_LAST_UPDATED = "last_updated"
+
+    const val EXTRA_PINNED = "pinned"
 
     val SERVICE_BIT_POS = mapOf(
             R.string.lastfm to 0,
@@ -198,7 +208,9 @@ object Stuff {
     const val PACKAGE_PANDORA = "com.pandora.android"
     const val PACKAGE_BLACKPLAYER = "com.musicplayer.blackplayerfree"
     const val PACKAGE_BLACKPLAYEREX = "com.kodarkooperativet.blackplayerex"
-    const val PACKAGE_SONOS_PREFIX = "com.sonos.acr"
+    const val PACKAGE_SONOS = "com.sonos.acr"
+    const val PACKAGE_SONOS2 = "com.sonos.acr2"
+    const val PACKAGE_DIFM = "com.audioaddict.di"
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
     const val PACKAGE_NETEASE_MUSIC = "com.netease.cloudmusic"
@@ -225,6 +237,14 @@ object Stuff {
         get() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            return PendingIntent.FLAG_UPDATE_CURRENT
+        }
+
+    val updateCurrentOrMutable: Int
+        get() {
+            //TODO: uncomment when targeting S
+//            if (Build.VERSION.SDK_INT >= 31)
+//                return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             return PendingIntent.FLAG_UPDATE_CURRENT
         }
 
@@ -552,11 +572,11 @@ object Stuff {
         return caller
     }
 
-    fun genHashCode(vararg strings: String): Int {
+    fun genHashCode(vararg objects: Any): Int {
         val prime = 31
         var result = 1
-        for (s in strings) {
-            result = result * prime + s.hashCode()
+        for (o in objects) {
+            result = result * prime + o.hashCode()
         }
         return result
     }
@@ -593,6 +613,7 @@ object Stuff {
         alarmManager.set(AlarmManager.RTC, nextWeek, weeklyIntent)
         alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
 
+        /*
         if (BuildConfig.DEBUG) {
             val dailyIntent = PendingIntent.getBroadcast(context, 22,
                     Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable)
@@ -603,5 +624,8 @@ object Stuff {
             val nextDay = cal.timeInMillis
             alarmManager.set(AlarmManager.RTC, nextDay, dailyIntent)
         }
+        */
     }
+
+    fun getWidgetPrefName(name: String, appWidgetId: Int) = "${name}_$appWidgetId"
 }

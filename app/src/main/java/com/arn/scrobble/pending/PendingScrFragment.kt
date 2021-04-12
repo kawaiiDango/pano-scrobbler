@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.TracksVM
+import com.arn.scrobble.recents.TracksVM
 import com.arn.scrobble.VMFactory
+import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.PendingMenu
 
 /**
  * Created by arn on 21/09/2017.
@@ -27,6 +27,7 @@ class PendingScrFragment: Fragment(), ItemClickListener {
         view.layoutManager = LinearLayoutManager(context!!)
         view.isNestedScrollingEnabled = false
         adapter = PendingScrAdapter(this)
+        adapter.isShowingAlbums = MultiPreferences(context!!).getBoolean(Stuff.PREF_SHOW_RECENTS_ALBUM, false)
         view.adapter = adapter
 
         vm = VMFactory.getVM(this, TracksVM::class.java)

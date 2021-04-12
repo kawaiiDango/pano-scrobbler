@@ -3,7 +3,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="?selectableItemBackground"
+              android:background="@drawable/ripple_rounded"
               android:clickable="true"
               android:focusable="true"
               android:gravity="end|center_vertical"
@@ -17,8 +17,9 @@
         android:id="@+id/pending_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="@dimen/elevation_hero_btn"
+        android:paddingEnd="8dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textDirection="firstStrong"
         tools:text="@string/n_more"/>
 
     <TextView

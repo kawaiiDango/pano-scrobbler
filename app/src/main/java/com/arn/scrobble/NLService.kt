@@ -22,7 +22,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.media.app.MediaStyleMod
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.Period
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -754,9 +754,14 @@ class NLService : NotificationListenerService() {
                     var intent = Intent(Intent.ACTION_SEND)
                             .putExtra("packageName", packageName)
                     val shareText = title + "\n\n" +
-                            digestArr.joinToString(separator = "\n") +
-                            "\n\n" +
-                            pref.getString(Stuff.PREF_SHARE_SIG, getString(R.string.share_sig))
+                            digestArr.mapIndexed { i, s ->
+                                if (i % 2 == 1 && i != digestArr.size - 1)
+                                    s + "\n"
+                                else
+                                    s
+                            }
+                                .joinToString(separator = "\n") +
+                            "\n\n" + getString(R.string.share_sig)
                     val i = Intent(Intent.ACTION_SEND)
                     i.type = "text/plain"
                     i.putExtra(Intent.EXTRA_SUBJECT, shareText)
@@ -890,6 +895,7 @@ class NLService : NotificationListenerService() {
         const val iBAD_META = "com.arn.scrobble.BAD_META"
         const val iDIGEST_WEEKLY = "com.arn.scrobble.DIGEST_WEEKLY"
         const val iDIGEST_MONTHLY = "com.arn.scrobble.DIGEST_MONTHLY"
+        const val iUPDATE_WIDGET = "com.arn.scrobble.UPDATE_WIDGET"
         const val B_TITLE = "title"
         const val B_ALBUM_ARTIST = "albumartist"
         const val B_TIME = "time"

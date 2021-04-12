@@ -43,7 +43,7 @@
     <string name="scrobble_services">Services</string>
     <string name="share_text">I was listening to\n %1$s, %2$s</string> <!-- %1= artist - track, %2= relative time, -->
     <string name="share_text_username">%1$s was listening to\n %2$s, %3$s</string>
-    <string name="share_sig">(Shared with bit.ly/Pscr )</string>
+    <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Share this song</string>
     <string name="share">Share</string>
     <string name="hero_info">More info</string>
@@ -166,6 +166,16 @@
     <string name="user_tags_empty">You haven\'t added any tags</string>
     <string name="info_long_press_guide">You can also long press on a song to open this</string>
 
+    <string name="appwidget_loading">Loading…</string>
+    <string name="appwidget_period">Period</string>
+    <string name="appwidget_theme">Theme</string>
+    <string name="appwidget_shadow">Shadow</string>
+    <string name="appwidget_show">Show</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="appwidget_alpha">Background Opacity</string>
+    <string name="appwidget_refresh_every">Widget will refresh every %1$d minutes</string>
+
     <string name="pref_master_off">Scrobbler disabled</string>
     <string name="pref_master_on">Scrobbler active</string>
     <string name="pref_master">Scrobble music</string>
@@ -206,6 +216,11 @@
     <string name="pref_export">Export</string>
     <string name="pref_export_desc">Backs up settings and saved edits. Does not save logins for security reasons. Useful for moving between devices or sharing with friends.</string>
     <string name="pref_import">Import</string>
+    <string name="pref_personalization">Personalization</string>
+    <string name="pref_widget_charts">Homescreen widget - Charts</string>
+    <string name="pref_show_albums">Show album names</string>
+    <string name="pref_show_albums_desc">…in recent scrobbles</string>
+
     <string name="import_hey_wtf">That\'s probably not a Pano Scrobbler export file</string>
     <string name="export_failed">Export failed</string>
     <string name="imported">Imported</string>

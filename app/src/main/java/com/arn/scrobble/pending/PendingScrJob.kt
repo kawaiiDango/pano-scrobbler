@@ -9,9 +9,9 @@ import android.content.Context
 import android.os.AsyncTask
 import androidx.annotation.StringRes
 import com.arn.scrobble.*
-import com.arn.scrobble.pending.db.PendingLove
-import com.arn.scrobble.pending.db.PendingScrobble
-import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.db.PendingLove
+import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -372,7 +372,7 @@ class PendingScrJob : JobService() {
             if (jobs.any { it.id == JOB_ID }) {
                 Stuff.log("Found " + jobs.size + " existing jobs")
                 if (force)
-                    js.cancelAll()
+                    js.cancel(JOB_ID)
                 else
                     return
             }

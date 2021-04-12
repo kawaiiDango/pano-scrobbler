@@ -47,6 +47,7 @@
                 android:layout_height="match_parent"
                 android:contentDescription="@string/album_art"
                 android:scaleType="centerCrop"
+                app:shapeAppearance="@style/roundedCorners"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <include

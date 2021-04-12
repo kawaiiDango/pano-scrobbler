@@ -6,6 +6,8 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.*
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -99,6 +101,14 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         chartsBinding.chartsList.adapter = adapter
         chartsBinding.chartsList.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
 
+        var itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
+        itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
+        chartsBinding.chartsList.addItemDecoration(itemDecor)
+
+        itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
+        itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
+        chartsBinding.chartsList.addItemDecoration(itemDecor)
+
         val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
                 loadCharts(page)
@@ -187,11 +197,10 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         else
             getString(R.string.my)
 
-        val multiPrefs = MultiPreferences(context!!)
         var shareText = getString(R.string.charts_share_text,
                 user, period.toLowerCase(), type.toLowerCase(), list)
 
-        shareText += "\n\n" + multiPrefs.getString(Stuff.PREF_SHARE_SIG, getString(R.string.share_sig))
+        shareText += "\n\n" + getString(R.string.share_sig)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
         i.putExtra(Intent.EXTRA_SUBJECT, shareText)

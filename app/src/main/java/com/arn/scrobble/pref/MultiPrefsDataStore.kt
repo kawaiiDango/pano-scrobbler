@@ -25,7 +25,7 @@ class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
             Stuff.PREF_FETCH_AA to false,
             Stuff.PREF_DIGEST_WEEKLY to true,
             Stuff.PREF_DIGEST_MONTHLY to true,
-            Stuff.PREF_SHARE_SIG to context.getString(R.string.share_sig)
+            Stuff.PREF_SHOW_RECENTS_ALBUM to false,
     )
 
     override fun getString(key: String, defValue: String?) =

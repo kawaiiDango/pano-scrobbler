@@ -100,6 +100,22 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:icon="@drawable/vd_user"
+        android:title="@string/pref_personalization">
+
+        <Preference
+            android:title="@string/pref_widget_charts"
+            android:key="charts_widget" />
+
+        <SwitchPreference
+            android:title="@string/pref_show_albums"
+            android:summary="@string/pref_show_albums_desc"
+            android:key="show_album"
+            android:persistent="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:icon="@drawable/vd_more_horiz"
         android:title="@string/pref_misc">
         <SwitchPreference
@@ -115,12 +131,6 @@
             android:title="@string/pref_fetch_aa"
             android:summary="@string/pref_fetch_aa_desc"/>
 
-        <EditTextPreference
-            android:title="@string/pref_share_sig"
-            android:summary="@string/pref_share_sig_desc"
-            android:persistent="true"
-            android:key="share_sig"
-            />
         <Preference
             android:title="@string/edits"
             android:key="edits"

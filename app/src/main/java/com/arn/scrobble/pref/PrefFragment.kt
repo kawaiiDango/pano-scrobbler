@@ -1,6 +1,8 @@
 package com.arn.scrobble.pref
 
 import android.app.Activity
+import android.app.PendingIntent
+import android.appwidget.AppWidgetManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
@@ -17,13 +19,16 @@ import android.webkit.URLUtil
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.preference.*
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogImportBinding
-import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.ui.MyClickableSpan
+import com.arn.scrobble.widget.ChartsWidgetActivity
+import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.*
@@ -36,11 +41,9 @@ import java.util.*
 class PrefFragment : PreferenceFragmentCompat(){
 
     private val restoreHandler by lazy { Handler(Looper.getMainLooper()) }
-    private lateinit var appPrefs: SharedPreferences
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = MultiPrefsDataStore(context!!)
-        appPrefs = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
 
         reenterTransition = Fade()
         exitTransition = Fade()
@@ -94,6 +97,27 @@ class PrefFragment : PreferenceFragmentCompat(){
                     .commit()
             true
         }
+
+        findPreference<Preference>("charts_widget")!!
+            .onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val appWidgetManager =
+                        getSystemService(context!!, AppWidgetManager::class.java) as AppWidgetManager
+                    if (appWidgetManager.isRequestPinAppWidgetSupported) {
+                        val pi = PendingIntent.getActivity(
+                            context,
+                            30,
+                            Intent(context, ChartsWidgetActivity::class.java)
+                                .apply { putExtra(Stuff.EXTRA_PINNED, true) },
+                            Stuff.updateCurrentOrMutable
+                        )
+
+                        val myProvider = ComponentName(context!!, ChartsWidgetProvider::class.java)
+                        appWidgetManager.requestPinAppWidget(myProvider, null, pi)
+                    }
+                }
+                true
+            }
 
         findPreference<Preference>(Stuff.PREF_EXPORT)
                 ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {

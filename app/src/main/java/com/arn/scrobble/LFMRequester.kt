@@ -13,10 +13,11 @@ import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.pending.PendingScrJob
-import com.arn.scrobble.pending.db.PendingLove
-import com.arn.scrobble.pending.db.PendingScrobble
-import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.db.PendingLove
+import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.search.SearchVM
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
@@ -408,11 +409,18 @@ class LFMRequester(context: Context) {
                     try {
                         val pr = User.getRecentTracks(usernamep, 1, 1, false, it.from / 1000, it.to / 1000, lastfmSession, null)
                         it.count = pr.total
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
-            es.shutdown()
-            es.awaitTermination(30, TimeUnit.SECONDS)
+            try {
+                es.shutdown()
+                es.awaitTermination(30, TimeUnit.SECONDS)
+            } catch (e: InterruptedException) {
+                es.shutdownNow()
+                Thread.currentThread().interrupt()
+            }
             periods
         }
         return this

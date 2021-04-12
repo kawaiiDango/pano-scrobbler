@@ -3,13 +3,10 @@ package com.arn.scrobble.pending
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.*
 import com.arn.scrobble.databinding.ListItemRecentsBinding
-import com.arn.scrobble.pending.db.PendingLove
-import com.arn.scrobble.pending.db.PendingScrobble
+import com.arn.scrobble.db.PendingLove
+import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.VHPendingLove
-import com.arn.scrobble.ui.VHPendingScrobble
 
 /**
  * Created by arn on 21/09/2017.
@@ -17,6 +14,7 @@ import com.arn.scrobble.ui.VHPendingScrobble
 class PendingScrAdapter(private val itemClickListener: ItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val psList = mutableListOf<PendingScrobble>()
     private val plList = mutableListOf<PendingLove>()
+    var isShowingAlbums = false
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -26,7 +24,11 @@ class PendingScrAdapter(private val itemClickListener: ItemClickListener) : Recy
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_PENDING_SCROBBLE ->
-                VHPendingScrobble(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener)
+                VHPendingScrobble(
+                    ListItemRecentsBinding.inflate(inflater, parent, false),
+                    itemClickListener,
+                    isShowingAlbums
+                )
             TYPE_PENDING_LOVE ->
                 VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener)
             else -> throw RuntimeException("Invalid view type $viewType")

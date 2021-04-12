@@ -15,10 +15,11 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="16dp"
         android:contentDescription="@string/menu_rec"
+        android:foreground="@drawable/ripple_circle"
         app:progressBarThickness="4dp"
-        app:progressbarColor="?colorPrimary" />
+        app:progressbarColor="?colorPrimary"/>
 
     <TextView
         android:id="@+id/rec_status"

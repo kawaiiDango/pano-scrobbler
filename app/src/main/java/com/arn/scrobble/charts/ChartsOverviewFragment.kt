@@ -17,6 +17,7 @@ import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
+import com.arn.scrobble.recents.SparkLineAdapter
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.ImageSize
@@ -87,8 +88,8 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         artistsFragment.viewModel.loadCharts(1)
         albumsFragment.viewModel.loadCharts(1)
         tracksFragment.viewModel.loadCharts(1)
-        viewModel.periodCountRequested = false
-        loadSparklineIfNeeded()
+        viewModel.resetRequestedState()
+        loadMoreSectionsIfNeeded()
     }
 
     override fun loadWeeklyCharts() {
@@ -103,8 +104,8 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         artistsFragment.viewModel.loadWeeklyCharts()
         albumsFragment.viewModel.loadWeeklyCharts()
         tracksFragment.viewModel.loadWeeklyCharts()
-        viewModel.periodCountRequested = false
-        loadSparklineIfNeeded()
+        viewModel.resetRequestedState()
+        loadMoreSectionsIfNeeded()
     }
 
     override fun postInit() {
@@ -155,7 +156,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             }
         }
         binding.chartsOverviewScrollview.viewTreeObserver.addOnScrollChangedListener {
-            loadSparklineIfNeeded()
+            loadMoreSectionsIfNeeded()
         }
 
         if (!Main.isTV && !activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
@@ -281,11 +282,11 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         }
     }
 
-    private fun loadSparklineIfNeeded() {
+    private fun loadMoreSectionsIfNeeded() {
         _binding ?: return
+        val scrollBounds = Rect()
+        binding.chartsOverviewScrollview.getHitRect(scrollBounds)
         if (!viewModel.periodCountRequested) {
-            val scrollBounds = Rect()
-            binding.chartsOverviewScrollview.getHitRect(scrollBounds)
             val partiallyVisible = binding.chartsSparklineFrame.getLocalVisibleRect(scrollBounds)
             if (partiallyVisible)
                 calcSparklineDurations()

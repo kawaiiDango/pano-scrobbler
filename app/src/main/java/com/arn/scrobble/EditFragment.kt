@@ -11,8 +11,8 @@ import android.view.*
 import android.view.inputmethod.EditorInfo
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
-import com.arn.scrobble.pending.db.Edit
-import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.db.Edit
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.CallException
 import de.umass.lastfm.Session

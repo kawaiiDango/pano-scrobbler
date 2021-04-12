@@ -22,6 +22,8 @@
         android:layoutAnimation="@anim/layout_animation_slide_left"
         android:nestedScrollingEnabled="false"
         android:visibility="invisible"
+        android:paddingStart="8dp"
+        android:clipToPadding="false"
         tools:visibility="visible" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator

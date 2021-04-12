@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.databinding.ContentEditsBinding
 import com.arn.scrobble.databinding.ListItemEditsBinding
-import com.arn.scrobble.pending.db.Edit
-import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.db.Edit
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.ui.ItemClickListener
 
 
@@ -113,7 +113,7 @@ class EditsAdapter(context: Context, private val fragmentBinding: ContentEditsBi
             binding.editsTrack.text = e.track
             if (e.album.isNotBlank()) {
                 binding.editsAlbum.visibility = View.VISIBLE
-                binding.editsAlbum.text = "(" + e.album + ")"
+                binding.editsAlbum.text = e.album
             } else
                 binding.editsAlbum.visibility = View.GONE
             binding.editsArtist.text = e.artist

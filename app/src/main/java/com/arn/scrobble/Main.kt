@@ -40,10 +40,11 @@ import androidx.viewpager.widget.ViewPager
 import com.arn.scrobble.databinding.ActivityMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.pending.PendingScrService
-import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.pref.PrefFragment
+import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.arn.scrobble.ui.StatefulAppBar
 import com.google.android.material.color.MaterialColors

@@ -84,11 +84,6 @@ class RandomFragment: Fragment() {
             16.dp,
             16.dp
         )
-        binding.randomBigImg.shapeAppearanceModel = binding.randomBigImg
-                .shapeAppearanceModel
-                .toBuilder()
-                .setAllCornerSizes(resources.getDimension(R.dimen.charts_corner_radius))
-                .build()
 
         viewModel.track.observe(viewLifecycleOwner) {
             it ?: return@observe

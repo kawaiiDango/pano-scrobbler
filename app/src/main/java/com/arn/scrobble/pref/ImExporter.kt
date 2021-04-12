@@ -9,8 +9,8 @@ import android.util.JsonWriter
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.Main
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.pending.db.Edit
-import com.arn.scrobble.pending.db.PendingScrobblesDb
+import com.arn.scrobble.db.Edit
+import com.arn.scrobble.db.PendingScrobblesDb
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStreamReader
@@ -90,6 +90,7 @@ class ImExporter {
                     name(Stuff.PREF_NOW_PLAYING).value(pref.getBoolean(Stuff.PREF_NOW_PLAYING, true))
                     name(Stuff.PREF_FETCH_AA).value(pref.getBoolean(Stuff.PREF_FETCH_AA, false))
                     name(Stuff.PREF_AUTO_DETECT).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
+                    name(Stuff.PREF_SHOW_RECENTS_ALBUM).value(pref.getBoolean(Stuff.PREF_SHOW_RECENTS_ALBUM, false))
                     name(Stuff.PREF_WHITELIST).beginArray()
                     pref.getStringSet(Stuff.PREF_WHITELIST, setOf())
                             .forEach {

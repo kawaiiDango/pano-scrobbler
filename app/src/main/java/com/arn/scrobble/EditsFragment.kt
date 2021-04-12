@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.databinding.ContentEditsBinding
 import com.arn.scrobble.databinding.DialogEditEditsBinding
-import com.arn.scrobble.pending.db.Edit
+import com.arn.scrobble.db.Edit
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

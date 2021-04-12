@@ -31,7 +31,6 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
     open val itemSizeDp = 185
     open val forceDimensions = false
-    open val roundCorners = false
     private var maxCount = -2
     var checkAllForMax = false
     @StringRes
@@ -70,7 +69,6 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
         return VHChart(
                 holderBinding,
                 itemSizeDp,
-                roundCorners,
                 clickListener,
                 queueEntryInfo,
                 getMaxCount
@@ -151,7 +149,6 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
     class VHChart(
             private val binding: GridItemChartBinding,
             itemSizeDp: Int,
-            roundCorners: Boolean,
             private val clickListener: EntryItemClickListener,
             private val queueEntryInfo: (Int, ImageView) -> Unit,
             private val getMaxCount: () -> Int
@@ -163,12 +160,6 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
             itemView.setOnClickListener(this)
             itemView.minimumWidth = itemSizeDp.dp
             itemView.minimumHeight = itemSizeDp.dp
-            if (roundCorners)
-                binding.chartImg.shapeAppearanceModel = binding.chartImg
-                        .shapeAppearanceModel
-                        .toBuilder()
-                        .setAllCornerSizes(itemView.context.resources.getDimension(R.dimen.charts_corner_radius))
-                        .build()
         }
 
         override fun onClick(view: View) {

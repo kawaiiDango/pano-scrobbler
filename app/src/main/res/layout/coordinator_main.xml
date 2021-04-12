@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:fitsSystemWindows="true"
+        android:stateListAnimator="@animator/appbar_always_elevated"
         app:layout_behavior="com.arn.scrobble.ui.DisableableAppBarLayoutBehavior"
         android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -26,7 +27,6 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?android:colorBackground"
-            app:elevation="@dimen/elevation_hero_btn"
             app:expandedTitleMarginEnd="@dimen/title_margin_right"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed|snap"
             app:statusBarScrim="@color/statusBarScrim"
@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="5dp"
-                android:alpha="0.7"
+                android:alpha="0.8"
                 android:animateLayoutChanges="true"
                 android:gravity="bottom|end"
                 android:orientation="horizontal"
@@ -91,6 +91,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginBottom="5sp"
                             android:importantForAccessibility="no"
+                            android:alpha="0.9"
                             app:spark_lineColor="?colorSecondary"
                             app:spark_animateChanges="true"
                             app:spark_lineWidth="6dp"
@@ -182,7 +183,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 app:titleTextColor="?colorPrimary"
-                app:elevation="@dimen/elevation_hero_btn"
                 app:layout_collapseMode="pin"
                 app:title=" "
                 app:layout_collapseParallaxMultiplier="1.0">

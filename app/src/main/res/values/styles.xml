@@ -21,9 +21,16 @@
         <item name="snackbarStyle">@style/snackbarStyle</item>
         <item name="snackbarTextViewStyle">@style/snackbarText</item>
         <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
+        <item name="bottomSheetDialogTheme">@style/RoundedBottomSheetDialog</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+
+    <style name="AppTheme.Wallpaper">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowShowWallpaper">true</item>
+    </style>
 
     <style name="snackbarStyle" parent="@style/Widget.MaterialComponents.Snackbar">
         <item name="android:background">@color/dialogBg</item>
@@ -60,6 +67,23 @@
         <!--<item name="android:backgroundDimEnabled">true</item>-->
     </style>
 
+    <style name="RoundedBottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
+    </style>
+
+    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
     <style name="firstThings">
         <item name="android:layout_margin">10dp</item>
         <item name="android:padding">10dp</item>
@@ -69,7 +93,7 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:clipToPadding">false</item>
-        <item name="android:elevation">@dimen/elevation_hero_btn</item>
+        <item name="android:elevation">@dimen/elevation_appbar</item>
         <item name="android:outlineProvider">bounds</item>
         <item name="android:stateListAnimator">@null</item>
         <item name="android:translationZ">@dimen/tz_hero_btn</item>
@@ -84,7 +108,7 @@
     </style>
 
     <style name="bottomSheetContent">
-        <item name="android:paddingStart">@dimen/elevation_hero_btn</item>
+        <item name="android:paddingStart">@dimen/elevation_appbar</item>
         <item name="android:paddingBottom">@dimen/fab_margin</item>
     </style>
 
@@ -93,18 +117,9 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="roundedImageView">
+    <style name="roundedCorners">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">10dp</item>
+        <item name="cornerSize">@dimen/corner_radius</item>
     </style>
 
-    <style name="ColorPatch">
-    </style>
-
-    <style name="ColorPatch.Pink">
-        <item name="colorNoti">@color/pinkNoti</item>
-        <item name="colorPrimary">@color/pinkPrimary</item>
-        <item name="colorSecondary">@color/pinkSecondary</item>
-        <item name="colorHighlight">@color/pinkHighlight</item>
-    </style>
 </resources>

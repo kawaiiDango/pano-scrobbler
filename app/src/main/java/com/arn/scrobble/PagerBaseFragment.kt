@@ -56,6 +56,7 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
             val tabBinding = NavTabBinding.inflate(layoutInflater)
             tabBinding.tabLabel.text = resources.getString(tabMeta[i].first)
             tabBinding.tabIcon.setImageResource(tabMeta[i].second)
+            tabBinding.tabIconShadow.setImageResource(tabMeta[i].second)
             tabBinding.tabIcon.imageTintList = tabBar.tabIconTint
             if (selectedTab == i) {
                 tabBinding.tabLabel.visibility = View.VISIBLE

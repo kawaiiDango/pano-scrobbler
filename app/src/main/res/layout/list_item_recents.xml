@@ -5,17 +5,18 @@
     android:focusable="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_list"
+    android:background="@drawable/selector_list_rounded"
     android:orientation="horizontal"
     android:baselineAligned="false">
 
     <FrameLayout
         android:layout_width="84dp"
-        android:layout_height="68dp">
+        android:layout_height="68dp"
+        android:layout_gravity="center_vertical">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/recents_img"
-            app:shapeAppearance="@style/roundedImageView"
+            app:shapeAppearance="@style/roundedCorners"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:contentDescription="@string/album_art"
@@ -33,7 +34,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="11dp"
             android:alpha="0.9"
-            android:elevation="@dimen/elevation_hero_btn"
+            android:elevation="8dp"
             android:rotation="@dimen/recents_overlay_rotate"
             android:transformPivotX="25dp"
             android:transformPivotY="50dp"
@@ -43,19 +44,21 @@
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/recents_track_ll"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:layout_marginVertical="8dp"
+        android:paddingVertical="0dp">
         <TextView
             android:id="@+id/recents_title"
             android:layout_width="match_parent"
-            android:layout_height="25sp"
+            android:layout_height="23sp"
             android:ellipsize="end"
-            android:gravity="start"
+            android:gravity="center_vertical"
             android:maxLines="1"
-            android:padding="1sp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:textColor="?colorSecondary"
             app:autoSizeMaxTextSize="22sp"
@@ -67,18 +70,33 @@
         <TextView
             android:id="@+id/recents_subtitle"
             android:layout_width="match_parent"
-            android:layout_height="21sp"
+            android:layout_height="20sp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="-2dp"
             android:ellipsize="end"
+            android:gravity="center_vertical"
             android:maxLines="1"
-            android:padding="1sp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             app:autoSizeMaxTextSize="20sp"
             app:autoSizeMinTextSize="12sp"
             app:autoSizeStepGranularity="1sp"
             app:autoSizeTextType="uniform"
             tools:text="subtit subtit"/>
+
+        <TextView
+            android:id="@+id/recents_album"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/album_text_height"
+            android:layout_marginStart="16dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:autoSizeMaxTextSize="20sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+            tools:text="album album"/>
     </LinearLayout>
 
     <FrameLayout
@@ -95,12 +113,13 @@
             android:layout_gravity="center_vertical|end">
             <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp">
                 <TextView
                     android:id="@+id/recents_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="4dp"
                     android:textAppearance="@android:style/TextAppearance.Material.Caption"
                     tools:text="date date yay" />
 
@@ -109,7 +128,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="14sp"
                     android:layout_gravity="end"
-                    android:layout_marginHorizontal="4dp"
                     android:contentDescription="@string/state_scrobbling"
                     tools:srcCompat="@drawable/avd_eq" />
             </FrameLayout>

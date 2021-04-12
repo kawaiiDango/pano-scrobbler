@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:paddingBottom="@dimen/elevation_hero_btn"
+                android:paddingBottom="@dimen/fixit_bottom_padding"
                 android:text="@string/fix_it_startup_title"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
@@ -76,7 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:paddingBottom="@dimen/elevation_hero_btn"
+                android:paddingBottom="@dimen/fixit_bottom_padding"
                 android:text="@string/fix_it_noti_title"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
@@ -116,7 +116,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:paddingBottom="@dimen/elevation_hero_btn"
+                android:paddingBottom="@dimen/fixit_bottom_padding"
                 android:text="@string/fix_it_battery_title"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 

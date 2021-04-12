@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.arn.scrobble.charts.ChartsOverviewFragment
+import com.arn.scrobble.friends.FriendsFragment
+import com.arn.scrobble.recents.LovesFragment
+import com.arn.scrobble.recents.RecentsFragment
 
 class HomePagerAdapter(fm: FragmentManager):
         FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

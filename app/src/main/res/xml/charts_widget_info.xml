@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="180dp"
+    android:updatePeriodMillis="0"
+    android:previewImage="@drawable/widget_charts_preview"
+    android:initialLayout="@layout/appwidget_charts_dark"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:initialKeyguardLayout="@layout/appwidget_charts_dark"
+    android:configure="com.arn.scrobble.widget.ChartsWidgetActivity" />
+<!-- size in dp: 70*n - 30 -->
+<!-- preview image has to be a square on launcher3 -->

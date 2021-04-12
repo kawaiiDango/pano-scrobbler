@@ -214,7 +214,7 @@
             android:layout_gravity="end"
             app:drawableTint="?colorSecondary"
             app:drawableEndCompat="@drawable/vd_arrow_right"
-            android:background="?selectableItemBackground"
+            android:background="@drawable/ripple_rounded"
             android:padding="6dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
             android:textColor="?colorSecondary"

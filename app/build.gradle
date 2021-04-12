@@ -21,12 +21,14 @@ android {
         throw new GradleException("Could not read version.txt!")
     }
 
-//    compileSdkVersion 30
+    kotlinOptions.useIR = true
+
+//    compileSdkVersion 'android-S'
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
-//        targetSdkVersion 30
+//        targetSdkVersion 'S'
         targetSdkVersion 29
         versionCode verCode
         versionName ((int)(versionCode/100) + "." + (versionCode%100) +  " - " + new Date().format('dd.MMM.YY'))
@@ -71,12 +73,12 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.3.0-beta01"
+    implementation "androidx.appcompat:appcompat:1.3.0-rc01"
 //    implementation "androidx.core:core-ktx:1.3.2"
     implementation "androidx.preference:preference:1.1.1"
-    implementation "androidx.media:media:1.2.1"
+    implementation "androidx.media:media:1.3.0"
     implementation "androidx.palette:palette:1.0.0"
-    implementation "androidx.recyclerview:recyclerview:1.2.0-beta01"
+    implementation "androidx.recyclerview:recyclerview:1.2.0"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     kapt "androidx.room:room-compiler:2.2.6"
@@ -92,7 +94,7 @@ dependencies {
 
     implementation project(':lastfm')
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     // androidTestImplementation 'androidx.test:runner:1.1.0-alpha1'
     // androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha1'
 }

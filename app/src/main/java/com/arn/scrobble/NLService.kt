@@ -72,17 +72,19 @@ class NLService : NotificationListenerService() {
 
     private fun init(){
         val filter = IntentFilter()
-        filter.addAction(pCANCEL)
-        filter.addAction(pLOVE)
-        filter.addAction(pUNLOVE)
-        filter.addAction(pWHITELIST)
-        filter.addAction(pBLACKLIST)
+        filter.addAction(iCANCEL)
+        filter.addAction(iLOVE)
+        filter.addAction(iUNLOVE)
+        filter.addAction(iWHITELIST)
+        filter.addAction(iBLACKLIST)
         filter.addAction(iBAD_META)
         filter.addAction(iOTHER_ERR)
         filter.addAction(iMETA_UPDATE)
         filter.addAction(iDISMISS_MAIN_NOTI)
         filter.addAction(iDIGEST_WEEKLY)
         filter.addAction(iDIGEST_MONTHLY)
+        filter.addAction(iSCROBBLER_ON)
+        filter.addAction(iSCROBBLER_OFF)
         filter.addAction(ACTION_TIME_CHANGED)
         filter.addAction(CONNECTIVITY_ACTION)
         applicationContext.registerReceiver(nlservicereciver, filter)
@@ -269,7 +271,7 @@ class NLService : NotificationListenerService() {
     private val nlservicereciver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action){
-                 pCANCEL -> {
+                 iCANCEL -> {
                      val hash: Int
                      if (!intent.hasExtra(B_HASH)) {
                          hash = currentBundle.getInt(B_HASH)
@@ -283,8 +285,8 @@ class NLService : NotificationListenerService() {
                      handler.removeMessages(hash)
                      markAsScrobbled(hash)
                  }
-                pLOVE, pUNLOVE -> {
-                    val loved = intent.action == pLOVE
+                iLOVE, iUNLOVE -> {
+                    val loved = intent.action == iLOVE
                     var artist = intent.getStringExtra(B_ARTIST)
                     var title = intent.getStringExtra(B_TITLE)
                     val hash = currentBundle.getInt(B_HASH, 0)
@@ -314,11 +316,11 @@ class NLService : NotificationListenerService() {
                     handler.notifyScrobble(artist,
                             title, hash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT))
                 }
-                pWHITELIST, pBLACKLIST -> {
+                iWHITELIST, iBLACKLIST -> {
                     //handle pixel_np blacklist in its own settings
                     val pkgName = intent.getStringExtra("packageName")
                     if (pkgName == Stuff.PACKAGE_PIXEL_NP || pkgName == Stuff.PACKAGE_PIXEL_NP_R){
-                        if (intent.action == pBLACKLIST) {
+                        if (intent.action == iBLACKLIST) {
                             pref.edit().putBoolean(Stuff.PREF_PIXEL_NP, false).apply()
                             handler.remove(currentBundle.getInt(B_HASH))
                             nm.cancel(NOTI_ID_APP, 0)
@@ -329,7 +331,7 @@ class NLService : NotificationListenerService() {
                     val wSet = pref.getStringSet(Stuff.PREF_WHITELIST, mutableSetOf())!!.toMutableSet()
                     val bSet = pref.getStringSet(Stuff.PREF_BLACKLIST, mutableSetOf())!!.toMutableSet()
 
-                    if (intent.action == pWHITELIST)
+                    if (intent.action == iWHITELIST)
                         wSet.add(pkgName)
                     else {
                         bSet.add(pkgName)
@@ -339,7 +341,7 @@ class NLService : NotificationListenerService() {
                             .putStringSet(Stuff.PREF_WHITELIST, wSet)
                             .putStringSet(Stuff.PREF_BLACKLIST,  bSet)
                             .apply()
-                    val key = if (intent.action == pBLACKLIST)
+                    val key = if (intent.action == iBLACKLIST)
                         Stuff.PREF_BLACKLIST
                     else
                         Stuff.PREF_WHITELIST
@@ -383,6 +385,14 @@ class NLService : NotificationListenerService() {
                     Stuff.scheduleDigests(applicationContext)
                     if (pref.getBoolean(Stuff.PREF_DIGEST_MONTHLY, true))
                         handler.notifyDigest(Period.ONE_MONTH)
+                }
+                iSCROBBLER_ON -> {
+                    pref.edit().putBoolean(Stuff.PREF_MASTER, true).apply()
+                    Stuff.toast(context, getString(R.string.pref_master_on))
+                }
+                iSCROBBLER_OFF -> {
+                    pref.edit().putBoolean(Stuff.PREF_MASTER, false).apply()
+                    Stuff.toast(context, getString(R.string.pref_master_off))
                 }
                 CONNECTIVITY_ACTION -> {
                     val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -542,12 +552,12 @@ class NLService : NotificationListenerService() {
                     .putExtra(B_ARTIST, artist)
                     .putExtra(B_TITLE, title)
             val loveAction = if (loved) {
-                i.action = pUNLOVE
+                i.action = iUNLOVE
                 val loveIntent = PendingIntent.getBroadcast(applicationContext, 4, i,
                         Stuff.updateCurrentOrImmutable)
                 getAction(R.drawable.vd_heart_break, "\uD83D\uDC94", getString(R.string.unlove), loveIntent)
             } else {
-                i.action = pLOVE
+                i.action = iLOVE
                 val loveIntent = PendingIntent.getBroadcast(applicationContext, 3, i,
                         Stuff.updateCurrentOrImmutable)
                 getAction(R.drawable.vd_heart, "❤", getString(R.string.love), loveIntent)
@@ -558,7 +568,7 @@ class NLService : NotificationListenerService() {
             val launchIntent = PendingIntent.getActivity(applicationContext, 8, i,
                     Stuff.updateCurrentOrImmutable)
 
-            i = Intent(pCANCEL)
+            i = Intent(iCANCEL)
                     .putExtra(B_HASH, hash)
             val cancelToastIntent = PendingIntent.getBroadcast(applicationContext, 5, i,
                     Stuff.updateCurrentOrImmutable)
@@ -697,11 +707,11 @@ class NLService : NotificationListenerService() {
                 packageName
             }
 
-            var intent = Intent(pBLACKLIST)
+            var intent = Intent(iBLACKLIST)
                     .putExtra("packageName", packageName)
             val ignoreIntent = PendingIntent.getBroadcast(applicationContext, 1, intent,
                     Stuff.updateCurrentOrImmutable)
-            intent = Intent(pWHITELIST)
+            intent = Intent(iWHITELIST)
                     .putExtra("packageName", packageName)
             val okayIntent = PendingIntent.getBroadcast(applicationContext, 2, intent,
                     Stuff.updateCurrentOrImmutable)
@@ -880,11 +890,11 @@ class NLService : NotificationListenerService() {
     }
 
     companion object {
-        const val pCANCEL = "com.arn.scrobble.CANCEL"
-        const val pLOVE = "com.arn.scrobble.LOVE"
-        const val pUNLOVE = "com.arn.scrobble.UNLOVE"
-        const val pBLACKLIST = "com.arn.scrobble.BLACKLIST"
-        const val pWHITELIST = "com.arn.scrobble.WHITELIST"
+        const val iCANCEL = "com.arn.scrobble.CANCEL"
+        const val iLOVE = "com.arn.scrobble.LOVE"
+        const val iUNLOVE = "com.arn.scrobble.UNLOVE"
+        const val iBLACKLIST = "com.arn.scrobble.BLACKLIST"
+        const val iWHITELIST = "com.arn.scrobble.WHITELIST"
         const val iDISMISS_MAIN_NOTI = "com.arn.scrobble.DISMISS_MAIN_NOTI"
         const val iNLS_STARTED = "com.arn.scrobble.NLS_STARTED"
         const val iSESS_CHANGED = "com.arn.scrobble.SESS_CHANGED"
@@ -896,6 +906,8 @@ class NLService : NotificationListenerService() {
         const val iDIGEST_WEEKLY = "com.arn.scrobble.DIGEST_WEEKLY"
         const val iDIGEST_MONTHLY = "com.arn.scrobble.DIGEST_MONTHLY"
         const val iUPDATE_WIDGET = "com.arn.scrobble.UPDATE_WIDGET"
+        const val iSCROBBLER_ON = "com.arn.scrobble.SCROBBLER_ON"
+        const val iSCROBBLER_OFF = "com.arn.scrobble.SCROBBLER_OFF"
         const val B_TITLE = "title"
         const val B_ALBUM_ARTIST = "albumartist"
         const val B_TIME = "time"

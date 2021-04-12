@@ -283,7 +283,7 @@ class EditFragment: LoginFragment() {
             i.putExtra(NLService.B_TIME, timeMillis)
             context?.sendBroadcast(i)
             if (args.getLong(NLService.B_TIME) == 0L) { //now playing
-                context?.sendBroadcast(Intent(NLService.pCANCEL))
+                context?.sendBroadcast(Intent(NLService.iCANCEL))
             }
         }
         return errMsg

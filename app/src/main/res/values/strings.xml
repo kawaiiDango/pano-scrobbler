@@ -231,11 +231,16 @@
     <string name="import_edits_keep">Merge, keeping existing edits</string>
     <string name="import_settings">Import settings</string>
     <string name="pref_intents_dialog_title">Broadcast intents</string>
-    <string name="pref_intents_dialog_desc">"com.arn.scrobble.LOVE
-com.arn.scrobble.UNLOVE
-com.arn.scrobble.CANCEL
+    <string name="pref_intents_dialog_desc">"For the current song:
+%1$s
+%2$s
+%3$s
 
-They perform the same actions as the buttons in the notification. They can be used with apps like Tasker, Macrodroid etc."</string>
+For the scrobbler:
+%4$s
+%5$s
+
+They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="pref_intents">Intents for Tasker etc</string>
     <string name="copied">Copied!</string>
     <string name="lastfm_reauth">You need to reauthenticate in order to edit or delete scrobbles</string>

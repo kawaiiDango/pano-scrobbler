@@ -247,19 +247,30 @@ class PrefFragment : PreferenceFragmentCompat(){
 
         findPreference<Preference>(Stuff.PREF_INTENTS)
                 ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            val ss = SpannableString(getString(R.string.pref_intents_dialog_desc))
+            val ss = SpannableString(getString(
+                R.string.pref_intents_dialog_desc,
+                NLService.iLOVE,
+                NLService.iUNLOVE,
+                NLService.iCANCEL,
+
+                NLService.iSCROBBLER_ON,
+                NLService.iSCROBBLER_OFF,
+            ))
             val newlinePosList = mutableListOf(-1)
             ss.forEachIndexed { index, c ->
                 if (c == '\n')
                     newlinePosList += index
             }
             newlinePosList.forEachIndexed { index, i ->
-                if (index in 1..3) {
-                    val start = newlinePosList[index - 1] + 1
-                    val end = newlinePosList[index]
+                if (index == 0 )
+                    return@forEachIndexed
+
+                val start = newlinePosList[index - 1] + 1
+                val end = newlinePosList[index]
+                if (ss.indexOf("com.", startIndex = start) == start)
                     ss.setSpan(MyClickableSpan(start, end), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
-                }
             }
+
             MaterialAlertDialogBuilder(context!!)
                     .setTitle(R.string.pref_intents_dialog_title)
                     .setMessage(ss)

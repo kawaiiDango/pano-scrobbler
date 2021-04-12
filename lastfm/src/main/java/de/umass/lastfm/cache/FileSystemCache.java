@@ -127,7 +127,20 @@ public class FileSystemCache extends Cache implements ScrobbleCache {
             fmos.close();
 		} catch (IOException e) {
 			// we ignore the exception. if something went wrong we just don't cache it.
-		}
+		} catch (AssertionError e) {
+		    /* on Android 8.1
+                java.lang.AssertionError:
+                  at android.icu.impl.TimeZoneNamesImpl$ZNames.getNameTypeIndex (TimeZoneNamesImpl.java:724)
+                  at android.icu.impl.TimeZoneNamesImpl$ZNames.getName (TimeZoneNamesImpl.java:790)
+                  at android.icu.impl.TimeZoneNamesImpl.getTimeZoneDisplayName (TimeZoneNamesImpl.java:183)
+                  at android.icu.text.TimeZoneNames.getDisplayName (TimeZoneNames.java:261)
+                  at java.util.TimeZone.getDisplayName (TimeZone.java:405)
+                  at java.util.Date.toString (Date.java:1066)
+                  at java.util.Properties.store0 (Properties.java:828)
+                  at java.util.Properties.store (Properties.java:817)
+                  at de.umass.lastfm.cache.FileSystemCache.store (FileSystemCache.java:2)
+		     */
+        }
 	}
 
 	private void createCache() {

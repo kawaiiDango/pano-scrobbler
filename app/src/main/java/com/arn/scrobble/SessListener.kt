@@ -172,32 +172,49 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
             var albumArtist = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
             var artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
                     albumArtist
-            val album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
-            val title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
+            var album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
+            var title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
+//            val genre = metadata?.getString(MediaMetadata.METADATA_KEY_GENRE)?.trim() ?: ""
+            // The genre field is not used by google podcasts and podcast addict
             var duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
             if (duration < -1)
                 duration = -1
 
-            if (packageName == Stuff.PACKAGE_XIAMI)
-                artist = artist.replace(";", "; ")
-            else if (packageName == Stuff.PACKAGE_PANDORA) {
-                artist = artist.replace("Ofln - ", "")
-                albumArtist = ""
-            } else if (packageName == Stuff.PACKAGE_PODCAST_ADDICT) {
-                val idx = artist.lastIndexOf(" • ")
-                if (idx != -1)
-                    artist = artist.substring(0, idx)
-            } else if (packageName.startsWith(Stuff.PACKAGE_SONOS_PREFIX) &&
-                    metadata?.getString(MediaMetadata.METADATA_KEY_COMPOSER) != null) {
-                artist = metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)
-                albumArtist = ""
-            } else if (packageName == Stuff.PACKAGE_HUAWEI_MUSIC &&
-                    Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) == Stuff.MANUFACTURER_HUAWEI) {
-                // Extra check for the manufacturer, because 'com.android.mediacenter' could match other music players.
-                val extra = " - $album"
-                if (artist.endsWith(extra))
-                    artist = artist.substring(0, artist.length - extra.length)
-                albumArtist = ""
+            when (packageName) {
+                Stuff.PACKAGE_XIAMI -> artist = artist.replace(";", "; ")
+                Stuff.PACKAGE_PANDORA -> {
+                    artist = artist.replace("Ofln - ", "")
+                    albumArtist = ""
+                }
+                Stuff.PACKAGE_PODCAST_ADDICT -> {
+                    val idx = artist.lastIndexOf(" • ")
+                    if (idx != -1)
+                        artist = artist.substring(0, idx)
+                }
+                Stuff.PACKAGE_SONOS,
+                Stuff.PACKAGE_SONOS2 -> {
+                    metadata?.getString(MediaMetadata.METADATA_KEY_COMPOSER)?.let{
+                        artist = it
+                        albumArtist = ""
+                    }
+                }
+                Stuff.PACKAGE_DIFM -> {
+                    val extra = " - $album"
+                    if (artist.endsWith(extra))
+                        artist = artist.substring(0, artist.length - extra.length)
+                    title = album
+                    album = ""
+                    albumArtist = ""
+                }
+                Stuff.PACKAGE_HUAWEI_MUSIC -> {
+                    if (Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) == Stuff.MANUFACTURER_HUAWEI) {
+                        // Extra check for the manufacturer, because 'com.android.mediacenter' could match other music players.
+                        val extra = " - $album"
+                        if (artist.endsWith(extra))
+                            artist = artist.substring(0, artist.length - extra.length)
+                        albumArtist = ""
+                    }
+                }
             }
 
             val sameAsOld = artist == this.artist && title == this.title && album == this.album && albumArtist == this.albumArtist

@@ -3,6 +3,7 @@
     android:minWidth="180dp"
     android:minHeight="180dp"
     android:updatePeriodMillis="0"
+    android:description="@string/menu_charts"
     android:previewImage="@drawable/widget_charts_preview"
     android:initialLayout="@layout/appwidget_charts_dark"
     android:resizeMode="horizontal|vertical"

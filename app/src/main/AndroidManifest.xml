@@ -43,7 +43,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <receiver android:name=".widget.ChartsWidgetProvider" android:exported="true">
+        <receiver
+            android:name=".widget.ChartsWidgetProvider"
+            android:label="@string/menu_charts"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

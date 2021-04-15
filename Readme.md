@@ -5,8 +5,7 @@
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
 [![download][play-store]][play-store-link] [![donate][ko-fi]][ko-fi-link]
 
-<img alt='GIF' src='https://media.giphy.com/media/WvikAmG3iseJoFun1A/giphy.gif' width="240"/>
-<i>Thats the GIF of a much older version.</i>
+<img src="https://i.imgur.com/XGmtOP5.jpg" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/m1lbrU6l.jpg" alt="friends" width="200"/> <img src="https://i.imgur.com/7kETocF.jpg" alt="charts" width="200"/>
 
 <a href="https://www.dropbox.com/sh/8saq9h4m2744x55/AABwpqEKbpTLWoZ8-vXvA5vda?dl=0">Download latest apk</a> (Do not use this if the play store link works for you)
 
@@ -35,6 +34,7 @@
 - Search
 - Weekly/monthly top scrobble notifications
 - Add/remove personal tags
+- Customizable homescreen widget
 
 ### Building:
 See [instructions.md](instructions.md)

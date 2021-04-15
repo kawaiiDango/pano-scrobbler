@@ -46,6 +46,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
+import java.net.URLEncoder
 import java.util.*
 import kotlin.math.max
 
@@ -303,7 +304,20 @@ open class RecentsFragment : Fragment(),
                 }
             }
         }
-        coordinatorBinding.heroPlay.setOnClickListener {
+
+        if (BuildConfig.DEBUG)
+            coordinatorBinding.heroInfo.setOnLongClickListener {
+                val t = coordinatorBinding.heroImg.tag
+                if (t is Track) {
+                    Stuff.openInBrowser("https://en.touhouwiki.net/index.php?search=" +
+                            URLEncoder.encode("${t.artist} - ${t.name}", "UTF-8"),
+                        context
+                    )
+                }
+                true
+            }
+
+            coordinatorBinding.heroPlay.setOnClickListener {
             val t =  coordinatorBinding.heroImg.tag
             if (t is Track)
                 Stuff.launchSearchIntent(t.artist, t.name, context!!)

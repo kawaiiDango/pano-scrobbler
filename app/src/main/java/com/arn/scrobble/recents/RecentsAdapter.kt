@@ -68,8 +68,8 @@ class RecentsAdapter
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_TRACK -> VHTrack(ListItemRecentsBinding.inflate(inflater, parent, false))
-            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener, isShowingAlbums)
-            TYPE_PENDING_LOVE -> VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener)
+            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(ListItemRecentsBinding.inflate(inflater, parent, false), isShowingAlbums, itemClickListener)
+            TYPE_PENDING_LOVE -> VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), isShowingAlbums, itemClickListener)
             TYPE_HEADER -> VHHeader(HeaderDefaultBinding.inflate(inflater, parent, false))
             TYPE_ACTION -> VHAction(HeaderPendingBinding.inflate(inflater, parent, false), fm)
             else -> throw RuntimeException("Invalid view type $viewType")

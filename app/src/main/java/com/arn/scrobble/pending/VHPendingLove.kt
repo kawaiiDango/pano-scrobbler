@@ -9,7 +9,11 @@ import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.ui.ItemClickListener
 
-class VHPendingLove(private val binding: ListItemRecentsBinding, itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(binding.root) {
+class VHPendingLove(
+    private val binding: ListItemRecentsBinding,
+    isShowingAlbums: Boolean,
+    itemClickListener: ItemClickListener,
+) : RecyclerView.ViewHolder(binding.root) {
     init {
         binding.recentsPlaying.visibility = View.GONE
         binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
@@ -20,6 +24,16 @@ class VHPendingLove(private val binding: ListItemRecentsBinding, itemClickListen
             }
         binding.recentsMenu.setOnClickListener {
             itemClickListener.onItemClick(it, adapterPosition)
+        }
+        if (isShowingAlbums) {
+            val albumHeight = itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
+            binding.recentsAlbum.visibility = View.GONE
+            binding.recentsTrackLl.setPaddingRelative(
+                0,
+                albumHeight/2,
+                0,
+                albumHeight/2
+            )
         }
     }
 

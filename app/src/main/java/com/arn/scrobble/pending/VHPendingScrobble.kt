@@ -12,9 +12,9 @@ import com.arn.scrobble.ui.ItemClickListener
 
 class VHPendingScrobble(
     private val binding: ListItemRecentsBinding,
+    private val isShowingAlbums: Boolean,
     itemClickListener: ItemClickListener,
-    private val isShowingAlbums: Boolean
-    ) : RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
     init {
         binding.recentsPlaying.visibility = View.GONE
         binding.recentsImgOverlay.background = ContextCompat.getDrawable(itemView.context, R.drawable.vd_hourglass)

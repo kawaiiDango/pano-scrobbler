@@ -26,11 +26,11 @@ class PendingScrAdapter(private val itemClickListener: ItemClickListener) : Recy
             TYPE_PENDING_SCROBBLE ->
                 VHPendingScrobble(
                     ListItemRecentsBinding.inflate(inflater, parent, false),
-                    itemClickListener,
-                    isShowingAlbums
+                    isShowingAlbums,
+                    itemClickListener
                 )
             TYPE_PENDING_LOVE ->
-                VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), itemClickListener)
+                VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), isShowingAlbums, itemClickListener)
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }

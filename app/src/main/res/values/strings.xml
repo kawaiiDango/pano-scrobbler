@@ -41,7 +41,7 @@
     <string name="offline">Offline. Data shown isn\'t fresh</string>
     <string name="unavailable_offline">Not available when offline</string>
     <string name="scrobble_services">Services</string>
-    <string name="share_text">I was listening to\n %1$s, %2$s</string> <!-- %1= artist - track, %2= relative time, -->
+    <string name="share_text">I was listening to\n%1$s, %2$s</string> <!-- %1= artist - track, %2= relative time, -->
     <string name="share_text_username">%1$s was listening to\n %2$s, %3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Share this song</string>
@@ -174,7 +174,7 @@
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="appwidget_alpha">Background Opacity</string>
-    <string name="appwidget_refresh_every">Widget will refresh every %1$d minutes</string>
+    <string name="appwidget_refresh_every">Widget will refresh every 15 minutes</string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
     <string name="pref_master_on">Scrobbler active</string>

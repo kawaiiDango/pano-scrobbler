@@ -95,14 +95,22 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/appwidget_shadow" />
 
-            <CheckBox
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:id="@+id/widget_shadow"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/appwidget_show"
                 android:checked="true"
-                />
-
+                app:checkedIconVisible="true"
+                app:checkedIconTint="?colorSecondary"
+                android:text="@string/appwidget_show"/>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="16dp"
+                android:text="@string/appwidget_refresh_every"/>
         </LinearLayout>
     </ScrollView>
     <LinearLayout

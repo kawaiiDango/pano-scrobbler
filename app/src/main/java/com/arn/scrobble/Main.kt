@@ -79,6 +79,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         binding = ActivityMainBinding.inflate(layoutInflater)
         navHeaderbinding = HeaderNavBinding.inflate(layoutInflater, binding.navView, false)
         binding.navView.addHeaderView(navHeaderbinding.root)
+        binding.drawerLayout.drawerElevation = 0f
         setContentView(binding.root)
         Stuff.timeIt("onCreate setContentView")
         setSupportActionBar(binding.coordinatorMain.toolbar)

@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:background="#1f1f1f">
+            android:background="@drawable/color_surface_edit">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/login_textfield2"

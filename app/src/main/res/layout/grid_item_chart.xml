@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@drawable/gradient_dark_overlay_nav"
+        android:background="@drawable/gradient_dark_overlay_nav_rounded"
         android:paddingTop="@dimen/gradient_container_top_padding"
         android:orientation="vertical">
 

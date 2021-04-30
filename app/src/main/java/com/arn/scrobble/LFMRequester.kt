@@ -800,7 +800,7 @@ class LFMRequester(context: Context) {
                     }
 
                 }
-                if (!Main.isOnline ||
+                if (scrobbleResults.isEmpty() ||
                         scrobbleResults.values.any { !it.isSuccessful }) {
                     val dao = PendingScrobblesDb.getDb(getContext).getScrobblesDao()
                     val entry = PendingScrobble()
@@ -812,7 +812,7 @@ class LFMRequester(context: Context) {
                     entry.timestamp = scrobbleData.timestamp.toLong() * 1000
                     entry.duration = scrobbleData.duration.toLong() * 1000
 
-                    if (!Main.isOnline)
+                    if (scrobbleResults.isEmpty())
                         serviceIdToKeys.keys.forEach { key ->
                             entry.state = entry.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
                         }

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="16dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:layoutAnimation="@anim/layout_animation_slide_up">
+
+            <TextView
+                android:id="@+id/theme_primary_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="?colorSecondary"
+                android:text="@string/primary_color"
+                android:paddingVertical="16dp"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/theme_primary_swatches"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:chipSpacingHorizontal="16dp"
+                app:chipSpacingVertical="16dp"
+                android:layoutAnimation="@anim/layout_animation_slide_up"/>
+
+            <TextView
+                android:id="@+id/theme_secondary_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="?colorSecondary"
+                android:text="@string/secondary_color"
+                android:paddingVertical="16dp"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/theme_secondary_swatches"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:chipSpacingHorizontal="16dp"
+                app:chipSpacingVertical="16dp"
+                android:layoutAnimation="@anim/layout_animation_slide_up"/>
+
+            <TextView
+                android:id="@+id/theme_background_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="?colorSecondary"
+                android:text="@string/background_color"
+                android:paddingVertical="16dp"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/theme_background_swatches"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:chipSpacingHorizontal="16dp"
+                app:chipSpacingVertical="16dp"
+                android:layoutAnimation="@anim/layout_animation_slide_up"/>
+
+            <CheckBox
+                android:id="@+id/theme_same_tone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/same_tone"/>
+
+            <CheckBox
+                android:id="@+id/theme_random"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/random_theme"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/theme_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_done_margin"
+        android:layout_marginEnd="@dimen/fab_done_margin"
+        android:contentDescription="@android:string/ok"
+        app:backgroundTint="?colorPrimary"
+        android:src="@drawable/vd_check_simple"/>
+</FrameLayout>

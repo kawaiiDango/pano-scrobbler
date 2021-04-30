@@ -11,6 +11,7 @@ import com.arn.scrobble.Main
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.Edit
 import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.themes.ColorPatchUtils
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStreamReader
@@ -91,6 +92,11 @@ class ImExporter {
                     name(Stuff.PREF_FETCH_AA).value(pref.getBoolean(Stuff.PREF_FETCH_AA, false))
                     name(Stuff.PREF_AUTO_DETECT).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
                     name(Stuff.PREF_SHOW_RECENTS_ALBUM).value(pref.getBoolean(Stuff.PREF_SHOW_RECENTS_ALBUM, false))
+                    name(Stuff.PREF_THEME_PRIMARY).value(pref.getString(Stuff.PREF_THEME_PRIMARY, ColorPatchUtils.primaryDefault))
+                    name(Stuff.PREF_THEME_SECONDARY).value(pref.getString(Stuff.PREF_THEME_SECONDARY, ColorPatchUtils.secondaryDefault))
+                    name(Stuff.PREF_THEME_BACKGROUND).value(pref.getString(Stuff.PREF_THEME_BACKGROUND, ColorPatchUtils.backgroundDefault))
+                    name(Stuff.PREF_THEME_SAME_TONE).value(pref.getBoolean(Stuff.PREF_THEME_SAME_TONE, false))
+                    name(Stuff.PREF_THEME_RANDOM).value(pref.getBoolean(Stuff.PREF_THEME_RANDOM, false))
                     name(Stuff.PREF_WHITELIST).beginArray()
                     pref.getStringSet(Stuff.PREF_WHITELIST, setOf())
                             .forEach {
@@ -195,6 +201,14 @@ class ImExporter {
                                         } catch (e: PackageManager.NameNotFoundException) {
                                             skipValue()
                                         }
+                                    } else if (settingsName in arrayOf(
+                                            Stuff.PREF_THEME_PRIMARY,
+                                            Stuff.PREF_THEME_SECONDARY,
+                                            Stuff.PREF_THEME_BACKGROUND
+                                    ))
+                                        pref.putString(settingsName, nextString())
+                                    else if (settingsName in arrayOf(Stuff.PREF_PRO_STATUS)) {
+
                                     } else
                                         pref.putBoolean(settingsName, nextBoolean())
                                 }

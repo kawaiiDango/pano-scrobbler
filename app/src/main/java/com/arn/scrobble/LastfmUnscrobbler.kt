@@ -175,20 +175,21 @@ class LastfmUnscrobbler(context: Context?) {
         try {
             val resp = client.newCall(request).execute()
             val respStr = resp.body()?.string()
-            if (resp.code() == 200 && respStr?.contains("{\"result\": true}") == true) {
+            return if (resp.code() == 200 && respStr?.contains("{\"result\": true}") == true) {
                 Stuff.log("LastfmUnscrobbler unscrobbled: $track")
+                true
             } else if (resp.code() == 403) { //invalid csrf (session was probably invalidated)
                 clearCookies()
                 throw RuntimeException("You've been logged out.")
             } else {
                 Stuff.log("err: LastfmUnscrobbler unscrobble status: " + resp.code())
                 Stuff.log("err: $respStr " )
-                return false
+                false
             }
         } catch (e: Exception) {
             Stuff.log("err: LastfmUnscrobbler unscrobble err: " + e.message)
+            return false
         }
-        return true
     }
 
     companion object {

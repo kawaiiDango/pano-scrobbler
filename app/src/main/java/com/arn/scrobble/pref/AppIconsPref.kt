@@ -9,9 +9,9 @@ import android.widget.LinearLayout
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.PrefAppIconsBinding
+import com.google.android.material.imageview.ShapeableImageView
 import com.squareup.picasso.Picasso
 import java.text.NumberFormat
 
@@ -54,7 +54,7 @@ class AppIconsPref : Preference {
 
             val nIcons = (totalWidth / wPx) - 1
             for (i in 0 until minOf(nIcons, packageNames.count())) {
-                val icon = ImageView(context)
+                val icon = ShapeableImageView(context)
                 icon.scaleType = ImageView.ScaleType.FIT_CENTER
                 icon.layoutParams = LinearLayout.LayoutParams(wPx, wPx)
                 val padding = wPx / 8

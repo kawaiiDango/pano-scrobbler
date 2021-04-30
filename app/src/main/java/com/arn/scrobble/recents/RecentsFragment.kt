@@ -7,7 +7,6 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.*
 import android.content.res.Configuration
-import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -19,7 +18,6 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.appcompat.view.menu.MenuBuilder
@@ -31,13 +29,14 @@ import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.Stuff.setArrowColors
+import com.arn.scrobble.Stuff.setProgressCircleColors
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.CoordinatorMainBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pending.PendingMenu
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.*
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -76,14 +75,9 @@ open class RecentsFragment : Fragment(),
     private val username: String?
         get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
     private lateinit var viewModel: TracksVM
-    private lateinit var animSet: AnimatorSet
+    private var animSet: AnimatorSet? = null
     private var smoothScroller: LinearSmoothScroller? = null
     open val isShowingLoves = false
-
-    private var colorPrimDark = 0
-    private var colorLightWhite = 0
-    private var colorMutedDark = 0
-    private var colorMutedBlack = 0
 
     private val editReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context?, i: Intent) {
@@ -129,9 +123,11 @@ open class RecentsFragment : Fragment(),
             coordinatorBinding.heroCalendar.visibility = View.VISIBLE
             coordinatorBinding.heroCalendar.isEnabled = true
         }
+        viewModel.reemitColors()
     }
 
     override fun onPause() {
+        animSet?.end()
         if (isShowingLoves)
             try {
                 adapter.removeHandlerCallbacks()
@@ -165,23 +161,9 @@ open class RecentsFragment : Fragment(),
 //        adapter.setStatusHeader()
 
         animSet = AnimatorSet()
-        animSet.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationRepeat(p0: Animator?) {}
-
-            override fun onAnimationEnd(p0: Animator?) {
-                lastColorLightWhite = colorLightWhite
-                lastColorMutedDark = colorMutedDark
-                lastColorMutedBlack = colorMutedBlack
-            }
-
-            override fun onAnimationCancel(p0: Animator?) {}
-
-            override fun onAnimationStart(p0: Animator?) {}
-
-        })
 
         binding.recentsList.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
-        Stuff.setProgressCircleColor(binding.recentsSwipeRefresh)
+        binding.recentsSwipeRefresh.setProgressCircleColors()
         binding.recentsSwipeRefresh.setOnRefreshListener {
             viewModel.toTime = 0
             loadRecents(1)
@@ -275,7 +257,8 @@ open class RecentsFragment : Fragment(),
                     shareText = getString(
                         R.string.share_text_username, username,
                             track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
-                shareText += "\n\n" + getString(R.string.share_sig)
+                if (activity.billingViewModel.proStatus.value != true)
+                    shareText += "\n\n" + getString(R.string.share_sig)
                 val i = Intent(Intent.ACTION_SEND)
                 i.type = "text/plain"
                 i.putExtra(Intent.EXTRA_SUBJECT, shareText)
@@ -388,6 +371,52 @@ open class RecentsFragment : Fragment(),
             coordinatorBinding.heroPlay.visibility = View.VISIBLE
             coordinatorBinding.heroShare.visibility = View.VISIBLE
         }
+
+        viewModel.paletteColors.observe(viewLifecycleOwner) { colors ->
+            if (!isResumed)
+                return@observe
+
+            activity.binding.coordinatorMain.ctl.setContentScrimColor(colors.mutedBlack)
+
+            val contentBgFrom = (binding.recentsSwipeRefresh.background as ColorDrawable).color
+            val tintFrom = coordinatorBinding.sparklineHorizontalLabel.textColors.defaultColor
+
+            val animSetList = mutableListOf<Animator>(
+                ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom, colors.mutedBlack),
+                ObjectAnimator.ofArgb(coordinatorBinding.heroShare, "colorFilter", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(coordinatorBinding.heroCalendar, "colorFilter", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(coordinatorBinding.heroInfo, "colorFilter", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(coordinatorBinding.heroPlay, "colorFilter", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickTop, "textColor", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickBottom, "textColor", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(coordinatorBinding.sparklineHorizontalLabel, "textColor", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(coordinatorBinding.sparkline, "lineColor", tintFrom, colors.lightWhite),
+
+                ValueAnimator.ofArgb(contentBgFrom, colors.mutedBlack).apply {
+                    addUpdateListener{
+                        //setNavigationBarColor uses binders and lags
+                        activity.window.navigationBarColor = it.animatedValue as Int
+                    }
+                },
+            )
+            if (coordinatorBinding.coordinator.paddingStart > 0)
+                animSetList += ObjectAnimator.ofArgb(activity.binding.navView, "backgroundColor", colors.mutedBlack)
+
+            val arrowBgColor = if (colors.primDark != colors.lightWhite)
+                colors.primDark
+            else
+                colors.mutedDark
+
+            coordinatorBinding.toolbar.setArrowColors(colors.lightWhite, arrowBgColor)
+
+            animSet?.apply {
+                cancel()
+                playTogether(animSetList)
+                interpolator = AccelerateDecelerateInterpolator()
+                duration = 1500
+                start()
+            }
+        }
     }
 
     private fun setGraph(pointsStr: String?) {
@@ -493,8 +522,15 @@ open class RecentsFragment : Fragment(),
         //check diff
         val oldTrack = coordinatorBinding.heroImg.tag as Track?
 
+        val trackCopy = Track(track.name, track.url, track.album, track.artist)
+            .apply {
+                imageUrlsMap = track.imageUrlsMap
+                playedWhen = track.playedWhen
+                isLoved = track.isLoved
+                isNowPlaying = track.isNowPlaying
+            }
         //TODO: check
-        coordinatorBinding.heroImg.tag = track
+        coordinatorBinding.heroImg.tag = trackCopy
         val imgUrl = if(fullSize)
             track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600")
         else
@@ -506,27 +542,27 @@ open class RecentsFragment : Fragment(),
         }
 
         if (!imgUrl.isNullOrEmpty() && imgUrl == oldTrack?.getWebpImageURL(ImageSize.LARGE)) {
-            if ((coordinatorBinding.ctl.contentScrim as? ColorDrawable?)?.color != lastColorMutedBlack)
-                setPaletteColors()
             return
         }
         //load img, animate colors
         if (!imgUrl.isNullOrEmpty()) {
             val req = Picasso.get()
                     .load(imgUrl)
-                    .error(R.drawable.vd_wave)
 
             if (fullSize)
                 req.placeholder(coordinatorBinding.heroImg.drawable)
-            else
+            else {
                 req.noPlaceholder()
+                req.error(R.drawable.vd_wave)
+            }
             req.into(coordinatorBinding.heroImg, object : Callback {
                 override fun onSuccess() {
-//                    hero.background = null
                     coordinatorBinding.heroImg.clearColorFilter()
-                    setPaletteColors()
-                    if (!fullSize)
+
+                    if (!fullSize) {
+                        setPaletteColors()
                         onSetHero(position, track, true)
+                    }
                 }
 
                 override fun onError(e: Exception) {
@@ -546,74 +582,18 @@ open class RecentsFragment : Fragment(),
 
     private fun setPaletteColors(oneColor: Int? = null){
         _binding ?: return
-        val activityBinding = (activity as Main?)?.binding ?: return
-        val content = binding.recentsSwipeRefresh
-
-        fun set(palette: Palette?) {
-            palette ?: return
-            context ?: return
-
-            colorPrimDark = palette.getDominantColor(Color.WHITE)
-            if (!Stuff.isDark(colorPrimDark))
-                colorPrimDark = palette.getDarkVibrantColor(MaterialColors.getColor(context, R.attr.colorPrimary, null))
-            colorLightWhite = palette.getLightMutedColor(ContextCompat.getColor(context!!, android.R.color.primary_text_dark))
-            colorMutedDark = palette.getDarkMutedColor(MaterialColors.getColor(context, R.attr.colorPrimary, null))
-            colorMutedBlack = palette.getDarkMutedColor(Color.BLACK)
-
-            activityBinding.coordinatorMain.ctl.setContentScrimColor(colorMutedBlack)
-
-            val contentBgFrom = (content.background as ColorDrawable).color
-            val contentBgAnimator = ObjectAnimator.ofArgb(content, "backgroundColor", contentBgFrom, colorMutedBlack)
-            val navBgAnimator = ObjectAnimator.ofArgb((activity as Main).binding.navView, "backgroundColor", contentBgFrom, colorMutedBlack)
-            val shareBgAnimator = ObjectAnimator.ofArgb(coordinatorBinding.heroShare, "colorFilter", lastColorLightWhite, colorLightWhite)
-            val calendarColorAnimator = ObjectAnimator.ofArgb(coordinatorBinding.heroCalendar, "colorFilter", lastColorLightWhite, colorLightWhite)
-            val infoBgAnimator = ObjectAnimator.ofArgb(coordinatorBinding.heroInfo, "colorFilter", lastColorLightWhite, colorLightWhite)
-            val searchBgAnimator = ObjectAnimator.ofArgb(coordinatorBinding.heroPlay, "colorFilter", lastColorLightWhite, colorLightWhite)
-            val sparklineTickTopAnimator = ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickTop, "textColor", lastColorLightWhite, colorLightWhite)
-            val sparklineTickBottomAnimator = ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickBottom, "textColor", lastColorLightWhite, colorLightWhite)
-            val sparklineHorizontalLabel = ObjectAnimator.ofArgb(coordinatorBinding.sparklineHorizontalLabel, "textColor", lastColorLightWhite, colorLightWhite)
-            val sparklineAnimator = ObjectAnimator.ofArgb(coordinatorBinding.sparkline, "lineColor", lastColorLightWhite, colorLightWhite)
-            val navbarBgAnimator = ValueAnimator.ofArgb(contentBgFrom, colorMutedBlack)
-            navbarBgAnimator.addUpdateListener{
-                val activity = activity ?: return@addUpdateListener
-                activity.window.navigationBarColor = it.animatedValue as Int
-            }
-            //setNavigationBarColor uses binders and lags
-            val animSetList = mutableListOf(contentBgAnimator,
-                    calendarColorAnimator, shareBgAnimator,
-                    searchBgAnimator, infoBgAnimator,
-                    navbarBgAnimator, sparklineAnimator, sparklineHorizontalLabel,
-                    sparklineTickBottomAnimator, sparklineTickTopAnimator)
-            if (coordinatorBinding.coordinator.paddingStart > 0)
-                animSetList.add(navBgAnimator)
-
-            for (i in 0..coordinatorBinding.toolbar.childCount){
-                val child = coordinatorBinding.toolbar.getChildAt(i)
-                if (child is ImageButton){
-
-                    val bgColor = if (colorPrimDark != colorLightWhite)
-                        colorPrimDark
-                    else
-                        colorMutedDark
-
-                    (child.drawable as ShadowDrawerArrowDrawable).setColors(colorLightWhite, bgColor)
-                    break
-                }
-            }
-            animSet.cancel()
-            animSet.playTogether(animSetList.toList())
-            animSet.interpolator = AccelerateDecelerateInterpolator()
-            animSet.duration = 1500
-            animSet.start()
-        }
 
         val d = coordinatorBinding.heroImg.drawable
         if (oneColor != null) {
             val swatch = Palette.Swatch(oneColor, 1)
             val palette = Palette.from(listOf(swatch))
-            set(palette)
+            viewModel.paletteColors.value = PaletteColors(context!!, palette)
         } else if (d is BitmapDrawable && d.bitmap != null)
-            Palette.from(d.bitmap).generate{ set(it) }
+            Palette.from(d.bitmap).generate {
+                it?.let {
+                    viewModel.paletteColors.value = PaletteColors(context!!, it)
+                }
+            }
     }
 
     override fun onItemClick(view: View, position: Int) {
@@ -707,6 +687,7 @@ open class RecentsFragment : Fragment(),
         }
         if (!anchor.isInTouchMode)
             inflater.inflate(R.menu.recents_item_tv_menu, menuBuilder)
+
         fun csrfTokenExists(): Boolean {
             val prefs = MultiPreferences(context!!)
             val exists = LastfmUnscrobbler(context)
@@ -824,11 +805,5 @@ open class RecentsFragment : Fragment(),
         aSet.start()
 
         track.isLoved = !track.isLoved
-    }
-
-    companion object {
-        private var lastColorLightWhite = Color.WHITE
-        private var lastColorMutedDark = Color.BLACK
-        var lastColorMutedBlack = Color.BLACK
     }
 }

@@ -269,8 +269,11 @@ class EditFragment: LoginFragment() {
                                     .show()
                         }
                     }
-                } else if (!standalone)
-                    errMsg = getString(R.string.network_error)
+                } else {
+                    Stuff.log("edit scrobble err: $result")
+                    if (!standalone)
+                        errMsg = getString(R.string.network_error)
+                }
             }
         } catch (e: Exception){
             errMsg = e.message

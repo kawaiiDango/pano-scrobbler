@@ -44,6 +44,25 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
 
     inner class VHInfo(private val binding: ListItemInfoBinding): RecyclerView.ViewHolder(binding.root){
 
+        init {
+            // workaround for library bug where the bg color depends on when the chip was added
+            // the resulting bg color was still very bright #262626 vs #1a1a1a
+            // that is offset by setting chip.backgroundDrawable!!.alpha lmao
+            for (i in 1..8){
+                val chip = Chip(itemView.context)
+                chip.id = View.generateViewId()
+                chip.chipBackgroundColor = null
+                chip.backgroundDrawable!!.alpha = (0.68 * 255).toInt()
+                chip.setOnClickListener {
+                    val tif = TagInfoFragment()
+                    tif.arguments = Bundle().apply { putString(Stuff.ARG_TAG, chip.text.toString()) }
+                    tif.show(fragment.parentFragmentManager, null)
+                }
+                chip.visibility = View.GONE
+                binding.infoTags.addView(chip)
+            }
+        }
+
         private fun setLoved(track: Track) {
             if (track.isLoved) {
                 binding.infoHeart.setImageResource(R.drawable.vd_heart_filled)
@@ -227,18 +246,18 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                 binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
                 binding.infoScrobbles.text = NumberFormat.getInstance().format(entry.playcount)
 
-                binding.infoTags.removeAllViews()
-                entry.tags?.forEach {
-                    val chip = Chip(itemView.context)
-                    chip.text = it
-                    chip.setChipBackgroundColorResource(R.color.chipBgOnBlack)
-                    // default/translucent colors increase the brightness probably due to the elevation of the dialog
-                    chip.setOnClickListener { _ ->
-                        val tif = TagInfoFragment()
-                        tif.arguments = Bundle().apply { putString(Stuff.ARG_TAG, it) }
-                        tif.show(fragment.parentFragmentManager, null)
+                var lastI = 0
+                entry.tags.forEachIndexed { i, tag ->
+                    (binding.infoTags.getChildAt(i) as? Chip?)?.apply {
+                        text = tag
+                        visibility = View.VISIBLE
                     }
-                    binding.infoTags.addView(chip)
+                    lastI = i
+                }
+
+                for (i in (lastI + 1) until binding.infoTags.childCount) {
+                    val chip = binding.infoTags.getChildAt(i) as Chip
+                    chip.visibility = View.GONE
                 }
 
                 var wikiText = entry.wikiText ?: entry.wikiSummary

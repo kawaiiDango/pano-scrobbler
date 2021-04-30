@@ -5,7 +5,8 @@
     android:orientation="horizontal"
     android:paddingVertical="6dp"
     android:paddingHorizontal="16dp"
-    android:background="?android:selectableItemBackground">
+    android:background="?android:selectableItemBackground"
+    android:id="@+id/appwidget_charts_item">
 
     <TextView
         android:id="@+id/appwidget_charts_serial"

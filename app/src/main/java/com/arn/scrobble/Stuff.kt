@@ -27,10 +27,10 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.arn.scrobble.recents.RecentsFragment.Companion.lastColorMutedBlack
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.Caller
@@ -53,6 +53,7 @@ object Stuff {
     const val TAG_HOME_PAGER = "home_pager"
     const val TAG_CHART_PAGER = "chart_pager"
     const val TAG_FIRST_THINGS = "first_things"
+    const val TAG_INFO_FROM_WIDGET = "info_widget"
     const val ARG_URL = "url"
     const val ARG_SAVE_COOKIES = "cookies"
     const val ARG_NOPASS = "nopass"
@@ -115,6 +116,13 @@ object Stuff {
     const val PREF_DIGEST_WEEKLY = "digest_weekly"
     const val PREF_DIGEST_MONTHLY = "digest_monthly"
     const val PREF_SHOW_RECENTS_ALBUM = "show_album"
+    const val PREF_THEME_PRIMARY = "theme_primary"
+    const val PREF_THEME_SECONDARY = "theme_secondary"
+    const val PREF_THEME_BACKGROUND = "theme_background"
+    const val PREF_THEME_RANDOM = "theme_random"
+    const val PREF_THEME_SAME_TONE = "theme_same_tone"
+    const val PREF_PRO_STATUS = "pro_status"
+    const val PREF_PRO_SKU_JSON = "pro_sku_json"
 
     const val PREF_ACTIVITY_FIRST_RUN = "first_run"
     const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
@@ -162,6 +170,7 @@ object Stuff {
     const val LASTFM_MAX_PAST_SCROBBLE: Long = 14 * 24 * 60 * 60 * 1000
     const val META_WAIT: Long = 500
     const val START_POS_LIMIT: Long = 1500
+    const val PENDING_PURCHASE_NOTIFY_THRESHOLD: Long = 15 * 1000
     const val MIN_LISTENER_COUNT = 5
     const val REQUEST_CODE_EXPORT = 10
     const val REQUEST_CODE_IMPORT = 11
@@ -307,7 +316,7 @@ object Stuff {
             return
         if (str == null) { // = clear title
             activity.binding.coordinatorMain.toolbar.title = null
-            activity.window.navigationBarColor = lastColorMutedBlack
+//            activity.window.navigationBarColor = lastColorMutedBlack
         } else {
             activity.binding.coordinatorMain.toolbar.title = str
             activity.binding.coordinatorMain.appBar.setExpanded(false, true)
@@ -319,17 +328,20 @@ object Stuff {
             }
             navbarBgAnimator.start()
         }
+        activity.window.navigationBarColor = MaterialColors.getColor(activity, android.R.attr.colorBackground, null)
         activity.binding.coordinatorMain.ctl.setContentScrimColor(MaterialColors.getColor(activity, android.R.attr.colorBackground, null))
+        activity.binding.coordinatorMain.toolbar.setArrowColors(MaterialColors.getColor(activity, R.attr.colorPrimary, null), Color.TRANSPARENT)
+    }
 
-        for (i in 0..activity.binding.coordinatorMain.toolbar.childCount) {
-            val child = activity.binding.coordinatorMain.toolbar.getChildAt(i)
+    fun Toolbar.setArrowColors(fg: Int, bg: Int) {
+        for (i in 0..childCount) {
+            val child = getChildAt(i)
             if (child is ImageButton) {
                 (child.drawable as ShadowDrawerArrowDrawable).
-                setColors(MaterialColors.getColor(activity, R.attr.colorPrimary, null), Color.TRANSPARENT)
+                setColors(fg, bg)
                 break
             }
         }
-
     }
 
     fun setAppBarHeight(activity: Activity, additionalHeight: Int = 0) {
@@ -424,7 +436,7 @@ object Stuff {
         return str.toString()
     }
 
-    fun myRelativeTime(context: Context, date: Date?): CharSequence =
+    fun myRelativeTime(context: Context, date: Date?) =
             myRelativeTime(context, date?.time ?: 0)
 
     fun myRelativeTime(context: Context, millis: Long, showTime: Boolean = false): CharSequence {
@@ -502,12 +514,12 @@ object Stuff {
         }
     }
 
-    fun setProgressCircleColor(swl: SwipeRefreshLayout) {
-        swl.setColorSchemeColors(
-                MaterialColors.getColor(swl, R.attr.colorPrimary),
-                MaterialColors.getColor(swl, R.attr.colorSecondary)
+    fun SwipeRefreshLayout.setProgressCircleColors() {
+        setColorSchemeColors(
+                MaterialColors.getColor(this, R.attr.colorPrimary),
+                MaterialColors.getColor(this, R.attr.colorSecondary)
         )
-        swl.setProgressBackgroundColorSchemeResource(R.color.darkBg)
+        setProgressBackgroundColorSchemeColor(MaterialColors.getColor(this, android.R.attr.colorBackground))
     }
 
     fun launchSearchIntent(artist: String, track: String, context: Context) {
@@ -628,4 +640,6 @@ object Stuff {
     }
 
     fun getWidgetPrefName(name: String, appWidgetId: Int) = "${name}_$appWidgetId"
+
+    fun <K, V> Map<K, V>.getOrDefaultKey(key: K, defaultKey: K) = this[key] ?: this[defaultKey]!!
 }

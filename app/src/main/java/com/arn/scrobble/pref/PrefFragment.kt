@@ -26,6 +26,7 @@ import com.arn.scrobble.*
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.themes.ThemesFragment
 import com.arn.scrobble.ui.MyClickableSpan
 import com.arn.scrobble.widget.ChartsWidgetActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
@@ -116,6 +117,16 @@ class PrefFragment : PreferenceFragmentCompat(){
                         appWidgetManager.requestPinAppWidget(myProvider, null, pi)
                     }
                 }
+                true
+            }
+
+        findPreference<Preference>("themes")!!
+            .setOnPreferenceClickListener {
+                parentFragmentManager.beginTransaction()
+                    .remove(this)
+                    .add(R.id.frame, ThemesFragment())
+                    .addToBackStack(null)
+                    .commit()
                 true
             }
 

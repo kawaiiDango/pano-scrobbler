@@ -5,7 +5,8 @@
               android:layout_height="match_parent"
               android:layout_marginHorizontal="@dimen/first_things_margin"
               android:gravity="center_vertical"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:layoutAnimation="@anim/layout_animation_slide_up">
 
     <LinearLayout
         android:id="@+id/first_things_0"

@@ -3,7 +3,10 @@ package com.arn.scrobble.pref
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
+import android.net.Uri
 import android.os.Build
+import android.os.DeadObjectException
 
 /**
  * Multi Preference class
@@ -11,9 +14,11 @@ import android.os.Build
  * - allows access to Shared Preferences across processes through a
  * Content Provider
  */
-class MultiPreferences(private val name: String, private val context: Context) {
+class MultiPreferences(private val name: String, context: Context) {
 
     constructor(context: Context) : this(context.packageName + "_preferences", context)
+
+    private val context = context.applicationContext
 
     private fun update(code:Int, key: String, value: Any) {
         val contentValues = ContentValues()
@@ -28,22 +33,13 @@ class MultiPreferences(private val name: String, private val context: Context) {
             else -> throw IllegalArgumentException("Invalid type")
         }
         val updateUri = MultiPrefsProvider.createQueryUri(name, key, code)
-
-        if (client == null)
-            client = context.contentResolver.acquireContentProviderClient(updateUri)
-
-        client?.update(updateUri, contentValues, null, null)
+        tryUpdate(updateUri, contentValues)
     }
 
     private fun query(code:Int, key: String, defaultValue: Any?): Any? {
         var value = defaultValue
-//        Stuff.log("query: $key $defaultValue $value")
         val queryUri = MultiPrefsProvider.createQueryUri(name, key, code)
-
-        if (client == null)
-            client = context.contentResolver.acquireContentProviderClient(queryUri)
-
-        val cursor = client?.query(queryUri, null, null, null, defaultValue?.toString())
+        val cursor = tryQuery(queryUri, defaultValue?.toString())
 
         if (cursor != null && cursor.moveToFirst()) {
             val colIndex = cursor.getColumnIndexOrThrow(MultiPrefsProvider.VALUE)
@@ -96,6 +92,28 @@ class MultiPreferences(private val name: String, private val context: Context) {
     fun clearPreferences() {
         val clearPrefsUri = MultiPrefsProvider.createQueryUri(name, "", MultiPrefsProvider.CODE_PREFS)
         context.contentResolver.delete(clearPrefsUri, null, null)
+    }
+
+    private fun tryUpdate(uri: Uri, contentValues: ContentValues) {
+        try {
+            if (client == null)
+                client = context.contentResolver.acquireContentProviderClient(uri)
+            client!!.update(uri, contentValues, null, null)
+        } catch (e: DeadObjectException) {
+            client = context.contentResolver.acquireContentProviderClient(uri)
+            client!!.update(uri, contentValues, null, null)
+        }
+    }
+
+    private fun tryQuery(uri: Uri, defaultValue: String?): Cursor {
+        return try {
+            if (client == null)
+                client = context.contentResolver.acquireContentProviderClient(uri)
+            client!!.query(uri, null, null, null, defaultValue)!!
+        } catch (e: DeadObjectException) {
+            client = context.contentResolver.acquireContentProviderClient(uri)
+            client!!.query(uri, null, null, null, defaultValue)!!
+        }
     }
 
     companion object {

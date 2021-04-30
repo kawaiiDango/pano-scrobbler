@@ -31,15 +31,15 @@ class ChartsWidgetUpdaterJob : JobService() {
         fun updateData(all: AllCharts, periodInt:Int, appWidgetIds: Collection<Int>) {
 
             val artists = arrayListOf<ChartsWidgetListItem>()
-            all.artists.pageResults?.forEach {
+            all.artists.forEach {
                 artists += ChartsWidgetListItem(it.name, "", it.playcount)
             }
             val albums = arrayListOf<ChartsWidgetListItem>()
-            all.albums.pageResults?.forEach {
+            all.albums.forEach {
                 albums += ChartsWidgetListItem(it.name, it.artist, it.playcount)
             }
             val tracks = arrayListOf<ChartsWidgetListItem>()
-            all.tracks.pageResults?.forEach {
+            all.tracks.forEach {
                 tracks += ChartsWidgetListItem(it.name, it.artist, it.playcount)
             }
 
@@ -76,9 +76,9 @@ class ChartsWidgetUpdaterJob : JobService() {
                             continue
                         val period = Period.values()[periodInt]
 
-                        val artists = User.getTopArtists(username, period, 50, 1, Stuff.LAST_KEY)!!
-                        val albums = User.getTopAlbums(username, period, 50, 1, Stuff.LAST_KEY)!!
-                        val tracks = User.getTopTracks(username, period, 50, 1, Stuff.LAST_KEY)!!
+                        val artists = User.getTopArtists(username, period, 50, 1, Stuff.LAST_KEY).pageResults!!
+                        val albums = User.getTopAlbums(username, period, 50, 1, Stuff.LAST_KEY).pageResults!!
+                        val tracks = User.getTopTracks(username, period, 50, 1, Stuff.LAST_KEY).pageResults!!
 
                         updateData(
                             AllCharts(artists, albums, tracks),
@@ -105,9 +105,9 @@ class ChartsWidgetUpdaterJob : JobService() {
     }
 
     class AllCharts(
-        val artists: PaginatedResult<Artist>,
-        val albums: PaginatedResult<Album>,
-        val tracks: PaginatedResult<Track>,
+        val artists: Collection<Artist>,
+        val albums: Collection<Album>,
+        val tracks: Collection<Track>,
     )
 
     companion object {

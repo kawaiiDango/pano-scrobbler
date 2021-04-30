@@ -2,6 +2,7 @@ package com.arn.scrobble.recents
 
 import android.app.Application
 import android.content.Intent
+import android.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.LFMRequester
@@ -24,6 +25,8 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     private var lastHeroInfoAsyncTask: LFMRequester.MyAsyncTask? = null
     val trackInfo by lazy { MutableLiveData<Pair<Int,Track?>>() }
     val imgMap = mutableMapOf<Int, Map<ImageSize, String>>()
+    val paletteColors by lazy { MutableLiveData(PaletteColors()) }
+
     private val pendingTracks by lazy { MutableLiveData<PendingListData>() }
     private val executor by lazy { Executors.newSingleThreadExecutor() }
     //for room's built in livedata to work, data must be inserted, deleted from the same dao object
@@ -92,6 +95,10 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
             }
         }
         return pendingTracks
+    }
+
+    fun reemitColors() {
+        paletteColors.value = paletteColors.value
     }
 
 }

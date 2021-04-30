@@ -5,7 +5,7 @@
               android:focusable="true"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="@drawable/selector_list"
+              android:background="@drawable/selector_list_rounded"
               android:orientation="horizontal">
 
     <CheckBox
@@ -19,7 +19,7 @@
         android:focusable="false"
         android:gravity="center_vertical" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/app_list_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"

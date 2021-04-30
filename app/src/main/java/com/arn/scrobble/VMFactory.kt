@@ -1,6 +1,7 @@
 package com.arn.scrobble
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +12,7 @@ import com.arn.scrobble.info.TagInfoVM
 import com.arn.scrobble.info.UserTagsVM
 import com.arn.scrobble.recents.TracksVM
 import com.arn.scrobble.search.SearchVM
+import com.arn.scrobble.billing.BillingViewModel
 
 
 object VMFactory: ViewModelProvider.Factory {
@@ -19,6 +21,11 @@ object VMFactory: ViewModelProvider.Factory {
     fun <T : ViewModel>getVM(fr: Fragment, vmClass: Class<T>): T {
         application = fr.activity?.application
         return ViewModelProvider(fr, this).get(vmClass)
+    }
+
+    fun <T : ViewModel>getVM(act: AppCompatActivity, vmClass: Class<T>): T {
+        application = act.application
+        return ViewModelProvider(act, this).get(vmClass)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -32,6 +39,7 @@ object VMFactory: ViewModelProvider.Factory {
             modelClass.isAssignableFrom(SearchVM::class.java) -> SearchVM(application!!) as T
             modelClass.isAssignableFrom(TagInfoVM::class.java) -> TagInfoVM(application!!) as T
             modelClass.isAssignableFrom(UserTagsVM::class.java) -> UserTagsVM(application!!) as T
+            modelClass.isAssignableFrom(BillingViewModel::class.java) -> BillingViewModel(application!!) as T
             else -> throw RuntimeException("Unknown VM class")
         }
     }

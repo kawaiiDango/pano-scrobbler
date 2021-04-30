@@ -16,7 +16,6 @@ import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
-import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.google.android.material.chip.Chip
@@ -134,8 +133,10 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             }
             loadMoreListener.currentPage = it.page
             adapter.populate()
-            if (it.page == 1)
-                chartsBinding.chartsList.smoothScrollToPosition(0)
+
+            // sometimes does somersaults
+//            if (it.page == 1)
+//                chartsBinding.chartsList.smoothScrollToPosition(0)
             viewModel.chartsReceiver.value = null
         })
 
@@ -199,8 +200,8 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
 
         var shareText = getString(R.string.charts_share_text,
                 user, period.toLowerCase(), type.toLowerCase(), list)
-
-        shareText += "\n\n" + getString(R.string.share_sig)
+        if ((activity as Main).billingViewModel.proStatus.value != true)
+            shareText += "\n\n" + getString(R.string.share_sig)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
         i.putExtra(Intent.EXTRA_SUBJECT, shareText)

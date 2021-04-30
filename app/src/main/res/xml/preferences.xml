@@ -104,6 +104,11 @@
         android:title="@string/pref_personalization">
 
         <Preference
+            android:title="@string/pref_themes"
+            android:summary="@string/pref_themes_desc"
+            android:key="themes"/>
+
+        <Preference
             android:title="@string/pref_widget_charts"
             android:key="charts_widget" />
 

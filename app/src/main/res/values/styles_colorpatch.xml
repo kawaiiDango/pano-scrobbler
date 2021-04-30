@@ -1,12 +1,217 @@
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-
-    <style name="ColorPatch" />
-
-    <style name="ColorPatch.Pink">
-        <item name="colorNoti">@color/pinkNoti</item>
-        <item name="colorPrimary">@color/pinkPrimary</item>
-        <item name="colorSecondary">@color/pinkSecondary</item>
-        <item name="colorHighlight">@color/pinkHighlight</item>
-    </style>
-
+  <style name="ColorPatch"/>
+  <style name="ColorPatch.Red_Main">
+    <item name="colorPrimary">#e57373</item>
+    <item name="colorNoti">#ef5350</item>
+  </style>
+  <style name="ColorPatch.Red_Secondary">
+    <item name="colorSecondary">#ffcdd2</item>
+  </style>
+  <style name="ColorPatch.Red_Background">
+    <item name="android:colorBackground">@color/Red_Background</item>
+    <item name="colorSurface">@color/Red_Background</item>
+  </style>
+  <style name="ColorPatch.Pink_Main">
+    <item name="colorPrimary">@color/pinkPrimary</item>
+    <item name="colorNoti">@color/pinkNoti</item>
+  </style>
+  <style name="ColorPatch.Pink_Secondary">
+    <item name="colorSecondary">#f8bbd0</item>
+  </style>
+  <style name="ColorPatch.Pink_Background">
+    <item name="android:colorBackground">@color/Pink_Background</item>
+    <item name="colorSurface">@color/Pink_Background</item>
+  </style>
+  <style name="ColorPatch.Purple_Main">
+    <item name="colorPrimary">#ba68c8</item>
+    <item name="colorNoti">#ab47bc</item>
+  </style>
+  <style name="ColorPatch.Purple_Secondary">
+    <item name="colorSecondary">@color/purpleSecondary</item>
+  </style>
+  <style name="ColorPatch.Purple_Background">
+    <item name="android:colorBackground">@color/Purple_Background</item>
+    <item name="colorSurface">@color/Purple_Background</item>
+  </style>
+  <style name="ColorPatch.Deeppurple_Main">
+    <item name="colorPrimary">#9575cd</item>
+    <item name="colorNoti">#7e57c2</item>
+  </style>
+  <style name="ColorPatch.Deeppurple_Secondary">
+    <item name="colorSecondary">#d1c4e9</item>
+  </style>
+  <style name="ColorPatch.Deeppurple_Background">
+    <item name="android:colorBackground">@color/Deeppurple_Background</item>
+    <item name="colorSurface">@color/Deeppurple_Background</item>
+  </style>
+  <style name="ColorPatch.Indigo_Main">
+    <item name="colorPrimary">#7986cb</item>
+    <item name="colorNoti">#5c6bc0</item>
+  </style>
+  <style name="ColorPatch.Indigo_Secondary">
+    <item name="colorSecondary">#c5cae9</item>
+  </style>
+  <style name="ColorPatch.Indigo_Background">
+    <item name="android:colorBackground">@color/Indigo_Background</item>
+    <item name="colorSurface">@color/Indigo_Background</item>
+  </style>
+  <style name="ColorPatch.Blue_Main">
+    <item name="colorPrimary">#64b5f6</item>
+    <item name="colorNoti">#42a5f5</item>
+  </style>
+  <style name="ColorPatch.Blue_Secondary">
+    <item name="colorSecondary">#bbdefb</item>
+  </style>
+  <style name="ColorPatch.Blue_Background">
+    <item name="android:colorBackground">@color/Blue_Background</item>
+    <item name="colorSurface">@color/Blue_Background</item>
+  </style>
+  <style name="ColorPatch.Lightblue_Main">
+    <item name="colorPrimary">#4fc3f7</item>
+    <item name="colorNoti">#29b6f6</item>
+  </style>
+  <style name="ColorPatch.Lightblue_Secondary">
+    <item name="colorSecondary">#b3e5fc</item>
+  </style>
+  <style name="ColorPatch.Lightblue_Background">
+    <item name="android:colorBackground">@color/Lightblue_Background</item>
+    <item name="colorSurface">@color/Lightblue_Background</item>
+  </style>
+  <style name="ColorPatch.Cyan_Main">
+    <item name="colorPrimary">#4dd0e1</item>
+    <item name="colorNoti">#26c6da</item>
+  </style>
+  <style name="ColorPatch.Cyan_Secondary">
+    <item name="colorSecondary">#b2ebf2</item>
+  </style>
+  <style name="ColorPatch.Cyan_Background">
+    <item name="android:colorBackground">@color/Cyan_Background</item>
+    <item name="colorSurface">@color/Cyan_Background</item>
+  </style>
+  <style name="ColorPatch.Teal_Main">
+    <item name="colorPrimary">#4db6ac</item>
+    <item name="colorNoti">#26a69a</item>
+  </style>
+  <style name="ColorPatch.Teal_Secondary">
+    <item name="colorSecondary">#b2dfdb</item>
+  </style>
+  <style name="ColorPatch.Teal_Background">
+    <item name="android:colorBackground">@color/Teal_Background</item>
+    <item name="colorSurface">@color/Teal_Background</item>
+  </style>
+  <style name="ColorPatch.Green_Main">
+    <item name="colorPrimary">#81c784</item>
+    <item name="colorNoti">#66bb6a</item>
+  </style>
+  <style name="ColorPatch.Green_Secondary">
+    <item name="colorSecondary">#c8e6c9</item>
+  </style>
+  <style name="ColorPatch.Green_Background">
+    <item name="android:colorBackground">@color/Green_Background</item>
+    <item name="colorSurface">@color/Green_Background</item>
+  </style>
+  <style name="ColorPatch.Lightgreen_Main">
+    <item name="colorPrimary">#aed581</item>
+    <item name="colorNoti">#9ccc65</item>
+  </style>
+  <style name="ColorPatch.Lightgreen_Secondary">
+    <item name="colorSecondary">#dcedc8</item>
+  </style>
+  <style name="ColorPatch.Lightgreen_Background">
+    <item name="android:colorBackground">@color/Lightgreen_Background</item>
+    <item name="colorSurface">@color/Lightgreen_Background</item>
+  </style>
+  <style name="ColorPatch.Lime_Main">
+    <item name="colorPrimary">#dce775</item>
+    <item name="colorNoti">#d4e157</item>
+  </style>
+  <style name="ColorPatch.Lime_Secondary">
+    <item name="colorSecondary">#f0f4c3</item>
+  </style>
+  <style name="ColorPatch.Lime_Background">
+    <item name="android:colorBackground">@color/Lime_Background</item>
+    <item name="colorSurface">@color/Lime_Background</item>
+  </style>
+  <style name="ColorPatch.Yellow_Main">
+    <item name="colorPrimary">#fff176</item>
+    <item name="colorNoti">#ffee58</item>
+  </style>
+  <style name="ColorPatch.Yellow_Secondary">
+    <item name="colorSecondary">#fff9c4</item>
+  </style>
+  <style name="ColorPatch.Yellow_Background">
+    <item name="android:colorBackground">@color/Yellow_Background</item>
+    <item name="colorSurface">@color/Yellow_Background</item>
+  </style>
+  <style name="ColorPatch.Amber_Main">
+    <item name="colorPrimary">#ffd54f</item>
+    <item name="colorNoti">#ffca28</item>
+  </style>
+  <style name="ColorPatch.Amber_Secondary">
+    <item name="colorSecondary">#ffecb3</item>
+  </style>
+  <style name="ColorPatch.Amber_Background">
+    <item name="android:colorBackground">@color/Amber_Background</item>
+    <item name="colorSurface">@color/Amber_Background</item>
+  </style>
+  <style name="ColorPatch.Orange_Main">
+    <item name="colorPrimary">#ffb74d</item>
+    <item name="colorNoti">#ffa726</item>
+  </style>
+  <style name="ColorPatch.Orange_Secondary">
+    <item name="colorSecondary">#ffe0b2</item>
+  </style>
+  <style name="ColorPatch.Orange_Background">
+    <item name="android:colorBackground">@color/Orange_Background</item>
+    <item name="colorSurface">@color/Orange_Background</item>
+  </style>
+  <style name="ColorPatch.Deeporange_Main">
+    <item name="colorPrimary">#ff8a65</item>
+    <item name="colorNoti">#ff7043</item>
+  </style>
+  <style name="ColorPatch.Deeporange_Secondary">
+    <item name="colorSecondary">#ffccbc</item>
+  </style>
+  <style name="ColorPatch.Deeporange_Background">
+    <item name="android:colorBackground">@color/Deeporange_Background</item>
+    <item name="colorSurface">@color/Deeporange_Background</item>
+  </style>
+  <style name="ColorPatch.Brown_Main">
+    <item name="colorPrimary">#a1887f</item>
+    <item name="colorNoti">#8d6e63</item>
+  </style>
+  <style name="ColorPatch.Brown_Secondary">
+    <item name="colorSecondary">#d7ccc8</item>
+  </style>
+  <style name="ColorPatch.Brown_Background">
+    <item name="android:colorBackground">@color/Brown_Background</item>
+    <item name="colorSurface">@color/Brown_Background</item>
+  </style>
+  <style name="ColorPatch.Grey_Main">
+    <item name="colorPrimary">#e0e0e0</item>
+    <item name="colorNoti">#bdbdbd</item>
+  </style>
+  <style name="ColorPatch.Grey_Secondary">
+    <item name="colorSecondary">#f5f5f5</item>
+  </style>
+  <style name="ColorPatch.Grey_Background">
+    <item name="android:colorBackground">@color/Grey_Background</item>
+    <item name="colorSurface">@color/Grey_Background</item>
+  </style>
+  <style name="ColorPatch.Bluegrey_Main">
+    <item name="colorPrimary">#90a4ae</item>
+    <item name="colorNoti">#78909c</item>
+  </style>
+  <style name="ColorPatch.Bluegrey_Secondary">
+    <item name="colorSecondary">#cfd8dc</item>
+  </style>
+  <style name="ColorPatch.Bluegrey_Background">
+    <item name="android:colorBackground">@color/Bluegrey_Background</item>
+    <item name="colorSurface">@color/Bluegrey_Background</item>
+  </style>
+  <style name="ColorPatch.Black_Background">
+    <item name="android:colorBackground">#010101</item>
+    <item name="colorSurface">#010101</item>
+  </style>
 </resources>

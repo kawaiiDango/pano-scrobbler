@@ -4,8 +4,7 @@
         <selector>
             <item android:state_enabled="false" android:drawable="@android:color/transparent"/>
             <item android:state_enabled="true" android:drawable="@drawable/shape_rounded_border_bright"/>
-            <item android:state_enabled="true" android:drawable="@color/pinkHighlight"/>
         </selector>
     </item>
-    <item android:drawable="@drawable/ripple_rounded" />
+    <item android:drawable="?selectableItemBackground" />
 </layer-list>

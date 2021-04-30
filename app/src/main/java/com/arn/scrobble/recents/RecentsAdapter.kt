@@ -276,6 +276,7 @@ class RecentsAdapter
         }
     }
 
+    // only called for loves fragment
     fun setImg(pos: Int, imgMapp: Map<ImageSize, String>?){
         val idx = pos - nonTrackViewCount
         if(idx >= 0 && idx < viewModel.tracks.size){
@@ -284,7 +285,7 @@ class RecentsAdapter
             viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] = imgMapp ?: mapOf()
             notifyItemChanged(pos)
             if (pos == viewModel.selectedPos)
-                setHeroListener.onSetHero(pos, viewModel.tracks[idx], true)
+                setHeroListener.onSetHero(pos, viewModel.tracks[idx], false)
         }
     }
 

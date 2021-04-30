@@ -158,7 +158,7 @@ object AppRater {
         }
 
         val scrobble_count = MultiPreferences(context)
-            .getLong(SCROBBLE_COUNT, 0)
+            .getInt(SCROBBLE_COUNT, 0)
         // Get date of first launch
         var date_firstLaunch: Long? = prefs.getLong(PREF_FIRST_LAUNCHED, 0)
         if (date_firstLaunch == 0L) {
@@ -261,7 +261,7 @@ object AppRater {
         editor.putBoolean(PREF_DONT_SHOW_AGAIN, false)
         editor.putBoolean(PREF_REMIND_LATER, false)
         MultiPreferences(context)
-            .putLong(SCROBBLE_COUNT, 0)
+            .putInt(SCROBBLE_COUNT, 0)
         val date_firstLaunch = System.currentTimeMillis()
         editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch)
         commitOrApply(editor)

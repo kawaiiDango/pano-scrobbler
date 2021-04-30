@@ -8,7 +8,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0000"
+        app:elevation="0dp"
         android:touchscreenBlocksFocus="false">
 
         <com.google.android.material.textfield.TextInputLayout

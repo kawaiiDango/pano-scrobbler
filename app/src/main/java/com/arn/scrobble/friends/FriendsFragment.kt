@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.Stuff.setProgressCircleColors
 import com.arn.scrobble.databinding.ActionFriendsBinding
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
@@ -126,7 +127,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private fun postInit() {
         Stuff.setTitle(activity, 0)
 
-        Stuff.setProgressCircleColor(binding.friendsSwipeRefresh)
+        binding.friendsSwipeRefresh.setProgressCircleColors()
         binding.friendsSwipeRefresh.setOnRefreshListener {
             viewModel.sorted = false
             binding.friendsSort.hide()

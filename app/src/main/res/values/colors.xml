@@ -12,7 +12,6 @@
     <color name="edit_elevation">#1FFFFFFF</color>
 
     <color name="pinkNoti">#ec407a</color>
-    <color name="pinkSecondary">#e1bee7</color>
+    <color name="purpleSecondary">#e1bee7</color>
     <color name="pinkPrimary">#f06292</color>
-    <color name="pinkHighlight">#26F06292</color> <!-- primary -->
 </resources>

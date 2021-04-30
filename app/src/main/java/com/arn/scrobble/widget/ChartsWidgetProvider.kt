@@ -43,7 +43,6 @@ class ChartsWidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        Stuff.log("widget update " + intent.action)
 
         if (NLService.iUPDATE_WIDGET == intent.action) {
             val appWidgetId = intent.getIntExtra(
@@ -87,8 +86,6 @@ internal fun updateAppWidget(
 
     // Here we setup the intent which points to the StackViewService which will
     // provide the views for this collection.
-    // Here we setup the intent which points to the StackViewService which will
-    // provide the views for this collection.
 
     val tab = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_TAB, appWidgetId), Stuff.TYPE_ARTISTS)
     val period = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), -1)
@@ -113,14 +110,10 @@ internal fun updateAppWidget(
 
         // When intents are compared, the extras are ignored, so we need to embed the extras
         // into the data so that the extras will not be ignored.
-        // When intents are compared, the extras are ignored, so we need to embed the extras
-        // into the data so that the extras will not be ignored.
         intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
 
         rv.setRemoteAdapter(R.id.appwidget_list, intent)
     }
-    // The empty view is displayed when the collection has no items. It should be a sibling
-    // of the collection view.
     // The empty view is displayed when the collection has no items. It should be a sibling
     // of the collection view.
     rv.setEmptyView(R.id.appwidget_list, R.id.appwidget_status)
@@ -135,10 +128,12 @@ internal fun updateAppWidget(
     // cannot setup their own pending intents, instead, the collection as a whole can
     // setup a pending intent template, and the individual items can set a fillInIntent
     // to create unique before on an item to item basis.
-    // Here we setup the a pending intent template. Individuals items of a collection
-    // cannot setup their own pending intents, instead, the collection as a whole can
-    // setup a pending intent template, and the individual items can set a fillInIntent
-    // to create unique before on an item to item basis.
+    val infoIntent = Intent(context, Main::class.java)
+    val infoPendingIntent = PendingIntent.getActivity(
+        context, 0, infoIntent,
+        Stuff.updateCurrentOrMutable
+    )
+    rv.setPendingIntentTemplate(R.id.appwidget_list, infoPendingIntent)
 
     val tabIntent = Intent(context, ChartsWidgetProvider::class.java)
     tabIntent.action = NLService.iUPDATE_WIDGET
@@ -164,14 +159,6 @@ internal fun updateAppWidget(
         Stuff.updateCurrentOrImmutable
     )
     rv.setOnClickPendingIntent(R.id.appwidget_tracks, tabIntentPending)
-
-    rv.setOnClickPendingIntent(
-        R.id.appwidget_open_app,
-        PendingIntent.getActivity(context, Stuff.genHashCode(appWidgetId, 4),
-            Intent(context, Main::class.java),
-            Stuff.updateCurrentOrImmutable
-        )
-    )
 
     rv.setInt(R.id.appwidget_bg, "setImageAlpha", (bgAlpha*255).toInt())
 

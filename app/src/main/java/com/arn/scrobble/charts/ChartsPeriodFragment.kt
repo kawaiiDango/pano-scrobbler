@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Parcel
 import android.text.format.DateFormat
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.*
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
@@ -132,6 +133,11 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             }
             showWeekPicker = false
 
+            if (weeklyList.isEmpty()){
+                periodChipsBinding.chartsPeriod.alpha = 1f
+                Stuff.toast(context, getString(R.string.charts_no_weekly_charts), Toast.LENGTH_LONG)
+                return@observe
+            }
 
             val time = if (viewModel.weeklyChart != null)
                 viewModel.weeklyChart!!.from.time

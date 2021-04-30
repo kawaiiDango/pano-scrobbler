@@ -74,14 +74,6 @@
                     style="@style/WidgetTabIndicator.Shadow"
                     android:visibility="invisible"
                     tools:visibility="visible"/>
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    style="@style/WidgetTabIndicator.Shadow"
-                    android:visibility="invisible"
-                    tools:visibility="visible"/>
             </LinearLayout>
 
             <LinearLayout
@@ -113,14 +105,6 @@
 
                 <ImageView
                     android:id="@+id/appwidget_tracks_glow"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    style="@style/WidgetTabIndicator"
-                    android:visibility="invisible"
-                    tools:visibility="visible"/>
-
-                <ImageView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -165,16 +149,6 @@
                     android:tint="?colorSecondary"
                     android:alpha="?fakeShadowAlpha"
                     android:src="@drawable/vd_note" />
-
-                <ImageButton
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="?android:selectableItemBackground"
-                    android:clickable="false"
-                    android:tint="?colorSecondary"
-                    android:alpha="?fakeShadowAlpha"
-                    android:src="@drawable/vd_noti" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -208,16 +182,6 @@
                     android:background="?android:selectableItemBackgroundBorderless"
                     android:contentDescription="@string/tracks"
                     android:src="@drawable/vd_note" />
-
-                <ImageButton
-                    android:id="@+id/appwidget_open_app"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/app_name"
-                    android:background="?android:selectableItemBackgroundBorderless"
-                    android:tint="?colorPrimary"
-                    android:src="@drawable/vd_noti" />
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>

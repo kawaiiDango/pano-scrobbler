@@ -3,9 +3,11 @@ package com.arn.scrobble.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import java.text.NumberFormat
@@ -18,6 +20,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         AppWidgetManager.EXTRA_APPWIDGET_ID,
         AppWidgetManager.INVALID_APPWIDGET_ID
     )
+    private var tab = Stuff.TYPE_ARTISTS
 
     override fun onCreate() {
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
@@ -50,26 +53,38 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         // position will always range from 0 to getCount() - 1.
         // We construct a remote views item based on our widget item xml file, and set the
         // text based on the position.
+        val item = widgetItems[position]
         val rv = RemoteViews(context.packageName, R.layout.appwidget_charts_item)
         rv.setTextViewText(R.id.appwidget_charts_serial, NumberFormat.getInstance().format(position + 1) + ".")
-        rv.setTextViewText(R.id.appwidget_charts_title, widgetItems[position].title)
+        rv.setTextViewText(R.id.appwidget_charts_title, item.title)
 
-        if (widgetItems[position].subtitle != "") {
-            rv.setTextViewText(R.id.appwidget_charts_subtitle, widgetItems[position].subtitle)
+        if (item.subtitle != "") {
+            rv.setTextViewText(R.id.appwidget_charts_subtitle, item.subtitle)
             rv.setViewVisibility(R.id.appwidget_charts_subtitle, View.VISIBLE)
         } else
             rv.setViewVisibility(R.id.appwidget_charts_subtitle, View.GONE)
 
         rv.setTextViewText(
             R.id.appwidget_charts_plays,
-            NumberFormat.getInstance().format(widgetItems[position].number))
+            NumberFormat.getInstance().format(item.number))
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
-//        Bundle extras = new Bundle();
-//        extras.putInt(StackWidgetProvider.EXTRA_ITEM, position);
-//        Intent fillInIntent = new Intent();
-//        fillInIntent.putExtras(extras);
-//        rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+        val fillInIntent = Intent().apply {
+            when (tab) {
+                Stuff.TYPE_ARTISTS -> {
+                    putExtra(NLService.B_ARTIST, item.title)
+                }
+                Stuff.TYPE_ALBUMS -> {
+                    putExtra(NLService.B_ARTIST, item.subtitle)
+                    putExtra(NLService.B_ALBUM, item.title)
+                }
+                Stuff.TYPE_TRACKS -> {
+                    putExtra(NLService.B_ARTIST, item.subtitle)
+                    putExtra(NLService.B_TITLE, item.title)
+                }
+            }
+        }
+        rv.setOnClickFillInIntent(R.id.appwidget_charts_item, fillInIntent)
         // You can do heaving lifting in here, synchronously. For example, if you need to
         // process an image, fetch something from the network, etc., it is ok to do it here,
         // synchronously. A loading view will show up in lieu of the actual contents in the
@@ -105,7 +120,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         widgetItems.clear()
         val pref = context.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
 
-        val tab = pref.getInt(
+        tab = pref.getInt(
             Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_TAB, appWidgetId),
             Stuff.TYPE_ARTISTS
         )

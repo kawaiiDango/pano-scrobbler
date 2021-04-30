@@ -9,6 +9,7 @@ import android.content.Intent.ACTION_PACKAGE_ADDED
 import android.content.Intent.ACTION_TIME_CHANGED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
@@ -17,13 +18,13 @@ import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.text.Html
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.NotificationCompat
 import androidx.core.media.app.MediaStyleMod
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.db.PendingScrobblesDb
-import com.google.android.material.color.MaterialColors
+import com.arn.scrobble.themes.ColorPatchUtils
 import de.umass.lastfm.Period
 import de.umass.lastfm.scrobble.ScrobbleData
 import org.codechimp.apprater.AppRater
@@ -33,11 +34,13 @@ import java.text.NumberFormat
 class NLService : NotificationListenerService() {
     private lateinit var pref: SharedPreferences
     private lateinit var nm: NotificationManager
-    private lateinit var themeContext: ContextThemeWrapper
     private var sessListener: SessListener? = null
     lateinit var handler: ScrobbleHandler
     private var lastNpTask: LFMRequester.MyAsyncTask? = null
     private var currentBundle = Bundle()
+    private var notiColor = Color.MAGENTA
+    private val isPro
+        get() = pref.getBoolean(Stuff.PREF_PRO_STATUS, false)
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
@@ -85,6 +88,7 @@ class NLService : NotificationListenerService() {
         filter.addAction(iDIGEST_MONTHLY)
         filter.addAction(iSCROBBLER_ON)
         filter.addAction(iSCROBBLER_OFF)
+        filter.addAction(iTHEME_CHANGED)
         filter.addAction(ACTION_TIME_CHANGED)
         filter.addAction(CONNECTIVITY_ACTION)
         applicationContext.registerReceiver(nlservicereciver, filter)
@@ -95,10 +99,9 @@ class NLService : NotificationListenerService() {
         applicationContext.registerReceiver(pkgInstallReceiver, f)
 
         pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        migratePrefs()
+        notiColor = ColorPatchUtils.getNotiColor(applicationContext, pref)
+//        migratePrefs()
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        themeContext = ContextThemeWrapper(applicationContext, R.style.ColorPatch_Pink)
 
         handler = ScrobbleHandler(mainLooper)
         val sessManager = applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
@@ -127,6 +130,11 @@ class NLService : NotificationListenerService() {
 //        isOnline = cm.activeNetworkInfo?.isConnected == true
         Stuff.scheduleDigests(applicationContext)
         sendBroadcast(Intent(iNLS_STARTED))
+        BillingRepository.getInstance(application).apply {
+            startDataSourceConnections()
+            queryPurchasesAsync()
+            Handler(Looper.getMainLooper()).postDelayed({ this.endDataSourceConnections() }, 20000)
+        }
     }
 
     private fun destroy() {
@@ -151,16 +159,6 @@ class NLService : NotificationListenerService() {
             sessListener = null
             handler.removeCallbacksAndMessages(null)
         }
-        /*
-        if (legacyMetaReceiver != null) {
-            try {
-                applicationContext.unregisterReceiver(legacyMetaReceiver)
-                legacyMetaReceiver = null
-            } catch(e:IllegalArgumentException) {
-                Stuff.log("LegacyMetaReceiver wasn't registered")
-            }
-        }
-         */
         PendingScrobblesDb.destroyInstance()
     }
 
@@ -394,6 +392,9 @@ class NLService : NotificationListenerService() {
                     pref.edit().putBoolean(Stuff.PREF_MASTER, false).apply()
                     Stuff.toast(context, getString(R.string.pref_master_off))
                 }
+                iTHEME_CHANGED -> {
+                    notiColor = ColorPatchUtils.getNotiColor(applicationContext, pref)
+                }
                 CONNECTIVITY_ACTION -> {
                     val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                     Main.isOnline =  cm.activeNetworkInfo?.isConnected == true
@@ -539,7 +540,7 @@ class NLService : NotificationListenerService() {
                     NotificationCompat.VISIBILITY_SECRET
             return NotificationCompat.Builder(applicationContext)
                     .setShowWhen(false)
-                    .setColor(MaterialColors.getColor(themeContext, R.attr.colorNoti, null))
+                    .setColor(notiColor)
                     .setAutoCancel(true)
                     .setCustomBigContentView(null)
                     .setVisibility(visibility)
@@ -763,15 +764,16 @@ class NLService : NotificationListenerService() {
                         getString(R.string.digest_monthly).toLowerCase()
                     var intent = Intent(Intent.ACTION_SEND)
                             .putExtra("packageName", packageName)
-                    val shareText = title + "\n\n" +
+                    var shareText = title + "\n\n" +
                             digestArr.mapIndexed { i, s ->
                                 if (i % 2 == 1 && i != digestArr.size - 1)
                                     s + "\n"
                                 else
                                     s
                             }
-                                .joinToString(separator = "\n") +
-                            "\n\n" + getString(R.string.share_sig)
+                                .joinToString(separator = "\n")
+                    if (!isPro)
+                        shareText += "\n\n" + getString(R.string.share_sig)
                     val i = Intent(Intent.ACTION_SEND)
                     i.type = "text/plain"
                     i.putExtra(Intent.EXTRA_SUBJECT, shareText)
@@ -908,6 +910,7 @@ class NLService : NotificationListenerService() {
         const val iUPDATE_WIDGET = "com.arn.scrobble.UPDATE_WIDGET"
         const val iSCROBBLER_ON = "com.arn.scrobble.SCROBBLER_ON"
         const val iSCROBBLER_OFF = "com.arn.scrobble.SCROBBLER_OFF"
+        const val iTHEME_CHANGED = "com.arn.scrobble.THEME_CHANGED"
         const val B_TITLE = "title"
         const val B_ALBUM_ARTIST = "albumartist"
         const val B_TIME = "time"

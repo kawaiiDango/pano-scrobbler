@@ -37,14 +37,18 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.ViewPager
+import com.arn.scrobble.billing.BillingFragment
+import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.search.SearchFragment
+import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.arn.scrobble.ui.StatefulAppBar
 import com.google.android.material.color.MaterialColors
@@ -71,10 +75,14 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     lateinit var binding: ActivityMainBinding
     private lateinit var navHeaderbinding: HeaderNavBinding
     private lateinit var connectivityCb: ConnectivityManager.NetworkCallback
+    val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Stuff.timeIt("onCreate start")
         super.onCreate(savedInstanceState)
+
+        if (billingViewModel.proStatus.value == true)
+            ColorPatchUtils.setTheme(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         navHeaderbinding = HeaderNavBinding.inflate(layoutInflater, binding.navView, false)
@@ -170,12 +178,16 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
                     showHomePager()
 
-                    val handler = Handler(mainLooper)
-                    handler.post {
-                        if (!KeepNLSAliveJob.ensureServiceRunning(this))
-                            showNotRunning()
-                        else if (!isTV)
-                            AppRater.app_launched(this)
+                    if (intent.getStringExtra(NLService.B_ARTIST) != null)
+                            showInfoFragment(intent)
+                    else {
+                        val handler = Handler(mainLooper)
+                        handler.post {
+                            if (!KeepNLSAliveJob.ensureServiceRunning(this))
+                                showNotRunning()
+                            else if (!isTV && billingViewModel.proStatus.value != true)
+                                AppRater.app_launched(this)
+                        }
                     }
                 }
             } else {
@@ -188,6 +200,12 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 openLockDrawer()
         }
         supportFragmentManager.addOnBackStackChangedListener(this)
+        billingViewModel.proStatus.observe(this) {
+            if (it == true) {
+                binding.navView.menu.removeItem(R.id.nav_pro)
+            }
+        }
+        billingViewModel.queryPurchases()
 //        showNotRunning()
 //        testNoti()
     }
@@ -209,6 +227,22 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 .commit()
         binding.coordinatorMain.appBar.setExpanded(false, true)
         closeLockDrawer()
+    }
+
+    private fun showInfoFragment(intent: Intent){
+        val artist = intent.getStringExtra(NLService.B_ARTIST)
+        val album = intent.getStringExtra(NLService.B_ALBUM)
+        val track = intent.getStringExtra(NLService.B_TITLE)
+        val info = InfoFragment()
+        info.arguments = Bundle().apply {
+            putString(NLService.B_ARTIST, artist)
+            putString(NLService.B_ALBUM, album)
+            putString(NLService.B_TITLE, track)
+        }
+        supportFragmentManager.findFragmentByTag(Stuff.TAG_INFO_FROM_WIDGET)?.let {
+            (it as InfoFragment).dismiss()
+        }
+        info.show(supportFragmentManager, Stuff.TAG_INFO_FROM_WIDGET)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -405,6 +439,13 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             R.id.nav_report -> {
                 mailLogs()
             }
+            R.id.nav_pro -> {
+                enableGestures()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.frame, BillingFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
         return true
     }
@@ -470,7 +511,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val activeSessions = try {
             val sessManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
             sessManager.getActiveSessions(ComponentName(this, NLService::class.java))
-                    .fold("") { str, session -> str +  ", "  + session.packageName}
+                .joinToString { it.packageName }
         } catch (e: SecurityException) {
             "SecurityException"
         }
@@ -506,7 +547,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             text += "Background service isn't running\n"
         text += "Active Sessions: $activeSessions\n"
 
-        text += "------------------------\n\n[how did this happen?]\n"
+        text += if (billingViewModel.proStatus.value == true)
+            "~~~~~~~~~~~~~~~~~~~~~~~~"
+        else
+            "------------------------"
+        text += "\n\n[how did this happen?]\n"
         //keep the email in english
 
         val log = Stuff.exec("logcat -d")
@@ -572,7 +617,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     }
                 }
             }
-        }
+        } else if (intent?.getStringExtra(NLService.B_ARTIST) != null)
+            showInfoFragment(intent)
     }
 
     private fun showBackArrow(show: Boolean){

@@ -143,6 +143,7 @@
     <string name="charts_no_data">No data for this period</string>
     <string name="charts_num_text">%1$d. %2$s</string>
     <string name="charts_share_text">%1$s %2$s top %3$s:\n%4$s</string>
+    <string name="charts_no_weekly_charts">Historical weekly charts are not available yet</string>
     <string name="menu_random">I\'m feeling lucky</string>
     <string name="random_not_found">No track found</string>
     <string name="loved_track">Loved track</string>
@@ -175,6 +176,33 @@
     <string name="dark">Dark</string>
     <string name="appwidget_alpha">Background Opacity</string>
     <string name="appwidget_refresh_every">Widget will refresh every 15 minutes</string>
+
+    <string name="primary_color">Primary color</string>
+    <string name="secondary_color">Secondary color</string>
+    <string name="background_color">Background color</string>
+    <string name="same_tone">Same tone for all</string>
+    <string name="random_theme">Randomize on every launch</string>
+
+    <string name="get_pro">Support this app</string>
+    <string name="menu_get_pro"><i>Support this app</i></string>
+    <string name="help">Help</string>
+    <string name="pro_support">This is a simple and quick way for amazing users like you to make a show of support recognizing the value this app provides.</string>
+    <string name="pro_also_get">You will also get:</string>
+    <string name="pro_benefits">You will also get 🎨 Themes (19 x 19 x 20 colors). The app name will be removed when sharing.</string>
+    <string name="thank_you">Thank you!</string>
+    <string name="purchase_pending">Your purchase has not been confirmed by your payment provider yet. Please check back after a few minutes.</string>
+    <string name="billing_toubleshoot_title">Restore purchase</string>
+    <string name="billing_toubleshoot">"Already purchased?
+
+Your purchases are managed by Google Play. They are linked with a Google Play account that did a purchase. When you install the app on a new device with multiple accounts, Google Play can associate it with a wrong one. The best solution to explicitly select the account owning a purchase is to install the app from a computer via Google Play web page:
+
+• Uninstall this app.
+• Open Google Play web page from your computer.
+• Login with an account owning the purchase.
+• Install this app directly from the Google Play web page.
+"</string>
+    <string name="billing_themes">Themes (19 x 19 x 20 colors)</string>
+    <string name="billing_sharing">Remove app name when sharing</string>
 
     <string name="pref_master_off">Scrobbler disabled</string>
     <string name="pref_master_on">Scrobbler active</string>
@@ -217,6 +245,8 @@
     <string name="pref_export_desc">Backs up settings and saved edits. Does not save logins for security reasons. Useful for moving between devices or sharing with friends.</string>
     <string name="pref_import">Import</string>
     <string name="pref_personalization">Personalization</string>
+    <string name="pref_themes">Themes</string>
+    <string name="pref_themes_desc">Mix and match\nAlso changes the notification color</string>
     <string name="pref_widget_charts">Homescreen widget - Charts</string>
     <string name="pref_show_albums">Show album names</string>
     <string name="pref_show_albums_desc">…in recent scrobbles</string>

@@ -5,8 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorNoti">@color/pinkNoti</item>
         <item name="colorPrimary">@color/pinkPrimary</item>
-        <item name="colorSecondary">@color/pinkSecondary</item>
-        <item name="colorHighlight">@color/pinkHighlight</item>
+        <item name="colorSecondary">@color/purpleSecondary</item>
 
         <item name="colorOnPrimary">@android:color/black</item>
         <item name="colorOnSecondary">@android:color/black</item>
@@ -22,6 +21,7 @@
         <item name="snackbarTextViewStyle">@style/snackbarText</item>
         <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
         <item name="bottomSheetDialogTheme">@style/RoundedBottomSheetDialog</item>
+        <item name="android:selectableItemBackground">@drawable/ripple_rounded</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
@@ -101,10 +101,22 @@
 
     <style name="friendsLinks" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textSize">12sp</item>
-        <item name="drawableTint">@color/pinkSecondary</item>
+        <item name="drawableTint">?colorSecondary</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="ProFeaturesText">
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="android:layout_marginStart">8dp</item>
+    </style>
+
+    <style name="ProFeaturesImage">
+        <item name="shapeAppearance">@style/roundedCorners</item>
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_margin">8dp</item>
     </style>
 
     <style name="bottomSheetContent">

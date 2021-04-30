@@ -60,7 +60,7 @@ class TagInfoFragment: BottomSheetDialogFragment() {
 
         viewModel.info.observe(viewLifecycleOwner) {
             it ?: return@observe
-            val tagInfo = it.first
+            val tagInfo = it.first ?: return@observe
             val similarTags = it.second
 
             binding.tagInfoProgress.hide()

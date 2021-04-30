@@ -29,7 +29,7 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
     lateinit var viewModel: ChartsVM
     private val handler by lazy { EntryInfoHandler(WeakReference(this)) }
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
-    open val itemSizeDp = 185
+    open val itemSizeDp = 185.dp
     open val forceDimensions = false
     private var maxCount = -2
     var checkAllForMax = false
@@ -62,9 +62,8 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
         val holderBinding = GridItemChartBinding.inflate(inflater, parent, false)
         if (forceDimensions) {
             val lp = holderBinding.root.layoutParams
-            lp.width = itemSizeDp.dp
-            lp.height = itemSizeDp.dp
-            holderBinding.root.layoutParams = lp
+            lp.width = itemSizeDp
+            lp.height = itemSizeDp
         }
         return VHChart(
                 holderBinding,
@@ -158,8 +157,8 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
 
         init {
             itemView.setOnClickListener(this)
-            itemView.minimumWidth = itemSizeDp.dp
-            itemView.minimumHeight = itemSizeDp.dp
+            itemView.minimumWidth = itemSizeDp
+            itemView.minimumHeight = itemSizeDp
         }
 
         override fun onClick(view: View) {

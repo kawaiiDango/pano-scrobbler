@@ -35,6 +35,7 @@
 - Weekly/monthly top scrobble notifications
 - Add/remove personal tags
 - Customizable homescreen widget
+- Mix and match themes
 
 ### Building:
 See [instructions.md](instructions.md)

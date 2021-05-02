@@ -3,7 +3,7 @@
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
 [ko-fi]: shields/ko-fi.svg
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
-[![download][play-store]][play-store-link] [![donate][ko-fi]][ko-fi-link]
+[![download][play-store]][play-store-link]
 
 <img src="https://i.imgur.com/XGmtOP5.jpg" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/m1lbrU6l.jpg" alt="friends" width="200"/> <img src="https://i.imgur.com/7kETocF.jpg" alt="charts" width="200"/>
 

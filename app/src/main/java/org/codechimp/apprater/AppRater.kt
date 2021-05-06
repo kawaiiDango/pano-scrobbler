@@ -128,7 +128,7 @@ object AppRater {
      * @param scrobblesUntilPrompt
      */
     fun app_launched(context: Context, daysUntilPrompt: Int = DAYS_UNTIL_PROMPT,
-                     scrobblesUntilPrompt: Int = MIN_SCROBBLES_UNTIL_PROMPT) {
+                     scrobblesUntilPrompt: Int = MIN_SCROBBLES_UNTIL_PROMPT): Boolean {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         val editor = prefs.edit()
         val days: Int
@@ -137,18 +137,18 @@ object AppRater {
             if (BuildConfig.VERSION_NAME != prefs.getString(PREF_APP_VERSION_NAME, "none")) {
                 editor.putString(PREF_APP_VERSION_NAME, BuildConfig.VERSION_NAME)
                 resetData(context)
-                commitOrApply(editor)
+                editor.apply()
             }
         }
         if (isVersionCodeCheckEnabled) {
             if (BuildConfig.VERSION_CODE != prefs.getInt(PREF_APP_VERSION_CODE, -1)) {
                 editor.putInt(PREF_APP_VERSION_CODE, BuildConfig.VERSION_CODE)
                 resetData(context)
-                commitOrApply(editor)
+                editor.apply()
             }
         }
         if (prefs.getBoolean(PREF_DONT_SHOW_AGAIN, false)) {
-            return
+            return false
         } else if (prefs.getBoolean(PREF_REMIND_LATER, false)) {
             days = DAYS_UNTIL_PROMPT_FOR_REMIND_LATER
             scrobbles = LAUNCHES_UNTIL_PROMPT_FOR_REMIND_LATER
@@ -167,10 +167,13 @@ object AppRater {
         }
         // Wait for at least the number of scrobbles && the number of days used
         // until prompt
-        if (scrobble_count >= scrobbles && System.currentTimeMillis() >= date_firstLaunch!! + days * 24 * 60 * 60 * 1000) {
+        val shouldShowPrompt = scrobble_count >= scrobbles && System.currentTimeMillis() >= date_firstLaunch!! + days * 24 * 60 * 60 * 1000
+        
+        if (shouldShowPrompt)
             showRateSnackbar(context, editor)
-        }
-        commitOrApply(editor)
+        editor.apply()
+        
+        return shouldShowPrompt
     }
 
     /**
@@ -212,23 +215,10 @@ object AppRater {
                     rateNow(context)
                     if (editor != null) {
                         editor.putBoolean(PREF_DONT_SHOW_AGAIN, true)
-                        commitOrApply(editor)
+                        editor.apply()
                     }
                 }
                 .addCallback(object : Snackbar.Callback() {
-                    override fun onDismissed(transientBottomBar: Snackbar?, @DismissEvent event: Int) {
-                        super.onDismissed(transientBottomBar, event)
-                        if (event == Snackbar.Callback.DISMISS_EVENT_SWIPE || event == Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                            if (editor != null) {
-                                val date_firstLaunch = System.currentTimeMillis()
-                                editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch)
-                                editor.putBoolean(PREF_REMIND_LATER, true)
-                                editor.putBoolean(PREF_DONT_SHOW_AGAIN, false)
-                                commitOrApply(editor)
-                            }
-                        }
-                    }
-
                     override fun onShown(sb: Snackbar?) {
                         super.onShown(sb)
                         if (sb != null && Main.isTV)
@@ -245,14 +235,18 @@ object AppRater {
                     long date_firstLaunch = System.currentTimeMillis();
                     editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch);
                     editor.putLong(PREF_LAUNCH_COUNT, 0);
-                    commitOrApply(editor);
+                    editor.apply();
                 }
  */
         snackbar.show()
-    }
 
-    private fun commitOrApply(editor: SharedPreferences.Editor) {
-        editor.apply()
+        if (editor != null) {
+            val date_firstLaunch = System.currentTimeMillis()
+            editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch)
+            editor.putBoolean(PREF_REMIND_LATER, true)
+            editor.putBoolean(PREF_DONT_SHOW_AGAIN, false)
+            editor.apply()
+        }
     }
 
     fun resetData(context: Context) {
@@ -264,7 +258,7 @@ object AppRater {
             .putInt(SCROBBLE_COUNT, 0)
         val date_firstLaunch = System.currentTimeMillis()
         editor.putLong(PREF_FIRST_LAUNCHED, date_firstLaunch)
-        commitOrApply(editor)
+        editor.apply()
     }
 
     fun incrementScrobbleCount(defPref: SharedPreferences) {

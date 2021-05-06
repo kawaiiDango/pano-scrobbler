@@ -13,6 +13,7 @@
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:textDirection">locale</item>
+<!--        <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>-->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <!--        <item name="android:windowTranslucentStatus">true</item>-->
         <!-- bug https://stackoverflow.com/a/48328471/1067596-->
@@ -58,6 +59,7 @@
         <item name="android:windowEnterTransition">@android:transition/fade</item>
         <item name="android:windowExitTransition">@android:transition/fade</item>
         <item name="android:windowActivityTransitions">true</item>
+<!--        <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>-->
 
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>

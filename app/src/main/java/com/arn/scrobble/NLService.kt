@@ -83,7 +83,6 @@ class NLService : NotificationListenerService() {
         filter.addAction(iBAD_META)
         filter.addAction(iOTHER_ERR)
         filter.addAction(iMETA_UPDATE)
-        filter.addAction(iDISMISS_MAIN_NOTI)
         filter.addAction(iDIGEST_WEEKLY)
         filter.addAction(iDIGEST_MONTHLY)
         filter.addAction(iSCROBBLER_ON)
@@ -370,9 +369,6 @@ class NLService : NotificationListenerService() {
                                 intent.getIntExtra(B_HASH, 0), true,
                                 currentBundle.getBoolean(B_USER_LOVED), currentBundle.getInt(B_USER_PLAY_COUNT))
                     }
-                }
-                iDISMISS_MAIN_NOTI -> {
-                    nm.cancel(NOTI_ID_SCR, 0)
                 }
                 iDIGEST_WEEKLY -> {
                     Stuff.scheduleDigests(applicationContext)
@@ -897,11 +893,8 @@ class NLService : NotificationListenerService() {
         const val iUNLOVE = "com.arn.scrobble.UNLOVE"
         const val iBLACKLIST = "com.arn.scrobble.BLACKLIST"
         const val iWHITELIST = "com.arn.scrobble.WHITELIST"
-        const val iDISMISS_MAIN_NOTI = "com.arn.scrobble.DISMISS_MAIN_NOTI"
         const val iNLS_STARTED = "com.arn.scrobble.NLS_STARTED"
         const val iSESS_CHANGED = "com.arn.scrobble.SESS_CHANGED"
-        const val iEDITED = "com.arn.scrobble.EDITED"
-        const val iDRAWER_UPDATE = "com.arn.scrobble.DRAWER_UPDATE"
         const val iMETA_UPDATE = "com.arn.scrobble.iMETA_UPDATE"
         const val iOTHER_ERR = "com.arn.scrobble.OTHER_ERR"
         const val iBAD_META = "com.arn.scrobble.BAD_META"

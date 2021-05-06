@@ -278,14 +278,16 @@ class EditFragment: LoginFragment() {
         } catch (e: Exception){
             errMsg = e.message
         }
-        if (errMsg == null && !standalone) {
-            val i = Intent(NLService.iEDITED)
-            i.putExtra(NLService.B_ARTIST, artist)
-            i.putExtra(NLService.B_ALBUM, album)
-            i.putExtra(NLService.B_TITLE, track)
-            i.putExtra(NLService.B_TIME, timeMillis)
-            context?.sendBroadcast(i)
-            if (args.getLong(NLService.B_TIME) == 0L) { //now playing
+        if (errMsg == null) {
+            (activity as? Main)?.let {
+                it.mainNotifierViewModel.editData.postValue(
+                        Track(track, null, album, artist).apply {
+                            if (args.getLong(NLService.B_TIME) != 0L)
+                                playedWhen = Date(timeMillis)
+                    }
+                )
+            }
+            if (args.getLong(NLService.B_TIME) == 0L /* now playing */) {
                 context?.sendBroadcast(Intent(NLService.iCANCEL))
             }
         }

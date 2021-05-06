@@ -40,11 +40,9 @@ import kotlin.random.Random
 
 class LFMRequester(context: Context) {
     private var contextWr = WeakReference(context.applicationContext)
-    private val getContext: Context
-        get() {
-            return contextWr.get()!!
-        }
-    private val prefs by lazy { DualPref(skipCP, getContext) }
+    private val context
+        get() = contextWr.get()!!
+    private val prefs by lazy { DualPref(skipCP, this.context) }
     private var skipCP = false
     private lateinit var toExec: (() -> Any?)
     private val lastfmSessKey by lazy { prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null) }
@@ -52,7 +50,7 @@ class LFMRequester(context: Context) {
     private val lastfmUsername by lazy { prefs.getString(Stuff.PREF_LASTFM_USERNAME, null) }
 
     private fun initCaller (online: Boolean) {
-        val caller = Stuff.initCaller(getContext)
+        val caller = Stuff.initCaller(context)
         caller.cache.expirationPolicy = LFMCachePolicy(online)
     }
 
@@ -139,17 +137,12 @@ class LFMRequester(context: Context) {
             val recents = User.getRecentTracks(null, 1, 1,
                     cal.timeInMillis/1000, System.currentTimeMillis()/1000, lastfmSession, null)
 
-            val actPref = getContext.getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
-            actPref.edit()
-                    .putInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, recents?.totalPages ?: 0)
-                    .putInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, profile?.playcount ?: 0)
-                    .putLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, profile?.registeredDate?.time ?: 0)
-                    .putString(Stuff.PREF_ACTIVITY_PROFILE_PIC, profile?.getWebpImageURL(ImageSize.EXTRALARGE) ?: "")
-                    .apply()
-
-            val intent = Intent(NLService.iDRAWER_UPDATE)
-            getContext.sendBroadcast(intent)
-            null
+            DrawerData(
+                todayScrobbles = recents?.totalPages ?: 0,
+                totalScrobbles = profile?.playcount ?: 0,
+                registeredDate = profile?.registeredDate?.time ?: 0,
+                profilePicUrl = profile?.getWebpImageURL(ImageSize.EXTRALARGE) ?: "",
+            ).apply { saveToPref(context) }
         }
         return this
     }
@@ -239,7 +232,7 @@ class LFMRequester(context: Context) {
             var scrobblingSince = scrobblingSincep
             if (usernamep == null) {
                 username = lastfmUsername ?: throw Exception("Login required")
-                scrobblingSince = getContext
+                scrobblingSince = context
                         .getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
                         ?.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0) ?: 0
             } else {
@@ -280,7 +273,7 @@ class LFMRequester(context: Context) {
             val es = Executors.newCachedThreadPool()
             es.execute {
                 try {
-                    artists = LFMRequester(getContext)
+                    artists = LFMRequester(context)
                             .skipContentProvider()
                             .getCharts(Stuff.TYPE_ARTISTS, period, 1, null, 3)
                             .toExec() as? PaginatedResult<Artist>?
@@ -288,7 +281,7 @@ class LFMRequester(context: Context) {
             }
             es.execute {
                 try {
-                    albums = LFMRequester(getContext)
+                    albums = LFMRequester(context)
                             .skipContentProvider()
                             .getCharts(Stuff.TYPE_ALBUMS, period, 1, null, 3)
                             .toExec() as? PaginatedResult<Album>?
@@ -296,7 +289,7 @@ class LFMRequester(context: Context) {
             }
             es.execute {
                 try {
-                    tracks = LFMRequester(getContext)
+                    tracks = LFMRequester(context)
                             .skipContentProvider()
                             .getCharts(Stuff.TYPE_TRACKS, period, 1, null, 3)
                             .toExec() as? PaginatedResult<Track>?
@@ -307,21 +300,21 @@ class LFMRequester(context: Context) {
 
             artists?.let {
                 if (!it.isEmpty) {
-                    digestArr += getContext.getString(R.string.top_artists) + ":"
+                    digestArr += context.getString(R.string.top_artists) + ":"
                     digestArr += it.pageResults.joinToString { it.name }
                 }
             }
 
             albums?.let {
                 if (!it.isEmpty) {
-                    digestArr += getContext.getString(R.string.top_albums) + ":"
+                    digestArr += context.getString(R.string.top_albums) + ":"
                     digestArr += it.pageResults.joinToString { it.name }
                 }
             }
 
             tracks?.let {
                 if (!it.isEmpty) {
-                    digestArr += getContext.getString(R.string.top_tracks) + ":"
+                    digestArr += context.getString(R.string.top_tracks) + ":"
                     digestArr += it.pageResults.joinToString { it.name }
                 }
             }
@@ -690,7 +683,7 @@ class LFMRequester(context: Context) {
                     if (correctedArtist != null && scrobbleData.album == "")
                         scrobbleData.artist = correctedArtist
                 }
-                val dao = PendingScrobblesDb.getDb(getContext).getEditsDao()
+                val dao = PendingScrobblesDb.getDb(context).getEditsDao()
                 val edit =
                         try {
                             if (track != null)
@@ -722,7 +715,7 @@ class LFMRequester(context: Context) {
                         i.putExtra(NLService.B_USER_LOVED, track.isLoved)
                         i.putExtra(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
                     }
-                    getContext.sendBroadcast(i)
+                    context.sendBroadcast(i)
                 }
                 if (Main.isOnline) {
                     if (correctedArtist != null || edit != null) {
@@ -764,7 +757,7 @@ class LFMRequester(context: Context) {
                         i.putExtra(NLService.B_ALBUM_ARTIST, scrobbleData.albumArtist)
                         i.putExtra(NLService.B_TIME, scrobbleData.timestamp * 1000L)
                         i.putExtra(NLService.B_HASH, hash)
-                        getContext.sendBroadcast(i)
+                        context.sendBroadcast(i)
                     }
                 }
             } else {
@@ -802,7 +795,7 @@ class LFMRequester(context: Context) {
                 }
                 if (scrobbleResults.isEmpty() ||
                         scrobbleResults.values.any { !it.isSuccessful }) {
-                    val dao = PendingScrobblesDb.getDb(getContext).getScrobblesDao()
+                    val dao = PendingScrobblesDb.getDb(context).getScrobblesDao()
                     val entry = PendingScrobble()
                     entry.artist = scrobbleData.artist
                     entry.album = scrobbleData.album
@@ -826,7 +819,7 @@ class LFMRequester(context: Context) {
                         entry.autoCorrected = 1
                     dao.insert(entry)
                     savedAsPending = true
-                    PendingScrJob.checkAndSchedule(getContext)
+                    PendingScrJob.checkAndSchedule(context)
                 }
             }
 
@@ -835,11 +828,11 @@ class LFMRequester(context: Context) {
                 scrobbleResults.forEach { (key, result) ->
                     if (!result.isSuccessful) {
                         val errMsg = scrobbleResults[key]?.errorMessage
-                                ?: getContext.getString(R.string.network_error)
-                        failedTextLines += "<b>" + getContext.getString(key) + ":</b> $errMsg"
+                                ?: context.getString(R.string.network_error)
+                        failedTextLines += "<b>" + context.getString(key) + ":</b> $errMsg"
                     } else if (result.isSuccessful && result.isIgnored) {
-                        failedTextLines += "<b>" + getContext.getString(key) + ":</b> " +
-                                getContext.getString(R.string.scrobble_ignored, scrobbleData.artist)
+                        failedTextLines += "<b>" + context.getString(key) + ":</b> " +
+                                context.getString(R.string.scrobble_ignored, scrobbleData.artist)
                     }
                 }
                 if (failedTextLines.isNotEmpty()) {
@@ -849,7 +842,7 @@ class LFMRequester(context: Context) {
                     i.putExtra(NLService.B_ERR_MSG, failedText)
                     i.putExtra(NLService.B_PENDING, savedAsPending)
                     i.putExtra(NLService.B_HASH, hash)
-                    getContext.sendBroadcast(i)
+                    context.sendBroadcast(i)
                 }
 
             } catch (e: NullPointerException) {
@@ -866,7 +859,7 @@ class LFMRequester(context: Context) {
             var submittedAll = true
             val serviceIdToKeys = getServiceIdToKeys(true)
 
-            val dao = PendingScrobblesDb.getDb(getContext).getLovesDao()
+            val dao = PendingScrobblesDb.getDb(context).getLovesDao()
             val pl = dao.find(artist, track)
             if (pl != null){
                 if (pl.shouldLove == !love) {
@@ -926,7 +919,7 @@ class LFMRequester(context: Context) {
                     }
                     if (entry.state != 0) {
                         dao.insert(entry)
-                        PendingScrJob.checkAndSchedule(getContext)
+                        PendingScrJob.checkAndSchedule(context)
                         submittedAll = false
                     }
                 }
@@ -940,7 +933,7 @@ class LFMRequester(context: Context) {
     fun delete(track: Track, callback: ((Boolean) -> Unit)?): LFMRequester {
         toExec = {
             val serviceIdToKeys = getServiceIdToKeys(true)
-            val unscrobbler = LastfmUnscrobbler(getContext)
+            val unscrobbler = LastfmUnscrobbler(context)
             val success = unscrobbler.checkCsrf(lastfmUsername!!) &&
                     unscrobbler.unscrobble(track.artist, track.name, track.playedWhen.time)
             callback!!.invoke(success)
@@ -992,7 +985,7 @@ class LFMRequester(context: Context) {
                     }
                 }
                 val intent = Intent(NLService.iSESS_CHANGED)
-                getContext.sendBroadcast(intent)
+                context.sendBroadcast(intent)
             }
             null
         }

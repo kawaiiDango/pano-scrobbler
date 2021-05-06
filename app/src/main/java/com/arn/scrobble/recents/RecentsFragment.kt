@@ -79,16 +79,6 @@ open class RecentsFragment : Fragment(),
     private var smoothScroller: LinearSmoothScroller? = null
     open val isShowingLoves = false
 
-    private val editReceiver = object : BroadcastReceiver() {
-        override fun onReceive(c: Context?, i: Intent) {
-            val extras = i.extras!!
-            adapter.editTrack(extras.getString(NLService.B_ARTIST)!!,
-                    extras.getString(NLService.B_ALBUM)!!,
-                    extras.getString(NLService.B_TITLE)!!,
-                    extras.getLong(NLService.B_TIME))
-        }
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentRecentsBinding.inflate(inflater, container, false)
         coordinatorBinding = (activity as Main).binding.coordinatorMain
@@ -224,6 +214,15 @@ open class RecentsFragment : Fragment(),
                 refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
             }
         })
+
+        if (!isShowingLoves)
+            activity.mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
+                it?.let {
+                    adapter.editTrack(it)
+                    activity.mainNotifierViewModel.editData.value = null
+                }
+            }
+
         viewModel.loadHero(null)
                 .observe(viewLifecycleOwner, {
                     it ?: return@observe
@@ -495,18 +494,8 @@ open class RecentsFragment : Fragment(),
         return true
     }
 
-    override fun onStart() {
-        super.onStart()
-        if(!isShowingLoves)
-            context?.registerReceiver(editReceiver, IntentFilter(NLService.iEDITED))
-    }
-
     override fun onStop() {
         refreshHandler.removeCallbacks(timedRefresh)
-        try {
-            context?.unregisterReceiver(editReceiver)
-        } catch (e: IllegalArgumentException) {}
-
         super.onStop()
     }
 

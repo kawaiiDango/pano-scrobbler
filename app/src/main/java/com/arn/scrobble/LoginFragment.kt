@@ -105,11 +105,8 @@ open class LoginFragment: DialogFragment() {
                         try {
                             dismiss()
                         } catch (e:IllegalStateException) {}
-                    else {
-                        if (standalone)
-                            context?.sendBroadcast(Intent(NLService.iDISMISS_MAIN_NOTI))
+                    else
                         activity?.onBackPressed()
-                    }
                 },
                 500
         )

@@ -66,7 +66,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var pref: MultiPreferences
-    private lateinit var actPref: SharedPreferences
     private var lastDrawerOpenTime:Long = 0
     private var backArrowShown = false
     var coordinatorPadding = 0
@@ -76,6 +75,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private lateinit var navHeaderbinding: HeaderNavBinding
     private lateinit var connectivityCb: ConnectivityManager.NetworkCallback
     val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
+    val mainNotifierViewModel by lazy { VMFactory.getVM(this, MainNotifierViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Stuff.timeIt("onCreate start")
@@ -94,7 +94,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         pref = MultiPreferences(applicationContext)
-        actPref = getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
         coordinatorPadding = binding.coordinatorMain.coordinator.paddingStart
         isTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
 
@@ -122,7 +121,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         toggle = object: ActionBarDrawerToggle(
                 this, binding.drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             override fun onDrawerOpened(drawerView: View) {
-                this@Main.onDrawerOpened()
+                this@Main.onDrawerOpened(mainNotifierViewModel.drawerData.value!!)
             }
         }
         toggle.drawerArrowDrawable = ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
@@ -206,6 +205,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
         billingViewModel.queryPurchases()
+        mainNotifierViewModel.drawerData.observe(this) {
+            it?.let { onDrawerOpened(it) }
+        }
 //        showNotRunning()
 //        testNoti()
     }
@@ -337,7 +339,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     }
 
-    private fun onDrawerOpened(forceUpdate: Boolean = false){
+    private fun onDrawerOpened(drawerData: DrawerData, forceUpdate: Boolean = false){
         if (!binding.drawerLayout.isDrawerVisible(GravityCompat.START) || (!forceUpdate &&
                         System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL))
             return
@@ -346,24 +348,21 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val displayUsername = if (BuildConfig.DEBUG) "nobody" else username
         if (navHeaderbinding.navName.tag == null)
             navHeaderbinding.navName.text = displayUsername
-        val numToday = actPref.getInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, 0)
-        val numTotal = actPref.getInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, 0)
         val nf = NumberFormat.getInstance()
         navHeaderbinding.navNumScrobbles.text = getString(R.string.num_scrobbles_nav,
-                nf.format(numTotal), nf.format(numToday))
+                nf.format(drawerData.totalScrobbles), nf.format(drawerData.todayScrobbles))
 
         navHeaderbinding.navProfileLink.setOnClickListener { v:View ->
             Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
         }
-        val picUrl = actPref.getString(Stuff.PREF_ACTIVITY_PROFILE_PIC,"")
-        if (picUrl != "")
+        if (drawerData.profilePicUrl != "")
             Picasso.get()
-                    .load(picUrl)
+                    .load(drawerData.profilePicUrl)
                     .noPlaceholder()
                     .error(R.drawable.vd_wave)
                     .into(navHeaderbinding.navProfilePic)
         if (!forceUpdate)
-            LFMRequester(applicationContext).getDrawerInfo().asAsyncTask()
+            LFMRequester(applicationContext).getDrawerInfo().asAsyncTask(mainNotifierViewModel.drawerData)
         lastDrawerOpenTime = System.currentTimeMillis()
 
         if (navHeaderbinding.navName.tag == null) {
@@ -644,19 +643,8 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         }
     }
 
-    private val mainReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                NLService.iDRAWER_UPDATE -> onDrawerOpened(true)
-            }
-        }
-    }
-
     public override fun onStart() {
         super.onStart()
-        val iF = IntentFilter()
-        iF.addAction(NLService.iDRAWER_UPDATE)
-        registerReceiver(mainReceiver, iF)
 
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val builder = NetworkRequest.Builder()
@@ -694,7 +682,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 binding.navView.addOnLayoutChangeListener { view, left, top, right, bottom,
                                                      leftWas, topWas, rightWas, bottomWas ->
                     if (left != leftWas || right != rightWas)
-                        onDrawerOpened()
+                        onDrawerOpened(mainNotifierViewModel.drawerData.value!!)
                 }
                 drawerInited = true
             }
@@ -718,7 +706,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     public override fun onStop() {
-        unregisterReceiver(mainReceiver)
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         cm.unregisterNetworkCallback(connectivityCb)
         super.onStop()

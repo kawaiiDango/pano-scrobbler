@@ -123,16 +123,11 @@ class RecentsAdapter
         }
     }
 
-    fun editTrack(artist: String, album: String, title: String, timeMillis: Long) {
-        val track = Track(title, null, album, artist)
-        track.playedWhen = if (timeMillis != 0L)
-                Date(timeMillis)
-            else
-                null
+    fun editTrack(track: Track) {
         val idx = viewModel.tracks.indexOfFirst { it.playedWhen == track.playedWhen }
         if (idx != -1) {
             val prevTrack = viewModel.tracks[idx]
-            if (prevTrack.artist == artist && prevTrack.album == album && prevTrack.name == title)
+            if (prevTrack.artist == track.artist && prevTrack.album == track.album && prevTrack.name == track.name)
                 return
             viewModel.deletedTracksStringSet += prevTrack.toString()
             viewModel.tracks[idx] = track

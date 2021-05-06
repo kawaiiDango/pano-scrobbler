@@ -40,6 +40,7 @@ object VMFactory: ViewModelProvider.Factory {
             modelClass.isAssignableFrom(TagInfoVM::class.java) -> TagInfoVM(application!!) as T
             modelClass.isAssignableFrom(UserTagsVM::class.java) -> UserTagsVM(application!!) as T
             modelClass.isAssignableFrom(BillingViewModel::class.java) -> BillingViewModel(application!!) as T
+            modelClass.isAssignableFrom(MainNotifierViewModel::class.java) -> MainNotifierViewModel(application!!) as T
             else -> throw RuntimeException("Unknown VM class")
         }
     }

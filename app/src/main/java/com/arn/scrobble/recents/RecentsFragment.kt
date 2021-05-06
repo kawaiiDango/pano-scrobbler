@@ -578,10 +578,9 @@ open class RecentsFragment : Fragment(),
             val palette = Palette.from(listOf(swatch))
             viewModel.paletteColors.value = PaletteColors(context!!, palette)
         } else if (d is BitmapDrawable && d.bitmap != null)
-            Palette.from(d.bitmap).generate {
-                it?.let {
-                    viewModel.paletteColors.value = PaletteColors(context!!, it)
-                }
+            Palette.from(d.bitmap).generate { palette ->
+                if (palette != null && context != null)
+                    viewModel.paletteColors.value = PaletteColors(context!!, palette)
             }
     }
 

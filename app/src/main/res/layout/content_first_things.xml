@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/list_item_padding"
-                tools:text="@string/grant_notification_access_desc"
+                android:text="@string/grant_notification_access_desc"
                 android:textSize="13sp"/>
         </LinearLayout>
 

@@ -34,12 +34,14 @@
         tools:text="status" />
 
     <TextView
+        android:id="@+id/rec_powered_by"
         android:alpha="0.5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="5dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/powered_acr" />
 
     <ImageView
@@ -52,5 +54,15 @@
         android:scaleType="fitCenter"
         app:tint="?colorPrimary"
         app:srcCompat="@drawable/vd_wave_simple" />
+
+    <TextView
+        android:id="@+id/rec_shazam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:layout_marginTop="16dp"
+        android:text="@string/shazam_scrobbling" />
 
 </RelativeLayout>

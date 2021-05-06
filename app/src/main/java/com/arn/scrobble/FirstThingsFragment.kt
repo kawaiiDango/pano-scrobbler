@@ -52,15 +52,6 @@ class FirstThingsFragment: Fragment() {
                     getString(R.string.grant_autostart_desc, Build.MANUFACTURER)
             binding.firstThings0.visibility = View.VISIBLE
         }
-        try {
-            if (Build.VERSION.SDK_INT >= 30)
-                context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
-            else
-                context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
-            binding.firstThings1Desc.text = getString(R.string.grant_notification_access_desc, getString(R.string.except_pixel_np))
-        } catch (e: PackageManager.NameNotFoundException) {
-            binding.firstThings1Desc.text = getString(R.string.grant_notification_access_desc, "")
-        }
 
         binding.firstThings1.setOnClickListener {
             val intent = if (Main.isTV && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)

@@ -22,7 +22,7 @@
 - Delete existing scrobbles
 - Offline cacheing and scrobbling
 - Check what your friends are listening to and view their profiles
-- Identify and scrobble a song from mic
+- Scrobble a song from mic or the S app (Android 8+)
 - Supports TVs (Oreo and lower needs adb commands)
 - Supports Pixel Now Playing
 - Import & export settings and saved edits
@@ -37,7 +37,7 @@
 - Customizable homescreen widget
 - Mix and match themes
 
-### Building:
+#### Building:
 See [instructions.md](instructions.md)
 
 - Inspiration from: Musixmatch's FloatingLyrics

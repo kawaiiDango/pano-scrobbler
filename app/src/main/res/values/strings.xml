@@ -85,8 +85,7 @@
     <string name="grant_autostart">Enable autostart</string>
     <string name="grant_autostart_desc">Needed on %1$s devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>
-    <string name="grant_notification_access_desc">Needed to retrieve music metadata even from non-music apps, such as youtube, browser etc. No actual notifications are read %1$s</string>
-    <string name="except_pixel_np">except Pixel\'s Now Playing.</string>
+    <string name="grant_notification_access_desc">Needed to retrieve music metadata. No non-music notifications are read</string>
     <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM and Listenbrainz can be authenticated after this, from settings</string>
     <string name="swap">Swap</string>
@@ -304,6 +303,7 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="add_acr_key_info">"• Sign up at https://console.acrcloud.com
 • Navigate to Projects > Audio &amp; video recognition
 • Create a new project, select Recorded Audio and the ACRCloud Music bucket"</string>
+    <string name="shazam_scrobbling">To continuously scrobble, open <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> instead and start Auto Shazam. Also make sure that Shazam is enabled for scrobbling.</string>
     <string name="pending_n_remaining">%1$d remaining</string>
     <string name="submitting_loves">Submitting loves, %1$d remaining</string>
     <string name="pending_batch">Submitting a batch</string>

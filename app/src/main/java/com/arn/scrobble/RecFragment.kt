@@ -9,8 +9,8 @@ import android.content.pm.ShortcutManager
 import android.graphics.Color
 import android.media.MediaRecorder
 import android.os.*
+import android.text.method.LinkMovementMethod
 import android.transition.Fade
-import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
@@ -48,11 +48,6 @@ class RecFragment:Fragment(){
         _binding = ContentRecBinding.inflate(inflater, container, false)
         if (!Main.isTV)
             setHasOptionsMenu(true)
-        else {
-            val outValue = TypedValue()
-            context!!.theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)
-            binding.recProgress.setBackgroundResource(outValue.resourceId)
-        }
         return binding.root
     }
 
@@ -66,6 +61,10 @@ class RecFragment:Fragment(){
             }
         }, 300)
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Main.isTV)
+            binding.recShazam.visibility = View.GONE
+        else
+            binding.recShazam.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onStart() {
@@ -96,7 +95,7 @@ class RecFragment:Fragment(){
                 val pinShortcutInfo = ShortcutInfo.Builder(context, "rec").build()
                 val pinnedShortcutCallbackIntent = shortcutManager.createShortcutResultIntent(pinShortcutInfo)
                 val successCallback = PendingIntent.getBroadcast(context,0,
-                        pinnedShortcutCallbackIntent,0)
+                        pinnedShortcutCallbackIntent, Stuff.updateCurrentOrImmutable)
 
                 shortcutManager.requestPinShortcut(pinShortcutInfo, successCallback.intentSender)
             }

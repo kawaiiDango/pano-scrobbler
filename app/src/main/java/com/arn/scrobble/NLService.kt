@@ -18,6 +18,7 @@ import android.preference.PreferenceManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.text.Html
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.media.app.MediaStyleMod
 import androidx.lifecycle.MutableLiveData
@@ -204,29 +205,68 @@ class NLService : NotificationListenerService() {
                     .apply()
     }
 
+    private fun isAppEnabled(packageName: String) =
+         ((pref.getStringSet(Stuff.PREF_WHITELIST, setOf())!!.contains(packageName) ||
+                (pref.getBoolean(Stuff.PREF_AUTO_DETECT, true) &&
+                        !pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!.contains(packageName))))
+
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        detectPixelNP(sbn, false)
+        if (pref.getBoolean(Stuff.PREF_PIXEL_NP, true))
+            scrobbleFromNoti(
+                sbn,
+                removed = false,
+                packageNames = listOf(Stuff.PACKAGE_PIXEL_NP, Stuff.PACKAGE_PIXEL_NP_R),
+                channelName = Stuff.CHANNEL_PIXEL_NP,
+                notiField = Notification.EXTRA_TITLE,
+                format = R.string.song_format_string
+            )
+        if (isAppEnabled(Stuff.PACKAGE_SHAZAM))
+            scrobbleFromNoti(
+                sbn,
+                removed = false,
+                packageNames = listOf(Stuff.PACKAGE_SHAZAM),
+                channelName = Stuff.CHANNEL_SHAZAM,
+                notiField = Notification.EXTRA_TEXT,
+                format = R.string.auto_shazam_now_playing
+            )
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?, rankingMap: RankingMap?, reason: Int) { //only for >26
         if (reason == REASON_APP_CANCEL || reason == REASON_APP_CANCEL_ALL ||
-                reason == REASON_TIMEOUT || reason == REASON_ERROR)
-            detectPixelNP(sbn, true)
+                reason == REASON_TIMEOUT || reason == REASON_ERROR) {
+            if (pref.getBoolean(Stuff.PREF_PIXEL_NP, true))
+                scrobbleFromNoti(
+                    sbn,
+                    removed = true,
+                    packageNames = listOf(Stuff.PACKAGE_PIXEL_NP, Stuff.PACKAGE_PIXEL_NP_R),
+                    channelName = Stuff.CHANNEL_PIXEL_NP,
+                )
+            if (isAppEnabled(Stuff.PACKAGE_SHAZAM))
+                scrobbleFromNoti(
+                    sbn,
+                    removed = true,
+                    packageNames = listOf(Stuff.PACKAGE_SHAZAM),
+                    channelName = Stuff.CHANNEL_SHAZAM,
+                )
+        }
     }
 
-    private fun detectPixelNP(sbn: StatusBarNotification?, removed:Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && sbn != null &&
-                pref.getBoolean(Stuff.PREF_PIXEL_NP, true) &&
-                (sbn.packageName == Stuff.PACKAGE_PIXEL_NP || sbn.packageName == Stuff.PACKAGE_PIXEL_NP_R)) {
+    private fun scrobbleFromNoti(sbn: StatusBarNotification?, removed:Boolean,
+                                 packageNames: List<String>, channelName: String,
+                                 notiField: String = Notification.EXTRA_TITLE,
+                                 @StringRes format: Int = 0
+    ) {
+        if (pref.getBoolean(Stuff.PREF_MASTER, true) &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && sbn != null && sbn.packageName in packageNames) {
             val n = sbn.notification
-            if (n.channelId == Stuff.CHANNEL_PIXEL_NP) {
-                Stuff.log("detectPixelNP " + n.extras.getString(Notification.EXTRA_TITLE) + "removed=$removed")
+            if (n.channelId == channelName) {
+                val title = n.extras.getString(notiField) ?: return
+                Stuff.log("${this::scrobbleFromNoti.name} $title removed=$removed")
                 if (removed) {
                     handler.remove(currentBundle.getInt(B_HASH))
                     return
                 }
-                val title = n.extras.getString(Notification.EXTRA_TITLE) ?: return
-                val meta = MetadataUtils.pixelNPExtractMeta(title, getString(R.string.song_format_string))
+                val meta = MetadataUtils.pixelNPExtractMeta(title, getString(format))
                 if (meta != null){
                     val hash = Stuff.genHashCode(meta[0], "", meta[1])
                     val packageNameArg =
@@ -246,7 +286,7 @@ class NLService : NotificationListenerService() {
                         handler.notifyScrobble(meta[0], meta[1], hash, true, currentBundle.getBoolean(B_USER_LOVED))
                     } else if (currentBundle.getInt(B_HASH) == hash &&
                             System.currentTimeMillis() - currentBundle.getLong(B_TIME) < Stuff.PIXEL_NP_INTERVAL)
-                        Stuff.log("detectPixelNP ignoring possible duplicate")
+                        Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                     else
                         handler.nowPlaying(meta[0], "", meta[1], "", 0, 0, hash, false, packageNameArg, true)
                 } else

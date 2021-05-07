@@ -63,7 +63,7 @@ public abstract class ImageHolder {
 	public String getWebpImageURL(ImageSize size) {
 		String imgUrl = getImageURL(size);
 		if (imgUrl != null && (imgUrl.endsWith(".png") || imgUrl.endsWith(".jpg")))
-		    imgUrl = imgUrl.substring(0,imgUrl.length()-3) + "webp";
+		    imgUrl += ".webp";
 		return imgUrl;
 	}
 

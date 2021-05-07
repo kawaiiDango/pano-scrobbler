@@ -457,7 +457,7 @@ object Stuff {
         return relDate
     }
 
-    fun drawableToBitmap(drawable: Drawable, width: Int, height: Int, forceDraw: Boolean = false): Bitmap {
+    fun drawableToBitmap(drawable: Drawable, width: Int, height: Int, forceDraw: Boolean = true): Bitmap {
         if (!forceDraw && drawable is BitmapDrawable && !drawable.bitmap.isRecycled)
             return drawable.bitmap
 

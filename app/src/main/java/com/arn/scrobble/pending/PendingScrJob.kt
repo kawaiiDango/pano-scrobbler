@@ -47,8 +47,6 @@ class PendingScrJob : JobService() {
         var doneCb:((done:Boolean)->Unit)? = null
 
         override fun doInBackground(vararg p0: Unit?): Boolean {
-            Stuff.initCaller(context)
-
             var done = submitLoves()
 
             var aneCount = dao.getAutoCorrectedCount(false)

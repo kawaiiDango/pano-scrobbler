@@ -18,7 +18,6 @@ import de.umass.lastfm.*
 class ChartsWidgetUpdaterJob : JobService() {
 
     override fun onStartJob(jp: JobParameters): Boolean {
-        Stuff.initCaller(applicationContext)
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
         val pref = applicationContext.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
         val username = MultiPreferences(applicationContext).getString(Stuff.PREF_LASTFM_USERNAME, null) ?: return false

@@ -49,15 +49,9 @@ class LFMRequester(context: Context) {
     private val lastfmSession by lazy { Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey) }
     private val lastfmUsername by lazy { prefs.getString(Stuff.PREF_LASTFM_USERNAME, null) }
 
-    private fun initCaller (online: Boolean) {
-        val caller = Stuff.initCaller(context)
-        caller.cache.expirationPolicy = LFMCachePolicy(online)
-    }
-
     private fun checkSession(usernamep: String? = null) {
         if (usernamep == null && lastfmSessKey == null)
             throw Exception("Login required")
-        initCaller(Main.isOnline)
     }
 
     fun getRecents(page: Int, to: Long, cached: Boolean, usernamep: String?): LFMRequester {
@@ -65,9 +59,7 @@ class LFMRequester(context: Context) {
             checkSession(usernamep)
             Stuff.log(this::getRecents.name + " " + page)
             val from = if (to == 0L) 0L else 1L
-            if (cached)
-                initCaller(false)
-            User.getRecentTracks(usernamep, page, 50, true, from, to/1000, lastfmSession, null)
+            User.getRecentTracks(usernamep, page, 50, true, from, to/1000, cached, lastfmSession, null)
         }
         return this
     }
@@ -76,9 +68,7 @@ class LFMRequester(context: Context) {
         toExec = {
             checkSession(usernamep)
             Stuff.log(this::getLoves.name + " " + page)
-            if (cached)
-                initCaller(false)
-            val pr = User.getLovedTracks(usernamep, page, 50, lastfmSession, null)
+            val pr = User.getLovedTracks(usernamep, page, 50, cached, lastfmSession, null)
             pr.pageResults.forEach {
                 it.isLoved = true
                 it.imageUrlsMap = null
@@ -90,7 +80,6 @@ class LFMRequester(context: Context) {
 
     fun getSimilarTracks(artist: String, track: String): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
             Track.getSimilar(artist, track, Stuff.LAST_KEY, 50)
         }
         return this
@@ -98,7 +87,6 @@ class LFMRequester(context: Context) {
 
     fun getSimilarArtists(artist: String): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
             Artist.getSimilar(artist, 50, Stuff.LAST_KEY)
         }
         return this
@@ -106,14 +94,12 @@ class LFMRequester(context: Context) {
 
     fun getArtistTopTracks(artist: String): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
             Artist.getTopTracks(artist, Stuff.LAST_KEY)
         }
         return this
     }
     fun getArtistTopAlbums(artist: String): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
             Artist.getTopAlbums(artist, Stuff.LAST_KEY)
         }
         return this
@@ -121,8 +107,7 @@ class LFMRequester(context: Context) {
 
     fun getFriendsRecents(username: String): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
-            Pair(username, User.getRecentTracks(username, 1, 1, false, null, Stuff.LAST_KEY))
+            Pair(username, User.getRecentTracks(username, 1, 1, false, 0, 0, !Main.isOnline, null, Stuff.LAST_KEY))
         }
         return this
     }
@@ -137,12 +122,15 @@ class LFMRequester(context: Context) {
             val recents = User.getRecentTracks(null, 1, 1,
                     cal.timeInMillis/1000, System.currentTimeMillis()/1000, lastfmSession, null)
 
-            DrawerData(
-                todayScrobbles = recents?.totalPages ?: 0,
-                totalScrobbles = profile?.playcount ?: 0,
-                registeredDate = profile?.registeredDate?.time ?: 0,
-                profilePicUrl = profile?.getWebpImageURL(ImageSize.EXTRALARGE) ?: "",
-            ).apply { saveToPref(context) }
+            if (profile != null && recents != null)
+                DrawerData(
+                    todayScrobbles = recents.totalPages,
+                    totalScrobbles = profile.playcount,
+                    registeredDate = profile.registeredDate?.time ?: 0,
+                    profilePicUrl = profile.getWebpImageURL(ImageSize.EXTRALARGE) ?: "",
+                ).apply { saveToPref(context) }
+            else
+                DrawerData.loadFromPref(context)
         }
         return this
     }
@@ -154,7 +142,7 @@ class LFMRequester(context: Context) {
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             var pr: PaginatedResult<User>
             try {
-                pr = User.getFriends(username, page, 30, null, Stuff.LAST_KEY)
+                pr = User.getFriends(username, page, 30, !Main.isOnline, null, Stuff.LAST_KEY)
             } catch (e: NullPointerException) {
                 val url = URL("https://www.last.fm/user/$username/following?page=$page")
                 var urlConnection: HttpURLConnection? = null
@@ -212,7 +200,6 @@ class LFMRequester(context: Context) {
     fun getCharts(type: Int, period: Period, page: Int, usernamep: String?, limit: Int = 50): LFMRequester {
         toExec = {
             Stuff.log(this::getCharts.name + " " + page)
-            initCaller(Main.isOnline)
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             val pr = when (type) {
                 Stuff.TYPE_ARTISTS -> User.getTopArtists(username, period, limit, page, Stuff.LAST_KEY)
@@ -227,7 +214,6 @@ class LFMRequester(context: Context) {
     fun getWeeklyChartsList(usernamep: String?, scrobblingSincep: Long): LFMRequester {
         toExec = {
             Stuff.log(this::getWeeklyChartsList.name)
-            initCaller(Main.isOnline)
             val username: String
             var scrobblingSince = scrobblingSincep
             if (usernamep == null) {
@@ -251,7 +237,6 @@ class LFMRequester(context: Context) {
     fun getWeeklyCharts(type: Int, from: Long, to: Long, usernamep: String?): LFMRequester {
         toExec = {
             Stuff.log(this::getWeeklyCharts.name)
-            initCaller(Main.isOnline)
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             val chart = when (type) {
                 Stuff.TYPE_ARTISTS -> User.getWeeklyArtistChart(username, from.toString(), to.toString(), -1, Stuff.LAST_KEY)
@@ -365,7 +350,6 @@ class LFMRequester(context: Context) {
     fun getSearches(term:String): LFMRequester {
         toExec = {
             Stuff.log(this::getSearches.name + " " + term)
-            initCaller(Main.isOnline)
             val artists = mutableListOf<Artist>()
             val albums = mutableListOf<Album>()
             val tracks = mutableListOf<Track>()
@@ -400,7 +384,7 @@ class LFMRequester(context: Context) {
             periods.forEach {
                 es.execute {
                     try {
-                        val pr = User.getRecentTracks(usernamep, 1, 1, false, it.from / 1000, it.to / 1000, lastfmSession, null)
+                        val pr = User.getRecentTracks(usernamep, 1, 1, false, it.from / 1000, it.to / 1000, false, lastfmSession, null)
                         it.count = pr.total
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -421,8 +405,6 @@ class LFMRequester(context: Context) {
 
     fun getTrackInfo(track: Track, pos: Int): LFMRequester {
         toExec = {
-            Stuff.log(this::getTrackInfo.name + " " + track.name)
-            initCaller(Main.isOnline)
             val info = try {
                 Track.getInfo(track.artist, track.name, Stuff.LAST_KEY)
             } catch (e: Exception){
@@ -435,8 +417,6 @@ class LFMRequester(context: Context) {
 
     fun getArtistInfo(artist: Artist, pos: Int): LFMRequester {
         toExec = {
-            Stuff.log(this::getArtistInfo.name + " " + artist.name)
-            initCaller(Main.isOnline)
             val info = try {
                 val info = getArtistInfoSpotify(artist.name)
                 if (info?.name.equals(artist.name, ignoreCase = true))
@@ -453,8 +433,6 @@ class LFMRequester(context: Context) {
 
     fun getAlbumInfo(album: Album, pos: Int): LFMRequester {
         toExec = {
-            Stuff.log(this::getAlbumInfo.name + " " + album.name)
-            initCaller(Main.isOnline)
             val info = try {
                 Album.getInfo(album.artist, album.name, Stuff.LAST_KEY)
             } catch (e:Exception){
@@ -467,7 +445,6 @@ class LFMRequester(context: Context) {
 
     fun getTagInfo(tag: String): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
             Tag.getInfo(tag, Stuff.LAST_KEY) to
 //                        Tag.getSimilar(tag, Stuff.LAST_KEY) //this doesn't work anymore
                     null
@@ -477,7 +454,6 @@ class LFMRequester(context: Context) {
 
     fun getUserTagsForEntry(entry: MusicEntry): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
             val list = when(entry) {
                 is Artist -> Artist.getTags(entry.name, lastfmSession)
                 is Album -> Album.getTags(entry.artist, entry.name, lastfmSession)
@@ -491,7 +467,6 @@ class LFMRequester(context: Context) {
 
     fun addUserTagsForEntry(entry: MusicEntry, tags: String): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
             when(entry) {
                 is Artist -> Artist.addTags(entry.name, tags, lastfmSession)
                 is Album -> Album.addTags(entry.artist, entry.name, tags, lastfmSession)
@@ -504,7 +479,6 @@ class LFMRequester(context: Context) {
 
     fun deleteUserTagsForEntry(entry: MusicEntry, tag: String): LFMRequester {
         toExec = {
-            initCaller(Main.isOnline)
             when(entry) {
                 is Artist -> Artist.removeTag(entry.name, tag, lastfmSession)
                 is Album -> Album.removeTag(entry.artist, tag, entry.name, lastfmSession)
@@ -519,7 +493,6 @@ class LFMRequester(context: Context) {
              activity: Activity, mld: MutableLiveData<Pair<String, MusicEntry?>>): LFMRequester {
         toExec = {
             Stuff.log(this::getInfo.name)
-            initCaller(Main.isOnline)
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             var album = albump
             var albumArtist: String? = null
@@ -1023,8 +996,10 @@ class LFMRequester(context: Context) {
             else
                 Track.scrobble(scrobbleData, session)
         } catch (e: CallException) {
-            if (e.cause is InterruptedIOException)
-                throw e.cause as InterruptedIOException
+            if (Thread.interrupted())
+                throw InterruptedException()
+//     SocketTimeoutException extends InterruptedIOException
+            e.printStackTrace()
             ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
         }
     }

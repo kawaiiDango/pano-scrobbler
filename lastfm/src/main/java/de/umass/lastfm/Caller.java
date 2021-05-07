@@ -237,8 +237,13 @@ public class Caller {
         return call(apiRootUrl,method,apiKey,params,session,session != null);
     }
 
-	public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
+    public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
                         Session session, boolean createSignature) {
+        return call(apiRootUrl,method,apiKey,params,session,createSignature, false);
+    }
+
+	public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
+                        Session session, boolean createSignature, boolean cacheFirst) {
 		params = new HashMap<String, String>(params); // create new Map in case params is an immutable Map
 		InputStream inputStream = null;
 		
@@ -246,8 +251,9 @@ public class Caller {
         //TODO: this is bugged for custom api root
 		String cacheEntryName = Cache.createCacheEntryName(method, params);
 		long cacheTime = cache != null ? cache.getExpirationPolicy().getExpirationTime(method, params) : -1;
-		if (!createSignature && cache != null && cacheTime != DefaultExpirationPolicy.NETWORK_AND_CACHE_CONST) {
-			inputStream = getStreamFromCache(cacheEntryName);
+		if (!createSignature && cache != null &&
+                (cacheTime != DefaultExpirationPolicy.NETWORK_AND_CACHE_CONST || cacheFirst)) {
+			inputStream = getStreamFromCache(cacheEntryName, cacheFirst);
 		}
 		
 		// no entry in cache, load from web
@@ -274,7 +280,7 @@ public class Caller {
 			try {
 				HttpURLConnection urlConnection = openPostConnection(apiRootUrl, method, params);
 				inputStream = getInputStreamFromConnection(urlConnection);
-				
+
 				if (inputStream == null) {
 					return Result.createHttpErrorResult(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
 //					return lastResult;
@@ -316,8 +322,9 @@ public class Caller {
 		}
     }
 
-	private InputStream getStreamFromCache(String cacheEntryName) {
-		if (cache != null && cache.contains(cacheEntryName) && !cache.isExpired(cacheEntryName)) {
+	private InputStream getStreamFromCache(String cacheEntryName, boolean forceCached) {
+		if (cache != null && cache.contains(cacheEntryName) &&
+                (!cache.isExpired(cacheEntryName) || forceCached)) {
 			return cache.load(cacheEntryName);
 		}
 		return null;

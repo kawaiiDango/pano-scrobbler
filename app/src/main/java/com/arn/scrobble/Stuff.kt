@@ -574,18 +574,6 @@ object Stuff {
         return browserPackages
     }
 
-    @Synchronized
-    fun initCaller(context: Context): Caller {
-        val caller = Caller.getInstance()
-        if (caller.userAgent != USER_AGENT) { // static instance not inited
-            caller.userAgent = USER_AGENT
-            caller.logger.level = Level.WARNING
-            val fsCache = FileSystemCache(context.cacheDir)
-            caller.cache = fsCache
-        }
-        return caller
-    }
-
     fun genHashCode(vararg objects: Any): Int {
         val prime = 31
         var result = 1

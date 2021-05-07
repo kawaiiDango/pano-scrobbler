@@ -156,8 +156,6 @@ class EditFragment: LoginFragment() {
             var validAlbumArtist:String? = ""
             var validTrack:Track? = null
 
-            Stuff.initCaller(context!!)
-
             if (!binding.loginForce.isChecked) {
                 if (album.isBlank() && origAlbum.isBlank())
                     validTrack =

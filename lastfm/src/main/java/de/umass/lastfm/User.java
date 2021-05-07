@@ -172,16 +172,16 @@ public class User extends ImageHolder {
 	}
 
 	public static PaginatedResult<User> getFriends(String user, String apiKey) {
-		return getFriends(user, 1, 50, null, apiKey);
+		return getFriends(user, 1, 50, false, null, apiKey);
 	}
 
-	public static PaginatedResult<User> getFriends(String user, int page, int limit, Session session, String apiKey) {
+	public static PaginatedResult<User> getFriends(String user, int page, int limit, boolean cacheFirst, Session session, String apiKey) {
         Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
         params.put("page", String.valueOf(page));
         params.put("limit", String.valueOf(limit));
         Result result = Caller.getInstance().call(null, "user.getFriends",
-                apiKey, params, session, false);
+                apiKey, params, session, false, cacheFirst);
 		return ResponseBuilder.buildPaginatedResult(result, User.class);
 	}
 
@@ -199,16 +199,16 @@ public class User extends ImageHolder {
 	}
 
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, Session session, String apiKey) {
-        return getRecentTracks(user, page, limit, false, 0, 0, session, apiKey);
+        return getRecentTracks(user, page, limit, false, 0, 0, false, session, apiKey);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, boolean extended, Session session, String apiKey) {
-        return getRecentTracks(user, page, limit, extended, 0, 0, session, apiKey);
+        return getRecentTracks(user, page, limit, extended, 0, 0, false, session, apiKey);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, long fromTime, long toTime, Session session, String apiKey) {
-        return getRecentTracks(user, page, limit, false, fromTime, toTime, session, apiKey);
+        return getRecentTracks(user, page, limit, false, fromTime, toTime, false, session, apiKey);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit,
-                boolean extended, long fromTime, long toTime, Session session, String apiKey) {
+                boolean extended, long fromTime, long toTime, boolean forceCached, Session session, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
 		params.put("limit", String.valueOf(limit));
@@ -221,7 +221,7 @@ public class User extends ImageHolder {
 		    params.put("to", String.valueOf(toTime));
         Result result;
             result = Caller.getInstance().call(null, "user.getRecentTracks",
-                apiKey, params, session, false);
+                apiKey, params, session, false, forceCached);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
@@ -432,12 +432,16 @@ public class User extends ImageHolder {
 	 * @return the loved tracks
 	 */
 	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, Session session, String apiKey) {
+        return getLovedTracks(user, page, limit, false, session, apiKey);
+    }
+
+	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, boolean forceCached, Session session, String apiKey) {
         Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
         params.put("page", String.valueOf(page));
         params.put("limit", String.valueOf(limit));
         Result result = Caller.getInstance().call(null, "user.getLovedTracks",
-                apiKey, params, session, false);
+                apiKey, params, session, false, forceCached);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 

@@ -121,7 +121,9 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         toggle = object: ActionBarDrawerToggle(
                 this, binding.drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             override fun onDrawerOpened(drawerView: View) {
-                this@Main.onDrawerOpened(mainNotifierViewModel.drawerData.value!!)
+                mainNotifierViewModel.drawerData.value?.let {
+                    this@Main.onDrawerOpened(it)
+                }
             }
         }
         toggle.drawerArrowDrawable = ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)

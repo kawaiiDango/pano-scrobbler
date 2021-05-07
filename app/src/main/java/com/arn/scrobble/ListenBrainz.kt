@@ -79,11 +79,13 @@ class ListenBrainz (private val token:String? = null) {
             return ScrobbleResult.createHttp200OKResult(conn.responseCode,
                     conn.responseMessage, errMsg)
 
-        } catch (e: InterruptedIOException) {
-            return ScrobbleResult.createHttp200OKResult(200, e.message, "ok") //suppress err notification
         } catch (e: Exception) {
             e.printStackTrace()
-            return ScrobbleResult.createHttp200OKResult(0, e.message, "")
+
+            return if (Thread.interrupted())
+                ScrobbleResult.createHttp200OKResult(200, e.message, "ok") //suppress err notification
+            else
+                ScrobbleResult.createHttp200OKResult(0, e.message, "")
         }
     }
 

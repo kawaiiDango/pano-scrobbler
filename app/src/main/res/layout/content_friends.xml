@@ -23,6 +23,8 @@
                 android:layout_height="match_parent"
                 android:layoutAnimation="@anim/layout_animation_slide_up"
                 android:paddingStart="8dp"
+                android:paddingTop="8dp"
+                android:clipToPadding="false"
                 tools:listitem="@layout/grid_item_friend"
                 />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

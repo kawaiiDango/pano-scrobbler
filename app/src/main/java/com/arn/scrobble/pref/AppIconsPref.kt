@@ -12,7 +12,6 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.PrefAppIconsBinding
 import com.google.android.material.imageview.ShapeableImageView
-import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 import java.text.NumberFormat
 
@@ -62,8 +61,6 @@ class AppIconsPref : Preference {
                 icon.setPadding(padding, padding, padding, padding)
                 val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME + ":" + packageNames.elementAt(i))
                 picasso.load(uri)
-                        // https://github.com/square/picasso/issues/279
-                        .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                         .resize(wPx - padding, wPx - padding)
                         .into(icon)
                 binding.appIconsContainer.addView(icon)

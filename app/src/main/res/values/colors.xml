@@ -9,6 +9,7 @@
     <color name="statusBarScrim">#32000000</color>
     <color name="dialogBg">#212121</color>
     <color name="gradient_launcher_fg">#fff</color>
+    <color name="shortcut_launcher_fg">#fff</color>
     <color name="edit_elevation">#1FFFFFFF</color>
 
     <color name="pinkNoti">#ec407a</color>

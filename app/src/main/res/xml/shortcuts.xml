@@ -3,7 +3,7 @@
     <shortcut
         android:shortcutId="pref"
         android:enabled="true"
-        android:icon="@drawable/vd_settings"
+        android:icon="@drawable/ic_shortcut_settings"
         android:shortcutShortLabel="@string/action_settings"
         android:shortcutLongLabel="@string/action_settings"
         android:shortcutDisabledMessage="@string/action_settings">
@@ -17,7 +17,7 @@
     <shortcut
         android:shortcutId="rec"
         android:enabled="true"
-        android:icon="@drawable/vd_mic"
+        android:icon="@drawable/ic_shortcut_mic"
         android:shortcutShortLabel="@string/menu_rec_short"
         android:shortcutLongLabel="@string/menu_rec_short"
         android:shortcutDisabledMessage="@string/menu_rec_short">
@@ -31,7 +31,7 @@
     <shortcut
         android:shortcutId="search"
         android:enabled="true"
-        android:icon="@drawable/vd_search"
+        android:icon="@drawable/ic_shortcut_search"
         android:shortcutShortLabel="@string/search"
         android:shortcutLongLabel="@string/search"
         android:shortcutDisabledMessage="@string/search">

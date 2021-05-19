@@ -1,11 +1,8 @@
 package com.arn.scrobble
 
 import android.animation.ValueAnimator
-import android.app.ActivityManager
-import android.app.Notification
+import android.app.*
 import android.app.Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.*
 import android.content.pm.LabeledIntent
 import android.content.pm.PackageManager
@@ -122,7 +119,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 this, binding.drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             override fun onDrawerOpened(drawerView: View) {
                 mainNotifierViewModel.drawerData.value?.let {
-                    this@Main.onDrawerOpened(it)
+                    this@Main.onDrawerOpened()
                 }
             }
         }
@@ -208,7 +205,21 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         }
         billingViewModel.queryPurchases()
         mainNotifierViewModel.drawerData.observe(this) {
-            it?.let { onDrawerOpened(it) }
+            it?.let { drawerData ->
+
+                val nf = NumberFormat.getInstance()
+                navHeaderbinding.navNumScrobbles.text = getString(R.string.num_scrobbles_nav,
+                    nf.format(drawerData.totalScrobbles), nf.format(drawerData.todayScrobbles))
+
+                if (drawerData.profilePicUrl != "")
+                    Picasso.get()
+                        .load(drawerData.profilePicUrl)
+                        .noPlaceholder()
+                        .error(R.drawable.vd_wave)
+                        .into(navHeaderbinding.navProfilePic)
+                else
+                    navHeaderbinding.navProfilePic.setImageResource(R.drawable.vd_wave)
+            }
         }
 //        showNotRunning()
 //        testNoti()
@@ -341,30 +352,22 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
     }
 
-    private fun onDrawerOpened(drawerData: DrawerData, forceUpdate: Boolean = false){
-        if (!binding.drawerLayout.isDrawerVisible(GravityCompat.START) || (!forceUpdate &&
+    private fun onDrawerOpened(){
+        if (!binding.drawerLayout.isDrawerVisible(GravityCompat.START) || (
                         System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL))
             return
+
+        LFMRequester(applicationContext).getDrawerInfo().asAsyncTask(mainNotifierViewModel.drawerData)
 
         val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
         val displayUsername = if (BuildConfig.DEBUG) "nobody" else username
         if (navHeaderbinding.navName.tag == null)
             navHeaderbinding.navName.text = displayUsername
-        val nf = NumberFormat.getInstance()
-        navHeaderbinding.navNumScrobbles.text = getString(R.string.num_scrobbles_nav,
-                nf.format(drawerData.totalScrobbles), nf.format(drawerData.todayScrobbles))
 
-        navHeaderbinding.navProfileLink.setOnClickListener { v:View ->
-            Stuff.openInBrowser("https://www.last.fm/user/$username", this, v)
+        navHeaderbinding.navProfileLink.setOnClickListener {
+            Stuff.openInBrowser("https://www.last.fm/user/$username", this)
         }
-        if (drawerData.profilePicUrl != "")
-            Picasso.get()
-                    .load(drawerData.profilePicUrl)
-                    .noPlaceholder()
-                    .error(R.drawable.vd_wave)
-                    .into(navHeaderbinding.navProfilePic)
-        if (!forceUpdate)
-            LFMRequester(applicationContext).getDrawerInfo().asAsyncTask(mainNotifierViewModel.drawerData)
+
         lastDrawerOpenTime = System.currentTimeMillis()
 
         if (navHeaderbinding.navName.tag == null) {
@@ -684,7 +687,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 binding.navView.addOnLayoutChangeListener { view, left, top, right, bottom,
                                                      leftWas, topWas, rightWas, bottomWas ->
                     if (left != leftWas || right != rightWas)
-                        onDrawerOpened(mainNotifierViewModel.drawerData.value!!)
+                        onDrawerOpened()
                 }
                 drawerInited = true
             }

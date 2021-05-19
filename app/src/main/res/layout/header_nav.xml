@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/profile_pic"
         android:scaleType="centerCrop"
-        app:srcCompat="@drawable/vd_wave" />
+        tools:srcCompat="@drawable/vd_wave" />
 
     <View
         android:layout_width="match_parent"

@@ -565,13 +565,10 @@ object Stuff {
         ).filter { it.activityInfo.applicationInfo.packageName != PACKAGE_NETEASE_MUSIC }
     }
 
-    fun getBrowsersAsStrings(pm: PackageManager): MutableList<String> {
-        val browserPackages = mutableListOf<String>()
-        getBrowsers(pm)
-                .forEach {
-                    browserPackages += it.activityInfo.applicationInfo.packageName
-                }
-        return browserPackages
+    fun getBrowsersAsStrings(pm: PackageManager): Set<String> {
+        return getBrowsers(pm)
+                .map { it.activityInfo.applicationInfo.packageName }
+                .toSet()
     }
 
     fun genHashCode(vararg objects: Any): Int {

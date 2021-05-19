@@ -46,8 +46,9 @@ class KeepNLSAliveJob: JobService() {
             if (serviceRunning)
                 return true
 
-            Stuff.log("ensureServiceRunning: service not running, reviving...")
-            toggleNLS(context)
+            Stuff.log("ensureServiceRunning: service not running")
+//            TODO: maybe uncomment
+//            toggleNLS(context)
             return false
         }
 

@@ -285,12 +285,12 @@ class NLService : NotificationListenerService() {
                         handler.sendMessageDelayed(m, -delay)
                         handler.notifyScrobble(meta[0], meta[1], hash, true, currentBundle.getBoolean(B_USER_LOVED))
                     } else if (currentBundle.getInt(B_HASH) == hash &&
-                            System.currentTimeMillis() - currentBundle.getLong(B_TIME) < Stuff.PIXEL_NP_INTERVAL)
+                            System.currentTimeMillis() - currentBundle.getLong(B_TIME) < Stuff.NOTI_SCROBBLE_INTERVAL)
                         Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                     else
                         handler.nowPlaying(meta[0], "", meta[1], "", 0, 0, hash, false, packageNameArg, true)
                 } else
-                    Stuff.log("detectPixelNP parse failed")
+                    Stuff.log("\"${this::scrobbleFromNoti.name} parse failed")
             }
         }
     }

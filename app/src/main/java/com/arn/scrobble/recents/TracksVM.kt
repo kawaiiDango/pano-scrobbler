@@ -2,7 +2,7 @@ package com.arn.scrobble.recents
 
 import android.app.Application
 import android.content.Intent
-import android.graphics.Color
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.LFMRequester
@@ -88,10 +88,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
             if (submit && (data.plCount > 0 || data.psCount > 0)
                     && Main.isOnline && !PendingScrService.mightBeRunning && !PendingScrJob.mightBeRunning) {
                 val intent = Intent(getApplication<Application>().applicationContext, PendingScrService::class.java)
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-//                    getApplication<Application>().startForegroundService(intent) //sometimes causes ANR
-//                else
-                getApplication<Application>().startService(intent)
+                ContextCompat.startForegroundService(getApplication<Application>(), intent)
             }
         }
         return pendingTracks

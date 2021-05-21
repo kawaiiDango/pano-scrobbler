@@ -1,6 +1,7 @@
 package com.arn.scrobble
 
 import android.content.SharedPreferences
+import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaController.Callback
@@ -10,25 +11,34 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
 import android.os.Message
-import android.util.Pair
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 /**
  * Created by arn on 04/07/2017.
  */
 
-class SessListener (pref: SharedPreferences, private val handler: NLService.ScrobbleHandler) :
-        OnActiveSessionsChangedListener, SharedPreferences.OnSharedPreferenceChangeListener {
+class SessListener (
+    private val pref: SharedPreferences,
+    private val handler: NLService.ScrobbleHandler,
+    private val audioManager: AudioManager,
+    private val defaultScope: CoroutineScope
+) : OnActiveSessionsChangedListener,
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val controllersMap = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
     private var controllers : List<MediaController>? = null
 
     private val blackList = mutableSetOf<String>()
     private val whiteList = mutableSetOf<String>()
-    private var autoDetectApps = pref.getBoolean(Stuff.PREF_AUTO_DETECT, true)
-    private var scrobblingEnabled = pref.getBoolean(Stuff.PREF_MASTER, true)
-    private var loggedIn = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null) != null
-    lateinit var browserPackages: MutableList<String>
+    private val autoDetectApps
+        get() = pref.getBoolean(Stuff.PREF_AUTO_DETECT, true)
+    private val scrobblingEnabled
+        get() = pref.getBoolean(Stuff.PREF_MASTER, true)
+    private val loggedIn
+        get() = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null) != null
+    lateinit var browserPackages: Set<String>
     val packageMap = mutableMapOf<String, HashesAndTimes>()
 
     init {
@@ -37,63 +47,61 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
         blackList.addAll(pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!)
     }
 
+    // this list of controllers is unreliable esp. with yt and yt music
+    // it may be empty even if there are active sessions
+    @Synchronized
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
         this.controllers = controllers
-        val tokens = mutableSetOf<MediaSession.Token>()
-        if (scrobblingEnabled && controllers != null) {
-            for (controller in controllers) {
-                if (shouldScrobble(controller.packageName)) {
-                    tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
-                    if (!controllersMap.containsKey(controller.sessionToken)) {
-                        Stuff.log("onActiveSessionsChanged [" + controllers.size + "] : " + controller.packageName)
-                        val ignoreArtistMeta =  Stuff.IGNORE_ARTIST_META.contains(controller.packageName) ||
-                                browserPackages.contains(controller.packageName)
-                        var hashesAndTimes = packageMap[controller.packageName]
-                        if (hashesAndTimes == null) {
-                            hashesAndTimes = HashesAndTimes()
-                            packageMap[controller.packageName] = hashesAndTimes
-                        }
-                        val cb = MyCallback(whiteList, handler, controller.packageName, hashesAndTimes, ignoreArtistMeta)
-                        controller.registerCallback(cb)
-                        val ps = controller.playbackState
-                        if (ps != null)
-                            cb.onPlaybackStateChanged(ps) //Melody needs this
-                        val md = controller.metadata
-                        if (md != null)
-                            cb.onMetadataChanged(md)
+        Stuff.log("controllers: " + controllers?.joinToString { it.packageName })
 
-                        val pair = Pair(controller, cb)
-                        synchronized(controllersMap) {
-                            controllersMap.put(controller.sessionToken, pair)
-                        }
+        if (!scrobblingEnabled || controllers == null)
+            return
+
+        val tokens = mutableSetOf<MediaSession.Token>()
+        for (controller in controllers) {
+            if (shouldScrobble(controller.packageName)) {
+                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
+                if (controller.sessionToken !in controllersMap) {
+                    val ignoreArtistMeta =  controller.packageName in Stuff.IGNORE_ARTIST_META ||
+                            controller.packageName in browserPackages
+                    var hashesAndTimes = packageMap[controller.packageName]
+                    if (hashesAndTimes == null) {
+                        hashesAndTimes = HashesAndTimes()
+                        packageMap[controller.packageName] = hashesAndTimes
                     }
+                    val cb = MyCallback(controller.packageName, hashesAndTimes, controller.sessionToken, ignoreArtistMeta)
+                    controller.registerCallback(cb)
+                    //Medoly needs this
+                    controller.playbackState.let { cb.onPlaybackStateChanged(it) }
+                    controller.metadata.let { cb.onMetadataChanged(it) }
+
+                    controllersMap[controller.sessionToken] = controller to cb
                 }
             }
         }
         // Now remove old sessions that are not longer active.
-        removeSessions(tokens)
+//        removeSessions(tokens)
     }
-
-    fun removeSessions(tokens: Set<MediaSession.Token>, packageNames: Set<String>? = null) {
+    @Synchronized
+    fun removeSessions(tokensToKeep: Set<MediaSession.Token>, packageNamesToKeep: Set<String>? = null) {
         val it = controllersMap.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
-            if (pair.first.packageName != Stuff.IGNORE_ARTIST_META[0] && pair.first.packageName != Stuff.IGNORE_ARTIST_META[1]
-                    && (!tokens.contains(token) ||
-                            (packageNames != null && packageNames.contains(pair.first.packageName)))) {
-                pair.second.stop()
-                pair.first.unregisterCallback(pair.second)
-                synchronized(controllersMap) {
-                    it.remove()
-                }
+            val (controller, callback) = pair
+            if (
+//                pair.first.packageName !in arrayOf(Stuff.IGNORE_ARTIST_META[0], Stuff.IGNORE_ARTIST_META[1], Stuff.PACKAGE_YOUTUBE_MUSIC) &&
+                (token !in tokensToKeep || packageNamesToKeep?.contains(pair.first.packageName) == false)
+            ) {
+                callback.stop()
+                controller.unregisterCallback(callback)
+                it.remove()
             }
         }
     }
 
-    class MyCallback(private val whiteList: MutableSet<String>,
-                     private val handler: NLService.ScrobbleHandler,
-                     private val packageName: String,
+    inner class MyCallback(private val packageName: String,
                      private val hashesAndTimes: HashesAndTimes,
+                     private val token: MediaSession.Token,
                      private val isIgnoreArtistMeta: Boolean) : Callback() {
 
         private var lastState = -1
@@ -110,7 +118,7 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
                 val state = msg.arg1
                 val pos = msg.arg2.toLong()
 
-                Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos duration=$duration cb=${this@MyCallback.hashCode()}")
+                Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos cb=${this@MyCallback.hashCode()}")
 
                 val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT //wynk puts -1
 
@@ -156,22 +164,46 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
                 )
             }
             hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
-            val isWhitelisted = whiteList.contains(packageName)
+            val isWhitelisted = packageName in whiteList
             val packageNameParam = if (!isWhitelisted) packageName else null
             handler.removeMessages(hashesAndTimes.lastScrobbleHash)
-            if (isIgnoreArtistMeta) {
-                val splits = MetadataUtils.sanitizeTitle(title)
-                handler.nowPlaying(splits[0], "", splits[1], "", hashesAndTimes.timePlayed, duration, currHash, false, packageNameParam)
-            } else
-                handler.nowPlaying(artist, album, title, albumArtist, hashesAndTimes.timePlayed, duration, currHash, true, packageNameParam)
+
+            defaultScope.launch {
+                if (isIgnoreArtistMeta) {
+                    val splits = MetadataUtils.sanitizeTitle(title)
+                    handler.nowPlaying(
+                        splits[0],
+                        "",
+                        splits[1],
+                        "",
+                        hashesAndTimes.timePlayed,
+                        duration,
+                        currHash,
+                        false,
+                        packageNameParam
+                    )
+                } else
+                    handler.nowPlaying(
+                        artist,
+                        album,
+                        title,
+                        albumArtist,
+                        hashesAndTimes.timePlayed,
+                        duration,
+                        currHash,
+                        true,
+                        packageNameParam
+                    )
+            }
             hashesAndTimes.lastScrobbleHash = currHash
             hashesAndTimes.lastScrobbledHash = 0
         }
 
-        @Synchronized override fun onMetadataChanged(metadata: MediaMetadata?) {
+        @Synchronized
+        override fun onMetadataChanged(metadata: MediaMetadata?) {
             var albumArtist = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
             var artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
-                    albumArtist
+                    albumArtist // do not scrobble empty artists, ads will get scrobbled
             var album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
             var title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
 //            val genre = metadata?.getString(MediaMetadata.METADATA_KEY_GENRE)?.trim() ?: ""
@@ -207,7 +239,7 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
                     albumArtist = ""
                 }
                 Stuff.PACKAGE_HUAWEI_MUSIC -> {
-                    if (Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) == Stuff.MANUFACTURER_HUAWEI) {
+                    if (Build.MANUFACTURER.lowercase(Locale.ENGLISH) == Stuff.MANUFACTURER_HUAWEI) {
                         // Extra check for the manufacturer, because 'com.android.mediacenter' could match other music players.
                         val extra = " - $album"
                         if (artist.endsWith(extra))
@@ -220,14 +252,20 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
             val sameAsOld = artist == this.artist && title == this.title && album == this.album && albumArtist == this.albumArtist
 
             Stuff.log("onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
-                    "lastState=$lastState, package=$packageName cb=${this.hashCode()}")
+                    "duration=$duration lastState=$lastState, package=$packageName cb=${this.hashCode()}")
             if (!sameAsOld) {
                 this.artist = artist
                 this.album = album
                 this.title = title
                 this.albumArtist = albumArtist
                 this.duration = duration
-                currHash = Stuff.genHashCode(artist, album, title) * 31 + packageName.hashCode()
+                currHash = Stuff.genHashCode(artist, album, title, packageName)
+
+                // hack for buggy youtubes until they fix it
+                if (packageName in (Stuff.IGNORE_ARTIST_META.take(5) + Stuff.PACKAGE_YOUTUBE_MUSIC) &&
+                        lastState == PlaybackState.STATE_STOPPED &&
+                        audioManager.isMusicActive)
+                    lastState = PlaybackState.STATE_PLAYING
 
                 // for cases:
                 // - meta is sent after play
@@ -247,10 +285,15 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
         }
 
         //Do not use
-//        override fun onSessionDestroyed() {
-//            Stuff.log("onSessionDestroyed")
-//            stop()
-//        }
+        override fun onSessionDestroyed() {
+            Stuff.log("onSessionDestroyed $packageName")
+            stop()
+            synchronized(this@SessListener) {
+                controllersMap.remove(token)
+                    ?.first
+                    ?.unregisterCallback(this)
+            }
+        }
 
         fun pause() {
             if (lastState == PlaybackState.STATE_PLAYING) {
@@ -267,15 +310,14 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
         fun stop() {
             pause()
             stateHandler.removeCallbacksAndMessages(null)
-            Stuff.log("stopped")
         }
     }
 
     private fun shouldScrobble(packageName: String): Boolean {
 
         return scrobblingEnabled && loggedIn &&
-                (whiteList.contains(packageName) ||
-                (autoDetectApps && !blackList.contains(packageName)))
+                (packageName in whiteList ||
+                (autoDetectApps && packageName !in blackList))
     }
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {
@@ -288,16 +330,18 @@ class SessListener (pref: SharedPreferences, private val handler: NLService.Scro
                 blackList.clear()
                 blackList.addAll(pref.getStringSet(key, setOf())!!)
             }
-            Stuff.PREF_AUTO_DETECT -> autoDetectApps = pref.getBoolean(key, true)
-            Stuff.PREF_MASTER -> scrobblingEnabled = pref.getBoolean(key, true)
-            Stuff.PREF_LASTFM_SESS_KEY -> loggedIn = pref.getString(key, null) != null
         }
         if (key == Stuff.PREF_WHITELIST ||
                 key == Stuff.PREF_BLACKLIST ||
                 key == Stuff.PREF_AUTO_DETECT ||
                 key == Stuff.PREF_MASTER) {
+
             onActiveSessionsChanged(controllers)
-            Stuff.log("SessListener prefs changed: $key")
+            val pkgsToKeep = controllersMap.values
+                .map { it.first.packageName }
+                .filter { shouldScrobble(it) }
+                .toSet()
+            removeSessions(controllersMap.keys.toSet(), pkgsToKeep)
         }
     }
 

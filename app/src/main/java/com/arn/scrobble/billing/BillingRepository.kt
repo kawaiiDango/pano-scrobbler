@@ -17,6 +17,8 @@ import java.util.*
 class BillingRepository private constructor(private val application: Application) :
         PurchasesUpdatedListener, BillingClientStateListener {
 
+    // Breaking change in billing v4: callbacks don't run on main thread, always use ld.postValue()
+
     private lateinit var playStoreBillingClient: BillingClient
     private val pref by lazy { MultiPreferences(application) }
     val proStatusLd by lazy { MutableLiveData(pref.getBoolean(Stuff.PREF_PRO_STATUS, false)) }
@@ -113,11 +115,11 @@ class BillingRepository private constructor(private val application: Application
      * on a different device.
      */
     fun queryPurchasesAsync() {
-        val result = playStoreBillingClient.queryPurchases(BillingClient.SkuType.INAPP)
-        if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-            val purchasesResult = HashSet<Purchase>()
-            result.purchasesList?.apply { purchasesResult.addAll(this) }
-            processPurchases(purchasesResult)
+        playStoreBillingClient.queryPurchasesAsync(BillingClient.SkuType.INAPP) {
+            billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                processPurchases(purchases.toHashSet())
+            }
         }
     }
 
@@ -129,7 +131,7 @@ class BillingRepository private constructor(private val application: Application
                             validPurchases.add(purchase)
                         }
                     } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
-                        if (purchase.sku == Tokens.PRO_SKU_NAME) {
+                        if (Tokens.PRO_SKU_NAME in purchase.skus) {
                             Log.d(
                                 LOG_TAG,
                                 "Received a pending purchase from " + Stuff.myRelativeTime(
@@ -137,7 +139,7 @@ class BillingRepository private constructor(private val application: Application
                                     purchase.purchaseTime
                                 )
                             )
-                            proPendingSinceLd.value = purchase.purchaseTime
+                            proPendingSinceLd.postValue(purchase.purchaseTime)
                         }
                     }
                 }
@@ -162,7 +164,7 @@ class BillingRepository private constructor(private val application: Application
      * [BillingClient.acknowledgePurchaseAsync] inside your app.
      */
     private fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
-        if (nonConsumables.isEmpty() || !nonConsumables.any { it.sku == Tokens.PRO_SKU_NAME }) {
+        if (nonConsumables.isEmpty() || !nonConsumables.any { Tokens.PRO_SKU_NAME in it.skus  }) {
             revokePro()
         }
 
@@ -175,7 +177,7 @@ class BillingRepository private constructor(private val application: Application
                         disburseNonConsumableEntitlement(purchase)
                     }
                     BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
-                        if (purchase.sku == Tokens.PRO_SKU_NAME) {
+                        if (Tokens.PRO_SKU_NAME in purchase.skus) {
                             revokePro()
                         }
                     }
@@ -193,32 +195,32 @@ class BillingRepository private constructor(private val application: Application
      * In this sample, once the entitlement is disbursed the receipt is thrown out.
      */
     private fun disburseNonConsumableEntitlement(purchase: Purchase) {
-        if (purchase.sku == Tokens.PRO_SKU_NAME) {
+        if (Tokens.PRO_SKU_NAME in purchase.skus) {
             pref.putBoolean(Stuff.PREF_PRO_STATUS, true)
             if (proStatusLd.value != true) {
-                proStatusLd.value = true
+                proStatusLd.postValue(true)
                 application.sendBroadcast(Intent(NLService.iTHEME_CHANGED))
             }
-            proPendingSinceLd.value = 0
+            proPendingSinceLd.postValue(0)
         }
     }
 
     private fun revokePro() {
         pref.putBoolean(Stuff.PREF_PRO_STATUS, false)
         if (proStatusLd.value != false)
-            proStatusLd.value = false
+            proStatusLd.postValue(false)
     }
 
     private fun findProSku(skudList: List<SkuDetails>?): SkuDetails? {
         val skud = skudList?.firstOrNull { it.sku == Tokens.PRO_SKU_NAME }
-        return if (skud != null && skud.title.contains(application.getString(R.string.app_name)) &&
-            skud.description.contains(application.getString(R.string.app_name)) &&
+        return if (skud != null && application.getString(R.string.app_name) in skud.title &&
+            application.getString(R.string.app_name) in skud.description &&
             skud.sku != skud.title && skud.sku != skud.description
         )
             skud
         else if (skud != null) {
             pref.remove(Stuff.PREF_PRO_SKU_JSON)
-            proSkuDetailsLd.value = null
+            proSkuDetailsLd.postValue(null)
             revokePro()
             null
         }
@@ -244,7 +246,7 @@ class BillingRepository private constructor(private val application: Application
                 BillingClient.BillingResponseCode.OK -> {
                     findProSku(skuDetailsList)?.let {
                         pref.putString(Stuff.PREF_PRO_SKU_JSON, it.originalJson)
-                        proSkuDetailsLd.value = it
+                        proSkuDetailsLd.postValue(it)
                     }
                 }
                 else -> {

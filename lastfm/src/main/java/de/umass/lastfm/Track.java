@@ -453,9 +453,11 @@ public class Track extends MusicEntry {
 		Result result = Caller.getInstance().call("track.getTags", session, "artist", artist, "track", track);
 		DomElement element = result.getContentElement();
 		Collection<String> tags = new ArrayList<String>();
-		for (DomElement domElement : element.getChildren("tag")) {
-			tags.add(domElement.getChildText("name"));
-		}
+        if (element.getChildren("tag") != null) {
+            for (DomElement domElement : element.getChildren("tag")) {
+                tags.add(domElement.getChildText("name"));
+            }
+        }
 		return tags;
 	}
 

@@ -273,9 +273,11 @@ public class Artist extends MusicEntry {
 			return Collections.emptyList();
 		DomElement element = result.getContentElement();
 		Collection<String> tags = new ArrayList<String>();
-		for (DomElement domElement : element.getChildren("tag")) {
-			tags.add(domElement.getChildText("name"));
-		}
+		if (element.getChildren("tag") != null) {
+            for (DomElement domElement : element.getChildren("tag")) {
+                tags.add(domElement.getChildText("name"));
+            }
+        }
 		return tags;
 	}
 

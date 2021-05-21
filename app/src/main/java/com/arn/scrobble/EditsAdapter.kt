@@ -13,6 +13,7 @@ import com.arn.scrobble.databinding.ListItemEditsBinding
 import com.arn.scrobble.db.Edit
 import com.arn.scrobble.db.PendingScrobblesDb
 import com.arn.scrobble.ui.ItemClickListener
+import java.util.*
 
 
 class EditsAdapter(context: Context, private val fragmentBinding: ContentEditsBinding) : RecyclerView.Adapter<EditsAdapter.VHEdits>() {
@@ -33,7 +34,7 @@ class EditsAdapter(context: Context, private val fragmentBinding: ContentEditsBi
     }
 
     fun filter(query: String) {
-        val query = query.toLowerCase().trim()
+        val query = query.lowercase().trim()
         AsyncTask.SERIAL_EXECUTOR.execute {
             if (query.isEmpty()) {
                 filteredIndices.clear()
@@ -42,10 +43,10 @@ class EditsAdapter(context: Context, private val fragmentBinding: ContentEditsBi
                 val tmpList = mutableListOf<Int>()
                 for (i in 0 until editsList.size) {
                     val it = editsList[i]
-                    if (it.artist.toLowerCase().startsWith(query) ||
-                            it.albumArtist.toLowerCase().startsWith(query) ||
-                            it.album.toLowerCase().startsWith(query) ||
-                            it.track.toLowerCase().startsWith(query))
+                    if (it.artist.lowercase().startsWith(query) ||
+                            it.albumArtist.lowercase(Locale.getDefault()).startsWith(query) ||
+                            it.album.lowercase(Locale.getDefault()).startsWith(query) ||
+                            it.track.lowercase(Locale.getDefault()).startsWith(query))
                        tmpList += i
                 }
                 filteredIndices.clear()

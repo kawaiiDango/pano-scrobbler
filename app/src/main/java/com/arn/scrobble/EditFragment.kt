@@ -4,11 +4,11 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
 import android.view.inputmethod.EditorInfo
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.arn.scrobble.db.Edit
@@ -19,6 +19,10 @@ import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 
@@ -113,7 +117,7 @@ class EditFragment: LoginFragment() {
             activity?.finish()
     }
 
-    override fun validateAsync(): String? {
+    override suspend fun validateAsync(): String? {
         val args = arguments ?: return null
         val track = binding.loginTextfield1.editText!!.text.toString().trim()
         val origTrack = args.getString(NLService.B_TITLE) ?: ""
@@ -172,11 +176,15 @@ class EditFragment: LoginFragment() {
                 } else {
                     if (album.isBlank() && validTrack.album != null) {
                         album = validTrack.album
-                        activity!!.runOnUiThread { binding.loginTextfield2.editText!!.setText(validTrack.album) }
+                        withContext(Dispatchers.Main) {
+                            binding.loginTextfield2.editText!!.setText(validTrack.album)
+                        }
                     }
                     if (albumArtist.isBlank() && validTrack.albumArtist != null) {
                         albumArtist = validTrack.albumArtist
-                        activity!!.runOnUiThread { binding.loginTextfieldLast2.editText!!.setText(validTrack.albumArtist) }
+                        withContext(Dispatchers.Main) {
+                            binding.loginTextfieldLast2.editText!!.setText(validTrack.albumArtist)
+                        }
                     }
                 }
             }
@@ -192,25 +200,27 @@ class EditFragment: LoginFragment() {
                 val activity = activity!!
 
                 if (result?.isSuccessful == true && !result.isIgnored) {
-                    AsyncTask.THREAD_POOL_EXECUTOR.execute {
-                        if (!standalone) {
-                            if (args.getLong(NLService.B_TIME) == 0L)
-                                Track.updateNowPlaying(scrobbleData, lastfmSession)
-                            else {
-                                val origTrackObj = Track(origTrack, null, origArtist)
-                                origTrackObj.playedWhen = Date(timeMillis)
-                                LFMRequester(activity).delete(origTrackObj) { succ ->
-                                    if (succ) {
-                                        //editing just the album is a noop, scrobble again
-                                        if (track.equals(origTrack, ignoreCase = true) &&
-                                                artist.equals(origArtist, ignoreCase = true))
-                                            Track.scrobble(scrobbleData, lastfmSession)
+                    coroutineScope {
+                        launch {
+                            if (!standalone) {
+                                if (args.getLong(NLService.B_TIME) == 0L)
+                                    Track.updateNowPlaying(scrobbleData, lastfmSession)
+                                else {
+                                    val origTrackObj = Track(origTrack, null, origArtist)
+                                    origTrackObj.playedWhen = Date(timeMillis)
+                                    LFMRequester(activity).delete(origTrackObj) { succ ->
+                                        if (succ) {
+                                            //editing just the album is a noop, scrobble again
+                                            if (track.equals(origTrack, ignoreCase = true) &&
+                                                artist.equals(origArtist, ignoreCase = true)
+                                            )
+                                                Track.scrobble(scrobbleData, lastfmSession)
+                                        }
                                     }
+                                        .asAsyncTask()
                                 }
-                                        .asSerialAsyncTask()
                             }
                         }
-
                         //scrobble everywhere else
                         fun getScrobbleResult(scrobbleData: ScrobbleData, session: Session): ScrobbleResult {
                             return try {
@@ -220,28 +230,36 @@ class EditFragment: LoginFragment() {
                             }
                         }
 
-                        pref.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)?.let {
-                            val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
-                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
-                            getScrobbleResult(scrobbleData, librefmSession)
+                        launch {
+                            pref.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)?.let {
+                                val librefmSession: Session = Session.createCustomRootSession(
+                                    Stuff.LIBREFM_API_ROOT,
+                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
+                                )
+                                getScrobbleResult(scrobbleData, librefmSession)
+                            }
                         }
-
-                        pref.getString(Stuff.PREF_GNUFM_SESS_KEY, null)?.let {
-                            val gnufmSession: Session = Session.createCustomRootSession(
+                        launch {
+                            pref.getString(Stuff.PREF_GNUFM_SESS_KEY, null)?.let {
+                                val gnufmSession: Session = Session.createCustomRootSession(
                                     pref.getString(Stuff.PREF_GNUFM_ROOT, null) + "2.0/",
-                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
-                            getScrobbleResult(scrobbleData, gnufmSession)
+                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
+                                )
+                                getScrobbleResult(scrobbleData, gnufmSession)
+                            }
                         }
-
-                        pref.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null)?.let {
-                            ListenBrainz(it)
+                        launch {
+                            pref.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null)?.let {
+                                ListenBrainz(it)
                                     .scrobble(scrobbleData)
+                            }
                         }
-
-                        pref.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.let {
-                            ListenBrainz(it)
+                        launch {
+                            pref.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.let {
+                                ListenBrainz(it)
                                     .setApiRoot(pref.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
                                     .scrobble(scrobbleData)
+                            }
                         }
                     }
                     saveEdit(context!!)
@@ -254,12 +272,12 @@ class EditFragment: LoginFragment() {
                         errMsg = getString(R.string.scrobble_ignored_or_old)
                     else {
                         errMsg = ""
-                        activity.runOnUiThread {
+                        withContext(Dispatchers.Main) {
                             MaterialAlertDialogBuilder(context!!)
                                     .setMessage(R.string.scrobble_ignored_save_edit)
                                     .setPositiveButton(android.R.string.yes) { dialogInterface, i ->
                                         dismiss()
-                                        AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                                        lifecycleScope.launch(Dispatchers.IO) {
                                             saveEdit(activity)
                                         }
                                     }

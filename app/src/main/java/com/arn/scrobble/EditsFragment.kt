@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.databinding.ContentEditsBinding
 import com.arn.scrobble.databinding.DialogEditEditsBinding
@@ -18,6 +19,9 @@ import com.arn.scrobble.db.Edit
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class EditsFragment: Fragment(), ItemClickListener {
@@ -80,7 +84,7 @@ class EditsFragment: Fragment(), ItemClickListener {
             val e = adapter.getItem(position)
             if (view.id == R.id.edits_delete) {
                 adapter.remove(position)
-                AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                lifecycleScope.launch(Dispatchers.IO) {
                     adapter.dao.delete(e)
                 }
             } else if (e.legacyHash == null) {
@@ -122,28 +126,41 @@ class EditsFragment: Fragment(), ItemClickListener {
                                 return@setPositiveButton
                             }
                             if (e != ne) {
-                                val checkArtist = ne.artist.isNotEmpty() && e.artist.toLowerCase() != ne.artist.toLowerCase()
+                                val checkArtist = ne.artist.isNotEmpty() && e.artist.lowercase() != ne.artist.lowercase()
                                 adapter.update(position, ne)
-                                AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                                lifecycleScope.launch(Dispatchers.IO) {
                                     if (checkArtist) {
-                                        val allowedSet = MultiPreferences(context!!).getStringSet(Stuff.PREF_ALLOWED_ARTISTS, setOf())
-                                        val artist = LFMRequester.getValidArtist(ne.artist, allowedSet)
+                                        val allowedSet =
+                                            MultiPreferences(context!!).getStringSet(
+                                                Stuff.PREF_ALLOWED_ARTISTS,
+                                                setOf()
+                                            )
+                                        val artist =
+                                            LFMRequester.getValidArtist(ne.artist, allowedSet)
                                         if (artist == null) {
-                                            activity?.runOnUiThread {
+                                            withContext(Dispatchers.Main) {
                                                 if (Main.isOnline)
-                                                    Stuff.toast(activity!!, getString(R.string.state_invalid_artist))
+                                                    Stuff.toast(
+                                                        activity!!,
+                                                        getString(R.string.state_invalid_artist)
+                                                    )
                                                 else
-                                                    Stuff.toast(activity!!, getString(R.string.unavailable_offline))
+                                                    Stuff.toast(
+                                                        activity!!,
+                                                        getString(R.string.unavailable_offline)
+                                                    )
                                                 adapter.update(position, e)
                                             }
-                                            return@execute
+                                            return@launch
                                         }
                                     }
-                                    if (!(e.origTrack == ne.origTrack.toLowerCase() &&
-                                                    e.origAlbum == ne.origAlbum.toLowerCase() &&
-                                                    e.origArtist == ne.origArtist.toLowerCase()))
+                                    if (!(e.origTrack == ne.origTrack.lowercase() &&
+                                                e.origAlbum == ne.origAlbum.lowercase() &&
+                                                e.origArtist == ne.origArtist.lowercase())
+                                    )
                                         adapter.dao.delete(e)
                                     adapter.dao.insertReplaceLowerCase(ne)
+
                                 }
                             }
                         }

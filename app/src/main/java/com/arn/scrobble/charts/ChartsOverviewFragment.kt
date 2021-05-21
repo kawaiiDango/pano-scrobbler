@@ -273,7 +273,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         }
         if (count != 0) {
             header.headerText.text =
-                    NumberFormat.getInstance().format(count) + " " + text.toLowerCase()
+                    NumberFormat.getInstance().format(count) + " " + text.lowercase()
             header.headerAction.visibility = View.VISIBLE
         }
         else {

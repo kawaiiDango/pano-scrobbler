@@ -20,6 +20,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
@@ -32,6 +33,9 @@ import com.arn.scrobble.widget.ChartsWidgetActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 
@@ -370,16 +374,21 @@ class PrefFragment : PreferenceFragmentCompat(){
             if (requestCode == Stuff.REQUEST_CODE_EXPORT) {
                 if (data != null) {
                     val currentUri = data.data ?: return
-                    AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                    lifecycleScope.launch(Dispatchers.IO) {
                         val exporter = ImExporter()
                         exporter.setOutputUri(context!!, currentUri)
-                        if (!exporter.export())
-                            activity?.runOnUiThread {
-                                Stuff.toast(context!!, getString(R.string.export_failed), Toast.LENGTH_LONG)
+                        val exported = exporter.export()
+                        exporter.close()
+                        if (!exported)
+                            withContext(Dispatchers.Main) {
+                                Stuff.toast(
+                                    context!!,
+                                    getString(R.string.export_failed),
+                                    Toast.LENGTH_LONG
+                                )
                             }
                         else
                             Stuff.log("Exported")
-                        exporter.close()
                     }
                 }
             } else if (requestCode == Stuff.REQUEST_CODE_IMPORT) {
@@ -400,19 +409,26 @@ class PrefFragment : PreferenceFragmentCompat(){
                                 val settingsMode = binding.importSettings.isChecked
                                 if (editsMode == Stuff.EDITS_NOPE && !settingsMode)
                                     return@setPositiveButton
-                                AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                                lifecycleScope.launch(Dispatchers.IO) {
                                     val importer = ImExporter()
                                     importer.setInputUri(context!!, currentUri)
-                                    if (!importer.import(editsMode, settingsMode))
-                                        activity?.runOnUiThread {
-                                            Stuff.toast(context!!, getString(R.string.import_hey_wtf), Toast.LENGTH_LONG)
-                                        }
-                                    else
-                                        activity?.runOnUiThread {
-                                            Stuff.toast(context!!, getString(R.string.imported))
+                                    val imported = importer.import(editsMode, settingsMode)
+                                    importer.close()
+                                    withContext(Dispatchers.Main) {
+                                        if (!imported)
+                                            Stuff.toast(
+                                                context!!,
+                                                getString(R.string.import_hey_wtf),
+                                                Toast.LENGTH_LONG
+                                            )
+                                        else {
+                                            Stuff.toast(
+                                                context!!,
+                                                getString(R.string.imported)
+                                            )
                                             parentFragmentManager.popBackStack()
                                         }
-                                    importer.close()
+                                    }
                                 }
                             }
                             .show()
@@ -431,13 +447,12 @@ class PrefFragment : PreferenceFragmentCompat(){
         setAuthLabel("lb")
 
         val edits = findPreference<Preference>("edits")!!
-        AsyncTask.THREAD_POOL_EXECUTOR.execute {
-            activity?.let {
-                val numEdits = PendingScrobblesDb.getDb(it).getEditsDao().count
-                it.runOnUiThread {
-                    if (context != null)
-                        edits.title = getString(R.string.n_edits, numEdits)
-                }
+        lifecycleScope.launch {
+            val numEdits = withContext(Dispatchers.IO) {
+                PendingScrobblesDb.getDb(context!!).getEditsDao().count
+            }
+            withContext(Dispatchers.Main) {
+                edits.title = getString(R.string.n_edits, numEdits)
             }
         }
 

@@ -21,16 +21,16 @@ interface EditsDao {
             track.hashCode().toString() + album.hashCode().toString() + artist.hashCode().toString()
         else
             artist.hashCode().toString() + album.hashCode().toString() + track.hashCode().toString()
-        return findByNamesOrHash(artist.toLowerCase(), album.toLowerCase(), track.toLowerCase(), hash)
+        return findByNamesOrHash(artist.lowercase(), album.lowercase(), track.lowercase(), hash)
     }
 
     @get:Query("SELECT count(1) FROM $tableName")
     val count: Int
 
     fun insertReplaceLowerCase(e: Edit) {
-        e.origArtist = e.origArtist.toLowerCase()
-        e.origAlbum = e.origAlbum.toLowerCase()
-        e.origTrack = e.origTrack.toLowerCase()
+        e.origArtist = e.origArtist.lowercase()
+        e.origAlbum = e.origAlbum.lowercase()
+        e.origTrack = e.origTrack.lowercase()
         insert(e)
     }
 

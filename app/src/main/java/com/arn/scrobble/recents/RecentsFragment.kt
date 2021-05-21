@@ -191,7 +191,7 @@ open class RecentsFragment : Fragment(),
                 if (it.page == 1)
                     viewModel.tracks.clear()
                 it.forEach { track ->
-                    if (viewModel.deletedTracksStringSet.contains(it.toString()))
+                    if (it.toString() in viewModel.deletedTracksStringSet)
                         return@forEach
                     if (!track.isNowPlaying || it.page == 1)
                         viewModel.tracks.add(track)

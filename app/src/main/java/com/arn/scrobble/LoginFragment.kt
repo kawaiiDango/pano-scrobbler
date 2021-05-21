@@ -1,11 +1,9 @@
 package com.arn.scrobble
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.AsyncTask
 import android.os.Bundle
 import android.text.util.Linkify
 import android.transition.Fade
@@ -17,8 +15,12 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.pref.MultiPreferences
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 
@@ -29,7 +31,6 @@ open class LoginFragment: DialogFragment() {
     protected lateinit var pref: MultiPreferences
     open val checksLogin = true
     protected var standalone = false
-    private var asyncTask: AsyncTask<Int, Unit, String?>? = null
     protected var _binding: ContentLoginBinding? = null
     protected val binding
         get() = _binding!!
@@ -132,22 +133,21 @@ open class LoginFragment: DialogFragment() {
     }
 
     private fun validate() {
-        asyncTask = @SuppressLint("StaticFieldLeak")
-        object : AsyncTask<Int, Unit, String?>(){
-            override fun doInBackground(vararg p0: Int?) = validateAsync()
-
-            override fun onPostExecute(errMsg: String?) {
+        lifecycleScope.launch {
+            val errMsg = withContext(Dispatchers.IO) {
+                validateAsync()
+            }
+            withContext(Dispatchers.Main) {
                 if (errMsg == null)
                     success()
                 else
                     error(errMsg)
             }
         }
-        asyncTask?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         hideKeyboard()
     }
 
-    open fun validateAsync(): String? {
+    open suspend fun validateAsync(): String? {
         val title = arguments?.getString(HEADING)
         val t1 = binding.loginTextfield1.editText!!.text.toString()
         var t2 = binding.loginTextfield2.editText!!.text.toString()
@@ -169,7 +169,7 @@ open class LoginFragment: DialogFragment() {
                                 .setApiRoot(t2)
                                 .checkAuth(activity!!, pref, t1)
                     } else
-                        activity?.runOnUiThread {
+                        withContext(Dispatchers.Main) {
                             Stuff.toast(activity!!, getString(R.string.failed_encode_url))
                         }
                 }
@@ -200,7 +200,7 @@ open class LoginFragment: DialogFragment() {
                     }
                 }
             }
-            else -> activity?.runOnUiThread {
+            else -> withContext(Dispatchers.Main) {
                 Stuff.toast(activity!!, "service not implemented")
             }
         }
@@ -231,7 +231,6 @@ open class LoginFragment: DialogFragment() {
     override fun onStop() {
         if (checksLogin)
             activity!!.unregisterReceiver(sessChangeReceiver)
-        asyncTask?.cancel(false)
         super.onStop()
     }
 

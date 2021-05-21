@@ -199,7 +199,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             getString(R.string.my)
 
         var shareText = getString(R.string.charts_share_text,
-                user, period.toLowerCase(), type.toLowerCase(), list)
+                user, period.lowercase(), type.lowercase(), list)
         if ((activity as Main).billingViewModel.proStatus.value != true)
             shareText += "\n\n" + getString(R.string.share_sig)
         val i = Intent(Intent.ACTION_SEND)

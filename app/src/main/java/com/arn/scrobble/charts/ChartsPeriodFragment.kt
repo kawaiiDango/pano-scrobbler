@@ -168,7 +168,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                             override fun isValid(date: Long): Boolean {
                                 val utcDate = date + 12 * 3600 * 1000
                                 return date in startTime..endTime &&
-                                        (weekStartMap.contains(date) || weekStartMap.contains(utcDate))
+                                        (date in weekStartMap || weekStartMap.contains(utcDate))
                             }
                         })
                         .build()

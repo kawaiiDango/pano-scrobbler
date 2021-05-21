@@ -2,7 +2,10 @@ package com.arn.scrobble
 
 import android.animation.ValueAnimator
 import android.app.*
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
@@ -33,14 +36,11 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.color.MaterialColors
-import de.umass.lastfm.Caller
-import de.umass.lastfm.cache.FileSystemCache
 import java.io.IOException
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
-import java.util.logging.Level
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -162,7 +162,7 @@ object Stuff {
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
     const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
-    const val PIXEL_NP_INTERVAL: Long = 5 * 60 * 1000
+    const val NOTI_SCROBBLE_INTERVAL: Long = 5 * 60 * 1000
     const val CONNECT_TIMEOUT = 20 * 1000
     const val READ_TIMEOUT = 20 * 1000
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
@@ -197,8 +197,6 @@ object Stuff {
     val IGNORE_ARTIST_META = arrayOf(
             "com.google.android.youtube",
             "com.vanced.android.youtube",
-            "com.bvanced.android.youtube",
-            "com.pvanced.android.youtube",
             "com.google.android.ogyoutube",
             "com.google.android.apps.youtube.mango",
             "com.google.android.youtube.tv",
@@ -225,6 +223,7 @@ object Stuff {
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
     const val PACKAGE_NETEASE_MUSIC = "com.netease.cloudmusic"
+    const val PACKAGE_YOUTUBE_MUSIC = "com.google.android.apps.youtube.music"
 
     val STARTUPMGR_INTENTS = arrayOf( //pkg, class
             "com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity",
@@ -241,7 +240,7 @@ object Stuff {
     )
 
     val persistentNoti by lazy {
-        Build.MANUFACTURER.toLowerCase(Locale.ENGLISH) in arrayOf(MANUFACTURER_HUAWEI, MANUFACTURER_SAMSUNG)
+        Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(MANUFACTURER_HUAWEI, MANUFACTURER_SAMSUNG)
     }
 
     val updateCurrentOrImmutable: Int

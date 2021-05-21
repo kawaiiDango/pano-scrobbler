@@ -54,7 +54,7 @@ object PendingMenu {
                         }
                         MaterialAlertDialogBuilder(context)
                                 .setMessage(context.getString(R.string.details_text,
-                                        context.getString(actionRes).toLowerCase(),
+                                        context.getString(actionRes).lowercase(),
                                         servicesList.joinToString(", ")))
                                 .setPositiveButton(android.R.string.ok, null)
                                 .show()

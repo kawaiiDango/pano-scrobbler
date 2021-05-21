@@ -520,7 +520,7 @@ class LFMRequester(context: Context) {
                     null
                 }
             }
-            if (!albumArtist.isNullOrEmpty() && albumArtist.toLowerCase() != artist.toLowerCase()) {
+            if (!albumArtist.isNullOrEmpty() && albumArtist.lowercase() != artist.lowercase()) {
                 es.execute {
                     aa = try {
                         Artist.getInfo(albumArtist, null, username, true, Stuff.LAST_KEY)

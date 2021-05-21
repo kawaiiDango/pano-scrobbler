@@ -91,7 +91,7 @@ object MetadataUtils {
     }
 
     fun sanitizeAlbum(albumOrig: String): String {
-        val albumLower = albumOrig.toLowerCase(Locale.ENGLISH)
+        val albumLower = albumOrig.lowercase(Locale.ENGLISH)
         if (metaSpam.any { albumLower.contains(it) } || metaUnknown.any { albumLower == it })
             return ""
 

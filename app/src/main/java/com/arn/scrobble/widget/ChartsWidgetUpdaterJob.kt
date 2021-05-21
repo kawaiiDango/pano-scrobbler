@@ -1,6 +1,5 @@
 package com.arn.scrobble.widget
 
-import android.annotation.SuppressLint
 import android.app.job.JobInfo
 import android.app.job.JobParameters
 import android.app.job.JobScheduler
@@ -8,11 +7,11 @@ import android.app.job.JobService
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
-import android.os.AsyncTask
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.*
+import kotlinx.coroutines.*
 
 
 class ChartsWidgetUpdaterJob : JobService() {
@@ -66,36 +65,28 @@ class ChartsWidgetUpdaterJob : JobService() {
             }
         }
 
-        val at = @SuppressLint("StaticFieldLeak")
-        object: AsyncTask<Unit,Unit, Unit>() {
-            override fun doInBackground(vararg p0: Unit?) {
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            for (periodInt in appWidgetIdToPeriodInt.values.toSet()) {
+                if (periodInt == -1)
+                    continue
+                val period = Period.values()[periodInt]
+
+                val artists = async { User.getTopArtists(username, period, 50, 1, Stuff.LAST_KEY).pageResults!! }
+                val albums = async { User.getTopAlbums(username, period, 50, 1, Stuff.LAST_KEY).pageResults!! }
+                val tracks = async { User.getTopTracks(username, period, 50, 1, Stuff.LAST_KEY).pageResults!! }
+
                 try {
-                    for (periodInt in appWidgetIdToPeriodInt.values.toSet()) {
-                        if (periodInt == -1)
-                            continue
-                        val period = Period.values()[periodInt]
-
-                        val artists = User.getTopArtists(username, period, 50, 1, Stuff.LAST_KEY).pageResults!!
-                        val albums = User.getTopAlbums(username, period, 50, 1, Stuff.LAST_KEY).pageResults!!
-                        val tracks = User.getTopTracks(username, period, 50, 1, Stuff.LAST_KEY).pageResults!!
-
-                        updateData(
-                            AllCharts(artists, albums, tracks),
-                            periodInt,
-                            appWidgetIdToPeriodInt.keys
-                        )
-                    }
+                    updateData(
+                        AllCharts(artists.await(), albums.await(), tracks.await()),
+                        periodInt,
+                        appWidgetIdToPeriodInt.keys
+                    )
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
-
-            override fun onPostExecute(result: Unit?) {
-                jobFinished(jp, false)
-            }
+            jobFinished(jp, false)
         }
-        at.execute()
-
         return true
     }
 

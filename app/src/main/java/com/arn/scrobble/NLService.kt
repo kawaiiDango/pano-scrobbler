@@ -30,6 +30,8 @@ import de.umass.lastfm.Period
 import de.umass.lastfm.scrobble.ScrobbleData
 import org.codechimp.apprater.AppRater
 import java.text.NumberFormat
+import android.media.AudioManager
+import kotlinx.coroutines.*
 
 
 class NLService : NotificationListenerService() {
@@ -40,6 +42,7 @@ class NLService : NotificationListenerService() {
     private var lastNpTask: LFMRequester.MyAsyncTask? = null
     private var currentBundle = Bundle()
     private var notiColor = Color.MAGENTA
+    private val defaultScope = CoroutineScope(Dispatchers.Default + Job())
     private val isPro
         get() = pref.getBoolean(Stuff.PREF_PRO_STATUS, false)
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
@@ -105,7 +108,9 @@ class NLService : NotificationListenerService() {
 
         handler = ScrobbleHandler(mainLooper)
         val sessManager = applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        sessListener = SessListener(pref, handler)
+        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+
+        sessListener = SessListener(pref, handler, audioManager, defaultScope)
         sessListener?.browserPackages = Stuff.getBrowsersAsStrings(packageManager)
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener!!, ComponentName(this, this::class.java))
@@ -159,6 +164,7 @@ class NLService : NotificationListenerService() {
             sessListener = null
             handler.removeCallbacksAndMessages(null)
         }
+        defaultScope.cancel()
         PendingScrobblesDb.destroyInstance()
     }
 
@@ -192,7 +198,7 @@ class NLService : NotificationListenerService() {
     }
 
     private fun migratePrefs() {
-        if (pref.contains("username") || pref.contains("sesskey") )
+        if ("username" in pref || "sesskey" in pref)
             pref.edit()
                     .putString(Stuff.PREF_LASTFM_USERNAME, pref.getString("username", ""))
                     .putString(Stuff.PREF_LASTFM_SESS_KEY, pref.getString("sesskey", ""))
@@ -206,9 +212,9 @@ class NLService : NotificationListenerService() {
     }
 
     private fun isAppEnabled(packageName: String) =
-         ((pref.getStringSet(Stuff.PREF_WHITELIST, setOf())!!.contains(packageName) ||
+         ((packageName in pref.getStringSet(Stuff.PREF_WHITELIST, setOf())!! ||
                 (pref.getBoolean(Stuff.PREF_AUTO_DETECT, true) &&
-                        !pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!.contains(packageName))))
+                        packageName !in pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!)))
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (pref.getBoolean(Stuff.PREF_PIXEL_NP, true))
@@ -288,7 +294,20 @@ class NLService : NotificationListenerService() {
                             System.currentTimeMillis() - currentBundle.getLong(B_TIME) < Stuff.NOTI_SCROBBLE_INTERVAL)
                         Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                     else
-                        handler.nowPlaying(meta[0], "", meta[1], "", 0, 0, hash, false, packageNameArg, true)
+                        defaultScope.launch {
+                            handler.nowPlaying(
+                                meta[0],
+                                "",
+                                meta[1],
+                                "",
+                                0,
+                                0,
+                                hash,
+                                false,
+                                packageNameArg,
+                                true
+                            )
+                        }
                 } else
                     Stuff.log("\"${this::scrobbleFromNoti.name} parse failed")
             }
@@ -469,7 +488,7 @@ class NLService : NotificationListenerService() {
             markAsScrobbled(hash)
         }
 
-        fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, position: Long, duration:Long,
+        suspend fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, position: Long, duration:Long,
                        hash:Int, forcable:Boolean, packageName: String?, lessDelay: Boolean = false) {
             if (title != "" && !hasMessages(hash)){
                 val now = System.currentTimeMillis()
@@ -478,17 +497,19 @@ class NLService : NotificationListenerService() {
                 var title = title
                 var albumArtist = MetadataUtils.sanitizeAlbum(albumArtist)
                 if (title != "") {
-                    val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
-                    try {
-                        dao.find(artist, album, title)
-                        ?.let {
-                            artist = it.artist
-                            album = it.album
-                            title = it.track
-                            albumArtist = it.albumArtist
+                    withContext(Dispatchers.IO) {
+                        val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
+                        try {
+                            dao.find(artist, album, title)
+                                ?.let {
+                                    artist = it.artist
+                                    album = it.album
+                                    title = it.track
+                                    albumArtist = it.albumArtist
+                                }
+                        } catch (e: Exception) {
+                            Stuff.log("editsDao exception")
                         }
-                    } catch (e: Exception) {
-                        Stuff.log("editsDao exception")
                     }
                 }
                 if (artist != "" && title != "") {
@@ -795,9 +816,9 @@ class NLService : NotificationListenerService() {
                         return
 
                     val title = getString(R.string.my) + " " + if (period == Period.WEEK)
-                        getString(R.string.digest_weekly).toLowerCase()
+                        getString(R.string.digest_weekly).lowercase()
                     else
-                        getString(R.string.digest_monthly).toLowerCase()
+                        getString(R.string.digest_monthly).lowercase()
                     var intent = Intent(Intent.ACTION_SEND)
                             .putExtra("packageName", packageName)
                     var shareText = title + "\n\n" +

@@ -27,6 +27,8 @@ import android.view.View;
 
 import com.arn.scrobble.R;
 
+import androidx.annotation.Keep;
+
 /**
  * A subclass of {@link android.view.View} class for creating a custom circular progressBar
  *
@@ -67,6 +69,7 @@ public class CircleProgressBar extends View {
         return progress;
     }
 
+    @Keep
     public void setProgress(float progress) {
         this.progress = progress;
         invalidate();

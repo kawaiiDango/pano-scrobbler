@@ -69,14 +69,14 @@ class AppListAdapter
     }
 
     fun add(app: ApplicationInfo?, selected:Boolean = false) {
-        if (selected || prefsSet.contains(app?.packageName))
+        if (selected || app?.packageName in prefsSet)
             selectedItems.add(itemCount)
         appList.add(app)
     }
 
     override fun onItemClick(view: View, position: Int) {
         if(getItemViewType(position) == TYPE_ITEM) {
-            if (selectedItems.contains(position))
+            if (position in selectedItems)
                 selectedItems.remove(position)
             else
                 selectedItems.add(position)
@@ -115,7 +115,7 @@ class AppListAdapter
         }
 
         private fun setChecked(animate: Boolean) {
-            val isSelected = selectedItems.contains(adapterPosition)
+            val isSelected = adapterPosition in selectedItems
             if (!animate){
                 binding.appListCheckbox.setOnCheckedChangeListener(null)
             }

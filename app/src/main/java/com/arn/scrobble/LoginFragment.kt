@@ -178,8 +178,11 @@ open class LoginFragment: DialogFragment() {
                 if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()){
                     val i = IdentifyProtocolV1()
                     try {
-                        if (!URLUtil.isValidUrl(t2)) {
-                            activity?.runOnUiThread {
+                        var url = t1
+                        if (!url.startsWith("http"))
+                            url = "https://$url"
+                        if (!URLUtil.isValidUrl(url)) {
+                            withContext(Dispatchers.Main) {
                                 Stuff.toast(activity!!, getString(R.string.failed_encode_url))
                             }
                             throw Exception(getString(R.string.failed_encode_url))

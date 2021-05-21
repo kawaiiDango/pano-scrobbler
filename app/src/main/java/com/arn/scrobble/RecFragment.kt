@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.pm.PackageManager
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
-import android.graphics.Color
 import android.media.MediaRecorder
 import android.os.*
 import android.text.method.LinkMovementMethod
@@ -16,24 +15,26 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.acrcloud.rec.*
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.snackbar.Snackbar
 import de.umass.lastfm.scrobble.ScrobbleData
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.File
 
 
-class RecFragment:Fragment(){
+class RecFragment: Fragment(),
+    IACRCloudListener,
+    IACRCloudRadioMetadataListener
+{
     private var started = false
     private val handler by lazy { Handler(Looper.getMainLooper()) }
-    private var recorder: MediaRecorder? = null
-    private val duration = 10000L
-    private lateinit var path: String
+    private var client: ACRCloudClient? = null
+    private lateinit var acrConfig: ACRCloudConfig
     private var fadeAnimator: ObjectAnimator? = null
     private var progressAnimator: ObjectAnimator? = null
-    private var asyncTask: SubmitAsync? = null
+    private val DURATION = 10000L
     private val pref: MultiPreferences by lazy { MultiPreferences(context!!) }
     private var _binding: ContentRecBinding? = null
     private val binding
@@ -53,18 +54,27 @@ class RecFragment:Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        path = activity!!.filesDir.absolutePath+"/sample.rec"
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Main.isTV)
+            binding.recShazam.visibility = View.GONE
+        else
+            binding.recShazam.movementMethod = LinkMovementMethod.getInstance()
+
+        acrConfig = ACRCloudConfig().apply {
+            acrcloudListener = this@RecFragment
+            context = this@RecFragment.context!!
+            host = pref.getString(Stuff.PREF_ACR_HOST, Tokens.ACR_HOST)
+            accessKey = pref.getString(Stuff.PREF_ACR_KEY, Tokens.ACR_KEY)
+            accessSecret = pref.getString(Stuff.PREF_ACR_SECRET, Tokens.ACR_SECRET)
+            recorderConfig.isVolumeCallback = false
+        }
+
         handler.postDelayed({
             if (_binding != null) {
                 startOrCancel()
                 binding.recProgress.setOnClickListener { startOrCancel() }
             }
         }, 300)
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Main.isTV)
-            binding.recShazam.visibility = View.GONE
-        else
-            binding.recShazam.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onStart() {
@@ -112,20 +122,20 @@ class RecFragment:Fragment(){
     }
 
     private fun openAddKey() {
-        val b = Bundle()
-        b.putString(LoginFragment.HEADING, getString(R.string.add_acr_key))
-        b.putString(LoginFragment.INFO, getString(R.string.add_acr_key_info))
-        b.putString(LoginFragment.TEXTF1, getString(R.string.acr_host))
-        b.putString(LoginFragment.TEXTF2, getString(R.string.acr_key))
-        b.putString(LoginFragment.TEXTFL, getString(R.string.acr_secret))
-
         val loginFragment = LoginFragment()
-        loginFragment.arguments = b
+        loginFragment.arguments = Bundle().apply {
+            putString(LoginFragment.HEADING, getString(R.string.add_acr_key))
+            putString(LoginFragment.INFO, getString(R.string.add_acr_key_info))
+            putString(LoginFragment.TEXTF1, getString(R.string.acr_host))
+            putString(LoginFragment.TEXTF2, getString(R.string.acr_key))
+            putString(LoginFragment.TEXTFL, getString(R.string.acr_secret))
+        }
         parentFragmentManager.beginTransaction()
                 .replace(R.id.frame, loginFragment)
                 .addToBackStack(null)
                 .commit()
     }
+
     private fun removeKey() {
         pref.remove(Stuff.PREF_ACR_HOST)
         pref.remove(Stuff.PREF_ACR_KEY)
@@ -138,22 +148,22 @@ class RecFragment:Fragment(){
                 .setAction(R.string.add) {
                     openAddKey()
                 }
-                .setActionTextColor(Color.YELLOW)
                 .addCallback(object : Snackbar.Callback() {
-            override fun onShown(sb: Snackbar?) {
-                super.onShown(sb)
-                if (sb != null && Main.isTV)
-                    sb.view.postDelayed({
-                        sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                                .requestFocus()
-                    }, 200)
-            }
-        })
-        .show()
+                    override fun onShown(sb: Snackbar?) {
+                        super.onShown(sb)
+                        if (sb != null && Main.isTV)
+                            sb.view.postDelayed({
+                                sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                                        .requestFocus()
+                            }, 200)
+                    }
+                })
+                .show()
     }
 
     private fun startOrCancel(){
         context ?: return
+
         if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(RECORD_AUDIO), Stuff.REQUEST_CODE_MIC_PERM)
             return
@@ -172,101 +182,87 @@ class RecFragment:Fragment(){
             if (fadeAnimator?.isRunning == true)
                 fadeAnimator?.cancel()
             fadeAnimator = ObjectAnimator.ofFloat(binding.recImg, "alpha", 0.5f, 1f)
-            fadeAnimator!!.duration = 500
-            fadeAnimator!!.interpolator = AccelerateInterpolator()
-            fadeAnimator!!.start()
+                .apply {
+                    duration = 500
+                    interpolator = AccelerateInterpolator()
+                    start()
+                }
 
             if (progressAnimator?.isRunning == true)
                 progressAnimator?.cancel()
             progressAnimator = ObjectAnimator.ofFloat(binding.recProgress, "progress", 0f, 100f)
-            progressAnimator!!.duration = duration + 2000
-            progressAnimator!!.interpolator = LinearInterpolator()
-            progressAnimator!!.start()
+                .apply {
+                    duration = DURATION
+                    interpolator = LinearInterpolator()
+                    start()
+                }
 
             handler.postDelayed({
                 finishRecording()
-            }, 10000)
+            }, DURATION)
             started = true
         } else {
             try {
-                recorder?.stop()
-                recorder?.reset()
-                recorder?.release()
-                recorder = null
+                client?.release()
+                client = null
             } catch (e:Exception) {}
-            asyncTask?.cancel(true)
-            asyncTask = null
             binding.recStatus.text = ""
 
             if (fadeAnimator?.isRunning == true)
                 fadeAnimator?.cancel()
             fadeAnimator = ObjectAnimator.ofFloat(binding.recImg, "alpha", 0.5f)
-            fadeAnimator!!.duration = 300
-            fadeAnimator!!.interpolator = AccelerateInterpolator()
-            fadeAnimator!!.start()
+                .apply {
+                    duration = 300
+                    interpolator = AccelerateInterpolator()
+                    start()
+                }
 
             if (progressAnimator?.isRunning == true)
                 progressAnimator?.cancel()
 
             progressAnimator = ObjectAnimator.ofFloat(binding.recProgress, "progress", 0f)
-            progressAnimator!!.duration = 300
-            progressAnimator!!.interpolator = AccelerateInterpolator()
-            progressAnimator!!.start()
+                .apply {
+                    duration = 300
+                    interpolator = AccelerateInterpolator()
+                    start()
+                }
 
             handler.removeCallbacksAndMessages(null)
             started = false
         }
     }
 
-    private fun startRecording():Boolean {
-        recorder = MediaRecorder()
-        recorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
-        recorder!!.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
-        recorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
-        recorder!!.setOutputFile(path)
-        try {
-            recorder!!.prepare()
-            recorder!!.start()
-        } catch (e: Exception) {
-            Stuff.log("prepare/start failed MIC")
-            recorder!!.reset()
-            recorder!!.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION) // needed on fire tv
-            recorder!!.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
-            recorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
-            recorder!!.setOutputFile(path)
-            try {
-                recorder!!.prepare()
-                recorder!!.start()
-            } catch (e: Exception) {
-                Stuff.log("prepare/start failed VOICE_RECOGNITION")
-                binding.recStatus.setText(R.string.recording_failed)
-                return false
-            }
+    private fun startRecording(): Boolean {
+        client = ACRCloudClient()
+        val initState = client!!.initWithConfig(acrConfig)
+        var startState = false
+        if (initState)
+            startState = client!!.startRecognize()
+
+        if (!initState || !startState) {
+            Stuff.log("rec initState = $initState, startState = $startState")
+            return false
         }
         return true
     }
 
     private fun finishRecording() {
         try {
-            recorder?.stop()
-            recorder?.reset()
-            recorder?.release()
+            client?.release()
         } catch (e:Exception) {}
+        client = null
 
-        recorder = null
-        binding.recStatus.setText(R.string.uploading)
-
-        asyncTask = SubmitAsync()
-        asyncTask!!.execute(path)
+        if(started)
+            startOrCancel()
     }
 
-    private fun onResult(result: String) {
+    override fun onResult(acrCloudResult: ACRCloudResult) {
+        val result = acrCloudResult.result ?: return
         var artist = ""
         var album = ""
         var title = ""
         var statusCode:Int
         var statusMsg = ""
-        asyncTask = null
         try {
             val j = JSONObject(result)
             val status = j.getJSONObject("status")
@@ -298,21 +294,33 @@ class RecFragment:Fragment(){
         if(started)
             startOrCancel()
 
-        if(statusCode == 0) {
-            binding.recImg.setImageResource(R.drawable.vd_check_simple)
-            binding.recStatus.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
-            val scrobbleData = ScrobbleData()
-            scrobbleData.artist = artist
-            scrobbleData.album = album
-            scrobbleData.track = title
-            scrobbleData.timestamp = (System.currentTimeMillis()/1000).toInt() // in secs
-            LFMRequester(context!!)
+        when(statusCode) {
+            0 -> {
+                binding.recImg.setImageResource(R.drawable.vd_check_simple)
+                binding.recStatus.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
+                val scrobbleData = ScrobbleData()
+                scrobbleData.artist = artist
+                scrobbleData.album = album
+                scrobbleData.track = title
+                scrobbleData.timestamp = (System.currentTimeMillis() / 1000).toInt() // in secs
+                LFMRequester(context!!)
                     .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title))
                     .asAsyncTask()
-        } else {
-            if (statusCode == 3003)
-                showSnackbar()
-            binding.recStatus.text = statusMsg
+            }
+            1001 -> binding.recStatus.text = getString(R.string.not_found)
+            2000 -> {
+                if (acrConfig.recorderConfig.source != MediaRecorder.AudioSource.VOICE_RECOGNITION) {
+                    acrConfig.recorderConfig.source = MediaRecorder.AudioSource.VOICE_RECOGNITION
+                    startOrCancel()
+                } else
+                    binding.recStatus.setText(R.string.recording_failed)
+            }
+            2001 -> binding.recStatus.setText(R.string.recording_failed)
+            3003, 3015 -> showSnackbar()
+            else -> {
+                Stuff.log("rec error: $statusCode - $statusMsg")
+                binding.recStatus.text = getString(R.string.network_error)
+            }
         }
     }
 
@@ -325,18 +333,9 @@ class RecFragment:Fragment(){
             Stuff.toast(context, getString(R.string.grant_rec_perm))
     }
 
-    inner class SubmitAsync: AsyncTask<String, Int, String>() {
-        override fun doInBackground(vararg path: String): String {
-            val file = File(path[0])
-            val i = IdentifyProtocolV1()
-            val host = pref.getString(Stuff.PREF_ACR_HOST, Tokens.ACR_HOST)
-            val key = pref.getString(Stuff.PREF_ACR_KEY, Tokens.ACR_KEY)
-            val secret = pref.getString(Stuff.PREF_ACR_SECRET, Tokens.ACR_SECRET)
-            return i.recognize(host, key, secret, file, "audio", Stuff.CONNECT_TIMEOUT)
-        }
+    override fun onVolumeChanged(volume: Double) {
+    }
 
-        override fun onPostExecute(result: String?) {
-            onResult(result!!)
-        }
+    override fun onRadioMetadataResult(result: String?) {
     }
 }

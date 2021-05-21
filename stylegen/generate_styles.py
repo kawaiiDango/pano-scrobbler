@@ -85,15 +85,14 @@ for color, shades in jsondoc.items():
         style.append(elem)
 
 color = "black"
-colorBackground = "#010101"
 prefix = f"ColorPatch.{color.capitalize()}"
 style = Element("style", {"name": prefix+"_Background"})
 styles_root.append(style)
 elem = Element("item", {"name": "android:colorBackground"})
-elem.text = colorBackground
+elem.text = "@android:color/black"
 style.append(elem)
 elem = Element("item", {"name": "colorSurface"})
-elem.text = colorBackground
+elem.text = "#010101"
 style.append(elem)
 
 objectify.deannotate(styles_root, cleanup_namespaces=True)

@@ -211,7 +211,7 @@
     <item name="colorSurface">@color/Bluegrey_Background</item>
   </style>
   <style name="ColorPatch.Black_Background">
-    <item name="android:colorBackground">#010101</item>
+    <item name="android:colorBackground">@android:color/black</item>
     <item name="colorSurface">#010101</item>
   </style>
 </resources>

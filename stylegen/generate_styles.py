@@ -12,17 +12,18 @@ path_dest_kt = "../app/src/main/java/com/arn/scrobble/themes/ColorPatchMap.kt"
 primary_shade = "300"
 noti_shade = "400"
 secondary_shade = "100"
-background_shade = "900"
+background_shade = "300"
 
 jsondoc = json.load(open(path_src, 'r'))
 
 
-def darken_color(color_hex: str, l: int) -> str:
+def darken_color(colorName: str, color_hex: str, l: float, maxS: float) -> str:
     color_hex = color_hex.lstrip('#')
     rgb = tuple(int(color_hex[i:i+2], 16) for i in (0, 2, 4))
     rgb = tuple(x/255 for x in rgb)
     hls = colorsys.rgb_to_hls(*rgb)
-    new_hls = (hls[0], l, hls[2])
+    new_hls = (hls[0], l, min(hls[2], maxS))
+    # print(colorName, hls[2])
     new_rgb = colorsys.hls_to_rgb(*new_hls)
     new_rgb = tuple(int(255*x) for x in new_rgb)
     return '#%02x%02x%02x' % new_rgb
@@ -67,7 +68,7 @@ for color, shades in jsondoc.items():
 
     if background_shade.lower() in shades:
         colorBackground = shades[background_shade.lower()]
-        colorBackground = darken_color(colorBackground, 0.12)
+        colorBackground = darken_color(color, colorBackground, 0.12, 0.5)
 
         # android bug: colorBackground has to be a reference on some devices
         color_element_name = color.capitalize() + "_Background"

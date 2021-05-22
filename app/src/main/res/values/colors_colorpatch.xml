@@ -1,22 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <color name="Red_Background">#350808</color>
-  <color name="Pink_Background">#370520</color>
-  <color name="Purple_Background">#1c0735</color>
-  <color name="Deeppurple_Background">#110933</color>
-  <color name="Indigo_Background">#0a0e32</color>
-  <color name="Blue_Background">#041838</color>
-  <color name="Lightblue_Background">#00223c</color>
-  <color name="Cyan_Background">#003a3d</color>
-  <color name="Teal_Background">#003d32</color>
-  <color name="Green_Background">#0d2f10</color>
-  <color name="Lightgreen_Background">#172f0d</color>
-  <color name="Lime_Background">#342f09</color>
-  <color name="Yellow_Background">#3a1c02</color>
-  <color name="Amber_Background">#3d1a00</color>
-  <color name="Orange_Background">#3d1500</color>
-  <color name="Deeporange_Background">#391003</color>
-  <color name="Brown_Background">#271816</color>
+  <color name="Red_Background">#2d0f0f</color>
+  <color name="Pink_Background">#2d0f19</color>
+  <color name="Purple_Background">#28102c</color>
+  <color name="Deeppurple_Background">#1a102c</color>
+  <color name="Indigo_Background">#11152c</color>
+  <color name="Blue_Background">#0f202d</color>
+  <color name="Lightblue_Background">#0f242d</color>
+  <color name="Cyan_Background">#0f2a2d</color>
+  <color name="Teal_Background">#112b28</color>
+  <color name="Green_Background">#122a13</color>
+  <color name="Lightgreen_Background">#1f2d0f</color>
+  <color name="Lime_Background">#2a2d0f</color>
+  <color name="Yellow_Background">#2d2a0f</color>
+  <color name="Amber_Background">#2d260f</color>
+  <color name="Orange_Background">#2d210f</color>
+  <color name="Deeporange_Background">#2d160f</color>
+  <color name="Brown_Background">#231c19</color>
   <color name="Grey_Background">#1e1e1e</color>
-  <color name="Bluegrey_Background">#182024</color>
+  <color name="Bluegrey_Background">#192023</color>
 </resources>

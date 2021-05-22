@@ -26,20 +26,9 @@ class ChartsWidgetUpdaterJob : JobService() {
                 appWidgetIdToPeriodInt[it] = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, it), -1)
             }
 
-        fun updateData(all: AllCharts, periodInt:Int, appWidgetIds: Collection<Int>) {
-
-            val artists = arrayListOf<ChartsWidgetListItem>()
-            all.artists.forEach {
-                artists += ChartsWidgetListItem(it.name, "", it.playcount)
-            }
-            val albums = arrayListOf<ChartsWidgetListItem>()
-            all.albums.forEach {
-                albums += ChartsWidgetListItem(it.name, it.artist, it.playcount)
-            }
-            val tracks = arrayListOf<ChartsWidgetListItem>()
-            all.tracks.forEach {
-                tracks += ChartsWidgetListItem(it.name, it.artist, it.playcount)
-            }
+        fun updateData(all: Triple<ArrayList<ChartsWidgetListItem>, ArrayList<ChartsWidgetListItem>, ArrayList<ChartsWidgetListItem>>,
+                       periodInt:Int, appWidgetIds: Collection<Int>) {
+            val (artists, albums, tracks) = all
 
             val editor = pref.edit()
                 .putString(
@@ -65,25 +54,44 @@ class ChartsWidgetUpdaterJob : JobService() {
             }
         }
 
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+        val exHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+            throwable.printStackTrace()
+            jobFinished(jp, false)
+        }
+
+        CoroutineScope(Dispatchers.IO + Job()).launch(exHandler) {
             for (periodInt in appWidgetIdToPeriodInt.values.toSet()) {
                 if (periodInt == -1)
                     continue
                 val period = Period.values()[periodInt]
 
-                val artists = async { User.getTopArtists(username, period, 50, 1, Stuff.LAST_KEY).pageResults!! }
-                val albums = async { User.getTopAlbums(username, period, 50, 1, Stuff.LAST_KEY).pageResults!! }
-                val tracks = async { User.getTopTracks(username, period, 50, 1, Stuff.LAST_KEY).pageResults!! }
-
-                try {
-                    updateData(
-                        AllCharts(artists.await(), albums.await(), tracks.await()),
-                        periodInt,
-                        appWidgetIdToPeriodInt.keys
+                val artists = async {
+                    val pr = User.getTopArtists(username, period, 50, 1, Stuff.LAST_KEY)
+                    pr.username!!
+                    ArrayList(
+                        pr.pageResults!!.map { ChartsWidgetListItem(it.name, "", it.playcount) }
                     )
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
+                val albums = async {
+                    val pr = User.getTopAlbums(username, period, 50, 1, Stuff.LAST_KEY)
+                    pr.username!!
+                    ArrayList(
+                        pr.pageResults!!.map { ChartsWidgetListItem(it.name, it.artist, it.playcount) }
+                    )
+                }
+                val tracks = async {
+                    val pr = User.getTopTracks(username, period, 50, 1, Stuff.LAST_KEY)
+                    pr.username!!
+                    ArrayList(
+                        pr.pageResults!!.map { ChartsWidgetListItem(it.name, it.artist, it.playcount) }
+                    )
+                }
+
+                updateData(
+                    Triple(artists.await(), albums.await(), tracks.await()),
+                    periodInt,
+                    appWidgetIdToPeriodInt.keys
+                )
             }
             jobFinished(jp, false)
         }
@@ -93,12 +101,6 @@ class ChartsWidgetUpdaterJob : JobService() {
     override fun onStopJob(params: JobParameters): Boolean {
         return true
     }
-
-    class AllCharts(
-        val artists: Collection<Artist>,
-        val albums: Collection<Album>,
-        val tracks: Collection<Track>,
-    )
 
     companion object {
         const val JOB_ID = 11

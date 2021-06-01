@@ -32,6 +32,8 @@ import org.codechimp.apprater.AppRater
 import java.text.NumberFormat
 import android.media.AudioManager
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 
 class NLService : NotificationListenerService() {
@@ -474,6 +476,8 @@ class NLService : NotificationListenerService() {
         constructor() : super()
         constructor(looper: Looper) : super(looper)
 
+        private val scrobbleMutex = Mutex()
+
         override fun handleMessage(m: Message) {
 
             val title = m.data.getString(B_TITLE)!!
@@ -490,7 +494,9 @@ class NLService : NotificationListenerService() {
 
         suspend fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, position: Long, duration:Long,
                        hash:Int, forcable:Boolean, packageName: String?, lessDelay: Boolean = false) {
-            if (title != "" && !hasMessages(hash)){
+            scrobbleMutex.withLock {
+                if (title == "" || hasMessages(hash))
+                    return
                 val now = System.currentTimeMillis()
                 var album = MetadataUtils.sanitizeAlbum(album)
                 var artist = MetadataUtils.sanitizeArtist(artist)

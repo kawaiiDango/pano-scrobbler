@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
 import java.util.Locale
 
 /**
@@ -139,10 +140,12 @@ class SessListener (
                             if (currHash != hashesAndTimes.lastScrobbleHash || (pos >= 0L && isPossiblyAtStart))
                                 hashesAndTimes.timePlayed = 0
 
-                            if (!handler.hasMessages(currHash) && ((pos >= 0L && isPossiblyAtStart) ||
+                            if (((pos >= 0L && isPossiblyAtStart) ||
                                             currHash != hashesAndTimes.lastScrobbledHash)) {
                                 Stuff.log("playing: timePlayed=${hashesAndTimes.timePlayed} $title")
-                                scrobble()
+                                defaultScope.launch {
+                                    scrobble()
+                                }
                             }
                         }
                     }
@@ -155,20 +158,25 @@ class SessListener (
             }
         }
 
-        fun scrobble() {
-            if ((packageName == Stuff.PACKAGE_BLACKPLAYER || packageName == Stuff.PACKAGE_BLACKPLAYEREX) && duration > 0) {
-                stateHandler.removeCallbacksAndMessages("bp")
-                stateHandler.sendMessageDelayed(
+        private suspend fun scrobble() {
+            handler.scrobbleMutex.withLock {
+                if (handler.hasMessages(currHash))
+                    return
+
+                if ((packageName == Stuff.PACKAGE_BLACKPLAYER || packageName == Stuff.PACKAGE_BLACKPLAYEREX) && duration > 0) {
+                    stateHandler.removeCallbacksAndMessages("bp")
+                    stateHandler.sendMessageDelayed(
                         stateHandler.obtainMessage(0, PlaybackState.STATE_PLAYING, 0, "bp"),
                         duration
-                )
-            }
-            hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
-            val isWhitelisted = packageName in whiteList
-            val packageNameParam = if (!isWhitelisted) packageName else null
-            handler.removeMessages(hashesAndTimes.lastScrobbleHash)
+                    )
+                }
+                hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
+                val packageNameParam = if (packageName !in whiteList)
+                        packageName
+                    else
+                        null
+                handler.removeMessages(hashesAndTimes.lastScrobbleHash)
 
-            defaultScope.launch {
                 if (isIgnoreArtistMeta) {
                     val splits = MetadataUtils.sanitizeTitle(title)
                     handler.nowPlaying(
@@ -194,9 +202,9 @@ class SessListener (
                         true,
                         packageNameParam
                     )
+                hashesAndTimes.lastScrobbleHash = currHash
+                hashesAndTimes.lastScrobbledHash = 0
             }
-            hashesAndTimes.lastScrobbleHash = currHash
-            hashesAndTimes.lastScrobbledHash = 0
         }
 
         @Synchronized
@@ -270,10 +278,11 @@ class SessListener (
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
-                if (artist != "" && title != "" &&
-                        !handler.hasMessages(currHash) &&
-                        lastState == PlaybackState.STATE_PLAYING)
-                    scrobble()
+                if (artist != "" && title != "" && lastState == PlaybackState.STATE_PLAYING) {
+                    defaultScope.launch {
+                        scrobble()
+                    }
+                }
             }
         }
 
@@ -284,7 +293,6 @@ class SessListener (
             }
         }
 
-        //Do not use
         override fun onSessionDestroyed() {
             Stuff.log("onSessionDestroyed $packageName")
             stop()

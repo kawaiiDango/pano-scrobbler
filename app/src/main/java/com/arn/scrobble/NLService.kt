@@ -297,20 +297,18 @@ class NLService : NotificationListenerService() {
                         Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                     else
                         defaultScope.launch {
-                            handler.scrobbleMutex.withLock {
-                                handler.nowPlaying(
-                                    meta[0],
-                                    "",
-                                    meta[1],
-                                    "",
-                                    0,
-                                    0,
-                                    hash,
-                                    false,
-                                    packageNameArg,
-                                    true
-                                )
-                            }
+                            handler.nowPlaying(
+                                meta[0],
+                                "",
+                                meta[1],
+                                "",
+                                0,
+                                0,
+                                hash,
+                                false,
+                                packageNameArg,
+                                true
+                            )
                         }
                 } else
                     Stuff.log("\"${this::scrobbleFromNoti.name} parse failed")
@@ -478,7 +476,7 @@ class NLService : NotificationListenerService() {
         constructor() : super()
         constructor(looper: Looper) : super(looper)
 
-        val scrobbleMutex = Mutex()
+        private val scrobbleMutex = Mutex()
 
         override fun handleMessage(m: Message) {
 
@@ -496,94 +494,86 @@ class NLService : NotificationListenerService() {
 
         suspend fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, position: Long, duration:Long,
                        hash:Int, forcable:Boolean, packageName: String?, lessDelay: Boolean = false) {
-            if (title == "" || hasMessages(hash))
-                return
-
-            val now = System.currentTimeMillis()
-            var album = MetadataUtils.sanitizeAlbum(album)
-            var artist = MetadataUtils.sanitizeArtist(artist)
-            var title = title
-            var albumArtist = MetadataUtils.sanitizeAlbum(albumArtist)
-            if (title != "") {
-                withContext(Dispatchers.IO) {
-                    val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
-                    try {
-                        dao.find(artist, album, title)
-                            ?.let {
-                                artist = it.artist
-                                album = it.album
-                                title = it.track
-                                albumArtist = it.albumArtist
-                            }
-                    } catch (e: Exception) {
-                        Stuff.log("editsDao exception")
+            scrobbleMutex.withLock {
+                if (title == "" || hasMessages(hash))
+                    return
+                val now = System.currentTimeMillis()
+                var album = MetadataUtils.sanitizeAlbum(album)
+                var artist = MetadataUtils.sanitizeArtist(artist)
+                var title = title
+                var albumArtist = MetadataUtils.sanitizeAlbum(albumArtist)
+                if (title != "") {
+                    withContext(Dispatchers.IO) {
+                        val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
+                        try {
+                            dao.find(artist, album, title)
+                                ?.let {
+                                    artist = it.artist
+                                    album = it.album
+                                    title = it.track
+                                    albumArtist = it.albumArtist
+                                }
+                        } catch (e: Exception) {
+                            Stuff.log("editsDao exception")
+                        }
                     }
                 }
-            }
-            if (artist != "" && title != "") {
-                val scrobbleData = ScrobbleData()
-                scrobbleData.artist = artist
-                scrobbleData.album = album
-                scrobbleData.track = title
-                scrobbleData.albumArtist = albumArtist
-                scrobbleData.timestamp = (now / 1000).toInt() // in secs
-                scrobbleData.duration = (duration / 1000).toInt() // in secs
-                lastNpTask?.cancel(true)
-                lastNpTask = LFMRequester(applicationContext)
-                    .skipContentProvider()
-                    .scrobble(true, scrobbleData, hash)
-                    .asAsyncTask()
+                if (artist != "" && title != "") {
+                    val scrobbleData = ScrobbleData()
+                    scrobbleData.artist = artist
+                    scrobbleData.album = album
+                    scrobbleData.track = title
+                    scrobbleData.albumArtist = albumArtist
+                    scrobbleData.timestamp = (now/1000).toInt() // in secs
+                    scrobbleData.duration = (duration/1000).toInt() // in secs
+                    lastNpTask?.cancel(true)
+                    lastNpTask = LFMRequester(applicationContext)
+                            .skipContentProvider()
+                            .scrobble(true, scrobbleData, hash)
+                            .asAsyncTask()
 
-                val b = Bundle()
-                b.putString(B_ARTIST, artist)
-                b.putString(B_ALBUM, album)
-                b.putString(B_TITLE, title)
-                b.putString(B_ALBUM_ARTIST, albumArtist)
-                b.putLong(B_TIME, now)
-                b.putLong(B_DURATION, duration)
-                b.putBoolean(B_FORCEABLE, forcable)
-                b.putInt(B_HASH, hash)
-                b.putBoolean(B_IS_SCROBBLING, true)
+                    val b = Bundle()
+                    b.putString(B_ARTIST, artist)
+                    b.putString(B_ALBUM, album)
+                    b.putString(B_TITLE, title)
+                    b.putString(B_ALBUM_ARTIST, albumArtist)
+                    b.putLong(B_TIME, now)
+                    b.putLong(B_DURATION, duration)
+                    b.putBoolean(B_FORCEABLE, forcable)
+                    b.putInt(B_HASH, hash)
+                    b.putBoolean(B_IS_SCROBBLING, true)
 
-                val delayMillis = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
-                val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
-                var delay =
-                    if (duration > 10000 && duration * delayPer / 100 < delayMillis) //dont scrobble <10 sec songs?
-                        duration * delayPer / 100
+                    val delayMillis = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
+                    val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
+                    var delay = if (duration > 10000 && duration*delayPer/100 < delayMillis) //dont scrobble <10 sec songs?
+                        duration*delayPer/100
                     else {
                         if (lessDelay)
-                            delayMillis * 2 / 3 //esp for pixel now playing
+                            delayMillis*2/3 //esp for pixel now playing
                         else
                             delayMillis
                     }
-                if (delay - position > 1000)
-                    delay -= position
-                b.putLong(B_DELAY, delay)
-                currentBundle = b
+                    if (delay - position > 1000)
+                        delay -= position
+                    b.putLong(B_DELAY, delay)
+                    currentBundle = b
 
-                val m = obtainMessage()
-                m.data = b
-                m.what = hash
-                sendMessageDelayed(m, delay)
+                    val m = obtainMessage()
+                    m.data = b
+                    m.what = hash
+                    sendMessageDelayed(m, delay)
 
-                notifyScrobble(artist, title, hash, nowPlaying = true, loved = false)
-                //display ignore thing only on successful parse
-                if (packageName != null) {
-                    notifyApp(packageName)
+                    notifyScrobble(artist, title, hash, true, false)
+                    //display ignore thing only on successful parse
+                    if (packageName != null) {
+                        notifyApp(packageName)
+                    }
+                    //for rating
+                    AppRater.incrementScrobbleCount(pref)
+                } else {
+                    notifyBadMeta(artist, album, title, albumArtist, now, getString(R.string.parse_error), hash)
+                    currentBundle = Bundle()
                 }
-                //for rating
-                AppRater.incrementScrobbleCount(pref)
-            } else {
-                notifyBadMeta(
-                    artist,
-                    album,
-                    title,
-                    albumArtist,
-                    now,
-                    getString(R.string.parse_error),
-                    hash
-                )
-                currentBundle = Bundle()
             }
         }
 

@@ -11,8 +11,6 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
 import android.os.Message
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.util.Locale
 
 /**
@@ -23,7 +21,6 @@ class SessListener (
     private val pref: SharedPreferences,
     private val handler: NLService.ScrobbleHandler,
     private val audioManager: AudioManager,
-    private val defaultScope: CoroutineScope
 ) : OnActiveSessionsChangedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -168,33 +165,31 @@ class SessListener (
             val packageNameParam = if (!isWhitelisted) packageName else null
             handler.removeMessages(hashesAndTimes.lastScrobbleHash)
 
-            defaultScope.launch {
-                if (isIgnoreArtistMeta) {
-                    val splits = MetadataUtils.sanitizeTitle(title)
-                    handler.nowPlaying(
-                        splits[0],
-                        "",
-                        splits[1],
-                        "",
-                        hashesAndTimes.timePlayed,
-                        duration,
-                        currHash,
-                        false,
-                        packageNameParam
-                    )
-                } else
-                    handler.nowPlaying(
-                        artist,
-                        album,
-                        title,
-                        albumArtist,
-                        hashesAndTimes.timePlayed,
-                        duration,
-                        currHash,
-                        true,
-                        packageNameParam
-                    )
-            }
+            if (isIgnoreArtistMeta) {
+                val splits = MetadataUtils.sanitizeTitle(title)
+                handler.nowPlaying(
+                    splits[0],
+                    "",
+                    splits[1],
+                    "",
+                    hashesAndTimes.timePlayed,
+                    duration,
+                    currHash,
+                    artist,
+                    packageNameParam
+                )
+            } else
+                handler.nowPlaying(
+                    artist,
+                    album,
+                    title,
+                    albumArtist,
+                    hashesAndTimes.timePlayed,
+                    duration,
+                    currHash,
+                    null,
+                    packageNameParam
+                )
             hashesAndTimes.lastScrobbleHash = currHash
             hashesAndTimes.lastScrobbledHash = 0
         }
@@ -284,7 +279,6 @@ class SessListener (
             }
         }
 
-        //Do not use
         override fun onSessionDestroyed() {
             Stuff.log("onSessionDestroyed $packageName")
             stop()

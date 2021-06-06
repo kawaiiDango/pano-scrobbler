@@ -11,6 +11,7 @@ import android.util.LruCache
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.db.PendingLove
@@ -607,8 +608,8 @@ class LFMRequester(context: Context) {
         return this
     }
 
-    fun scrobble(nowPlaying: Boolean, scrobbleData: ScrobbleData, hash: Int): LFMRequester {
-        toExec = {
+    fun scrobble(nowPlaying: Boolean, scrobbleData: ScrobbleData, hash: Int, ignoredArtist: String? = null): LFMRequester {
+        toExec = fun() {
             checkSession()
             Stuff.log(this::scrobble.name + " " +
                     (if (nowPlaying) "np" else "submit")
@@ -625,6 +626,37 @@ class LFMRequester(context: Context) {
                 var correctedArtist: String? = null
                 if (Thread.interrupted())
                     throw InterruptedException()
+
+                val editsDao = PendingScrobblesDb.getDb(context).getEditsDao()
+                var edit = editsDao.find(scrobbleData.artist, scrobbleData.album, scrobbleData.track)
+                edit?.let {
+                    scrobbleData.artist = it.artist
+                    scrobbleData.album = it.album
+                    scrobbleData.track = it.track
+                    scrobbleData.albumArtist = it.albumArtist
+                }
+
+                if (scrobbleData.artist.isNullOrBlank() || scrobbleData.track.isNullOrBlank()) {
+                    val b = scrobbleData.toBundle().apply {
+                        putInt(NLService.B_HASH, hash)
+                        putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
+                        putString(NLService.B_ERR_MSG, context.getString(R.string.parse_error))
+                    }
+                    val i = Intent(NLService.iBAD_META).apply {
+                        putExtras(b)
+                    }
+                    context.sendBroadcast(i)
+                    return
+                } else if (edit != null) {
+                    val b = scrobbleData.toBundle().apply {
+                        putInt(NLService.B_HASH, hash)
+                    }
+                    val i = Intent(NLService.iMETA_UPDATE).apply {
+                        putExtras(b)
+                    }
+
+                    context.sendBroadcast(i)
+                }
 
                 if (Main.isOnline) {
                     try {
@@ -656,16 +688,10 @@ class LFMRequester(context: Context) {
                     if (correctedArtist != null && scrobbleData.album == "")
                         scrobbleData.artist = correctedArtist
                 }
-                val dao = PendingScrobblesDb.getDb(context).getEditsDao()
-                val edit =
-                        try {
-                            if (track != null)
-                                dao.find(track.artist, scrobbleData.album, track.name)
-                            else
-                                dao.find(scrobbleData.artist, scrobbleData.album, scrobbleData.track)
-                        } catch (e: Exception) {
-                            null
-                        }
+                edit = if (track != null)
+                            editsDao.find(track.artist, scrobbleData.album, track.name)
+                        else
+                            editsDao.find(scrobbleData.artist, scrobbleData.album, scrobbleData.track)
                 if (edit != null) {
                     scrobbleData.artist = edit.artist
                     scrobbleData.album = edit.album
@@ -678,16 +704,17 @@ class LFMRequester(context: Context) {
                     }
                 }
                 if (edit != null || track != null) {
-                    val i = Intent(NLService.iMETA_UPDATE)
-                    i.putExtra(NLService.B_ARTIST, scrobbleData.artist)
-                    i.putExtra(NLService.B_ALBUM, scrobbleData.album)
-                    i.putExtra(NLService.B_ALBUM_ARTIST, scrobbleData.albumArtist)
-                    i.putExtra(NLService.B_TITLE, scrobbleData.track)
-                    i.putExtra(NLService.B_HASH, hash)
-                    if (track != null) {
-                        i.putExtra(NLService.B_USER_LOVED, track.isLoved)
-                        i.putExtra(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
+                    val b = scrobbleData.toBundle().apply {
+                        putInt(NLService.B_HASH, hash)
+                        if (track != null) {
+                            putBoolean(NLService.B_USER_LOVED, track.isLoved)
+                            putInt(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
+                        }
                     }
+                    val i = Intent(NLService.iMETA_UPDATE).apply {
+                        putExtras(b)
+                    }
+
                     context.sendBroadcast(i)
                 }
                 if (Main.isOnline) {
@@ -723,13 +750,13 @@ class LFMRequester(context: Context) {
                         }
                     } else {
                         //no such artist
-                        val i = Intent(NLService.iBAD_META)
-                        i.putExtra(NLService.B_ARTIST, scrobbleData.artist)
-                        i.putExtra(NLService.B_ALBUM, scrobbleData.album)
-                        i.putExtra(NLService.B_TITLE, scrobbleData.track)
-                        i.putExtra(NLService.B_ALBUM_ARTIST, scrobbleData.albumArtist)
-                        i.putExtra(NLService.B_TIME, scrobbleData.timestamp * 1000L)
-                        i.putExtra(NLService.B_HASH, hash)
+                        val b = scrobbleData.toBundle().apply {
+                            putInt(NLService.B_HASH, hash)
+                            putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
+                        }
+                        val i = Intent(NLService.iBAD_META).apply {
+                            putExtras(b)
+                        }
                         context.sendBroadcast(i)
                     }
                 }
@@ -811,16 +838,16 @@ class LFMRequester(context: Context) {
                 if (failedTextLines.isNotEmpty()) {
                     val failedText = failedTextLines.joinToString("<br>\n")
                     Stuff.log("failedText= $failedText")
-                    val i = Intent(NLService.iOTHER_ERR)
-                    i.putExtra(NLService.B_ERR_MSG, failedText)
-                    i.putExtra(NLService.B_PENDING, savedAsPending)
-                    i.putExtra(NLService.B_HASH, hash)
+                    val i = Intent(NLService.iOTHER_ERR).apply {
+                        putExtra(NLService.B_ERR_MSG, failedText)
+                        putExtra(NLService.B_PENDING, savedAsPending)
+                        putExtra(NLService.B_HASH, hash)
+                    }
                     context.sendBroadcast(i)
                 }
 
             } catch (e: NullPointerException) {
             }
-            null
         }
         return this
     }

@@ -31,6 +31,7 @@ import de.umass.lastfm.scrobble.ScrobbleData
 import org.codechimp.apprater.AppRater
 import java.text.NumberFormat
 import android.media.AudioManager
+import com.arn.scrobble.Stuff.toBundle
 import kotlinx.coroutines.*
 
 
@@ -110,7 +111,7 @@ class NLService : NotificationListenerService() {
         val sessManager = applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
-        sessListener = SessListener(pref, handler, audioManager, defaultScope)
+        sessListener = SessListener(pref, handler, audioManager)
         sessListener?.browserPackages = Stuff.getBrowsersAsStrings(packageManager)
         try {
             sessManager.addOnActiveSessionsChangedListener(sessListener!!, ComponentName(this, this::class.java))
@@ -294,20 +295,18 @@ class NLService : NotificationListenerService() {
                             System.currentTimeMillis() - currentBundle.getLong(B_TIME) < Stuff.NOTI_SCROBBLE_INTERVAL)
                         Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                     else
-                        defaultScope.launch {
-                            handler.nowPlaying(
-                                meta[0],
-                                "",
-                                meta[1],
-                                "",
-                                0,
-                                0,
-                                hash,
-                                false,
-                                packageNameArg,
-                                true
-                            )
-                        }
+                        handler.nowPlaying(
+                            meta[0],
+                            "",
+                            meta[1],
+                            "",
+                            0,
+                            0,
+                            hash,
+                            null,
+                            packageNameArg,
+                            true
+                        )
                 } else
                     Stuff.log("\"${this::scrobbleFromNoti.name} parse failed")
             }
@@ -411,15 +410,18 @@ class NLService : NotificationListenerService() {
                         handler.notifyOtherError(" ", intent.getStringExtra(B_ERR_MSG)!!)
                 }
                 iBAD_META -> {
-                    handler.notifyBadMeta(intent.getStringExtra(B_ARTIST)!!,
-                            intent.getStringExtra(B_ALBUM)!!,
-                            intent.getStringExtra(B_TITLE)!!,
-                            intent.getStringExtra(B_ALBUM_ARTIST)!!,
-                            intent.getLongExtra(B_TIME, System.currentTimeMillis()),
-                            intent.getStringExtra(B_ERR_MSG),
-                            intent.getIntExtra(B_HASH, 0)
-                            )
-                    handler.remove(intent.getIntExtra(B_HASH, 0), false)
+                    val scrobbleData = ScrobbleData().apply {
+                        artist = intent.getStringExtra(B_ARTIST)!!
+                        track = intent.getStringExtra(B_TITLE)!!
+                        albumArtist = intent.getStringExtra(B_ALBUM_ARTIST)!!
+                        timestamp = intent.getLongExtra(B_TIME, System.currentTimeMillis()).toInt()
+                    }
+                    handler.notifyBadMeta(
+                        scrobbleData,
+                        intent.getIntExtra(B_HASH, 0),
+                        intent.getBooleanExtra(B_FORCEABLE, true),
+                        intent.getStringExtra(B_ERR_MSG),
+                        )
                 }
                 iMETA_UPDATE -> {
                     if (handler.hasMessages(intent.getIntExtra(B_HASH, 0))) {
@@ -488,86 +490,59 @@ class NLService : NotificationListenerService() {
             markAsScrobbled(hash)
         }
 
-        suspend fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, position: Long, duration:Long,
-                       hash:Int, forcable:Boolean, packageName: String?, lessDelay: Boolean = false) {
+        fun nowPlaying(artist:String, album:String, title: String, albumArtist:String, position: Long, duration:Long,
+                       hash:Int, ignoredArtist: String?, packageName: String?, lessDelay: Boolean = false) {
             if (title != "" && !hasMessages(hash)){
                 val now = System.currentTimeMillis()
-                var album = MetadataUtils.sanitizeAlbum(album)
-                var artist = MetadataUtils.sanitizeArtist(artist)
-                var title = title
-                var albumArtist = MetadataUtils.sanitizeAlbum(albumArtist)
-                if (title != "") {
-                    withContext(Dispatchers.IO) {
-                        val dao = PendingScrobblesDb.getDb(applicationContext).getEditsDao()
-                        try {
-                            dao.find(artist, album, title)
-                                ?.let {
-                                    artist = it.artist
-                                    album = it.album
-                                    title = it.track
-                                    albumArtist = it.albumArtist
-                                }
-                        } catch (e: Exception) {
-                            Stuff.log("editsDao exception")
-                        }
-                    }
+                val album = MetadataUtils.sanitizeAlbum(album)
+                val artist = MetadataUtils.sanitizeArtist(artist)
+                val albumArtist = MetadataUtils.sanitizeAlbum(albumArtist)
+
+                val scrobbleData = ScrobbleData()
+                scrobbleData.artist = artist
+                scrobbleData.album = album
+                scrobbleData.track = title
+                scrobbleData.albumArtist = albumArtist
+                scrobbleData.timestamp = (now/1000).toInt() // in secs
+                scrobbleData.duration = (duration/1000).toInt() // in secs
+                lastNpTask?.cancel(true)
+                lastNpTask = LFMRequester(applicationContext)
+                        .skipContentProvider()
+                        .scrobble(true, scrobbleData, hash, ignoredArtist)
+                        .asAsyncTask()
+
+                val b = scrobbleData.toBundle().apply {
+                    putBoolean(B_FORCEABLE, ignoredArtist == null)
+                    putInt(B_HASH, hash)
+                    putBoolean(B_IS_SCROBBLING, true)
                 }
-                if (artist != "" && title != "") {
-                    val scrobbleData = ScrobbleData()
-                    scrobbleData.artist = artist
-                    scrobbleData.album = album
-                    scrobbleData.track = title
-                    scrobbleData.albumArtist = albumArtist
-                    scrobbleData.timestamp = (now/1000).toInt() // in secs
-                    scrobbleData.duration = (duration/1000).toInt() // in secs
-                    lastNpTask?.cancel(true)
-                    lastNpTask = LFMRequester(applicationContext)
-                            .skipContentProvider()
-                            .scrobble(true, scrobbleData, hash)
-                            .asAsyncTask()
 
-                    val b = Bundle()
-                    b.putString(B_ARTIST, artist)
-                    b.putString(B_ALBUM, album)
-                    b.putString(B_TITLE, title)
-                    b.putString(B_ALBUM_ARTIST, albumArtist)
-                    b.putLong(B_TIME, now)
-                    b.putLong(B_DURATION, duration)
-                    b.putBoolean(B_FORCEABLE, forcable)
-                    b.putInt(B_HASH, hash)
-                    b.putBoolean(B_IS_SCROBBLING, true)
-
-                    val delayMillis = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
-                    val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
-                    var delay = if (duration > 10000 && duration*delayPer/100 < delayMillis) //dont scrobble <10 sec songs?
-                        duration*delayPer/100
-                    else {
-                        if (lessDelay)
-                            delayMillis*2/3 //esp for pixel now playing
-                        else
-                            delayMillis
-                    }
-                    if (delay - position > 1000)
-                        delay -= position
-                    b.putLong(B_DELAY, delay)
-                    currentBundle = b
-
-                    val m = obtainMessage()
-                    m.data = b
-                    m.what = hash
-                    sendMessageDelayed(m, delay)
-
-                    notifyScrobble(artist, title, hash, true, false)
-                    //display ignore thing only on successful parse
-                    if (packageName != null) {
-                        notifyApp(packageName)
-                    }
-                    //for rating
-                    AppRater.incrementScrobbleCount(pref)
-                } else {
-                    notifyBadMeta(artist, album, title, albumArtist, now, getString(R.string.parse_error), hash)
-                    currentBundle = Bundle()
+                val delayMillis = pref.getInt(Stuff.PREF_DELAY_SECS, 90).toLong() * 1000
+                val delayPer = pref.getInt(Stuff.PREF_DELAY_PER, 50).toLong()
+                var delay = if (duration > 10000 && duration*delayPer/100 < delayMillis) //dont scrobble <10 sec songs?
+                    duration*delayPer/100
+                else {
+                    if (lessDelay)
+                        delayMillis*2/3 //esp for pixel now playing
+                    else
+                        delayMillis
                 }
+                if (delay - position > 1000)
+                    delay -= position
+                b.putLong(B_DELAY, delay)
+                currentBundle = b
+
+                val m = obtainMessage()
+                m.data = b
+                m.what = hash
+                sendMessageDelayed(m, delay)
+
+                notifyScrobble(artist, title, hash, nowPlaying = true, loved = false)
+                if (packageName != null) {
+                    notifyApp(packageName)
+                }
+                //for rating
+                AppRater.incrementScrobbleCount(pref)
             }
         }
 
@@ -672,17 +647,16 @@ class NLService : NotificationListenerService() {
             }
         }
 
-        fun notifyBadMeta(artist: String, album: String, title: String, albumArtist: String, timeMillis: Long, stateText: String?, hash: Int) {
+        fun notifyBadMeta(scrobbleData: ScrobbleData, hash: Int, forcable: Boolean, stateText: String?) {
             if (!pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
                 return
-            val i = Intent(applicationContext, EditActivity::class.java)
-            i.putExtra(B_ARTIST, artist)
-            i.putExtra(B_ALBUM_ARTIST, albumArtist)
-            i.putExtra(B_ALBUM, album)
-            i.putExtra(B_TITLE, title)
-            i.putExtra(B_TIME, timeMillis)
-            i.putExtra(B_STANDALONE, true)
-            i.putExtra(B_FORCEABLE, currentBundle.getBoolean(B_FORCEABLE))
+            val b = scrobbleData.toBundle().apply {
+                putBoolean(B_STANDALONE, true)
+                putBoolean(B_FORCEABLE, forcable)
+            }
+            val i = Intent(applicationContext, EditActivity::class.java).apply {
+                putExtras(b)
+            }
 
             val editIntent = PendingIntent.getActivity(applicationContext, 9, i,
                     Stuff.updateCurrentOrImmutable)
@@ -694,23 +668,26 @@ class NLService : NotificationListenerService() {
                     .setContentIntent(editIntent)
                     .setContentText(
                         if (stateText == null)
-                            artist
+                            scrobbleData.artist
                         else
-                            title
+                            scrobbleData.track
                     )
                     .setContentTitle(
                             (stateText ?: getString(R.string.state_invalid_artist)) + " " +
-                                    (if (currentBundle.getBoolean(B_FORCEABLE))
+                                    (if (forcable)
                                         getString(R.string.tap_to_edit_force)
                                     else
                                         getString(R.string.tap_to_edit))
                         )
                     .setPriority(
-                        if (stateText == null )
+                        if (stateText == null)
                             NotificationCompat.PRIORITY_LOW
                         else
                             NotificationCompat.PRIORITY_MIN
                     )
+            remove(hash, false)
+            currentBundle = Bundle()
+
             nm.notify(NOTI_ID_SCR, 0, nb.build())
             markAsScrobbled(hash)
         }

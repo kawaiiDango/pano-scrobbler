@@ -36,6 +36,7 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.color.MaterialColors
+import de.umass.lastfm.scrobble.ScrobbleData
 import java.io.IOException
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -584,6 +585,15 @@ object Stuff {
         this[Calendar.MINUTE] = 0
         this[Calendar.SECOND] = 0
         this[Calendar.MILLISECOND] = 0
+    }
+
+    fun ScrobbleData.toBundle() = Bundle().apply {
+            putString(NLService.B_ARTIST, artist)
+            putString(NLService.B_ALBUM, album)
+            putString(NLService.B_TITLE, track)
+            putString(NLService.B_ALBUM_ARTIST, albumArtist)
+            putLong(NLService.B_TIME, timestamp * 1000L)
+            putLong(NLService.B_DURATION, duration * 1000L)
     }
 
     fun scheduleDigests(context: Context) {

@@ -414,7 +414,7 @@ class NLService : NotificationListenerService() {
                         artist = intent.getStringExtra(B_ARTIST)!!
                         track = intent.getStringExtra(B_TITLE)!!
                         albumArtist = intent.getStringExtra(B_ALBUM_ARTIST)!!
-                        timestamp = intent.getLongExtra(B_TIME, System.currentTimeMillis()).toInt()
+                        timestamp = (intent.getLongExtra(B_TIME, System.currentTimeMillis())/1000).toInt()
                     }
                     handler.notifyBadMeta(
                         scrobbleData,

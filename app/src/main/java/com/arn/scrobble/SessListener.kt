@@ -138,7 +138,6 @@ class SessListener (
 
                             if (!handler.hasMessages(currHash) && ((pos >= 0L && isPossiblyAtStart) ||
                                             currHash != hashesAndTimes.lastScrobbledHash)) {
-                                Stuff.log("playing: timePlayed=${hashesAndTimes.timePlayed} $title")
                                 scrobble()
                             }
                         }
@@ -153,6 +152,8 @@ class SessListener (
         }
 
         fun scrobble() {
+            Stuff.log("playing: timePlayed=${hashesAndTimes.timePlayed} $title")
+
             if ((packageName == Stuff.PACKAGE_BLACKPLAYER || packageName == Stuff.PACKAGE_BLACKPLAYEREX) && duration > 0) {
                 stateHandler.removeCallbacksAndMessages("bp")
                 stateHandler.sendMessageDelayed(
@@ -267,8 +268,10 @@ class SessListener (
                 // - "gapless playback", where playback state never changes
                 if (artist != "" && title != "" &&
                         !handler.hasMessages(currHash) &&
-                        lastState == PlaybackState.STATE_PLAYING)
-                    scrobble()
+                        lastState == PlaybackState.STATE_PLAYING) {
+                            hashesAndTimes.timePlayed = 0
+                            scrobble()
+                        }
             }
         }
 

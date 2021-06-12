@@ -22,6 +22,7 @@ import com.arn.scrobble.search.SearchVM
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
+import timber.log.Timber
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.InterruptedIOException
@@ -350,7 +351,7 @@ class LFMRequester(context: Context) {
 
     fun getSearches(term:String): LFMRequester {
         toExec = {
-            Stuff.log(this::getSearches.name + " " + term)
+            Stuff.log(this::getSearches.name)
             val artists = mutableListOf<Artist>()
             val albums = mutableListOf<Album>()
             val tracks = mutableListOf<Track>()
@@ -660,7 +661,19 @@ class LFMRequester(context: Context) {
 
                 if (Main.isOnline) {
                     try {
-                        track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, lastfmUsername, null, Stuff.LAST_KEY)
+                        val (lastScrobbleData, lastTime) = lastNp
+                        lastNp = scrobbleData to System.currentTimeMillis()
+
+                        if (
+                            lastScrobbleData.artist == scrobbleData.artist &&
+                            lastScrobbleData.album == scrobbleData.album &&
+                            lastScrobbleData.albumArtist == scrobbleData.albumArtist &&
+                            lastScrobbleData.track == scrobbleData.track &&
+                            System.currentTimeMillis() - lastTime < 1000
+                        )
+                            Timber.tag(Stuff.TAG).w(Exception("Possible duplicate scrobble"))
+                        else
+                            track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, lastfmUsername, null, Stuff.LAST_KEY)
                         //works even if the username is wrong
                     } catch (e: CallException) {
                     }
@@ -855,7 +868,7 @@ class LFMRequester(context: Context) {
     fun loveOrUnlove(love: Boolean, artist: String, track: String, callback: ((Boolean) -> Unit)? = null): LFMRequester {
         toExec = {
             checkSession()
-            Stuff.log(this::loveOrUnlove.name+ " " + love + " " +  artist + " - " + track)
+            Stuff.log(this::loveOrUnlove.name+ " " + love)
             var submittedAll = true
             val serviceIdToKeys = getServiceIdToKeys(true)
 
@@ -1082,6 +1095,8 @@ class LFMRequester(context: Context) {
     companion object {
 
         private val validArtistsCache = LruCache<String, Boolean>(10)
+
+        private var lastNp = ScrobbleData() to 0L
 
         private fun slurp(urlConnection: HttpURLConnection, bufferSize: Int): String {
             val buffer = CharArray(bufferSize)

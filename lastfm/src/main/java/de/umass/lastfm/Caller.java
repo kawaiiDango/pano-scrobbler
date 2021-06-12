@@ -92,6 +92,7 @@ public class Caller {
 //	private Result lastResult;
 	private Result lastError;
     int timeout = 20000;
+    private HashMap<Integer, ErrorNotifier> errorNotifiersMap = new HashMap<>();
 
 //	private Caller() {
 //		cache = new FileSystemCache();
@@ -201,6 +202,10 @@ public class Caller {
 		return lastError;
 	}
 
+	public void setErrorNotifier(int errorCode, ErrorNotifier handler) {
+        errorNotifiersMap.put(errorCode, handler);
+    }
+
 	public Result call(String method, String apiKey, String... params) throws CallException {
 		return call(method, apiKey, map(params));
 	}
@@ -306,7 +311,12 @@ public class Caller {
 		try {
 			Result result = createResultFromInputStream(inputStream);
 			if (!result.isSuccessful()) {
-				log.warning(String.format(method + " failed with result: %s%n", result));
+				String errMsg = String.format(method + " failed with result: %s%n", result);
+				log.warning(errMsg);
+
+				if (errorNotifiersMap.get(result.errorCode) != null)
+                    errorNotifiersMap.get(result.errorCode).notify(new CallException(errMsg));
+
 				if (cache != null) {
 					cache.remove(cacheEntryName);
 				}

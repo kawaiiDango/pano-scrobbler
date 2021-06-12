@@ -1,7 +1,10 @@
 package com.arn.scrobble
 import android.app.Application
+import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Caller
 import de.umass.lastfm.cache.FileSystemCache
+import timber.log.Timber
 import java.util.logging.Level
 
 class App : Application() {
@@ -10,6 +13,11 @@ class App : Application() {
         DebugOnly.strictMode()
         super.onCreate()
         initCaller()
+        FirebaseApp.initializeApp(applicationContext)
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+        FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
+        Timber.plant(Timber.DebugTree())
+        Timber.plant(CrashlyticsTree())
     }
 
     @Synchronized
@@ -19,6 +27,8 @@ class App : Application() {
         caller.logger.level = Level.WARNING
         caller.cache = FileSystemCache(cacheDir)
         caller.cache.expirationPolicy = LFMCachePolicy(true)
-
+        caller.setErrorNotifier(29) { e ->
+            Timber.tag(Stuff.TAG).w(e)
+        }
     }
 }

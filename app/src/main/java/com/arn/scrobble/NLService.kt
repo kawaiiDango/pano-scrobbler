@@ -32,7 +32,9 @@ import org.codechimp.apprater.AppRater
 import java.text.NumberFormat
 import android.media.AudioManager
 import com.arn.scrobble.Stuff.toBundle
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.*
+import timber.log.Timber
 
 
 class NLService : NotificationListenerService() {
@@ -46,6 +48,7 @@ class NLService : NotificationListenerService() {
     private val defaultScope = CoroutineScope(Dispatchers.Default + Job())
     private val isPro
         get() = pref.getBoolean(Stuff.PREF_PRO_STATUS, false)
+    private var crashlyticsReporterJob: Job? = null
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
@@ -124,7 +127,7 @@ class NLService : NotificationListenerService() {
             try {
                 sessManager.removeOnActiveSessionsChangedListener(sessListener!!)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.tag(Stuff.TAG).w(e)
             }
             // Media controller needs notification listener service
             // permissions to be granted.
@@ -140,6 +143,13 @@ class NLService : NotificationListenerService() {
             startDataSourceConnections()
             queryPurchasesAsync()
             Handler(Looper.getMainLooper()).postDelayed({ this.endDataSourceConnections() }, 20000)
+        }
+
+        crashlyticsReporterJob = CoroutineScope(Dispatchers.Main + Job()).launch {
+            while (isActive) {
+                delay(Stuff.CRASH_REPORT_INTERVAL)
+                FirebaseCrashlytics.getInstance().sendUnsentReports()
+            }
         }
     }
 
@@ -166,6 +176,7 @@ class NLService : NotificationListenerService() {
             handler.removeCallbacksAndMessages(null)
         }
         defaultScope.cancel()
+        crashlyticsReporterJob?.cancel()
         PendingScrobblesDb.destroyInstance()
     }
 

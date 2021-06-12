@@ -22,10 +22,10 @@ package com.arn.scrobble.billing
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Base64
-import android.util.Log
 import com.android.billingclient.api.Purchase
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Tokens
+import timber.log.Timber
 import java.io.IOException
 import java.security.InvalidKeyException
 import java.security.KeyFactory
@@ -57,7 +57,7 @@ object Security {
     @Throws(IOException::class)
     fun verifyPurchase(context: Context, purchase: Purchase): Boolean {
         if (purchase.originalJson.isEmpty() || Tokens.BASE_64_ENCODED_PUBLIC_KEY.isEmpty() || purchase.signature.isEmpty() || !checkSignature(context)) {
-            Log.w(TAG, "Purchase verification failed: missing data.")
+            Timber.tag(TAG).w("Purchase verification failed: missing data.")
             return false
         }
         val key = generatePublicKey(Tokens.BASE_64_ENCODED_PUBLIC_KEY)
@@ -82,7 +82,7 @@ object Security {
             throw RuntimeException(e)
         } catch (e: InvalidKeySpecException) {
             val msg = "Invalid key specification: $e"
-            Log.w(TAG, msg)
+            Timber.tag(TAG).w(msg)
             throw IOException(msg)
         }
     }
@@ -101,7 +101,7 @@ object Security {
         try {
             signatureBytes = Base64.decode(signature, Base64.DEFAULT)
         } catch (e: IllegalArgumentException) {
-            Log.w(TAG, "Base64 decoding failed.")
+            Timber.tag(TAG).w("Base64 decoding failed.")
             return false
         }
         try {
@@ -109,7 +109,7 @@ object Security {
             signatureAlgorithm.initVerify(publicKey)
             signatureAlgorithm.update(signedData.toByteArray())
             if (!signatureAlgorithm.verify(signatureBytes)) {
-                Log.w(TAG, "Signature verification failed...")
+                Timber.tag(TAG).w("Signature verification failed...")
                 return false
             }
             return true
@@ -117,9 +117,9 @@ object Security {
             // "RSA" is guaranteed to be available.
             throw RuntimeException(e)
         } catch (e: InvalidKeyException) {
-            Log.w(TAG, "Invalid key specification.")
+            Timber.tag(TAG).w("Invalid key specification.")
         } catch (e: SignatureException) {
-            Log.w(TAG, "Signature exception.")
+            Timber.tag(TAG).w("Signature exception.")
         }
         return false
     }

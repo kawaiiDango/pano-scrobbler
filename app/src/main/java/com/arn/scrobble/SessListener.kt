@@ -115,7 +115,7 @@ class SessListener (
                 val state = msg.arg1
                 val pos = msg.arg2.toLong()
 
-                Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos cb=${this@MyCallback.hashCode()}")
+                Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos cb=${this@MyCallback.hashCode()} sl=${this@SessListener.hashCode()}")
 
                 val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT //wynk puts -1
 
@@ -248,7 +248,7 @@ class SessListener (
             val sameAsOld = artist == this.artist && title == this.title && album == this.album && albumArtist == this.albumArtist
 
             Stuff.log("onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
-                    "duration=$duration lastState=$lastState, package=$packageName cb=${this.hashCode()}")
+                    "duration=$duration lastState=$lastState, package=$packageName cb=${this.hashCode()} sl=${this@SessListener.hashCode()}")
             if (!sameAsOld) {
                 this.artist = artist
                 this.album = album

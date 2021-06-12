@@ -17,6 +17,7 @@ import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import org.xml.sax.SAXException
+import timber.log.Timber
 
 
 /**
@@ -239,7 +240,7 @@ class PendingScrJob : JobService() {
                     return done
                 } catch (e: Exception) {
                     Stuff.log("OfflineScrobble: n/w err - ")
-                    e.printStackTrace()
+                    Timber.tag(Stuff.TAG).w(e)
                     done = false
                     return done
                 }

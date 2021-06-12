@@ -3,7 +3,6 @@ package com.arn.scrobble.billing
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
 import com.arn.scrobble.NLService
@@ -11,6 +10,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Tokens
 import com.arn.scrobble.pref.MultiPreferences
+import timber.log.Timber
 import java.util.*
 
 
@@ -65,7 +65,7 @@ class BillingRepository private constructor(private val application: Application
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                Log.d(LOG_TAG, "onBillingSetupFinished BILLING_UNAVAILABLE")
+                Timber.tag(LOG_TAG).d("onBillingSetupFinished BILLING_UNAVAILABLE")
                 //Some apps may choose to make decisions based on this knowledge.
             }
             else -> {
@@ -132,8 +132,7 @@ class BillingRepository private constructor(private val application: Application
                         }
                     } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
                         if (Tokens.PRO_SKU_NAME in purchase.skus) {
-                            Log.d(
-                                LOG_TAG,
+                            Timber.tag(LOG_TAG).d(
                                 "Received a pending purchase from " + Stuff.myRelativeTime(
                                     application,
                                     purchase.purchaseTime
@@ -152,7 +151,7 @@ class BillingRepository private constructor(private val application: Application
                   disbursement.
                  */
 //                val testing = localCacheBillingClient.purchaseDao().getPurchases()
-//                Log.d(LOG_TAG, "processPurchases purchases in the lcl db ${testing.size}")
+//                Timber.tag(LOG_TAG).d("processPurchases purchases in the lcl db ${testing.size}")
 //                localCacheBillingClient.purchaseDao().insert(*validPurchases.toTypedArray())
                 acknowledgeNonConsumablePurchasesAsync(validPurchases)
         }
@@ -182,7 +181,7 @@ class BillingRepository private constructor(private val application: Application
                         }
                     }
                     else -> {
-                        Log.d(LOG_TAG, "acknowledgeNonConsumablePurchasesAsync response is ${billingResult.debugMessage}")
+                        Timber.tag(LOG_TAG).d("acknowledgeNonConsumablePurchasesAsync response is ${billingResult.debugMessage}")
                     }
                 }
             }
@@ -250,7 +249,7 @@ class BillingRepository private constructor(private val application: Application
                     }
                 }
                 else -> {
-                    Log.e(LOG_TAG, billingResult.debugMessage)
+                    Timber.tag(LOG_TAG).e(billingResult.debugMessage)
                 }
             }
         }
@@ -301,7 +300,7 @@ class BillingRepository private constructor(private val application: Application
                 connectToPlayBillingService()
             }
             else -> {
-                Log.i(LOG_TAG, billingResult.debugMessage)
+                Timber.tag(LOG_TAG).i(billingResult.debugMessage)
             }
         }
     }

@@ -22,7 +22,6 @@ import android.text.Html
 import android.text.Spanned
 import android.text.format.DateUtils
 import android.util.DisplayMetrics
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -37,6 +36,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.scrobble.ScrobbleData
+import timber.log.Timber
 import java.io.IOException
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -169,6 +169,7 @@ object Stuff {
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
     const val KEEPALIVE_JOB_INTERVAL: Long = 30 * 60 * 1000
     const val LASTFM_MAX_PAST_SCROBBLE: Long = 14 * 24 * 60 * 60 * 1000
+    const val CRASH_REPORT_INTERVAL: Long = 10 * 60 * 1000
     const val META_WAIT: Long = 500
     const val START_POS_LIMIT: Long = 1500
     const val PENDING_PURCHASE_NOTIFY_THRESHOLD: Long = 15 * 1000
@@ -267,12 +268,12 @@ object Stuff {
             Resources.getSystem().displayMetrics).toInt()
 
     fun log(s: String) {
-        Log.i(TAG, s)
+        Timber.tag(TAG).i(s)
     }
 
     fun timeIt(s: String) {
         val now = System.currentTimeMillis()
-        Log.w(TAG + "_time: ", "[" + (now - timeIt) + "] " + s)
+        Timber.tag(TAG + "_time").d("[${now - timeIt}] $s")
         timeIt = now
     }
 

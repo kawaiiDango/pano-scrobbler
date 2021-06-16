@@ -54,6 +54,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import org.codechimp.apprater.AppRater
+import timber.log.Timber
 import java.io.File
 import java.text.NumberFormat
 import java.util.*
@@ -492,23 +493,23 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun showNotRunning(){
-        val snackbar = Snackbar
+        Snackbar
                 .make(binding.coordinatorMain.frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.not_running_fix_action) {
                     FixItFragment().show(supportFragmentManager, null)
                 }
-
-        snackbar.addCallback(object : Snackbar.Callback() {
-            override fun onShown(sb: Snackbar?) {
-                super.onShown(sb)
-                if (sb != null && isTV)
-                    sb.view.postDelayed({
-                        sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                                .requestFocus()
-                }, 200)
-            }
-        })
-        snackbar.show()
+                .addCallback(object : Snackbar.Callback() {
+                    override fun onShown(sb: Snackbar?) {
+                        super.onShown(sb)
+                        if (sb != null && isTV)
+                            sb.view.postDelayed({
+                                sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                                        .requestFocus()
+                        }, 200)
+                    }
+            })
+            .show()
+        Timber.tag(Stuff.TAG).w(Exception("bgScrobbler not running"))
     }
 
     private fun mailLogs(){

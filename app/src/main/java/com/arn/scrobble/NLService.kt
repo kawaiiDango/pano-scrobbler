@@ -55,9 +55,8 @@ class NLService : NotificationListenerService() {
         if (BuildConfig.DEBUG)
             Stuff.toast(applicationContext,getString(R.string.pref_master_on))
         super.onCreate()
-        // lollipop and mm bug
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
-            init()
+//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
+        init()
     }
 
     //from https://gist.github.com/xinghui/b2ddd8cffe55c4b62f5d8846d5545bf9
@@ -70,8 +69,11 @@ class NLService : NotificationListenerService() {
 //    override fun onBind(intent: Intent): IBinder? {
 //        return null
 //    }
-
+/*
     override fun onListenerConnected() {
+//    This sometimes gets called twice without calling onListenerDisconnected or onDestroy
+//    onCreate seems to get called only once in those cases.
+//    also unreliable on lp and mm
         super.onListenerConnected()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (Looper.myLooper() == null) {
@@ -80,6 +82,7 @@ class NLService : NotificationListenerService() {
                 init()
         }
     }
+*/
 
     private fun init(){
         val filter = IntentFilter()
@@ -120,7 +123,6 @@ class NLService : NotificationListenerService() {
             sessManager.addOnActiveSessionsChangedListener(sessListener!!, ComponentName(this, this::class.java))
             //scrobble after the app is updated
             sessListener?.onActiveSessionsChanged(sessManager.getActiveSessions(ComponentName(this, this::class.java)))
-            Stuff.log("onListenerConnected")
         } catch (exception: SecurityException) {
             Stuff.log("Failed to start media controller: " + exception.message)
             // Try to unregister it, just in case.
@@ -151,10 +153,12 @@ class NLService : NotificationListenerService() {
                 FirebaseCrashlytics.getInstance().sendUnsentReports()
             }
         }
+
+        Stuff.log("init")
     }
 
     private fun destroy() {
-        Stuff.log("onListenerDisconnected")
+        Stuff.log("destroy")
         try {
             applicationContext.unregisterReceiver(nlservicereciver)
 //            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -180,10 +184,12 @@ class NLService : NotificationListenerService() {
         PendingScrobblesDb.destroyInstance()
     }
 
+    /*
     override fun onListenerDisconnected() { //api 24+ only
         destroy()
         super.onListenerDisconnected()
     }
+    */
 
     override fun onDestroy() {
         if (sessListener != null)
@@ -286,7 +292,7 @@ class NLService : NotificationListenerService() {
                 }
                 val meta = MetadataUtils.pixelNPExtractMeta(title, getString(format))
                 if (meta != null){
-                    val hash = Stuff.genHashCode(meta[0], "", meta[1])
+                    val hash = Stuff.genHashCode(meta[0], "", meta[1], sbn.packageName)
                     val packageNameArg =
                             if (pref.getStringSet(Stuff.PREF_WHITELIST, null)?.contains(sbn.packageName) == false)
                                 sbn.packageName

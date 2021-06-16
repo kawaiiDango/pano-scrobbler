@@ -10,7 +10,6 @@ import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
-import android.os.Message
 import java.util.Locale
 
 /**
@@ -54,15 +53,16 @@ class SessListener (
         if (!scrobblingEnabled || controllers == null)
             return
 
-        val tokens = mutableSetOf<MediaSession.Token>()
+//        val tokens = mutableSetOf<MediaSession.Token>()
         for (controller in controllers) {
             if (shouldScrobble(controller.packageName)) {
-                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
+//                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                 if (controller.sessionToken !in controllersMap) {
                     val ignoreArtistMeta =  controller.packageName in Stuff.IGNORE_ARTIST_META ||
                             controller.packageName in browserPackages
+                    val hasMultipleSessions = controllers.count { it.packageName == controller.packageName } > 1
                     var hashesAndTimes = packageMap[controller.packageName]
-                    if (hashesAndTimes == null) {
+                    if (hashesAndTimes == null || hasMultipleSessions) {
                         hashesAndTimes = HashesAndTimes()
                         packageMap[controller.packageName] = hashesAndTimes
                     }
@@ -110,56 +110,20 @@ class SessListener (
         private var albumArtist = ""
         private var duration = -1L
 
-        private val stateHandler = object : Handler(handler.looper) {
-            override fun handleMessage(msg: Message) {
-                val state = msg.arg1
-                val pos = msg.arg2.toLong()
-
-                Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos cb=${this@MyCallback.hashCode()} sl=${this@SessListener.hashCode()}")
-
-                val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT //wynk puts -1
-
-                if (lastState == state /* bandcamp does this */ &&
-                        !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
-                    return
-
-                when (state) {
-                    PlaybackState.STATE_PAUSED,
-                    PlaybackState.STATE_STOPPED,
-                    PlaybackState.STATE_NONE,
-                    PlaybackState.STATE_ERROR -> {
-                        pause()
-                        Stuff.log("paused")
-                    }
-                    PlaybackState.STATE_PLAYING -> {
-                        if (title != "" && artist != "") {
-                            if (currHash != hashesAndTimes.lastScrobbleHash || (pos >= 0L && isPossiblyAtStart))
-                                hashesAndTimes.timePlayed = 0
-
-                            if (!handler.hasMessages(currHash) && ((pos >= 0L && isPossiblyAtStart) ||
-                                            currHash != hashesAndTimes.lastScrobbledHash)) {
-                                scrobble()
-                            }
-                        }
-                    }
-                    else -> {
-                        Stuff.log("other ($state) : $title")
-                    }
-                }
-                if (state != PlaybackState.STATE_BUFFERING)
-                    lastState = state
-            }
-        }
+        private val syntheticStateHandler = Handler(handler.looper)
 
         fun scrobble() {
             Stuff.log("playing: timePlayed=${hashesAndTimes.timePlayed} $title")
 
-            if ((packageName == Stuff.PACKAGE_BLACKPLAYER || packageName == Stuff.PACKAGE_BLACKPLAYEREX) && duration > 0) {
-                stateHandler.removeCallbacksAndMessages("bp")
-                stateHandler.sendMessageDelayed(
-                        stateHandler.obtainMessage(0, PlaybackState.STATE_PLAYING, 0, "bp"),
-                        duration
-                )
+            if (packageName in arrayOf(Stuff.PACKAGE_BLACKPLAYER, Stuff.PACKAGE_BLACKPLAYEREX) && duration > 0) {
+                syntheticStateHandler.removeCallbacksAndMessages(null)
+                syntheticStateHandler.postDelayed({
+                    onPlaybackStateChanged(
+                        PlaybackState.Builder()
+                            .setState(PlaybackState.STATE_PLAYING, 0, 1f)
+                            .build()
+                    )
+                }, duration)
             }
             hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
             val isWhitelisted = packageName in whiteList
@@ -197,14 +161,17 @@ class SessListener (
 
         @Synchronized
         override fun onMetadataChanged(metadata: MediaMetadata?) {
-            var albumArtist = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
-            var artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
+            if (metadata == null)
+                return
+
+            var albumArtist = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
+            var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
                     albumArtist // do not scrobble empty artists, ads will get scrobbled
-            var album = metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
-            var title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
+            var album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
+            var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
 //            val genre = metadata?.getString(MediaMetadata.METADATA_KEY_GENRE)?.trim() ?: ""
             // The genre field is not used by google podcasts and podcast addict
-            var duration = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: -1
+            var duration = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
             if (duration < -1)
                 duration = -1
 
@@ -221,7 +188,7 @@ class SessListener (
                 }
                 Stuff.PACKAGE_SONOS,
                 Stuff.PACKAGE_SONOS2 -> {
-                    metadata?.getString(MediaMetadata.METADATA_KEY_COMPOSER)?.let{
+                    metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)?.let{
                         artist = it
                         albumArtist = ""
                     }
@@ -275,11 +242,54 @@ class SessListener (
             }
         }
 
-        override fun onPlaybackStateChanged(state: PlaybackState?) {
-            if (state != null) {
-                val msg = stateHandler.obtainMessage(0, state.state, state.position.toInt())
-                stateHandler.sendMessageDelayed(msg, Stuff.META_WAIT)
+        @Synchronized
+        override fun onPlaybackStateChanged(playbackState: PlaybackState?) {
+            if (playbackState == null)
+                return
+
+            val state = playbackState.state
+            val pos = playbackState.position // can be -1
+
+            Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos cb=${this@MyCallback.hashCode()} sl=${this@SessListener.hashCode()}")
+
+            val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT
+
+            if (lastState == state /* bandcamp does this */ &&
+                !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
+                return
+
+            when (state) {
+                PlaybackState.STATE_PAUSED,
+                PlaybackState.STATE_STOPPED,
+                PlaybackState.STATE_NONE,
+                PlaybackState.STATE_ERROR -> {
+                    pause()
+                    Stuff.log("paused")
+                }
+                PlaybackState.STATE_PLAYING -> {
+                    if (title != "" && artist != "") {
+                        // ignore state=playing, pos=lowValue spam
+                        if (lastState == state && hashesAndTimes.lastScrobbleHash == currHash &&
+                            System.currentTimeMillis() - hashesAndTimes.lastScrobbleTime < Stuff.START_POS_LIMIT * 2)
+                                return
+
+                        if (currHash != hashesAndTimes.lastScrobbleHash || (pos >= 0L && isPossiblyAtStart))
+                            hashesAndTimes.timePlayed = 0
+
+                        if (!handler.hasMessages(currHash) &&
+                            ((pos >= 0L && isPossiblyAtStart) ||
+                            currHash != hashesAndTimes.lastScrobbledHash)) {
+                            scrobble()
+                        }
+                    }
+                }
+                else -> {
+                    Stuff.log("other ($state) : $title")
+                }
             }
+            if (state != PlaybackState.STATE_BUFFERING)
+                lastState = state
+
         }
 
         override fun onSessionDestroyed() {
@@ -299,14 +309,14 @@ class SessListener (
                 else
                     hashesAndTimes.timePlayed = 0
             }
-            if (packageName == Stuff.PACKAGE_BLACKPLAYER || packageName == Stuff.PACKAGE_BLACKPLAYEREX)
-                stateHandler.removeCallbacksAndMessages("bp")
+            if (packageName in arrayOf(Stuff.PACKAGE_BLACKPLAYER, Stuff.PACKAGE_BLACKPLAYEREX))
+                syntheticStateHandler.removeCallbacksAndMessages(null)
             handler.remove(hashesAndTimes.lastScrobbleHash)
         }
 
         fun stop() {
             pause()
-            stateHandler.removeCallbacksAndMessages(null)
+            syntheticStateHandler.removeCallbacksAndMessages(null)
         }
     }
 

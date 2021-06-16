@@ -623,10 +623,14 @@ class LFMRequester(context: Context) {
             val serviceIdToKeys by lazy { getServiceIdToKeys() }
 
             if (nowPlaying) {
-                var track: Track? = null
-                var correctedArtist: String? = null
+                // some players put the previous song and then switch to the current song in like 150ms
+                // potentially wasting an api call. sleep and throw interrupt in that case
+                Thread.sleep(Stuff.META_WAIT)
                 if (Thread.interrupted())
                     throw InterruptedException()
+
+                var track: Track? = null
+                var correctedArtist: String? = null
 
                 val editsDao = PendingScrobblesDb.getDb(context).getEditsDao()
                 var edit = editsDao.find(scrobbleData.artist, scrobbleData.album, scrobbleData.track)
@@ -660,23 +664,23 @@ class LFMRequester(context: Context) {
                 }
 
                 if (Main.isOnline) {
-                    try {
-                        val (lastScrobbleData, lastTime) = lastNp
-                        lastNp = scrobbleData to System.currentTimeMillis()
+                    val (lastScrobbleData, lastTime) = lastNp
+                    lastNp = scrobbleData to System.currentTimeMillis()
 
-                        if (
-                            lastScrobbleData.artist == scrobbleData.artist &&
-                            lastScrobbleData.album == scrobbleData.album &&
-                            lastScrobbleData.albumArtist == scrobbleData.albumArtist &&
-                            lastScrobbleData.track == scrobbleData.track &&
-                            System.currentTimeMillis() - lastTime < 1000
-                        )
+                    if (
+                        lastScrobbleData.artist == scrobbleData.artist &&
+                        lastScrobbleData.album == scrobbleData.album &&
+                        lastScrobbleData.albumArtist == scrobbleData.albumArtist &&
+                        lastScrobbleData.track == scrobbleData.track &&
+                        System.currentTimeMillis() - lastTime < Stuff.TRACK_INFO_VALIDITY
+                    ) {
+                        if (System.currentTimeMillis() - lastTime < 1000)
                             Timber.tag(Stuff.TAG).w(Exception("Possible duplicate scrobble"))
-                        else
-                            track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, lastfmUsername, null, Stuff.LAST_KEY)
+                        track = getValidTrack(scrobbleData.artist, scrobbleData.track, lastfmUsername!!, cacheOnly= true)
+                    } else if (validArtistsCache[scrobbleData.artist] == "") {
+                    } else
+                        track = getValidTrack(scrobbleData.artist, scrobbleData.track, lastfmUsername!!)
                         //works even if the username is wrong
-                    } catch (e: CallException) {
-                    }
                     if (Thread.interrupted())
                         throw InterruptedException()
                     if (track != null) {
@@ -711,10 +715,7 @@ class LFMRequester(context: Context) {
                     if (edit.albumArtist.isNotBlank())
                         scrobbleData.albumArtist = edit.albumArtist
                     scrobbleData.track = edit.track
-                    try {
-                        track = Track.getInfo(scrobbleData.artist, scrobbleData.track, null, lastfmUsername, null, Stuff.LAST_KEY)
-                    } catch (e: CallException) {
-                    }
+                    track = getValidTrack(scrobbleData.artist, scrobbleData.track, lastfmUsername!!)
                 }
                 if (edit != null || track != null) {
                     val b = scrobbleData.toBundle().apply {
@@ -1094,7 +1095,8 @@ class LFMRequester(context: Context) {
 
     companion object {
 
-        private val validArtistsCache = LruCache<String, Boolean>(10)
+        private val validArtistsCache = LruCache<String, String>(10)
+        private val validTracksCache = LruCache<Pair<String, String>, Pair<Track?, Long>>(10)
 
         private var lastNp = ScrobbleData() to 0L
 
@@ -1125,12 +1127,32 @@ class LFMRequester(context: Context) {
             return res
         }
 
+        fun getValidTrack(artist: String, title: String, lastfmUsername: String, cacheOnly: Boolean = false): Track? {
+            val entry = validTracksCache[artist to title]
+            if (entry != null) {
+                val (track, time) = entry
+                if (System.currentTimeMillis() - time < Stuff.TRACK_INFO_VALIDITY || cacheOnly)
+                    return track
+            }
+            if (cacheOnly)
+                return null
+            val track = try {
+                Track.getInfo(artist, title, null, lastfmUsername, null, Stuff.LAST_KEY)
+            } catch (e: Exception) {
+                null
+            }
+            validTracksCache.put(artist to title, track to System.currentTimeMillis())
+            return track
+        }
 
         fun getValidArtist(artist:String, set:Set<String>? = null): String? {
-            val valid = set?.contains(artist) == true
-            if (valid || validArtistsCache[artist] == true)
+            if (set?.contains(artist) == true)
                 return artist
-            else if (validArtistsCache[artist] == null) {
+            if (validArtistsCache[artist] != null && validArtistsCache[artist].isEmpty())
+                return null
+            else if (validArtistsCache[artist] != null)
+                return validArtistsCache[artist]
+            else {
                 var artistInfo: Artist?
                 var errCode = Caller.getInstance().lastError?.errorCode
                 //6 = artist not found on lastfm, 7 = invalid resource specified on librefm
@@ -1150,12 +1172,12 @@ class LFMRequester(context: Context) {
                 //nw err throws an exception
                 if (artistInfo!= null && artistInfo.name?.trim() != ""){
                     if(artistInfo.listeners == -1 || artistInfo.listeners >= Stuff.MIN_LISTENER_COUNT) {
-                        validArtistsCache.put(artistInfo.name, true)
+                        validArtistsCache.put(artist, artistInfo.name)
                         return artistInfo.name
                     } else
-                        validArtistsCache.put(artist, false)
+                        validArtistsCache.put(artist, "")
                 } else
-                    validArtistsCache.put(artist, false)
+                    validArtistsCache.put(artist, "")
             }
             return null
         }

@@ -169,8 +169,9 @@ object Stuff {
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
     const val KEEPALIVE_JOB_INTERVAL: Long = 30 * 60 * 1000
     const val LASTFM_MAX_PAST_SCROBBLE: Long = 14 * 24 * 60 * 60 * 1000
-    const val CRASH_REPORT_INTERVAL: Long = 10 * 60 * 1000
-    const val META_WAIT: Long = 500
+    const val CRASH_REPORT_INTERVAL: Long = 120 * 60 * 1000
+    const val TRACK_INFO_VALIDITY: Long = 5 * 1000
+    const val META_WAIT: Long = 300
     const val START_POS_LIMIT: Long = 1500
     const val PENDING_PURCHASE_NOTIFY_THRESHOLD: Long = 15 * 1000
     const val MIN_LISTENER_COUNT = 5

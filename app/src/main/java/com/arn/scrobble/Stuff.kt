@@ -205,7 +205,11 @@ object Stuff {
             "com.google.android.youtube.tv",
             "org.schabi.newpipe",
             "com.kapp.youtube.final",
-            "jp.nicovideo.nicobox"
+            "jp.nicovideo.nicobox",
+
+            // radios
+            "tunein.player",
+            "com.thehouseofcode.radio_nowy_swiat",
     )
 
     const val MANUFACTURER_HUAWEI = "huawei"

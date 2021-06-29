@@ -513,7 +513,7 @@ class NLService : NotificationListenerService() {
                 val now = System.currentTimeMillis()
                 val album = MetadataUtils.sanitizeAlbum(album)
                 val artist = MetadataUtils.sanitizeArtist(artist)
-                val albumArtist = MetadataUtils.sanitizeAlbum(albumArtist)
+                val albumArtist = MetadataUtils.sanitizeAlbumArtist(albumArtist)
 
                 val scrobbleData = ScrobbleData()
                 scrobbleData.artist = artist

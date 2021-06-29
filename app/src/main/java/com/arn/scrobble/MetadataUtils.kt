@@ -16,6 +16,7 @@ object MetadataUtils {
 
     private val metaSpam = arrayOf("downloaded", ".com", ".co.", "www.")
     private val metaUnknown = arrayOf("unknown", "[unknown]", "unknown album", "[unknown album]", "unknown artist", "[unknown artist]")
+    private val albumArtistUnknown = arrayOf("va")
 
     fun sanitizeTitle(titleContentOriginal: String): Array<String> {
         //New detection of trackinformation
@@ -99,10 +100,17 @@ object MetadataUtils {
     }
 
     fun sanitizeArtist(artistOrig: String): String {
-        val splits = artistOrig.split("; ").filter { !it.isBlank() }
+        val splits = artistOrig.split("; ").filter { it.isNotBlank() }
         if (splits.isEmpty())
             return ""
         return splits[0]
+    }
+
+    fun sanitizeAlbumArtist(artistOrig: String): String {
+        val artist = sanitizeAlbum(artistOrig)
+        if (artist.lowercase(Locale.ENGLISH) in albumArtistUnknown)
+            return ""
+        return artist
     }
 
     fun pixelNPExtractMeta(titleStr: String, formatStr: String):Array<String>? {

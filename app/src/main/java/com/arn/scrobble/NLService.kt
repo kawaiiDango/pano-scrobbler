@@ -139,7 +139,7 @@ class NLService : NotificationListenerService() {
 
 //        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 //        isOnline = cm.activeNetworkInfo?.isConnected == true
-        Stuff.scheduleDigests(applicationContext)
+        Stuff.scheduleDigests(applicationContext, pref)
         sendBroadcast(Intent(iNLS_STARTED))
         BillingRepository.getInstance(application).apply {
             startDataSourceConnections()
@@ -449,12 +449,12 @@ class NLService : NotificationListenerService() {
                     }
                 }
                 iDIGEST_WEEKLY -> {
-                    Stuff.scheduleDigests(applicationContext)
+                    Stuff.scheduleDigests(applicationContext, pref)
                     if (pref.getBoolean(Stuff.PREF_DIGEST_WEEKLY, true))
                         handler.notifyDigest(Period.WEEK)
                 }
                 iDIGEST_MONTHLY -> {
-                    Stuff.scheduleDigests(applicationContext)
+                    Stuff.scheduleDigests(applicationContext, pref)
                     if (pref.getBoolean(Stuff.PREF_DIGEST_MONTHLY, true))
                         handler.notifyDigest(Period.ONE_MONTH)
                 }
@@ -474,7 +474,7 @@ class NLService : NotificationListenerService() {
                     Main.isOnline =  cm.activeNetworkInfo?.isConnected == true
                 }
                 ACTION_TIME_CHANGED -> {
-                    Stuff.scheduleDigests(applicationContext)
+                    Stuff.scheduleDigests(applicationContext, pref)
                 }
             }
         }

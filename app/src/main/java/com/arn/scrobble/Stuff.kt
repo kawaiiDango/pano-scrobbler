@@ -2,10 +2,7 @@ package com.arn.scrobble
 
 import android.animation.ValueAnimator
 import android.app.*
-import android.content.ActivityNotFoundException
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
@@ -124,6 +121,7 @@ object Stuff {
     const val PREF_THEME_SAME_TONE = "theme_same_tone"
     const val PREF_PRO_STATUS = "pro_status"
     const val PREF_PRO_SKU_JSON = "pro_sku_json"
+    const val PREF_DIGEST_SECONDS = "digest_seconds"
 
     const val PREF_ACTIVITY_FIRST_RUN = "first_run"
     const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
@@ -602,43 +600,61 @@ object Stuff {
             putLong(NLService.B_DURATION, duration * 1000L)
     }
 
-    fun scheduleDigests(context: Context) {
+    fun scheduleDigests(context: Context, pref: SharedPreferences) {
+        if (!pref.contains(PREF_DIGEST_SECONDS))
+            pref.edit()
+                .putInt(PREF_DIGEST_SECONDS, (60..3600).random())
+                .apply()
+
+        val secondsToAdd = -pref.getInt(PREF_DIGEST_SECONDS, 60)
+
         val weeklyIntent = PendingIntent.getBroadcast(context, 20,
                 Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable)
 
         val monthlyIntent = PendingIntent.getBroadcast(context, 21,
                 Intent(NLService.iDIGEST_MONTHLY), updateCurrentOrImmutable)
 
+        val now = System.currentTimeMillis()
+
         val cal = Calendar.getInstance()
         cal.setMidnight()
 
         cal[Calendar.DAY_OF_WEEK] = Calendar.MONDAY
         cal.add(Calendar.WEEK_OF_YEAR, 1)
+        cal.add(Calendar.SECOND, secondsToAdd)
+        if (cal.timeInMillis < now)
+            cal.add(Calendar.WEEK_OF_YEAR, 1)
         val nextWeek = cal.timeInMillis
 
-        cal.timeInMillis = System.currentTimeMillis()
+        cal.timeInMillis = now
         cal.setMidnight()
 
         cal[Calendar.DAY_OF_MONTH] = 1
         cal.add(Calendar.MONTH, 1)
+        cal.add(Calendar.SECOND, secondsToAdd)
+        if (cal.timeInMillis < now)
+            cal.add(Calendar.MONTH, 1)
         val nextMonth = cal.timeInMillis
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.set(AlarmManager.RTC, nextWeek, weeklyIntent)
         alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
 
-        /*
+
         if (BuildConfig.DEBUG) {
             val dailyIntent = PendingIntent.getBroadcast(context, 22,
                     Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable)
 
-            cal.timeInMillis = System.currentTimeMillis()
+            cal.timeInMillis = now
             cal.setMidnight()
             cal.add(Calendar.DAY_OF_YEAR, 1)
+            cal.add(Calendar.SECOND, secondsToAdd)
+            if (cal.timeInMillis < now)
+                cal.add(Calendar.DAY_OF_YEAR, 1)
             val nextDay = cal.timeInMillis
             alarmManager.set(AlarmManager.RTC, nextDay, dailyIntent)
         }
-        */
+
     }
 
     fun getWidgetPrefName(name: String, appWidgetId: Int) = "${name}_$appWidgetId"

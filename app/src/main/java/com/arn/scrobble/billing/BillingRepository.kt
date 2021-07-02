@@ -3,6 +3,8 @@ package com.arn.scrobble.billing
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
 import com.arn.scrobble.NLService
@@ -12,12 +14,16 @@ import com.arn.scrobble.Tokens
 import com.arn.scrobble.pref.MultiPreferences
 import timber.log.Timber
 import java.util.*
+import kotlin.math.min
 
 
 class BillingRepository private constructor(private val application: Application) :
         PurchasesUpdatedListener, BillingClientStateListener {
 
     // Breaking change in billing v4: callbacks don't run on main thread, always use ld.postValue()
+
+    // how long before the data source tries to reconnect to Google play
+    private var reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
 
     private lateinit var playStoreBillingClient: BillingClient
     private val pref by lazy { MultiPreferences(application) }
@@ -39,19 +45,22 @@ class BillingRepository private constructor(private val application: Application
             .enablePendingPurchases() // required or app will crash
             .setListener(this)
             .build()
-        connectToPlayBillingService()
+        playStoreBillingClient.startConnection(this)
     }
 
     fun endDataSourceConnections() {
         playStoreBillingClient.endConnection()
     }
 
-    private fun connectToPlayBillingService(): Boolean {
-        if (!playStoreBillingClient.isReady) {
-            playStoreBillingClient.startConnection(this)
-            return true
-        }
-        return false
+    private fun retryBillingConnectionWithExponentialBackoff() {
+        handler.postDelayed(
+            { playStoreBillingClient.startConnection(this@BillingRepository) },
+            reconnectMilliseconds
+        )
+        reconnectMilliseconds = min(
+            reconnectMilliseconds * 2,
+            RECONNECT_TIMER_MAX_TIME_MILLISECONDS
+        )
     }
 
     /**
@@ -61,6 +70,8 @@ class BillingRepository private constructor(private val application: Application
     override fun onBillingSetupFinished(billingResult: BillingResult) {
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
+                handler.removeCallbacksAndMessages(null)
+                reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
                 querySkuDetailsAsync(BillingClient.SkuType.INAPP, INAPP_SKUS)
                 queryPurchasesAsync()
             }
@@ -85,7 +96,7 @@ class BillingRepository private constructor(private val application: Application
      *   been called.
      **/
     override fun onBillingServiceDisconnected() {
-        connectToPlayBillingService()
+        retryBillingConnectionWithExponentialBackoff()
     }
 
     /**
@@ -115,6 +126,9 @@ class BillingRepository private constructor(private val application: Application
      * on a different device.
      */
     fun queryPurchasesAsync() {
+        if (!playStoreBillingClient.isReady)
+            return
+
         playStoreBillingClient.queryPurchasesAsync(BillingClient.SkuType.INAPP) {
             billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
@@ -297,7 +311,7 @@ class BillingRepository private constructor(private val application: Application
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> {
-                connectToPlayBillingService()
+                retryBillingConnectionWithExponentialBackoff()
             }
             else -> {
                 Timber.tag(LOG_TAG).i(billingResult.debugMessage)
@@ -309,8 +323,12 @@ class BillingRepository private constructor(private val application: Application
         private const val LOG_TAG = Stuff.TAG
         private val INAPP_SKUS = listOf(Tokens.PRO_SKU_NAME)
 
+        private const val RECONNECT_TIMER_START_MILLISECONDS = 1L * 1000L
+        private const val RECONNECT_TIMER_MAX_TIME_MILLISECONDS = 1000L * 60L * 15L // 15 minutes
+
         @Volatile
         private var INSTANCE: BillingRepository? = null
+        private val handler = Handler(Looper.getMainLooper())
 
         fun getInstance(application: Application): BillingRepository =
                 INSTANCE ?: synchronized(this) {

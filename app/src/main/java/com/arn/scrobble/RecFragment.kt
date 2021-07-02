@@ -304,7 +304,7 @@ class RecFragment: Fragment(),
                 scrobbleData.track = title
                 scrobbleData.timestamp = (System.currentTimeMillis() / 1000).toInt() // in secs
                 LFMRequester(context!!)
-                    .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title))
+                    .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title, -1L, "rec"))
                     .asAsyncTask()
             }
             1001 -> binding.recStatus.text = getString(R.string.not_found)

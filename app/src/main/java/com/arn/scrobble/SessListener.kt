@@ -52,7 +52,6 @@ class SessListener (
 
         if (!scrobblingEnabled || controllers == null)
             return
-
 //        val tokens = mutableSetOf<MediaSession.Token>()
         for (controller in controllers) {
             if (shouldScrobble(controller.packageName)) {
@@ -60,7 +59,16 @@ class SessListener (
                 if (controller.sessionToken !in controllersMap) {
                     val ignoreArtistMeta =  controller.packageName in Stuff.IGNORE_ARTIST_META ||
                             controller.packageName in browserPackages
-                    val hasMultipleSessions = controllers.count { it.packageName == controller.packageName } > 1
+                    var numControllersForPackage = 0
+                    var hasOtherTokensForPackage = false
+                    controllersMap.forEach { (token, pair) ->
+                        if (pair.first.packageName == controller.packageName) {
+                            numControllersForPackage++
+                            if (token != controller.sessionToken)
+                                hasOtherTokensForPackage = true
+                        }
+                    }
+                    val hasMultipleSessions = numControllersForPackage > 1 || hasOtherTokensForPackage
                     var hashesAndTimes = packageMap[controller.packageName]
                     if (hashesAndTimes == null || hasMultipleSessions) {
                         hashesAndTimes = HashesAndTimes()
@@ -212,7 +220,8 @@ class SessListener (
                 }
             }
 
-            val sameAsOld = artist == this.artist && title == this.title && album == this.album && albumArtist == this.albumArtist
+            val sameAsOld = artist == this.artist && title == this.title && album == this.album
+                    && albumArtist == this.albumArtist && duration == this.duration
 
             Stuff.log("onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
                     "duration=$duration lastState=$lastState, package=$packageName cb=${this.hashCode()} sl=${this@SessListener.hashCode()}")
@@ -222,7 +231,7 @@ class SessListener (
                 this.title = title
                 this.albumArtist = albumArtist
                 this.duration = duration
-                currHash = Stuff.genHashCode(artist, album, title, packageName)
+                currHash = Stuff.genHashCode(artist, album, title, duration, packageName)
 
                 // hack for buggy youtubes until they fix it
                 if (packageName in (Stuff.IGNORE_ARTIST_META.take(5) + Stuff.PACKAGE_YOUTUBE_MUSIC) &&
@@ -264,7 +273,7 @@ class SessListener (
                 PlaybackState.STATE_NONE,
                 PlaybackState.STATE_ERROR -> {
                     pause()
-                    Stuff.log("paused")
+                    Stuff.log("paused timePlayed=${hashesAndTimes.timePlayed}")
                 }
                 PlaybackState.STATE_PLAYING -> {
                     if (title != "" && artist != "") {

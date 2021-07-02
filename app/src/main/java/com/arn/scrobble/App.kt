@@ -13,11 +13,13 @@ class App : Application() {
         DebugOnly.strictMode()
         super.onCreate()
         initCaller()
-        FirebaseApp.initializeApp(applicationContext)
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
-        FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
+        if (!BuildConfig.DEBUG) {
+            FirebaseApp.initializeApp(applicationContext)
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+            FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
+            Timber.plant(CrashlyticsTree())
+        }
         Timber.plant(Timber.DebugTree())
-        Timber.plant(CrashlyticsTree())
     }
 
     @Synchronized

@@ -143,16 +143,16 @@ class NLService : NotificationListenerService() {
         sendBroadcast(Intent(iNLS_STARTED))
         BillingRepository.getInstance(application).apply {
             startDataSourceConnections()
-            queryPurchasesAsync()
             Handler(Looper.getMainLooper()).postDelayed({ this.endDataSourceConnections() }, 20000)
         }
 
-        crashlyticsReporterJob = CoroutineScope(Dispatchers.Main + Job()).launch {
-            while (isActive) {
-                delay(Stuff.CRASH_REPORT_INTERVAL)
-                FirebaseCrashlytics.getInstance().sendUnsentReports()
+        if (!BuildConfig.DEBUG)
+            crashlyticsReporterJob = CoroutineScope(Dispatchers.Main + Job()).launch {
+                while (isActive) {
+                    delay(Stuff.CRASH_REPORT_INTERVAL)
+                    FirebaseCrashlytics.getInstance().sendUnsentReports()
+                }
             }
-        }
 
         Stuff.log("init")
     }
@@ -292,7 +292,7 @@ class NLService : NotificationListenerService() {
                 }
                 val meta = MetadataUtils.pixelNPExtractMeta(title, getString(format))
                 if (meta != null){
-                    val hash = Stuff.genHashCode(meta[0], "", meta[1], sbn.packageName)
+                    val hash = Stuff.genHashCode(meta[0], "", meta[1], -1L, sbn.packageName)
                     val packageNameArg =
                             if (pref.getStringSet(Stuff.PREF_WHITELIST, null)?.contains(sbn.packageName) == false)
                                 sbn.packageName
@@ -825,18 +825,14 @@ class NLService : NotificationListenerService() {
                                 .joinToString(separator = "\n")
                     if (!isPro)
                         shareText += "\n\n" + getString(R.string.share_sig)
-                    val i = Intent(Intent.ACTION_SEND)
-                    i.type = "text/plain"
-                    i.putExtra(Intent.EXTRA_SUBJECT, shareText)
-                    i.putExtra(Intent.EXTRA_TEXT, shareText)
                     intent.type = "text/plain"
                     intent.putExtra(Intent.EXTRA_TEXT, shareText)
-                    val shareIntent = PendingIntent.getActivity(applicationContext, 10,
+                    val shareIntent = PendingIntent.getActivity(applicationContext, 10 + period.ordinal,
                             Intent.createChooser(intent, title),
                             Stuff.updateCurrentOrImmutable)
                     intent = Intent(applicationContext, Main::class.java)
                             .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_CHARTS)
-                    val launchIntent = PendingIntent.getActivity(applicationContext, 11, intent,
+                    val launchIntent = PendingIntent.getActivity(applicationContext, 10 + Period.values().size, intent,
                             Stuff.updateCurrentOrImmutable)
 
                     var digestHtml = ""

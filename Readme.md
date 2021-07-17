@@ -1,9 +1,14 @@
 ## Pano Scrobbler
 [play-store]: shields/play-store.svg
 [play-store-link]: https://play.google.com/store/apps/details?id=com.arn.scrobble
+
 [ko-fi]: shields/ko-fi.svg
 [ko-fi-link]: https://ko-fi.com/kawaiiDango
-[![download][play-store]][play-store-link]
+
+[crowdin]: shields/crowdin.svg
+[crowdin-link]: https://crowdin.com/project/pscrobbler
+
+[![download][play-store]][play-store-link] [![translate][crowdin]][crowdin-link]
 
 <img src="https://i.imgur.com/XGmtOP5.jpg" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/m1lbrU6l.jpg" alt="friends" width="200"/> <img src="https://i.imgur.com/7kETocF.jpg" alt="charts" width="200"/>
 

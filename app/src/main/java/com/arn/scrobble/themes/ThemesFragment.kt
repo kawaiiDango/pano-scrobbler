@@ -1,5 +1,6 @@
 package com.arn.scrobble.themes
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -61,6 +62,8 @@ class ThemesFragment: Fragment() {
 
         binding.themeRandom.isChecked = pref.getBoolean(Stuff.PREF_THEME_RANDOM, false)
         binding.themeSameTone.isChecked = pref.getBoolean(Stuff.PREF_THEME_SAME_TONE, false)
+        binding.themePaletteBg.isChecked = activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+            .getBoolean(Stuff.PREF_ACTIVITY_THEME_PALETTE_BG, true)
 
         primarySwatchIds = mutableListOf()
         secondarySwatchIds = mutableListOf()
@@ -260,5 +263,9 @@ class ThemesFragment: Fragment() {
         pref.putString(Stuff.PREF_THEME_BACKGROUND, getThemeName(binding.themeBackgroundSwatches))
         pref.putBoolean(Stuff.PREF_THEME_RANDOM, binding.themeRandom.isChecked)
         pref.putBoolean(Stuff.PREF_THEME_SAME_TONE, binding.themeSameTone.isChecked)
+        activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(Stuff.PREF_ACTIVITY_THEME_PALETTE_BG, binding.themePaletteBg.isChecked)
+            .apply()
     }
 }

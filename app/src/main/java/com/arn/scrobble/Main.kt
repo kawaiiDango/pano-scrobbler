@@ -23,6 +23,7 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.webkit.URLUtil
 import android.widget.ImageButton
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -39,7 +40,7 @@ import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.pending.PendingScrService
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
@@ -53,6 +54,7 @@ import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
+import okhttp3.HttpUrl
 import org.codechimp.apprater.AppRater
 import timber.log.Timber
 import java.io.File
@@ -248,12 +250,12 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private fun showInfoFragment(intent: Intent){
         val artist = intent.getStringExtra(NLService.B_ARTIST)
         val album = intent.getStringExtra(NLService.B_ALBUM)
-        val track = intent.getStringExtra(NLService.B_TITLE)
+        val track = intent.getStringExtra(NLService.B_TRACK)
         val info = InfoFragment()
         info.arguments = Bundle().apply {
             putString(NLService.B_ARTIST, artist)
             putString(NLService.B_ALBUM, album)
-            putString(NLService.B_TITLE, track)
+            putString(NLService.B_TRACK, track)
         }
         supportFragmentManager.findFragmentByTag(Stuff.TAG_INFO_FROM_WIDGET)?.let {
             (it as InfoFragment).dismiss()
@@ -556,7 +558,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             "~~~~~~~~~~~~~~~~~~~~~~~~"
         else
             "------------------------"
-        text += "\n\n[how did this happen?]\n"
+        text += "\n\n[describe the issue]\n"
         //keep the email in english
 
         val log = Stuff.exec("logcat -d")
@@ -584,7 +586,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             intents.add(LabeledIntent(intent, info.activityInfo.packageName, info.loadLabel(packageManager), info.icon))
         }
         if (intents.size > 0) {
-            val chooser = Intent.createChooser(intents.removeAt(intents.size - 1), getString(R.string.action_report))
+            val chooser = Intent.createChooser(intents.removeAt(intents.size - 1), getString(R.string.bug_report))
             chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
             startActivity(chooser)
         }else
@@ -727,7 +729,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     override fun onDestroy() {
         MultiPreferences.destroyClient()
         if (!PendingScrService.mightBeRunning)
-            PendingScrobblesDb.destroyInstance()
+            PanoDb.destroyInstance()
         super.onDestroy()
     }
 

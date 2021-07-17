@@ -61,38 +61,32 @@
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:id="@+id/charts_7day"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/charts_7day" />
+                android:layout_height="wrap_content" />
             <com.google.android.material.chip.Chip
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:id="@+id/charts_1month"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/charts_1month" />
+                android:layout_height="wrap_content" />
             <com.google.android.material.chip.Chip
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:id="@+id/charts_3month"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/charts_3month" />
+                android:layout_height="wrap_content" />
             <com.google.android.material.chip.Chip
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:id="@+id/charts_6month"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/charts_6month" />
+                android:layout_height="wrap_content" />
             <com.google.android.material.chip.Chip
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:id="@+id/charts_12month"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/charts_12month" />
+                android:layout_height="wrap_content" />
             <com.google.android.material.chip.Chip
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:id="@+id/charts_overall"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/charts_overall" />
+                android:layout_height="wrap_content" />
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
 </HorizontalScrollView>

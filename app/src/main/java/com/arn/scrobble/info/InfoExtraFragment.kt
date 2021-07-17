@@ -42,7 +42,7 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
         val binding = ContentInfoExtraBinding.inflate(inflater, container, false)
 
         val artist = arguments!!.getString(NLService.B_ARTIST)!!
-        val track = arguments!!.getString(NLService.B_TITLE)
+        val track = arguments!!.getString(NLService.B_TRACK)
 
         tracksFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_TRACKS.toString()) as? FakeTrackFragment ?: FakeTrackFragment()
         if (!tracksFragment.isAdded)
@@ -91,7 +91,7 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             binding.infoExtraHeader3.root.visibility = View.GONE
             binding.infoExtraFrame3.root.visibility = View.GONE
 
-            binding.infoExtraTitle.text = "$artist — $track"
+            binding.infoExtraTitle.text = getString(R.string.artist_title, artist, track)
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
                 LFMRequester(context!!).getSimilarTracks(artist, track).asAsyncTask(tracksFragment.viewModel.listReceiver)
@@ -118,7 +118,7 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
         (rootViewBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
         rootViewBinding.chartsList.adapter = adapter
 
-        fragment.viewModel.listReceiver.observe(viewLifecycleOwner, {
+        fragment.viewModel.listReceiver.observe(viewLifecycleOwner) {
             if (it == null && !Main.isOnline && fragment.viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
@@ -128,9 +128,9 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             }
             adapter.populate()
             fragment.viewModel.listReceiver.value = null
-        })
+        }
 
-        fragment.viewModel.info.observe(viewLifecycleOwner, {
+        fragment.viewModel.info.observe(viewLifecycleOwner) {
             it ?: return@observe
             val imgUrl = when (val entry = it.second) {
                 is Artist -> entry.getImageURL(ImageSize.EXTRALARGE) ?: ""
@@ -140,7 +140,7 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             }
             adapter.setImg(it.first, imgUrl)
             fragment.viewModel.removeInfoTask(it.first)
-        })
+        }
 
         if (fragment.viewModel.chartsData.isNotEmpty())
             adapter.populate()
@@ -180,7 +180,7 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             is Track -> {
                 b.putString(NLService.B_ARTIST, entry.artist)
                 b.putString(NLService.B_ALBUM, entry.album)
-                b.putString(NLService.B_TITLE, entry.name)
+                b.putString(NLService.B_TRACK, entry.name)
             }
             else -> return
         }

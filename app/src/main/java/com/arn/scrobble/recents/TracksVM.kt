@@ -9,7 +9,7 @@ import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.Main
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.PendingScrService
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pending.PendingListData
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
@@ -21,7 +21,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     val tracksReceiver by lazy { MutableLiveData<PaginatedResult<Track>>() }
     val tracks by lazy { mutableListOf<Track>() }
     val deletedTracksStringSet by lazy { mutableSetOf<String>() }
-    val heroInfo by lazy { MutableLiveData<MutableList<String>>() }
+    val listenerTrend by lazy { MutableLiveData<MutableList<Int>>() }
     private var lastHeroInfoAsyncTask: LFMRequester.MyAsyncTask? = null
     val trackInfo by lazy { MutableLiveData<Pair<Int,Track?>>() }
     val imgMap = mutableMapOf<Int, Map<ImageSize, String>>()
@@ -51,12 +51,11 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
         loadedCached = true
     }
 
-    fun loadHero(url: String?): MutableLiveData<MutableList<String>> {
+    fun loadListenerTrend(url: String?){
         lastHeroInfoAsyncTask?.cancel(true)
         if (url != null) {
-            lastHeroInfoAsyncTask = LFMRequester(getApplication()).getHeroInfo(url).asAsyncTask(heroInfo)
+            lastHeroInfoAsyncTask = LFMRequester(getApplication()).getListenerTrend(url).asAsyncTask(listenerTrend)
         }
-        return heroInfo
     }
 
     fun loadInfo(track: Track, pos:Int) {
@@ -65,8 +64,8 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
 
     fun loadPending(limit: Int, submit: Boolean): MutableLiveData<PendingListData> {
         executor.execute{
-            val dao = PendingScrobblesDb.getDb(getApplication()).getScrobblesDao()
-            val lovesDao = PendingScrobblesDb.getDb(getApplication()).getLovesDao()
+            val dao = PanoDb.getDb(getApplication()).getScrobblesDao()
+            val lovesDao = PanoDb.getDb(getApplication()).getLovesDao()
             val data = PendingListData()
             data.plCount = lovesDao.count
             data.psCount = dao.count

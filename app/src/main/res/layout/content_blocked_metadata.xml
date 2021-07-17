@@ -32,6 +32,7 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:imeOptions="actionSearch"
+                android:contentDescription="@string/search"
                 android:singleLine="true"
                 />
 
@@ -45,7 +46,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <TextView
-            android:id="@+id/edits_empty"
+            android:id="@+id/empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -55,11 +56,23 @@
             tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/edits_list"
+            android:id="@+id/block_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
+            android:visibility="invisible"
             android:layoutAnimation="@anim/layout_animation_slide_up"/>
 
     </FrameLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/block_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/vd_add_borderless"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:contentDescription="@string/add"
+        app:backgroundTint="?colorPrimary"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

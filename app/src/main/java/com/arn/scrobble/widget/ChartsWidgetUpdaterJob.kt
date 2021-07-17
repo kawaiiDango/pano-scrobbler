@@ -19,7 +19,12 @@ class ChartsWidgetUpdaterJob : JobService() {
     override fun onStartJob(jp: JobParameters): Boolean {
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
         val pref = applicationContext.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
-        val username = MultiPreferences(applicationContext).getString(Stuff.PREF_LASTFM_USERNAME, null) ?: return false
+        val mpref = MultiPreferences(applicationContext)
+
+        if (Stuff.willCrashOnMemeUI(mpref))
+            return false
+
+        val username = mpref.getString(Stuff.PREF_LASTFM_USERNAME, null) ?: return false
         val appWidgetIdToPeriodInt = mutableMapOf<Int, Int>()
         appWidgetManager.getAppWidgetIds(ComponentName(this, ChartsWidgetProvider::class.java))
             .forEach {

@@ -172,7 +172,7 @@ class FirstThingsFragment: Fragment() {
         iF.addAction(NLService.iSESS_CHANGED)
         iF.addAction(NLService.iNLS_STARTED)
         activity!!.registerReceiver(receiver, iF)
-        Stuff.setTitle(activity, R.string.first_things)
+        Stuff.setTitle(activity, R.string.almost_there)
         (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         if (arguments?.getBoolean(Stuff.ARG_NOPASS) != true)
@@ -198,7 +198,7 @@ class FirstThingsFragment: Fragment() {
         super.onHiddenChanged(hidden)
         if (!hidden) {
             checkAll()
-            (activity as Main?)?.binding?.coordinatorMain?.toolbar?.title = getString(R.string.first_things)
+            (activity as Main?)?.binding?.coordinatorMain?.toolbar?.title = getString(R.string.almost_there)
         }
     }
 

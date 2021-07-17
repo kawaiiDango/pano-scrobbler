@@ -1,6 +1,5 @@
 package com.arn.scrobble.charts
 
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -119,7 +118,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         adapter.clickListener = this
         adapter.viewModel = viewModel
 
-        viewModel.chartsReceiver.observe(viewLifecycleOwner, {
+        viewModel.chartsReceiver.observe(viewLifecycleOwner) {
             if (it == null && !Main.isOnline && viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
@@ -138,9 +137,9 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
 //            if (it.page == 1)
 //                chartsBinding.chartsList.smoothScrollToPosition(0)
             viewModel.chartsReceiver.value = null
-        })
+        }
 
-        viewModel.info.observe(viewLifecycleOwner, {
+        viewModel.info.observe(viewLifecycleOwner) {
             it ?: return@observe
             val imgUrl = when (val entry = it.second) {
                 is Artist -> entry.getImageURL(ImageSize.EXTRALARGE) ?: ""
@@ -150,7 +149,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             }
             adapter.setImg(it.first, imgUrl)
             viewModel.removeInfoTask(it.first)
-        })
+        }
 
         if (viewModel.chartsData.isNotEmpty())
             adapter.populate()
@@ -169,37 +168,47 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         val entries = viewModel.chartsData
         if (entries.isNullOrEmpty())
             return
-        val pref = context?.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE) ?: return
-        val type = when (entries[0]) {
-            is Artist -> getString(R.string.artists)
-            is Album -> getString(R.string.albums)
-            else -> getString(R.string.tracks)
+        val topType = when (entries[0]) {
+            is Artist -> getString(R.string.top_artists)
+            is Album -> getString(R.string.top_albums)
+            else -> getString(R.string.top_tracks)
         }
         val checkedChip = periodChipsBinding.chartsPeriod.findViewById<Chip>(periodChipsBinding.chartsPeriod.checkedChipId)
-        val period = if (checkedChip.id == R.id.charts_choose_week) {
-            viewModel.weeklyChart ?: return
-            getString(
+        val period = when (checkedChip.id) {
+            R.id.charts_choose_week -> {
+                viewModel.weeklyChart ?: return
+                getString(
                     R.string.weekly_range,
                     DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.from.time),
                     DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.to.time)
-            )
-        } else
-            checkedChip.text.toString()
+                )
+            }
+            R.id.charts_7day -> getString(R.string.weekly)
+            R.id.charts_1month -> getString(R.string.monthly)
+            else -> checkedChip.text.toString()
+        }
         var pos = 1
         val list = entries.take(10).joinToString(separator = "\n") {
             when (it) {
-                is Track -> getString(R.string.charts_num_text, pos++, it.artist + " — " + it.name)
-                is Album -> getString(R.string.charts_num_text, pos++, it.artist + " — " + it.name)
+                is Track -> getString(
+                    R.string.charts_num_text,
+                    pos++,
+                    getString(R.string.artist_title, it.artist, it.name)
+                )
+                is Album -> getString(
+                    R.string.charts_num_text,
+                    pos++,
+                    getString(R.string.artist_title, it.artist, it.name)
+                )
                 else -> getString(R.string.charts_num_text, pos++, it.name)
             }
         }
-        val user = if (username != null)
-            getString(R.string.possesion, username)
-        else
-            getString(R.string.my)
 
-        var shareText = getString(R.string.charts_share_text,
-                user, period.lowercase(), type.lowercase(), list)
+        var shareText = if (username != null)
+                getString(R.string.charts_share_username, period.lowercase(), topType.lowercase(), list, username)
+            else
+                getString(R.string.charts_share, period.lowercase(), topType.lowercase(), list)
+
         if ((activity as Main).billingViewModel.proStatus.value != true)
             shareText += "\n\n" + getString(R.string.share_sig)
         val i = Intent(Intent.ACTION_SEND)

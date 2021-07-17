@@ -50,7 +50,7 @@
 
         <receiver
             android:name=".widget.ChartsWidgetProvider"
-            android:label="@string/menu_charts"
+            android:label="@string/charts"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -97,10 +97,10 @@
                 android:resource="@xml/shortcuts" />
         </activity>
         <activity
-            android:name=".EditActivity"
+            android:name=".edits.EditDialogActivity"
             android:excludeFromRecents="true"
             android:exported="false"
-            android:label="@string/menu_edit"
+            android:label="@string/edit"
             android:theme="@style/AppThemeDialog"
             android:windowSoftInputMode="adjustPan" >
             <intent-filter>
@@ -150,7 +150,6 @@
             android:name=".MasterSwitchQS"
             android:exported="true"
             android:icon="@drawable/vd_noti"
-            android:label="@string/qs_master_disabled"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:process=":bgScrobbler" >
             <intent-filter>

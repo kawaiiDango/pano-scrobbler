@@ -1,8 +1,7 @@
 <resources>
     <dimen name="app_bar_height">350dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
     <dimen name="title_margin_right">50dp</dimen>
-    <dimen name="fab_done_margin">24dp</dimen>
+    <dimen name="fab_margin">24dp</dimen>
     <dimen name="elevation_appbar">10dp</dimen>
     <dimen name="tz_hero_btn">2dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>

@@ -160,7 +160,7 @@ class AppListFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.action_app_list)
+        Stuff.setTitle(activity, R.string.enabled_apps)
     }
     override fun onStop() {
         val prefs = MultiPreferences(context ?: return)

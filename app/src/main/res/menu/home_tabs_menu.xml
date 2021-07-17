@@ -12,7 +12,7 @@
     <item
         android:id="@+id/menu_charts"
         android:icon="@drawable/vd_charts"
-        android:title="@string/menu_charts"/>
+        android:title="@string/charts"/>
     <item
         android:id="@+id/menu_friends"
         android:icon="@drawable/vd_friends"

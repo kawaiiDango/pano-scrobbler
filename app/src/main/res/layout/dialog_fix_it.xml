@@ -11,15 +11,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="7dp"
-        android:paddingEnd="@dimen/fab_done_margin"
-        android:paddingStart="@dimen/fab_done_margin">
+        android:paddingEnd="@dimen/fab_margin"
+        android:paddingStart="@dimen/fab_margin">
 
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/fab_margin"
-            android:layout_marginTop="@dimen/fab_margin"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
             android:text="@string/fix_it_title"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
 
@@ -52,8 +52,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:background="?selectableItemBackgroundBorderless"
-                android:paddingEnd="@dimen/fab_done_margin"
-                android:paddingStart="@dimen/fab_done_margin"
+                android:paddingEnd="@dimen/fab_margin"
+                android:paddingStart="@dimen/fab_margin"
                 android:text="@string/fix_it_action"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
@@ -93,8 +93,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:background="?selectableItemBackgroundBorderless"
-                android:paddingEnd="@dimen/fab_done_margin"
-                android:paddingStart="@dimen/fab_done_margin"
+                android:paddingEnd="@dimen/fab_margin"
+                android:paddingStart="@dimen/fab_margin"
                 android:text="@string/fix_it_action"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
@@ -133,8 +133,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:background="?selectableItemBackgroundBorderless"
-                android:paddingEnd="@dimen/fab_done_margin"
-                android:paddingStart="@dimen/fab_done_margin"
+                android:paddingEnd="@dimen/fab_margin"
+                android:paddingStart="@dimen/fab_margin"
                 android:text="@string/fix_it_action"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"

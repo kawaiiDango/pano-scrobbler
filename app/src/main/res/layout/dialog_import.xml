@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/fab_margin">
+    android:padding="16dp">
 
     <RadioGroup
         android:id="@+id/import_radio_group"
@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/list_item_padding"
-            android:text="@string/import_edits_nope"
+            android:text="@string/import_lists_nope"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
         <RadioButton
@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/list_item_padding"
-            android:text="@string/import_edits_replace_all"
+            android:text="@string/import_lists_replace_all"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
         <RadioButton
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/list_item_padding"
-            android:text="@string/import_edits_replace_existing"
+            android:text="@string/import_lists_replace_existing"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
         <RadioButton
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/list_item_padding"
-            android:text="@string/import_edits_keep"
+            android:text="@string/import_lists_keep"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
     </RadioGroup>
 

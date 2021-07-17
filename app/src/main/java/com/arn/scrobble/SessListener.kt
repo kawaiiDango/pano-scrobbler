@@ -10,6 +10,7 @@ import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
+import okhttp3.HttpUrl
 import java.util.Locale
 
 /**
@@ -57,8 +58,6 @@ class SessListener (
             if (shouldScrobble(controller.packageName)) {
 //                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
                 if (controller.sessionToken !in controllersMap) {
-                    val ignoreArtistMeta =  controller.packageName in Stuff.IGNORE_ARTIST_META ||
-                            controller.packageName in browserPackages
                     var numControllersForPackage = 0
                     var hasOtherTokensForPackage = false
                     controllersMap.forEach { (token, pair) ->
@@ -74,7 +73,7 @@ class SessListener (
                         hashesAndTimes = HashesAndTimes()
                         packageMap[controller.packageName] = hashesAndTimes
                     }
-                    val cb = MyCallback(controller.packageName, hashesAndTimes, controller.sessionToken, ignoreArtistMeta)
+                    val cb = MyCallback(controller.packageName, hashesAndTimes, controller.sessionToken)
                     controller.registerCallback(cb)
                     //Medoly needs this
                     controller.playbackState.let { cb.onPlaybackStateChanged(it) }
@@ -106,8 +105,7 @@ class SessListener (
 
     inner class MyCallback(private val packageName: String,
                      private val hashesAndTimes: HashesAndTimes,
-                     private val token: MediaSession.Token,
-                     private val isIgnoreArtistMeta: Boolean) : Callback() {
+                     private val token: MediaSession.Token) : Callback() {
 
         private var lastState = -1
         private var currHash = 0
@@ -121,6 +119,22 @@ class SessListener (
         private val syntheticStateHandler = Handler(handler.looper)
 
         fun scrobble() {
+
+            fun isUrlOrDomain(s: String): Boolean {
+                // got some internal IOBE, catch everything
+                return try {
+                    HttpUrl.parse(s)?.topPrivateDomain() != null
+                } catch (e: Exception) {
+                    false
+                }
+                 ||
+                try {
+                    HttpUrl.parse("https://$s")?.topPrivateDomain() != null
+                } catch (e: Exception) {
+                    false
+                }
+            }
+
             Stuff.log("playing: timePlayed=${hashesAndTimes.timePlayed} $title")
 
             if (packageName in arrayOf(Stuff.PACKAGE_BLACKPLAYER, Stuff.PACKAGE_BLACKPLAYEREX) && duration > 0) {
@@ -133,12 +147,19 @@ class SessListener (
                     )
                 }, duration)
             }
+
             hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
             val isWhitelisted = packageName in whiteList
-            val packageNameParam = if (!isWhitelisted) packageName else null
+            val packageNameParam = if (!isWhitelisted)
+                    packageName
+                else
+                    null
             handler.removeMessages(hashesAndTimes.lastScrobbleHash)
 
-            if (isIgnoreArtistMeta) {
+            val ignoreArtistMeta = packageName in Stuff.IGNORE_ARTIST_META ||
+                    packageName in browserPackages && isUrlOrDomain(artist)
+
+            if (ignoreArtistMeta) {
                 val splits = MetadataUtils.sanitizeTitle(title)
                 handler.nowPlaying(
                     splits[0],
@@ -221,29 +242,35 @@ class SessListener (
             }
 
             val sameAsOld = artist == this.artist && title == this.title && album == this.album
-                    && albumArtist == this.albumArtist && duration == this.duration
+                    && albumArtist == this.albumArtist
+            val onlyDurationUpdated = sameAsOld && duration != this.duration
 
             Stuff.log("onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
                     "duration=$duration lastState=$lastState, package=$packageName cb=${this.hashCode()} sl=${this@SessListener.hashCode()}")
-            if (!sameAsOld) {
+            if (!sameAsOld || onlyDurationUpdated) {
                 this.artist = artist
                 this.album = album
                 this.title = title
                 this.albumArtist = albumArtist
                 this.duration = duration
-                currHash = Stuff.genHashCode(artist, album, title, duration, packageName)
+                currHash = Stuff.genHashCode(artist, album, title, packageName)
 
                 // hack for buggy youtubes until they fix it
-                if (packageName in (Stuff.IGNORE_ARTIST_META.take(5) + Stuff.PACKAGE_YOUTUBE_MUSIC) &&
-                        lastState == PlaybackState.STATE_STOPPED &&
-                        audioManager.isMusicActive)
-                    lastState = PlaybackState.STATE_PLAYING
+//                if (packageName in (Stuff.IGNORE_ARTIST_META.take(5) + Stuff.PACKAGE_YOUTUBE_MUSIC) &&
+//                        lastState == PlaybackState.STATE_STOPPED &&
+//                        audioManager.isMusicActive)
+//                    lastState = PlaybackState.STATE_PLAYING
+
+                // scrobbled when ad was playing
+                if (!handler.hasMessages(currHash) && onlyDurationUpdated &&
+                    packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC))
+                    return
 
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
                 if (artist != "" && title != "" &&
-                        !handler.hasMessages(currHash) &&
+                        (!handler.hasMessages(currHash) || !onlyDurationUpdated) &&
                         lastState == PlaybackState.STATE_PLAYING) {
                             hashesAndTimes.timePlayed = 0
                             scrobble()
@@ -264,7 +291,9 @@ class SessListener (
             val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT
 
             if (lastState == state /* bandcamp does this */ &&
-                !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart))
+                !(state == PlaybackState.STATE_PLAYING &&
+                        isPossiblyAtStart &&
+                        packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)))
                 return
 
             when (state) {

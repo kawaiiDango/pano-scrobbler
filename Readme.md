@@ -36,6 +36,8 @@
 - Add/remove personal tags
 - Customizable homescreen widget
 - Mix and match themes
+- Block metadata from scrobbling
+- Pattern edits (upto 30)
 
 #### Building:
 See [instructions.md](instructions.md)

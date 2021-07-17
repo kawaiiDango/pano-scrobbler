@@ -21,6 +21,7 @@
                 android:layout_width="20sp"
                 android:layout_height="20sp"
                 android:layout_marginEnd="10dp"
+                android:contentDescription="@string/tag"
                 app:tint="?colorPrimary"
                 app:srcCompat="@drawable/vd_tag" />
 
@@ -38,8 +39,8 @@
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="38dp"
                     android:layout_height="38dp"
-                    android:contentDescription="@string/hero_info"
-                    android:tooltipText="@string/hero_info"
+                    android:contentDescription="@string/more_info"
+                    android:tooltipText="@string/more_info"
                     app:srcCompat="@drawable/vd_open_in_new"
                     app:tint="?colorSecondary" />
         </LinearLayout>
@@ -69,28 +70,52 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
 
-                    <TextView
-                        android:id="@+id/tag_info_taggers"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center_horizontal"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textSize="18sp"
-                        tools:text="1" />
+                        android:orientation="vertical"
+                        android:gravity="center">
 
-                    <TextView
-                        android:id="@+id/tag_info_taggings"
+                        <TextView
+                            android:id="@+id/tag_info_taggers"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:textSize="18sp"
+                            tools:text="1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/taggers" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center_horizontal"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textSize="18sp"
-                        tools:text="1" />
+                        android:orientation="vertical"
+                        android:gravity="center">
 
+                        <TextView
+                            android:id="@+id/tag_info_taggings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:textSize="18sp"
+                            tools:text="1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/taggings" />
+
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -98,21 +123,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_horizontal"
-                        android:text="@string/taggers"
-                        />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_horizontal"
-                        android:text="@string/taggings"
-                        />
+
+
 
                 </LinearLayout>
 

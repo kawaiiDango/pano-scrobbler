@@ -59,6 +59,7 @@
             android:minWidth="0dp"
             android:minHeight="0dp"
             android:text="\?"
+            android:contentDescription="@string/help"
             android:textStyle="bold"
             android:textColor="?colorPrimary"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"/>

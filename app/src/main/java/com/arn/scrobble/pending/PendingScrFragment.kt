@@ -32,11 +32,11 @@ class PendingScrFragment: Fragment(), ItemClickListener {
 
         vm = VMFactory.getVM(this, TracksVM::class.java)
         vm.loadPending(1000, false)
-                .observe(viewLifecycleOwner, {
+                .observe(viewLifecycleOwner) {
                     it ?: return@observe
                     adapter.clear()
                     adapter.addAll(it)
-                })
+                }
         return view
     }
 

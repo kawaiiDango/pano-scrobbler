@@ -4,9 +4,9 @@
         android:shortcutId="pref"
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_settings"
-        android:shortcutShortLabel="@string/action_settings"
-        android:shortcutLongLabel="@string/action_settings"
-        android:shortcutDisabledMessage="@string/action_settings">
+        android:shortcutShortLabel="@string/settings"
+        android:shortcutLongLabel="@string/settings"
+        android:shortcutDisabledMessage="@string/settings">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"
@@ -18,9 +18,9 @@
         android:shortcutId="rec"
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_mic"
-        android:shortcutShortLabel="@string/menu_rec_short"
-        android:shortcutLongLabel="@string/menu_rec_short"
-        android:shortcutDisabledMessage="@string/menu_rec_short">
+        android:shortcutShortLabel="@string/from_mic"
+        android:shortcutLongLabel="@string/from_mic"
+        android:shortcutDisabledMessage="@string/from_mic">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"

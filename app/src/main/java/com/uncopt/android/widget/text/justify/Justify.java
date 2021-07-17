@@ -27,6 +27,10 @@ import android.text.style.MetricAffectingSpan;
 import android.text.style.ScaleXSpan;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
+import timber.log.Timber;
+
 
 class Justify {
 
@@ -182,8 +186,7 @@ class Justify {
         int loop = 0;
         while (excess > 0) {
           if (++loop == 4) {
-            android.util.Log.e("ERROR",
-                               "Could not compensate for excess space (" + excess + "px).");
+              Timber.tag("Justify").e("Could not compensate for excess space (" + excess + "px).");
           }
           // Clear the spans from the previous attempt.
           for (int span=0; span<n; ++span) {

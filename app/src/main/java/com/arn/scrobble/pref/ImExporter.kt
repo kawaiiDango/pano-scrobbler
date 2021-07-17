@@ -9,8 +9,9 @@ import android.util.JsonWriter
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.Main
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.db.Edit
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.db.*
+import com.arn.scrobble.pref.JsonHelpers.readJson
+import com.arn.scrobble.pref.JsonHelpers.writeJson
 import com.arn.scrobble.themes.ColorPatchUtils
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -59,23 +60,31 @@ class ImExporter {
 
                     beginObject()
                     name("pano_version").value(BuildConfig.VERSION_CODE)
-                    name("edits").beginArray()
-                    val edits = PendingScrobblesDb.getDb(context).getEditsDao().all
-                    edits.forEach {
-                        beginObject()
-                        if (it.legacyHash != null)
-                            name("hash").value(it.legacyHash)
-                        else {
-                            name("origTrack").value(it.origTrack)
-                            name("origAlbum").value(it.origAlbum)
-                            name("origArtist").value(it.origArtist)
+                    name("simple_edits").beginArray()
+                    PanoDb.getDb(context)
+                        .getSimpleEditsDao()
+                        .all
+                        .asReversed()
+                        .forEach {
+                            it.writeJson(this)
                         }
-                        name("track").value(it.track)
-                        name("album").value(it.album)
-                        name("albumArtist").value(it.albumArtist)
-                        name("artist").value(it.artist)
-                        endObject()
-                    }
+                    endArray()
+                    name("regex_edits").beginArray()
+                    PanoDb.getDb(context)
+                        .getRegexEditsDao()
+                        .all
+                        .forEach {
+                            it.writeJson(this)
+                        }
+                    endArray()
+                    name("blocked_metadata").beginArray()
+                    PanoDb.getDb(context)
+                        .getBlockedMetadataDao()
+                        .all
+                        .asReversed()
+                        .forEach {
+                            it.writeJson(this)
+                        }
                     endArray()
 
                     name("settings").beginObject()
@@ -134,42 +143,68 @@ class ImExporter {
                     var versionCode = -1
                     while (hasNext()) {
                         val name = nextName()
-                        if (name == "edits" && editsMode != Stuff.EDITS_NOPE) {
-                            val editsDao = PendingScrobblesDb.getDb(context).getEditsDao()
-                            if (editsMode == Stuff.EDITS_REPLACE_ALL)
-                                editsDao.nuke()
-                            beginArray()
-                            while (hasNext()) {
-                                beginObject()
-                                val edit = Edit()
-                                while (hasNext()) {
-                                    val editName = nextName()
-                                    val editVal = nextString()
-                                    when (editName) {
-                                        "hash" -> edit.legacyHash = editVal
-                                        "track" -> edit.track = editVal
-                                        "album" -> edit.album = editVal
-                                        "albumArtist" -> edit.albumArtist = editVal
-                                        "artist" -> edit.artist = editVal
-                                        "origTrack" -> edit.origTrack = editVal
-                                        "origAlbum" -> edit.origAlbum = editVal
-                                        "origArtist" -> edit.origArtist = editVal
-                                        else -> return false
+                        if (name in arrayOf("edits", "simple_edits", "regex_edits", "blocked_metadata") && editsMode != Stuff.EDITS_NOPE) {
+                            when(name) {
+                                "simple_edits",
+                                "edits" -> {
+                                    val dao = PanoDb.getDb(context).getSimpleEditsDao()
+                                    if (editsMode == Stuff.EDITS_REPLACE_ALL)
+                                        dao.nuke()
+                                    val edits = mutableListOf<SimpleEdit>()
+                                    beginArray()
+                                    while (hasNext()) {
+                                        edits += SimpleEdit().readJson(this)
                                     }
-                                }
-                                if (edit.legacyHash != null) {
-                                    edit.origTrack = edit.legacyHash!!
-                                    edit.origAlbum = edit.legacyHash!!
-                                    edit.origArtist = edit.legacyHash!!
-                                }
-                                if (editsMode == Stuff.EDITS_REPLACE_EXISTING || editsMode == Stuff.EDITS_REPLACE_ALL)
-                                    editsDao.insert(edit)
-                                else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
-                                    editsDao.insertIgnore(edit)
+                                    endArray()
 
-                                endObject()
+                                    if (editsMode == Stuff.EDITS_REPLACE_EXISTING || editsMode == Stuff.EDITS_REPLACE_ALL)
+                                        dao.insert(edits)
+                                    else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
+                                        dao.insertIgnore(edits)
+                                }
+                                "regex_edits" -> {
+                                    val dao = PanoDb.getDb(context).getRegexEditsDao()
+                                    if (editsMode == Stuff.EDITS_REPLACE_ALL)
+                                        dao.nuke()
+                                    val edits = mutableListOf<RegexEdit>()
+                                    beginArray()
+                                    while (hasNext()) {
+                                        edits += RegexEdit().readJson(this)
+                                    }
+                                    endArray()
+
+                                    val existingEdits = dao.all
+                                    existingEdits.forEach { it._id = 0 }
+                                    val deduplicatedEdits = (edits.toSet() - existingEdits.toSet()).toList()
+                                    if (deduplicatedEdits.isNotEmpty()) {
+                                        val offset = (dao.maxOrder ?: -1) + 1
+                                        deduplicatedEdits.forEach { it.order += offset }
+                                    }
+
+                                    if (editsMode == Stuff.EDITS_REPLACE_EXISTING || editsMode == Stuff.EDITS_REPLACE_ALL)
+                                        dao.insert(deduplicatedEdits)
+                                    else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
+                                        dao.insertIgnore(deduplicatedEdits)
+                                }
+                                "blocked_metadata" -> {
+                                    val dao = PanoDb.getDb(context).getBlockedMetadataDao()
+                                    if (editsMode == Stuff.EDITS_REPLACE_ALL)
+                                        dao.nuke()
+                                    val blockedMetadata = mutableListOf<BlockedMetadata>()
+                                    beginArray()
+                                    while (hasNext()) {
+                                        blockedMetadata += BlockedMetadata().readJson(this)
+                                    }
+                                    endArray()
+
+                                    if (editsMode == Stuff.EDITS_REPLACE_EXISTING || editsMode == Stuff.EDITS_REPLACE_ALL)
+                                        dao.insertLowerCase(blockedMetadata, ignore = false)
+                                    else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
+                                        dao.insertLowerCase(blockedMetadata, ignore = true)
+                                }
                             }
-                            endArray()
+
+
                         } else if (name == "settings" && settings) {
                             val pref = MultiPreferences(context)
                             beginObject()

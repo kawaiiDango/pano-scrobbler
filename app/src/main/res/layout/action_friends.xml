@@ -12,7 +12,7 @@
         android:id="@+id/friends_profile"
         style="@style/friendsLinks"
         android:drawableTop="@drawable/vd_open_in_new"
-        android:text="@string/user_profile"/>
+        android:text="@string/profile"/>
 
     <Button
         android:id="@+id/friends_scrobbles"
@@ -24,6 +24,6 @@
         android:id="@+id/friends_charts"
         style="@style/friendsLinks"
         android:drawableTop="@drawable/vd_charts"
-        android:text="@string/menu_charts"/>
+        android:text="@string/charts"/>
 
 </LinearLayout>

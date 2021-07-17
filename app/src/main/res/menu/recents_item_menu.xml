@@ -11,10 +11,10 @@
         android:id="@+id/menu_edit"
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_edit"
-        android:title="@string/menu_edit"/>
+        android:title="@string/edit"/>
     <item
         android:id="@+id/menu_delete"
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_delete"
-        android:title="@string/menu_delete"/>
+        android:title="@string/delete"/>
 </menu>

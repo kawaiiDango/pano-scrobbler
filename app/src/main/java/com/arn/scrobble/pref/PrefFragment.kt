@@ -25,8 +25,12 @@ import androidx.preference.*
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.DialogImportBinding
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.edits.BlockedMetadataFragment
+import com.arn.scrobble.edits.SimpleEditsFragment
+import com.arn.scrobble.edits.RegexEditsFragment
 import com.arn.scrobble.themes.ThemesFragment
 import com.arn.scrobble.ui.MyClickableSpan
 import com.arn.scrobble.widget.ChartsWidgetActivity
@@ -93,15 +97,11 @@ class PrefFragment : PreferenceFragmentCompat(){
         val autoDetect = findPreference<SwitchPreference>(Stuff.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
 
-        val edits = findPreference<Preference>("edits")!!
-        edits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            parentFragmentManager.beginTransaction()
-                    .remove(this)
-                    .add(R.id.frame, EditsFragment())
-                    .addToBackStack(null)
-                    .commit()
-            true
-        }
+        findPreference<Preference>("digest_weekly")!!
+            .title = getString(R.string.s_top_scrobbles, getString(R.string.weekly))
+
+        findPreference<Preference>("digest_monthly")!!
+            .title = getString(R.string.s_top_scrobbles, getString(R.string.monthly))
 
         findPreference<Preference>("charts_widget")!!
             .onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -149,6 +149,10 @@ class PrefFragment : PreferenceFragmentCompat(){
 
         findPreference<Preference>(Stuff.PREF_IMPORT)
                 ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            // On Android 11 TV:
+            // Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider
+            // from ProcessRecord{a608cee 5039:com.google.android.documentsui/u0a21}
+            // (pid=5039, uid=10021) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "application/*"
@@ -195,7 +199,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                     preferenceManager.preferenceDataStore?.getString(Stuff.PREF_GNUFM_ROOT, "https://")!!
                 val et = EditText(context)
                 et.setText(nixtapeUrl)
-                val padding = resources.getDimensionPixelSize(R.dimen.fab_margin)
+                val padding = 16.dp
 
                 val dialog = MaterialAlertDialogBuilder(context!!)
                         .setTitle(R.string.pref_gnufm_title)
@@ -439,26 +443,73 @@ class PrefFragment : PreferenceFragmentCompat(){
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.action_settings)
+        Stuff.setTitle(activity, R.string.settings)
 
         listView.isNestedScrollingEnabled = false
 
         setAuthLabel("listenbrainz")
         setAuthLabel("lb")
 
-        val edits = findPreference<Preference>("edits")!!
-        lifecycleScope.launch {
-            val numEdits = withContext(Dispatchers.IO) {
-                PendingScrobblesDb.getDb(context!!).getEditsDao().count
-            }
-            withContext(Dispatchers.Main) {
-                edits.title = getString(R.string.n_edits, numEdits)
-            }
-        }
-
         val iF = IntentFilter()
         iF.addAction(NLService.iSESS_CHANGED)
         activity!!.registerReceiver(sessChangeReceiver, iF)
+
+        val simpleEdits = findPreference<Preference>("simple_edits")!!
+        simpleEdits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            parentFragmentManager.beginTransaction()
+                .remove(this)
+                .add(R.id.frame, SimpleEditsFragment())
+                .addToBackStack(null)
+                .commit()
+            true
+        }
+
+        lifecycleScope.launch {
+            val numEdits = withContext(Dispatchers.IO) {
+                PanoDb.getDb(context!!).getSimpleEditsDao().count
+            }
+            withContext(Dispatchers.Main) {
+                simpleEdits.title = getString(R.string.n_simple_edits, numEdits)
+            }
+        }
+
+        val regexEdits = findPreference<Preference>("regex_edits")!!
+        regexEdits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            parentFragmentManager.beginTransaction()
+                .remove(this)
+                .add(R.id.frame, RegexEditsFragment())
+                .addToBackStack(null)
+                .commit()
+            true
+        }
+
+        lifecycleScope.launch {
+            val numEdits = withContext(Dispatchers.IO) {
+                PanoDb.getDb(context!!).getRegexEditsDao().count
+            }
+            withContext(Dispatchers.Main) {
+                regexEdits.title = getString(R.string.n_regex_edits, numEdits)
+            }
+        }
+
+        val blockedMetadata = findPreference<Preference>("blocked_metadata")!!
+        blockedMetadata.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            parentFragmentManager.beginTransaction()
+                .remove(this)
+                .add(R.id.frame, BlockedMetadataFragment())
+                .addToBackStack(null)
+                .commit()
+            true
+        }
+
+        lifecycleScope.launch {
+            val numEdits = withContext(Dispatchers.IO) {
+                PanoDb.getDb(context!!).getBlockedMetadataDao().count
+            }
+            withContext(Dispatchers.Main) {
+                blockedMetadata.title = getString(R.string.n_blocked_metadata, numEdits)
+            }
+        }
     }
 
     override fun onStop() {

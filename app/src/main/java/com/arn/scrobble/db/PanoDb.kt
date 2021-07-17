@@ -12,22 +12,29 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * Created by arn on 11/09/2017.
  */
 
-@Database(entities = [PendingScrobble::class, PendingLove::class, Edit::class], version = 8)
-abstract class PendingScrobblesDb : RoomDatabase() {
+@Database(entities = [
+    PendingScrobble::class,
+    PendingLove::class,
+    SimpleEdit::class,
+    RegexEdit::class,
+    BlockedMetadata::class,
+ ], version = 9)
+abstract class PanoDb : RoomDatabase() {
     abstract fun getScrobblesDao(): PendingScrobblesDao
     abstract fun getLovesDao(): PendingLovesDao
-    abstract fun getEditsDao(): EditsDao
+    abstract fun getSimpleEditsDao(): SimpleEditsDao
+    abstract fun getRegexEditsDao(): RegexEditsDao
+    abstract fun getBlockedMetadataDao(): BlockedMetadataDao
 
     companion object {
         const val fileName = "pendingScrobbles"
-        private var INSTANCE: PendingScrobblesDb? = null
-        fun getDb(context: Context): PendingScrobblesDb {
+        private var INSTANCE: PanoDb? = null
+        fun getDb(context: Context): PanoDb {
             if (INSTANCE == null || INSTANCE?.isOpen == false) {
-                INSTANCE = Room.databaseBuilder(context.applicationContext, PendingScrobblesDb::class.java, fileName)
-                        .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                INSTANCE = Room.databaseBuilder(context.applicationContext, PanoDb::class.java, fileName)
+                        .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
                         // allow queries on the main thread.
                         // Don't do this on a real app! See PersistenceBasicSample for an example.
-                        // Just dont do this on a UI thread
 //                        .allowMainThreadQueries()
                         .build()
             }
@@ -75,6 +82,26 @@ abstract class PendingScrobblesDb : RoomDatabase() {
                 database.execSQL("CREATE INDEX legacyIdx ON $tableName (legacyHash)")
                 database.execSQL("INSERT INTO $tableName SELECT hash, hash, hash, hash, track, album, albumArtist, artist FROM edits2")
                 database.execSQL("DROP TABLE edits2")
+            }
+        }
+
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                var tableName = "regexEdits"
+                database.execSQL("CREATE TABLE IF NOT EXISTS $tableName (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `order` INTEGER NOT NULL, `preset` TEXT, `name` TEXT, `pattern` TEXT, `replacement` TEXT NOT NULL, `field` TEXT, `replaceAll` INTEGER NOT NULL, `caseSensitive` INTEGER NOT NULL, `continueMatching` INTEGER NOT NULL)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_regexEdits_preset` ON $tableName (`preset`)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_regexEdits_order` ON $tableName (`order`)")
+
+                tableName = "blockedMetadata"
+                database.execSQL("CREATE TABLE IF NOT EXISTS $tableName (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `track` TEXT NOT NULL, `album` TEXT NOT NULL, `artist` TEXT NOT NULL, `albumArtist` TEXT NOT NULL)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_blockedMetadata_track_album_artist_albumArtist` ON $tableName (`track`, `album`, `artist`, `albumArtist`)")
+
+                tableName = "simpleEdits"
+                database.execSQL("CREATE TABLE IF NOT EXISTS `$tableName` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `legacyHash` TEXT, `origTrack` TEXT NOT NULL, `origAlbum` TEXT NOT NULL, `origArtist` TEXT NOT NULL, `track` TEXT NOT NULL, `album` TEXT NOT NULL, `albumArtist` TEXT NOT NULL, `artist` TEXT NOT NULL)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_simpleEdits_legacyHash` ON `$tableName` (`legacyHash`)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_simpleEdits_origArtist_origAlbum_origTrack` ON `$tableName` (`origArtist`, `origAlbum`, `origTrack`)")
+                database.execSQL("INSERT INTO $tableName SELECT null, legacyHash, origTrack, origAlbum, origArtist, track, album, albumArtist, artist FROM edits")
+                database.execSQL("DROP table edits")
             }
         }
 

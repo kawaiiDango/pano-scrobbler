@@ -27,7 +27,6 @@ import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import java.lang.ref.WeakReference
-import java.util.*
 
 
 /**
@@ -54,6 +53,7 @@ class RecentsAdapter
     lateinit var viewModel: TracksVM
     var isShowingLoves = false
     var isShowingAlbums = false
+    private var lastPopulateTime = System.currentTimeMillis()
     val handler by lazy { EntryInfoHandler(WeakReference(this)) }
     private val nonTrackViewCount: Int
         get() = sectionHeaders.size + psMap.size + plMap.size +
@@ -254,7 +254,10 @@ class RecentsAdapter
 
         myUpdateCallback.offset = nonTrackViewCount
         myUpdateCallback.selectedPos = viewModel.selectedPos
-        val diff = DiffUtil.calculateDiff(DiffCallback(viewModel.tracks, oldTracks), false)
+        val diff = DiffUtil.calculateDiff(
+            DiffCallback(viewModel.tracks, oldTracks, lastPopulateTime),
+            false
+        )
         diff.dispatchUpdatesTo(myUpdateCallback)
         if (!viewModel.loadedNw || fragmentBinding.recentsSwipeRefresh.isRefreshing) {
             fragmentBinding.recentsList.scheduleLayoutAnimation()
@@ -262,6 +265,8 @@ class RecentsAdapter
                 notifyItemChanged(0, 0) //animation gets delayed otherwise
         }
         setLoading(false)
+
+        lastPopulateTime = System.currentTimeMillis()
     }
 
     override fun loadImg(pos: Int){
@@ -288,7 +293,7 @@ class RecentsAdapter
         handler.cancelAll()
     }
 
-    class DiffCallback(private var newList: List<Track>, private var oldList: List<Track>) : DiffUtil.Callback() {
+    class DiffCallback(private val newList: List<Track>, private val oldList: List<Track>, private val lastPopulateTime: Long) : DiffUtil.Callback() {
 
         override fun getOldListSize() = oldList.size
 
@@ -299,7 +304,8 @@ class RecentsAdapter
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].name == newList[newItemPosition].name &&
+            return System.currentTimeMillis() - lastPopulateTime < 60 * 60 * 1000 && // populate time
+                    oldList[oldItemPosition].name == newList[newItemPosition].name &&
                     oldList[oldItemPosition].album == newList[newItemPosition].album &&
                     oldList[oldItemPosition].artist == newList[newItemPosition].artist &&
                     oldList[oldItemPosition].isLoved == newList[newItemPosition].isLoved &&
@@ -410,7 +416,7 @@ class RecentsAdapter
             } else {
                 binding.recentsDate.visibility = View.VISIBLE
                 binding.recentsDate.text =
-                    Stuff.myRelativeTime(itemView.context, track.playedWhen?.time ?: 0, true)
+                    Stuff.myRelativeTime(itemView.context, track.playedWhen?.time ?: 0)
                 Stuff.nowPlayingAnim(binding.recentsPlaying, false)
             }
 

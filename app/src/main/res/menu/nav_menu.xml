@@ -28,18 +28,18 @@
         <item
             android:id="@+id/nav_charts"
             android:icon="@drawable/vd_charts"
-            android:title="@string/menu_charts"/>
+            android:title="@string/charts"/>
     </group>
 
     <group android:id="@+id/nav_group_3">
         <item
             android:id="@+id/nav_random"
             android:icon="@drawable/vd_die"
-            android:title="@string/menu_random"/>
+            android:title="@string/random"/>
         <item
             android:id="@+id/nav_rec"
             android:icon="@drawable/vd_mic"
-            android:title="@string/menu_rec"/>
+            android:title="@string/scrobble_from_mic"/>
         <item
             android:id="@+id/nav_search"
             android:icon="@drawable/vd_search"
@@ -53,11 +53,11 @@
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/vd_settings"
-            android:title="@string/action_settings"/>
+            android:title="@string/settings"/>
         <item
             android:id="@+id/nav_report"
             android:icon="@drawable/vd_bug"
-            android:title="@string/action_report"/>
+            android:title="@string/bug_report"/>
     </group>
 
 </menu>

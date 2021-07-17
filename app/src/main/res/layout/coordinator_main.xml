@@ -156,10 +156,10 @@
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="38dp"
                     android:layout_height="38dp"
-                    android:contentDescription="@string/hero_info"
+                    android:contentDescription="@string/more_info"
                     android:padding="3dp"
                     android:scaleType="centerInside"
-                    android:tooltipText="@string/hero_info"
+                    android:tooltipText="@string/more_info"
                     android:visibility="invisible"
                     app:srcCompat="@drawable/vd_info"
                     tools:visibility="visible" />

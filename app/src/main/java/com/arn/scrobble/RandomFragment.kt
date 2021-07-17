@@ -50,7 +50,7 @@ class RandomFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.menu_random)
+        Stuff.setTitle(activity, R.string.random)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -150,7 +150,7 @@ class RandomFragment: Fragment() {
 
         binding.randomTrack.recentsTitle.text = name
         binding.randomTrack.recentsSubtitle.text = track.artist
-        binding.randomTrack.recentsDate.text = Stuff.myRelativeTime(context!!, track.playedWhen?.time ?: 0, true)
+        binding.randomTrack.recentsDate.text = Stuff.myRelativeTime(context!!, track.playedWhen?.time ?: 0)
 
         binding.randomPlay.setOnClickListener {
             Stuff.launchSearchIntent(track.artist, track.name, context!!)
@@ -165,7 +165,7 @@ class RandomFragment: Fragment() {
                 b.putString(NLService.B_ARTIST, track.artist)
                 if (!track.album.isNullOrEmpty())
                     b.putString(NLService.B_ALBUM, track.album)
-                b.putString(NLService.B_TITLE, track.name)
+                b.putString(NLService.B_TRACK, track.name)
                 info.arguments = b
                 info.show(parentFragmentManager, null)
             }

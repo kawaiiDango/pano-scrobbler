@@ -70,8 +70,8 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/hero_info"
-                android:tooltipText="@string/hero_info"
+                android:contentDescription="@string/more_info"
+                android:tooltipText="@string/more_info"
                 app:drawableTint="?colorPrimary"
                 app:srcCompat="@drawable/vd_info" />
 

@@ -32,6 +32,7 @@
                 app:singleSelection="true"
                 app:chipSpacingHorizontal="16dp"
                 app:chipSpacingVertical="16dp"
+                app:selectionRequired="true"
                 android:layoutAnimation="@anim/layout_animation_slide_up"/>
 
             <TextView
@@ -50,6 +51,7 @@
                 app:singleSelection="true"
                 app:chipSpacingHorizontal="16dp"
                 app:chipSpacingVertical="16dp"
+                app:selectionRequired="true"
                 android:layoutAnimation="@anim/layout_animation_slide_up"/>
 
             <TextView
@@ -68,6 +70,7 @@
                 app:singleSelection="true"
                 app:chipSpacingHorizontal="16dp"
                 app:chipSpacingVertical="16dp"
+                app:selectionRequired="true"
                 android:layoutAnimation="@anim/layout_animation_slide_up"/>
 
             <CheckBox
@@ -81,6 +84,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/random_theme"/>
+
+            <CheckBox
+                android:id="@+id/theme_palette_bg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="64dp"
+                android:text="@string/palette_bg"/>
         </LinearLayout>
     </ScrollView>
 
@@ -89,8 +99,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_done_margin"
-        android:layout_marginEnd="@dimen/fab_done_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
         android:contentDescription="@android:string/ok"
         app:backgroundTint="?colorPrimary"
         android:src="@drawable/vd_check_simple"/>

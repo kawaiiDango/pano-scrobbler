@@ -12,6 +12,7 @@ import com.arn.scrobble.Main
 import com.arn.scrobble.R
 import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.snackbar.Snackbar
+import timber.log.Timber
 
 object AppRater {
     // Preference Constants
@@ -195,7 +196,7 @@ object AppRater {
         try {
             context.startActivity(Intent(Intent.ACTION_VIEW, market.getMarketURI(context)))
         } catch (activityNotFoundException1: ActivityNotFoundException) {
-            Log.e(AppRater::class.java.simpleName, "Market Intent not found")
+            Timber.tag("AppRater").e("Market Intent not found")
         }
 
     }
@@ -211,7 +212,7 @@ object AppRater {
         val coordinatorLayout = (context as Activity).findViewById<View>(R.id.frame)
         val snackbar = Snackbar
                 .make(coordinatorLayout, R.string.rate_msg, Snackbar.LENGTH_INDEFINITE)
-                .setAction("\uD83C\uDF1F " + context.getString(R.string.rate_link)) {
+                .setAction("\uD83C\uDF1F " + context.getString(R.string.rate_action)) {
                     rateNow(context)
                     if (editor != null) {
                         editor.putBoolean(PREF_DONT_SHOW_AGAIN, true)

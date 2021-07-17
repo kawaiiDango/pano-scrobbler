@@ -85,7 +85,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
             val b = Bundle()
 
             when (key) {
-                NLService.B_TITLE -> {
+                NLService.B_TRACK -> {
                     entry as Track
                     binding.infoPlay.visibility = View.VISIBLE
                     binding.infoPlay.setOnClickListener {
@@ -116,7 +116,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                     }
 
                     b.putString(NLService.B_ARTIST, entry.artist)
-                    b.putString(NLService.B_TITLE, entry.name)
+                    b.putString(NLService.B_TRACK, entry.name)
 
                     binding.infoExtra.text = itemView.context.getString(R.string.similar)
                     binding.infoExtra.setOnClickListener {
@@ -170,7 +170,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                                         fragment.dismiss()
                                         val info = InfoFragment()
                                         val thisBundle = b.clone() as Bundle
-                                        thisBundle.putString(NLService.B_TITLE, tracks[position].name)
+                                        thisBundle.putString(NLService.B_TRACK, tracks[position].name)
                                         thisBundle.putString(Stuff.ARG_USERNAME, username)
                                         info.arguments = thisBundle
                                         info.show(fragment.parentFragmentManager, null)

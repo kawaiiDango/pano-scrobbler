@@ -13,7 +13,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.db.PanoDb
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.lang.RuntimeException
 
@@ -63,9 +63,9 @@ object PendingMenu {
                         AsyncTask.THREAD_POOL_EXECUTOR.execute {
                             try {
                                 if (p is PendingScrobble)
-                                    PendingScrobblesDb.getDb(context).getScrobblesDao().delete(p)
+                                    PanoDb.getDb(context).getScrobblesDao().delete(p)
                                 else if (p is PendingLove)
-                                    PendingScrobblesDb.getDb(context).getLovesDao().delete(p)
+                                    PanoDb.getDb(context).getLovesDao().delete(p)
                                 deleteAction.invoke()
                             } catch (e: Exception) {
                             }

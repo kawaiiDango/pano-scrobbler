@@ -26,10 +26,10 @@ class MasterSwitchQS: TileService() {
     private fun setActive(isActive: Boolean){
         if (isActive){
             qsTile.state = Tile.STATE_ACTIVE
-            qsTile.label = getString(R.string.qs_master_on)
+            qsTile.label = getString(R.string.scrobbler_on)
         } else {
             qsTile.state = Tile.STATE_INACTIVE
-            qsTile.label = getString(R.string.qs_master_off)
+            qsTile.label = getString(R.string.scrobbler_off)
         }
         qsTile.updateTile()
     }

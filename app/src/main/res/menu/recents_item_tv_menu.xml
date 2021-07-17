@@ -11,7 +11,7 @@
         android:id="@+id/menu_info"
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_info"
-        android:title="@string/hero_info"/>
+        android:title="@string/more_info"/>
     <item
         android:id="@+id/menu_share"
         app:iconTint="?android:colorForeground"

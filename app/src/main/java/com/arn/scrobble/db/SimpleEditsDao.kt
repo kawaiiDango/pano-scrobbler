@@ -1,22 +1,26 @@
 package com.arn.scrobble.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 
 /**
  * Created by arn on 11/09/2017.
  */
-private const val tableName = "edits"
+private const val tableName = "simpleEdits"
 
 @Dao
-interface EditsDao {
-    @get:Query("SELECT * FROM $tableName")
-    val all: List<Edit>
+interface SimpleEditsDao {
+    @get:Query("SELECT * FROM $tableName ORDER BY _id DESC")
+    val all: List<SimpleEdit>
+
+    @get:Query("SELECT * FROM $tableName ORDER BY _id DESC")
+    val allLd: LiveData<List<SimpleEdit>>
 
     @Query("SELECT * FROM $tableName WHERE (origArtist = :artist and origAlbum = :album and origTrack = :track) OR legacyHash = :hash")
-    fun findByNamesOrHash(artist: String, album: String, track: String, hash: String): Edit?
+    fun findByNamesOrHash(artist: String, album: String, track: String, hash: String): SimpleEdit?
 
-    fun find(artist: String, album: String, track: String): Edit? {
+    fun find(artist: String, album: String, track: String): SimpleEdit? {
         val hash = if (artist == "" && track != "")
             track.hashCode().toString() + album.hashCode().toString() + artist.hashCode().toString()
         else
@@ -27,7 +31,7 @@ interface EditsDao {
     @get:Query("SELECT count(1) FROM $tableName")
     val count: Int
 
-    fun insertReplaceLowerCase(e: Edit) {
+    fun insertReplaceLowerCase(e: SimpleEdit) {
         e.origArtist = e.origArtist.lowercase()
         e.origAlbum = e.origAlbum.lowercase()
         e.origTrack = e.origTrack.lowercase()
@@ -35,13 +39,17 @@ interface EditsDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(e: Edit)
+    fun insert(e: List<SimpleEdit>)
+
+    fun insert(e: SimpleEdit) = insert(listOf(e))
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore(e: Edit)
+    fun insertIgnore(e: List<SimpleEdit>)
+
+    fun insertIgnore(e: SimpleEdit) = insertIgnore(listOf(e))
 
     @Delete
-    fun delete(e: Edit)
+    fun delete(e: SimpleEdit)
 
     @Query("DELETE FROM $tableName WHERE legacyHash = :hash")
     fun deleteLegacy(hash: String)

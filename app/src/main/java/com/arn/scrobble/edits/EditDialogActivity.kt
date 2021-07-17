@@ -1,11 +1,13 @@
-package com.arn.scrobble
+package com.arn.scrobble.edits
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.arn.scrobble.R
+import com.arn.scrobble.VMFactory
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.themes.ColorPatchUtils
 
-class EditActivity: AppCompatActivity() {
+class EditDialogActivity: AppCompatActivity() {
     private val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +19,7 @@ class EditActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 //        if (savedInstanceState == null) {
-            val ef = EditFragment()
+            val ef = EditDialogFragment()
             ef.arguments = intent.extras
             ef.show(supportFragmentManager, null)
 //        }

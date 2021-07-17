@@ -1,4 +1,4 @@
-package com.arn.scrobble
+package com.arn.scrobble.edits
 
 import android.app.Dialog
 import android.content.Context
@@ -11,8 +11,9 @@ import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
-import com.arn.scrobble.db.Edit
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.*
+import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.db.PanoDb
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.CallException
 import de.umass.lastfm.Session
@@ -26,7 +27,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 
 
-class EditFragment: LoginFragment() {
+class EditDialogFragment: LoginFragment() {
 
     override val checksLogin = false
 
@@ -52,11 +53,11 @@ class EditFragment: LoginFragment() {
                 if (checked)
                     binding.loginSubmit.setText(R.string.force)
                 else
-                    binding.loginSubmit.setText(R.string.menu_edit)
+                    binding.loginSubmit.setText(R.string.edit)
             }
         }
 
-        arguments?.getString(NLService.B_TITLE)?.let {
+        arguments?.getString(NLService.B_TRACK)?.let {
             binding.loginTextfield1.editText!!.setText(it)
             binding.loginTextfield1.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
         }
@@ -98,7 +99,7 @@ class EditFragment: LoginFragment() {
             binding.loginTextfieldLast2.visibility = View.VISIBLE
             binding.loginTextfieldLast2.requestFocus()
         }
-        binding.loginSubmit.text = getString(R.string.menu_edit)
+        binding.loginSubmit.text = getString(R.string.edit)
 
         return MaterialAlertDialogBuilder(context!!)
         .setView(binding.root)
@@ -120,7 +121,7 @@ class EditFragment: LoginFragment() {
     override suspend fun validateAsync(): String? {
         val args = arguments ?: return null
         val track = binding.loginTextfield1.editText!!.text.toString().trim()
-        val origTrack = args.getString(NLService.B_TITLE) ?: ""
+        val origTrack = args.getString(NLService.B_TRACK) ?: ""
         var album = binding.loginTextfield2.editText!!.text.toString().trim()
         var albumArtist = binding.loginTextfieldLast2.editText!!.text.toString().trim()
         val origAlbum = args.getString(NLService.B_ALBUM) ?: ""
@@ -131,15 +132,16 @@ class EditFragment: LoginFragment() {
 
         fun saveEdit(context: Context) {
             if(!(track == origTrack && artist == origArtist && album == origAlbum && albumArtist == "")) {
-                val dao = PendingScrobblesDb.getDb(context).getEditsDao()
-                val e = Edit()
-                e.artist = artist
-                e.album = album
-                e.albumArtist = albumArtist
-                e.track = track
-                e.origArtist = origArtist
-                e.origAlbum = origAlbum
-                e.origTrack = origTrack
+                val dao = PanoDb.getDb(context).getSimpleEditsDao()
+                val e = SimpleEdit(
+                    artist = artist,
+                    album = album,
+                    albumArtist = albumArtist,
+                    track = track,
+                    origArtist = origArtist,
+                    origAlbum = origAlbum,
+                    origTrack = origTrack,
+                )
                 dao.insertReplaceLowerCase(e)
                 dao.deleteLegacy(origArtist.hashCode().toString() + origAlbum.hashCode().toString() + origTrack.hashCode().toString())
             }
@@ -169,9 +171,15 @@ class EditFragment: LoginFragment() {
                                 null
                             }
                 if (validTrack == null) {
-                    validArtist = LFMRequester.getValidArtist(artist, pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+                    validArtist = LFMRequester.getValidArtist(
+                        artist,
+                        pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null)
+                    )
                     if (albumArtist.isNotEmpty())
-                        validAlbumArtist = LFMRequester.getValidArtist(albumArtist, pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+                        validAlbumArtist = LFMRequester.getValidArtist(
+                            albumArtist,
+                            pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null)
+                        )
 
                 } else {
                     if (album.isBlank() && validTrack.album != null) {
@@ -189,10 +197,12 @@ class EditFragment: LoginFragment() {
                 }
             }
             if (validTrack == null && (validArtist == null || validAlbumArtist == null) && !binding.loginForce.isChecked) {
-                errMsg = getString(R.string.state_invalid_artist)
+                errMsg = getString(R.string.state_unrecognised_artist)
             } else {
                 val lastfmSessKey: String? = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
-                val lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
+                val lastfmSession = Session.createSession(
+                    Stuff.LAST_KEY,
+                    Stuff.LAST_SECRET, lastfmSessKey)
                 val scrobbleData = ScrobbleData(artist, track, (timeMillis / 1000).toInt())
                 scrobbleData.album = album
                 scrobbleData.albumArtist = albumArtist
@@ -269,7 +279,7 @@ class EditFragment: LoginFragment() {
                     }
                 } else if (result.isIgnored) {
                     if (System.currentTimeMillis() - timeMillis < Stuff.LASTFM_MAX_PAST_SCROBBLE)
-                        errMsg = getString(R.string.scrobble_ignored_or_old)
+                        errMsg = getString(R.string.lastfm) + ": " + getString(R.string.scrobble_ignored)
                     else {
                         errMsg = ""
                         withContext(Dispatchers.Main) {

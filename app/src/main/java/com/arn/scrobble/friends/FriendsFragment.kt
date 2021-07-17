@@ -161,7 +161,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         adapter.loadMoreListener = loadMoreListener
 
         if (!viewModel.receiver.hasActiveObservers()) {
-            viewModel.receiver.observe(viewLifecycleOwner, {
+            viewModel.receiver.observe(viewLifecycleOwner) {
                 it ?: return@observe
                 viewModel.totalPages = it.totalPages
                 /*
@@ -183,8 +183,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 for (i in 0 until adapter.itemCount) {
                     val friend = newFriendsMap[viewModel.friends[i].name]
                     if (friend != null &&
-                            friend.recentTrack == null && viewModel.friends[i].recentTrack != null &&
-                            (i in firstVisible..lastVisible)) {
+                        friend.recentTrack == null && viewModel.friends[i].recentTrack != null &&
+                        (i in firstVisible..lastVisible)
+                    ) {
                         friend.recentTrack = viewModel.friends[i].recentTrack
                         friend.playcount = viewModel.friends[i].playcount
                     }
@@ -200,11 +201,11 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     adapter.handler.removeCallbacks(runnable)
                     adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL * 2)
                 }
-            })
-            viewModel.track.observe(viewLifecycleOwner, {
-                        it ?: return@observe
-                        adapter.populateFriendsRecent(it.second, it.first)
-                    })
+            }
+            viewModel.track.observe(viewLifecycleOwner) {
+                it ?: return@observe
+                adapter.populateFriendsRecent(it.second, it.first)
+            }
         }
         adapter.itemClickListener = this
 

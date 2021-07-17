@@ -17,7 +17,7 @@ class LastfmUnscrobbler(context: Context?) {
                     .cookieJar(cookieJar)
 //                .addInterceptor(LoggingInterceptor())
 //                .followRedirects(false)
-                    .build()!!
+                    .build()
     }
     private var cookieCache = SetCookieCache()
     private val cookieJar: CookieJar

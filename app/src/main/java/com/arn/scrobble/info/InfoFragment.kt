@@ -40,7 +40,7 @@ class InfoFragment: BottomSheetDialogFragment() {
 
         val artist = arguments!!.getString(NLService.B_ARTIST)!!
         val album = arguments!!.getString(NLService.B_ALBUM)
-        val track = arguments!!.getString(NLService.B_TITLE)
+        val track = arguments!!.getString(NLService.B_TRACK)
         val username = arguments!!.getString(Stuff.ARG_USERNAME)
 
         val adapter = InfoAdapter(viewModel, this, username)
@@ -54,7 +54,7 @@ class InfoFragment: BottomSheetDialogFragment() {
         adapter.notifyDataSetChanged()
         if (viewModel.loadedTypes.isEmpty()) {
             if (!track.isNullOrEmpty())
-                viewModel.info += NLService.B_TITLE to Track(track, null, artist)
+                viewModel.info += NLService.B_TRACK to Track(track, null, artist)
             viewModel.info += NLService.B_ARTIST to Artist(artist, null)
             if (!album.isNullOrEmpty())
                 viewModel.info += NLService.B_ALBUM to Album(album, null, artist)

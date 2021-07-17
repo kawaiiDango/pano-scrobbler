@@ -33,10 +33,12 @@ import com.arn.scrobble.Stuff.setArrowColors
 import com.arn.scrobble.Stuff.setProgressCircleColors
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.CoordinatorMainBinding
+import com.arn.scrobble.edits.EditDialogFragment
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pending.PendingMenu
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.*
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -182,7 +184,7 @@ open class RecentsFragment : Fragment(),
             coordinatorBinding.sparkline.adapter = SparkLineAdapter()
             toggleGraphDetails(true)
         }
-        viewModel.tracksReceiver.observe(viewLifecycleOwner, {
+        viewModel.tracksReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
             synchronized(viewModel.tracks) {
                 val oldList = mutableListOf<Track>()
@@ -195,8 +197,13 @@ open class RecentsFragment : Fragment(),
                         return@forEach
                     if (!track.isNowPlaying || it.page == 1)
                         viewModel.tracks.add(track)
-                    if (isShowingLoves && viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] != null)
-                        track.imageUrlsMap = viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)]
+                    if (isShowingLoves && viewModel.imgMap[Stuff.genHashCode(
+                            track.artist,
+                            track.name
+                        )] != null
+                    )
+                        track.imageUrlsMap =
+                            viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)]
                 }
                 adapter.populate(oldList)
             }
@@ -213,7 +220,7 @@ open class RecentsFragment : Fragment(),
                 refreshHandler.removeCallbacks(timedRefresh)
                 refreshHandler.postDelayed(timedRefresh, Stuff.RECENTS_REFRESH_INTERVAL)
             }
-        })
+        }
 
         if (!isShowingLoves)
             activity.mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
@@ -223,23 +230,23 @@ open class RecentsFragment : Fragment(),
                 }
             }
 
-        viewModel.loadHero(null)
-                .observe(viewLifecycleOwner, {
+        viewModel.listenerTrend
+                .observe(viewLifecycleOwner) {
                     it ?: return@observe
-                    setGraph(it[0])
-                })
+                    setGraph(it)
+                }
         if (isShowingLoves)
-            viewModel.trackInfo.observe(viewLifecycleOwner, {
+            viewModel.trackInfo.observe(viewLifecycleOwner) {
                 it ?: return@observe
                 adapter.setImg(it.first, it.second?.imageUrlsMap)
-            })
+            }
         else if (username == null)
             viewModel.loadPending(2, !activity.pendingSubmitAttempted)
-                    .observe(viewLifecycleOwner, {
+                    .observe(viewLifecycleOwner) {
                         it ?: return@observe
                         activity.pendingSubmitAttempted = true
                         adapter.setPending(activity.supportFragmentManager, it)
-                    })
+                    }
 
         coordinatorBinding.sparkline.setOnClickListener{
             toggleGraphDetails()
@@ -248,14 +255,19 @@ open class RecentsFragment : Fragment(),
         coordinatorBinding.heroShare.setOnClickListener{
             val track = coordinatorBinding.heroImg.tag
             if (track is Track) {
-                var shareText: String
-                if (username == null)
-                    shareText = getString(R.string.share_text,
-                            track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
+                var shareText = if (username == null)
+                    getString(
+                        R.string.recents_share,
+                        getString(R.string.artist_title, track.artist, track.name),
+                        Stuff.myRelativeTime(context!!, track.playedWhen, true)
+                    )
                 else
-                    shareText = getString(
-                        R.string.share_text_username, username,
-                            track.artist + " - " + track.name, Stuff.myRelativeTime(context!!, track.playedWhen))
+                    getString(
+                        R.string.recents_share_username,
+                        getString(R.string.artist_title, track.artist, track.name),
+                        Stuff.myRelativeTime(context!!, track.playedWhen, true),
+                        username
+                    )
                 if (activity.billingViewModel.proStatus.value != true)
                     shareText += "\n\n" + getString(R.string.share_sig)
                 val i = Intent(Intent.ACTION_SEND)
@@ -274,12 +286,12 @@ open class RecentsFragment : Fragment(),
                 b.putString(NLService.B_ARTIST, t.artist)
                 if (!t.album.isNullOrEmpty())
                     b.putString(NLService.B_ALBUM, t.album)
-                b.putString(NLService.B_TITLE, t.name)
+                b.putString(NLService.B_TRACK, t.name)
                 b.putString(Stuff.ARG_USERNAME, username)
                 info.arguments = b
                 info.show(activity.supportFragmentManager, null)
                 if (!appPrefs.getBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, false)) {
-                    Stuff.toast(context, getString(R.string.info_long_press_guide), Toast.LENGTH_LONG)
+                    Stuff.toast(context, getString(R.string.info_long_press_hint), Toast.LENGTH_LONG)
                     appPrefs.edit()
                             .putBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, true)
                             .apply()
@@ -375,13 +387,11 @@ open class RecentsFragment : Fragment(),
             if (!isResumed)
                 return@observe
 
-            activity.binding.coordinatorMain.ctl.setContentScrimColor(colors.mutedBlack)
 
             val contentBgFrom = (binding.recentsSwipeRefresh.background as ColorDrawable).color
             val tintFrom = coordinatorBinding.sparklineHorizontalLabel.textColors.defaultColor
 
             val animSetList = mutableListOf<Animator>(
-                ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom, colors.mutedBlack),
                 ObjectAnimator.ofArgb(coordinatorBinding.heroShare, "colorFilter", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.heroCalendar, "colorFilter", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.heroInfo, "colorFilter", tintFrom, colors.lightWhite),
@@ -390,16 +400,27 @@ open class RecentsFragment : Fragment(),
                 ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickBottom, "textColor", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.sparklineHorizontalLabel, "textColor", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.sparkline, "lineColor", tintFrom, colors.lightWhite),
+            )
 
-                ValueAnimator.ofArgb(contentBgFrom, colors.mutedBlack).apply {
+            if (activity.billingViewModel.proStatus.value != true || appPrefs.getBoolean(Stuff.PREF_ACTIVITY_THEME_PALETTE_BG, true)) {
+                if (coordinatorBinding.coordinator.paddingStart > 0)
+                    animSetList += ObjectAnimator.ofArgb(
+                        activity.binding.navView,
+                        "backgroundColor",
+                        colors.mutedBlack
+                    )
+                animSetList += ValueAnimator.ofArgb(contentBgFrom, colors.mutedBlack).apply {
                     addUpdateListener{
                         //setNavigationBarColor uses binders and lags
                         activity.window.navigationBarColor = it.animatedValue as Int
                     }
-                },
-            )
-            if (coordinatorBinding.coordinator.paddingStart > 0)
-                animSetList += ObjectAnimator.ofArgb(activity.binding.navView, "backgroundColor", colors.mutedBlack)
+                }
+                animSetList += ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom, colors.mutedBlack)
+                activity.binding.coordinatorMain.ctl.setContentScrimColor(colors.mutedBlack)
+            } else {
+                animSetList += ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom,
+                    MaterialColors.getColor(context, android.R.attr.colorBackground, null))
+            }
 
             val arrowBgColor = if (colors.primDark != colors.lightWhite)
                 colors.primDark
@@ -418,33 +439,23 @@ open class RecentsFragment : Fragment(),
         }
     }
 
-    private fun setGraph(pointsStr: String?) {
+    private fun setGraph(points: List<Int>) {
         _binding ?: return
         val frame = coordinatorBinding.sparklineFrame
-        if (pointsStr.isNullOrBlank()) {
+        if (points.isEmpty() || points.all { it == 0 })
             frame.visibility = View.INVISIBLE
-        } else {
-            val points = mutableListOf<Int>()
-            pointsStr.split(", ")
-                    .forEach {
-                        points.add(it.toInt())
-                    }
-            if (points.isEmpty())
-                frame.visibility = View.INVISIBLE
-            else {
-                frame.visibility = View.VISIBLE
-                val sparklineAdapter = coordinatorBinding.sparkline.adapter as SparkLineAdapter
-                sparklineAdapter.setData(points)
-                val max = sparklineAdapter.max()
-                val min = sparklineAdapter.min()
-                coordinatorBinding.sparklineTickTop.text = Stuff.humanReadableNum(max)
+        else {
+            frame.visibility = View.VISIBLE
+            val sparklineAdapter = coordinatorBinding.sparkline.adapter as SparkLineAdapter
+            sparklineAdapter.setData(points)
+            val max = sparklineAdapter.max()
+            val min = sparklineAdapter.min()
+            coordinatorBinding.sparklineTickTop.text = Stuff.humanReadableNum(max)
 
-                if (max != min)
-                    coordinatorBinding.sparklineTickBottom.text = Stuff.humanReadableNum(min)
-                else
-                    coordinatorBinding.sparklineTickBottom.text = ""
-            }
-
+            if (max != min)
+                coordinatorBinding.sparklineTickBottom.text = Stuff.humanReadableNum(min)
+            else
+                coordinatorBinding.sparklineTickBottom.text = ""
         }
     }
 
@@ -527,7 +538,7 @@ open class RecentsFragment : Fragment(),
 
         if (!fullSize &&
                 (oldTrack?.artist != track.artist || oldTrack?.album != track.album || oldTrack?.name != track.name)){
-            viewModel.loadHero(track.url)
+            viewModel.loadListenerTrend(track.url)
         }
 
         if (!imgUrl.isNullOrEmpty() && imgUrl == oldTrack?.getWebpImageURL(ImageSize.LARGE)) {
@@ -636,7 +647,7 @@ open class RecentsFragment : Fragment(),
         b.putString(NLService.B_ARTIST, t.artist)
         if (!t.album.isNullOrEmpty())
             b.putString(NLService.B_ALBUM, t.album)
-        b.putString(NLService.B_TITLE, t.name)
+        b.putString(NLService.B_TRACK, t.name)
         b.putString(Stuff.ARG_USERNAME, username)
         info.arguments = b
         info.show(activity!!.supportFragmentManager, null)
@@ -712,13 +723,13 @@ open class RecentsFragment : Fragment(),
                             val b = Bundle()
                             b.putString(NLService.B_ARTIST, track.artist)
                             b.putString(NLService.B_ALBUM, track.album)
-                            b.putString(NLService.B_TITLE, track.name)
+                            b.putString(NLService.B_TRACK, track.name)
 
                             val millis = track.playedWhen?.time
                             if (millis != null)
                                 b.putLong(NLService.B_TIME, millis)
 
-                            val ef = EditFragment()
+                            val ef = EditDialogFragment()
                             ef.arguments = b
                             ef.show(activity!!.supportFragmentManager, null)
                         }

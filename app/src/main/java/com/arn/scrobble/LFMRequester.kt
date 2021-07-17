@@ -16,7 +16,7 @@ import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.search.SearchVM
 import de.umass.lastfm.*
@@ -508,7 +508,7 @@ class LFMRequester(context: Context) {
                     album = t?.album
                 albumArtist = t?.albumArtist
                 activity.runOnUiThread {
-                    mld.value = NLService.B_TITLE to t
+                    mld.value = NLService.B_TRACK to t
                 }
             }
             val es = Executors.newCachedThreadPool()
@@ -555,12 +555,11 @@ class LFMRequester(context: Context) {
     }
 
 
-    fun getHeroInfo(url: String): LFMRequester {
+    fun getListenerTrend(url: String): LFMRequester {
         toExec = {
-            Stuff.log(this::getHeroInfo.name)
+            val monthlyPlayCounts = mutableListOf(0, 0, 0, 0, 0)
             if (Main.isOnline && url != "") {
                 var urlConnection: HttpURLConnection? = null
-                val scrapped = mutableListOf<String?>()
                 try {
                     urlConnection = URL(url).openConnection() as HttpURLConnection
                     urlConnection.setRequestProperty("Accept-Encoding", "gzip")
@@ -570,12 +569,11 @@ class LFMRequester(context: Context) {
                     val resp = slurp(urlConnection, 1024)
                     if (resp == "")
                         throw IOException()
-                    //0
+
                     var idx = resp.indexOf("charts/listener-trend", 200000)
                     var idx2: Int
                     var days = 0
                     val daily = arrayListOf<Int>()
-                    val monthly = arrayOf(0, 0, 0, 0, 0)
                     if (idx > -1) {
                         val stop1 = "data-value=\""
                         do {
@@ -588,23 +586,18 @@ class LFMRequester(context: Context) {
                             }
                         } while (idx > -1)
                         for (i in daily.size - 1 downTo 0) {
-                            monthly[4 - days / 30] += daily[i]
+                            monthlyPlayCounts[4 - days / 30] += daily[i]
                             days++
                             if (days / 30 > 4)
                                 break
                         }
-                        scrapped.add(monthly.joinToString())
-                    } else
-                        scrapped.add(null)
+                    }
                 } catch (e: Exception) {
                 } finally {
-                    if (scrapped.isEmpty())
-                        scrapped.add(null)
                     urlConnection?.disconnect()
                 }
-                scrapped
-            } else
-                null
+            }
+            monthlyPlayCounts
         }
         return this
     }
@@ -632,13 +625,38 @@ class LFMRequester(context: Context) {
                 var track: Track? = null
                 var correctedArtist: String? = null
 
-                val editsDao = PendingScrobblesDb.getDb(context).getEditsDao()
+                val editsDao = PanoDb.getDb(context).getSimpleEditsDao()
                 var edit = editsDao.find(scrobbleData.artist, scrobbleData.album, scrobbleData.track)
                 edit?.let {
                     scrobbleData.artist = it.artist
                     scrobbleData.album = it.album
                     scrobbleData.track = it.track
                     scrobbleData.albumArtist = it.albumArtist
+                }
+
+                val oldArtist = scrobbleData.artist
+                val oldTrack = scrobbleData.track
+
+                val regexEdits = PanoDb.getDb(context)
+                    .getRegexEditsDao()
+                    .performRegexReplace(scrobbleData)
+
+                if (scrobbleData.artist.isNullOrBlank())
+                    scrobbleData.artist = oldArtist
+
+                if (scrobbleData.track.isNullOrBlank())
+                    scrobbleData.track = oldTrack
+
+                if (prefs.getBoolean(Stuff.PREF_PRO_STATUS, false)) {
+                    if (PanoDb.getDb(context)
+                            .getBlockedMetadataDao()
+                            .isBlocked(scrobbleData, ignoredArtist)) {
+                        val i = Intent(NLService.iCANCEL).apply {
+                            putExtra(NLService.B_HASH, hash)
+                        }
+                        context.sendBroadcast(i)
+                        return
+                    }
                 }
 
                 if (scrobbleData.artist.isNullOrBlank() || scrobbleData.track.isNullOrBlank()) {
@@ -652,7 +670,7 @@ class LFMRequester(context: Context) {
                     }
                     context.sendBroadcast(i)
                     return
-                } else if (edit != null) {
+                } else if (edit != null || regexEdits.values.sum() > 0) {
                     val b = scrobbleData.toBundle().apply {
                         putInt(NLService.B_HASH, hash)
                     }
@@ -763,7 +781,7 @@ class LFMRequester(context: Context) {
                             }
                         }
                     } else {
-                        //no such artist
+                        // unrecognized artist
                         val b = scrobbleData.toBundle().apply {
                             putInt(NLService.B_HASH, hash)
                             putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
@@ -809,7 +827,7 @@ class LFMRequester(context: Context) {
                 }
                 if (scrobbleResults.isEmpty() ||
                         scrobbleResults.values.any { !it.isSuccessful }) {
-                    val dao = PendingScrobblesDb.getDb(context).getScrobblesDao()
+                    val dao = PanoDb.getDb(context).getScrobblesDao()
                     val entry = PendingScrobble()
                     entry.artist = scrobbleData.artist
                     entry.album = scrobbleData.album
@@ -846,7 +864,7 @@ class LFMRequester(context: Context) {
                         failedTextLines += "<b>" + context.getString(key) + ":</b> $errMsg"
                     } else if (result.isSuccessful && result.isIgnored) {
                         failedTextLines += "<b>" + context.getString(key) + ":</b> " +
-                                context.getString(R.string.scrobble_ignored, scrobbleData.artist)
+                                context.getString(R.string.scrobble_ignored)
                     }
                 }
                 if (failedTextLines.isNotEmpty()) {
@@ -873,7 +891,7 @@ class LFMRequester(context: Context) {
             var submittedAll = true
             val serviceIdToKeys = getServiceIdToKeys(true)
 
-            val dao = PendingScrobblesDb.getDb(context).getLovesDao()
+            val dao = PanoDb.getDb(context).getLovesDao()
             val pl = dao.find(artist, track)
             if (pl != null){
                 if (pl.shouldLove == !love) {
@@ -1099,6 +1117,8 @@ class LFMRequester(context: Context) {
         private val validTracksCache = LruCache<Pair<String, String>, Pair<Track?, Long>>(10)
 
         private var lastNp = ScrobbleData() to 0L
+
+        private var lastNpInfoTime = 0L
 
         private fun slurp(urlConnection: HttpURLConnection, bufferSize: Int): String {
             val buffer = CharArray(bufferSize)

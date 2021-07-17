@@ -9,22 +9,17 @@ import androidx.room.PrimaryKey
  */
 
 @Entity(tableName = "PendingScrobbles")
-class PendingScrobble {
+data class PendingScrobble (
     @PrimaryKey(autoGenerate = true)
-    var _id: Int = 0
+    var _id: Int = 0,
 
-    var track: String = ""
-    var album: String = ""
-    var artist: String = ""
-    var albumArtist: String = ""
-    var duration: Long = 0
-    var timestamp: Long = System.currentTimeMillis()
-    var autoCorrected: Int = 0
-    var state: Int = 0
-    var state_timestamp: Long = System.currentTimeMillis()
-
-    override fun toString(): String {
-        return "PendingScrobble [track=$track, album=$album, artist=$artist, duration=$duration, timestamp=$timestamp," +
-                " autoCorrected=$autoCorrected, state=$state, state_timestamp=$state_timestamp]"
-    }
-}
+    var track: String = "",
+    var album: String = "",
+    var artist: String = "",
+    var albumArtist: String = "",
+    var duration: Long = 0,
+    var timestamp: Long = System.currentTimeMillis(),
+    var autoCorrected: Int = 0,
+    var state: Int = 0,
+    var state_timestamp: Long = System.currentTimeMillis(),
+)

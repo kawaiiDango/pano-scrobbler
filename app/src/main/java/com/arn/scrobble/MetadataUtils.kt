@@ -5,7 +5,7 @@ import java.util.*
 
 object MetadataUtils {
 
-    private val seperators = arrayOf(// in priority order
+    private val seperators = arrayOf( // in priority order
             "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", /*"ー", */" • ",
 
             "【", "〖", "〔",
@@ -14,6 +14,7 @@ object MetadataUtils {
             " \"", " / ", "／")
     private val unwantedSeperators = arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
 
+    // in lower case
     private val metaSpam = arrayOf("downloaded", ".com", ".co.", "www.")
     private val metaUnknown = arrayOf("unknown", "[unknown]", "unknown album", "[unknown album]", "unknown artist", "[unknown artist]")
     private val albumArtistUnknown = arrayOf("va")
@@ -113,7 +114,7 @@ object MetadataUtils {
         return artist
     }
 
-    fun pixelNPExtractMeta(titleStr: String, formatStr: String):Array<String>? {
+    fun scrobbleFromNotiExtractMeta(titleStr: String, formatStr: String):Array<String>? {
         val tpos = formatStr.indexOf("%1\$s")
         val apos = formatStr.indexOf("%2\$s")
         val regex = formatStr.replace("(", "\\(")

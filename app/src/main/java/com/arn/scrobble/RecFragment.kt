@@ -79,7 +79,7 @@ class RecFragment: Fragment(),
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.menu_rec)
+        Stuff.setTitle(activity, R.string.scrobble_from_mic)
 //        showSnackbar()
     }
 
@@ -297,14 +297,15 @@ class RecFragment: Fragment(),
         when(statusCode) {
             0 -> {
                 binding.recImg.setImageResource(R.drawable.vd_check_simple)
-                binding.recStatus.text = getString(R.string.state_scrobbled) + "\n$artist — $title"
+                binding.recStatus.text = getString(R.string.state_scrobbled) +
+                        getString(R.string.artist_title, artist, title)
                 val scrobbleData = ScrobbleData()
                 scrobbleData.artist = artist
                 scrobbleData.album = album
                 scrobbleData.track = title
                 scrobbleData.timestamp = (System.currentTimeMillis() / 1000).toInt() // in secs
                 LFMRequester(context!!)
-                    .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title, -1L, "rec"))
+                    .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title, "rec"))
                     .asAsyncTask()
             }
             1001 -> binding.recStatus.text = getString(R.string.not_found)

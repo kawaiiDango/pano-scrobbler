@@ -90,7 +90,7 @@ class UserTagsFragment: DialogFragment() {
         val entry: MusicEntry
         @DrawableRes val icon: Int
         val b = arguments!!
-        val track = b.getString(NLService.B_TITLE)
+        val track = b.getString(NLService.B_TRACK)
         val album = b.getString(NLService.B_ALBUM)
         val artist = b.getString(NLService.B_ARTIST)
 

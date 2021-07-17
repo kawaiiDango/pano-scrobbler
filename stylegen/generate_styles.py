@@ -68,7 +68,7 @@ for color, shades in jsondoc.items():
 
     if background_shade.lower() in shades:
         colorBackground = shades[background_shade.lower()]
-        colorBackground = darken_color(color, colorBackground, 0.12, 0.5)
+        colorBackground = darken_color(color, colorBackground, 0.09, 0.5)
 
         # android bug: colorBackground has to be a reference on some devices
         color_element_name = color.capitalize() + "_Background"

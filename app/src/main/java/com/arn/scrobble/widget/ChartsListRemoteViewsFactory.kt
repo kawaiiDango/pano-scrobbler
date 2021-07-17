@@ -3,7 +3,6 @@ package com.arn.scrobble.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
@@ -80,7 +79,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
                 }
                 Stuff.TYPE_TRACKS -> {
                     putExtra(NLService.B_ARTIST, item.subtitle)
-                    putExtra(NLService.B_TITLE, item.title)
+                    putExtra(NLService.B_TRACK, item.title)
                 }
             }
         }

@@ -43,7 +43,7 @@
         android:hint="@string/user_tags_hint"
         app:endIconMode="dropdown_menu">
 
-        <AutoCompleteTextView
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/user_tags_input_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

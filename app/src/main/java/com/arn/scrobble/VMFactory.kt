@@ -13,6 +13,9 @@ import com.arn.scrobble.info.UserTagsVM
 import com.arn.scrobble.recents.TracksVM
 import com.arn.scrobble.search.SearchVM
 import com.arn.scrobble.billing.BillingViewModel
+import com.arn.scrobble.edits.BlockedMetadataVM
+import com.arn.scrobble.edits.RegexEditsVM
+import com.arn.scrobble.edits.SimpleEditsVM
 
 
 object VMFactory: ViewModelProvider.Factory {
@@ -41,6 +44,9 @@ object VMFactory: ViewModelProvider.Factory {
             modelClass.isAssignableFrom(UserTagsVM::class.java) -> UserTagsVM(application!!) as T
             modelClass.isAssignableFrom(BillingViewModel::class.java) -> BillingViewModel(application!!) as T
             modelClass.isAssignableFrom(MainNotifierViewModel::class.java) -> MainNotifierViewModel(application!!) as T
+            modelClass.isAssignableFrom(SimpleEditsVM::class.java) -> SimpleEditsVM(application!!) as T
+            modelClass.isAssignableFrom(RegexEditsVM::class.java) -> RegexEditsVM(application!!) as T
+            modelClass.isAssignableFrom(BlockedMetadataVM::class.java) -> BlockedMetadataVM(application!!) as T
             else -> throw RuntimeException("Unknown VM class")
         }
     }

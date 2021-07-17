@@ -1,0 +1,233 @@
+package com.arn.scrobble.edits
+
+import android.content.Context
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.autoNotify
+import com.arn.scrobble.databinding.ContentSimpleEditsBinding
+import com.arn.scrobble.databinding.DialogEditEditsBinding
+import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.ui.ItemClickListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+
+
+class SimpleEditsFragment: Fragment(), ItemClickListener {
+
+    private var _binding: ContentSimpleEditsBinding? = null
+    private val binding
+        get() = _binding!!
+
+    private val mutex = Mutex()
+    private lateinit var adapter: SimpleEditsAdapter
+    private val viewModel by lazy { VMFactory.getVM(this, SimpleEditsVM::class.java) }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = ContentSimpleEditsBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        adapter = SimpleEditsAdapter(viewModel, this)
+        binding.editsList.layoutManager = LinearLayoutManager(context!!)
+        binding.editsList.adapter = adapter
+        binding.editsList.setOnTouchListener{ v, motionEvent ->
+            if (binding.searchTerm.editText!!.isFocused) {
+                binding.searchTerm.clearFocus()
+                imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
+            }
+            false
+        }
+
+        binding.searchTerm.editText?.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun afterTextChanged(editable: Editable?) {
+                lifecycleScope.launch(Dispatchers.Default) {
+                    update(viewModel.editsReceiver.value)
+                }
+            }
+
+        })
+
+        binding.searchTerm.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH){
+                imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
+                textView.clearFocus()
+                true
+            } else
+                false
+        }
+
+        binding.empty.text = getString(R.string.n_simple_edits, 0)
+
+        if (!binding.root.isInTouchMode)
+            binding.searchTerm.requestFocus()
+
+        viewModel.editsReceiver.observe(viewLifecycleOwner) {
+            update(it)
+        }
+    }
+
+    private fun update(simpleEdits: List<SimpleEdit>?) {
+        simpleEdits ?: return
+
+        lifecycleScope.launch {
+            mutex.withLock {
+                val oldList = viewModel.edits.toList()
+                val searchTerm = binding.searchEdittext.text?.trim()?.toString()?.lowercase()
+
+                withContext(Dispatchers.Default) {
+                    viewModel.edits.clear()
+                    if (searchTerm.isNullOrEmpty())
+                        viewModel.edits.addAll(simpleEdits)
+                    else
+                        viewModel.edits.addAll(simpleEdits.filter {
+                            it.artist.startsWith(searchTerm, ignoreCase = true) ||
+                                    it.album.startsWith(searchTerm, ignoreCase = true) ||
+                                    it.albumArtist.startsWith(searchTerm, ignoreCase = true) ||
+                                    it.track.startsWith(searchTerm, ignoreCase = true)
+                        })
+                }
+
+                binding.empty.visibility = if (viewModel.edits.isEmpty())
+                    View.VISIBLE
+                else
+                    View.INVISIBLE
+
+                binding.editsList.visibility = if (viewModel.edits.isNotEmpty())
+                    View.VISIBLE
+                else
+                    View.INVISIBLE
+
+                binding.searchTerm.visibility =
+                    if (simpleEdits.size > Stuff.MIN_ITEMS_TO_SHOW_SEARCH)
+                        View.VISIBLE
+                    else
+                        View.GONE
+
+                adapter.autoNotify(oldList, viewModel.edits) { o, n -> o._id == n._id }
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Stuff.setTitle(activity, R.string.simple_edits)
+    }
+
+    private fun showEditDialog(position: Int) {
+        val edit = viewModel.edits[position]
+
+        val dialogBinding = DialogEditEditsBinding.inflate(layoutInflater).apply {
+            editTrackOrig.root.hint = getString(R.string.track)
+            editTrack.root.hint = getString(R.string.track)
+            editAlbumOrig.root.hint = getString(R.string.album)
+            editAlbum.root.hint = getString(R.string.album)
+            editArtistOrig.root.hint = getString(R.string.artist)
+            editArtist.root.hint = getString(R.string.artist)
+            editAlbumArtist.root.hint = getString(R.string.album_artist)
+            editTrackOrig.edittext.setText(edit.origTrack)
+            editTrack.edittext.setText(edit.track)
+            editAlbumOrig.edittext.setText(edit.origAlbum)
+            editAlbum.edittext.setText(edit.album)
+            editArtistOrig.edittext.setText(edit.origArtist)
+            editArtist.edittext.setText(edit.artist)
+            editAlbumArtist.edittext.setText(edit.albumArtist)
+        }
+        MaterialAlertDialogBuilder(context!!)
+            .setView(dialogBinding.root)
+            .setPositiveButton(android.R.string.ok){ dialogInterface, i ->
+                val newEdit = SimpleEdit(
+                    origTrack = dialogBinding.editTrackOrig.edittext.text.toString().trim(),
+                    track = dialogBinding.editTrack.edittext.text.toString().trim(),
+                    origAlbum = dialogBinding.editAlbumOrig.edittext.text.toString().trim(),
+                    album = dialogBinding.editAlbum.edittext.text.toString().trim(),
+                    origArtist = dialogBinding.editArtistOrig.edittext.text.toString().trim(),
+                    artist = dialogBinding.editArtist.edittext.text.toString().trim(),
+                    albumArtist = dialogBinding.editAlbumArtist.edittext.text.toString().trim(),
+                )
+
+                if (
+                    newEdit.origTrack.isEmpty() ||
+                    newEdit.artist.isEmpty() ||
+                    newEdit.track.isEmpty()
+                ) {
+                    Stuff.toast(context, getString(R.string.required_fields_empty))
+                    return@setPositiveButton
+                }
+                if (edit != newEdit) {
+                    val checkArtist = newEdit.artist.isNotEmpty() &&
+                            edit.artist.lowercase() != newEdit.artist.lowercase()
+                    adapter.tempUpdate(position, newEdit)
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        if (checkArtist) {
+                            val allowedSet =
+                                MultiPreferences(context!!).getStringSet(
+                                    Stuff.PREF_ALLOWED_ARTISTS,
+                                    setOf()
+                                )
+                            val artist =
+                                LFMRequester.getValidArtist(newEdit.artist, allowedSet)
+                            if (artist == null) {
+                                withContext(Dispatchers.Main) {
+                                    if (Main.isOnline)
+                                        Stuff.toast(
+                                            activity!!,
+                                            getString(R.string.state_unrecognised_artist)
+                                        )
+                                    else
+                                        Stuff.toast(
+                                            activity!!,
+                                            getString(R.string.unavailable_offline)
+                                        )
+                                    adapter.tempUpdate(position, edit)
+                                }
+                                return@launch
+                            }
+                        }
+                        viewModel.upsert(newEdit)
+                    }
+                }
+            }
+            .show()
+    }
+
+
+    override fun onItemClick(view: View, position: Int) {
+        if (position != -1) {
+            //needed if the user quickly taps on the same item before the animation is done
+            if (view.id == R.id.edits_delete) {
+                viewModel.delete(position)
+            } else if (viewModel.edits[position].legacyHash == null) {
+                showEditDialog(position)
+            }
+        }
+    }
+}

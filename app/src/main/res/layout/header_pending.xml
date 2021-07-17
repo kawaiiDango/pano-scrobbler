@@ -9,8 +9,8 @@
               android:gravity="end|center_vertical"
               android:orientation="horizontal"
               android:paddingBottom="5dp"
-              android:paddingLeft="@dimen/fab_margin"
-              android:paddingRight="@dimen/fab_margin"
+              android:paddingLeft="16dp"
+              android:paddingRight="16dp"
               android:paddingTop="5dp">
 
     <TextView

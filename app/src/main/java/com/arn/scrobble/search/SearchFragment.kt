@@ -143,7 +143,7 @@ class SearchFragment: Fragment() {
                             val b = Bundle()
                             b.putString(NLService.B_ARTIST, item.artist)
                             b.putString(NLService.B_ALBUM, item.album)
-                            b.putString(NLService.B_TITLE, item.name)
+                            b.putString(NLService.B_TRACK, item.name)
                             info.arguments = b
                             info.show(activity!!.supportFragmentManager, null)
                         }
@@ -178,7 +178,7 @@ class SearchFragment: Fragment() {
             resultsAdapter.populate(it, -1, false)
         }
 
-        chartsVM.info.observe(viewLifecycleOwner, {
+        chartsVM.info.observe(viewLifecycleOwner) {
             it ?: return@observe
             val imgUrl = when (val entry = it.second) {
                 is Artist -> entry.getImageURL(ImageSize.EXTRALARGE) ?: ""
@@ -188,7 +188,7 @@ class SearchFragment: Fragment() {
             }
             resultsAdapter.setImg(it.first, imgUrl)
             chartsVM.removeInfoTask(it.first)
-        })
+        }
     }
 
     override fun onStart() {

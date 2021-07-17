@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -209,7 +210,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         (rootView.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
         rootView.chartsList.adapter = adapter
 
-        fragment.viewModel.chartsReceiver.observe(viewLifecycleOwner, {
+        fragment.viewModel.chartsReceiver.observe(viewLifecycleOwner) {
             if (it == null && !Main.isOnline && fragment.viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
@@ -227,9 +228,9 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             if (it.page == 1)
                 rootView.chartsList.smoothScrollToPosition(0)
             fragment.viewModel.chartsReceiver.value = null
-        })
+        }
 
-        fragment.viewModel.info.observe(viewLifecycleOwner, {
+        fragment.viewModel.info.observe(viewLifecycleOwner) {
             it ?: return@observe
             val imgUrl = when (val entry = it.second) {
                 is Artist -> entry.getImageURL(ImageSize.EXTRALARGE) ?: ""
@@ -239,7 +240,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             }
             adapter.setImg(it.first, imgUrl)
             fragment.viewModel.removeInfoTask(it.first)
-        })
+        }
 
         if (fragment.viewModel.chartsData.isNotEmpty())
             adapter.populate()
@@ -249,37 +250,41 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         var count = 0
         var text = ""
         lateinit var header: HeaderWithActionBinding
+
+        fun getQString(@StringRes zeroStrRes: Int, @StringRes strRes: Int): String {
+            return if (count <= 0)
+                getString(zeroStrRes)
+            else
+                getString(strRes, NumberFormat.getInstance().format(count))
+        }
+
         when (type) {
             Stuff.TYPE_ARTISTS -> {
                 count = artistsFragment.viewModel.totalCount
-                text = getString(R.string.artists)
+                text = getQString(R.string.artists, R.string.n_artists)
                 header = binding.chartsArtistsHeader
             }
             Stuff.TYPE_ALBUMS -> {
                 count = albumsFragment.viewModel.totalCount
-                text = getString(R.string.albums)
+                text = getQString(R.string.albums, R.string.n_albums)
                 header = binding.chartsAlbumsHeader
             }
             Stuff.TYPE_TRACKS -> {
                 count = tracksFragment.viewModel.totalCount
-                text = getString(R.string.tracks)
+                text = getQString(R.string.tracks, R.string.n_tracks)
                 header = binding.chartsTracksHeader
             }
             Stuff.TYPE_SC -> {
                 binding.chartsSparklineHeader.headerText.text = viewModel.periodCountHeader
-                        ?: getString(R.string.menu_charts)
+                        ?: getString(R.string.charts)
                 return
             }
         }
-        if (count != 0) {
-            header.headerText.text =
-                    NumberFormat.getInstance().format(count) + " " + text.lowercase()
-            header.headerAction.visibility = View.VISIBLE
-        }
-        else {
-            header.headerText.text = text
-            header.headerAction.visibility = View.GONE
-        }
+        header.headerText.text = text
+        header.headerAction.visibility = if (count != 0)
+            View.VISIBLE
+        else
+            View.GONE
     }
 
     private fun loadMoreSectionsIfNeeded() {

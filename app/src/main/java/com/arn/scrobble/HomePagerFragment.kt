@@ -18,7 +18,7 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
                 Pair(R.string.recents, R.drawable.vd_history),
                 Pair(R.string.loved, R.drawable.vd_heart),
                 Pair(R.string.friends, R.drawable.vd_friends),
-                Pair(R.string.menu_charts, R.drawable.vd_charts)
+                Pair(R.string.charts, R.drawable.vd_charts)
         )
         adapter = HomePagerAdapter(childFragmentManager)
         if (arguments?.getString(Stuff.ARG_USERNAME) == null)

@@ -23,8 +23,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.media.app.MediaStyleMod
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.arn.scrobble.billing.BillingRepository
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.themes.ColorPatchUtils
 import de.umass.lastfm.Period
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -32,9 +31,11 @@ import org.codechimp.apprater.AppRater
 import java.text.NumberFormat
 import android.media.AudioManager
 import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.edits.EditDialogActivity
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.*
 import timber.log.Timber
+import java.util.*
 
 
 class NLService : NotificationListenerService() {
@@ -53,7 +54,7 @@ class NLService : NotificationListenerService() {
 
     override fun onCreate() {
         if (BuildConfig.DEBUG)
-            Stuff.toast(applicationContext,getString(R.string.pref_master_on))
+            Stuff.toast(applicationContext,getString(R.string.scrobbler_on))
         super.onCreate()
 //        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
         init()
@@ -141,11 +142,7 @@ class NLService : NotificationListenerService() {
 //        isOnline = cm.activeNetworkInfo?.isConnected == true
         Stuff.scheduleDigests(applicationContext, pref)
         sendBroadcast(Intent(iNLS_STARTED))
-        BillingRepository.getInstance(application).apply {
-            startDataSourceConnections()
-            Handler(Looper.getMainLooper()).postDelayed({ this.endDataSourceConnections() }, 20000)
-        }
-
+//      Dont instantiate BillingRepository in this service, it causes unexplained ANRs
         if (!BuildConfig.DEBUG)
             crashlyticsReporterJob = CoroutineScope(Dispatchers.Main + Job()).launch {
                 while (isActive) {
@@ -181,7 +178,7 @@ class NLService : NotificationListenerService() {
         }
         defaultScope.cancel()
         crashlyticsReporterJob?.cancel()
-        PendingScrobblesDb.destroyInstance()
+        PanoDb.destroyInstance()
     }
 
     /*
@@ -204,15 +201,15 @@ class NLService : NotificationListenerService() {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         nm.createNotificationChannel(NotificationChannel(NOTI_ID_SCR,
-                getString(R.string.channel_scrobbling), NotificationManager.IMPORTANCE_LOW))
+                getString(R.string.state_scrobbling), NotificationManager.IMPORTANCE_LOW))
         nm.createNotificationChannel(NotificationChannel(NOTI_ID_ERR,
                 getString(R.string.channel_err), NotificationManager.IMPORTANCE_MIN))
         nm.createNotificationChannel(NotificationChannel(NOTI_ID_APP,
-                getString(R.string.channel_new_app), NotificationManager.IMPORTANCE_LOW))
+                getString(R.string.new_player, getString(R.string.new_app)), NotificationManager.IMPORTANCE_LOW))
         nm.createNotificationChannel(NotificationChannel(NOTI_ID_FG,
-                getString(R.string.channel_fg), NotificationManager.IMPORTANCE_MIN))
+                getString(R.string.pending_scrobbles), NotificationManager.IMPORTANCE_MIN))
         nm.createNotificationChannel(NotificationChannel(NOTI_ID_DIGESTS,
-                getString(R.string.channel_digests), NotificationManager.IMPORTANCE_LOW))
+                getString(R.string.s_top_scrobbles, getString(R.string.weekly) + "/" + getString(R.string.monthly)), NotificationManager.IMPORTANCE_LOW))
     }
 
     private fun migratePrefs() {
@@ -229,10 +226,10 @@ class NLService : NotificationListenerService() {
                     .apply()
     }
 
-    private fun isAppEnabled(packageName: String) =
-         ((packageName in pref.getStringSet(Stuff.PREF_WHITELIST, setOf())!! ||
+    private fun isAppEnabled(pkgName: String) =
+         ((pkgName in pref.getStringSet(Stuff.PREF_WHITELIST, setOf())!! ||
                 (pref.getBoolean(Stuff.PREF_AUTO_DETECT, true) &&
-                        packageName !in pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!)))
+                        pkgName !in pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!)))
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (pref.getBoolean(Stuff.PREF_PIXEL_NP, true))
@@ -290,9 +287,9 @@ class NLService : NotificationListenerService() {
                     handler.remove(currentBundle.getInt(B_HASH))
                     return
                 }
-                val meta = MetadataUtils.pixelNPExtractMeta(title, getString(format))
+                val meta = MetadataUtils.scrobbleFromNotiExtractMeta(title, getString(format))
                 if (meta != null){
-                    val hash = Stuff.genHashCode(meta[0], "", meta[1], -1L, sbn.packageName)
+                    val hash = Stuff.genHashCode(meta[0], "", meta[1], sbn.packageName)
                     val packageNameArg =
                             if (pref.getStringSet(Stuff.PREF_WHITELIST, null)?.contains(sbn.packageName) == false)
                                 sbn.packageName
@@ -352,7 +349,11 @@ class NLService : NotificationListenerService() {
                          nm.cancel(NOTI_ID_SCR, 0)
                      } else {
                          hash = intent.getIntExtra(B_HASH, 0)
-                         handler.notifyTempMsg(getString(R.string.state_unscrobbled))
+                         val errMag = intent.getStringExtra(B_ERR_MSG)
+                         if (errMag != null)
+                             handler.notifyTempMsg(errMag)
+                         else
+                             nm.cancel(NOTI_ID_SCR, 0)
                      }
                      handler.removeMessages(hash)
                      markAsScrobbled(hash)
@@ -360,19 +361,19 @@ class NLService : NotificationListenerService() {
                 iLOVE, iUNLOVE -> {
                     val loved = intent.action == iLOVE
                     var artist = intent.getStringExtra(B_ARTIST)
-                    var title = intent.getStringExtra(B_TITLE)
+                    var title = intent.getStringExtra(B_TRACK)
                     val hash = currentBundle.getInt(B_HASH, 0)
                     if (artist == null && title == null) {
                         if (currentBundle.getBoolean(B_IS_SCROBBLING) && currentBundle.getString(B_ARTIST) != null &&
-                                currentBundle.getString(B_TITLE) != null) {
+                                currentBundle.getString(B_TRACK) != null) {
                             artist = currentBundle.getString(B_ARTIST)!!
-                            title = currentBundle.getString(B_TITLE)!!
+                            title = currentBundle.getString(B_TRACK)!!
                             Stuff.toast(context, (
                                     if (loved)
                                         "♥"
                                     else
                                         "\uD83D\uDC94"
-                                    ) + artist + " — " + title
+                                    ) + getString(R.string.artist_title, artist, title)
                             )
                             if (loved == currentBundle.getBoolean(B_USER_LOVED, false))
                                 return
@@ -428,8 +429,9 @@ class NLService : NotificationListenerService() {
                 }
                 iBAD_META -> {
                     val scrobbleData = ScrobbleData().apply {
+                        track = intent.getStringExtra(B_TRACK)!!
+                        album = intent.getStringExtra(B_ALBUM)!!
                         artist = intent.getStringExtra(B_ARTIST)!!
-                        track = intent.getStringExtra(B_TITLE)!!
                         albumArtist = intent.getStringExtra(B_ALBUM_ARTIST)!!
                         timestamp = (intent.getLongExtra(B_TIME, System.currentTimeMillis())/1000).toInt()
                     }
@@ -443,7 +445,7 @@ class NLService : NotificationListenerService() {
                 iMETA_UPDATE -> {
                     if (handler.hasMessages(intent.getIntExtra(B_HASH, 0))) {
                         currentBundle.putAll(intent.extras!!)
-                        handler.notifyScrobble(currentBundle.getString(B_ARTIST)!!, currentBundle.getString(B_TITLE)!!,
+                        handler.notifyScrobble(currentBundle.getString(B_ARTIST)!!, currentBundle.getString(B_TRACK)!!,
                                 intent.getIntExtra(B_HASH, 0), true,
                                 currentBundle.getBoolean(B_USER_LOVED), currentBundle.getInt(B_USER_PLAY_COUNT))
                     }
@@ -460,11 +462,11 @@ class NLService : NotificationListenerService() {
                 }
                 iSCROBBLER_ON -> {
                     pref.edit().putBoolean(Stuff.PREF_MASTER, true).apply()
-                    Stuff.toast(context, getString(R.string.pref_master_on))
+                    Stuff.toast(context, getString(R.string.scrobbler_on))
                 }
                 iSCROBBLER_OFF -> {
                     pref.edit().putBoolean(Stuff.PREF_MASTER, false).apply()
-                    Stuff.toast(context, getString(R.string.pref_master_off))
+                    Stuff.toast(context, getString(R.string.scrobbler_off))
                 }
                 iTHEME_CHANGED -> {
                     notiColor = ColorPatchUtils.getNotiColor(applicationContext, pref)
@@ -495,7 +497,7 @@ class NLService : NotificationListenerService() {
 
         override fun handleMessage(m: Message) {
 
-            val title = m.data.getString(B_TITLE)!!
+            val title = m.data.getString(B_TRACK)!!
             val artist = m.data.getString(B_ARTIST)!!
             val album = m.data.getString(B_ALBUM)!!
             val albumArtist = m.data.getString(B_ALBUM_ARTIST)!!
@@ -600,7 +602,7 @@ class NLService : NotificationListenerService() {
                 return
             var i = Intent()
                     .putExtra(B_ARTIST, artist)
-                    .putExtra(B_TITLE, title)
+                    .putExtra(B_TRACK, title)
             val loveAction = if (loved) {
                 i.action = iUNLOVE
                 val loveIntent = PendingIntent.getBroadcast(applicationContext, 4, i,
@@ -620,6 +622,8 @@ class NLService : NotificationListenerService() {
 
             i = Intent(iCANCEL)
                     .putExtra(B_HASH, hash)
+                    .putExtra(B_ERR_MSG, getString(R.string.state_unscrobbled))
+
             val cancelToastIntent = PendingIntent.getBroadcast(applicationContext, 5, i,
                     Stuff.updateCurrentOrImmutable)
 
@@ -634,7 +638,7 @@ class NLService : NotificationListenerService() {
                     .addAction(loveAction)
                     .setOngoing(Stuff.persistentNoti)
             if (userPlayCount > 0)
-                nb.setContentTitle("$artist — $title")
+                nb.setContentTitle(getString(R.string.artist_title, artist, title))
                     .setContentText(resources.getQuantityString(R.plurals.num_scrobbles_noti,
                             userPlayCount,
                             NumberFormat.getInstance().format(userPlayCount)))
@@ -671,7 +675,7 @@ class NLService : NotificationListenerService() {
                 putBoolean(B_STANDALONE, true)
                 putBoolean(B_FORCEABLE, forcable)
             }
-            val i = Intent(applicationContext, EditActivity::class.java).apply {
+            val i = Intent(applicationContext, EditDialogActivity::class.java).apply {
                 putExtras(b)
             }
 
@@ -690,7 +694,7 @@ class NLService : NotificationListenerService() {
                             scrobbleData.track
                     )
                     .setContentTitle(
-                            (stateText ?: getString(R.string.state_invalid_artist)) + " " +
+                            (stateText ?: getString(R.string.state_unrecognised_artist)) + " " +
                                     (if (forcable)
                                         getString(R.string.tap_to_edit_force)
                                     else
@@ -778,8 +782,8 @@ class NLService : NotificationListenerService() {
                     .setChannelId(NOTI_ID_APP)
                     .setSmallIcon(R.drawable.vd_appquestion_noti)
                     .setContentIntent(launchIntent)
-                    .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(R.string.ignore_app), ignoreIntent))
-                    .addAction(getAction(R.drawable.vd_check, "✔", getString(R.string.ok_cool), okayIntent))
+                    .addAction(getAction(R.drawable.vd_ban, "\uD83D\uDEAB", getString(android.R.string.no), ignoreIntent))
+                    .addAction(getAction(R.drawable.vd_check, "✔", getString(android.R.string.yes), okayIntent))
                     .setStyle(
                             if (resources.getBoolean(R.bool.is_rtl))
                         MediaStyleMod().setShowActionsInCompactView(1, 0)
@@ -809,7 +813,7 @@ class NLService : NotificationListenerService() {
                     if (digestArr.isEmpty())
                         return
 
-                    val title = getString(R.string.my) + " " + if (period == Period.WEEK)
+                    val title = if (period == Period.WEEK)
                         getString(R.string.digest_weekly).lowercase()
                     else
                         getString(R.string.digest_monthly).lowercase()
@@ -955,7 +959,7 @@ class NLService : NotificationListenerService() {
         const val iSCROBBLER_ON = "com.arn.scrobble.SCROBBLER_ON"
         const val iSCROBBLER_OFF = "com.arn.scrobble.SCROBBLER_OFF"
         const val iTHEME_CHANGED = "com.arn.scrobble.THEME_CHANGED"
-        const val B_TITLE = "title"
+        const val B_TRACK = "track"
         const val B_ALBUM_ARTIST = "albumartist"
         const val B_TIME = "time"
         const val B_ARTIST = "artist"

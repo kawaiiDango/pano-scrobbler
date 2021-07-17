@@ -123,7 +123,7 @@
 
     <style name="bottomSheetContent">
         <item name="android:paddingStart">@dimen/elevation_appbar</item>
-        <item name="android:paddingBottom">@dimen/fab_margin</item>
+        <item name="android:paddingBottom">16dp</item>
     </style>
 
     <style name="circleImageView">

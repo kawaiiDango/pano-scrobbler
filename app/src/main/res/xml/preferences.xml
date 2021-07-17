@@ -84,13 +84,11 @@
         <SwitchPreference
             android:defaultValue="true"
             android:key="digest_weekly"
-            android:persistent="true"
-            android:title="@string/digest_weekly"/>
+            android:persistent="true"/>
         <SwitchPreference
             android:defaultValue="true"
             android:key="digest_monthly"
-            android:persistent="true"
-            android:title="@string/digest_monthly"/>
+            android:persistent="true"/>
 
         <SwitchPreference
             android:defaultValue="false"
@@ -121,6 +119,22 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:icon="@drawable/vd_list"
+        android:title="@string/pref_lists">
+
+        <Preference
+            android:title="@string/simple_edits"
+            android:key="simple_edits"/>
+
+        <Preference
+            android:title="@string/pref_regex_edits"
+            android:key="regex_edits"/>
+
+        <Preference
+            android:title="@string/pref_blocked_metadata"
+            android:key="blocked_metadata"/>
+    </PreferenceCategory>
+    <PreferenceCategory
         app:icon="@drawable/vd_more_horiz"
         android:title="@string/pref_misc">
         <SwitchPreference
@@ -136,10 +150,6 @@
             android:title="@string/pref_fetch_aa"
             android:summary="@string/pref_fetch_aa_desc"/>
 
-        <Preference
-            android:title="@string/edits"
-            android:key="edits"
-            />
     </PreferenceCategory>
     <PreferenceCategory
         app:icon="@drawable/vd_swap"
@@ -193,7 +203,6 @@
             android:key="intents"
             />
         <Preference
-            android:title="@string/pref_about_title"
             android:summary="@string/github_link"
             android:key="about"
             />

@@ -11,7 +11,7 @@ import androidx.annotation.StringRes
 import com.arn.scrobble.*
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PendingScrobblesDb
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -41,13 +41,16 @@ class PendingScrJob : JobService() {
     }
 
     class OfflineScrobbleTask(private val context: Context): AsyncTask<Unit, String, Boolean>() {
-        private val dao by lazy { PendingScrobblesDb.getDb(context).getScrobblesDao() }
-        private val lovesDao by lazy { PendingScrobblesDb.getDb(context).getLovesDao() }
+        private val dao by lazy { PanoDb.getDb(context).getScrobblesDao() }
+        private val lovesDao by lazy { PanoDb.getDb(context).getLovesDao() }
         private val prefs by lazy { MultiPreferences(context) }
         var progressCb:((str:String)->Unit)? = null
         var doneCb:((done:Boolean)->Unit)? = null
 
         override fun doInBackground(vararg p0: Unit?): Boolean {
+            if (Stuff.willCrashOnMemeUI(prefs))
+                return false
+
             var done = submitLoves()
 
             var aneCount = dao.getAutoCorrectedCount(false)

@@ -17,7 +17,6 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.*
 import java.util.*
 
@@ -40,6 +39,14 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
 
     open fun postInit() {
         context ?: return
+
+        periodChipsBinding.charts7day.text = resources.getQuantityString(R.plurals.num_weeks, 1, 1)
+        periodChipsBinding.charts1month.text = resources.getQuantityString(R.plurals.num_months, 1, 1)
+        periodChipsBinding.charts3month.text = resources.getQuantityString(R.plurals.num_months, 3, 3)
+        periodChipsBinding.charts6month.text = resources.getQuantityString(R.plurals.num_months, 6, 6)
+        periodChipsBinding.charts12month.text = resources.getQuantityString(R.plurals.num_years, 1, 1)
+        periodChipsBinding.chartsOverall.text = getString(R.string.charts_overall)
+
         val pref = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
         val periodIdx = pref.getInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, 1)
         var firstLoad = periodChipsBinding.chartsPeriod.checkedChipId == View.NO_ID ||
@@ -120,20 +127,22 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             }
         }
 
-        viewModel.weeklyListReceiver.observe(viewLifecycleOwner, { weeklyList ->
+        viewModel.weeklyListReceiver.observe(viewLifecycleOwner) { weeklyList ->
             weeklyList ?: return@observe
             if (!showWeekPicker) {
                 if (viewModel.periodIdx == 0 &&
-                        viewModel.weeklyChart != null &&
-                        viewModel.weeklyListReceiver.value != null) {
-                    viewModel.weeklyChartIdx = viewModel.weeklyListReceiver.value!!.indexOfFirst { viewModel.weeklyChart!!.to == it.to}
+                    viewModel.weeklyChart != null &&
+                    viewModel.weeklyListReceiver.value != null
+                ) {
+                    viewModel.weeklyChartIdx =
+                        viewModel.weeklyListReceiver.value!!.indexOfFirst { viewModel.weeklyChart!!.to == it.to }
                     showArrows(true)
                 }
                 return@observe
             }
             showWeekPicker = false
 
-            if (weeklyList.isEmpty()){
+            if (weeklyList.isEmpty()) {
                 periodChipsBinding.chartsPeriod.alpha = 1f
                 Stuff.toast(context, getString(R.string.charts_no_weekly_charts), Toast.LENGTH_LONG)
                 return@observe
@@ -146,7 +155,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             val startTime = weeklyList.last().from.time
             val endTime = weeklyList.first().from.time
             val weekStartMap = mutableMapOf<Long, Chart<MusicEntry>>()
-            weeklyList.forEach{
+            weeklyList.forEach {
                 weekStartMap[it.from.time] = it
             }
 
@@ -157,7 +166,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                         .setStart(startTime)
                         .setEnd(endTime)
                         .setOpenAt(time)
-                        .setValidator(object: CalendarConstraints.DateValidator{
+                        .setValidator(object : CalendarConstraints.DateValidator {
                             override fun describeContents(): Int {
                                 return 0
                             }
@@ -194,7 +203,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             dpd.show(parentFragmentManager, null)
 
             periodChipsBinding.chartsPeriod.alpha = 1f
-        })
+        }
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {
@@ -221,7 +230,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                 val b = Bundle()
                 b.putString(NLService.B_ARTIST, entry.artist)
                 b.putString(NLService.B_ALBUM, entry.album)
-                b.putString(NLService.B_TITLE, entry.name)
+                b.putString(NLService.B_TRACK, entry.name)
                 b.putString(Stuff.ARG_USERNAME, username)
                 info.arguments = b
                 info.show(activity!!.supportFragmentManager, null)

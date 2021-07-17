@@ -23,6 +23,8 @@ import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
 
 /**
  * A TextView with justified text.<br>

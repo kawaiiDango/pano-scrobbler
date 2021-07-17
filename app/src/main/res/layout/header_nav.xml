@@ -54,10 +54,10 @@
         android:layout_alignParentBottom="true"
         android:alpha="0.8"
         android:background="?attr/selectableItemBackground"
-        android:contentDescription="@string/user_profile"
+        android:contentDescription="@string/profile"
         android:nextFocusRight="@id/pager"
-        android:padding="@dimen/fab_margin"
-        android:tooltipText="@string/user_profile"
+        android:padding="16dp"
+        android:tooltipText="@string/profile"
         app:srcCompat="@drawable/vd_open_in_new" />
     <!--sometimes focus doesn't work on borderless-->
 

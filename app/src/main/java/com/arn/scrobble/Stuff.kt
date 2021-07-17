@@ -27,15 +27,22 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.scrobble.ScrobbleData
 import timber.log.Timber
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import java.io.IOException
-import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
@@ -77,6 +84,8 @@ object Stuff {
     const val DL_CHARTS = 36
     const val DIRECT_OPEN_KEY = "directopen"
     const val FRIENDS_RECENTS_DELAY: Long = 800
+    const val MAX_PATTERNS = 30
+    const val MIN_ITEMS_TO_SHOW_SEARCH = 7
 
     const val PREF_MASTER = "master"
     const val PREF_NOTIFICATIONS = "show_notifications"
@@ -138,6 +147,7 @@ object Stuff {
     const val PREF_ACTIVITY_TAG_HISTORY = "tag_history"
     const val PREF_ACTIVITY_SCRUB_LEARNT = "scrub_learnt"
     const val PREF_ACTIVITY_LONG_PRESS_LEARNT = "long_press_learnt"
+    const val PREF_ACTIVITY_THEME_PALETTE_BG = "palette_bg"
     const val ACTIVITY_PREFS = "activity_preferences"
 
     const val WIDGET_PREFS = "widget_preferences"
@@ -169,7 +179,7 @@ object Stuff {
     const val LASTFM_MAX_PAST_SCROBBLE: Long = 14 * 24 * 60 * 60 * 1000
     const val CRASH_REPORT_INTERVAL: Long = 120 * 60 * 1000
     const val TRACK_INFO_VALIDITY: Long = 5 * 1000
-    const val META_WAIT: Long = 300
+    const val META_WAIT: Long = 400
     const val START_POS_LIMIT: Long = 1500
     const val PENDING_PURCHASE_NOTIFY_THRESHOLD: Long = 15 * 1000
     const val MIN_LISTENER_COUNT = 5
@@ -442,23 +452,35 @@ object Stuff {
         return str.toString()
     }
 
-    fun myRelativeTime(context: Context, date: Date?) =
-            myRelativeTime(context, date?.time ?: 0)
+    fun myRelativeTime(context: Context, date: Date?, longFormat: Boolean = false) =
+            myRelativeTime(context, date?.time ?: 0, longFormat)
 
-    fun myRelativeTime(context: Context, millis: Long, showTime: Boolean = false): CharSequence {
-        if (millis == 0L)
-            return context.getString(R.string.time_now)
-        val diff = System.currentTimeMillis()-millis
-        if(diff <=60*1000)
-            return context.getString(R.string.time_now_long)
-        var relDate = DateUtils.getRelativeTimeSpanString(
-                    millis, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL) as String
+    fun myRelativeTime(context: Context, millis: Long, longFormat: Boolean = false): CharSequence {
+        val diff = System.currentTimeMillis() - millis
+        if(millis == 0L || diff <= 60*1000)
+            return context.getString(R.string.time_just_now)
+        return when {
+            longFormat && diff >= 24 * 60 * 60 * 1000 ->
+                DateUtils.getRelativeTimeSpanString(context, millis, true)
 
-        if(showTime && diff>24*3600*1000){
-            val df = DateFormat.getTimeInstance(DateFormat.SHORT)
-            relDate = relDate + ", "+ df.format(Date(millis))
+            (longFormat && diff < 24 * 60 * 60 * 1000) ||
+                    (!longFormat && diff < 60 * 60 * 1000) ->
+                DateUtils.getRelativeTimeSpanString(
+                    millis,
+                    System.currentTimeMillis(),
+                    DateUtils.MINUTE_IN_MILLIS,
+                    DateUtils.FORMAT_ABBREV_ALL
+                )
+
+            else ->
+                DateUtils.getRelativeDateTimeString(
+                    context,
+                    millis,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    DateUtils.WEEK_IN_MILLIS,
+                    DateUtils.FORMAT_ABBREV_ALL
+                )
         }
-        return relDate
     }
 
     fun drawableToBitmap(drawable: Drawable, width: Int, height: Int, forceDraw: Boolean = true): Bitmap {
@@ -594,7 +616,7 @@ object Stuff {
     fun ScrobbleData.toBundle() = Bundle().apply {
             putString(NLService.B_ARTIST, artist)
             putString(NLService.B_ALBUM, album)
-            putString(NLService.B_TITLE, track)
+            putString(NLService.B_TRACK, track)
             putString(NLService.B_ALBUM_ARTIST, albumArtist)
             putLong(NLService.B_TIME, timestamp * 1000L)
             putLong(NLService.B_DURATION, duration * 1000L)
@@ -641,7 +663,8 @@ object Stuff {
         alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
 
 
-        if (BuildConfig.DEBUG) {
+        val dailyTestDigests = false
+        if (BuildConfig.DEBUG && dailyTestDigests) {
             val dailyIntent = PendingIntent.getBroadcast(context, 22,
                     Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable)
 
@@ -654,10 +677,47 @@ object Stuff {
             val nextDay = cal.timeInMillis
             alarmManager.set(AlarmManager.RTC, nextDay, dailyIntent)
         }
-
     }
 
     fun getWidgetPrefName(name: String, appWidgetId: Int) = "${name}_$appWidgetId"
+
+    fun willCrashOnMemeUI(mpref: MultiPreferences): Boolean {
+        try {
+            mpref.getString(PREF_LASTFM_USERNAME, null)
+        } catch (e: NullPointerException) {
+            return true
+        }
+        return false
+    }
+
+    // https://stackoverflow.com/a/65046522/1067596
+    suspend fun <TInput, TOutput> Iterable<TInput>.mapConcurrently(
+        maxConcurrency: Int,
+        transform: suspend (TInput) -> TOutput,
+    ) = coroutineScope {
+        val gate = Semaphore(maxConcurrency)
+        this@mapConcurrently.map {
+            async {
+                gate.withPermit {
+                    transform(it)
+                }
+            }
+        }.awaitAll()
+    }
+
+    fun <T> RecyclerView.Adapter<*>.autoNotify(oldList: List<T>, newList: List<T>, compare: (T, T) -> Boolean) {
+        val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return compare(oldList[oldItemPosition], newList[newItemPosition])
+            }
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return oldList[oldItemPosition] == newList[newItemPosition]
+            }
+            override fun getOldListSize() = oldList.size
+            override fun getNewListSize() = newList.size
+        })
+        diff.dispatchUpdatesTo(this)
+    }
 
     fun <K, V> Map<K, V>.getOrDefaultKey(key: K, defaultKey: K) = this[key] ?: this[defaultKey]!!
 }

@@ -39,9 +39,9 @@
     <string name="top_artists">Top artists</string>
     <string name="album_artist">Album artist</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artist / channel</string>
-    <string name="similar_artists">Similar artists</string>
-    <string name="album_optional">Album (optional)</string>
-    <string name="album">Album</string>
+    <string name="similar_artists">Artistas similares</string>
+    <string name="album_optional">Álbum (opcional)</string>
+    <string name="album">Álbum</string>
     <string name="albums">Albums</string>
     <string name="n_albums">%1$s albums</string>
     <string name="top_albums">Top albums</string>
@@ -58,14 +58,14 @@
     <string name="unscrobble">Unscrobble</string>
     <string name="state_unscrobbled">Unscrobbled</string>
     <string name="state_didnt_scrobble">Didn\'t scrobble</string>
-    <string name="state_unrecognised_artist">Unrecognised artist</string>
+    <string name="state_unrecognised_artist">Artista no reconocido</string>
     <string name="tap_to_edit">(Tap to edit)</string>
     <string name="tap_to_edit_force">(Tap to edit or force)</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
     <string name="recently_loved">♥ Recently Loved</string>
     <string name="recents">Recents</string>
     <string name="graph_info">… last 5 months</string>
-    <string name="enabled_apps">Enabled Apps</string>
+    <string name="enabled_apps">Aplicaciones habilitadas</string>
     <string name="almost_there">Almost there…</string>
     <string name="music_players">Music Players</string>
     <string name="video_players">Video Streaming Apps</string>

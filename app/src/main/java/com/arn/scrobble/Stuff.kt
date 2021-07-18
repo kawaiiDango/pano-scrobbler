@@ -237,7 +237,6 @@ object Stuff {
     const val PACKAGE_DIFM = "com.audioaddict.di"
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
-    const val PACKAGE_NETEASE_MUSIC = "com.netease.cloudmusic"
     const val PACKAGE_YOUTUBE_MUSIC = "com.google.android.apps.youtube.music"
 
     val STARTUPMGR_INTENTS = arrayOf( //pkg, class
@@ -588,14 +587,13 @@ object Stuff {
                     PackageManager.MATCH_ALL
                 else
                     0
-        ).filter { it.activityInfo.applicationInfo.packageName != PACKAGE_NETEASE_MUSIC }
+        )
     }
 
-    fun getBrowsersAsStrings(pm: PackageManager): Set<String> {
-        return getBrowsers(pm)
-                .map { it.activityInfo.applicationInfo.packageName }
-                .toSet()
-    }
+    fun getBrowsersAsStrings(pm: PackageManager) =
+        getBrowsers(pm)
+            .map { it.activityInfo.applicationInfo.packageName }
+            .toSet()
 
     fun genHashCode(vararg objects: Any): Int {
         val prime = 31

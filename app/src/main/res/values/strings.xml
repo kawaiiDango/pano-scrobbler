@@ -183,7 +183,7 @@
     <string name="sort">Sort</string>
     <string name="past_scrobbles">Past scrobbles</string>
 <!--  todo: don't concat  -->
-    <string name="possesion" formatted="true"
+    <string name="possession" formatted="true"
         comment="%1= name (e.g. Reimu's)"
         >%1$s\'s</string>
 
@@ -215,7 +215,7 @@
         >Not found</string>
     <string name="share_this_chart">Share this chart</string>
     <string name="weekly">Weekly</string>
-    <string name="monthly">Monthy</string>
+    <string name="monthly">Monthly</string>
     <string name="charts_choose_week">Choose a week</string>
     <string name="charts_overall">Overall</string>
     <string name="charts_no_data">No data for this period</string>
@@ -357,6 +357,7 @@
     <string name="pref_lists">Lists</string>
     <string name="pref_regex_edits">Pattern edits</string>
     <string name="pref_blocked_metadata">Blocked metadata</string>
+    <string name="pref_translate">Translate this app</string>
 
     <string name="import_hey_wtf">That\'s probably not a Pano Scrobbler export file</string>
     <string name="export_failed">Export failed</string>
@@ -440,8 +441,8 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="pro_benefits">You will also get 🎨 Themes (19 x 19 x 20 colors) and the ability to 🚫 block metadata from scrobbling. The app name will be removed when sharing.</string>
     <string name="thank_you">Thank you!</string>
     <string name="purchase_pending">Your purchase has not been confirmed by your payment provider yet. Please check back after a few minutes.</string>
-    <string name="billing_toubleshoot_title">Restore purchase</string>
-    <string name="billing_toubleshoot">"Already purchased?
+    <string name="billing_troubleshoot_title">Restore purchase</string>
+    <string name="billing_troubleshoot">"Already purchased?
 
 Your purchases are managed by Google Play. They are linked with a Google Play account that did a purchase. When you install the app on a new device with multiple accounts, Google Play can associate it with a wrong one. The best solution to explicitly select the account owning a purchase is to install the app from a computer via Google Play web page:
 

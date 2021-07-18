@@ -8,5 +8,5 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:textSize="18sp"
-        android:text="@string/billing_toubleshoot"/>
+        android:text="@string/billing_troubleshoot"/>
 </LinearLayout>

@@ -5,6 +5,7 @@
     <string name="email" translatable="false">kawaiiDango@protonmail.com</string>
     <string name="tv_link" translatable="false">https://bit.ly/Pscrtv</string>
     <string name="github_link" translatable="false">https://github.com/kawaiiDango/pScrobbler</string>
+    <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
     <string name="last_week" translatable="false">Last.week</string>
     <string name="lastfm" translatable="false">LastFM</string>
     <string name="librefm" translatable="false">LibreFM</string>

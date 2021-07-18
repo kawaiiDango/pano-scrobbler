@@ -198,7 +198,7 @@ class RecentsAdapter
 
     fun setStatusHeader(){
         val username = if (viewModel.username != null)
-            fragmentBinding.root.context.getString(R.string.possesion, viewModel.username) + " "
+            fragmentBinding.root.context.getString(R.string.possession, viewModel.username) + " "
         else
             ""
         val header =  if (isShowingLoves)

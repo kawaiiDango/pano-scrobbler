@@ -200,11 +200,12 @@
         android:title="@string/pref_about">
         <Preference
             android:title="@string/pref_intents"
-            android:key="intents"
-            />
+            android:key="intents" />
+        <Preference
+            android:title="@string/pref_translate"
+            android:key="translate" />
         <Preference
             android:summary="@string/github_link"
-            android:key="about"
-            />
+            android:key="about" />
     </PreferenceCategory>
 </PreferenceScreen>

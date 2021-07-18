@@ -299,6 +299,11 @@ class PrefFragment : PreferenceFragmentCompat(){
 
             true
         }
+        findPreference<Preference>("translate")!!
+            .onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            Stuff.openInBrowser(getString(R.string.crowdin_link), activity)
+            true
+        }
         val about = findPreference<Preference>("about")!!
         try {
             about.title = "v " + BuildConfig.VERSION_NAME

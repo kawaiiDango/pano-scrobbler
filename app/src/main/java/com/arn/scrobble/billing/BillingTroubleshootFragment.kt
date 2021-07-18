@@ -34,7 +34,7 @@ class BillingTroubleshootFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, getString(R.string.billing_toubleshoot_title))
+        Stuff.setTitle(activity, getString(R.string.billing_troubleshoot_title))
 
     }
     override fun onDestroyView() {

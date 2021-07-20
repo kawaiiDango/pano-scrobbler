@@ -115,6 +115,7 @@
     <string name="swap" comment="(Swap title and artist)">Trocar</string>
     <string name="rate_msg">Está a gostar desta app?</string>
     <string name="rate_action">Avalie</string>
+    <string name="time_just_now">agora mesmo</string>
     <string name="no_mail_apps">Nenhum cliente de e-mail instalado.</string>
     <string name="loved">Favoritada</string>
     <string name="unloved">Retirada das favoritas</string>
@@ -189,6 +190,7 @@
     <string name="secondary_color">Cor secundária</string>
     <string name="background_color">Cor de fundo</string>
     <string name="same_tone">O mesmo tom para tudo</string>
+    <string name="random_theme">Aleatório a cada inicialização</string>
     <string name="palette_bg">Usar cor da capa do álbum para alguns planos de fundo</string>
     <string name="edit_name" comment="name for regex pattern">Nome amigável (opcional)</string>
     <string name="edit_regex">Padrão de regex</string>
@@ -207,20 +209,25 @@
     <string name="n_matches" formatted="true">%1$d correspondências</string>
     <string name="text">Texto</string>
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
+    <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles.</string>
     <!-- presets-->
     <string name="preset_explicit_track">Explícita (faixa)</string>
     <string name="preset_explicit_album">Explícito (álbum)</string>
     <string name="preset_album_ver_track">Versão do álbum (faixa)</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
+    <string name="pref_master">Scrobble de música</string>
     <string name="pref_noti_q">Pode promover a notificação, caso o ícone não apareça</string>
     <string name="pref_noti">Notificações</string>
+    <string name="pref_scrobble_noti">Notificações de scrobbles</string>
     <string name="pref_lockscreen_noti">Notificações no ecrã de bloqueio</string>
+    <string name="pref_offline_info">ℹ️ Scrobbles offline &amp; e favoritadas serão guardadas, para ser tudo enviado mais tarde.</string>
     <string name="pref_scrobble_from">Scrobble a partir de</string>
     <string name="pref_enabled_apps_summary">ℹ️ Suporta apps que revelam metadados de música. Para evitar scrobbles duplos do Spotify, ative-os apenas num lugar.</string>
     <string name="pref_enabled_apps_title">Escolher apps</string>
     <string name="pref_auto_detect_summary">…iremos pedir-lhe que confirme/ignore essa app</string>
     <string name="pref_auto_detect">Detetar automaticamente novas apps de música</string>
+    <string name="pref_delay">Atraso de scrobble (o que for mais cedo)</string>
     <string name="pref_delay_secs">Atraso em segundos</string>
     <string name="pref_delay_per">Atraso em percentagem</string>
     <string name="pref_logout">Sair</string>
@@ -228,6 +235,7 @@
     <string name="pref_login">Iniciar sessão</string>
     <string name="pref_about">Acerca</string>
     <string name="pref_search_title">App de pesquisa de músicas</string>
+    <string name="pref_scrobble_only">(Scrobble apenas)</string>
     <string name="pref_user_label" comment="(Like username)">Utilizador</string>
     <string name="pref_token_label" comment="For Listenbrainz">Código de autenticação</string>
     <string name="pref_now_playing">Enviar em reprodução</string>
@@ -237,8 +245,10 @@
     <string name="pref_imexport">Importar &amp; exportar</string>
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
+    <string name="pref_import">Importar</string>
     <string name="pref_personalization">Personalização</string>
     <string name="pref_themes">Temas</string>
+    <string name="pref_themes_desc">Misturar e combinar\nAltera também a cor das notificações</string>
     <string name="pref_widget_charts">Widget no ecrã inicial - tabelas</string>
     <string name="pref_show_albums">Mostrar nomes dos álbuns</string>
     <string name="pref_show_albums_desc">…nos scrobbles recentes</string>
@@ -252,7 +262,10 @@
     <string name="import_options">Opções de importação</string>
     <string name="import_lists_nope">Não importar edições e lista de bloqueio</string>
     <string name="import_lists_replace_all">Substituir todas as edições e lista de bloqueio</string>
+    <string name="import_lists_replace_existing">Fundir, substituindo as edições existentes e lista de bloqueio</string>
+    <string name="import_lists_keep">Fundir, mantendo edições existentes e lista de bloqueio</string>
     <string name="import_settings">Importar configurações</string>
+    <string name="pref_intents">Intenções para o Tasker, etc</string>
     <string name="copied">Copiado!</string>
     <string name="custom_listenbrainz">Servidor Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>

@@ -164,12 +164,16 @@
     <string name="random_not_found">No se encontraron temas</string>
     <string name="loved_track">Temas favoritos</string>
     <string name="randomize">Aleatorio</string>
+    <string name="graph_scrub_msg">Las horas están en su zona horaria \nMantenga presionado o suelte la gráfica para ver las cuentas exactas</string>
     <string name="original">Original</string>
     <string name="corrected">Corregido</string>
+    <string name="tag">Etiqueta</string>
     <string name="digest_weekly">Mis mejores scrobbles de la última semana</string>
     <string name="digest_monthly">Mis mejores scrobbles del último mes</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= weekly/monthly">%1$s mejores scrobbles</string>
+    <string name="my_tags">Mis etiquetas</string>
     <string name="close">Cerrar</string>
+    <string name="user_tags_hint">Nueva etiqueta</string>
     <string name="user_tags_empty">No has añadido ninguna etiqueta</string>
     <string name="info_long_press_hint">También puedes mantener pulsado una canción para abrir esto</string>
     <string name="appwidget_loading">Cargando…</string>
@@ -191,7 +195,10 @@
     <string name="edit_replace">Reemplazar</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primero</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
+    <string name="edit_case_sensitive">Distingue entre mayúsculas y minúsculas</string>
+    <string name="edit_regex_test">Prueba</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Límite de patrones alcanzado (%1$d)</string>
+    <string name="n_matches" formatted="true">%1$d coincidencias</string>
     <string name="text">Texto</string>
     <!-- presets-->
     <string name="preset_remastered_track">Remasterizado (tema)</string>
@@ -210,6 +217,7 @@
     <string name="pref_enabled_apps_summary">Soporta aplicaciones que revelan metadatos de música. Para evitar dobles scrobbles de Spotify, habilítelo sólo en un lugar.</string>
     <string name="pref_enabled_apps_title">Escoge las aplicaciones</string>
     <string name="pref_auto_detect_summary">…todavía te pediremos que confirmes o ignores esa aplicación</string>
+    <string name="pref_delay">Demora del scrobble (lo que ocurra primero)</string>
     <string name="pref_delay_secs">Retraso en segundos</string>
     <string name="pref_delay_per">Retraso en porcentaje</string>
     <string name="pref_logout">Cerrar sesión</string>
@@ -222,6 +230,7 @@
     <string name="pref_user_label" comment="(Like username)">Usuario</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token de autenticación</string>
     <string name="pref_now_playing">Enviar reproducción</string>
+    <string name="pref_fetch_aa">Obtener artistas del último álbum</string>
     <string name="pref_fetch_aa_desc">Para los reproductores que no facilitan estos datos. Los datos obtenidos pueden diferir a los de tús etiquetas. Es posible que lastFM no tenga los datos de algunas canciones.</string>
     <string name="pref_pixel_np_nope">Disponible sólo en dispositivos Pixel</string>
     <string name="pref_misc">Misceláneo.</string>
@@ -247,6 +256,7 @@
     <string name="import_lists_replace_existing">Combinar, reemplazar ediciones existentes y lista de bloqueos</string>
     <string name="import_lists_keep">Combinar, mantener las ediciones y lista de bloqueos existentes</string>
     <string name="import_settings">Importar configuración</string>
+    <string name="pref_intents_dialog_title">Intentos de transmisión</string>
     <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Para la canción actual:
 %1$s
 %2$s
@@ -257,6 +267,7 @@ Para el scrobbler:
 %5$s
 
 Pueden utilizarse con aplicaciones como Tasker, Macrodroid, etc."</string>
+    <string name="pref_intents">Intentos para Tasker etc</string>
     <string name="copied">¡Copiado!</string>
     <string name="lastfm_reauth">Necesitas volver a autenticarte para editar o eliminar scrobbles</string>
     <string name="custom_listenbrainz">Servidor personalizado de Listenbrainz</string>
@@ -267,6 +278,7 @@ Pueden utilizarse con aplicaciones como Tasker, Macrodroid, etc."</string>
     <string name="no_browser">No hay ningún navegador instalado.</string>
     <string name="no_player">No hay reproductor de música instalado.</string>
     <string name="not_running">⚠ El scrobbler fue asesinado por tu sistema.</string>
+    <string name="not_running_fix_action">Corregir</string>
     <string name="login_submit">Verificar</string>
     <string name="scrobble">Scrobble</string>
     <string name="acr_host">Host</string>

@@ -121,6 +121,7 @@
     <string name="unloved">Eliminar de favoritos</string>
     <string name="simple_edits">Ediciones</string>
     <string name="n_simple_edits" formatted="true">%1$d ediciones</string>
+    <string name="n_regex_edits" formatted="true">%1$d ediciones de patrones</string>
     <string name="n_blocked_metadata" formatted="true">%1$d metadatos bloqueados</string>
     <string name="force_remembered">Forzar scrobble (será recordado)</string>
     <string name="force" comment="Force scrobble but in short">Forzar</string>
@@ -168,6 +169,8 @@
     <string name="original">Original</string>
     <string name="corrected">Corregido</string>
     <string name="tag">Etiqueta</string>
+    <string name="taggers">Etiquetadores</string>
+    <string name="taggings">Etiquetado</string>
     <string name="digest_weekly">Mis mejores scrobbles de la última semana</string>
     <string name="digest_monthly">Mis mejores scrobbles del último mes</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= weekly/monthly">%1$s mejores scrobbles</string>
@@ -234,6 +237,7 @@
     <string name="pref_fetch_aa_desc">Para los reproductores que no facilitan estos datos. Los datos obtenidos pueden diferir a los de tús etiquetas. Es posible que lastFM no tenga los datos de algunas canciones.</string>
     <string name="pref_pixel_np_nope">Disponible sólo en dispositivos Pixel</string>
     <string name="pref_misc">Misceláneo.</string>
+    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Importar &amp; Exportar</string>
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Realiza copias de seguridad de la configuración, las ediciones y la lista de bloqueo. No guarda inicios de sesión por razones de seguridad. Útil para moverse entre dispositivos o compartir con amigos.</string>
@@ -245,6 +249,7 @@
     <string name="pref_show_albums">Mostrar nombres del álbumes</string>
     <string name="pref_show_albums_desc">…en los scrobbles recientes</string>
     <string name="pref_lists">Listas</string>
+    <string name="pref_regex_edits">Edición de patrones</string>
     <string name="pref_blocked_metadata">Metadatos bloqueados</string>
     <string name="pref_translate">Traducir esta aplicación</string>
     <string name="import_hey_wtf">Probablemente no sea un archivo de exportación de Pano Scrobbler</string>

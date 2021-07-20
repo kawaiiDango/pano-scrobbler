@@ -61,7 +61,7 @@
     <string name="state_unrecognised_artist">Artista não reconhecido</string>
     <string name="tap_to_edit">(Toque para editar)</string>
     <string name="tap_to_edit_force">(Toque para editar ou forçar)</string>
-    <string name="recently_scrobbled">Scrobble recente</string>
+    <string name="recently_scrobbled">Scrobbles recentes</string>
     <string name="recently_loved">♥ Faixas favoritadas recentes</string>
     <string name="recents">Recentes</string>
     <string name="graph_info">… últimos 5 meses</string>
@@ -117,7 +117,7 @@
     <string name="rate_action">Avalie</string>
     <string name="time_just_now">agora mesmo</string>
     <string name="no_mail_apps">Nenhum cliente de e-mail instalado.</string>
-    <string name="loved">Favoritada</string>
+    <string name="loved">Favoritas</string>
     <string name="unloved">Retirada das favoritas</string>
     <string name="simple_edits">Edições</string>
     <string name="n_simple_edits" formatted="true">%1$d edições</string>
@@ -157,7 +157,7 @@
     <string name="weekly">Semanalmente</string>
     <string name="monthly">Mensalmente</string>
     <string name="charts_choose_week">Escolher uma semana</string>
-    <string name="charts_overall">Em geral</string>
+    <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
     <string name="charts_no_weekly_charts">O histórico das tabelas semanais não está disponível ainda</string>
     <string name="random">A sentir-me com sorte</string>
@@ -211,12 +211,15 @@
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles.</string>
     <!-- presets-->
+    <string name="preset_remastered_track">Remasterizada (faixa)</string>
+    <string name="preset_remastered_album">Remasterizado (álbum)</string>
     <string name="preset_explicit_track">Explícita (faixa)</string>
     <string name="preset_explicit_album">Explícito (álbum)</string>
     <string name="preset_album_ver_track">Versão do álbum (faixa)</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
     <string name="pref_master">Scrobble de música</string>
+    <string name="pref_master_qs_hint">Também pode ser alternado a partir das configurações rápidas</string>
     <string name="pref_noti_q">Pode promover a notificação, caso o ícone não apareça</string>
     <string name="pref_noti">Notificações</string>
     <string name="pref_scrobble_noti">Notificações de scrobbles</string>
@@ -236,12 +239,15 @@
     <string name="pref_about">Acerca</string>
     <string name="pref_search_title">App de pesquisa de músicas</string>
     <string name="pref_scrobble_only">(Scrobble apenas)</string>
+    <string name="pref_scrobble_love_only">(Scrobble &amp; favoritas apenas)</string>
     <string name="pref_user_label" comment="(Like username)">Utilizador</string>
     <string name="pref_token_label" comment="For Listenbrainz">Código de autenticação</string>
     <string name="pref_now_playing">Enviar em reprodução</string>
     <string name="pref_fetch_aa">Obter artistas dos álbuns do lastFM</string>
     <string name="pref_fetch_aa_desc">Para reprodutores que não fornecem esses dados. Os dados obtidos podem ser diferentes das suas etiquetas. O lastFM pode não ter dados para algumas músicas.</string>
+    <string name="pref_pixel_np">Scrobble do que o Pixel estiver a reproduzir</string>
     <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
+    <string name="pref_misc">Diversos</string>
     <string name="pref_imexport">Importar &amp; exportar</string>
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
@@ -265,10 +271,23 @@
     <string name="import_lists_replace_existing">Fundir, substituindo as edições existentes e lista de bloqueio</string>
     <string name="import_lists_keep">Fundir, mantendo edições existentes e lista de bloqueio</string>
     <string name="import_settings">Importar configurações</string>
+    <string name="pref_intents_dialog_title">Propostas de difusão</string>
+    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Para a música atual:
+%1$s
+%2$s
+%3$s
+
+Para o scrobbler:
+%4$s
+%5$s
+
+Podem ser usadas com apps como Tasker, Macrodroid, etc."</string>
     <string name="pref_intents">Intenções para o Tasker, etc</string>
     <string name="copied">Copiado!</string>
+    <string name="lastfm_reauth">Precisa reautenticar-se para editar ou apagar scrobbles</string>
     <string name="custom_listenbrainz">Servidor Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
+    <string name="check_nls_tv" formatted="true" comment="app name">Acesso especial à app &gt; Acesso às Notificações &gt; %1$s</string>
     <string name="artist_extra">Faixas, álbuns &amp; semelhantes</string>
     <string name="no_browser">Nenhum navegador instalado.</string>
     <string name="no_player">Nenhum reprodutor de música instalado.</string>
@@ -280,10 +299,16 @@
     <string name="add_acr_key">Adicionar chave ACRCloud</string>
     <string name="remove_acr_key">Remover chave ACRCloud</string>
     <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar sua própria chave ACRcloud</string>
+    <string name="add_acr_key_info">"• Registe-se em https://console.acrcloud.com
+• Navegue em Projects &gt; Audio &amp; video recognition
+• Crie um novo projeto, selecione Recorded Audio e repositório ACRCloud Music"</string>
     <string name="shazam_scrobbling">Para fazer scrobbles continuamente, abra o <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> em vez disso e inicie o Auto Shazam. Certifique-se também de que o Shazam o scrobble ativado.</string>
     <string name="pending_n_remaining" formatted="true">%1$d restantes</string>
     <string name="submitting_loves" formatted="true">Submetendo favoritadas, %1$d restantes</string>
     <string name="webview_error">Falha ao carregar a página (sua internet está funcionando?)</string>
+    <string name="navigation_drawer_open">Abrir painel de navegação ou voltar</string>
+    <string name="navigation_drawer_close">Fechar painel de navegação</string>
+    <string name="graph">Gráfico</string>
     <string name="cleared_disabled_apps">Reiniciar lista de apps desativadas</string>
     <string name="fix_it_title">Possíveis correções</string>
     <string name="fix_it_startup_title">Bateria / Gestores de Arranque</string>

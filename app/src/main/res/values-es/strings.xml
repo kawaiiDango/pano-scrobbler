@@ -161,12 +161,15 @@
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">No hay datos para este período</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <string name="charts_no_weekly_charts">Las listas semanales aún no están disponibles</string>
     <string name="random">Me siento con suerte</string>
     <string name="random_not_found">No se encontraron temas</string>
     <string name="loved_track">Temas favoritos</string>
     <string name="randomize">Aleatorio</string>
     <string name="graph_daily">Conteo diario de scrobble</string>
     <string name="graph_weekly">Conteo semanal de scrobble</string>
+    <string name="graph_monthly">Conteo mensual de scrobble</string>
+    <string name="graph_yearly">Conteo anual de scrobble</string>
     <string name="graph_scrub_msg">Las horas están en su zona horaria \nMantenga presionado o suelte la gráfica para ver las cuentas exactas</string>
     <string name="original">Original</string>
     <string name="corrected">Corregido</string>
@@ -197,6 +200,8 @@
     <string name="random_theme">Aleatorizar cada lanzamiento</string>
     <string name="palette_bg">Usar el color de la imagen del álbum para algunos fondos</string>
     <string name="edit_name" comment="name for regex pattern">Nombre amigable (opcional)</string>
+    <string name="edit_regex">Patrón regex</string>
+    <string name="edit_regex_replacement">Reemplazo de Regex</string>
     <string name="edit_field" comment="Field like artist/album/track etc">Campo</string>
     <string name="edit_replace">Reemplazar</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primero</string>
@@ -204,7 +209,12 @@
     <string name="edit_continue">Si se encuentra, continúa coincidiendo con otras expresiones regulares</string>
     <string name="edit_case_sensitive">Distingue entre mayúsculas y minúsculas</string>
     <string name="edit_regex_test">Prueba</string>
+    <string name="edit_presets">Ajustes por defecto</string>
+    <string name="edit_presets_available">Ajustes disponibles</string>
+    <string name="edit_no_presets_available">Todos los ajustes predeterminados están en uso</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Preestablecido: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Límite de patrones alcanzado (%1$d)</string>
+    <string name="edit_drag_handle" comment="for drag and drop">Manija de arrastre</string>
     <string name="n_matches" formatted="true">%1$d coincidencias</string>
     <string name="text">Texto</string>
     <string name="edit_regex_warning">⚠ Asegúrate de entender <a href="https://www.google.com/search?q=regex+tutorial">regex java</a> antes de usar esto, o usa uno de los <b>presets</b> proporcionados. Partidas regex intentadas desde arriba hacia abajo</string>

@@ -165,6 +165,8 @@
     <string name="random_not_found">No se encontraron temas</string>
     <string name="loved_track">Temas favoritos</string>
     <string name="randomize">Aleatorio</string>
+    <string name="graph_daily">Conteo diario de scrobble</string>
+    <string name="graph_weekly">Conteo semanal de scrobble</string>
     <string name="graph_scrub_msg">Las horas están en su zona horaria \nMantenga presionado o suelte la gráfica para ver las cuentas exactas</string>
     <string name="original">Original</string>
     <string name="corrected">Corregido</string>
@@ -195,14 +197,18 @@
     <string name="random_theme">Aleatorizar cada lanzamiento</string>
     <string name="palette_bg">Usar el color de la imagen del álbum para algunos fondos</string>
     <string name="edit_name" comment="name for regex pattern">Nombre amigable (opcional)</string>
+    <string name="edit_field" comment="Field like artist/album/track etc">Campo</string>
     <string name="edit_replace">Reemplazar</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primero</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
+    <string name="edit_continue">Si se encuentra, continúa coincidiendo con otras expresiones regulares</string>
     <string name="edit_case_sensitive">Distingue entre mayúsculas y minúsculas</string>
     <string name="edit_regex_test">Prueba</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Límite de patrones alcanzado (%1$d)</string>
     <string name="n_matches" formatted="true">%1$d coincidencias</string>
     <string name="text">Texto</string>
+    <string name="edit_regex_warning">⚠ Asegúrate de entender <a href="https://www.google.com/search?q=regex+tutorial">regex java</a> antes de usar esto, o usa uno de los <b>presets</b> proporcionados. Partidas regex intentadas desde arriba hacia abajo</string>
+    <string name="blocked_metadata_info">ℹ️ Completa más de uno de estos campos aplicará un operador AND entre ellos.</string>
     <!-- presets-->
     <string name="preset_remastered_track">Remasterizado (tema)</string>
     <string name="preset_remastered_album">Remasterizado (álbum)</string>
@@ -211,7 +217,9 @@
     <string name="preset_album_ver_track">Versión del álbum (tema)</string>
     <string name="scrobbler_off">Scrobbler desactivado</string>
     <string name="scrobbler_on">Scrobbler activado</string>
+    <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">También se puede cambiar desde el panel de ajustes rápidos</string>
+    <string name="pref_noti_q">Puedes promover la notificación, si el icono no se muestra</string>
     <string name="pref_noti">Notificaciones</string>
     <string name="pref_scrobble_noti">Notificaciones de Scrobble</string>
     <string name="pref_lockscreen_noti">Notificaciones en la pantalla de bloqueo</string>
@@ -220,6 +228,7 @@
     <string name="pref_enabled_apps_summary">Soporta aplicaciones que revelan metadatos de música. Para evitar dobles scrobbles de Spotify, habilítelo sólo en un lugar.</string>
     <string name="pref_enabled_apps_title">Escoge las aplicaciones</string>
     <string name="pref_auto_detect_summary">…todavía te pediremos que confirmes o ignores esa aplicación</string>
+    <string name="pref_auto_detect">Detectar automáticamente nuevas aplicaciones tipo música</string>
     <string name="pref_delay">Demora del scrobble (lo que ocurra primero)</string>
     <string name="pref_delay_secs">Retraso en segundos</string>
     <string name="pref_delay_per">Retraso en porcentaje</string>
@@ -235,6 +244,7 @@
     <string name="pref_now_playing">Enviar reproducción</string>
     <string name="pref_fetch_aa">Obtener artistas del último álbum</string>
     <string name="pref_fetch_aa_desc">Para los reproductores que no facilitan estos datos. Los datos obtenidos pueden diferir a los de tús etiquetas. Es posible que lastFM no tenga los datos de algunas canciones.</string>
+    <string name="pref_pixel_np">Scrobble Pixel ahora reproduciendo</string>
     <string name="pref_pixel_np_nope">Disponible sólo en dispositivos Pixel</string>
     <string name="pref_misc">Misceláneo.</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>

@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_months">
+        <item quantity="one">%1$d mês</item>
+        <item quantity="other">%1$d meses</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$d ano</item>
+        <item quantity="other">%1$d anos</item>
+    </plurals>
     <string name="settings">Definições</string>
     <string name="bug_report">Relatório de erros</string>
     <string name="album_art">Capa do álbum</string>
@@ -39,6 +47,28 @@
     <string name="enabled_apps">Aplicações ativadas</string>
     <string name="almost_there">Quase lá…</string>
     <string name="music_players">Reprodutores de música</string>
+    <string name="video_players">Aplicações de Vídeo</string>
+    <string name="other_apps">Outras Aplicações</string>
+    <string name="offline">Offline. Os dados mostrados não são recentes</string>
+    <string name="unavailable_offline">Não disponível quando offline</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava a ouvir \n%1$s, a %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava a ouvir \n%1$s, a %2$s</string>
+    <string name="share_sig">(via Pano Scrobbler)</string>
+    <string name="share_this_song">Partilhar esta música</string>
+    <string name="share">Partilhar</string>
+    <string name="more_info">Mais informação</string>
+    <string name="search">Pesquisar</string>
+    <string name="profile">Perfil</string>
+    <string name="profile_pic">Foto de perfil</string>
+    <string name="item_options">Opções para este item</string>
+    <string name="no_scrobbles">Sem músicas aqui ainda…</string>
+    <string name="channel_err">Erro de Scrobble</string>
+    <string name="new_app">Nova aplicação</string>
+    <string name="no_apps_enabled">Sem aplicações ativadas</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Eliminar</string>
+    <string name="friends">Amigos</string>
     <string name="swap" comment="(Swap title and artist)">Inverter</string>
     <string name="rate_msg">A gostar desta aplicação?</string>
     <string name="rate_action">Avalie-a</string>
@@ -60,9 +90,11 @@
     <string name="press_back">Pressione voltar quando terminar</string>
     <string name="powered_acr">Fornecido por <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalhes</string>
+    <string name="saved_as_pending">Guardado como scrobble pendente</string>
     <string name="past_scrobbles">Histórico de scrobbles</string>
     <!--  todo: don't concat  -->
     <string name="my_scrobbles">Meus scrobbles</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de %1$s</string>
     <string name="listeners">Ouvintes</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s adorou isto</string>
@@ -75,17 +107,82 @@
     <string name="charts_choose_week">Escolher uma semana</string>
     <string name="charts_no_data">Sem dados para este período</string>
     <string name="random">A sentir-me com sorte</string>
+    <string name="original">Original</string>
+    <string name="corrected">Corrigido</string>
+    <string name="close">Fechar</string>
+    <string name="appwidget_loading">A carregar…</string>
+    <string name="appwidget_period">Período</string>
+    <string name="appwidget_theme">Tema</string>
+    <string name="appwidget_shadow">Sombra</string>
+    <string name="appwidget_show">Exibir</string>
+    <string name="light">Claro</string>
+    <string name="dark">Escuro</string>
+    <string name="appwidget_alpha">Opacidade do fundo</string>
+    <string name="appwidget_refresh_every">O widget será atualizado a cada 15 minutos</string>
+    <string name="primary_color">Cor principal</string>
+    <string name="secondary_color">Cor secundária</string>
+    <string name="background_color">Cor de fundo</string>
+    <string name="same_tone">O mesmo tom para tudo</string>
+    <string name="random_theme">Aleatório a cada inicialização</string>
+    <string name="edit_name" comment="name for regex pattern">Nome amigável (opcional)</string>
     <string name="edit_replace">Substituir</string>
     <string name="edit_case_sensitive">Maiúsculas/minúsculas</string>
     <string name="n_matches" formatted="true">%1$d correspondências</string>
     <string name="text">Texto</string>
     <!-- presets-->
+    <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
+    <string name="pref_master">Scrobble de música</string>
     <string name="pref_noti">Notificações</string>
+    <string name="pref_enabled_apps_title">Selecionar aplicações</string>
+    <string name="pref_auto_detect_summary">… ainda iremos pedir-lhe que confirme/ignore essa app</string>
     <string name="pref_delay">Atraso de scrobble (o que for mais cedo)</string>
     <string name="pref_delay_secs">Atraso em segundos</string>
     <string name="pref_delay_per">Atraso em percentagem</string>
+    <string name="pref_logout">Sair</string>
+    <string name="pref_confirm_logout">ENCERRAR A SESSÃO? Toque novamente</string>
     <string name="pref_login">Iniciar sessão</string>
     <string name="pref_about">Acerca</string>
+    <string name="pref_scrobble_only">(Scrobble apenas)</string>
+    <string name="pref_user_label" comment="(Like username)">Utilizador</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Código de autenticação</string>
+    <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
+    <string name="pref_misc">Diversos.</string>
+    <string name="pref_imexport">Importar &amp; exportar</string>
+    <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
+    <string name="pref_import">Importar</string>
+    <string name="pref_personalization">Personalização</string>
+    <string name="pref_themes">Temas</string>
+    <string name="pref_themes_desc">Misturar e combinar\nTambém altera a cor das notificações</string>
+    <string name="pref_widget_charts">Widget no ecrã inicial - Tabelas</string>
+    <string name="pref_show_albums">Mostrar nomes dos álbuns</string>
+    <string name="pref_show_albums_desc">…nos scrobbles recentes</string>
+    <string name="pref_lists">Listas</string>
+    <string name="pref_blocked_metadata">Metadados bloqueados</string>
+    <string name="pref_translate">Traduzir esta aplicação</string>
+    <string name="export_failed">Falha ao exportar</string>
+    <string name="imported">Importado</string>
+    <string name="import_options">Opções de importação</string>
+    <string name="import_lists_nope">Não importar edições e lista de bloqueio</string>
+    <string name="import_lists_replace_all">Substituir todas as edições e lista de bloqueio</string>
+    <string name="import_settings">Definições de importação</string>
+    <string name="pref_intents_dialog_title">Propostas de difusão</string>
+    <string name="pref_intents">Intenções para Tasker, etc</string>
+    <string name="copied">Copiado!</string>
+    <string name="failed_encode_url">Falha na codificação de URL</string>
+    <string name="artist_extra">Faixas, álbuns &amp; semelhantes</string>
+    <string name="no_browser">Nenhum navegador instalado.</string>
+    <string name="no_player">Nenhum reprodutor de música instalado.</string>
+    <string name="not_running_fix_action">Corrigir</string>
+    <string name="login_submit">Verificar</string>
+    <string name="scrobble">Scrobble</string>
+    <string name="acr_key">Chave de Acesso</string>
+    <string name="remove_acr_key">Remover chave ACRCloud</string>
+    <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar a sua própria chave ACRcloud</string>
+    <string name="pending_n_remaining" formatted="true">%1$d restantes</string>
+    <string name="fix_it_action" comment="(To open an app)">Abrir</string>
     <!--  pro  -->
+    <string name="help">Ajuda</string>
+    <string name="thank_you">Obrigado!</string>
+    <string name="billing_troubleshoot_title">Restaurar compra</string>
 </resources>

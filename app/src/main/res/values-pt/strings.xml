@@ -1,6 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Definições</string>
+    <string name="bug_report">Relatório de erros</string>
+    <string name="album_art">Capa do álbum</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar título</string>
+    <string name="network_error">Falha de rede</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">scrobble ignorado</string>
+    <string name="scrobble_ignored_save_edit">O Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de guardar esta edição para futuros scrobbles em vez disso?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Os campos obrigatórios estão vazios</string>
+    <string name="artist">Artista</string>
+    <string name="artists">Artistas</string>
+    <string name="n_artists">%1$s artistas</string>
+    <string name="album_artist">Artista do álbum</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Artista / canal</string>
+    <string name="similar_artists">Artistas semelhantes</string>
+    <string name="album_optional">Álbum (opcional)</string>
+    <string name="album">Álbum</string>
+    <string name="albums">Álbuns</string>
+    <string name="n_albums">%1$s álbuns</string>
+    <string name="track">Faixa</string>
+    <string name="tracks">Faixas</string>
+    <string name="n_tracks">%1$s faixas</string>
+    <string name="similar_tracks">Faixas semelhantes</string>
+    <string name="no_similar_tracks">Nenhuma faixa semelhante foi encontrada</string>
+    <string name="similar" comment="Similar tracks but in short">Semelhantes</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
+    <string name="state_scrobbling">A fazer scrobble…</string>
+    <string name="state_scrobbled">Scrobble efetuado</string>
+    <string name="state_unscrobbled">Scrobble eliminado</string>
+    <string name="state_didnt_scrobble">O scrobble falhou</string>
+    <string name="state_unrecognised_artist">Artista não-reconhecido</string>
+    <string name="tap_to_edit">(Toque para editar)</string>
+    <string name="tap_to_edit_force">(Toque para editar ou forçar)</string>
+    <string name="recently_scrobbled">Scrobbles recentes</string>
+    <string name="recently_loved">♥ Favoritas recentes</string>
+    <string name="recents">Recentes</string>
+    <string name="graph_info">… últimos 5 meses</string>
+    <string name="enabled_apps">Aplicações ativadas</string>
+    <string name="almost_there">Quase lá…</string>
+    <string name="music_players">Reprodutores de música</string>
+    <string name="swap" comment="(Swap title and artist)">Inverter</string>
+    <string name="rate_msg">A gostar desta aplicação?</string>
+    <string name="rate_action">Avalie-a</string>
+    <string name="no_mail_apps">Nenhum cliente de e-mail instalado.</string>
+    <string name="loved">Favoritas</string>
+    <string name="simple_edits">Edições</string>
+    <string name="n_simple_edits" formatted="true">%1$d edições</string>
+    <string name="n_regex_edits" formatted="true">%1$d edições padrão</string>
+    <string name="n_blocked_metadata" formatted="true">%1$d metadados bloqueados</string>
+    <string name="force_remembered">Forçar scrobble (será lembrado)</string>
+    <string name="force" comment="Force scrobble but in short">Forçar</string>
+    <string name="charts">Tabelas</string>
+    <string name="scrobble_from_mic">Scrobble do micro</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">Do microfone</string>
+    <string name="add_to_hs">Adicionar ao ecrã principal</string>
+    <string name="listening">Ouvir músicas ao seu redor…</string>
+    <string name="uploading">A enviar…</string>
+    <string name="recording_failed">Falha ao iniciar a gravação. O micro pode estar ocupado ou indisponível neste dispositivo</string>
+    <string name="press_back">Pressione voltar quando terminar</string>
+    <string name="powered_acr">Fornecido por <i><b>ACR</b>Cloud</i></string>
+    <string name="details">Detalhes</string>
+    <string name="past_scrobbles">Histórico de scrobbles</string>
     <!--  todo: don't concat  -->
+    <string name="my_scrobbles">Meus scrobbles</string>
+    <string name="listeners">Ouvintes</string>
+    <string name="scrobbles">Scrobbles</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s adorou isto</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles até %1$s</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
+    <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s a %2$s</string>
+    <string name="weekly_range" formatted="true" comment="%1= date %2= date">semanal (%1$s a %2$s)</string>
+    <string name="not_found" comment="Shown in search">Não encontrado</string>
+    <string name="share_this_chart">Partilhar esta tabela</string>
+    <string name="charts_choose_week">Escolher uma semana</string>
+    <string name="charts_no_data">Sem dados para este período</string>
+    <string name="random">A sentir-me com sorte</string>
+    <string name="edit_replace">Substituir</string>
+    <string name="edit_case_sensitive">Maiúsculas/minúsculas</string>
+    <string name="n_matches" formatted="true">%1$d correspondências</string>
+    <string name="text">Texto</string>
     <!-- presets-->
+    <string name="scrobbler_on">Scrobbler ativado</string>
+    <string name="pref_noti">Notificações</string>
+    <string name="pref_delay">Atraso de scrobble (o que for mais cedo)</string>
+    <string name="pref_delay_secs">Atraso em segundos</string>
+    <string name="pref_delay_per">Atraso em percentagem</string>
+    <string name="pref_login">Iniciar sessão</string>
+    <string name="pref_about">Acerca</string>
     <!--  pro  -->
 </resources>

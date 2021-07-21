@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">设置</string>
+    <string name="bug_report">Bug 报告</string>
+    <string name="album_art">专辑封面</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">无法解析标题</string>
+    <string name="network_error">网络异常</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">必填字段不能为空</string>
+    <string name="artist">艺术家</string>
+    <string name="artists">艺术家</string>
+    <string name="n_artists">%1$s 位艺术家</string>
+    <string name="top_artists">热门艺术家</string>
+    <string name="album_artist">专辑艺术家</string>
+    <string name="similar_artists">相似的艺术家</string>
+    <string name="album_optional">专辑（可选）</string>
+    <string name="album">专辑</string>
+    <string name="albums">专辑</string>
+    <!--  todo: don't concat  -->
+    <!-- presets-->
+    <!--  pro  -->
+</resources>

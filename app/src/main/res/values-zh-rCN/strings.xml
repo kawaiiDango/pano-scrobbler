@@ -80,13 +80,20 @@
     <string name="my_tags">我的标签</string>
     <string name="close">关闭</string>
     <string name="user_tags_hint">新建标签</string>
+    <string name="user_tags_empty">您尚未添加任何标签</string>
     <string name="appwidget_loading">正在加载…</string>
     <string name="appwidget_theme">主题</string>
+    <string name="appwidget_refresh_every">小部件将每15分钟刷新一次</string>
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>
     <string name="background_color">背景颜色</string>
     <string name="random_theme">每次启动时随机显示</string>
     <string name="palette_bg">对某些背景使用专辑封面颜色</string>
+    <string name="edit_case_sensitive">区分大小写</string>
+    <string name="edit_presets">预设</string>
+    <string name="edit_presets_available">可用预设</string>
+    <string name="edit_no_presets_available">正在使用所有预设</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">预设：%1$s</string>
     <!-- presets-->
     <string name="pref_master">抓取音乐</string>
     <string name="pref_noti">通知</string>

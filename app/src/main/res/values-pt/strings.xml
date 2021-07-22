@@ -120,6 +120,7 @@
     <string name="powered_acr">Fornecido por <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalhes</string>
     <string name="saved_as_pending">Guardado como scrobble pendente</string>
+    <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Histórico de scrobbles</string>
     <!--  todo: don't concat  -->
     <string name="my_scrobbles">Meus scrobbles</string>

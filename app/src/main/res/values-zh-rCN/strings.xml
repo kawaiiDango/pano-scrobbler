@@ -52,17 +52,35 @@
     <string name="love">喜爱</string>
     <string name="unlove">不再喜爱</string>
     <string name="friends">好友</string>
+    <string name="rate_msg">喜欢这个应用吗？</string>
+    <string name="rate_action">去打分</string>
+    <string name="no_mail_apps">未安装电子邮件客户端。</string>
     <string name="loved">喜爱的</string>
     <string name="unloved">不再喜爱的</string>
+    <string name="simple_edits">编辑</string>
+    <string name="grant_rec_perm">请授予使用麦克风的权限</string>
     <string name="charts">图表</string>
     <string name="scrobble_from_mic">从麦克风抓取</string>
     <string name="add_to_hs">添加到主屏幕</string>
+    <string name="listening">正在聆听您周围播放的音乐…</string>
+    <string name="uploading">正在上传...</string>
+    <string name="recording_failed">无法开始录制。麦克风可能正忙或在此设备上不可用</string>
     <!--  todo: don't concat  -->
+    <string name="collapse">折叠</string>
+    <string name="expand">展开</string>
+    <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s 至 %2$s</string>
+    <string name="weekly_range" formatted="true" comment="%1= date %2= date">每周（%1$s 至 %2$s）</string>
+    <string name="share_this_chart">分享此图表</string>
     <string name="charts_choose_week">选择一周</string>
     <string name="charts_overall">总览</string>
     <string name="random">手气不错</string>
     <string name="random_not_found">未找到曲目</string>
     <string name="loved_track">喜爱的曲目</string>
+    <string name="tag">标签</string>
+    <string name="my_tags">我的标签</string>
+    <string name="close">关闭</string>
+    <string name="user_tags_hint">新建标签</string>
+    <string name="appwidget_loading">正在加载…</string>
     <string name="appwidget_theme">主题</string>
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>

@@ -66,6 +66,7 @@
     <string name="music_players">Reprodutores de música</string>
     <string name="video_players">Aplicações de Vídeo</string>
     <string name="other_apps">Outras Aplicações</string>
+    <string name="choose_apps">Escolher apps para scrobble</string>
     <string name="offline">Offline. Os dados mostrados não são recentes</string>
     <string name="unavailable_offline">Não disponível quando offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
@@ -109,6 +110,7 @@
     <string name="n_blocked_metadata" formatted="true">%1$d metadados bloqueados</string>
     <string name="force_remembered">Forçar scrobble (será lembrado)</string>
     <string name="force" comment="Force scrobble but in short">Forçar</string>
+    <string name="grant_rec_perm">Por favor, conceda permissão para usar o microfone</string>
     <string name="charts">Tabelas</string>
     <string name="scrobble_from_mic">Scrobble do micro</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">Do microfone</string>
@@ -135,8 +137,10 @@
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="share_this_chart">Partilhar esta tabela</string>
     <string name="charts_choose_week">Escolher uma semana</string>
+    <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
     <string name="random">A sentir-me com sorte</string>
+    <string name="random_not_found">Nenhuma faixa encontrada</string>
     <string name="graph_daily">Contagem diária de scrobbles</string>
     <string name="graph_weekly">Contagem semanal de scrobbles</string>
     <string name="graph_monthly">Contagem mensal de scrobbles</string>
@@ -166,7 +170,12 @@
     <string name="n_matches" formatted="true">%1$d correspondências</string>
     <string name="text">Texto</string>
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
+    <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles.</string>
     <!-- presets-->
+    <string name="preset_remastered_track">Remasterizado (faixa)</string>
+    <string name="preset_remastered_album">Remasterizado (álbum)</string>
+    <string name="preset_explicit_track">Explícito (faixa)</string>
+    <string name="preset_explicit_album">Explícito (álbum)</string>
     <string name="preset_album_ver_track">Versão do álbum (faixa)</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
@@ -176,6 +185,7 @@
     <string name="pref_lockscreen_noti">Notificações no ecrã de bloqueio</string>
     <string name="pref_offline_info">ℹ️ Scrobbles offline &amp; e favoritas serão guardados, para ser tudo enviado mais tarde.</string>
     <string name="pref_scrobble_from">Scrobble a partir de</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Suporta aplicações que revelam metadados de música. Para evitar scrobbles duplos do Spotify, ative-os apenas num lugar.</string>
     <string name="pref_enabled_apps_title">Selecionar aplicações</string>
     <string name="pref_auto_detect_summary">… ainda iremos pedir-lhe que confirme/ignore essa app</string>
     <string name="pref_auto_detect">Detetar automaticamente novas apps de música</string>
@@ -212,6 +222,8 @@
     <string name="import_options">Opções de importação</string>
     <string name="import_lists_nope">Não importar edições e lista de bloqueio</string>
     <string name="import_lists_replace_all">Substituir todas as edições e lista de bloqueio</string>
+    <string name="import_lists_replace_existing">Fundir, substituindo as edições existentes e lista de bloqueio</string>
+    <string name="import_lists_keep">Fundir, mantendo edições existentes e lista de bloqueio</string>
     <string name="import_settings">Definições de importação</string>
     <string name="pref_intents_dialog_title">Propostas de difusão</string>
     <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Para a música atual:
@@ -226,11 +238,13 @@ Para o scrobbler:
 Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="pref_intents">Intenções para Tasker, etc</string>
     <string name="copied">Copiado!</string>
+    <string name="lastfm_reauth">Precisa de reiniciar sessão para editar ou apagar scrobbles</string>
     <string name="custom_listenbrainz">Servidor Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
     <string name="artist_extra">Faixas, álbuns &amp; semelhantes</string>
     <string name="no_browser">Nenhum navegador instalado.</string>
     <string name="no_player">Nenhum reprodutor de música instalado.</string>
+    <string name="not_running">⚠ Scrobbler terminado abruptamente pelo seu sistema.</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit">Verificar</string>
     <string name="scrobble">Scrobble</string>
@@ -241,12 +255,14 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="add_acr_key_info">"• Registe-se em https://console.acrcloud.com
 • Navegue em Projects &gt; Audio &amp; video recognition
 • Crie um novo projeto, selecione Recorded Audio e o repositório ACRCloud Music"</string>
+    <string name="shazam_scrobbling">Para scrobbles contínuos, abra o <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> em vez disso e inicie o Auto Shazam. Certifique-se também de que o Shazam tem o scrobbler ativado.</string>
     <string name="pending_n_remaining" formatted="true">%1$d restantes</string>
     <string name="submitting_loves" formatted="true">A submeter favoritas, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">A submeter um lote</string>
     <string name="webview_error">Falha ao carregar a página (está ligado à Internet?)</string>
     <string name="graph">Gráfico</string>
     <string name="fix_it_title">Possíveis correções</string>
+    <string name="fix_it_startup_title">Bateria / Gestores de Arranque</string>
     <string name="fix_it_startup_desc_default">Se o seu sistema tem gestores de arranque ou de bateria, permita a listagem desta aplicação, pois eles podem impedi-la de funcionar em segundo plano.</string>
     <string name="fix_it_noti_title">Ativar/desativar acesso às notificações</string>
     <string name="fix_it_noti_desc">Esta é uma correção temporária</string>
@@ -255,11 +271,21 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar esta aplicação</string>
     <string name="help">Ajuda</string>
+    <string name="pro_support">Esta é uma maneira simples e rápida para que utilizadores incríveis como você demonstrem o seu apoio e reconhecimento pelo valor desta aplicação.</string>
     <string name="pro_also_get">Também receberá:</string>
     <string name="pro_benefits">Também receberá 🎨 Temas (19 x 19 x 20 cores) e a capacidade de 🚫 bloquear metadados a partir dos scrobbles. O nome da aplicação será removido quando partilhar algo.</string>
     <string name="thank_you">Obrigado!</string>
     <string name="purchase_pending">A sua compra ainda não foi confirmada pelo seu provedor de pagamento. Por favor, verifique novamente daqui a alguns minutos.</string>
     <string name="billing_troubleshoot_title">Restaurar compra</string>
+    <string name="billing_troubleshoot">"Já comprou?
+
+As suas compras são administradas pelo Google Play. Estas estão vinculadas a uma conta do Google Play que fez uma compra. Quando instala a aplicação num novo dispositivo com várias contas, o Google Play pode associá-la com uma errada. A melhor solução para selecionar explicitamente a conta que possui uma compra é instalar a aplicação a partir de um computador, através da página web do Google Play:
+
+• Desinstale esta aplicação.
+• Abra a página da Web do Google Play no seu computador.
+• Inicie sessão com a conta que fez a compra.
+• Instale este aplicativo diretamente a partir da página web do Google Play.
+"</string>
     <string name="billing_themes">Temas (19 x 19 x 20 cores)</string>
     <string name="billing_sharing">Remover nome da aplicação ao partilhar</string>
 </resources>

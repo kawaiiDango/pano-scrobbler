@@ -44,9 +44,11 @@
     <string name="album">Álbum</string>
     <string name="albums">Álbuns</string>
     <string name="n_albums">%1$s álbuns</string>
+    <string name="top_albums">Álbuns mais ouvidos</string>
     <string name="track">Faixa</string>
     <string name="tracks">Faixas</string>
     <string name="n_tracks">%1$s faixas</string>
+    <string name="top_tracks">Faixas mais ouvidas</string>
     <string name="similar_tracks">Faixas semelhantes</string>
     <string name="no_similar_tracks">Nenhuma faixa semelhante foi encontrada</string>
     <string name="similar" comment="Similar tracks but in short">Semelhantes</string>
@@ -91,6 +93,7 @@
     <string name="new_app">Nova aplicação</string>
     <string name="no_apps_enabled">Sem apps ativadas</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d mais</string>
+    <string name="show_all">Ver tudo</string>
     <string name="edit">Editar</string>
     <string name="delete">Eliminar</string>
     <string name="love">Favorita</string>
@@ -152,6 +155,7 @@
     <string name="charts_choose_week">Escolher uma semana</string>
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
+    <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">Histórico das tabelas semanais indisponível ainda</string>
     <string name="random">A sentir-me com sorte</string>
     <string name="random_not_found">Nenhuma faixa encontrada</string>
@@ -281,6 +285,8 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="lastfm_reauth">Precisa de reiniciar sessão para editar ou apagar scrobbles</string>
     <string name="custom_listenbrainz">Servidor Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
+    <string name="check_nls" formatted="true" comment="app name">Verificar %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="app name">Acesso especial à aplicação &gt; Acesso às Notificações &gt; %1$s</string>
     <string name="artist_extra">Faixas, álbuns &amp; semelhantes</string>
     <string name="no_browser">Nenhum navegador instalado.</string>
     <string name="no_player">Nenhum reprodutor de música instalado.</string>
@@ -288,7 +294,9 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit">Verificar</string>
     <string name="scrobble">Scrobble</string>
+    <string name="acr_host">Servidor</string>
     <string name="acr_key">Chave de Acesso</string>
+    <string name="acr_secret">Código secreto</string>
     <string name="add_acr_key">Adicionar chave ACRCloud</string>
     <string name="remove_acr_key">Remover chave ACRCloud</string>
     <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar a sua própria chave ACRcloud</string>

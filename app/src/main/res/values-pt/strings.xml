@@ -133,6 +133,7 @@
     <string name="press_back">Pressione voltar quando terminar</string>
     <string name="powered_acr">Fornecido por <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalhes</string>
+    <string name="details_text" formatted="true" comment="%1= scrobble, %2= the service such as lastfm">%1$s irá para %2$s</string>
     <string name="saved_as_pending">Guardado como scrobble pendente</string>
     <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Histórico de scrobbles</string>
@@ -160,6 +161,7 @@
     <string name="random">A sentir-me com sorte</string>
     <string name="random_not_found">Nenhuma faixa encontrada</string>
     <string name="loved_track">Faixa favorita</string>
+    <string name="randomize">Aleatorizar</string>
     <string name="graph_daily">Contagem diária de scrobbles</string>
     <string name="graph_weekly">Contagem semanal de scrobbles</string>
     <string name="graph_monthly">Contagem mensal de scrobbles</string>
@@ -167,6 +169,7 @@
     <string name="graph_scrub_msg">Os horários estão no seu fuso horário\nMantenha pressionado ou solte o gráfico para ver as contagens exatas</string>
     <string name="original">Original</string>
     <string name="corrected">Corrigido</string>
+    <string name="tag">Etiqueta</string>
     <string name="taggers">Etiquetadores</string>
     <string name="taggings">Etiquetas</string>
     <string name="digest_weekly">O meu top de scrobbles da semana passada</string>
@@ -246,6 +249,7 @@
     <string name="pref_fetch_aa_desc">Para reprodutores que não fornecem esses dados. Os dados obtidos podem ser diferentes dos seus identificadores. O lastFM pode não ter dados para algumas músicas.</string>
     <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
     <string name="pref_misc">Diversos.</string>
+    <string name="pref_gnufm_title">URL nixtape GNU FM</string>
     <string name="pref_imexport">Importar &amp; exportar</string>
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
@@ -308,6 +312,8 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="submitting_loves" formatted="true">A submeter favoritas, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">A submeter um lote</string>
     <string name="webview_error">Falha ao carregar a página (está ligado à Internet?)</string>
+    <string name="navigation_drawer_open">Abrir painel de navegação ou voltar</string>
+    <string name="navigation_drawer_close">Fechar painel de navegação</string>
     <string name="graph">Gráfico</string>
     <string name="fix_it_title">Possíveis correções</string>
     <string name="fix_it_startup_title">Bateria / Gestores de Arranque</string>

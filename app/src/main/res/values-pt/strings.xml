@@ -76,6 +76,8 @@
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava a ouvir \n%1$s, a %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava a ouvir \n%1$s, a %2$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">%2$s (%1$s):\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%2$s (%1$s) de %4$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Partilhar esta música</string>
     <string name="share">Partilhar</string>
@@ -97,7 +99,7 @@
     <string name="edit">Editar</string>
     <string name="delete">Eliminar</string>
     <string name="love">Favorita</string>
-    <string name="unlove">Apagar das favoritas</string>
+    <string name="unlove">Tirar das favoritas</string>
     <string name="pending_scrobbles">Scrobbles Pendentes</string>
     <string name="pending_scrobble">Scrobble pendente</string>
     <string name="pending_scrobbles_noti">A processar scrobbles pendentes</string>
@@ -116,6 +118,7 @@
     <string name="time_just_now">ainda agora</string>
     <string name="no_mail_apps">Nenhum cliente de e-mail instalado.</string>
     <string name="loved">Favoritas</string>
+    <string name="unloved">Tirada das favoritas</string>
     <string name="simple_edits">Edições</string>
     <string name="n_simple_edits" formatted="true">%1$d edições</string>
     <string name="n_regex_edits" formatted="true">%1$d edições padrão</string>
@@ -138,6 +141,7 @@
     <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Histórico de scrobbles</string>
     <!--  todo: don't concat  -->
+    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s -</string>
     <string name="my_scrobbles">Meus scrobbles</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de %1$s</string>
     <string name="listeners">Ouvintes</string>
@@ -240,6 +244,7 @@
     <string name="pref_confirm_logout">ENCERRAR A SESSÃO? Toque novamente</string>
     <string name="pref_login">Iniciar sessão</string>
     <string name="pref_about">Acerca</string>
+    <string name="pref_search_title">App de pesquisa de músicas</string>
     <string name="pref_scrobble_only">(Scrobble apenas)</string>
     <string name="pref_scrobble_love_only">(Scrobble &amp; favoritas apenas)</string>
     <string name="pref_user_label" comment="(Like username)">Utilizador</string>
@@ -247,6 +252,7 @@
     <string name="pref_now_playing">Submeter em reprodução</string>
     <string name="pref_fetch_aa">Obter artistas dos álbuns do lastFM</string>
     <string name="pref_fetch_aa_desc">Para reprodutores que não fornecem esses dados. Os dados obtidos podem ser diferentes dos seus identificadores. O lastFM pode não ter dados para algumas músicas.</string>
+    <string name="pref_pixel_np">Scrobble do A Tocar do Pixel</string>
     <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
     <string name="pref_misc">Diversos.</string>
     <string name="pref_gnufm_title">URL nixtape GNU FM</string>
@@ -321,6 +327,7 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="fix_it_noti_title">Ativar/desativar acesso às notificações</string>
     <string name="fix_it_noti_desc">Esta é uma correção temporária</string>
     <string name="fix_it_battery_title">Desativar otimização na bateria</string>
+    <string name="fix_it_battery_desc">Apenas se mais nada funcionou</string>
     <string name="fix_it_action" comment="(To open an app)">Abrir</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar esta aplicação</string>

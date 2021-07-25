@@ -210,6 +210,7 @@
     <string name="scrobbler_on">Скробблер включен</string>
     <string name="pref_master">Скробблинг музыки</string>
     <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек.</string>
+    <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
     <string name="pref_noti">Уведомления</string>
     <string name="pref_scrobble_noti">Уведомление скробблинга</string>
     <string name="pref_lockscreen_noti">Уведомления на экране блокировки</string>

@@ -332,9 +332,20 @@
     <string name="help">帮助</string>
     <string name="pro_support">这是一种简单而快速的方式，让像你这样非常棒的用户可以由于该应用提供的价值而支持该应用。</string>
     <string name="pro_also_get">您还将得到:</string>
+    <string name="pro_benefits">您还将获得 🎨 主题（19 x 19 x 20 颜色）以及🚫阻止元素据被记录的能力。分享时该应用的名称将被删除。</string>
     <string name="thank_you">谢谢!</string>
     <string name="purchase_pending">您的购买尚未被您的付款提供商确认。请在几分钟后重新检查。</string>
     <string name="billing_troubleshoot_title">恢复购买</string>
+    <string name="billing_troubleshoot">"已经购买？
+
+你的购买由Google Play管理。他们已经与进行购买的谷歌Play帐户连接。 当你在一个登录了多账户的新设备上安装应用程序时，Google Play可以将它与一个错误的帐户关联。正确选择以有购买记录的账户的最佳办法是通过 Google Play 网页从计算机上安装应用程序：
+
+• 卸载此应用程序。
+• 从你的电脑打开Google Play网页。
+• 使用有购买记录的帐户登录。
+• 直接从Google Play网页安装此应用。
+"</string>
     <string name="billing_themes">主题(19x 19 x 20 颜色)</string>
+    <string name="billing_block">阻止记录元数据</string>
     <string name="billing_sharing">分享时删除应用名称</string>
 </resources>

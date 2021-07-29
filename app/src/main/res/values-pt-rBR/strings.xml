@@ -302,7 +302,7 @@ Podem ser usadas com apps como Tasker, Macrodroid, etc."</string>
     <string name="acr_key">Chave de Acesso</string>
     <string name="add_acr_key">Adicionar chave ACRCloud</string>
     <string name="remove_acr_key">Remover chave ACRCloud</string>
-    <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar sua própria chave ACRcloud</string>
+    <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar sua própria chave ACRCloud</string>
     <string name="add_acr_key_info">"• Registe-se em https://console.acrcloud.com
 • Navegue em Projects &gt; Audio &amp; video recognition
 • Crie um novo projeto, selecione Recorded Audio e repositório ACRCloud Music"</string>

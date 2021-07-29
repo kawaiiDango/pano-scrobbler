@@ -5,7 +5,6 @@
     <string name="album_art">Обложка альбома</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось разобрать заголовок</string>
     <string name="network_error">Ошибка сети</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">ignored %1$s</string>
     <string name="scrobble_ignored_save_edit">Lastfm проигнорировал правку, вероятно, потому, что скроббл слишком старый. Хотели бы вы вместо этого сохранить это изменение для будущих скробблеров?</string>
     <string name="limit_exceeded_ignored">Превышен дневной лимит скробблинга</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Обязательные поля не заполнены</string>
@@ -14,7 +13,6 @@
     <string name="n_artists">Исполнителей %1$s</string>
     <string name="top_artists">Популярные исполнители</string>
     <string name="album_artist">Альбомы артиста</string>
-    <string name="artist_channel" comment="Artist or youtube channel">Artist / channel</string>
     <string name="similar_artists">Похожие исполнители</string>
     <string name="album_optional">Альбом (по желанию)</string>
     <string name="album">Албом</string>
@@ -29,9 +27,8 @@
     <string name="no_similar_tracks">Похожих треков не найдено</string>
     <string name="similar" comment="Similar tracks but in short">Похожие</string>
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
-    <string name="state_scrobbling">Новый скробблинг...</string>
+    <string name="state_scrobbling">Новый скробблинг…</string>
     <string name="state_scrobbled">Заскробблено</string>
-    <string name="unscrobble">Unscrobble</string>
     <string name="state_unscrobbled">Без скробблинга</string>
     <string name="state_didnt_scrobble">Не скробблить</string>
     <string name="state_unrecognised_artist">Неизвестный исполнитель</string>
@@ -50,15 +47,10 @@
     <string name="offline">Офлайн. Показанные данные не актуальны</string>
     <string name="unavailable_offline">Недоступно в офлайн-режиме</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервисы</string>
-    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слушал
-%1$s %2$s</string>
-    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слушал
-%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">My %1$s %2$s:
-%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s\'s %1$s %2$s:
-%3$s</string>
-    <string name="share_sig">(Совместно с bit.ly/Pscr )</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слушал\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слушал\n%1$s %2$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">My %1$s %2$s:\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s\'s %1$s %2$s:\n%3$s</string>
     <string name="share_this_song">Поеделиться этим треком</string>
     <string name="share">Поделиться</string>
     <string name="more_info">Больше информации</string>
@@ -70,7 +62,7 @@
     <string name="new_player_prompt">Продолжать скробблинг из этого приложения ?</string>
     <string name="no_track_url">У этой песни нет страницы на lastFM</string>
     <string name="no_scrobbles">Здесь пока нет песен…</string>
-    <string name="no_friends">Друзей из last FM еще нет…</string>
+    <string name="no_friends">Друзей из lastFM еще нет…</string>
     <string name="channel_err">Ошибка скробблинга</string>
     <string name="new_app">Новое приложение</string>
     <string name="no_apps_enabled">Для скробблинга нет приложений</string>
@@ -103,7 +95,6 @@
     <string name="n_simple_edits" formatted="true">Правки - %1$d</string>
     <string name="n_regex_edits" formatted="true">Редактируемых шаблонов - %1$d</string>
     <string name="n_blocked_metadata" formatted="true">Заблокированные метаданные - %1$d</string>
-    <string name="force_remembered">Запомнить скроббл</string>
     <string name="force" comment="Force scrobble but in short">Применить</string>
     <string name="grant_rec_perm">Пожалуйста, предоставьте разрешение на использование микрофона</string>
     <string name="charts">Чарты</string>
@@ -114,7 +105,7 @@
     <string name="uploading">Загрузка…</string>
     <string name="recording_failed">Не удалось начать запись. Микрофон может быть занят или недоступен на этом устройстве</string>
     <string name="press_back">Нажмите назад, когда закончите</string>
-    <string name="powered_acr">На платформе ACRCloud</string>
+    <string name="powered_acr">На платформе <i><b>ACR</b>Cloud</i></string>
     <string name="details">Детали</string>
     <string name="details_text" formatted="true" comment="%1= scrobble, %2= the service such as lastfm">Будет %1$s для %2$s</string>
     <string name="saved_as_pending">Сохранено как ожидающий скроббл</string>
@@ -164,7 +155,7 @@
     <string name="close">Закрыть</string>
     <string name="user_tags_hint">Новый тег</string>
     <string name="user_tags_empty">Вы не добавили никаких тегов</string>
-    <string name="info_long_press_hint">Используйте долгий тап по песни, что бы открыть её.</string>
+    <string name="info_long_press_hint">Используйте долгий тап по песни, что бы открыть её</string>
     <string name="appwidget_loading">Загрузка…</string>
     <string name="appwidget_period">Период</string>
     <string name="appwidget_theme">Тема</string>
@@ -180,7 +171,6 @@
     <string name="same_tone">Одинаковый тон для всех</string>
     <string name="random_theme">Выбирать случайным образом при каждом запуске</string>
     <string name="palette_bg">Используйте цвет обложки альбома для некоторых фонов</string>
-    <string name="edit_name" comment="name for regex pattern">Имя шаблона</string>
     <string name="edit_regex">Шаблон регулярного выражения</string>
     <string name="edit_regex_replacement">Замена регулярного выражения</string>
     <string name="edit_field" comment="Field like artist/album/track etc">Поле</string>
@@ -198,7 +188,7 @@
     <string name="edit_drag_handle" comment="for drag and drop">Ручка перетаскивания</string>
     <string name="n_matches" formatted="true">Совпадений - %1$d</string>
     <string name="text">Текст</string>
-    <string name="edit_regex_warning">ℹ️ Перед использованием убедитесь, что вы понимаете <a href="https://www.google.com/search?q=regex+tutorial">Java Regex</a> или используйте одну из предустановок.</string>
+    <string name="edit_regex_warning">ℹ️ Перед использованием убедитесь, что вы понимаете <a href="https://www.google.com/search?q=regex+tutorial">Java Regex</a> или используйте одну из <b>предустановок</b></string>
     <string name="blocked_metadata_info">ℹ️ При заполнении более чем одного из этих полей между ними будет применяться оператор И.</string>
     <!-- presets-->
     <string name="preset_remastered_track">Трек (Remastered)</string>
@@ -209,7 +199,7 @@
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
     <string name="pref_master">Скробблинг музыки</string>
-    <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек.</string>
+    <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек</string>
     <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
     <string name="pref_noti">Уведомления</string>
     <string name="pref_scrobble_noti">Уведомление скробблинга</string>
@@ -229,7 +219,6 @@
     <string name="pref_about">Разное</string>
     <string name="pref_search_title">Сервис поиска песен</string>
     <string name="pref_scrobble_only">(Только скробблинг)</string>
-    <string name="pref_scrobble_love_only">(Scrobble &amp; love only)</string>
     <string name="pref_user_label" comment="(Like username)">Пользователь</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентификации</string>
     <string name="pref_now_playing">Отправить сейчас играет</string>
@@ -245,8 +234,7 @@
     <string name="pref_import">Импорт</string>
     <string name="pref_personalization">Персонализация</string>
     <string name="pref_themes">Темы</string>
-    <string name="pref_themes_desc">Смешивайте и комбинируйте,
-а также меняйте цвет уведомлений.</string>
+    <string name="pref_themes_desc">Смешивайте и комбинируйте,\nа также меняйте цвет уведомлений</string>
     <string name="pref_widget_charts">Виджет на главном экране</string>
     <string name="pref_show_albums">Показать названия альбомов</string>
     <string name="pref_show_albums_desc">…в недавних скробблах</string>
@@ -254,7 +242,7 @@
     <string name="pref_regex_edits">Редактирование шаблонов</string>
     <string name="pref_blocked_metadata">Заблокированные метаданные</string>
     <string name="pref_translate">Перевести это приложение</string>
-    <string name="import_hey_wtf">Вероятно, это не файл экспорта Pano Scrobbler.</string>
+    <string name="import_hey_wtf">Вероятно, это не файл экспорта Pano Scrobbler</string>
     <string name="export_failed">Экспорт не удался</string>
     <string name="imported">Импортирован</string>
     <string name="import_options">Параметры импорта</string>
@@ -276,12 +264,12 @@
 Их можно использовать с приложениями, такими как Tasker, Macrodroid и т. д."</string>
     <string name="pref_intents">Интенты для Таскера</string>
     <string name="copied">Скопировано!</string>
-    <string name="lastfm_reauth">Вам необходимо повторно пройти аутентификацию, чтобы редактировать или удалять скробблы.</string>
+    <string name="lastfm_reauth">Вам необходимо повторно пройти аутентификацию, чтобы редактировать или удалять скробблы</string>
     <string name="custom_listenbrainz">Пользовательский сервер Listenbrainz</string>
     <string name="failed_encode_url">не удалось закодировать URL</string>
     <string name="check_nls" formatted="true" comment="app name">Проверьте %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="app name">Доступ к специальному приложению&gt; Доступ к уведомлениям&gt; %1$s</string>
-    <string name="artist_extra">Популярные треки, албомы и похожие исполнители.</string>
+    <string name="artist_extra">Популярные треки, албомы и похожие исполнители</string>
     <string name="no_browser">Браузер не установлен.</string>
     <string name="no_player">Музыкальный плеер не установлен.</string>
     <string name="not_running">Скробблер был остановлен вашей системой.</string>
@@ -293,7 +281,6 @@
     <string name="acr_secret">Secret</string>
     <string name="add_acr_key">добавить ACRCloud ключ</string>
     <string name="remove_acr_key">Удалить ключ ACRCloud</string>
-    <string name="add_acr_consider">To prevent hitting rate limits, consider adding your own ACRCloud Key</string>
     <string name="add">Добавить</string>
     <string name="add_acr_key_info">"• Зарегистрируйтесь на console.acrcloud.com
 • Перейдите к проэктамм &gt; Аудио &amp; видео распознавание

@@ -311,7 +311,7 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="acr_secret">Código secreto</string>
     <string name="add_acr_key">Adicionar chave ACRCloud</string>
     <string name="remove_acr_key">Remover chave ACRCloud</string>
-    <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar a sua própria chave ACRcloud</string>
+    <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar a sua própria chave ACRCloud</string>
     <string name="add">Adir</string>
     <string name="add_acr_key_info">"• Registe-se em https://console.acrcloud.com
 • Navegue em Projects &gt; Audio &amp; video recognition

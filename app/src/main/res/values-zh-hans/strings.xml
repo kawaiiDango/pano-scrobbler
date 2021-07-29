@@ -3,6 +3,9 @@
     <plurals name="num_scrobbles_noti">
         <item quantity="other">%1$s</item>
     </plurals>
+    <plurals name="num_listeners">
+        <item quantity="other">%1$s 听众</item>
+    </plurals>
     <string name="settings">设置</string>
     <string name="bug_report">Bug 报告</string>
     <string name="album_art">专辑封面</string>

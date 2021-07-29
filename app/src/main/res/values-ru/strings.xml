@@ -81,7 +81,7 @@
     <string name="grant_autostart">Включить автозапуск</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Требуется на устройствах %1$s для запуска скробблера</string>
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
-    <string name="grant_notification_access_desc">Требуется для получения метаданных музыки даже из приложений, не связанных с музыкой, таких как YouTube, браузер и т. д. Фактические уведомления не читаются.</string>
+    <string name="grant_notification_access_desc">Требуется для получения метаданных музыки даже из приложений, не связанных с музыкой, таких как YouTube, браузер и т. д. Фактические уведомления не читаются</string>
     <string name="authenticate_with_lastfm">Авторизируйтесь в last.FM</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM и Listenbrainz могут быть авторизированы после этого меню в настройках</string>
     <string name="swap" comment="(Swap title and artist)">Свап</string>
@@ -141,8 +141,7 @@
     <string name="graph_weekly">Еженедельный подсчет скробблов</string>
     <string name="graph_monthly">Ежемесячный подсчет скробблов</string>
     <string name="graph_yearly">Ежегодный подсчет скробблов</string>
-    <string name="graph_scrub_msg">Время в вашем часовом поясе 
-Удерживайте или прокрутите график, чтобы увидеть точное количество</string>
+    <string name="graph_scrub_msg">Время в вашем часовом поясе\nУдерживайте или прокрутите график, чтобы увидеть точное количество</string>
     <string name="original">Оригинал</string>
     <string name="corrected">Исправленный</string>
     <string name="tag">Тег</string>
@@ -284,7 +283,7 @@
     <string name="add">Добавить</string>
     <string name="add_acr_key_info">"• Зарегистрируйтесь на console.acrcloud.com
 • Перейдите к проэктамм &gt; Аудио &amp; видео распознавание
-• Создайте новый проект, выберите Recorded Audio и сегмент ACRCloud Music."</string>
+• Создайте новый проект, выберите Recorded Audio и сегмент ACRCloud Music"</string>
     <string name="shazam_scrobbling">Чтобы непрерывно скробблировать, откройте <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> вместо этого и запустите Auto Shazam. Также убедитесь, что Shazam включен для скробблинга.</string>
     <string name="pending_n_remaining" formatted="true">Осталось %1$d</string>
     <string name="submitting_loves" formatted="true">Отправка лайков, осталось %1$d</string>

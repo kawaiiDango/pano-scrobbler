@@ -298,9 +298,9 @@
     <string name="fix_it_startup_title">Диспетчер запуска</string>
     <string name="fix_it_startup_desc_default">Если в вашей системе есть диспетчеры запуска или диспетчеры питания, внесите это приложение в белый список, так как они могут предотвратить сканирование в фоновом режиме.</string>
     <string name="fix_it_noti_title">Включение и выключение доступа к уведомлениям</string>
-    <string name="fix_it_noti_desc">Это временное исправление.</string>
+    <string name="fix_it_noti_desc">Это временное исправление</string>
     <string name="fix_it_battery_title">Отключить оптимизацию батареи</string>
-    <string name="fix_it_battery_desc">Только если ничего не работает.</string>
+    <string name="fix_it_battery_desc">Только если ничего не работает</string>
     <string name="fix_it_action" comment="(To open an app)">Открыть</string>
     <!--  pro  -->
     <string name="get_pro">Поддержка</string>
@@ -321,6 +321,5 @@
 • Установите это приложение прямо с веб-страницы Google Play.
 "</string>
     <string name="billing_themes">Темы (19 х 19 х 20 цвета)</string>
-    <string name="billing_block">Block metadata from scrobbling</string>
     <string name="billing_sharing">Удалить имя приложения при совместном использовании</string>
 </resources>

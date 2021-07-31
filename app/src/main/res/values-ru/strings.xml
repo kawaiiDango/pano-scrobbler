@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s скроббл</item>
-        <item quantity="few">%1$s скроббла</item>
-        <item quantity="many">%1$s скробблов</item>
-        <item quantity="other">%1$s скроббла</item>
+        <item quantity="one">%1$s скробблик</item>
+        <item quantity="few">%1$s 2-3 скробблика</item>
+        <item quantity="many">%1$s скроббликов</item>
+        <item quantity="other">%1$s скробблы</item>
     </plurals>
     <plurals name="num_listeners">
-        <item quantity="one">%1$s слушатель</item>
-        <item quantity="few">%1$s слушателя</item>
-        <item quantity="many">%1$s слушателей</item>
-        <item quantity="other">%1$s слушателя</item>
+        <item quantity="one">%1$s тот кто слушает</item>
+        <item quantity="few">%1$s несколько слушателей</item>
+        <item quantity="many">%1$s много слушателей</item>
+        <item quantity="other">%1$s другие слушателя</item>
     </plurals>
     <plurals name="num_songs">
-        <item quantity="one">%1$d трек</item>
-        <item quantity="few">%1$d трека</item>
-        <item quantity="many">%1$d треков</item>
-        <item quantity="other">%1$d трека</item>
+        <item quantity="one">%1$d песня</item>
+        <item quantity="few">%1$d песни</item>
+        <item quantity="many">%1$d песен</item>
+        <item quantity="other">%1$d песни</item>
     </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$d неделя</item>
@@ -36,20 +36,20 @@
         <item quantity="many">%1$d лет</item>
         <item quantity="other">%1$d года</item>
     </plurals>
-    <string name="settings">Настроить</string>
-    <string name="bug_report">Отчет об ошибке</string>
-    <string name="album_art">Обложка альбома</string>
-    <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось разобрать заголовок</string>
-    <string name="network_error">Ошибка сети</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">игнорировать этот скроббл</string>
-    <string name="scrobble_ignored_save_edit">Lastfm проигнорировал правку, вероятно, потому, что скроббл слишком старый. Хотели бы вы вместо этого сохранить это изменение для будущих скробблеров?</string>
-    <string name="limit_exceeded_ignored">Превышен дневной лимит скробблинга</string>
-    <string name="required_fields_empty" comment="Shown on filling a form">Обязательные поля не заполнены</string>
-    <string name="artist">Артист</string>
-    <string name="artists">Артисты</string>
-    <string name="n_artists">Исполнителей %1$s</string>
-    <string name="top_artists">Популярные исполнители</string>
-    <string name="album_artist">Альбомы артиста</string>
+    <string name="settings">Конфигурировать</string>
+    <string name="bug_report">Отчёт об ошибке</string>
+    <string name="album_art">Обложка</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось разобрать название</string>
+    <string name="network_error">Сетевая ошибка</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">проигнорировал этот скробблинг</string>
+    <string name="scrobble_ignored_save_edit">Lastfm проигнорировал редактирование, вероятно потому что скробблинг слишком старый. Вы хотите сохранить это изменение для будущих скробблинг?</string>
+    <string name="limit_exceeded_ignored">Превышен ежедневный лимит скробблинга</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Обязательные поля пусты</string>
+    <string name="artist">Исполнитель</string>
+    <string name="artists">Исполнители</string>
+    <string name="n_artists">%1$s исполнителей</string>
+    <string name="top_artists">Лучшие Исполнители</string>
+    <string name="album_artist">Исполнитель альбома</string>
     <string name="artist_channel" comment="Artist or youtube channel">Исполнитель / канал</string>
     <string name="similar_artists">Похожие исполнители</string>
     <string name="album_optional">Альбом (по желанию)</string>

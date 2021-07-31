@@ -5,6 +5,7 @@
     <string name="album_art">Обложка альбома</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось разобрать заголовок</string>
     <string name="network_error">Ошибка сети</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">игнорировать этот скроббл</string>
     <string name="scrobble_ignored_save_edit">Lastfm проигнорировал правку, вероятно, потому, что скроббл слишком старый. Хотели бы вы вместо этого сохранить это изменение для будущих скробблеров?</string>
     <string name="limit_exceeded_ignored">Превышен дневной лимит скробблинга</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Обязательные поля не заполнены</string>
@@ -13,6 +14,7 @@
     <string name="n_artists">Исполнителей %1$s</string>
     <string name="top_artists">Популярные исполнители</string>
     <string name="album_artist">Альбомы артиста</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Исполнитель / канал</string>
     <string name="similar_artists">Похожие исполнители</string>
     <string name="album_optional">Альбом (по желанию)</string>
     <string name="album">Албом</string>

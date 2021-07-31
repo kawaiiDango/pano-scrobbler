@@ -1,5 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s скроббл</item>
+        <item quantity="few">%1$s скроббла</item>
+        <item quantity="many">%1$s скробблов</item>
+        <item quantity="other">%1$s скроббла</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s слушатель</item>
+        <item quantity="few">%1$s слушателя</item>
+        <item quantity="many">%1$s слушателей</item>
+        <item quantity="other">%1$s слушателя</item>
+    </plurals>
+    <plurals name="num_songs">
+        <item quantity="one">%1$d трек</item>
+        <item quantity="few">%1$d трека</item>
+        <item quantity="many">%1$d треков</item>
+        <item quantity="other">%1$d трека</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$d неделя</item>
+        <item quantity="few">%1$d недели</item>
+        <item quantity="many">%1$d недель</item>
+        <item quantity="other">%1$d недели</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$d месяц</item>
+        <item quantity="few">%1$d месяца</item>
+        <item quantity="many">%1$d месяцев</item>
+        <item quantity="other">%1$d месяца</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$d год</item>
+        <item quantity="few">%1$d года</item>
+        <item quantity="many">%1$d лет</item>
+        <item quantity="other">%1$d года</item>
+    </plurals>
     <string name="settings">Настроить</string>
     <string name="bug_report">Отчет об ошибке</string>
     <string name="album_art">Обложка альбома</string>
@@ -31,6 +67,7 @@
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Новый скробблинг…</string>
     <string name="state_scrobbled">Заскробблено</string>
+    <string name="unscrobble">Удалить скроббл</string>
     <string name="state_unscrobbled">Без скробблинга</string>
     <string name="state_didnt_scrobble">Не скробблить</string>
     <string name="state_unrecognised_artist">Неизвестный исполнитель</string>
@@ -53,7 +90,8 @@
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слушал\n%1$s %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">My %1$s %2$s:\n%3$s</string>
     <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s\'s %1$s %2$s:\n%3$s</string>
-    <string name="share_this_song">Поеделиться этим треком</string>
+    <string name="share_sig">(через Pano Scrobbler)</string>
+    <string name="share_this_song">Поделиться этим треком</string>
     <string name="share">Поделиться</string>
     <string name="more_info">Больше информации</string>
     <string name="search">Поиск</string>
@@ -97,6 +135,7 @@
     <string name="n_simple_edits" formatted="true">Правки - %1$d</string>
     <string name="n_regex_edits" formatted="true">Редактируемых шаблонов - %1$d</string>
     <string name="n_blocked_metadata" formatted="true">Заблокированные метаданные - %1$d</string>
+    <string name="force_remembered">Принудительный скробблинг (запомнить)</string>
     <string name="force" comment="Force scrobble but in short">Применить</string>
     <string name="grant_rec_perm">Пожалуйста, предоставьте разрешение на использование микрофона</string>
     <string name="charts">Чарты</string>
@@ -172,6 +211,7 @@
     <string name="same_tone">Одинаковый тон для всех</string>
     <string name="random_theme">Выбирать случайным образом при каждом запуске</string>
     <string name="palette_bg">Используйте цвет обложки альбома для некоторых фонов</string>
+    <string name="edit_name" comment="name for regex pattern">Дружественное имя (необязательно)</string>
     <string name="edit_regex">Шаблон регулярного выражения</string>
     <string name="edit_regex_replacement">Замена регулярного выражения</string>
     <string name="edit_field" comment="Field like artist/album/track etc">Поле</string>
@@ -220,6 +260,7 @@
     <string name="pref_about">Разное</string>
     <string name="pref_search_title">Сервис поиска песен</string>
     <string name="pref_scrobble_only">(Только скробблинг)</string>
+    <string name="pref_scrobble_love_only">(Скроббл &amp; только любимые)</string>
     <string name="pref_user_label" comment="(Like username)">Пользователь</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентификации</string>
     <string name="pref_now_playing">Отправить сейчас играет</string>
@@ -282,6 +323,7 @@
     <string name="acr_secret">Secret</string>
     <string name="add_acr_key">добавить ACRCloud ключ</string>
     <string name="remove_acr_key">Удалить ключ ACRCloud</string>
+    <string name="add_acr_consider">Чтобы предотвратить превышение лимитов скорости, подумайте о добавлении собственного ключа ACRCloud</string>
     <string name="add">Добавить</string>
     <string name="add_acr_key_info">"• Зарегистрируйтесь на console.acrcloud.com
 • Перейдите к проэктамм &gt; Аудио &amp; видео распознавание
@@ -322,5 +364,6 @@
 • Установите это приложение прямо с веб-страницы Google Play.
 "</string>
     <string name="billing_themes">Темы (19 х 19 х 20 цвета)</string>
+    <string name="billing_block">Блокировать метаданные от скробблинга</string>
     <string name="billing_sharing">Удалить имя приложения при совместном использовании</string>
 </resources>

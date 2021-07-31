@@ -127,7 +127,7 @@
     <string name="swap" comment="(Swap title and artist)">Свап</string>
     <string name="rate_msg">Нравится это приложение?</string>
     <string name="rate_action">Оцените это</string>
-    <string name="time_just_now">Сейчас</string>
+    <string name="time_just_now">сейчас</string>
     <string name="no_mail_apps">Почтовый клиент не установлен.</string>
     <string name="loved">Любимые</string>
     <string name="unloved">Unloved</string>
@@ -141,7 +141,7 @@
     <string name="charts">Чарты</string>
     <string name="scrobble_from_mic">Скробблинг с микрофона</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">From mic</string>
-    <string name="add_to_hs">добавить на главный экран</string>
+    <string name="add_to_hs">Добавить на главный экран</string>
     <string name="listening">Слушаю музыку, которая играет вокруг вас…</string>
     <string name="uploading">Загрузка…</string>
     <string name="recording_failed">Не удалось начать запись. Микрофон может быть занят или недоступен на этом устройстве</string>
@@ -164,7 +164,7 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Скробблы к %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">From %1$s</string>
     <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s to %2$s</string>
-    <string name="weekly_range" formatted="true" comment="%1= date %2= date">Еженедельно (%1$s to %2$s)</string>
+    <string name="weekly_range" formatted="true" comment="%1= date %2= date">еженедельно (%1$s to %2$s)</string>
     <string name="not_found" comment="Shown in search">Не найдено</string>
     <string name="share_this_chart">Поеделиться этим чартом</string>
     <string name="weekly">Еженедельно</string>
@@ -308,7 +308,7 @@
     <string name="copied">Скопировано!</string>
     <string name="lastfm_reauth">Вам необходимо повторно пройти аутентификацию, чтобы редактировать или удалять скробблы</string>
     <string name="custom_listenbrainz">Пользовательский сервер Listenbrainz</string>
-    <string name="failed_encode_url">не удалось закодировать URL</string>
+    <string name="failed_encode_url">Не удалось закодировать URL</string>
     <string name="check_nls" formatted="true" comment="app name">Проверьте %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="app name">Доступ к специальному приложению&gt; Доступ к уведомлениям&gt; %1$s</string>
     <string name="artist_extra">Популярные треки, албомы и похожие исполнители</string>
@@ -321,7 +321,7 @@
     <string name="acr_host">Host</string>
     <string name="acr_key">Access Key</string>
     <string name="acr_secret">Secret</string>
-    <string name="add_acr_key">добавить ACRCloud ключ</string>
+    <string name="add_acr_key">Добавить ACRCloud ключ</string>
     <string name="remove_acr_key">Удалить ключ ACRCloud</string>
     <string name="add_acr_consider">Чтобы предотвратить превышение лимитов скорости, подумайте о добавлении собственного ключа ACRCloud</string>
     <string name="add">Добавить</string>

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="other">%1$s条记录</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="other">%1$s 位听众</item>
     </plurals>

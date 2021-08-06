@@ -116,7 +116,6 @@
     <string name="rate_msg">¿Disfrutando de esta aplicación?</string>
     <string name="rate_action">Califícalo</string>
     <string name="time_just_now">hace un momento</string>
-    <string name="no_mail_apps">Ningún cliente de correo electrónico está instalado.</string>
     <string name="loved">Favoritos</string>
     <string name="unloved">Eliminar de favoritos</string>
     <string name="simple_edits">Ediciones</string>
@@ -218,7 +217,6 @@
     <string name="n_matches" formatted="true">%1$d coincidencias</string>
     <string name="text">Texto</string>
     <string name="edit_regex_warning">⚠ Asegúrate de entender <a href="https://www.google.com/search?q=regex+tutorial">regex java</a> antes de usar esto, o usa uno de los <b>presets</b> proporcionados. Partidas regex intentadas desde arriba hacia abajo</string>
-    <string name="blocked_metadata_info">ℹ️ Completa más de uno de estos campos aplicará un operador AND entre ellos.</string>
     <!-- presets-->
     <string name="preset_remastered_track">Remasterizado (tema)</string>
     <string name="preset_remastered_album">Remasterizado (álbum)</string>
@@ -300,9 +298,6 @@ Pueden utilizarse con aplicaciones como Tasker, Macrodroid, etc."</string>
     <string name="check_nls" formatted="true" comment="app name">Comprobar %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="app name">Acceso especial a la aplicación &gt; Acceso a notificaciones &gt; %1$s</string>
     <string name="artist_extra">Temas, álbumes &amp; similares</string>
-    <string name="no_browser">No hay ningún navegador instalado.</string>
-    <string name="no_player">No hay reproductor de música instalado.</string>
-    <string name="not_running">⚠ El scrobbler fue asesinado por tu sistema.</string>
     <string name="not_running_fix_action">Corregir</string>
     <string name="login_submit">Verificar</string>
     <string name="scrobble">Scrobble</string>

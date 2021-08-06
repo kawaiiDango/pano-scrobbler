@@ -110,7 +110,6 @@
     <string name="rate_msg">喜欢这个应用吗？</string>
     <string name="rate_action">去打分</string>
     <string name="time_just_now">现在</string>
-    <string name="no_mail_apps">未安装电子邮件客户端。</string>
     <string name="loved">喜爱的</string>
     <string name="unloved">不再喜爱的</string>
     <string name="simple_edits">编辑</string>
@@ -212,7 +211,6 @@
     <string name="n_matches" formatted="true">%1$d 个匹配</string>
     <string name="text">文本</string>
     <string name="edit_regex_warning">⚠ 请确保您在使用前了解 <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> 或使用提供的 <b>预设之一</b> 。 从上往下尝试用正则表达式达成匹配</string>
-    <string name="blocked_metadata_info">ℹ️ 填写超过一个域，将在这些域之间添加AND操作符。</string>
     <!-- presets-->
     <string name="preset_remastered_track">已重新调整(曲目)</string>
     <string name="preset_remastered_album">已重新调整(专辑)</string>
@@ -294,9 +292,6 @@
     <string name="check_nls" formatted="true" comment="app name">正在检查：%1$s</string>
     <string name="check_nls_tv" formatted="true" comment="app name">特殊应用访问 &gt; 通知访问 &gt; %1$s</string>
     <string name="artist_extra">曲目，专辑 &amp; 相似</string>
-    <string name="no_browser">未安装浏览器</string>
-    <string name="no_player">未安装音乐播放器。</string>
-    <string name="not_running">⚠ 你的系统终止了记录器的运行。</string>
     <string name="not_running_fix_action">修复</string>
     <string name="login_submit">验证</string>
     <string name="scrobble">音乐记录</string>

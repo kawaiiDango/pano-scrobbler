@@ -8,9 +8,9 @@ buildscript {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0-alpha03'
+        classpath 'com.android.tools.build:gradle:7.1.0-alpha06'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.github.triplet.gradle:play-publisher:3.5.0-SNAPSHOT"
+        classpath "com.github.triplet.gradle:play-publisher:3.6.0-SNAPSHOT"
 
         classpath 'com.google.gms:google-services:4.3.8'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'

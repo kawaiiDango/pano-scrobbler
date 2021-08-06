@@ -116,6 +116,7 @@
     <string name="rate_msg">A gostar desta aplicação?</string>
     <string name="rate_action">Avalie-a</string>
     <string name="time_just_now">ainda agora</string>
+    <string name="no_mail_apps">Nenhum cliente de e-mail instalado</string>
     <string name="loved">Favoritas</string>
     <string name="unloved">Tirada das favoritas</string>
     <string name="simple_edits">Edições</string>
@@ -217,6 +218,7 @@
     <string name="n_matches" formatted="true">%1$d correspondências</string>
     <string name="text">Texto</string>
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
+    <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
     <!-- presets-->
     <string name="preset_remastered_track">Remasterizado (faixa)</string>
     <string name="preset_remastered_album">Remasterizado (álbum)</string>
@@ -298,6 +300,9 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="check_nls" formatted="true" comment="app name">Verificar %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="app name">Acesso especial à aplicação &gt; Acesso às Notificações &gt; %1$s</string>
     <string name="artist_extra">Faixas, álbuns &amp; semelhantes</string>
+    <string name="no_browser">Nenhum navegador instalado</string>
+    <string name="no_player">Nenhum reprodutor de música instalado</string>
+    <string name="not_running">⚠ Scrobbler terminado abruptamente pelo seu sistema</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit">Verificar</string>
     <string name="scrobble">Scrobble</string>

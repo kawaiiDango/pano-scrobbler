@@ -83,12 +83,7 @@ class PrefFragment : PreferenceFragmentCompat(){
 
         val pixelNp = findPreference<SwitchPreference>(Stuff.PREF_PIXEL_NP)!!
         hideOnTV.add(pixelNp)
-        try {
-            if (Build.VERSION.SDK_INT >= 30)
-                context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
-            else
-                context?.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
-        } catch (e: PackageManager.NameNotFoundException) {
+        if (Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE) {
             pixelNp.summary = getString(R.string.pref_pixel_np_nope)
             pixelNp.isEnabled = false
             pixelNp.isPersistent = false

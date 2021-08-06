@@ -3,6 +3,7 @@ package com.arn.scrobble.pref
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.JsonReader
 import android.util.JsonWriter
@@ -230,10 +231,9 @@ class ImExporter {
                                     if (settingsName == Stuff.PREF_AUTO_DETECT && Main.isTV)
                                         skipValue()
                                     else if (settingsName == Stuff.PREF_PIXEL_NP) {
-                                        try {
-                                            context.packageManager?.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
+                                        if (Build.MANUFACTURER.lowercase() == Stuff.MANUFACTURER_GOOGLE) {
                                             pref.putBoolean(settingsName, nextBoolean())
-                                        } catch (e: PackageManager.NameNotFoundException) {
+                                        } else {
                                             skipValue()
                                         }
                                     } else if (settingsName in arrayOf(

@@ -23,7 +23,6 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import android.webkit.URLUtil
 import android.widget.ImageButton
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -39,9 +38,9 @@ import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
-import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.info.InfoFragment
+import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.pref.PrefFragment
@@ -54,19 +53,19 @@ import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
-import okhttp3.HttpUrl
 import org.codechimp.apprater.AppRater
 import timber.log.Timber
 import java.io.File
 import java.text.NumberFormat
 import java.util.*
 
+
 class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         FragmentManager.OnBackStackChangedListener{
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var pref: MultiPreferences
-    private var lastDrawerOpenTime:Long = 0
+    private var lastDrawerOpenTime: Long = 0
     private var backArrowShown = false
     var coordinatorPadding = 0
     private var drawerInited = false

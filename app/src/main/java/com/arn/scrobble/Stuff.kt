@@ -179,6 +179,8 @@ object Stuff {
     const val LASTFM_MAX_PAST_SCROBBLE: Long = 14 * 24 * 60 * 60 * 1000
     const val CRASH_REPORT_INTERVAL: Long = 120 * 60 * 1000
     const val TRACK_INFO_VALIDITY: Long = 5 * 1000
+    const val TRACK_INFO_WINDOW: Long = 60 * 1000
+    const val TRACK_INFO_REQUESTS: Long = 2
     const val META_WAIT: Long = 400
     const val START_POS_LIMIT: Long = 1500
     const val PENDING_PURCHASE_NOTIFY_THRESHOLD: Long = 15 * 1000
@@ -222,6 +224,7 @@ object Stuff {
 
     const val MANUFACTURER_HUAWEI = "huawei"
     const val MANUFACTURER_SAMSUNG = "samsung"
+    const val MANUFACTURER_GOOGLE = "google"
 
     const val CHANNEL_PIXEL_NP = "com.google.intelligence.sense.ambientmusic.MusicNotificationChannel"
     const val PACKAGE_PIXEL_NP = "com.google.intelligence.sense"
@@ -302,7 +305,7 @@ object Stuff {
         var s = ""
         for (key in keySet().sortedDescending()) {
             val value = get(key) ?: "null"
-            s += String.format("%s= %s, ", key, value.toString())
+            s += "$key= $value, "
         }
         return s
     }

@@ -1,11 +1,18 @@
 package com.arn.scrobble
+import android.app.ActivityManager
 import android.app.Application
+import android.content.Context
+import android.os.Build
+import com.github.anrwatchdog.ANRWatchDog
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Caller
 import de.umass.lastfm.cache.FileSystemCache
 import timber.log.Timber
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.util.logging.Level
+
 
 class App : Application() {
 
@@ -20,6 +27,22 @@ class App : Application() {
             Timber.plant(CrashlyticsTree())
         }
         Timber.plant(Timber.DebugTree())
+
+        ANRWatchDog(4500)
+            .setANRListener {
+                val sw = StringWriter()
+                it.printStackTrace(PrintWriter(sw))
+                Timber.tag("anrWatchDog").e(RuntimeException(sw.toString().take(2500)))
+            }
+            .start()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 5)
+            exitReasons.forEachIndexed { index, applicationExitInfo ->
+                Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
+            }
+        }
+
     }
 
     @Synchronized

@@ -1041,13 +1041,8 @@ class LFMRequester(context: Context) {
         return null
     }
 
-    private fun reAuth(context: Context) {
-        MultiPreferences(context).remove(Stuff.PREF_LASTFM_SESS_KEY)
-        Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
-    }
-
     private fun getScrobbleResult(scrobbleData: ScrobbleData, session: Session, nowPlaying: Boolean): ScrobbleResult {
-        if (Thread.interrupted())
+        if (Thread.interrupted() && nowPlaying)
             throw InterruptedException()
         return try {
             if (nowPlaying)
@@ -1055,7 +1050,7 @@ class LFMRequester(context: Context) {
             else
                 Track.scrobble(scrobbleData, session)
         } catch (e: CallException) {
-            if (Thread.interrupted())
+            if (Thread.interrupted() && nowPlaying)
                 throw InterruptedException()
 //     SocketTimeoutException extends InterruptedIOException
             e.printStackTrace()
@@ -1119,6 +1114,7 @@ class LFMRequester(context: Context) {
         private var lastNp = ScrobbleData() to 0L
 
         private var lastNpInfoTime = 0L
+        private var lastNpInfoCount = 0
 
         private fun slurp(urlConnection: HttpURLConnection, bufferSize: Int): String {
             val buffer = CharArray(bufferSize)
@@ -1156,6 +1152,16 @@ class LFMRequester(context: Context) {
             }
             if (cacheOnly)
                 return null
+
+            val now = System.currentTimeMillis()
+            if (now - lastNpInfoTime < Stuff.TRACK_INFO_WINDOW && !BuildConfig.DEBUG) {
+                lastNpInfoCount++
+                if (lastNpInfoCount >= Stuff.TRACK_INFO_REQUESTS)
+                    return null
+            } else {
+                lastNpInfoTime = now
+                lastNpInfoCount = 0
+            }
             val track = try {
                 Track.getInfo(artist, title, null, lastfmUsername, null, Stuff.LAST_KEY)
             } catch (e: Exception) {

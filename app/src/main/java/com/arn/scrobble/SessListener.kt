@@ -255,12 +255,6 @@ class SessListener (
                 this.duration = duration
                 currHash = Stuff.genHashCode(artist, album, title, packageName)
 
-                // hack for buggy youtubes until they fix it
-//                if (packageName in (Stuff.IGNORE_ARTIST_META.take(5) + Stuff.PACKAGE_YOUTUBE_MUSIC) &&
-//                        lastState == PlaybackState.STATE_STOPPED &&
-//                        audioManager.isMusicActive)
-//                    lastState = PlaybackState.STATE_PLAYING
-
                 // scrobbled when ad was playing
                 if (!handler.hasMessages(currHash) && onlyDurationUpdated &&
                     packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC))

@@ -192,8 +192,8 @@
             android:defaultValue="false"
             android:persistent="true"
             android:key="lastfm_disable"
-            android:summary="You still need a lastFM login for the rest of the UI to work, for now"
-            android:title="Don't scrobble to lastFM"/>
+            android:summary="@string/pref_lastfm_disable_desc"
+            android:title="@string/pref_lastfm_disable"/>
     </PreferenceCategory>
     <PreferenceCategory
         app:icon="@drawable/vd_info"

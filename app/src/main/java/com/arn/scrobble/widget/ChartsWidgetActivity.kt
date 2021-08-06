@@ -42,6 +42,12 @@ class ChartsWidgetActivity: AppCompatActivity() {
         setResult(false)
         val editor = pref.edit()
         binding.widgetPeriod.chartsChooseWeek.visibility = View.GONE
+        binding.widgetPeriod.charts7day.text = resources.getQuantityString(R.plurals.num_weeks, 1, 1)
+        binding.widgetPeriod.charts1month.text = resources.getQuantityString(R.plurals.num_months, 1, 1)
+        binding.widgetPeriod.charts3month.text = resources.getQuantityString(R.plurals.num_months, 3, 3)
+        binding.widgetPeriod.charts6month.text = resources.getQuantityString(R.plurals.num_months, 6, 6)
+        binding.widgetPeriod.charts12month.text = resources.getQuantityString(R.plurals.num_years, 1, 1)
+        binding.widgetPeriod.chartsOverall.text = getString(R.string.charts_overall)
 
         binding.widgetPeriod.chartsPeriod.setOnCheckedChangeListener { group, checkedId ->
             val idx = periodChipIds.indexOf(checkedId)

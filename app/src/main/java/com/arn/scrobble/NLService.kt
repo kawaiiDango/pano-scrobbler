@@ -35,7 +35,6 @@ import com.arn.scrobble.edits.EditDialogActivity
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.*
 import timber.log.Timber
-import java.util.*
 
 
 class NLService : NotificationListenerService() {
@@ -46,7 +45,6 @@ class NLService : NotificationListenerService() {
     private var lastNpTask: LFMRequester.MyAsyncTask? = null
     private var currentBundle = Bundle()
     private var notiColor = Color.MAGENTA
-    private val defaultScope = CoroutineScope(Dispatchers.Default + Job())
     private val isPro
         get() = pref.getBoolean(Stuff.PREF_PRO_STATUS, false)
     private var crashlyticsReporterJob: Job? = null
@@ -176,7 +174,6 @@ class NLService : NotificationListenerService() {
             sessListener = null
             handler.removeCallbacksAndMessages(null)
         }
-        defaultScope.cancel()
         crashlyticsReporterJob?.cancel()
         PanoDb.destroyInstance()
     }
@@ -814,9 +811,9 @@ class NLService : NotificationListenerService() {
                         return
 
                     val title = if (period == Period.WEEK)
-                        getString(R.string.digest_weekly).lowercase()
+                        getString(R.string.digest_weekly)
                     else
-                        getString(R.string.digest_monthly).lowercase()
+                        getString(R.string.digest_monthly)
                     var intent = Intent(Intent.ACTION_SEND)
                             .putExtra("packageName", packageName)
                     var shareText = title + "\n\n" +

@@ -121,13 +121,14 @@
     <string name="grant_autostart">Включить автозапуск</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Требуется на устройствах %1$s для запуска скробблера</string>
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
-    <string name="grant_notification_access_desc">Требуется для получения метаданных музыки даже из приложений, не связанных с музыкой, таких как YouTube, браузер и т. д. Фактические уведомления не читаются</string>
+    <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Нотификации, не относящиеся к музыке, не читаются</string>
     <string name="authenticate_with_lastfm">Авторизируйтесь в last.FM</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM и Listenbrainz могут быть авторизированы после этого меню в настройках</string>
     <string name="swap" comment="(Swap title and artist)">Свап</string>
     <string name="rate_msg">Нравится это приложение?</string>
     <string name="rate_action">Оцените это</string>
     <string name="time_just_now">сейчас</string>
+    <string name="no_mail_apps">Почтовый клиент не установлен</string>
     <string name="loved">Любимые</string>
     <string name="unloved">Unloved</string>
     <string name="simple_edits">Правки</string>
@@ -229,6 +230,7 @@
     <string name="n_matches" formatted="true">Совпадений - %1$d</string>
     <string name="text">Текст</string>
     <string name="edit_regex_warning">ℹ️ Перед использованием убедитесь, что вы понимаете <a href="https://www.google.com/search?q=regex+tutorial">Java Regex</a> или используйте одну из <b>предустановок</b></string>
+    <string name="blocked_metadata_info">ℹ️ При заполнении более чем одного из этих полей между ними будет применяться оператор И</string>
     <!-- presets-->
     <string name="preset_remastered_track">Трек (Remastered)</string>
     <string name="preset_remastered_album">Альбом (Remastered)</string>
@@ -310,6 +312,9 @@
     <string name="check_nls" formatted="true" comment="app name">Проверьте %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="app name">Доступ к специальному приложению&gt; Доступ к уведомлениям&gt; %1$s</string>
     <string name="artist_extra">Популярные треки, албомы и похожие исполнители</string>
+    <string name="no_browser">Браузер не установлен</string>
+    <string name="no_player">Музыкальный плеер не установлен</string>
+    <string name="not_running">⚠ Скробблер был остановлен вашей системой</string>
     <string name="not_running_fix_action">Исправить это</string>
     <string name="login_submit">Проверить</string>
     <string name="scrobble">Скробблинг</string>
@@ -331,7 +336,6 @@
     <string name="navigation_drawer_open">Откройте панель навигации или вернитесь</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
     <string name="graph">Graph</string>
-    <string name="cleared_disabled_apps">Cleared disabled apps</string>
     <string name="fix_it_title">Возможные исправления</string>
     <string name="fix_it_startup_title">Диспетчер запуска</string>
     <string name="fix_it_startup_desc_default">Если в вашей системе есть диспетчеры запуска или диспетчеры питания, внесите это приложение в белый список, так как они могут предотвратить сканирование в фоновом режиме.</string>

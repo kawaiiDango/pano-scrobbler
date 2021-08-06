@@ -152,7 +152,7 @@
     <string name="rate_msg">Enjoying this app?</string>
     <string name="rate_action">Rate it</string>
     <string name="time_just_now">just now</string>
-    <string name="no_mail_apps">No email client is installed.</string>
+    <string name="no_mail_apps">No email client is installed</string>
     <string name="loved">Loved</string>
     <string name="unloved">Unloved</string>
     <string name="simple_edits">Edits</string>
@@ -298,7 +298,7 @@
     <string name="n_matches" formatted="true">%1$d matches</string>
     <string name="text">Text</string>
     <string name="edit_regex_warning">⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
-    <string name="blocked_metadata_info">ℹ️ Filling in more than one of these fields will apply an AND operator between them.</string>
+    <string name="blocked_metadata_info">ℹ️ Filling in more than one of these fields will apply an AND operator between them</string>
 
 <!-- presets-->
     <string name="preset_remastered_track">Remastered (track)</string>
@@ -394,9 +394,9 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
         comment="app name"
         >Special app access > Notification Access > %1$s</string>
     <string name="artist_extra">Tracks, albums &amp; similar</string>
-    <string name="no_browser">No browser is installed.</string>
-    <string name="no_player">No music player is installed.</string>
-    <string name="not_running">⚠ The scrobbler was killed by your system.</string>
+    <string name="no_browser">No browser is installed</string>
+    <string name="no_player">No music player is installed</string>
+    <string name="not_running">⚠ The scrobbler was killed by your system</string>
     <string name="not_running_fix_action">Fix it</string>
     <string name="login_submit">Verify</string>
     <string name="scrobble">Scrobble</string>

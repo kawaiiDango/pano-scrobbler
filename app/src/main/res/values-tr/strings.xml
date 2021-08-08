@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings">Ayarlar</string>
+    <string name="bug_report">Hata raporu</string>
+    <string name="album_art">Albüm kapağı</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Başlık ayrıştırılamadı</string>
+    <string name="network_error">Bağlantı hatası</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">bu skrop dikkate alınmadı</string>
     <!--  todo: don't concat  -->
     <!-- presets-->
     <!--  pro  -->

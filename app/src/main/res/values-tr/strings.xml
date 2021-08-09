@@ -5,8 +5,8 @@
     <string name="album_art">Albüm kapağı</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Başlık ayrıştırılamadı</string>
     <string name="network_error">Bağlantı hatası</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">bu skrop görmezden gelindi</string>
-    <string name="scrobble_ignored_save_edit">Lastfm düzenlemeyi muhtemelen skrop çok eski olduğu için görmezden geldi. Bu düzenlemeyi gelecek skroplar için saklamak ister misiniz?</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">bu skrop dikkate alınmadı</string>
+    <string name="scrobble_ignored_save_edit">Lastfm düzenlemeyi muhtemelen skrop çok eski olduğu için dikkate almadı. Bu düzenlemeyi gelecek skroplar için saklamak ister misiniz?</string>
     <string name="limit_exceeded_ignored">Günlük scrop sınırı aşıldı</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Gerekli alanlar boş</string>
     <string name="artist">Sanatçı</string>
@@ -30,6 +30,19 @@
     <string name="similar" comment="Similar tracks but in short">Benzer</string>
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Skroplanıyor…</string>
+    <string name="state_scrobbled">Skroplandı</string>
+    <string name="unscrobble">Skroplamayı geri al</string>
+    <string name="state_unscrobbled">Skroplama geri alındı</string>
+    <string name="state_didnt_scrobble">Skroplama</string>
+    <string name="state_unrecognised_artist">Bilinmeyen sanatçı</string>
+    <string name="tap_to_edit">(Düzenlemek için dokunun)</string>
+    <string name="recently_scrobbled">En Son Skroplananlar</string>
+    <string name="recently_loved">♥ En Son Beğenilenler</string>
+    <string name="recents">Son dinlemeler</string>
+    <string name="graph_info">… son 5 ay</string>
+    <string name="enabled_apps">Etkin Uygulamalar</string>
+    <string name="almost_there">Neredeyse tamam…</string>
+    <string name="music_players">Müzik Oynatıcılar</string>
     <!--  todo: don't concat  -->
     <!-- presets-->
     <!--  pro  -->

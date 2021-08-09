@@ -36,19 +36,19 @@
     <string name="artist">Sanatçı</string>
     <string name="artists">Sanatçılar</string>
     <string name="n_artists">%1$s sanatçı</string>
-    <string name="top_artists">En iyi sanatçılar</string>
+    <string name="top_artists">En çık dinlenen sanatçılar</string>
     <string name="album_artist">Albüm sanatçısı</string>
     <string name="artist_channel" comment="Artist or youtube channel">Sanatçı / kanal</string>
-    <string name="similar_artists">Benzer şarkıcılar</string>
+    <string name="similar_artists">Benzer sanatçılar</string>
     <string name="album_optional">Albüm (opsiyonel)</string>
     <string name="album">Albüm</string>
     <string name="albums">Albümler</string>
     <string name="n_albums">%1$s albüm</string>
-    <string name="top_albums">En iyi albümler</string>
+    <string name="top_albums">En çok dinlenen albümler</string>
     <string name="track">Parça</string>
     <string name="tracks">Parçalar</string>
     <string name="n_tracks">%1$s parça</string>
-    <string name="top_tracks">En iyi parçalar</string>
+    <string name="top_tracks">En çok dinlenen parçalar</string>
     <string name="similar_tracks">Benzer parçalar</string>
     <string name="no_similar_tracks">Benzer parça bulunamadı</string>
     <string name="similar" comment="Similar tracks but in short">Benzer</string>
@@ -57,7 +57,7 @@
     <string name="state_scrobbled">Skroplandı</string>
     <string name="unscrobble">Skroplamayı geri al</string>
     <string name="state_unscrobbled">Skroplama geri alındı</string>
-    <string name="state_didnt_scrobble">Skroplama</string>
+    <string name="state_didnt_scrobble">Skroplanmadı</string>
     <string name="state_unrecognised_artist">Bilinmeyen sanatçı</string>
     <string name="tap_to_edit">(Düzenlemek için dokunun)</string>
     <string name="tap_to_edit_force">(Düzenlemek veya zorlamak için dokunun)</string>
@@ -71,12 +71,12 @@
     <string name="video_players">Video Akışı Uygulamaları</string>
     <string name="other_apps">Diğer Uygulamalar</string>
     <string name="choose_apps">Skroplanacak Uygulamaları seçin</string>
-    <string name="offline">Çevrimdışı. Güncel veri gösterilemiyor</string>
+    <string name="offline">Çevrimdışı. Güncel veriler gösterilemiyor</string>
     <string name="unavailable_offline">Çevrimdışı kullanılamıyor</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Hizmetler</string>
-    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Bak ne dinliyorum\n%1$s %2$s</string>
-    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Bak %3$s ne dinliyor\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">%1$s %2$s:\n%3$s</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Bak ne dinliyorum:\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Bak %3$s ne dinliyor:\n%1$s %2$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Tarafımca %1$s %2$s:\n%3$s</string>
     <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s tarafından %1$s %2$s:\n%3$s</string>
     <string name="share_sig">(Pano Scrobbler tarafından)</string>
     <string name="share_this_song">Bu şarkıyı paylaş</string>
@@ -87,7 +87,7 @@
     <string name="profile_pic">Profil fotoğrafı</string>
     <string name="item_options">Bu öğe için seçenekler</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification)">%1$s algılandı</string>
-    <string name="new_player_prompt">Bu uygulamayı skroplamaya devam etsin mi?</string>
+    <string name="new_player_prompt">Bu uygulama skroplanmaya devam edilsin mi?</string>
     <string name="no_track_url">Bu şarkının lastFM\'de sayfası bulunmamakta</string>
     <string name="no_scrobbles">Henüz hiç şarkı yok…</string>
     <string name="no_friends">Henüz hiç lastFM arkadaşı yok…</string>
@@ -95,7 +95,7 @@
     <string name="new_app">Yeni uygulama</string>
     <string name="no_apps_enabled">Etkin uygulama yok</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d daha</string>
-    <string name="show_all">Tümünü Gör</string>
+    <string name="show_all">Tümünü gör</string>
     <string name="edit">Düzenle</string>
     <string name="delete">Sil</string>
     <string name="love">Beğen</string>
@@ -103,7 +103,7 @@
     <string name="pending_scrobbles">Askıdaki Skroplar</string>
     <string name="pending_scrobble">Askıda skrop</string>
     <string name="pending_scrobbles_noti">Askıdaki skroplar işleniyor</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles • n today">%1$s skrop • bugün %2$s</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles • n today">%1$s skrop • Bugün: %2$s</string>
     <string name="friends">Arkadaşlar</string>
     <string name="num_scrobbles_since" formatted="true">%2$s itibariyle %1$s skrop</string>
     <string name="grant_autostart">Otomatik başlatmayı etkinleştir</string>
@@ -115,7 +115,7 @@
     <string name="swap" comment="(Swap title and artist)">Değiştir</string>
     <string name="rate_msg">Uygulamamızı beğendiniz mi?</string>
     <string name="rate_action">Oy ver</string>
-    <string name="time_just_now">az önce</string>
+    <string name="time_just_now">şimdi</string>
     <string name="no_mail_apps">Yüklü e-posta istemcisi yok</string>
     <string name="loved">Beğenildi</string>
     <string name="unloved">Beğeni kaldırıldı</string>
@@ -127,12 +127,12 @@
     <string name="force" comment="Force scrobble but in short">Zorla</string>
     <string name="grant_rec_perm">Lütfen mikrofonu kullanmak için izin verin</string>
     <string name="charts">Listeler</string>
-    <string name="scrobble_from_mic">Mikrofondan skropla</string>
-    <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">Mikden</string>
+    <string name="scrobble_from_mic">Mikrofonla skropla</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">Mikle</string>
     <string name="add_to_hs">Ana ekrana ekle</string>
     <string name="listening">Yakınınızda oynatılan müzik dinleniyor…</string>
     <string name="uploading">Karşıya yükleniyor…</string>
-    <string name="recording_failed">Kayıt başlatılamadı. Cihaz mikrofonu mevcut değil veya meşgul</string>
+    <string name="recording_failed">Kayıt başlatılamadı. Mikrofon mevcut değil veya meşgul</string>
     <string name="press_back">Bittiğinde geri tuşuna basın</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Ayrıntılar</string>
@@ -141,15 +141,15 @@
     <string name="sort">Tür</string>
     <string name="past_scrobbles">Geçmiş skroplar</string>
     <!--  todo: don't concat  -->
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s tarafında</string>
+    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s tarafından</string>
     <string name="my_scrobbles">Skroplarım</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s tarafında skroplar</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s kullanıcısının skropları</string>
     <string name="listeners">Dinleyiciler</string>
     <string name="scrobbles">Skroplar</string>
     <string name="collapse">Daralt</string>
     <string name="expand">Genişlet</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s bunu beğendi</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">%1$s tarihine kadar skropla</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">%1$s tarihine kadar skroplar</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s → %2$s</string>
     <string name="weekly_range" formatted="true" comment="%1= date %2= date">haftalık (%1$s → %2$s)</string>
@@ -170,7 +170,7 @@
     <string name="graph_weekly">Haftalık skrop sayısı</string>
     <string name="graph_monthly">Aylık skrop sayısı</string>
     <string name="graph_yearly">Yıllık skrop sayısı</string>
-    <string name="graph_scrub_msg">Saat diliminizdeki saatler\nTam sayıyı görmek için grafiğin üzerine basılı tutun ve kaydırın</string>
+    <string name="graph_scrub_msg">Saatler, saat diliminize göre ayarlanmıştır\nTam sayıyı görmek için grafiğin üzerine basılı tutun ve kaydırın</string>
     <string name="original">Orijinal</string>
     <string name="corrected">Düzeltildi</string>
     <string name="tag">Etiket</string>
@@ -197,7 +197,7 @@
     <string name="secondary_color">İkincil renk</string>
     <string name="background_color">Arkaplan rengi</string>
     <string name="same_tone">Hepsi için aynı tonu kullan</string>
-    <string name="random_theme">Her açılışta rastgele değiştir</string>
+    <string name="random_theme">Her açılışta rastgele seç</string>
     <string name="palette_bg">Arkaplan için albüm kapağı rengini kullan</string>
     <string name="edit_name" comment="name for regex pattern">Gerçek ad (isteğe bağlı)</string>
     <string name="edit_regex">Düzenli ifade kalıbı</string>

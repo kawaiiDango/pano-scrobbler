@@ -194,6 +194,24 @@
     <string name="n_matches" formatted="true">%1$d eşleşme</string>
     <string name="text">Metin</string>
     <string name="edit_regex_warning">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
+    <string name="blocked_metadata_info">ℹ️ Bu alanların birinden fazlasının doldurulması, aralarında bir AND operatörü uygulamasına yol açacaktır</string>
     <!-- presets-->
+    <string name="preset_remastered_track">Remastered (parça)</string>
+    <string name="preset_remastered_album">Remastered (albüm)</string>
+    <string name="preset_explicit_track">Sansürsüz (parça)</string>
+    <string name="preset_explicit_album">Sansürsüz (albüm)</string>
+    <string name="preset_album_ver_track">Albüm versiyonu (parça)</string>
+    <string name="scrobbler_off">Skroplayıcı devre dışı</string>
+    <string name="scrobbler_on">Skroplayıcı aktif</string>
+    <string name="pref_master">Müzik skropla</string>
+    <string name="pref_master_qs_hint">Ayrıca hızlı ayarlar kutucuğundan da değiştirilebilir</string>
+    <string name="pref_noti_q">Simge görünmüyorsa cihazınızın bildirim ayarlarından açabilirsiniz</string>
+    <string name="pref_noti">Bildirimler</string>
+    <string name="pref_scrobble_noti">Skrop bildirimleri</string>
+    <string name="pref_lockscreen_noti">Kilit ekranı bildirimleri</string>
+    <string name="pref_offline_info">ℹ️ Çevrmdışı skroplar &amp; beğeniler daha sonra gönderilmek üzere kaydedilecektir.</string>
+    <string name="pref_scrobble_from">\'den/dan skropla</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Müzik metaverisini paylaşan uygulamaları destekler. Spotify\'da oluşabilecek çift skropları engellemek için sadece bir yerde etkin bırakın.</string>
+    <string name="pref_enabled_apps_title">Uygulamaları seçin</string>
     <!--  pro  -->
 </resources>

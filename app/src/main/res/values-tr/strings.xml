@@ -199,9 +199,9 @@
     <string name="same_tone">Hepsi için aynı tonu kullan</string>
     <string name="random_theme">Her açılışta rastgele seç</string>
     <string name="palette_bg">Arkaplan için albüm kapağı rengini kullan</string>
-    <string name="edit_name" comment="name for regex pattern">Gerçek ad (isteğe bağlı)</string>
+    <string name="edit_name" comment="name for regex pattern">İsim (isteğe bağlı)</string>
     <string name="edit_regex">Düzenli ifade kalıbı</string>
-    <string name="edit_regex_replacement">Regex replacement</string>
+    <string name="edit_regex_replacement">Düzenli ifade değiştirme</string>
     <string name="edit_field" comment="Field like artist/album/track etc">Alan</string>
     <string name="edit_replace">Değiştir</string>
     <string name="edit_first" comment="First occurrence of a pattern">İlkini</string>
@@ -222,14 +222,14 @@
     <!-- presets-->
     <string name="preset_remastered_track">Remastered (parça)</string>
     <string name="preset_remastered_album">Remastered (albüm)</string>
-    <string name="preset_explicit_track">Sansürsüz (parça)</string>
-    <string name="preset_explicit_album">Sansürsüz (albüm)</string>
-    <string name="preset_album_ver_track">Albüm versiyonu (parça)</string>
+    <string name="preset_explicit_track">Explicit (parça)</string>
+    <string name="preset_explicit_album">Explicit (albüm)</string>
+    <string name="preset_album_ver_track">Album version (parça)</string>
     <string name="scrobbler_off">Skroplayıcı devre dışı</string>
     <string name="scrobbler_on">Skroplayıcı aktif</string>
     <string name="pref_master">Müzik skropla</string>
     <string name="pref_master_qs_hint">Ayrıca hızlı ayarlar kutucuğundan da değiştirilebilir</string>
-    <string name="pref_noti_q">Simge görünmüyorsa cihazınızın bildirim ayarlarından açabilirsiniz</string>
+    <string name="pref_noti_q">Simge görünmüyorsa cihazınızın bildirim ayarlarından ekleyebilirsiniz</string>
     <string name="pref_noti">Bildirimler</string>
     <string name="pref_scrobble_noti">Skrop bildirimleri</string>
     <string name="pref_lockscreen_noti">Kilit ekranı bildirimleri</string>
@@ -238,7 +238,7 @@
     <string name="pref_enabled_apps_summary">ℹ️ Müzik metaverisini paylaşan uygulamaları destekler. Spotify\'da oluşabilecek çift skropları engellemek için sadece bir yerde etkin bırakın.</string>
     <string name="pref_enabled_apps_title">Uygulamaları seçin</string>
     <string name="pref_auto_detect_summary">…yine de bu uygulamayı onaylamak/dikkate almamak için size soracağız</string>
-    <string name="pref_auto_detect">Yeni müzik uygulamalarını sapta</string>
+    <string name="pref_auto_detect">Yeni müzik uygulamalarını algıla</string>
     <string name="pref_delay">Skrop gecikmesi (hangisi daha önceyse)</string>
     <string name="pref_delay_secs">Saniyelik gecikme</string>
     <string name="pref_delay_per">Yüzdelik gecikme</string>
@@ -253,14 +253,14 @@
     <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
     <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
     <string name="pref_fetch_aa">Albüm sanatçılarını lastFM\'den al</string>
-    <string name="pref_fetch_aa_desc">Bu bilgiyi sağlamayan oynatıcılar için. Alınan veriler sizin etiketlerinizden farklı olabilir. LastFM bazı şarkıların verilerine sahip olmayabilir.</string>
-    <string name="pref_pixel_np">Pixel Skropu Şimdi Oynuyor</string>
+    <string name="pref_fetch_aa_desc">Bu bilgiyi sağlamayan oynatıcılar için kullanılır. Alınan veriler sizin etiketlerinizden farklı olabilir. LastFM bazı şarkıların verilerine sahip olmayabilir.</string>
+    <string name="pref_pixel_np">Pixel\'de Şimdi Oynatılanı Skropla</string>
     <string name="pref_pixel_np_nope">Sadece Pixel cihazlarda mevcut</string>
     <string name="pref_misc">Çeşitli</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL\'si</string>
     <string name="pref_imexport">İçe Aktar &amp; Dışa Aktar</string>
     <string name="pref_export">Dışa Aktar</string>
-    <string name="pref_export_desc">Yedekleme ayarları, düzenlemeler ve engel listesi. Oturum açma bilgilerini güvenlik sebepleriyle kaydetme. Cihazların sık sık değiştirildiği veya arkadaşlarla paylaşıldığı anlar için uygundur.</string>
+    <string name="pref_export_desc">Ayarları, düzenlemeleri ve engel listesini yedekler. Oturum açma bilgilerini güvenlik sebepleriyle kaydetmez. Cihazın sık sık değiştirildiği veya arkadaşlarla paylaşıldığı durumlar için uygundur.</string>
     <string name="pref_import">İçe aktar</string>
     <string name="pref_personalization">Kişiselleştirme</string>
     <string name="pref_themes">Temalar</string>
@@ -269,9 +269,9 @@
     <string name="pref_show_albums">Albüm isimlerini göster</string>
     <string name="pref_show_albums_desc">Son skroplardaki…</string>
     <string name="pref_lists">Listeler</string>
-    <string name="pref_regex_edits">Kalıp düzenlemesi</string>
+    <string name="pref_regex_edits">Kalıp düzenlemeleri</string>
     <string name="pref_blocked_metadata">Engellenmiş metaveri</string>
-    <string name="pref_lastfm_disable">LastFM\'i skroplama</string>
+    <string name="pref_lastfm_disable">LastFM\'e skroplama</string>
     <string name="pref_lastfm_disable_desc">Arayüzün kalan işlevlerinin çalışabilmesi için yine de bir lastFM hesabıya oturum açmalısınız</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
     <string name="import_hey_wtf">Bu muhtemelen Pano Scrobbler\'dan dışa aktarılmış bir dosya değil</string>
@@ -299,12 +299,12 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>
     <string name="custom_listenbrainz">Özel Listenbrainz sunucusu</string>
     <string name="failed_encode_url">URL şifreleme başarısız</string>
-    <string name="check_nls" formatted="true" comment="app name">%1$s Denetle</string>
+    <string name="check_nls" formatted="true" comment="app name">%1$s uygulamasını denetle</string>
     <string name="check_nls_tv" formatted="true" comment="app name">Özel uygulama erişimi &gt; Bildirim Erişimi &gt; %1$s</string>
-    <string name="artist_extra">Parçalar, albümler &amp; benzer</string>
+    <string name="artist_extra">Parçalar, albümler &amp; benzer öneriler</string>
     <string name="no_browser">Yüklü tarayıcı yok</string>
     <string name="no_player">Yüklü müzik oynatıcı yok</string>
-    <string name="not_running">⚠ Skoplayıcı sisteminiz tarafından etkisiz kılındı</string>
+    <string name="not_running">⚠ Skoplayıcı sisteminiz tarafından sonlandırıldı</string>
     <string name="not_running_fix_action">Düzelt</string>
     <string name="login_submit">Doğrula</string>
     <string name="scrobble">Skropla</string>
@@ -318,7 +318,7 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="add_acr_key_info">"• Kaydolun: https://console.acrcloud.com
 • Projelerde &gt; Ses &amp; video tanımaya gidin
 • Yeni proje oluşturun, Kayıtlı Sesi ve ACRCloud Müzik kutusunu seçin"</string>
-    <string name="shazam_scrobbling">Sürekli skroplamak için <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam\'ı</a> açın ve Auto Shazam\'ı etkinleştirin. Ayrıca Shazam\'ın scroplama özelliğinin etkin olduğundan emin olun.</string>
+    <string name="shazam_scrobbling">Sürekli skroplamak için <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam\'ı</a> açın ve Otomatik Shazam\'ı etkinleştirin. Ayrıca Shazam\'ın skroplama özelliğinin etkin olduğundan emin olun.</string>
     <string name="pending_n_remaining" formatted="true">%1$d kaldı</string>
     <string name="submitting_loves" formatted="true">Beğeniler gönderiliyor, %1$d kaldı</string>
     <string name="pending_batch" comment="For pending scrobbles">Skroplar gönderiliyor</string>
@@ -330,8 +330,8 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="fix_it_title">Muhtemel düzeltmeler</string>
     <string name="fix_it_startup_title">Pil / başlangıç Yöneticileri</string>
     <string name="fix_it_startup_desc_default">Sisteminizde başlangıç veya pil yöneticileri varsa, arka planda skroplanmanın engellenmesini önlemek için lütfen bu uygulamayı izin listesine ekleyin.</string>
-    <string name="fix_it_noti_title">Bildirim erişim iznini kapalı veya açık olarak ayarla</string>
-    <string name="fix_it_noti_desc">Bu geçici bir düzeltmedir</string>
+    <string name="fix_it_noti_title">Bildirim erişim iznini kapatıp aç</string>
+    <string name="fix_it_noti_desc">Bu geçici bir çözümdür</string>
     <string name="fix_it_battery_title">Pil optimizasyonlarını devre dışı bırak</string>
     <string name="fix_it_battery_desc">Başka hiçbir şey işe yaramadıysa</string>
     <string name="fix_it_action" comment="(To open an app)">Aç</string>
@@ -340,10 +340,10 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="help">Yardım</string>
     <string name="pro_support">Bu, sizin gibi harika kullanıcılarımızın, bu uygulamanın sağladığı hizmetlerin hatırına desteklerini göstermeleri için hızlı ve basit bir yoldur.</string>
     <string name="pro_also_get">Ayrıca şunlara sahip olacaksınız:</string>
-    <string name="pro_benefits">Ayrıca 🎨 Farklı temalara (19 x 19 x 20 renk) ve 🚫 metadatanın skroplanmasını engelleme seçeneğine sahip alacaksınız. Paylaşım sırasındaki uygulama ismi kaldırılacak.</string>
+    <string name="pro_benefits">Ayrıca 🎨 Farklı temalara (19 x 19 x 20 renk) ve 🚫 metadatanın skroplanmasını engelleme seçeneğine sahip olacaksınız. Paylaşımlarda uygulama ismi kaldırılacak.</string>
     <string name="thank_you">Teşekkürler!</string>
     <string name="purchase_pending">Satın alma işleminiz henüz ödeme sağlayıcınız tarafından onaylanmadı. Lütfen birkaç dakika sonra tekrar kontrol edin.</string>
-    <string name="billing_troubleshoot_title">Satın alımı geri yükle</string>
+    <string name="billing_troubleshoot_title">Satın almayı geri yükle</string>
     <string name="billing_troubleshoot">"Çoktan satın aldınız mı?
 
 Satın alma işlemleriniz Google Play tarafından yönetilir ve satın almayı gerçekleştiren Google Play hesabıyla bağlantılıdır. Uygulamayı birden fazla hesaba sahip yeni bir cihaza yüklediğinizde, Google Play bunu yanlış hesapla ilişkilendirebilir. Satın alma gerçekleştirilen hesabı açıkça seçmenin en iyi yolu, uygulamayı Google Play web sayfası aracılığıyla bir bilgisayardan yüklemektir:
@@ -355,5 +355,5 @@ Satın alma işlemleriniz Google Play tarafından yönetilir ve satın almayı g
 "</string>
     <string name="billing_themes">Temalar (19 x 19 x 20 renk)</string>
     <string name="billing_block">Metadatanın skroplanmasını engelle</string>
-    <string name="billing_sharing">Paylaşım yaparken uygulama ismini kaldır</string>
+    <string name="billing_sharing">Paylaşımlarda uygulama ismini kaldır</string>
 </resources>

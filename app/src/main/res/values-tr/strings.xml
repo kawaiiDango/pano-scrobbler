@@ -5,8 +5,8 @@
         <item quantity="other">%1$s skrop</item>
     </plurals>
     <plurals name="num_listeners">
-        <item quantity="one">%1$s dinleyen</item>
-        <item quantity="other">%1$s dinleyen</item>
+        <item quantity="one">%1$s dinleyici</item>
+        <item quantity="other">%1$s dinleyici</item>
     </plurals>
     <plurals name="num_songs">
         <item quantity="one">%1$d şarkı</item>
@@ -31,7 +31,7 @@
     <string name="network_error">Bağlantı hatası</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">bu skrop dikkate alınmadı</string>
     <string name="scrobble_ignored_save_edit">Lastfm düzenlemeyi muhtemelen skrop çok eski olduğu için dikkate almadı. Bu düzenlemeyi gelecek skroplar için saklamak ister misiniz?</string>
-    <string name="limit_exceeded_ignored">Günlük scrop sınırı aşıldı</string>
+    <string name="limit_exceeded_ignored">Günlük skrop sınırı aşıldı</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Gerekli alanlar boş</string>
     <string name="artist">Sanatçı</string>
     <string name="artists">Sanatçılar</string>

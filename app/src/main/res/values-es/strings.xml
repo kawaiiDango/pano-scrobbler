@@ -323,7 +323,6 @@ Pueden utilizarse con aplicaciones como Tasker, Macrodroid, etc."</string>
     <string name="webview_error">No se pudo cargar la página (¿Está funcionando tu internet?)</string>
     <string name="navigation_drawer_open">Abrir el cajón de navegación o volver</string>
     <string name="navigation_drawer_close">Cerrar el cajón de navegación</string>
-    <string name="graph">Gráfico</string>
     <string name="cleared_disabled_apps">Limpiar aplicaciones desactivadas</string>
     <string name="fix_it_title">Posibles soluciones</string>
     <string name="fix_it_startup_title">Gestor de batería / inicio</string>

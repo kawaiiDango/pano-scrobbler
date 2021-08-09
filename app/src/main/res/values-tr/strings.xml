@@ -36,6 +36,7 @@
     <string name="state_didnt_scrobble">Skroplama</string>
     <string name="state_unrecognised_artist">Bilinmeyen sanatçı</string>
     <string name="tap_to_edit">(Düzenlemek için dokunun)</string>
+    <string name="tap_to_edit_force">(Düzenlemek veya zorlamak için dokunun)</string>
     <string name="recently_scrobbled">En Son Skroplananlar</string>
     <string name="recently_loved">♥ En Son Beğenilenler</string>
     <string name="recents">Son dinlemeler</string>
@@ -43,6 +44,68 @@
     <string name="enabled_apps">Etkin Uygulamalar</string>
     <string name="almost_there">Neredeyse tamam…</string>
     <string name="music_players">Müzik Oynatıcılar</string>
+    <string name="video_players">Video Akışı Uygulamaları</string>
+    <string name="other_apps">Diğer Uygulamalar</string>
+    <string name="choose_apps">Skroplanacak Uygulamaları seçin</string>
+    <string name="offline">Çevrimdışı. Güncel veri gösterilemiyor</string>
+    <string name="unavailable_offline">Çevrimdışı kullanılamıyor</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Hizmetler</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Bak ne dinliyorum\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Bak %3$s ne dinliyor\n%1$s %2$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">%1$s %2$s:\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s tarafından %1$s %2$s:\n%3$s</string>
+    <string name="share_sig">(Pano Scrobbler tarafından)</string>
+    <string name="share_this_song">Bu şarkıyı paylaş</string>
+    <string name="share">Paylaş</string>
+    <string name="more_info">Daha fazla bilgi</string>
+    <string name="search">Ara</string>
+    <string name="profile">Profil</string>
+    <string name="profile_pic">Profil fotoğrafı</string>
+    <string name="item_options">Bu öğe için seçenekler</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification)">%1$s algılandı</string>
+    <string name="new_player_prompt">Bu uygulamayı skroplamaya devam etsin mi?</string>
+    <string name="no_track_url">Bu şarkının lastFM\'de sayfası bulunmamakta</string>
+    <string name="no_scrobbles">Henüz hiç şarkı yok…</string>
+    <string name="no_friends">Henüz hiç lastFM arkadaşı yok…</string>
+    <string name="channel_err">Skrop hatası</string>
+    <string name="new_app">Yeni uygulama</string>
+    <string name="no_apps_enabled">Etkin uygulama yok</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d daha</string>
+    <string name="show_all">Tümünü Gör</string>
+    <string name="edit">Düzenle</string>
+    <string name="delete">Sil</string>
+    <string name="love">Beğen</string>
+    <string name="unlove">Beğeniyi kaldır</string>
+    <string name="pending_scrobbles">Sıradaki Skroplar</string>
+    <string name="pending_scrobble">Sıradaki skrop</string>
+    <string name="pending_scrobbles_noti">Sıradaki skroplar işleniyor</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles • n today">%1$s skrop • bugün %2$s</string>
+    <string name="friends">Arkadaşlar</string>
+    <string name="num_scrobbles_since" formatted="true">%2$s itibariyle %1$s skrop</string>
+    <string name="grant_autostart">Otomatik başlatmayı etkinleştir</string>
+    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Skroplayıcının başlaması için %1$s cihazlarda gerekli</string>
+    <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
+    <string name="grant_notification_access_desc">Müzik metaverisi almak için gerekli. Müzik harici veriler okunmaz</string>
+    <string name="authenticate_with_lastfm">LastFM ile kimlik doğrulaması yapın</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM ve Listenbrainz sonradan ayarlar aracılığıyla doğrulanabilir</string>
+    <string name="swap" comment="(Swap title and artist)">Değiştir</string>
+    <string name="rate_msg">Uygulamamızı beğendiniz mi?</string>
+    <string name="rate_action">Oy ver</string>
+    <string name="time_just_now">az önce</string>
+    <string name="no_mail_apps">Yüklü e-posta istemcisi yok</string>
+    <string name="loved">Beğenildi</string>
+    <string name="unloved">Beğeni kaldırıldı</string>
+    <string name="simple_edits">Düzenlemeler</string>
+    <string name="n_simple_edits" formatted="true">%1$d düzenleme</string>
+    <string name="n_regex_edits" formatted="true">%1$d pattern düzenlemesi</string>
+    <string name="n_blocked_metadata" formatted="true">%1$d engellenmiş metaveri</string>
+    <string name="force_remembered">Zorlu skropla (hatırlanacak)</string>
+    <string name="force" comment="Force scrobble but in short">Zorla</string>
+    <string name="grant_rec_perm">Lütfen mikrofonu kullanmak için izin verin</string>
+    <string name="charts">Listeler</string>
+    <string name="scrobble_from_mic">Mikrofondan skropla</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">Mikden</string>
+    <string name="add_to_hs">Ana ekrana ekle</string>
     <!--  todo: don't concat  -->
     <!-- presets-->
     <!--  pro  -->

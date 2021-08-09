@@ -421,7 +421,7 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="webview_error">The page failed to load (is your internet working?)</string>
     <string name="navigation_drawer_open">Open navigation drawer or go back</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="graph">Graph</string>
+    <string name="graph">Line chart</string>
     <string name="cleared_disabled_apps">Cleared disabled apps</string>
 
     <string name="fix_it_title">Possible fixes</string>

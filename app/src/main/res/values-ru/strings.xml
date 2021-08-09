@@ -337,7 +337,6 @@
     <string name="webview_error">Не удалось загрузить страницу (работает ли у вас интернет?)</string>
     <string name="navigation_drawer_open">Откройте панель навигации или вернитесь</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
-    <string name="graph">График</string>
     <string name="cleared_disabled_apps">Отключенные приложения очищены</string>
     <string name="fix_it_title">Возможные исправления</string>
     <string name="fix_it_startup_title">Диспетчер запуска</string>

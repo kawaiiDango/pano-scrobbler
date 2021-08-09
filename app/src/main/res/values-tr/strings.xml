@@ -76,9 +76,9 @@
     <string name="delete">Sil</string>
     <string name="love">Beğen</string>
     <string name="unlove">Beğeniyi kaldır</string>
-    <string name="pending_scrobbles">Sıradaki Skroplar</string>
-    <string name="pending_scrobble">Sıradaki skrop</string>
-    <string name="pending_scrobbles_noti">Sıradaki skroplar işleniyor</string>
+    <string name="pending_scrobbles">Askıdaki Skroplar</string>
+    <string name="pending_scrobble">Askıda skrop</string>
+    <string name="pending_scrobbles_noti">Askıdaki skroplar işleniyor</string>
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles • n today">%1$s skrop • bugün %2$s</string>
     <string name="friends">Arkadaşlar</string>
     <string name="num_scrobbles_since" formatted="true">%2$s itibariyle %1$s skrop</string>
@@ -97,7 +97,7 @@
     <string name="unloved">Beğeni kaldırıldı</string>
     <string name="simple_edits">Düzenlemeler</string>
     <string name="n_simple_edits" formatted="true">%1$d düzenleme</string>
-    <string name="n_regex_edits" formatted="true">%1$d pattern düzenlemesi</string>
+    <string name="n_regex_edits" formatted="true">%1$d kalıp düzenlemesi</string>
     <string name="n_blocked_metadata" formatted="true">%1$d engellenmiş metaveri</string>
     <string name="force_remembered">Zorlu skropla (hatırlanacak)</string>
     <string name="force" comment="Force scrobble but in short">Zorla</string>
@@ -106,7 +106,94 @@
     <string name="scrobble_from_mic">Mikrofondan skropla</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">Mikden</string>
     <string name="add_to_hs">Ana ekrana ekle</string>
+    <string name="listening">Yakınınızda oynatılan müzik dinleniyor…</string>
+    <string name="uploading">Karşıya yükleniyor…</string>
+    <string name="recording_failed">Kayıt başlatılamadı. Cihaz mikrofonu mevcut değil veya meşgul</string>
+    <string name="press_back">Bittiğinde geri tuşuna basın</string>
+    <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
+    <string name="details">Ayrıntılar</string>
+    <string name="details_text" formatted="true" comment="%1= scrobble, %2= the service such as lastfm">%2$s hizmetini %1$s</string>
+    <string name="saved_as_pending">Askıda skrop olarak kaydedildi</string>
+    <string name="sort">Tür</string>
+    <string name="past_scrobbles">Geçmiş skroplar</string>
     <!--  todo: don't concat  -->
+    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s tarafında</string>
+    <string name="my_scrobbles">Skroplarım</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s tarafında skroplar</string>
+    <string name="listeners">Dinleyiciler</string>
+    <string name="scrobbles">Skroplar</string>
+    <string name="collapse">Daralt</string>
+    <string name="expand">Genişlet</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s bunu beğendi</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">%1$s tarihine kadar skropla</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
+    <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s → %2$s</string>
+    <string name="weekly_range" formatted="true" comment="%1= date %2= date">haftalık (%1$s → %2$s)</string>
+    <string name="not_found" comment="Shown in search">Bulunamadı</string>
+    <string name="share_this_chart">Bu listeyi paylaş</string>
+    <string name="weekly">Haftalık</string>
+    <string name="monthly">Aylık</string>
+    <string name="charts_choose_week">Bir hafta seçin</string>
+    <string name="charts_overall">Genel</string>
+    <string name="charts_no_data">Bu dönem için veri yok</string>
+    <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <string name="charts_no_weekly_charts">Geriye dönük haftalık listeler henüz mevcut değil</string>
+    <string name="random">Kendimi şanslı hissediyorum</string>
+    <string name="random_not_found">Parça bulunamadı</string>
+    <string name="loved_track">Beğenilen parça</string>
+    <string name="randomize">Rastgele Seç</string>
+    <string name="graph_daily">Günlük skrop sayısı</string>
+    <string name="graph_weekly">Haftalık skrop sayısı</string>
+    <string name="graph_monthly">Aylık skrop sayısı</string>
+    <string name="graph_yearly">Yıllık skrop sayısı</string>
+    <string name="graph_scrub_msg">Saat diliminizdeki saatler\nTam sayıyı görmek için grafiğin üzerine basılı tutun ve kaydırın</string>
+    <string name="original">Orijinal</string>
+    <string name="corrected">Düzeltildi</string>
+    <string name="tag">Etiket</string>
+    <string name="taggers">Etiketleyenler</string>
+    <string name="taggings">Etiketlemeler</string>
+    <string name="digest_weekly">Geçen hafta en çok skropladıklarım</string>
+    <string name="digest_monthly">Geçen ay en çok skropladıklarım</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= weekly/monthly">%1$s en çok skroplananlar</string>
+    <string name="my_tags">Etiketlerim</string>
+    <string name="close">Kapat</string>
+    <string name="user_tags_hint">Yeni etiket</string>
+    <string name="user_tags_empty">Henüz bir etiket eklemediniz</string>
+    <string name="info_long_press_hint">Ayrıca burayı açmak için bir şarkıya basılı tutabilirsiniz</string>
+    <string name="appwidget_loading">Yükleniyor…</string>
+    <string name="appwidget_period">Süre</string>
+    <string name="appwidget_theme">Tema</string>
+    <string name="appwidget_shadow">Gölgelendirme</string>
+    <string name="appwidget_show">Göster</string>
+    <string name="light">Açık</string>
+    <string name="dark">Koyu</string>
+    <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
+    <string name="appwidget_refresh_every">Widget her 15 dakikada bir yenilenir</string>
+    <string name="primary_color">Ana renk</string>
+    <string name="secondary_color">İkincil renk</string>
+    <string name="background_color">Arkaplan rengi</string>
+    <string name="same_tone">Hepsi için aynı tonu kullan</string>
+    <string name="random_theme">Her açılışta rastgele değiştir</string>
+    <string name="palette_bg">Arkaplan için albüm kapağı rengini kullan</string>
+    <string name="edit_name" comment="name for regex pattern">Gerçek ad (isteğe bağlı)</string>
+    <string name="edit_regex">Düzenli ifade kalıbı</string>
+    <string name="edit_regex_replacement">Regex replacement</string>
+    <string name="edit_field" comment="Field like artist/album/track etc">Alan</string>
+    <string name="edit_replace">Değiştir</string>
+    <string name="edit_first" comment="First occurrence of a pattern">İlkini</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
+    <string name="edit_continue">Mevcutsa, diğer düzenli ifadeleri de eşleştirmeye devam et</string>
+    <string name="edit_case_sensitive">Büyük küçük harfe duyarlı</string>
+    <string name="edit_regex_test">Dene</string>
+    <string name="edit_presets">Ön Ayarlar</string>
+    <string name="edit_presets_available">Ön ayarlar mevcut</string>
+    <string name="edit_no_presets_available">Tüm ön ayarlar kullanımda</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Ön ayar: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Kalıp sınırına ulaşıldı (%1$d)</string>
+    <string name="edit_drag_handle" comment="for drag and drop">Sürükleme yöneticisi</string>
+    <string name="n_matches" formatted="true">%1$d eşleşme</string>
+    <string name="text">Metin</string>
+    <string name="edit_regex_warning">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
     <!-- presets-->
     <!--  pro  -->
 </resources>

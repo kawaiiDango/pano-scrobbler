@@ -315,5 +315,45 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="remove_acr_key">ACRCloud Anahtarını Kaldır</string>
     <string name="add_acr_consider">Hız kısıtlamalarını önlemek için kendi ACRCloud Anahtarınızı ekleyebilirsiniz</string>
     <string name="add">Ekle</string>
+    <string name="add_acr_key_info">"• Kaydolun: https://console.acrcloud.com
+• Projelerde &gt; Ses &amp; video tanımaya gidin
+• Yeni proje oluşturun, Kayıtlı Sesi ve ACRCloud Müzik kutusunu seçin"</string>
+    <string name="shazam_scrobbling">Sürekli skroplamak için <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam\'ı</a> açın ve Auto Shazam\'ı etkinleştirin. Ayrıca Shazam\'ın scroplama özelliğinin etkin olduğundan emin olun.</string>
+    <string name="pending_n_remaining" formatted="true">%1$d kaldı</string>
+    <string name="submitting_loves" formatted="true">Beğeniler gönderiliyor, %1$d kaldı</string>
+    <string name="pending_batch" comment="For pending scrobbles">Skroplar gönderiliyor</string>
+    <string name="webview_error">Sayfa yüklenirken bir hata oluştu (internet bağlantınız var mı?)</string>
+    <string name="navigation_drawer_open">Yan gezinti çubuğunu aç veya geriye dön</string>
+    <string name="navigation_drawer_close">Yan gezinti çubuğunu kapat</string>
+    <string name="graph">Grafik</string>
+    <string name="cleared_disabled_apps">Devre dışı uygulamalar temizlendi</string>
+    <string name="fix_it_title">Muhtemel düzeltmeler</string>
+    <string name="fix_it_startup_title">Pil / başlangıç Yöneticileri</string>
+    <string name="fix_it_startup_desc_default">Sisteminizde başlangıç veya pil yöneticileri varsa, arka planda skroplanmanın engellenmesini önlemek için lütfen bu uygulamayı izin listesine ekleyin.</string>
+    <string name="fix_it_noti_title">Bildirim erişim iznini kapalı veya açık olarak ayarla</string>
+    <string name="fix_it_noti_desc">Bu geçici bir düzeltmedir</string>
+    <string name="fix_it_battery_title">Pil optimizasyonlarını devre dışı bırak</string>
+    <string name="fix_it_battery_desc">Başka hiçbir şey işe yaramadıysa</string>
+    <string name="fix_it_action" comment="(To open an app)">Aç</string>
     <!--  pro  -->
+    <string name="get_pro">Uygulamayı destekle</string>
+    <string name="help">Yardım</string>
+    <string name="pro_support">Bu, sizin gibi harika kullanıcılarımızın, bu uygulamanın sağladığı hizmetlerin hatırına desteklerini göstermeleri için hızlı ve basit bir yoldur.</string>
+    <string name="pro_also_get">Ayrıca şunlara sahip olacaksınız:</string>
+    <string name="pro_benefits">Ayrıca 🎨 Farklı temalara (19 x 19 x 20 renk) ve 🚫 metadatanın skroplanmasını engelleme seçeneğine sahip alacaksınız. Paylaşım sırasındaki uygulama ismi kaldırılacak.</string>
+    <string name="thank_you">Teşekkürler!</string>
+    <string name="purchase_pending">Satın alma işleminiz henüz ödeme sağlayıcınız tarafından onaylanmadı. Lütfen birkaç dakika sonra tekrar kontrol edin.</string>
+    <string name="billing_troubleshoot_title">Satın alımı geri yükle</string>
+    <string name="billing_troubleshoot">"Çoktan satın aldınız mı?
+
+Satın alma işlemleriniz Google Play tarafından yönetilir ve satın almayı gerçekleştiren Google Play hesabıyla bağlantılıdır. Uygulamayı birden fazla hesaba sahip yeni bir cihaza yüklediğinizde, Google Play bunu yanlış hesapla ilişkilendirebilir. Satın alma gerçekleştirilen hesabı açıkça seçmenin en iyi yolu, uygulamayı Google Play web sayfası aracılığıyla bir bilgisayardan yüklemektir:
+
+• Uygulamayı kaldırın.
+• Bilgisayarınızdan Google Play web sayfasını açın.
+• Satın alma işlemi gerçekleştirilen hesapla oturum açın.
+• Uygulamayı direkt Google Play web sayfasından kurun.
+"</string>
+    <string name="billing_themes">Temalar (19 x 19 x 20 renk)</string>
+    <string name="billing_block">Metadatanın skroplanmasını engelle</string>
+    <string name="billing_sharing">Paylaşım yaparken uygulama ismini kaldır</string>
 </resources>

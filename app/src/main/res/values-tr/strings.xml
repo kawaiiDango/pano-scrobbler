@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s skrop</item>
+        <item quantity="other">%1$s skrop</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s dinleyen</item>
+        <item quantity="other">%1$s dinleyen</item>
+    </plurals>
+    <plurals name="num_songs">
+        <item quantity="one">%1$d şarkı</item>
+        <item quantity="other">%1$d şarkı</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$d hafta</item>
+        <item quantity="other">%1$d hafta</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$d ay</item>
+        <item quantity="other">%1$d ay</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$d yıl</item>
+        <item quantity="other">%1$d yıl</item>
+    </plurals>
     <string name="settings">Ayarlar</string>
     <string name="bug_report">Hata raporu</string>
     <string name="album_art">Albüm kapağı</string>
@@ -213,5 +237,83 @@
     <string name="pref_scrobble_from">\'den/dan skropla</string>
     <string name="pref_enabled_apps_summary">ℹ️ Müzik metaverisini paylaşan uygulamaları destekler. Spotify\'da oluşabilecek çift skropları engellemek için sadece bir yerde etkin bırakın.</string>
     <string name="pref_enabled_apps_title">Uygulamaları seçin</string>
+    <string name="pref_auto_detect_summary">…yine de bu uygulamayı onaylamak/dikkate almamak için size soracağız</string>
+    <string name="pref_auto_detect">Yeni müzik uygulamalarını sapta</string>
+    <string name="pref_delay">Skrop gecikmesi (hangisi daha önceyse)</string>
+    <string name="pref_delay_secs">Saniyelik gecikme</string>
+    <string name="pref_delay_per">Yüzdelik gecikme</string>
+    <string name="pref_logout">Oturumu kapat</string>
+    <string name="pref_confirm_logout">EMİN MİSİNİZ? Yeniden dokunun</string>
+    <string name="pref_login">Oturum aç</string>
+    <string name="pref_about">Hakkında</string>
+    <string name="pref_search_title">Şarkı arama uygulaması</string>
+    <string name="pref_scrobble_only">(Sadece skrop)</string>
+    <string name="pref_scrobble_love_only">(Sadece skrop &amp; beğeni)</string>
+    <string name="pref_user_label" comment="(Like username)">Kullanıcı</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
+    <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
+    <string name="pref_fetch_aa">Albüm sanatçılarını lastFM\'den al</string>
+    <string name="pref_fetch_aa_desc">Bu bilgiyi sağlamayan oynatıcılar için. Alınan veriler sizin etiketlerinizden farklı olabilir. LastFM bazı şarkıların verilerine sahip olmayabilir.</string>
+    <string name="pref_pixel_np">Pixel Skropu Şimdi Oynuyor</string>
+    <string name="pref_pixel_np_nope">Sadece Pixel cihazlarda mevcut</string>
+    <string name="pref_misc">Çeşitli</string>
+    <string name="pref_gnufm_title">GNU FM nixtape URL\'si</string>
+    <string name="pref_imexport">İçe Aktar &amp; Dışa Aktar</string>
+    <string name="pref_export">Dışa Aktar</string>
+    <string name="pref_export_desc">Yedekleme ayarları, düzenlemeler ve engel listesi. Oturum açma bilgilerini güvenlik sebepleriyle kaydetme. Cihazların sık sık değiştirildiği veya arkadaşlarla paylaşıldığı anlar için uygundur.</string>
+    <string name="pref_import">İçe aktar</string>
+    <string name="pref_personalization">Kişiselleştirme</string>
+    <string name="pref_themes">Temalar</string>
+    <string name="pref_themes_desc">Karıştır ve eşle\nAyrıca bildirim rengini de değiştirir</string>
+    <string name="pref_widget_charts">Ana ekran widget\'ı - Listeler</string>
+    <string name="pref_show_albums">Albüm isimlerini göster</string>
+    <string name="pref_show_albums_desc">Son skroplardaki…</string>
+    <string name="pref_lists">Listeler</string>
+    <string name="pref_regex_edits">Kalıp düzenlemesi</string>
+    <string name="pref_blocked_metadata">Engellenmiş metaveri</string>
+    <string name="pref_lastfm_disable">LastFM\'i skroplama</string>
+    <string name="pref_lastfm_disable_desc">Arayüzün kalan işlevlerinin çalışabilmesi için yine de bir lastFM hesabıya oturum açmalısınız</string>
+    <string name="pref_translate">Bu uygulamayı çevir</string>
+    <string name="import_hey_wtf">Bu muhtemelen Pano Scrobbler\'dan dışa aktarılmış bir dosya değil</string>
+    <string name="export_failed">Dışa aktarma başarısız</string>
+    <string name="imported">İçe aktarıldı</string>
+    <string name="import_options">İçe aktarma seçenekleri</string>
+    <string name="import_lists_nope">Düzenlemeleri ve engel listesini içe aktarma</string>
+    <string name="import_lists_replace_all">Tüm düzenlemeleri ve engel listesini değiştir</string>
+    <string name="import_lists_replace_existing">Birleştir, mevcut düzenlemeleri ve engel listesini değiştir</string>
+    <string name="import_lists_keep">Birleştir, mevcut düzenlemeleri ve engel listesini koru</string>
+    <string name="import_settings">Ayarları içe aktar</string>
+    <string name="pref_intents_dialog_title">Yayın intentleri</string>
+    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Şimdiki şarkı için:
+%1$s
+%2$s
+%3$s
+
+Skroplayıcı için:
+%4$s
+%5$s
+
+Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
+    <string name="pref_intents">Tasker vb. için intentler</string>
+    <string name="copied">Kopyalandı!</string>
+    <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>
+    <string name="custom_listenbrainz">Özel Listenbrainz sunucusu</string>
+    <string name="failed_encode_url">URL şifreleme başarısız</string>
+    <string name="check_nls" formatted="true" comment="app name">%1$s Denetle</string>
+    <string name="check_nls_tv" formatted="true" comment="app name">Özel uygulama erişimi &gt; Bildirim Erişimi &gt; %1$s</string>
+    <string name="artist_extra">Parçalar, albümler &amp; benzer</string>
+    <string name="no_browser">Yüklü tarayıcı yok</string>
+    <string name="no_player">Yüklü müzik oynatıcı yok</string>
+    <string name="not_running">⚠ Skoplayıcı sisteminiz tarafından etkisiz kılındı</string>
+    <string name="not_running_fix_action">Düzelt</string>
+    <string name="login_submit">Doğrula</string>
+    <string name="scrobble">Skropla</string>
+    <string name="acr_host">Sunucu</string>
+    <string name="acr_key">Erişim anahtarı</string>
+    <string name="acr_secret">Gizli</string>
+    <string name="add_acr_key">ACRCloud Anahtarı Ekle</string>
+    <string name="remove_acr_key">ACRCloud Anahtarını Kaldır</string>
+    <string name="add_acr_consider">Hız kısıtlamalarını önlemek için kendi ACRCloud Anahtarınızı ekleyebilirsiniz</string>
+    <string name="add">Ekle</string>
     <!--  pro  -->
 </resources>

@@ -325,6 +325,7 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="webview_error">Sayfa yüklenirken bir hata oluştu (internet bağlantınız var mı?)</string>
     <string name="navigation_drawer_open">Yan gezinti çubuğunu aç veya geriye dön</string>
     <string name="navigation_drawer_close">Yan gezinti çubuğunu kapat</string>
+    <string name="graph">Grafik</string>
     <string name="cleared_disabled_apps">Devre dışı uygulamalar temizlendi</string>
     <string name="fix_it_title">Muhtemel düzeltmeler</string>
     <string name="fix_it_startup_title">Pil / başlangıç Yöneticileri</string>

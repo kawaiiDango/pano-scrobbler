@@ -140,7 +140,7 @@
     <string name="grant_rec_perm">Пожалуйста, предоставьте разрешение на использование микрофона</string>
     <string name="charts">Чарты</string>
     <string name="scrobble_from_mic">Скробблинг с микрофона</string>
-    <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">С микр</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">С микрофона</string>
     <string name="add_to_hs">Добавить на главный экран</string>
     <string name="listening">Слушаю музыку, которая играет вокруг вас…</string>
     <string name="uploading">Загрузка…</string>
@@ -195,7 +195,7 @@
     <string name="close">Закрыть</string>
     <string name="user_tags_hint">Новый тег</string>
     <string name="user_tags_empty">Вы не добавили никаких тегов</string>
-    <string name="info_long_press_hint">Вы также можете долго держать по песне, чтобы открыть её</string>
+    <string name="info_long_press_hint">Используйте долгий тап по песни, что бы открыть её</string>
     <string name="appwidget_loading">Загрузка…</string>
     <string name="appwidget_period">Период</string>
     <string name="appwidget_theme">Тема</string>

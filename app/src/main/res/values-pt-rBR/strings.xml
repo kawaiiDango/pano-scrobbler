@@ -44,11 +44,11 @@
     <string name="album">Álbum</string>
     <string name="albums">Álbuns</string>
     <string name="n_albums">%1$s álbuns</string>
-    <string name="top_albums">Top de álbuns</string>
+    <string name="top_albums">Álbuns mais escutados</string>
     <string name="track">Faixa</string>
     <string name="tracks">Faixas</string>
     <string name="n_tracks">%1$s faixas</string>
-    <string name="top_tracks">Top de faixas</string>
+    <string name="top_tracks">Faixas mais escutadas</string>
     <string name="similar_tracks">Faixas semelhantes</string>
     <string name="no_similar_tracks">Não foram encontradas faixas parecidas</string>
     <string name="similar" comment="Similar tracks but in short">Parecidas</string>

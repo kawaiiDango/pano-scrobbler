@@ -30,7 +30,7 @@
     <string name="artist">艺术家</string>
     <string name="artists">艺术家</string>
     <string name="n_artists">%1$s 位艺术家</string>
-    <string name="top_artists">热门艺术家</string>
+    <string name="top_artists" comment="Top artists the user has listened to">热门艺术家</string>
     <string name="album_artist">专辑艺术家</string>
     <string name="artist_channel" comment="Artist or youtube channel">艺术家/频道</string>
     <string name="similar_artists">相似的艺术家</string>
@@ -38,11 +38,11 @@
     <string name="album">专辑</string>
     <string name="albums">专辑</string>
     <string name="n_albums">%1$s 张专辑</string>
-    <string name="top_albums">热门专辑</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">热门专辑</string>
     <string name="track">曲目</string>
     <string name="tracks">曲目</string>
     <string name="n_tracks">%1$s 首曲目</string>
-    <string name="top_tracks">热门曲目</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">热门曲目</string>
     <string name="similar_tracks">相似的曲目</string>
     <string name="no_similar_tracks">未找到相似的曲目</string>
     <string name="similar" comment="Similar tracks but in short">相似的</string>
@@ -54,16 +54,16 @@
     <string name="state_didnt_scrobble">没有记录</string>
     <string name="state_unrecognised_artist">无法识别的艺术家</string>
     <string name="tap_to_edit">（点击以编辑）</string>
-    <string name="tap_to_edit_force">(点击编辑或强制执行)</string>
+    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(点击编辑或强制执行)</string>
     <string name="recently_scrobbled">最近的抓取</string>
     <string name="recently_loved">♥ 最近喜爱的</string>
-    <string name="recents">最近的</string>
+    <string name="recents" comment="Short for recently scrobbled">最近的</string>
     <string name="graph_info">… 过去 5 个月</string>
     <string name="enabled_apps">已启用的应用</string>
-    <string name="almost_there">即将完成……</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">即将完成……</string>
     <string name="music_players">音乐播放器</string>
     <string name="video_players">视频串流应用</string>
-    <string name="other_apps">其他应用</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">其他应用</string>
     <string name="choose_apps">选择要抓取的应用</string>
     <string name="offline">离线状态下显示的数据并不是最新的</string>
     <string name="unavailable_offline">离线时不可用</string>
@@ -79,8 +79,8 @@
     <string name="search">搜索</string>
     <string name="profile">用户</string>
     <string name="profile_pic">用户图片</string>
-    <string name="item_options">该项目的选项</string>
-    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification)">检测到 %1$s</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">该项目的选项</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">检测到 %1$s</string>
     <string name="new_player_prompt">要在此应用保持记录吗?</string>
     <string name="no_track_url">这首歌在 lastFM 上没有页面</string>
     <string name="no_scrobbles">这里还没有歌曲…</string>
@@ -97,14 +97,14 @@
     <string name="pending_scrobbles">待处理的音乐记录</string>
     <string name="pending_scrobble">待处理的音乐记录</string>
     <string name="pending_scrobbles_noti">正在加载待处理的音乐记录</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles • n today">总记录：%1$s • 今日记录：%2$s</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">总记录：%1$s • 今日记录：%2$s</string>
     <string name="friends">好友</string>
-    <string name="num_scrobbles_since" formatted="true">%1$s 个记录，始于 %2$s</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s 个记录，始于 %2$s</string>
     <string name="grant_autostart">启动自启</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">需要在 %1$s 设备上启用歌曲记录</string>
     <string name="grant_notification_access">授予通知访问权限</string>
     <string name="grant_notification_access_desc">需要检索音乐元数据且不读取非音乐通知</string>
-    <string name="authenticate_with_lastfm">使用 last.FM 进行身份验证</string>
+    <string name="authenticate_with_lastfm" comment="Login with last.fm">使用 last.FM 进行身份验证</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM 和 Listenbrainz 可以在此之后从设置中进行身份验证</string>
     <string name="swap" comment="(Swap title and artist)">切换</string>
     <string name="rate_msg">喜欢这个应用吗？</string>
@@ -120,9 +120,9 @@
     <string name="force_remembered">强制记录(持续保持)</string>
     <string name="force" comment="Force scrobble but in short">强制执行</string>
     <string name="grant_rec_perm">请授予使用麦克风的权限</string>
-    <string name="charts">图表</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts">图表</string>
     <string name="scrobble_from_mic">从麦克风抓取</string>
-    <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">来自麦克风</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">来自麦克风</string>
     <string name="add_to_hs">添加到主屏幕</string>
     <string name="listening">正在聆听您周围播放的音乐…</string>
     <string name="uploading">正在上传...</string>
@@ -130,7 +130,7 @@
     <string name="press_back">完成后返回</string>
     <string name="powered_acr">由 <i><b>ACR</b>Cloud</i>驱动</string>
     <string name="details">详细资料</string>
-    <string name="details_text" formatted="true" comment="%1= scrobble, %2= the service such as lastfm">将%1$s保存至%2$s</string>
+    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">将%1$s保存至%2$s</string>
     <string name="saved_as_pending">保存为待定记录</string>
     <string name="sort">排序</string>
     <string name="past_scrobbles">过去的音乐记录</string>
@@ -140,8 +140,8 @@
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s 的音乐记录</string>
     <string name="listeners">听众</string>
     <string name="scrobbles">音乐记录</string>
-    <string name="collapse">折叠</string>
-    <string name="expand">展开</string>
+    <string name="collapse" comment="(view only a few items)">折叠</string>
+    <string name="expand" comment="(view all items)">展开</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s 喜欢这个</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">直到%1$s的记录</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">来自 %1$s</string>
@@ -156,7 +156,7 @@
     <string name="charts_no_data">没有在此期间的数据</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">历史周榜尚不可用</string>
-    <string name="random">手气不错</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">手气不错</string>
     <string name="random_not_found">未找到曲目</string>
     <string name="loved_track">喜爱的曲目</string>
     <string name="randomize">随机</string>
@@ -165,21 +165,21 @@
     <string name="graph_monthly">每月记录计数</string>
     <string name="graph_yearly">每年记录计数</string>
     <string name="graph_scrub_msg">时间在您的时区\n按住或滑动图形以查看准确的计数</string>
-    <string name="original">原始版本</string>
-    <string name="corrected">校正</string>
-    <string name="tag">标签</string>
-    <string name="taggers">标签编辑器</string>
-    <string name="taggings">标签</string>
+    <string name="original" comment="Original metadata before editing">原始版本</string>
+    <string name="corrected" comment="Corrected metadata after editing">校正</string>
+    <string name="tag" comment="last.fm tag">标签</string>
+    <string name="taggers" comment="(number of) people who have tagged">标签编辑器</string>
+    <string name="taggings" comment="(total count of) a particular tag">标签</string>
     <string name="digest_weekly">我上周最佳的音乐播放记录</string>
     <string name="digest_monthly">我上个月最佳的音乐播放记录</string>
-    <string name="s_top_scrobbles" formatted="true" comment="%1= weekly/monthly">%1$s 最佳的音乐记录</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s 最佳的音乐记录</string>
     <string name="my_tags">我的标签</string>
     <string name="close">关闭</string>
     <string name="user_tags_hint">新建标签</string>
     <string name="user_tags_empty">您尚未添加任何标签</string>
     <string name="info_long_press_hint">您也可以长按一首歌来打开</string>
     <string name="appwidget_loading">正在加载…</string>
-    <string name="appwidget_period">时期</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">时期</string>
     <string name="appwidget_theme">主题</string>
     <string name="appwidget_shadow">暗色</string>
     <string name="appwidget_show">显示</string>
@@ -208,17 +208,11 @@
     <string name="edit_no_presets_available">正在使用所有预设</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">预设：%1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">模式限制已达到(%1$d)</string>
-    <string name="edit_drag_handle" comment="for drag and drop">拖拽处理</string>
-    <string name="n_matches" formatted="true">%1$d 个匹配</string>
-    <string name="text">文本</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">拖拽处理</string>
+    <string name="n_matches" formatted="true" comment="regex matches">%1$d 个匹配</string>
+    <string name="text" comment="text to test regex rules with">文本</string>
     <string name="edit_regex_warning">⚠ 请确保您在使用前了解 <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> 或使用提供的 <b>预设之一</b> 。 从上往下尝试用正则表达式达成匹配</string>
     <string name="blocked_metadata_info">ℹ️ 填写超过一个域，将在这些域之间添加AND操作符</string>
-    <!-- presets-->
-    <string name="preset_remastered_track">已重新调整(曲目)</string>
-    <string name="preset_remastered_album">已重新调整(专辑)</string>
-    <string name="preset_explicit_track">限制级（曲目）</string>
-    <string name="preset_explicit_album">限制级（专辑）</string>
-    <string name="preset_album_ver_track">专辑版本 (曲目)</string>
     <string name="scrobbler_off">已禁用 Scrobbler</string>
     <string name="scrobbler_on">Scrobbler 激活</string>
     <string name="pref_master">抓取音乐</string>
@@ -228,7 +222,7 @@
     <string name="pref_scrobble_noti">抓取通知</string>
     <string name="pref_lockscreen_noti">锁屏界面通知</string>
     <string name="pref_offline_info">ℹ️ 离线歌曲记录 &amp; 喜爱曲目将会被保存，以便稍后发送。</string>
-    <string name="pref_scrobble_from">抓取来源</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">抓取来源</string>
     <string name="pref_enabled_apps_summary">ℹ️ 支持可以显示音乐元数据的应用。为了避免在 Spotify 中出现重复抓取，只能在一个地方启用它。</string>
     <string name="pref_enabled_apps_title">选择应用</string>
     <string name="pref_auto_detect_summary">…我们仍将要求你确认或忽略该应用</string>
@@ -239,7 +233,7 @@
     <string name="pref_logout">退出登录</string>
     <string name="pref_confirm_logout">是否继续点击以便确认您要退出登录?</string>
     <string name="pref_login">登录</string>
-    <string name="pref_about">关于</string>
+    <string name="pref_about" comment="Info about this app">关于</string>
     <string name="pref_search_title">歌曲搜索应用</string>
     <string name="pref_scrobble_only">(仅限记录)</string>
     <string name="pref_scrobble_love_only">（Scrobble &amp; 仅喜爱曲目）</string>
@@ -256,13 +250,13 @@
     <string name="pref_export">导出</string>
     <string name="pref_export_desc">备份设置、编辑和黑名单。出于安全原因不保存登录信息。用于在设备之间移动或与朋友共享。</string>
     <string name="pref_import">导入</string>
-    <string name="pref_personalization">个性化</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">个性化</string>
     <string name="pref_themes">主题</string>
     <string name="pref_themes_desc">混合与配对\n同时更改通知颜色</string>
     <string name="pref_widget_charts">主屏幕小部件 - 图表</string>
     <string name="pref_show_albums">显示专辑名称</string>
     <string name="pref_show_albums_desc">…在最近的音乐记录</string>
-    <string name="pref_lists">列表</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">列表</string>
     <string name="pref_regex_edits">模板编辑</string>
     <string name="pref_blocked_metadata">已阻止的元数据</string>
     <string name="pref_translate">翻译本应用</string>
@@ -275,7 +269,7 @@
     <string name="import_lists_replace_existing">合并，替换现有的编辑和阻止列表</string>
     <string name="import_lists_keep">合并，保留现有的编辑和阻止列表</string>
     <string name="import_settings">导入配置</string>
-    <string name="pref_intents_dialog_title">广播 intents</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">广播 intents</string>
     <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"对于当前歌曲：
 %1$s
 %2$s
@@ -291,8 +285,8 @@
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
     <string name="custom_listenbrainz">自定义 Listenbrainz 服务器</string>
     <string name="failed_encode_url">无法对URL进行编码</string>
-    <string name="check_nls" formatted="true" comment="app name">正在检查：%1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="app name">特殊应用访问 &gt; 通知访问 &gt; %1$s</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">正在检查：%1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特殊应用访问 &gt; 通知访问 &gt; %1$s</string>
     <string name="artist_extra">曲目，专辑 &amp; 相似</string>
     <string name="no_browser">未安装浏览器</string>
     <string name="no_player">未安装音乐播放器</string>
@@ -300,7 +294,7 @@
     <string name="not_running_fix_action">修复</string>
     <string name="login_submit">验证</string>
     <string name="scrobble">音乐记录</string>
-    <string name="acr_host">主机</string>
+    <string name="acr_host" comment="Web hostname">主机</string>
     <string name="acr_key">通行密钥</string>
     <string name="acr_secret">安全码</string>
     <string name="add_acr_key">添加 ACRCloud 密钥</string>
@@ -311,7 +305,7 @@
 • 导航到项目 &gt; 音频 &amp; 视频识别
 • 创建一个新项目，选择录音音频和 ACRCloud 音乐桶。"</string>
     <string name="shazam_scrobbling">若需要连续记录，请打开 <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> 并启动自动Shazam 。同时请确保Shazam 已启用进行记录。</string>
-    <string name="pending_n_remaining" formatted="true">剩余 %1$d</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">剩余 %1$d</string>
     <string name="submitting_loves" formatted="true">提交喜爱曲目，%1$d 剩余</string>
     <string name="pending_batch" comment="For pending scrobbles">正在提交一个批次的记录</string>
     <string name="webview_error">页面加载失败 (你的网络是否正常工作？)</string>

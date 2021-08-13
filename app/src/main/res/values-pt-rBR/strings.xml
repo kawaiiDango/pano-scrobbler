@@ -265,7 +265,7 @@
     <string name="pref_lists">Listas</string>
     <string name="pref_regex_edits">Edições por padrão</string>
     <string name="pref_blocked_metadata">Metadados bloqueados</string>
-    <string name="pref_lastfm_disable">Não faça scrobble no lastFM</string>
+    <string name="pref_lastfm_disable" comment="test">Não faça scrobble no lastFM</string>
     <string name="pref_lastfm_disable_desc">Você ainda vai precisar fazer login no lastFM para o resto da interface funcionar</string>
     <string name="pref_translate">Traduzir esta app</string>
     <string name="import_hey_wtf">Esse provavelmente não é um arquivo de exportação do Pano Scrobbler</string>

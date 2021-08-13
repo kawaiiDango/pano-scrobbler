@@ -283,7 +283,7 @@
     <string name="pref_lists">Списки</string>
     <string name="pref_regex_edits">Редактирование шаблонов</string>
     <string name="pref_blocked_metadata">Заблокированные метаданные</string>
-    <string name="pref_lastfm_disable">Не скробблить в LastFM</string>
+    <string name="pref_lastfm_disable" comment="test">Не скробблить в LastFM</string>
     <string name="pref_lastfm_disable_desc">Для работы остальной части пользовательского интерфейса вам по-прежнему нужно войти в lastFm</string>
     <string name="pref_translate">Перевести это приложение</string>
     <string name="import_hey_wtf">Вероятно, это не файл экспорта Pano Scrobbler</string>

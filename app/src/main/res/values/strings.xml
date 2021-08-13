@@ -44,7 +44,9 @@
     <string name="artist">Artist</string>
     <string name="artists">Artists</string>
     <string name="n_artists">%1$s artists</string>
-    <string name="top_artists">Top artists</string>
+    <string name="top_artists"
+        comment="Top artists the user has listened to"
+        >Top artists</string>
     <string name="album_artist">Album artist</string>
     <string name="artist_channel"
         comment="Artist or youtube channel"
@@ -54,11 +56,15 @@
     <string name="album">Album</string>
     <string name="albums">Albums</string>
     <string name="n_albums">%1$s albums</string>
-    <string name="top_albums">Top albums</string>
+    <string name="top_albums"
+        comment="top albums the user has listened to, or most scrobbled albums of an artist"
+        >Top albums</string>
     <string name="track">Track</string>
     <string name="tracks">Tracks</string>
     <string name="n_tracks">%1$s tracks</string>
-    <string name="top_tracks">Top tracks</string>
+    <string name="top_tracks"
+        comment="top tracks the user has listened to, or most scrobbled tracks of an artist"
+        >Top tracks</string>
     <string name="similar_tracks">Similar tracks</string>
     <string name="no_similar_tracks">No similar tracks found</string>
     <string name="similar"
@@ -75,16 +81,24 @@
     <string name="state_didnt_scrobble">Didn\'t scrobble</string>
     <string name="state_unrecognised_artist">Unrecognised artist</string>
     <string name="tap_to_edit">(Tap to edit)</string>
-    <string name="tap_to_edit_force">(Tap to edit or force)</string>
+    <string name="tap_to_edit_force"
+        comment="Edit the scrobble or force submit the scrobble"
+        >(Tap to edit or force)</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
     <string name="recently_loved">♥ Recently Loved</string>
-    <string name="recents">Recents</string>
+    <string name="recents"
+        comment="Short for recently scrobbled"
+        >Recents</string>
     <string name="graph_info">… last 5 months</string>
     <string name="enabled_apps">Enabled Apps</string>
-    <string name="almost_there">Almost there…</string>
+    <string name="almost_there"
+        comment="Shown on the first screen after install, asking the user to complete the setup"
+        >Almost there…</string>
     <string name="music_players">Music Players</string>
     <string name="video_players">Video Streaming Apps</string>
-    <string name="other_apps">Other Apps</string>
+    <string name="other_apps"
+        comment="Apps which are not music players or video streaming apps"
+        >Other Apps</string>
     <string name="choose_apps">Choose Apps to scrobble</string>
     <string name="offline">Offline. Data shown isn\'t fresh</string>
     <string name="unavailable_offline">Not available when offline</string>
@@ -110,9 +124,11 @@
     <string name="search">Search</string>
     <string name="profile">Profile</string>
     <string name="profile_pic">Profile picture</string>
-    <string name="item_options">Options for this item</string>
+    <string name="item_options"
+        comment="Screen reader text for 3 dots menu button"
+        >Options for this item</string>
     <string name="new_player" formatted="true"
-        comment="(%1 = App name) detected (shown in notification)"
+        comment="(%1 = App name) detected (shown in notification, when a new music player is detected)"
         >%1$s detected</string>
     <string name="new_player_prompt">Keep scrobbling this app?</string>
     <string name="no_track_url">This song doesn\'t have a page on lastFM</string>
@@ -133,18 +149,22 @@
     <string name="pending_scrobble">Pending scrobble</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
     <string name="num_scrobbles_nav" formatted="true"
-        comment="n scrobbles • n today"
+        comment="n scrobbles (total) • n (scrobbles) today"
         >%1$s scrobbles • %2$s today</string>
 
     <string name="friends">Friends</string>
-    <string name="num_scrobbles_since" formatted="true">%1$s scrobbles, since %2$s</string>
+    <string name="num_scrobbles_since" formatted="true"
+        comment="%1= number, %2= date of joining lastfm"
+        >%1$s scrobbles, since %2$s</string>
     <string name="grant_autostart">Enable autostart</string>
     <string name="grant_autostart_desc" formatted="true"
         comment="%1= Brand name"
         >Needed on %1$s devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>
     <string name="grant_notification_access_desc">Needed to retrieve music metadata. No non-music notifications are read</string>
-    <string name="authenticate_with_lastfm">Authenticate with last.FM</string>
+    <string name="authenticate_with_lastfm"
+        comment="Login with last.fm"
+        >Authenticate with last.FM</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM and Listenbrainz can be authenticated after this, from settings</string>
     <string name="swap"
         comment="(Swap title and artist)"
@@ -164,10 +184,12 @@
         comment="Force scrobble but in short"
         >Force</string>
     <string name="grant_rec_perm">Please grant permission to use the microphone</string>
-    <string name="charts">Charts</string>
+    <string name="charts"
+        comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts"
+        >Charts</string>
     <string name="scrobble_from_mic">Scrobble from mic</string>
     <string name="from_mic"
-        comment="(Scrobble from mic in short, ideally less than 8 characters)"
+        comment="(Scrobble from mic in short, ideally 10 characters or less)"
         >From mic</string>
     <string name="add_to_hs">Add to homescreen</string>
     <string name="listening">Listening to music playing around you…</string>
@@ -177,7 +199,7 @@
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Details</string>
     <string name="details_text" formatted="true"
-        comment="%1= scrobble, %2= the service such as lastfm"
+        comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm"
         >Will %1$s to %2$s</string>
     <string name="saved_as_pending">Saved as a pending scrobble</string>
     <string name="sort">Sort</string>
@@ -193,8 +215,12 @@
         >%1$s\'s scrobbles</string>
     <string name="listeners">Listeners</string>
     <string name="scrobbles">Scrobbles</string>
-    <string name="collapse">Collapse</string>
-    <string name="expand">Expand</string>
+    <string name="collapse"
+        comment="(view only a few items)"
+        >Collapse</string>
+    <string name="expand"
+        comment="(view all items)"
+        >Expand</string>
     <string name="user_loved" formatted="true"
         comment="%1= username"
         >%1$s loved this</string>
@@ -223,7 +249,9 @@
         comment="%1= number, %2= List text (e.g. 1. Text)"
         >%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">Historical weekly charts are not available yet</string>
-    <string name="random">I\'m feeling lucky</string>
+    <string name="random"
+        comment="Displays a random scrobble or a loved track of the user"
+        >I\'m feeling lucky</string>
     <string name="random_not_found">No track found</string>
     <string name="loved_track">Loved track</string>
     <string name="randomize">Randomize</string>
@@ -232,15 +260,25 @@
     <string name="graph_monthly">Monthly scrobble counts</string>
     <string name="graph_yearly">Yearly scrobble counts</string>
     <string name="graph_scrub_msg">Times are in your timezone\nHold or scrub the graph to see the exact counts</string>
-    <string name="original">Original</string>
-    <string name="corrected">Corrected</string>
-    <string name="tag">Tag</string>
-    <string name="taggers">Taggers</string>
-    <string name="taggings">Taggings</string>
+    <string name="original"
+        comment="Original metadata before editing"
+        >Original</string>
+    <string name="corrected"
+        comment="Corrected metadata after editing"
+        >Corrected</string>
+    <string name="tag"
+        comment="last.fm tag"
+        >Tag</string>
+    <string name="taggers"
+        comment="(number of) people who have tagged"
+        >Taggers</string>
+    <string name="taggings"
+        comment="(total count of) a particular tag"
+        >Taggings</string>
     <string name="digest_weekly">My last week\'s top scrobbles</string>
     <string name="digest_monthly">My last month\'s top scrobbles</string>
     <string name="s_top_scrobbles" formatted="true"
-        comment="%1= weekly/monthly"
+        comment="%1= the word weekly or monthly"
         >%1$s top scrobbles</string>
     <string name="my_tags">My tags</string>
     <string name="close">Close</string>
@@ -249,7 +287,9 @@
     <string name="info_long_press_hint">You can also long press on a song to open this</string>
 
     <string name="appwidget_loading">Loading…</string>
-    <string name="appwidget_period">Period</string>
+    <string name="appwidget_period"
+        comment="1 week, 1 month, 1 year etc"
+        >Period</string>
     <string name="appwidget_theme">Theme</string>
     <string name="appwidget_shadow">Shadow</string>
     <string name="appwidget_show">Show</string>
@@ -293,19 +333,16 @@
         comment="%1= max pattern count"
         >Pattern limit reached (%1$d)</string>
     <string name="edit_drag_handle"
-        comment="for drag and drop"
+        comment="screen reader text for drag and drop button"
         >Drag handle</string>
-    <string name="n_matches" formatted="true">%1$d matches</string>
-    <string name="text">Text</string>
+    <string name="n_matches" formatted="true"
+        comment="regex matches"
+        >%1$d matches</string>
+    <string name="text"
+        comment="text to test regex rules with"
+        >Text</string>
     <string name="edit_regex_warning">⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
     <string name="blocked_metadata_info">ℹ️ Filling in more than one of these fields will apply an AND operator between them</string>
-
-<!-- presets-->
-    <string name="preset_remastered_track">Remastered (track)</string>
-    <string name="preset_remastered_album">Remastered (album)</string>
-    <string name="preset_explicit_track">Explicit (track)</string>
-    <string name="preset_explicit_album">Explicit (album)</string>
-    <string name="preset_album_ver_track">Album version (track)</string>
 
     <string name="scrobbler_off">Scrobbler disabled</string>
     <string name="scrobbler_on">Scrobbler active</string>
@@ -316,7 +353,9 @@
     <string name="pref_scrobble_noti">Scrobble notifications</string>
     <string name="pref_lockscreen_noti">Lockscreen notifications</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
-    <string name="pref_scrobble_from">Scrobble from</string>
+    <string name="pref_scrobble_from"
+        comment="Scrobble from (these apps)"
+        >Scrobble from</string>
     <string name="pref_enabled_apps_summary">ℹ️ Supports apps that reveal music metadata. To avoid double scrobbles from Spotify, enable it only in one place.</string>
     <string name="pref_enabled_apps_title">Choose apps</string>
     <string name="pref_auto_detect_summary">…we will still ask you to confirm/ignore that app</string>
@@ -327,7 +366,9 @@
     <string name="pref_logout">Logout</string>
     <string name="pref_confirm_logout">CONFIRM LOGOUT? Tap again</string>
     <string name="pref_login">Login</string>
-    <string name="pref_about">About</string>
+    <string name="pref_about"
+        comment="Info about this app"
+        >About</string>
     <string name="pref_search_title">Song search app</string>
     <string name="pref_scrobble_only">(Scrobble only)</string>
     <string name="pref_scrobble_love_only">(Scrobble &amp; love only)</string>
@@ -348,16 +389,20 @@
     <string name="pref_export">Export</string>
     <string name="pref_export_desc">Backs up settings, edits and blocklist. Does not save logins for security reasons. Useful for moving between devices or sharing with friends.</string>
     <string name="pref_import">Import</string>
-    <string name="pref_personalization">Personalization</string>
+    <string name="pref_personalization"
+        comment="Such as themes, widgets and some appearance settings"
+        >Personalization</string>
     <string name="pref_themes">Themes</string>
     <string name="pref_themes_desc">Mix and match\nAlso changes the notification color</string>
     <string name="pref_widget_charts">Homescreen widget - Charts</string>
     <string name="pref_show_albums">Show album names</string>
     <string name="pref_show_albums_desc">…in recent scrobbles</string>
-    <string name="pref_lists">Lists</string>
+    <string name="pref_lists"
+        comment="Such as edits list and block lists"
+        >Lists</string>
     <string name="pref_regex_edits">Pattern edits</string>
     <string name="pref_blocked_metadata">Blocked metadata</string>
-    <string name="pref_lastfm_disable" comment="test">Don\'t scrobble to lastFM</string>
+    <string name="pref_lastfm_disable">Don\'t scrobble to lastFM</string>
     <string name="pref_lastfm_disable_desc">You still need a lastFM login for the rest of the UI to work</string>
     <string name="pref_translate">Translate this app</string>
 
@@ -370,7 +415,9 @@
     <string name="import_lists_replace_existing">Merge, replacing existing edits and blocklist</string>
     <string name="import_lists_keep">Merge, keeping existing edits and blocklist</string>
     <string name="import_settings">Import settings</string>
-    <string name="pref_intents_dialog_title">Broadcast intents</string>
+    <string name="pref_intents_dialog_title"
+        comment="Android broadcast intents for apps like Tasker"
+        >Broadcast intents</string>
     <string name="pref_intents_dialog_desc" formatted="true"
         comment="%= different intent strings"
         >"For the current song:
@@ -390,10 +437,10 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="custom_listenbrainz">Custom Listenbrainz server</string>
     <string name="failed_encode_url">Failed to encode URL</string>
     <string name="check_nls" formatted="true"
-        comment="app name"
+        comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings"
         >Check %1$s</string>
     <string name="check_nls_tv" formatted="true"
-        comment="app name"
+        comment="%1= the name Pano Scrobbler"
         >Special app access > Notification Access > %1$s</string>
     <string name="artist_extra">Tracks, albums &amp; similar</string>
     <string name="no_browser">No browser is installed</string>
@@ -402,7 +449,9 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="not_running_fix_action">Fix it</string>
     <string name="login_submit">Verify</string>
     <string name="scrobble">Scrobble</string>
-    <string name="acr_host">Host</string>
+    <string name="acr_host"
+        comment="Web hostname"
+        >Host</string>
     <string name="acr_key">Access Key</string>
     <string name="acr_secret">Secret</string>
     <string name="add_acr_key">Add ACRCloud Key</string>
@@ -413,7 +462,9 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
 • Navigate to Projects > Audio &amp; video recognition
 • Create a new project, select Recorded Audio and the ACRCloud Music bucket"</string>
     <string name="shazam_scrobbling">To continuously scrobble, open <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> instead and start Auto Shazam. Also make sure that Shazam is enabled for scrobbling.</string>
-    <string name="pending_n_remaining" formatted="true">%1$d remaining</string>
+    <string name="pending_n_remaining" formatted="true"
+        comment="For pending scrobbles"
+        >%1$d remaining</string>
     <string name="submitting_loves" formatted="true">Submitting loves, %1$d remaining</string>
     <string name="pending_batch"
         comment="For pending scrobbles"

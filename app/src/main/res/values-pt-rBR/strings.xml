@@ -36,7 +36,7 @@
     <string name="artist">Artista</string>
     <string name="artists">Artistas</string>
     <string name="n_artists">%1$s artistas</string>
-    <string name="top_artists">Top de artistas</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Top de artistas</string>
     <string name="album_artist">Artista do álbum</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artista / canal</string>
     <string name="similar_artists">Artistas semelhantes</string>
@@ -44,11 +44,11 @@
     <string name="album">Álbum</string>
     <string name="albums">Álbuns</string>
     <string name="n_albums">%1$s álbuns</string>
-    <string name="top_albums">Álbuns mais escutados</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Álbuns mais escutados</string>
     <string name="track">Faixa</string>
     <string name="tracks">Faixas</string>
     <string name="n_tracks">%1$s faixas</string>
-    <string name="top_tracks">Faixas mais escutadas</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Faixas mais escutadas</string>
     <string name="similar_tracks">Faixas semelhantes</string>
     <string name="no_similar_tracks">Não foram encontradas faixas parecidas</string>
     <string name="similar" comment="Similar tracks but in short">Parecidas</string>
@@ -60,16 +60,16 @@
     <string name="state_didnt_scrobble">O scrobble falhou</string>
     <string name="state_unrecognised_artist">Artista não reconhecido</string>
     <string name="tap_to_edit">(Toque para editar)</string>
-    <string name="tap_to_edit_force">(Toque para editar ou forçar)</string>
+    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Toque para editar ou forçar)</string>
     <string name="recently_scrobbled">Scrobbles recentes</string>
     <string name="recently_loved">♥ Faixas favoritadas recentes</string>
-    <string name="recents">Recentes</string>
+    <string name="recents" comment="Short for recently scrobbled">Recentes</string>
     <string name="graph_info">… últimos 5 meses</string>
     <string name="enabled_apps">Apps ativados</string>
-    <string name="almost_there">Quase lá…</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Quase lá…</string>
     <string name="music_players">Reprodutores de música</string>
     <string name="video_players">Apps de Transmissão de Vídeo</string>
-    <string name="other_apps">Outros apps</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Outros apps</string>
     <string name="choose_apps">Escolha as apps para scrobble</string>
     <string name="offline">Offline. Dados mostrados não são recentes</string>
     <string name="unavailable_offline">Não disponível quando estiver offline</string>
@@ -85,8 +85,8 @@
     <string name="search">Pesquisar</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
-    <string name="item_options">Opções para este item</string>
-    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification)">%1$s detetado</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">Opções para este item</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s detetado</string>
     <string name="new_player_prompt">Continuar a fazer scrobble deste app?</string>
     <string name="no_track_url">Esta música não tem uma página no lastFM</string>
     <string name="no_scrobbles">Nenhuma música aqui…</string>
@@ -103,14 +103,14 @@
     <string name="pending_scrobbles">Scrobbles Pendentes</string>
     <string name="pending_scrobble">Scrobble pendente</string>
     <string name="pending_scrobbles_noti">A processar scrobbles pendentes</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles • n today">%1$s scrobbles • %2$s hoje</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s hoje</string>
     <string name="friends">Amigos</string>
-    <string name="num_scrobbles_since" formatted="true">%1$s scrobbles, desde %2$s</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
     <string name="grant_autostart">Ativar início automático</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Necessário em dispositivos %1$s, para que o scrobbler comece</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para recuperar metadados da música. Nenhum outro tipo notificação é lida</string>
-    <string name="authenticate_with_lastfm">Autenticar com Last.FM</string>
+    <string name="authenticate_with_lastfm" comment="Login with last.fm">Autenticar com Last.FM</string>
     <string name="authenticate_with_lastfm_desc">Pode depois iniciar sessão no LibreFM, GNUFM e Listenbrainz, a partir das configurações</string>
     <string name="swap" comment="(Swap title and artist)">Trocar</string>
     <string name="rate_msg">Gostando do aplicativo?</string>
@@ -126,9 +126,9 @@
     <string name="force_remembered">Forçar scrobble (será lembrado)</string>
     <string name="force" comment="Force scrobble but in short">Forçar</string>
     <string name="grant_rec_perm">Por favor, conceda permissão para usar o microfone</string>
-    <string name="charts">Paradas</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts">Paradas</string>
     <string name="scrobble_from_mic">Scrobble do micro</string>
-    <string name="from_mic" comment="(Scrobble from mic in short, ideally less than 8 characters)">Do micro</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Do micro</string>
     <string name="add_to_hs">Adicionar à página inicial</string>
     <string name="listening">Ouvir músicas a tocar ao seu redor…</string>
     <string name="uploading">A enviar…</string>
@@ -136,7 +136,7 @@
     <string name="press_back">Pressione voltar quando terminar</string>
     <string name="powered_acr">Fornecido por <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalhes</string>
-    <string name="details_text" formatted="true" comment="%1= scrobble, %2= the service such as lastfm">%1$s a %2$s Português</string>
+    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">%1$s a %2$s Português</string>
     <string name="saved_as_pending">Guardado como scrobble pendente</string>
     <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Histórico de scrobbles</string>
@@ -146,8 +146,8 @@
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de %1$s</string>
     <string name="listeners">Ouvintes</string>
     <string name="scrobbles">Scrobbles</string>
-    <string name="collapse">Fechar</string>
-    <string name="expand">Expandir</string>
+    <string name="collapse" comment="(view only a few items)">Fechar</string>
+    <string name="expand" comment="(view all items)">Expandir</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s favoritou isto</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles até %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
@@ -161,7 +161,7 @@
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
     <string name="charts_no_weekly_charts">O histórico das tabelas semanais não está disponível ainda</string>
-    <string name="random">A sentir-me com sorte</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">A sentir-me com sorte</string>
     <string name="random_not_found">Nenhuma faixa encontrada</string>
     <string name="loved_track">Faixa favoritada</string>
     <string name="randomize">Aleatória</string>
@@ -170,19 +170,19 @@
     <string name="graph_monthly">Contagem mensal de scrobbles</string>
     <string name="graph_yearly">Contagem anual de scrobbles</string>
     <string name="graph_scrub_msg">As horas estão no seu fuso horário\nPressione ou segure o gráfico para ver a contagem exata</string>
-    <string name="original">Original</string>
-    <string name="corrected">Corrigido</string>
-    <string name="tag">Marcação</string>
+    <string name="original" comment="Original metadata before editing">Original</string>
+    <string name="corrected" comment="Corrected metadata after editing">Corrigido</string>
+    <string name="tag" comment="last.fm tag">Marcação</string>
     <string name="digest_weekly">O meu top de scrobbles da semana passada</string>
     <string name="digest_monthly">O meu top de scrobbles do mês passado</string>
-    <string name="s_top_scrobbles" formatted="true" comment="%1= weekly/monthly">Top %1$s de scrobbles</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Top %1$s de scrobbles</string>
     <string name="my_tags">Meus marcadores</string>
     <string name="close">Fechar</string>
     <string name="user_tags_hint">Novo marcador</string>
     <string name="user_tags_empty">Não adicionou nenhuma etiqueta</string>
     <string name="info_long_press_hint">Pode também pressionar longamente uma música para abrir isto</string>
     <string name="appwidget_loading">Carregando…</string>
-    <string name="appwidget_period">Período</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Período</string>
     <string name="appwidget_theme">Tema</string>
     <string name="appwidget_shadow">Sombra</string>
     <string name="appwidget_show">Mostrar</string>
@@ -210,16 +210,10 @@
     <string name="edit_no_presets_available">Todas as predefinições estão em uso</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Predefinição: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite de padrões atingido (%1$d)</string>
-    <string name="n_matches" formatted="true">%1$d correspondências</string>
-    <string name="text">Texto</string>
+    <string name="n_matches" formatted="true" comment="regex matches">%1$d correspondências</string>
+    <string name="text" comment="text to test regex rules with">Texto</string>
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
-    <!-- presets-->
-    <string name="preset_remastered_track">Remasterizada (faixa)</string>
-    <string name="preset_remastered_album">Remasterizado (álbum)</string>
-    <string name="preset_explicit_track">Explícita (faixa)</string>
-    <string name="preset_explicit_album">Explícito (álbum)</string>
-    <string name="preset_album_ver_track">Versão do álbum (faixa)</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
     <string name="pref_master">Scrobble de música</string>
@@ -229,7 +223,7 @@
     <string name="pref_scrobble_noti">Notificações de scrobbles</string>
     <string name="pref_lockscreen_noti">Notificações no ecrã de bloqueio</string>
     <string name="pref_offline_info">ℹ️ Scrobbles offline &amp; e favoritadas serão guardadas, para ser tudo enviado mais tarde.</string>
-    <string name="pref_scrobble_from">Scrobble a partir de</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble a partir de</string>
     <string name="pref_enabled_apps_summary">ℹ️ Suporta apps que revelam metadados de música. Para evitar scrobbles duplos do Spotify, ative-os apenas num lugar.</string>
     <string name="pref_enabled_apps_title">Escolher apps</string>
     <string name="pref_auto_detect_summary">…iremos pedir-lhe que confirme/ignore essa app</string>
@@ -240,7 +234,7 @@
     <string name="pref_logout">Sair</string>
     <string name="pref_confirm_logout">ENCERRAR SESSÃO? Toque novamente</string>
     <string name="pref_login">Iniciar sessão</string>
-    <string name="pref_about">Acerca</string>
+    <string name="pref_about" comment="Info about this app">Acerca</string>
     <string name="pref_search_title">App de pesquisa de músicas</string>
     <string name="pref_scrobble_only">(Scrobble apenas)</string>
     <string name="pref_scrobble_love_only">(Scrobble &amp; favoritas apenas)</string>
@@ -256,16 +250,16 @@
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
     <string name="pref_import">Importar</string>
-    <string name="pref_personalization">Personalização</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalização</string>
     <string name="pref_themes">Temas</string>
     <string name="pref_themes_desc">Misturar e combinar\nAltera também a cor das notificações</string>
     <string name="pref_widget_charts">Widget no ecrã inicial - tabelas</string>
     <string name="pref_show_albums">Mostrar nomes dos álbuns</string>
     <string name="pref_show_albums_desc">…nos scrobbles recentes</string>
-    <string name="pref_lists">Listas</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="pref_regex_edits">Edições por padrão</string>
     <string name="pref_blocked_metadata">Metadados bloqueados</string>
-    <string name="pref_lastfm_disable" comment="test">Não faça scrobble no lastFM</string>
+    <string name="pref_lastfm_disable">Não faça scrobble no lastFM</string>
     <string name="pref_lastfm_disable_desc">Você ainda vai precisar fazer login no lastFM para o resto da interface funcionar</string>
     <string name="pref_translate">Traduzir esta app</string>
     <string name="import_hey_wtf">Esse provavelmente não é um arquivo de exportação do Pano Scrobbler</string>
@@ -277,7 +271,7 @@
     <string name="import_lists_replace_existing">Fundir, substituindo as edições existentes e lista de bloqueio</string>
     <string name="import_lists_keep">Fundir, mantendo edições existentes e lista de bloqueio</string>
     <string name="import_settings">Importar configurações</string>
-    <string name="pref_intents_dialog_title">Propostas de difusão</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Propostas de difusão</string>
     <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Para a música atual:
 %1$s
 %2$s
@@ -293,8 +287,8 @@ Podem ser usadas com apps como Tasker, Macrodroid, etc."</string>
     <string name="lastfm_reauth">Precisa reautenticar-se para editar ou apagar scrobbles</string>
     <string name="custom_listenbrainz">Servidor Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
-    <string name="check_nls" formatted="true" comment="app name">Verificar %1$s</string>
-    <string name="check_nls_tv" formatted="true" comment="app name">Acesso especial à app &gt; Acesso às Notificações &gt; %1$s</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Verificar %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Acesso especial à app &gt; Acesso às Notificações &gt; %1$s</string>
     <string name="artist_extra">Faixas, álbuns &amp; semelhantes</string>
     <string name="no_browser">Nenhum browser instalado</string>
     <string name="no_player">Nenhum reprodutor de música instalado</string>
@@ -311,7 +305,7 @@ Podem ser usadas com apps como Tasker, Macrodroid, etc."</string>
 • Navegue em Projects &gt; Audio &amp; video recognition
 • Crie um novo projeto, selecione Recorded Audio e repositório ACRCloud Music"</string>
     <string name="shazam_scrobbling">Para fazer scrobbles continuamente, abra o <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> em vez disso e inicie o Auto Shazam. Certifique-se também de que o Shazam o scrobble ativado.</string>
-    <string name="pending_n_remaining" formatted="true">%1$d restantes</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restantes</string>
     <string name="submitting_loves" formatted="true">Submetendo favoritadas, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">Enviar um lote</string>
     <string name="webview_error">Falha ao carregar a página (sua internet está funcionando?)</string>

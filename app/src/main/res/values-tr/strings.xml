@@ -271,7 +271,7 @@
     <string name="pref_lists">Listeler</string>
     <string name="pref_regex_edits">Kalıp düzenlemeleri</string>
     <string name="pref_blocked_metadata">Engellenmiş metaveri</string>
-    <string name="pref_lastfm_disable">LastFM\'e skroplama</string>
+    <string name="pref_lastfm_disable" comment="test">LastFM\'e skroplama</string>
     <string name="pref_lastfm_disable_desc">Arayüzün kalan işlevlerinin çalışabilmesi için yine de bir lastFM hesabıya oturum açmalısınız</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
     <string name="import_hey_wtf">Bu muhtemelen Pano Scrobbler\'dan dışa aktarılmış bir dosya değil</string>

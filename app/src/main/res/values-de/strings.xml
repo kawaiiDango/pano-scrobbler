@@ -1,5 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s Zuhörer</item>
+        <item quantity="other">%1$s Zuhörer</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$d Woche</item>
+        <item quantity="other">%1$d Wochen</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$d Monat</item>
+        <item quantity="other">%1$d Monate</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$d Jahr</item>
+        <item quantity="other">%1$d Jahre</item>
+    </plurals>
+    <string name="settings">Einstellungen</string>
+    <string name="bug_report">Fehler melden</string>
+    <string name="album_art">Album-Cover</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Titel wurde nicht gefunden</string>
+    <string name="network_error">Netzwerkfehler</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">scrobble ignoriert</string>
+    <string name="scrobble_ignored_save_edit">Lastfm hat die Bearbeitung ignoriert, da der Scrobble wahrscheinlich zu alt ist. Möchten Sie diese Bearbeitung stattdessen für zukünftige Scrobbles speichern?</string>
+    <string name="limit_exceeded_ignored">Tägliches Scrobble Limit überschritten</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Erforderliche Felder sind leer</string>
+    <string name="artist">Interpret</string>
+    <string name="artists">Interpreten</string>
+    <string name="n_artists">%1$s Interpreten</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Top Interpreten</string>
+    <string name="similar_artists">Ähnliche Interpreten</string>
+    <string name="album_optional">Album (optional)</string>
+    <string name="album">Album</string>
+    <string name="albums">Alben</string>
+    <string name="n_albums">%1$s Alben</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top Alben</string>
+    <string name="track">Titel</string>
+    <string name="tracks">Titel</string>
+    <string name="n_tracks">%1$s Titel</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Top-Titel</string>
+    <string name="similar_tracks">Ähnliche Titel</string>
+    <string name="no_similar_tracks">Keine ähnlichen Titel gefunden</string>
+    <string name="similar" comment="Similar tracks but in short">Ähnlich</string>
+    <string name="state_scrobbling">Scrobbelt gerade…</string>
+    <string name="state_scrobbled">Gescrobbelt</string>
+    <string name="unscrobble">Scrobble löschen</string>
+    <string name="state_unscrobbled">Scrobble gelöscht</string>
+    <string name="state_didnt_scrobble">Nicht gescrobbelt</string>
+    <string name="state_unrecognised_artist">Unbekannter Interpret</string>
+    <string name="tap_to_edit">(Zum Bearbeiten tippen)</string>
+    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Zum Bearbeiten tippen oder erzwingen)</string>
+    <string name="recently_scrobbled">Zuletzt gescrobbelt</string>
+    <string name="recently_loved">♥ Kürzlich favorisiert</string>
+    <string name="recents" comment="Short for recently scrobbled">Zuletzt</string>
+    <string name="graph_info">… letzte 5 Monate</string>
+    <string name="enabled_apps">Aktivierte Apps</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Fast geschafft…</string>
+    <string name="music_players">Musik-Player</string>
     <!--  todo: don't concat  -->
     <!--  pro  -->
 </resources>

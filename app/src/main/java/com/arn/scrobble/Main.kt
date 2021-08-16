@@ -183,7 +183,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     else {
                         val handler = Handler(mainLooper)
                         handler.post {
-                            if (!KeepNLSAliveJob.ensureServiceRunning(this))
+                            if (!Stuff.isScrobblerRunning(this))
                                 showNotRunning()
                             else if (!isTV && billingViewModel.proStatus.value != true)
                                 AppRater.app_launched(this)
@@ -549,7 +549,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
 
-        if (!KeepNLSAliveJob.ensureServiceRunning(this))
+        if (!Stuff.isScrobblerRunning(this))
             text += "Background service isn't running\n"
         text += "Active Sessions: $activeSessions\n"
 

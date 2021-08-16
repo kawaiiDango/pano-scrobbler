@@ -1,6 +1,5 @@
 package com.arn.scrobble.info
 
-import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -11,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentTagInfoBinding
@@ -27,16 +25,6 @@ class TagInfoFragment: BottomSheetDialogFragment() {
     private var _binding: ContentTagInfoBinding? = null
     private val binding
         get() = _binding!!
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setOnShowListener {
-            val width = resources.getDimension(R.dimen.bottom_sheet_width)
-            if (width > 0)
-                dialog.window!!.setLayout(width.toInt(), ViewGroup.LayoutParams.MATCH_PARENT)
-        }
-        return dialog
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentTagInfoBinding.inflate(inflater, container, false)

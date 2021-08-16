@@ -1,6 +1,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@android:id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 <!--    <merge> crashes with npe in viewbinding-->
@@ -31,6 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:paddingTop="8dp"
+            android:clipToPadding="false"
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp"/>
 

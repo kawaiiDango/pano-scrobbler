@@ -1,6 +1,7 @@
 package com.arn.scrobble.edits
 
 import android.content.Context
+import androidx.annotation.StringRes
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.db.RegexEdit
@@ -8,7 +9,7 @@ import com.arn.scrobble.db.RegexEdit
 object RegexPresets {
     private val presets = mapOf(
         "remastered_track" to (
-                R.string.preset_remastered_track to
+                R.string.preset_remastered to
                     RegexEdit(
                         pattern = "([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?| [(\\[].*remastere?d?.*[)\\]]",
                         replacement = "",
@@ -16,7 +17,7 @@ object RegexPresets {
                     )
                 ),
         "remastered_album" to (
-                R.string.preset_remastered_album to
+                R.string.preset_remastered to
                         RegexEdit(
                         pattern = "([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?| [(\\[].*remastere?d?.*[)\\]]",
                         replacement = "",
@@ -24,7 +25,7 @@ object RegexPresets {
                     )
                 ),
         "explicit_track" to (
-                R.string.preset_explicit_track to
+                R.string.preset_explicit to
                         RegexEdit(
                         pattern = " ([/-] )? ?explicit ?(.*?version)?| [(\\[].*?explicit.*?[)\\]]",
                         replacement = "",
@@ -32,7 +33,7 @@ object RegexPresets {
                     )
                 ),
         "explicit_album" to (
-                R.string.preset_explicit_album to
+                R.string.preset_explicit to
                         RegexEdit(
                         pattern = " ([/-] )? ?explicit ?(.*?version)?| [(\\[].*?explicit.*?[)\\]]",
                         replacement = "",
@@ -40,7 +41,7 @@ object RegexPresets {
                     )
                 ),
         "album_ver_track" to (
-                R.string.preset_album_ver_track to
+                R.string.preset_album_version to
                         RegexEdit(
                         pattern = " ([/-] .*)? ?album version.*| [(\\[].*?album version.*?[)\\]]",
                         replacement = "",
@@ -51,7 +52,20 @@ object RegexPresets {
 
     val presetKeys = presets.keys
 
-    fun getString(context: Context, key: String) = context.getString(presets[key]?.first ?: R.string.edit_presets)
+    fun getString(context: Context, key: String): String {
+        @StringRes
+        val fieldRes = when (presets[key]?.second?.field) {
+            NLService.B_ARTIST -> R.string.artist
+            NLService.B_ALBUM -> R.string.album
+            NLService.B_TRACK -> R.string.track
+            NLService.B_ALBUM_ARTIST -> R.string.album_artist
+
+            else -> return "invalid field"
+        }
+
+        return context.getString(presets[key]?.first ?: R.string.edit_presets) +
+                " (${context.getString(fieldRes).lowercase()})"
+    }
 
     fun getPossiblePreset(regexEdit: RegexEdit) = presets[regexEdit.preset]?.second
         ?.apply {

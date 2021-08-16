@@ -13,6 +13,7 @@ import android.graphics.drawable.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Process
 import android.provider.MediaStore
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.Html
@@ -269,9 +270,8 @@ object Stuff {
 
     val updateCurrentOrMutable: Int
         get() {
-            //TODO: uncomment when targeting S
-//            if (Build.VERSION.SDK_INT >= 31)
-//                return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            if (Build.VERSION.SDK_INT >= 31)
+                return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             return PendingIntent.FLAG_UPDATE_CURRENT
         }
 
@@ -688,6 +688,34 @@ object Stuff {
         } catch (e: NullPointerException) {
             return true
         }
+        return false
+    }
+
+    fun isScrobblerRunning(context: Context): Boolean {
+        val serviceComponent = ComponentName(context, NLService::class.java)
+        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        var serviceRunning = false
+        val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
+        if (runningServices == null) {
+            log("${this::isScrobblerRunning} runningServices is NULL")
+            return true //just assume true for now. this throws SecurityException, might not work in future
+        }
+        for (service in runningServices) {
+            if (service.service == serviceComponent) {
+                log("${this::isScrobblerRunning}  service - pid: " + service.pid + ", currentPID: " +
+                        Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
+                        service.clientCount + " process:" + service.process + ", clientLabel: " +
+                        if (service.clientLabel == 0) "0" else "(" + context.resources.getString(service.clientLabel) + ")")
+                if (service.process == BuildConfig.APPLICATION_ID + ":bgScrobbler" /*&& service.clientCount > 0 */) {
+                    serviceRunning = true
+                    break
+                }
+            }
+        }
+        if (serviceRunning)
+            return true
+
+        log("${this::isScrobblerRunning} : service not running")
         return false
     }
 

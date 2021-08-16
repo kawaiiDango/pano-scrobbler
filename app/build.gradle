@@ -25,13 +25,11 @@ android {
 
     kotlinOptions.useIR = true
 
-//    compileSdkVersion 31
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
-//        targetSdkVersion 31
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode verCode
         versionName ((int)(versionCode/100) + "." + (versionCode%100) +  " - " + new Date().format('dd.MMM.YY'))
         setProperty("archivesBaseName", "pScrobbler")
@@ -78,7 +76,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.3.1"
 //    implementation "androidx.core:core-ktx:1.3.2"
     implementation "androidx.preference:preference:1.1.1"
-    implementation "androidx.media:media:1.4.0"
+    implementation "androidx.media:media:1.4.1"
     implementation "androidx.palette:palette:1.0.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
@@ -93,8 +91,8 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1"
     // viewpager2 doesnt respond to left/right press on TVs, don't migrate
 
-    implementation "com.google.android.material:material:1.3.0"  // in 1.4.0, bottomsheet on tablet is cut off
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation "com.google.android.material:material:1.4.0"
+    implementation 'com.jakewharton.timber:timber:5.0.0'
     implementation platform('com.google.firebase:firebase-bom:28.1.0')
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies

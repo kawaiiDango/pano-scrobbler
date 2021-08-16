@@ -31,6 +31,7 @@
         android:allowBackup="true"
         android:banner="@drawable/tv_banner"
         android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/backup_rules_31"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -117,14 +118,12 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
 
-            <meta-data
-                android:name="android.service.notification.default_filter_types"
-                android:value="2,4,8">
-            </meta-data>
+<!--            <meta-data-->
+<!--                android:name="android.service.notification.default_filter_types"-->
+<!--                android:value="alerting,ongoing,silent"/>-->
             <meta-data
                 android:name="android.service.notification.disabled_filter_types"
-                android:value="1">
-            </meta-data>
+                android:value="conversations"/>
 
         </service>
         <service
@@ -134,9 +133,6 @@
             android:name=".widget.ChartsWidgetUpdaterJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".pending.PendingScrService" />
-        <service
-            android:name=".KeepNLSAliveJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".MasterSwitchQS"
             android:exported="true"

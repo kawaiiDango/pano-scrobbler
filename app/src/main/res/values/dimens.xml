@@ -18,7 +18,6 @@
     <dimen name="random_container_max_width">400dp</dimen>
     <dimen name="first_things_margin">10dp</dimen>
     <dimen name="recents_overlay_rotate">10</dimen>
-    <dimen name="bottom_sheet_width">0dp</dimen>
     <dimen name="corner_radius">10dp</dimen>
     <dimen name="widget_corner_radius">30dp</dimen>
     <dimen name="album_text_height">20sp</dimen>

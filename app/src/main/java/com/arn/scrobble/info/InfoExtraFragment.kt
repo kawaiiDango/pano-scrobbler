@@ -1,6 +1,5 @@
 package com.arn.scrobble.info
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,16 +26,6 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
     private lateinit var tracksFragment: FakeTrackFragment
     private val username: String?
         get() = arguments?.getString(Stuff.ARG_USERNAME)
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setOnShowListener {
-            val width = resources.getDimension(R.dimen.bottom_sheet_width)
-            if (width > 0)
-                dialog.window!!.setLayout(width.toInt(), ViewGroup.LayoutParams.MATCH_PARENT)
-        }
-        return dialog
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = ContentInfoExtraBinding.inflate(inflater, container, false)

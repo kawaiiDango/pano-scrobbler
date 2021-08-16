@@ -109,21 +109,28 @@ class ChartsWidgetUpdaterJob : JobService() {
 
     companion object {
         const val JOB_ID = 11
+        const val ONE_SHOT_JOB_ID = 12
         var mightBeRunning = false // this may not be false when the job is force stopped
         private const val INTERVAL = 15 * 60 * 1000L //15 mins is the minimum
 
-        fun checkAndSchedule(context: Context, force: Boolean = true) {
+        fun checkAndSchedule(context: Context, runImmediately: Boolean) {
             if (mightBeRunning)
                 return
             val js = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             val jobs = js.allPendingJobs
 
+            if (runImmediately) {
+                val job = JobInfo.Builder(ONE_SHOT_JOB_ID, ComponentName(context, ChartsWidgetUpdaterJob::class.java))
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setMinimumLatency(1)
+                    .setOverrideDeadline(1)
+                    .build()
+                js.schedule(job)
+            }
+
             if (jobs.any { it.id == JOB_ID }) {
                 Stuff.log("Found " + jobs.size + " existing jobs")
-                if (force)
-                    js.cancel(JOB_ID)
-                else
-                    return
+                return
             }
 
             val job = JobInfo.Builder(JOB_ID, ComponentName(context, ChartsWidgetUpdaterJob::class.java))

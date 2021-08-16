@@ -148,7 +148,7 @@ class FirstThingsFragment: Fragment() {
         stepsNeeded = 4
         if (checkNLAccess(activity)) {
             markAsDone(binding.firstThings1)
-            if(startupMgrIntent != null && KeepNLSAliveJob.ensureServiceRunning(activity))
+            if(startupMgrIntent != null && Stuff.isScrobblerRunning(activity))
                 // needed for cases when a miui user enables autostart AFTER granting NLS permission
                 markAsDone(binding.firstThings0)
             else

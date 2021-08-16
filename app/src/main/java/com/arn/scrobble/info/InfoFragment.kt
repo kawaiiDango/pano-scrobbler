@@ -1,6 +1,5 @@
 package com.arn.scrobble.info
 
-import android.app.Dialog
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,16 +23,6 @@ import de.umass.lastfm.Track
 class InfoFragment: BottomSheetDialogFragment() {
 
     private val viewModel by lazy { VMFactory.getVM(this, InfoVM::class.java) }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setOnShowListener {
-            val width = resources.getDimension(R.dimen.bottom_sheet_width)
-            if (width > 0)
-                dialog.window!!.setLayout(width.toInt(), ViewGroup.LayoutParams.MATCH_PARENT)
-        }
-        return dialog
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = ContentInfoBinding.inflate(inflater, container, false)

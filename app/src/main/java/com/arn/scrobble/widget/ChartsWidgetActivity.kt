@@ -32,6 +32,7 @@ class ChartsWidgetActivity: AppCompatActivity() {
     lateinit var previewBinding: AppwidgetChartsContentBinding
     private val pref by lazy { getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE) }
     private val periodChipIds = arrayOf(R.id.charts_7day, R.id.charts_1month, R.id.charts_3month, R.id.charts_6month, R.id.charts_12month, R.id.charts_overall)
+    private var widgetExists = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,14 +56,11 @@ class ChartsWidgetActivity: AppCompatActivity() {
                 editor.putInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), idx)
         }
 
-        binding.widgetPeriod.charts7day.isChecked = true
-
         binding.widgetTheme.setOnCheckedChangeListener { group, checkedId ->
             val isDark = checkedId == R.id.chip_dark
             editor.putBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_DARK, appWidgetId), isDark)
             initPreview(isDark, binding.widgetShadow.isChecked)
             previewAlpha(binding.widgetBgAlpha.value/100)
-
         }
 
         binding.widgetBgAlpha.addOnChangeListener { slider, value, fromUser ->
@@ -85,6 +83,10 @@ class ChartsWidgetActivity: AppCompatActivity() {
                 editor.putInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), idx)
             editor.apply()
             updateWidget()
+
+            if (widgetExists)
+                ChartsWidgetUpdaterJob.checkAndSchedule(applicationContext, true)
+
             finish()
         }
         binding.cancelButton.setOnClickListener {
@@ -94,8 +96,37 @@ class ChartsWidgetActivity: AppCompatActivity() {
         if (isPinned)
             binding.cancelButton.visibility = View.GONE
 
-        initPreview(true, true)
+        initFromPrefs()
+
         previewAlpha(binding.widgetBgAlpha.value/100)
+    }
+
+    private fun initFromPrefs() {
+        val period = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), -1)
+        if (period != -1)
+            binding.widgetPeriod.chartsPeriod.check(periodChipIds[period])
+        else {
+            binding.widgetPeriod.charts7day.isChecked = true
+            initPreview(true, true)
+            return
+        }
+
+        val isDark = pref.getBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_DARK, appWidgetId), true)
+        if (isDark)
+            binding.chipDark.isChecked = true
+        else
+            binding.chipLight.isChecked = true
+
+        val alpha = pref.getFloat(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_BG_ALPHA, appWidgetId), -1f)
+        if (alpha != -1f)
+            binding.widgetBgAlpha.value = alpha * 100
+
+        val hasShadow = pref.getBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_SHADOW, appWidgetId), true)
+        binding.widgetShadow.isChecked = hasShadow
+
+        initPreview(isDark, hasShadow)
+
+        widgetExists = true
     }
 
     override fun onDestroy() {

@@ -4,6 +4,5 @@
     <string name="album_art">Pochette d\'album</string>
     <string name="network_error">Erreur de réseau</string>
     <!--  todo: don't concat  -->
-    <!-- presets-->
     <!--  pro  -->
 </resources>

@@ -297,8 +297,8 @@ class RecFragment: Fragment(),
         when(statusCode) {
             0 -> {
                 binding.recImg.setImageResource(R.drawable.vd_check_simple)
-                binding.recStatus.text = getString(R.string.state_scrobbled) +
-                        getString(R.string.artist_title, artist, title)
+                binding.recStatus.text =
+                    getString(R.string.state_scrobbled) + ' ' + getString(R.string.artist_title, artist, title)
                 val scrobbleData = ScrobbleData()
                 scrobbleData.artist = artist
                 scrobbleData.album = album

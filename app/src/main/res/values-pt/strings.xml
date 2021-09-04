@@ -265,6 +265,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="pref_regex_edits">Edições padrão</string>
     <string name="pref_blocked_metadata">Metadados bloqueados</string>
+    <string name="pref_lastfm_disable">Não enviar scrobbles para o lastFM</string>
+    <string name="pref_lastfm_disable_desc">Continuará a precisar de uma conta no lastFM para que o resto da interface de utilizador funcione</string>
     <string name="pref_translate">Traduzir esta aplicação</string>
     <string name="import_hey_wtf">Provavelmente, este não é um ficheiro de exportação do Pano Scrobbler</string>
     <string name="export_failed">Falha ao exportar</string>
@@ -317,6 +319,7 @@ Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="webview_error">Falha ao carregar a página (está ligado à Internet?)</string>
     <string name="navigation_drawer_open">Abrir painel de navegação ou voltar</string>
     <string name="navigation_drawer_close">Fechar painel de navegação</string>
+    <string name="graph">Gráfico</string>
     <string name="cleared_disabled_apps">Lista de apps desativadas limpa</string>
     <string name="fix_it_title">Possíveis correções</string>
     <string name="fix_it_startup_title">Bateria / Gestores de Arranque</string>

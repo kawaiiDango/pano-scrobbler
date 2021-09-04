@@ -36,7 +36,7 @@
     <string name="artist">Sanatçı</string>
     <string name="artists">Sanatçılar</string>
     <string name="n_artists">%1$s sanatçı</string>
-    <string name="top_artists" comment="Top artists the user has listened to">En çık dinlenen sanatçılar</string>
+    <string name="top_artists" comment="Top artists the user has listened to">En çok dinlenen sanatçılar</string>
     <string name="album_artist">Albüm sanatçısı</string>
     <string name="artist_channel" comment="Artist or youtube channel">Sanatçı / kanal</string>
     <string name="similar_artists">Benzer sanatçılar</string>
@@ -74,10 +74,10 @@
     <string name="offline">Çevrimdışı. Güncel veriler gösterilemiyor</string>
     <string name="unavailable_offline">Çevrimdışı kullanılamıyor</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Hizmetler</string>
-    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Bak ne dinliyorum:\n%1$s %2$s</string>
-    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Bak %3$s ne dinliyor:\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Tarafımca %1$s %2$s:\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s tarafından %1$s %2$s:\n%3$s</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Bak ne dinliyorum:\n%1$s (%2$s)</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Bak %3$s ne dinliyor:\n%1$s (%2$s)</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Tarafımca %2$s (%1$s):\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s tarafından %2$s (%1$s):\n%3$s</string>
     <string name="share_sig">(Pano Scrobbler tarafından)</string>
     <string name="share_this_song">Bu şarkıyı paylaş</string>
     <string name="share">Paylaş</string>
@@ -117,7 +117,7 @@
     <string name="rate_action">Oy ver</string>
     <string name="time_just_now">şimdi</string>
     <string name="no_mail_apps">Yüklü e-posta istemcisi yok</string>
-    <string name="loved">Beğenildi</string>
+    <string name="loved">Beğenilenler</string>
     <string name="unloved">Beğeni kaldırıldı</string>
     <string name="simple_edits">Düzenlemeler</string>
     <string name="n_simple_edits" formatted="true">%1$d düzenleme</string>
@@ -162,9 +162,9 @@
     <string name="charts_no_data">Bu dönem için veri yok</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">Geriye dönük haftalık listeler henüz mevcut değil</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">Kendimi şanslı hissediyorum</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Haydi rastgele</string>
     <string name="random_not_found">Parça bulunamadı</string>
-    <string name="loved_track">Beğenilen parça</string>
+    <string name="loved_track">Beğenilenler</string>
     <string name="randomize">Rastgele Seç</string>
     <string name="graph_daily">Günlük skrop sayısı</string>
     <string name="graph_weekly">Haftalık skrop sayısı</string>
@@ -228,7 +228,7 @@
     <string name="pref_scrobble_noti">Skrop bildirimleri</string>
     <string name="pref_lockscreen_noti">Kilit ekranı bildirimleri</string>
     <string name="pref_offline_info">ℹ️ Çevrmdışı skroplar &amp; beğeniler daha sonra gönderilmek üzere kaydedilecektir.</string>
-    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">\'den/dan skropla</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Müzik uygulamaları</string>
     <string name="pref_enabled_apps_summary">ℹ️ Müzik metaverisini paylaşan uygulamaları destekler. Spotify\'da oluşabilecek çift skropları engellemek için sadece bir yerde etkin bırakın.</string>
     <string name="pref_enabled_apps_title">Uygulamaları seçin</string>
     <string name="pref_auto_detect_summary">…yine de bu uygulamayı onaylamak/dikkate almamak için size soracağız</string>
@@ -301,7 +301,7 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="not_running">⚠ Skoplayıcı sisteminiz tarafından sonlandırıldı</string>
     <string name="not_running_fix_action">Düzelt</string>
     <string name="login_submit">Doğrula</string>
-    <string name="scrobble">Skropla</string>
+    <string name="scrobble">Tümü</string>
     <string name="acr_host" comment="Web hostname">Sunucu</string>
     <string name="acr_key">Erişim anahtarı</string>
     <string name="acr_secret">Gizli</string>
@@ -334,7 +334,7 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="help">Yardım</string>
     <string name="pro_support">Bu, sizin gibi harika kullanıcılarımızın, bu uygulamanın sağladığı hizmetlerin hatırına desteklerini göstermeleri için hızlı ve basit bir yoldur.</string>
     <string name="pro_also_get">Ayrıca şunlara sahip olacaksınız:</string>
-    <string name="pro_benefits">Ayrıca 🎨 Farklı temalara (19 x 19 x 20 renk) ve 🚫 metadatanın skroplanmasını engelleme seçeneğine sahip olacaksınız. Paylaşımlarda uygulama ismi kaldırılacak.</string>
+    <string name="pro_benefits">Ayrıca 🎨 farklı temalara (19 x 19 x 20 renk) ve metadatanın skroplanmasını 🚫 engelleme seçeneğine sahip olacaksınız. Paylaşımlarda uygulama ismi kaldırılacak.</string>
     <string name="thank_you">Teşekkürler!</string>
     <string name="purchase_pending">Satın alma işleminiz henüz ödeme sağlayıcınız tarafından onaylanmadı. Lütfen birkaç dakika sonra tekrar kontrol edin.</string>
     <string name="billing_troubleshoot_title">Satın almayı geri yükle</string>

@@ -26,10 +26,10 @@ interface RegexEditsDao {
     @get:Query("SELECT MAX(`order`) FROM $tableName")
     val maxOrder: Int?
 
-    @get:Query("SELECT * FROM $tableName WHERE preset != NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
+    @get:Query("SELECT * FROM $tableName WHERE preset IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
     val allPresets: List<RegexEdit>
 
-    @get:Query("SELECT * FROM $tableName WHERE pattern != NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
+    @get:Query("SELECT * FROM $tableName WHERE pattern IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
     val allRegexes: List<RegexEdit>
 
     @Query("UPDATE $tableName SET `order` = `order` + 1")
@@ -51,8 +51,11 @@ interface RegexEditsDao {
     @Query("DELETE FROM $tableName")
     fun nuke()
 
-    fun performRegexReplace(scrobbleData: ScrobbleData): Map<String, Int> {
-        val regexEdits = all.map { RegexPresets.getPossiblePreset(it) }
+    fun performRegexReplace(
+        scrobbleData: ScrobbleData,
+        regexEdits: List<RegexEdit> = all.map { RegexPresets.getPossiblePreset(it) },
+        matchedRegexEditsRef: MutableList<RegexEdit>? = null,
+    ): Map<String, Int> {
         val numMatches = mutableMapOf(
             NLService.B_ARTIST to 0,
             NLService.B_ALBUM to 0,
@@ -60,9 +63,9 @@ interface RegexEditsDao {
             NLService.B_TRACK to 0,
         )
 
-        fun replaceField(text: String?, field: String): String? {
-            text ?: return null
-            var text: String = text
+        fun replaceField(textp: String?, field: String): String? {
+            textp ?: return null
+            var text: String = textp
             for (regexEdit in regexEdits.filter { it.field == field }) {
                 regexEdit.pattern ?: continue
 
@@ -74,11 +77,12 @@ interface RegexEditsDao {
 
                 if (regex.containsMatchIn(text)) {
                     numMatches[field] = numMatches[field]!! + 1
+                    matchedRegexEditsRef?.add(regexEdit)
 
                     text = if (regexEdit.replaceAll)
-                        text.replace(regex, regexEdit.replacement)
+                        text.replace(regex, regexEdit.replacement).trim()
                     else
-                        text.replaceFirst(regex, regexEdit.replacement)
+                        text.replaceFirst(regex, regexEdit.replacement).trim()
                     if (!regexEdit.continueMatching)
                         break
                 }

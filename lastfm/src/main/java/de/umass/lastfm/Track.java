@@ -778,11 +778,15 @@ public class Track extends MusicEntry {
 			if (element.hasChild("duration")) {
 				String duration = element.getChildText("duration");
 				if(duration.length() != 0) {
-					int durationLength = Integer.parseInt(duration);
-					// So it seems last.fm couldn't decide which format to send the duration in.
-					// It's supplied in milliseconds for Playlist.fetch and Track.getInfo but Artist.getTopTracks returns (much saner) seconds
-					// so we're doing a little sanity check for the duration to be over or under 10'000 and decide what to do
-					track.duration = durationLength > 10000 ? durationLength / 1000 : durationLength;
+				    try {
+                        int durationLength = Integer.parseInt(duration);
+                        // So it seems last.fm couldn't decide which format to send the duration in.
+                        // It's supplied in milliseconds for Playlist.fetch and Track.getInfo but Artist.getTopTracks returns (much saner) seconds
+                        // so we're doing a little sanity check for the duration to be over or under 10'000 and decide what to do
+                        track.duration = durationLength > 10000 ? durationLength / 1000 : durationLength;
+                    } catch (NumberFormatException e) {
+
+                    }
 				}
 			}
 			DomElement album = element.getChild("album");

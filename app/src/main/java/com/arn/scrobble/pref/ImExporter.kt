@@ -91,15 +91,16 @@ class ImExporter {
                     name("settings").beginObject()
                     val pref = MultiPreferences(context)
                     name(Stuff.PREF_MASTER).value(pref.getBoolean(Stuff.PREF_MASTER, true))
-                    name(Stuff.PREF_NOTIFICATIONS).value(pref.getBoolean(Stuff.PREF_NOTIFICATIONS, true))
-                    name(Stuff.PREF_DIGEST_WEEKLY).value(pref.getBoolean(Stuff.PREF_DIGEST_WEEKLY, true))
-                    name(Stuff.PREF_DIGEST_MONTHLY).value(pref.getBoolean(Stuff.PREF_DIGEST_MONTHLY, true))
+                    name(Stuff.CHANNEL_NOTI_SCROBBLING).value(pref.getBoolean(Stuff.CHANNEL_NOTI_SCROBBLING, true))
+                    name(Stuff.CHANNEL_NOTI_DIGEST_WEEKLY).value(pref.getBoolean(Stuff.CHANNEL_NOTI_DIGEST_WEEKLY, true))
+                    name(Stuff.CHANNEL_NOTI_DIGEST_MONTHLY).value(pref.getBoolean(Stuff.CHANNEL_NOTI_DIGEST_MONTHLY, true))
                     name(Stuff.PREF_LOCKSCREEN_NOTI).value(pref.getBoolean(Stuff.PREF_LOCKSCREEN_NOTI, false))
                     name(Stuff.PREF_PIXEL_NP).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
                     name(Stuff.PREF_DELAY_SECS).value(pref.getInt(Stuff.PREF_DELAY_SECS, Stuff.PREF_DELAY_SECS_DEFAULT))
                     name(Stuff.PREF_DELAY_PER).value(pref.getInt(Stuff.PREF_DELAY_PER, Stuff.PREF_DELAY_PER_DEFAULT))
                     name(Stuff.PREF_NOW_PLAYING).value(pref.getBoolean(Stuff.PREF_NOW_PLAYING, true))
                     name(Stuff.PREF_FETCH_AA).value(pref.getBoolean(Stuff.PREF_FETCH_AA, false))
+                    name(Stuff.PREF_LOCALE).value(pref.getString(Stuff.PREF_LOCALE, null))
                     name(Stuff.PREF_AUTO_DETECT).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
                     name(Stuff.PREF_SHOW_RECENTS_ALBUM).value(pref.getBoolean(Stuff.PREF_SHOW_RECENTS_ALBUM, false))
                     name(Stuff.PREF_THEME_PRIMARY).value(pref.getString(Stuff.PREF_THEME_PRIMARY, ColorPatchUtils.primaryDefault))
@@ -239,7 +240,8 @@ class ImExporter {
                                     } else if (settingsName in arrayOf(
                                             Stuff.PREF_THEME_PRIMARY,
                                             Stuff.PREF_THEME_SECONDARY,
-                                            Stuff.PREF_THEME_BACKGROUND
+                                            Stuff.PREF_THEME_BACKGROUND,
+                                            Stuff.PREF_LOCALE,
                                     ))
                                         pref.putString(settingsName, nextString())
                                     else if (settingsName in arrayOf(Stuff.PREF_PRO_STATUS)) {

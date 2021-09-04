@@ -3,6 +3,7 @@ package com.arn.scrobble.friends
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
@@ -21,9 +22,9 @@ class FriendsVM(app: Application): AndroidViewModel(app) {
 
     fun loadFriendsList(page: Int) {
         this.page = page
-        LFMRequester(getApplication()).getFriends(page, username).asAsyncTask(receiver)
+        LFMRequester(getApplication(), viewModelScope, receiver).getFriends(page, username)
     }
     fun loadFriendsRecents(user: String) {
-        LFMRequester(getApplication()).getFriendsRecents(user).asAsyncTask(track)
+        LFMRequester(getApplication(), viewModelScope, track).getFriendsRecents(user)
     }
 }

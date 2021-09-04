@@ -171,17 +171,17 @@ public class User extends ImageHolder {
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
-	public static PaginatedResult<User> getFriends(String user, String apiKey) {
-		return getFriends(user, 1, 50, false, null, apiKey);
+	public static PaginatedResult<User> getFriends(String user, Session session) {
+		return getFriends(user, 1, 50, false, session);
 	}
 
-	public static PaginatedResult<User> getFriends(String user, int page, int limit, boolean cacheFirst, Session session, String apiKey) {
+	public static PaginatedResult<User> getFriends(String user, int page, int limit, boolean cacheFirst, Session session) {
         Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
         params.put("page", String.valueOf(page));
         params.put("limit", String.valueOf(limit));
         Result result = Caller.getInstance().call(null, "user.getFriends",
-                apiKey, params, session, false, cacheFirst);
+                null, params, session, cacheFirst);
 		return ResponseBuilder.buildPaginatedResult(result, User.class);
 	}
 
@@ -194,21 +194,21 @@ public class User extends ImageHolder {
 		return ResponseBuilder.buildCollection(result, User.class);
 	}
 
-	public static PaginatedResult<Track> getRecentTracks(String user, Session session, String apiKey) {
-		return getRecentTracks(user, 1, 10, session, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, Session session) {
+		return getRecentTracks(user, 1, 10, session);
 	}
 
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, Session session, String apiKey) {
-        return getRecentTracks(user, page, limit, false, 0, 0, false, session, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, Session session) {
+        return getRecentTracks(user, page, limit, false, 0, 0, false, session);
     }
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, boolean extended, Session session, String apiKey) {
-        return getRecentTracks(user, page, limit, extended, 0, 0, false, session, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, boolean extended, Session session) {
+        return getRecentTracks(user, page, limit, extended, 0, 0, false, session);
     }
-	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, long fromTime, long toTime, Session session, String apiKey) {
-        return getRecentTracks(user, page, limit, false, fromTime, toTime, false, session, apiKey);
+	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, long fromTime, long toTime, Session session) {
+        return getRecentTracks(user, page, limit, false, fromTime, toTime, false, session);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit,
-                boolean extended, long fromTime, long toTime, boolean forceCached, Session session, String apiKey) {
+                boolean extended, long fromTime, long toTime, boolean forceCached, Session session) {
 		Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
 		params.put("limit", String.valueOf(limit));
@@ -221,94 +221,94 @@ public class User extends ImageHolder {
 		    params.put("to", String.valueOf(toTime));
         Result result;
             result = Caller.getInstance().call(null, "user.getRecentTracks",
-                apiKey, params, session, false, forceCached);
+                null, params, session, forceCached);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
-	public static PaginatedResult<Album> getTopAlbums(String user, String apiKey) {
-		return getTopAlbums(user, Period.OVERALL, 50, 1, apiKey);
+	public static PaginatedResult<Album> getTopAlbums(String user, Session session) {
+		return getTopAlbums(user, Period.OVERALL, 50, 1, session);
 	}
 
-	public static PaginatedResult<Album> getTopAlbums(String user, Period period, int limit, int page, String apiKey) {
-		Result result = Caller.getInstance().call("user.getTopAlbums", apiKey,
+	public static PaginatedResult<Album> getTopAlbums(String user, Period period, int limit, int page, Session session) {
+		Result result = Caller.getInstance().call("user.getTopAlbums", session,
                 "user", user, "period", period.getString(), "limit", Integer.toString(limit), "page", Integer.toString(page));
 		return ResponseBuilder.buildPaginatedResult(result, Album.class);
 	}
 
-	public static PaginatedResult<Artist> getTopArtists(String user, String apiKey) {
-		return getTopArtists(user, Period.OVERALL, 50, 1, apiKey);
+	public static PaginatedResult<Artist> getTopArtists(String user, Session session) {
+		return getTopArtists(user, Period.OVERALL, 50, 1, session);
 	}
 
-	public static PaginatedResult<Artist> getTopArtists(String user, Period period, int limit, int page, String apiKey) {
-		Result result = Caller.getInstance().call("user.getTopArtists", apiKey,
+	public static PaginatedResult<Artist> getTopArtists(String user, Period period, int limit, int page, Session session) {
+		Result result = Caller.getInstance().call("user.getTopArtists", session,
                 "user", user, "period", period.getString(), "limit", Integer.toString(limit), "page", Integer.toString(page));
 		return ResponseBuilder.buildPaginatedResult(result, Artist.class);
 	}
 
-	public static PaginatedResult<Track> getTopTracks(String user, String apiKey) {
-		return getTopTracks(user, Period.OVERALL, 50, 1, apiKey);
+	public static PaginatedResult<Track> getTopTracks(String user, Session session) {
+		return getTopTracks(user, Period.OVERALL, 50, 1, session);
 	}
 
-	public static PaginatedResult<Track> getTopTracks(String user, Period period, int limit, int page, String apiKey) {
-		Result result = Caller.getInstance().call("user.getTopTracks", apiKey,
+	public static PaginatedResult<Track> getTopTracks(String user, Period period, int limit, int page, Session session) {
+		Result result = Caller.getInstance().call("user.getTopTracks", session,
                 "user", user, "period", period.getString(), "limit", Integer.toString(limit), "page", Integer.toString(page));
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
-	public static Collection<Tag> getTopTags(String user, String apiKey) {
-		return getTopTags(user, -1, apiKey);
+	public static Collection<Tag> getTopTags(String user, Session session) {
+		return getTopTags(user, -1, session);
 	}
 
-	public static Collection<Tag> getTopTags(String user, int limit, String apiKey) {
+	public static Collection<Tag> getTopTags(String user, int limit, Session session) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("user", user);
 		MapUtilities.nullSafePut(params, "limit", limit);
-		Result result = Caller.getInstance().call("user.getTopTags", apiKey, params);
+		Result result = Caller.getInstance().call("user.getTopTags", session, params);
 		return ResponseBuilder.buildCollection(result, Tag.class);
 	}
 
-	public static Chart<Album> getWeeklyAlbumChart(String user, String apiKey) {
-		return getWeeklyAlbumChart(user, null, null, -1, apiKey);
+	public static Chart<Album> getWeeklyAlbumChart(String user, Session session) {
+		return getWeeklyAlbumChart(user, null, null, -1, session);
 	}
 
-	public static Chart<Album> getWeeklyAlbumChart(String user, int limit, String apiKey) {
-		return getWeeklyAlbumChart(user, null, null, limit, apiKey);
+	public static Chart<Album> getWeeklyAlbumChart(String user, int limit, Session session) {
+		return getWeeklyAlbumChart(user, null, null, limit, session);
 	}
 
-	public static Chart<Album> getWeeklyAlbumChart(String user, String from, String to, int limit, String apiKey) {
-		return Chart.getChart("user.getWeeklyAlbumChart", "user", user, "album", from, to, limit, apiKey);
+	public static Chart<Album> getWeeklyAlbumChart(String user, String from, String to, int limit, Session session) {
+		return Chart.getChart("user.getWeeklyAlbumChart", "user", user, "album", from, to, limit, session);
 	}
 
-	public static Chart<Artist> getWeeklyArtistChart(String user, String apiKey) {
-		return getWeeklyArtistChart(user, null, null, -1, apiKey);
+	public static Chart<Artist> getWeeklyArtistChart(String user, Session session) {
+		return getWeeklyArtistChart(user, null, null, -1, session);
 	}
 
-	public static Chart<Artist> getWeeklyArtistChart(String user, int limit, String apiKey) {
-		return getWeeklyArtistChart(user, null, null, limit, apiKey);
+	public static Chart<Artist> getWeeklyArtistChart(String user, int limit, Session session) {
+		return getWeeklyArtistChart(user, null, null, limit, session);
 	}
 
-	public static Chart<Artist> getWeeklyArtistChart(String user, String from, String to, int limit, String apiKey) {
-		return Chart.getChart("user.getWeeklyArtistChart", "user", user, "artist", from, to, limit, apiKey);
+	public static Chart<Artist> getWeeklyArtistChart(String user, String from, String to, int limit, Session session) {
+		return Chart.getChart("user.getWeeklyArtistChart", "user", user, "artist", from, to, limit, session);
 	}
 
-	public static Chart<Track> getWeeklyTrackChart(String user, String apiKey) {
-		return getWeeklyTrackChart(user, null, null, -1, apiKey);
+	public static Chart<Track> getWeeklyTrackChart(String user, Session session) {
+		return getWeeklyTrackChart(user, null, null, -1, session);
 	}
 
-	public static Chart<Track> getWeeklyTrackChart(String user, int limit, String apiKey) {
-		return getWeeklyTrackChart(user, null, null, limit, apiKey);
+	public static Chart<Track> getWeeklyTrackChart(String user, int limit, Session session) {
+		return getWeeklyTrackChart(user, null, null, limit, session);
 	}
 
-	public static Chart<Track> getWeeklyTrackChart(String user, String from, String to, int limit, String apiKey) {
-		return Chart.getChart("user.getWeeklyTrackChart", "user", user, "track", from, to, limit, apiKey);
+	public static Chart<Track> getWeeklyTrackChart(String user, String from, String to, int limit, Session session) {
+		return Chart.getChart("user.getWeeklyTrackChart", "user", user, "track", from, to, limit, session);
 	}
 
-	public static LinkedHashMap<String, String> getWeeklyChartList(String user, String apiKey) {
-		return Chart.getWeeklyChartList("user.getWeeklyChartList", "user", user, apiKey);
+	public static LinkedHashMap<String, String> getWeeklyChartList(String user, Session session) {
+		return Chart.getWeeklyChartList("user.getWeeklyChartList", "user", user, session);
 	}
 
-	public static Collection<Chart> getWeeklyChartListAsCharts(String user, String apiKey) {
-		return Chart.getWeeklyChartListAsCharts("user", user, apiKey);
+	public static Collection<Chart> getWeeklyChartListAsCharts(String user, Session session) {
+		return Chart.getWeeklyChartListAsCharts("user", user, session);
 	}
 
 	/**
@@ -416,11 +416,11 @@ public class User extends ImageHolder {
 	 * Retrieves the loved tracks by a user.
 	 *
 	 * @param user The user name to fetch the loved tracks for.
-	 * @param apiKey A Last.fm API key.
+     * @param session A Last.fm session.
 	 * @return the loved tracks
 	 */
-	public static PaginatedResult<Track> getLovedTracks(String user, String apiKey) {
-		return getLovedTracks(user, 1, 50, null, apiKey);
+	public static PaginatedResult<Track> getLovedTracks(String user, Session session) {
+		return getLovedTracks(user, 1, 50, session);
 	}
 
 	/**
@@ -428,20 +428,20 @@ public class User extends ImageHolder {
 	 *
 	 * @param user The user name to fetch the loved tracks for.
 	 * @param page The page number to scan to
-	 * @param apiKey A Last.fm API key.
+	 * @param session A Last.fm session.
 	 * @return the loved tracks
 	 */
-	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, Session session, String apiKey) {
-        return getLovedTracks(user, page, limit, false, session, apiKey);
+	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, Session session) {
+        return getLovedTracks(user, page, limit, false, session);
     }
 
-	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, boolean forceCached, Session session, String apiKey) {
+	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, boolean forceCached, Session session) {
         Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
         params.put("page", String.valueOf(page));
         params.put("limit", String.valueOf(limit));
         Result result = Caller.getInstance().call(null, "user.getLovedTracks",
-                apiKey, params, session, false, forceCached);
+                null, params, session, forceCached);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
@@ -449,11 +449,11 @@ public class User extends ImageHolder {
 	 * Retrieves profile information about the specified user.
 	 *
 	 * @param user A username
-	 * @param apiKey A Last.fm API key.
+     * @param session A Last.fm session.
 	 * @return User info
 	 */
-	public static User getInfo(String user, String apiKey) {
-		Result result = Caller.getInstance().call("user.getInfo", apiKey, "user", user);
+	public static User getInfo(String user, Session session) {
+		Result result = Caller.getInstance().call("user.getInfo", session, "user", user);
 		return ResponseBuilder.buildItem(result, User.class);
 	}
 
@@ -598,12 +598,12 @@ public class User extends ImageHolder {
 	 * @param user The user who performed the taggings
 	 * @param tag The tag you're interested in
 	 * @param taggingType Either <code>Artist.class</code>, <code>Album.class</code> or <code>Track.class</code>
-	 * @param apiKey A Last.fm API key
+     * @param session A Last.fm session.
 	 * @return the items the user has tagged with the specified tag
 	 * @throws IllegalArgumentException if <code>taggingType</code> is <code>null</code> or not one of the above mentioned classes
 	 */
-	public static <T extends MusicEntry> PaginatedResult<T> getPersonalTags(String user, String tag, Class<T> taggingType, String apiKey) {
-		return getPersonalTags(user, tag, taggingType, -1, -1, apiKey);
+	public static <T extends MusicEntry> PaginatedResult<T> getPersonalTags(String user, String tag, Class<T> taggingType, Session session) {
+		return getPersonalTags(user, tag, taggingType, -1, -1, session);
 	}
 
 	/**
@@ -613,12 +613,12 @@ public class User extends ImageHolder {
 	 * @param tag The tag you're interested in
 	 * @param taggingType Either <code>Artist.class</code>, <code>Album.class</code> or <code>Track.class</code>
 	 * @param page The page number to fetch
-	 * @param apiKey A Last.fm API key
+     * @param session A Last.fm session.
 	 * @return the items the user has tagged with the specified tag
 	 * @throws IllegalArgumentException if <code>taggingType</code> is <code>null</code> or not one of the above mentioned classes
 	 */
-	public static <T extends MusicEntry> PaginatedResult<T> getPersonalTags(String user, String tag, Class<T> taggingType, int page, String apiKey) {
-		return getPersonalTags(user, tag, taggingType, page, -1, apiKey);
+	public static <T extends MusicEntry> PaginatedResult<T> getPersonalTags(String user, String tag, Class<T> taggingType, int page, Session session) {
+		return getPersonalTags(user, tag, taggingType, page, -1, session);
 	}
 
 	/**
@@ -629,11 +629,11 @@ public class User extends ImageHolder {
 	 * @param taggingType Either <code>Artist.class</code>, <code>Album.class</code> or <code>Track.class</code>
 	 * @param page The page number to fetch
 	 * @param limit The number of results to fetch per page. Defaults to 50
-	 * @param apiKey A Last.fm API key
+     * @param session A Last.fm session.
 	 * @return the items the user has tagged with the specified tag
 	 * @throws IllegalArgumentException if <code>taggingType</code> is <code>null</code> or not one of the above mentioned classes
 	 */
-	public static <T extends MusicEntry> PaginatedResult<T> getPersonalTags(String user, String tag, Class<T> taggingType, int page, int limit, String apiKey) {
+	public static <T extends MusicEntry> PaginatedResult<T> getPersonalTags(String user, String tag, Class<T> taggingType, int page, int limit, Session session) {
 		Map<String, String> params = StringUtilities.map("user", user, "tag", tag);
 		MapUtilities.nullSafePut(params, "page", page);
 		MapUtilities.nullSafePut(params, "limit", limit);
@@ -648,7 +648,7 @@ public class User extends ImageHolder {
 		else
 			throw new IllegalArgumentException("Parameter taggingType has to be one of Artist.class, Album.class or Track.class.");
 
-		Result result = Caller.getInstance().call("user.getPersonalTags", apiKey, params);
+		Result result = Caller.getInstance().call("user.getPersonalTags", session, params);
 		if (!result.isSuccessful())
 			return new PaginatedResult<T>(0, 0, 0, Collections.<T>emptyList(), null);
 
@@ -657,6 +657,32 @@ public class User extends ImageHolder {
 		DomElement childElement = contentElement.getChild(childElementName);
 		return ResponseBuilder.buildPaginatedResult(contentElement, childElement, taggingType);
 	}
+
+    public static PaginatedResult<Track> getTrackScrobbles(String artist, String track, String user, Session session) {
+        return getTrackScrobbles(artist, track, user, 1, 50, session);
+    }
+
+    public static PaginatedResult<Track> getTrackScrobbles(String artist, String track, String user, int page, int limit, Session session) {
+        return getTrackScrobbles(artist, track, user, page, limit, 0, 0, session);
+    }
+
+    public static PaginatedResult<Track> getTrackScrobbles(String artist, String track, String user, int page, int limit,
+                                                         long fromTime, long toTime, Session session) {
+        Map<String, String> params = new HashMap<String, String>();
+        MapUtilities.nullSafePut(params, "artist", artist);
+        MapUtilities.nullSafePut(params, "track", track);
+        MapUtilities.nullSafePut(params, "user", user);
+        params.put("limit", String.valueOf(limit));
+        params.put("page", String.valueOf(page));
+        if (fromTime > 0)
+            params.put("from", String.valueOf(fromTime));
+        if (toTime > 0)
+            params.put("to", String.valueOf(toTime));
+        Result result;
+        result = Caller.getInstance().call(null, "user.getTrackScrobbles",
+                null, params, session, false);
+        return ResponseBuilder.buildPaginatedResult(result, Track.class);
+    }
 
 
 	private static class UserFactory implements ItemFactory<User> {

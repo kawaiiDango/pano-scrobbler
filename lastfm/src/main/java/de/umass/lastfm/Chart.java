@@ -69,15 +69,15 @@ public class Chart<T extends MusicEntry> {
 	 * @param from Start date or <code>null</code>
 	 * @param to End date or <code>null</code>
 	 * @param limit The number of chart items to return or -1
-	 * @param apiKey A Last.fm API key.
+     * @param session A Last.fm session.
 	 * @return a Chart
 	 */
 	static <T extends MusicEntry> Chart<T> getChart(String method, String sourceType, String source,
 													String target, String from, String to, int limit,
-													String apiKey) {
+                                                    Session session) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put(sourceType, source);
-		return getChart(method, target, params, from, to, limit, apiKey);
+		return getChart(method, target, params, from, to, limit, session);
 	}
 
 	/**
@@ -89,18 +89,18 @@ public class Chart<T extends MusicEntry> {
 	 * @param from Start date or <code>null</code>
 	 * @param to End date or <code>null</code>
 	 * @param limit The number of chart items to return or -1
-	 * @param apiKey A Last.fm API key.
+     * @param session A Last.fm session.
 	 * @return a Chart
 	 */
 	@SuppressWarnings("unchecked")
 	static <T extends MusicEntry> Chart<T> getChart(String method, String target, Map<String, String> params, String from, String to,
-												 	int limit, String apiKey) {
+												 	int limit, Session session) {
 		if (from != null && to != null) {
 			params.put("from", from);
 			params.put("to", to);
 		}
 		MapUtilities.nullSafePut(params, "limit", limit);
-		Result result = Caller.getInstance().call(method, apiKey, params);
+		Result result = Caller.getInstance().call(method, session, params);
 		if (!result.isSuccessful())
 			return null;
 		DomElement element = result.getContentElement();
@@ -133,11 +133,11 @@ public class Chart<T extends MusicEntry> {
 	 * @param methodName The name of the method to be called, e.g. <code>user.getWeeklyChartList</code>
 	 * @param paramName The name of the parameter which is passed to the specified method, e.g. <code>user</code>
 	 * @param paramValue The value of the parameter which is passed to the specified method, e.g. the user name
-	 * @param apiKey A Last.fm API key.
+     * @param session A Last.fm session.
 	 * @return a list of available charts as a Map
 	 */
-	static LinkedHashMap<String, String> getWeeklyChartList(String methodName, String paramName, String paramValue, String apiKey) {
-		Result result = Caller.getInstance().call(methodName, apiKey, paramName, paramValue);
+	static LinkedHashMap<String, String> getWeeklyChartList(String methodName, String paramName, String paramValue, Session session) {
+		Result result = Caller.getInstance().call(methodName, session, paramName, paramValue);
 		if (!result.isSuccessful())
 			return new LinkedHashMap<String, String>(0);
 		DomElement element = result.getContentElement();
@@ -153,12 +153,12 @@ public class Chart<T extends MusicEntry> {
 	 *
 	 * @param sourceType The name of the parameter to get the charts for, either "user", "tag" or "group"
 	 * @param source The username, tag or group to get charts from
-	 * @param apiKey A Last.fm API key.
+     * @param session A Last.fm session.
 	 * @return a list of available charts as a Collection of Charts
 	 */
 	@SuppressWarnings("unchecked")
-	static Collection<Chart> getWeeklyChartListAsCharts(String sourceType, String source, String apiKey) {
-		Result result = Caller.getInstance().call(sourceType + ".getWeeklyChartList", apiKey, sourceType, source);
+	static Collection<Chart> getWeeklyChartListAsCharts(String sourceType, String source, Session session) {
+		Result result = Caller.getInstance().call(sourceType + ".getWeeklyChartList", session, sourceType, source);
 		if (!result.isSuccessful())
 			return Collections.emptyList();
 		DomElement element = result.getContentElement();

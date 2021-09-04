@@ -108,11 +108,14 @@
                 android:baselineAligned="false">
 
                 <LinearLayout
+                    android:id="@+id/info_user_scrobbles_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:padding="@dimen/list_item_padding"
+                    android:clickable="false">
 
                     <TextView
                         android:id="@+id/info_user_scrobbles"
@@ -127,6 +130,7 @@
                         android:id="@+id/info_user_scrobbles_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textAlignment="center"
                         android:text="@string/my_scrobbles"
                         android:textStyle="bold" />
 
@@ -137,6 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
+                    android:padding="@dimen/list_item_padding"
                     android:gravity="center">
 
                     <TextView
@@ -151,6 +156,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/listeners"
+                        android:textAlignment="center"
                         />
 
                 </LinearLayout>
@@ -160,6 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
+                    android:padding="@dimen/list_item_padding"
                     android:gravity="center">
 
                     <TextView
@@ -174,7 +181,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/scrobbles"
-                        />
+                        android:textAlignment="center" />
 
                 </LinearLayout>
             </LinearLayout>

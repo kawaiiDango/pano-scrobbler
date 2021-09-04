@@ -24,6 +24,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.RecyclerView.Recycler
@@ -33,15 +34,12 @@ import com.arn.scrobble.Stuff.setArrowColors
 import com.arn.scrobble.Stuff.setProgressCircleColors
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.CoordinatorMainBinding
-import com.arn.scrobble.edits.EditDialogFragment
 import com.arn.scrobble.info.InfoFragment
-import com.arn.scrobble.pending.PendingMenu
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.*
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.robinhood.spark.animation.MorphSparkAnimator
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -65,7 +63,7 @@ open class RecentsFragment : Fragment(),
             loadRecents(1)
         val ps = coordinatorBinding.coordinator.paddingStart
         if (activity != null && ps > 0)
-            LFMRequester(context!!).getDrawerInfo().asAsyncTask()
+            LFMRequester(context!!, lifecycleScope, (activity as Main).mainNotifierViewModel.drawerData).getDrawerInfo()
         lastRefreshTime = System.currentTimeMillis()
     }
     private lateinit var coordinatorBinding: CoordinatorMainBinding
@@ -255,25 +253,28 @@ open class RecentsFragment : Fragment(),
         coordinatorBinding.heroShare.setOnClickListener{
             val track = coordinatorBinding.heroImg.tag
             if (track is Track) {
+                val heart = if (track.isLoved) "♥️" else ""
+
                 var shareText = if (username == null)
                     getString(
                         R.string.recents_share,
-                        getString(R.string.artist_title, track.artist, track.name),
+                        heart + getString(R.string.artist_title, track.artist, track.name),
                         Stuff.myRelativeTime(context!!, track.playedWhen, true)
                     )
                 else
                     getString(
                         R.string.recents_share_username,
-                        getString(R.string.artist_title, track.artist, track.name),
+                        heart + getString(R.string.artist_title, track.artist, track.name),
                         Stuff.myRelativeTime(context!!, track.playedWhen, true),
                         username
                     )
                 if (activity.billingViewModel.proStatus.value != true)
                     shareText += "\n\n" + getString(R.string.share_sig)
-                val i = Intent(Intent.ACTION_SEND)
-                i.type = "text/plain"
-                i.putExtra(Intent.EXTRA_SUBJECT, shareText)
-                i.putExtra(Intent.EXTRA_TEXT, shareText)
+                val i = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_SUBJECT, shareText)
+                    putExtra(Intent.EXTRA_TEXT, shareText)
+                }
                 startActivity(Intent.createChooser(i, getString(R.string.share_this_song)))
             }
         }
@@ -299,8 +300,30 @@ open class RecentsFragment : Fragment(),
             }
         }
 
+        coordinatorBinding.heroRandomize.setOnClickListener {
+            activity.supportFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.frame,
+                    RandomFragment().apply {
+                        arguments = Bundle().apply {
+                            putString(Stuff.ARG_USERNAME, username)
+                            putInt(
+                                Stuff.ARG_TYPE,
+                                if (isShowingLoves)
+                                    Stuff.TYPE_LOVES
+                                else
+                                    Stuff.TYPE_TRACKS
+                            )
+                        }
+                    }
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
         if (BuildConfig.DEBUG)
-            coordinatorBinding.heroInfo.setOnLongClickListener {
+            coordinatorBinding.heroPlay.setOnLongClickListener {
                 val t = coordinatorBinding.heroImg.tag
                 if (t is Track) {
                     Stuff.openInBrowser("https://en.touhouwiki.net/index.php?search=" +
@@ -378,7 +401,15 @@ open class RecentsFragment : Fragment(),
                 adapter.populate(viewModel.tracks)
             }
         if (!Main.isTV) {
-            coordinatorBinding.heroInfo.visibility = View.VISIBLE
+
+            if (username != null) {
+                coordinatorBinding.heroInfo.visibility = View.GONE
+                coordinatorBinding.heroRandomize.visibility = View.VISIBLE
+            } else {
+                coordinatorBinding.heroInfo.visibility = View.VISIBLE
+                coordinatorBinding.heroRandomize.visibility = View.GONE
+            }
+
             coordinatorBinding.heroPlay.visibility = View.VISIBLE
             coordinatorBinding.heroShare.visibility = View.VISIBLE
         }
@@ -395,6 +426,7 @@ open class RecentsFragment : Fragment(),
                 ObjectAnimator.ofArgb(coordinatorBinding.heroShare, "colorFilter", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.heroCalendar, "colorFilter", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.heroInfo, "colorFilter", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(coordinatorBinding.heroRandomize, "colorFilter", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.heroPlay, "colorFilter", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickTop, "textColor", tintFrom, colors.lightWhite),
                 ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickBottom, "textColor", tintFrom, colors.lightWhite),
@@ -568,7 +600,7 @@ open class RecentsFragment : Fragment(),
                 override fun onError(e: Exception) {
                     if (!fullSize)
                         onSetHero(position, track, true)
-                    Stuff.log("Picasso err: $e")
+                    Stuff.log("Picasso err: $e $imgUrl")
                 }
             })
         } else {
@@ -600,7 +632,7 @@ open class RecentsFragment : Fragment(),
         val dateFrame = (view.parent as ViewGroup).findViewById<FrameLayout>(R.id.date_frame)
         if (item !is Track) {
             if (view.id == R.id.recents_menu)
-                PendingMenu.openPendingPopupMenu(dateFrame, item,
+                PopupMenuUtils.openPendingPopupMenu(dateFrame, lifecycleScope, item,
                         {
                             viewModel.loadPending(2, false)
                         }
@@ -687,67 +719,16 @@ open class RecentsFragment : Fragment(),
         if (!anchor.isInTouchMode)
             inflater.inflate(R.menu.recents_item_tv_menu, menuBuilder)
 
-        fun csrfTokenExists(): Boolean {
-            val prefs = MultiPreferences(context!!)
-            val exists = LastfmUnscrobbler(context)
-                    .checkCsrf(prefs.getString(Stuff.PREF_LASTFM_USERNAME, null))
-            if (!exists) {
-                MaterialAlertDialogBuilder(context!!)
-                        .setMessage(R.string.lastfm_reauth)
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            val wf = WebViewFragment()
-                            val b = Bundle()
-                            b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
-                            b.putBoolean(Stuff.ARG_SAVE_COOKIES, true)
-                            wf.arguments = b
-                            activity!!.supportFragmentManager.beginTransaction()
-                                    .replace(R.id.frame, wf)
-                                    .addToBackStack(null)
-                                    .commit()
-                        }
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show()
-            }
-            return exists
-        }
         menuBuilder.setCallback(object : MenuBuilder.Callback {
             override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
                 when (item.itemId) {
-                    R.id.menu_love -> {
-                        loveToggle((anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay), track)
-                    }
-                    R.id.menu_edit -> {
-                        if (!Main.isOnline)
-                            Stuff.toast(context, getString(R.string.unavailable_offline))
-                        else if (csrfTokenExists()) {
-                            val b = Bundle()
-                            b.putString(NLService.B_ARTIST, track.artist)
-                            b.putString(NLService.B_ALBUM, track.album)
-                            b.putString(NLService.B_TRACK, track.name)
-
-                            val millis = track.playedWhen?.time
-                            if (millis != null)
-                                b.putLong(NLService.B_TIME, millis)
-
-                            val ef = EditDialogFragment()
-                            ef.arguments = b
-                            ef.show(activity!!.supportFragmentManager, null)
-                        }
-                    }
-                    R.id.menu_delete -> {
-                        if (!Main.isOnline)
-                            Stuff.toast(context, getString(R.string.unavailable_offline))
-                        else if (csrfTokenExists()) {
-                            LFMRequester(context!!).delete(track) { succ ->
-                                if (succ) {
-                                    view?.post {
-                                        adapter.removeTrack(track)
-                                    }
-                                } else
-                                    Stuff.toast(context, getString(R.string.network_error))
-                            }
-                                    .asAsyncTask()
-                        }
+                    R.id.menu_love -> loveToggle((anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay), track)
+                    R.id.menu_edit -> PopupMenuUtils.editScrobble(activity!!, track)
+                    R.id.menu_delete -> PopupMenuUtils.deleteScrobble(activity!!, track) { succ ->
+                        if (succ)
+                            adapter.removeTrack(track)
+                        else
+                            Stuff.toast(activity, getString(R.string.network_error))
                     }
                     R.id.menu_play -> coordinatorBinding.heroPlay.callOnClick()
                     R.id.menu_info -> coordinatorBinding.heroInfo.callOnClick()
@@ -774,7 +755,7 @@ open class RecentsFragment : Fragment(),
 
         val isRtl = resources.getBoolean(R.bool.is_rtl)
         if (track.isLoved) {
-            LFMRequester(context!!).loveOrUnlove(false, track.artist, track.name).asAsyncTask()
+            LFMRequester(context!!, lifecycleScope).loveOrUnlove(track, false)
 
             alphaAnimator.setFloatValues(0f)
             scalexAnimator.setFloatValues(1f, 2f)
@@ -786,7 +767,7 @@ open class RecentsFragment : Fragment(),
             if (loveIcon.background == null)
                 loveIcon.background = ContextCompat.getDrawable(context!!, R.drawable.vd_heart_stroked)
 
-            LFMRequester(context!!).loveOrUnlove(true, track.artist, track.name).asAsyncTask()
+            LFMRequester(context!!, lifecycleScope).loveOrUnlove(track, true)
 
             loveIcon.alpha = 0f
             loveIcon.visibility = View.VISIBLE

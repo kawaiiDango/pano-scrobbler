@@ -13,13 +13,19 @@ import android.transition.Fade
 import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.acrcloud.rec.*
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.snackbar.Snackbar
 import de.umass.lastfm.scrobble.ScrobbleData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -36,6 +42,7 @@ class RecFragment: Fragment(),
     private var progressAnimator: ObjectAnimator? = null
     private val DURATION = 10000L
     private val pref: MultiPreferences by lazy { MultiPreferences(context!!) }
+    private lateinit var micPermRequest: ActivityResultLauncher<String>
     private var _binding: ContentRecBinding? = null
     private val binding
         get() = _binding!!
@@ -43,6 +50,13 @@ class RecFragment: Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enterTransition = Fade()
+
+        micPermRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted)
+                startOrCancel()
+            else
+                Stuff.toast(context, getString(R.string.grant_rec_perm))
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -69,12 +83,11 @@ class RecFragment: Fragment(),
             recorderConfig.isVolumeCallback = false
         }
 
-        handler.postDelayed({
-            if (_binding != null) {
-                startOrCancel()
-                binding.recProgress.setOnClickListener { startOrCancel() }
-            }
-        }, 300)
+        lifecycleScope.launch {
+            delay(300)
+            startOrCancel()
+            binding.recProgress.setOnClickListener { startOrCancel() }
+        }
     }
 
     override fun onStart() {
@@ -102,12 +115,20 @@ class RecFragment: Fragment(),
         if (item.itemId == R.id.menu_add_to_hs && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val shortcutManager = activity!!.getSystemService(ShortcutManager::class.java)
             if (shortcutManager!!.isRequestPinShortcutSupported) {
-                val pinShortcutInfo = ShortcutInfo.Builder(context, "rec").build()
-                val pinnedShortcutCallbackIntent = shortcutManager.createShortcutResultIntent(pinShortcutInfo)
-                val successCallback = PendingIntent.getBroadcast(context,0,
-                        pinnedShortcutCallbackIntent, Stuff.updateCurrentOrImmutable)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val pinShortcutInfo = ShortcutInfo.Builder(context, "rec").build()
+                    val pinnedShortcutCallbackIntent =
+                        shortcutManager.createShortcutResultIntent(pinShortcutInfo)
+                    val successCallback = PendingIntent.getBroadcast(
+                        context, 0,
+                        pinnedShortcutCallbackIntent, Stuff.updateCurrentOrImmutable
+                    )
 
-                shortcutManager.requestPinShortcut(pinShortcutInfo, successCallback.intentSender)
+                    shortcutManager.requestPinShortcut(
+                        pinShortcutInfo,
+                        successCallback.intentSender
+                    )
+                }
             }
             return true
         } else if (item.itemId == R.id.menu_add_acr_key) {
@@ -165,7 +186,7 @@ class RecFragment: Fragment(),
         context ?: return
 
         if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(RECORD_AUDIO), Stuff.REQUEST_CODE_MIC_PERM)
+            micPermRequest.launch(RECORD_AUDIO)
             return
         }
 
@@ -297,16 +318,15 @@ class RecFragment: Fragment(),
         when(statusCode) {
             0 -> {
                 binding.recImg.setImageResource(R.drawable.vd_check_simple)
-                binding.recStatus.text = getString(R.string.state_scrobbled) +
+                binding.recStatus.text = getString(R.string.state_scrobbled) + "\n" +
                         getString(R.string.artist_title, artist, title)
                 val scrobbleData = ScrobbleData()
                 scrobbleData.artist = artist
                 scrobbleData.album = album
                 scrobbleData.track = title
                 scrobbleData.timestamp = (System.currentTimeMillis() / 1000).toInt() // in secs
-                LFMRequester(context!!)
+                LFMRequester(context!!, lifecycleScope)
                     .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title, "rec"))
-                    .asAsyncTask()
             }
             1001 -> binding.recStatus.text = getString(R.string.not_found)
             2000 -> {
@@ -323,15 +343,6 @@ class RecFragment: Fragment(),
                 binding.recStatus.text = getString(R.string.network_error)
             }
         }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == Stuff.REQUEST_CODE_MIC_PERM && grantResults.isNotEmpty() &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            startOrCancel()
-        else
-            Stuff.toast(context, getString(R.string.grant_rec_perm))
     }
 
     override fun onVolumeChanged(volume: Double) {

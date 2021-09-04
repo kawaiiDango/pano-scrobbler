@@ -75,7 +75,9 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
         }
 
         binding.editPresets.setOnClickListener {
-            showPresetsDialog()
+            lifecycleScope.launch {
+                showPresetsDialog()
+            }
         }
 
         binding.editTest.setOnClickListener {
@@ -111,6 +113,11 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
             adapter.autoNotify(oldList, viewModel.regexes) { o, n -> o._id == n._id }
         }
 
+        viewModel.countReceiver.observe(viewLifecycleOwner) {
+        }
+
+        if (arguments?.getBoolean(Stuff.ARG_SHOW_DIALOG, false) == true)
+            binding.editPresets.callOnClick()
     }
 
     override fun onItemClick(view: View, position: Int) {
@@ -119,14 +126,15 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
     }
 
     private fun showAddDialog(position: Int) {
-        if (hasReachedLimit())
+        val isNew = position == -1
+
+        if (isNew && hasReachedLimit())
             return
 
         val binding = DialogRegexEditBinding.inflate(layoutInflater)
         val dialog = MaterialAlertDialogBuilder(context!!)
             .setView(binding.root)
             .create()
-        val isNew = position == -1
         val regexEdit = if (isNew)
             RegexEdit()
         else
@@ -219,14 +227,17 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
         dialog.show()
     }
 
-    private fun showPresetsDialog() {
+    private suspend fun showPresetsDialog() {
         if (hasReachedLimit())
             return
 
-        val presetsAvailable = (RegexPresets.presetKeys - viewModel.regexes.map {
+        val dao = PanoDb.getDb(context!!).getRegexEditsDao()
+
+        val presetsAvailable = withContext(Dispatchers.IO) {
+            (RegexPresets.presetKeys - dao.allPresets.map {
                 it.preset
-            }.toSet()
-        ).toList()
+            }.toSet()).toList()
+        }
 
         if (presetsAvailable.isEmpty()) {
             Stuff.toast(context, getString(R.string.edit_no_presets_available))
@@ -245,7 +256,6 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
                             preset = presetsAvailable[idx],
                             order = 0
                         )
-                    val dao = PanoDb.getDb(context!!).getRegexEditsDao()
                     dao.shiftDown()
                     dao.insert(regexEdit)
                 }

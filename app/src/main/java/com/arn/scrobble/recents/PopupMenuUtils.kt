@@ -1,26 +1,92 @@
-package com.arn.scrobble.pending
+package com.arn.scrobble.recents
 
 import android.annotation.SuppressLint
-import android.os.AsyncTask
+import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.view.SupportMenuInflater
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
-import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
+import com.arn.scrobble.*
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.edits.EditDialogFragment
+import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.lang.RuntimeException
+import de.umass.lastfm.Track
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-object PendingMenu {
+object PopupMenuUtils {
+
+    fun csrfTokenExists(activity: FragmentActivity): Boolean {
+        val prefs = MultiPreferences(activity)
+        val exists = LastfmUnscrobbler(activity)
+            .checkCsrf(prefs.getString(Stuff.PREF_LASTFM_USERNAME, null))
+        if (!exists) {
+            MaterialAlertDialogBuilder(activity)
+                .setMessage(R.string.lastfm_reauth)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    val wf = WebViewFragment()
+                    val b = Bundle()
+                    b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
+                    b.putBoolean(Stuff.ARG_SAVE_COOKIES, true)
+                    wf.arguments = b
+                    activity.supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, wf)
+                        .addToBackStack(null)
+                        .commit()
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
+        return exists
+    }
+
+    fun editScrobble(activity: FragmentActivity, track: Track) {
+        if (!Main.isOnline)
+            Stuff.toast(activity, activity.getString(R.string.unavailable_offline))
+        else if (csrfTokenExists(activity)) {
+            val b = Bundle().apply {
+                putString(NLService.B_ARTIST, track.artist)
+                putString(NLService.B_ALBUM, track.album)
+                putString(NLService.B_TRACK, track.name)
+            }
+
+            val millis = track.playedWhen?.time
+            if (millis != null)
+                b.putLong(NLService.B_TIME, millis)
+
+            EditDialogFragment().apply {
+                arguments = b
+                show(activity.supportFragmentManager, null)
+            }
+        }
+    }
+
+    fun deleteScrobble(activity: FragmentActivity, track: Track, deleteAction: (Boolean)-> Unit) {
+        if (!Main.isOnline)
+            Stuff.toast(activity, activity.getString(R.string.unavailable_offline))
+        else if (csrfTokenExists(activity)) {
+            LFMRequester(activity, activity.lifecycleScope)
+                .delete(track, deleteAction)
+        }
+    }
 
     @SuppressLint("RestrictedApi")
-    fun openPendingPopupMenu (anchor: View, p: Any, deleteAction: ()-> Unit, loveAction: (()-> Unit)? = null) {
+    fun openPendingPopupMenu (
+        anchor: View,
+        scope: CoroutineScope,
+        p: Any,
+        deleteAction: ()-> Unit,
+        loveAction: (()-> Unit)? = null
+    ) {
         val context = anchor.context
         val menuBuilder = MenuBuilder(context)
         val inflater = SupportMenuInflater(context)
@@ -60,20 +126,22 @@ object PendingMenu {
                                 .show()
                     }
                     R.id.menu_delete -> {
-                        AsyncTask.THREAD_POOL_EXECUTOR.execute {
+                        scope.launch(Dispatchers.IO) {
                             try {
                                 if (p is PendingScrobble)
                                     PanoDb.getDb(context).getScrobblesDao().delete(p)
                                 else if (p is PendingLove)
                                     PanoDb.getDb(context).getLovesDao().delete(p)
-                                deleteAction.invoke()
+                                withContext(Dispatchers.Main) {
+                                    deleteAction.invoke()
+                                }
                             } catch (e: Exception) {
                             }
                         }
                     }
                     R.id.menu_love -> {
                         if (p is PendingScrobble) {
-                            LFMRequester(context!!).loveOrUnlove(true, p.artist, p.track) {
+                            LFMRequester(context!!, scope).loveOrUnlove(Track(p.track, null, p.artist), true) {
                                         if (!it) {
                                             if (loveAction != null)
                                                 loveAction.invoke()
@@ -81,7 +149,6 @@ object PendingMenu {
                                                 deleteAction.invoke()
                                         }
                                     }
-                                    .asAsyncTask()
                         }
                     }
                 }

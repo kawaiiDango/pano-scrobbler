@@ -6,7 +6,6 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
-import android.os.AsyncTask
 import androidx.annotation.StringRes
 import com.arn.scrobble.*
 import com.arn.scrobble.db.PendingLove
@@ -16,6 +15,7 @@ import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
+import kotlinx.coroutines.*
 import org.xml.sax.SAXException
 import timber.log.Timber
 
@@ -24,30 +24,43 @@ import timber.log.Timber
  * Created by arn on 08/09/2017.
  */
 class PendingScrJob : JobService() {
+
+    private lateinit var job: Job
+
     override fun onStartJob(jp: JobParameters): Boolean {
         mightBeRunning = true
-        val ost = OfflineScrobbleTask(applicationContext)
-        ost.doneCb = { done ->
+        job = SupervisorJob()
+        OfflineScrobbleTask(applicationContext, CoroutineScope(Dispatchers.IO + job)) { done ->
             mightBeRunning = false
             jobFinished(jp, done)
         }
-        ost.execute()
         return true
     }
 
     override fun onStopJob(params: JobParameters): Boolean {
         mightBeRunning = false
+        job.cancel()
         return true
     }
 
-    class OfflineScrobbleTask(private val context: Context): AsyncTask<Unit, String, Boolean>() {
+    class OfflineScrobbleTask(
+        private val context: Context,
+        scope: CoroutineScope,
+        private val progressCb: ((str: String)->Unit)? = null,
+        private val doneCb: ((done: Boolean)->Unit)? = null,
+        ) {
         private val dao by lazy { PanoDb.getDb(context).getScrobblesDao() }
         private val lovesDao by lazy { PanoDb.getDb(context).getLovesDao() }
         private val prefs by lazy { MultiPreferences(context) }
-        var progressCb:((str:String)->Unit)? = null
-        var doneCb:((done:Boolean)->Unit)? = null
 
-        override fun doInBackground(vararg p0: Unit?): Boolean {
+        init {
+            scope.launch {
+                val success = run()
+                doneCb?.invoke(success)
+            }
+        }
+
+        private suspend fun run(): Boolean {
             if (Stuff.willCrashOnMemeUI(prefs))
                 return false
 
@@ -58,7 +71,7 @@ class PendingScrJob : JobService() {
             if (!prefs.getBoolean(Stuff.PREF_FETCH_AA, false))
                 scrobbles = scrobbles.filter { it.album == "" }
             scrobbles.forEach {
-                publishProgress(context.getString(R.string.pending_n_remaining, aneCount--))
+                progressCb?.invoke(context.getString(R.string.pending_n_remaining, aneCount--))
                 try {
                     val track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
                     if (track != null) {
@@ -85,7 +98,7 @@ class PendingScrJob : JobService() {
             while (aneCount > 0){
                 val entry = dao.oneNotAutocorrected ?: break
 
-                publishProgress(context.getString(R.string.pending_n_remaining, aneCount))
+                progressCb?.invoke(context.getString(R.string.pending_n_remaining, aneCount))
                 var correctedArtist: String?
                 try {
                     correctedArtist = LFMRequester.getValidArtist(entry.artist, prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
@@ -98,7 +111,7 @@ class PendingScrJob : JobService() {
                     dao.markValidArtist(entry.artist)
                 else
                     dao.deleteInvalidArtist(entry.artist)
-                Thread.sleep(DELAY)
+                delay(DELAY)
 
                 if (aneCount >= BATCH_SIZE) {
                     done = submitScrobbleBatch()
@@ -125,7 +138,7 @@ class PendingScrJob : JobService() {
             var done = true
             val entries = dao.allAutocorrected(BATCH_SIZE)
 
-            publishProgress(context.getString(R.string.pending_batch))
+            progressCb?.invoke(context.getString(R.string.pending_batch))
 
             val lastfmSessKey: String = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
                     ?: //user logged out
@@ -199,7 +212,7 @@ class PendingScrJob : JobService() {
                     if (prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.also { token = it } != null &&
                             filterForService(R.string.custom_listenbrainz, scrobbleDataToEntry).also { filteredData = it }.isNotEmpty())
                         scrobbleResults[R.string.custom_listenbrainz] = ListenBrainz(token)
-                                        .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
+                                        .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null)!!)
                                         .scrobble(filteredData!!)
 
                     val idsToDelete = mutableListOf<Int>()
@@ -277,7 +290,7 @@ class PendingScrJob : JobService() {
                 val entries = lovesDao.all(100)
                 var remaining = entries.size
                 for (entry in entries) {
-                    publishProgress(context.getString(R.string.submitting_loves, remaining--))
+                    progressCb?.invoke(context.getString(R.string.submitting_loves, remaining--))
                     val results = mutableMapOf<@StringRes Int, Result>()
 
                     if (lastfmSession != null && filterOneForService(R.string.lastfm, entry))
@@ -347,14 +360,6 @@ class PendingScrJob : JobService() {
                     filtered += scrobbleData
             }
             return filtered
-        }
-
-        override fun onProgressUpdate(vararg values: String) {
-            progressCb?.invoke(values[0])
-        }
-
-        override fun onPostExecute(result: Boolean) {
-            doneCb?.invoke(result)
         }
     }
 

@@ -32,6 +32,10 @@ class RandomFragment: Fragment() {
     private var _binding: ContentRandomBinding? = null
     private val binding
         get() = _binding!!
+    private val username: String?
+        get() = arguments?.getString(Stuff.ARG_USERNAME)
+    private val type: Int?
+        get() = arguments?.getInt(Stuff.ARG_TYPE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +64,10 @@ class RandomFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.username = username
+        binding.username.text = username
+
         binding.randomGetLoved.setOnClickListener {
             if (!isLoading) {
                 viewModel.loadRandomLove()
@@ -100,7 +108,10 @@ class RandomFragment: Fragment() {
             setTrack(it.track)
         }
         if (viewModel.track.value == null) {
-            val type = prefs.getInt(Stuff.PREF_ACTIVITY_LAST_RANDOM_TYPE, Stuff.TYPE_TRACKS)
+            val type = if (type != null)
+                type
+            else
+                prefs.getInt(Stuff.PREF_ACTIVITY_LAST_RANDOM_TYPE, Stuff.TYPE_TRACKS)
             if (type == Stuff.TYPE_TRACKS)
                 viewModel.loadRandomScrobble()
             else
@@ -146,7 +157,7 @@ class RandomFragment: Fragment() {
 
         var name = track.name
         if (track.isLoved)
-            name = "❤ " + name
+            name = "❤ $name"
 
         binding.randomTrack.recentsTitle.text = name
         binding.randomTrack.recentsSubtitle.text = track.artist

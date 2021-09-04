@@ -137,16 +137,7 @@ class SessListener (
 
             Stuff.log("playing: timePlayed=${hashesAndTimes.timePlayed} $title")
 
-            if (packageName in arrayOf(Stuff.PACKAGE_BLACKPLAYER, Stuff.PACKAGE_BLACKPLAYEREX) && duration > 0) {
-                syntheticStateHandler.removeCallbacksAndMessages(null)
-                syntheticStateHandler.postDelayed({
-                    onPlaybackStateChanged(
-                        PlaybackState.Builder()
-                            .setState(PlaybackState.STATE_PLAYING, 0, 1f)
-                            .build()
-                    )
-                }, duration)
-            }
+            scheduleSyntheticState()
 
             hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
             val isWhitelisted = packageName in whiteList
@@ -160,11 +151,11 @@ class SessListener (
                     packageName in browserPackages && isUrlOrDomain(artist)
 
             if (ignoreArtistMeta) {
-                val splits = MetadataUtils.sanitizeTitle(title)
+                val (artist, title) = MetadataUtils.parseArtistTitle(title)
                 handler.nowPlaying(
-                    splits[0],
+                    artist,
                     "",
-                    splits[1],
+                    title,
                     "",
                     hashesAndTimes.timePlayed,
                     duration,
@@ -188,10 +179,23 @@ class SessListener (
             hashesAndTimes.lastScrobbledHash = 0
         }
 
+        private fun scheduleSyntheticState() {
+            if (packageName in Stuff.needSyntheticStates && duration > 0) {
+                syntheticStateHandler.removeCallbacksAndMessages(null)
+                syntheticStateHandler.postDelayed({
+                    onPlaybackStateChanged(
+                        PlaybackState.Builder()
+                            .setState(PlaybackState.STATE_PLAYING, 0, 1f)
+                            .setErrorMessage("synthetic")
+                            .build()
+                    )
+                }, duration)
+            }
+        }
+
         @Synchronized
         override fun onMetadataChanged(metadata: MediaMetadata?) {
-            if (metadata == null)
-                return
+            metadata ?: return
 
             var albumArtist = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
             var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
@@ -257,8 +261,10 @@ class SessListener (
 
                 // scrobbled when ad was playing
                 if (!handler.hasMessages(currHash) && onlyDurationUpdated &&
-                    packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC))
-                    return
+                    packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)) {
+//                        scheduleSyntheticState()
+                        return
+                    }
 
                 // for cases:
                 // - meta is sent after play
@@ -274,8 +280,7 @@ class SessListener (
 
         @Synchronized
         override fun onPlaybackStateChanged(playbackState: PlaybackState?) {
-            if (playbackState == null)
-                return
+            playbackState ?: return
 
             val state = playbackState.state
             val pos = playbackState.position // can be -1
@@ -285,9 +290,12 @@ class SessListener (
             val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT
 
             if (lastState == state /* bandcamp does this */ &&
-                !(state == PlaybackState.STATE_PLAYING &&
+                playbackState.errorMessage != "synthetic" &&
+                    !(state == PlaybackState.STATE_PLAYING &&
                         isPossiblyAtStart &&
-                        packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)))
+                        packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)
+                    )
+            )
                 return
 
             when (state) {
@@ -311,6 +319,8 @@ class SessListener (
                         if (!handler.hasMessages(currHash) &&
                             ((pos >= 0L && isPossiblyAtStart) ||
                             currHash != hashesAndTimes.lastScrobbledHash)) {
+                                if (playbackState.errorMessage == "synthetic")
+                                    Stuff.log("synthetic")
                             scrobble()
                         }
                     }
@@ -341,7 +351,7 @@ class SessListener (
                 else
                     hashesAndTimes.timePlayed = 0
             }
-            if (packageName in arrayOf(Stuff.PACKAGE_BLACKPLAYER, Stuff.PACKAGE_BLACKPLAYEREX))
+            if (packageName in Stuff.needSyntheticStates)
                 syntheticStateHandler.removeCallbacksAndMessages(null)
             handler.remove(hashesAndTimes.lastScrobbleHash)
         }

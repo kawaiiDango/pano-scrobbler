@@ -40,15 +40,15 @@ class InfoFragment: BottomSheetDialogFragment() {
         itemDecor.setDrawable(ColorDrawable(ContextCompat.getColor(context!!, R.color.lightInfoDivider)))
         binding.infoList.addItemDecoration(itemDecor)
         binding.infoList.adapter = adapter
-        adapter.notifyDataSetChanged()
         if (viewModel.loadedTypes.isEmpty()) {
             if (!track.isNullOrEmpty())
                 viewModel.info += NLService.B_TRACK to Track(track, null, artist)
             viewModel.info += NLService.B_ARTIST to Artist(artist, null)
             if (!album.isNullOrEmpty())
                 viewModel.info += NLService.B_ALBUM to Album(album, null, artist)
-            viewModel.loadInfo(activity!!, artist, album, track, username)
+            viewModel.loadInfo(artist, album, track, username)
         }
+        adapter.notifyDataSetChanged()
         viewModel.receiver.observe(viewLifecycleOwner) {
             it ?: return@observe
             viewModel.loadedTypes += it.first

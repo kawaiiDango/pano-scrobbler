@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
@@ -26,6 +27,8 @@ import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class SearchFragment: Fragment() {
@@ -59,14 +62,14 @@ class SearchFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         binding.searchTerm.editText!!.requestFocus()
-        binding.searchTerm.postDelayed({
-            if (_binding != null)
-                imm?.showSoftInput(binding.searchTerm.editText, 0)
-        }, 100)
-        binding.searchTerm.postDelayed({
-            if (_binding != null)
-                binding.searchEdittext.showDropDown()
-        }, 500)
+
+        lifecycleScope.launch {
+            delay(100)
+            imm?.showSoftInput(binding.searchTerm.editText, 0)
+            delay(400)
+            binding.searchEdittext.showDropDown()
+        }
+
         binding.searchTerm.editText!!.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 loadSearches(textView.text.toString())

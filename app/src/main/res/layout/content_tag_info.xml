@@ -78,6 +78,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
+                        android:padding="@dimen/list_item_padding"
                         android:gravity="center">
 
                         <TextView
@@ -91,7 +92,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/taggers" />
+                            android:text="@string/taggers"
+                            android:textAlignment="center"/>
 
                     </LinearLayout>
 
@@ -100,6 +102,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
+                        android:padding="@dimen/list_item_padding"
                         android:gravity="center">
 
                         <TextView
@@ -113,7 +116,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/taggings" />
+                            android:text="@string/taggings"
+                            android:textAlignment="center"/>
 
                     </LinearLayout>
                 </LinearLayout>

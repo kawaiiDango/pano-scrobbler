@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
@@ -12,6 +13,7 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.recents.TracksVM
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.ui.ItemClickListener
 
 /**
@@ -48,9 +50,11 @@ class PendingScrFragment: Fragment(), ItemClickListener {
     override fun onItemClick(view: View, position: Int) {
         val p = adapter.getPending(position)
         if (view.id == R.id.recents_menu)
-            PendingMenu.openPendingPopupMenu((view.parent as ViewGroup).findViewById(R.id.date_frame), p,
+            PopupMenuUtils.openPendingPopupMenu((view.parent as ViewGroup).findViewById(R.id.date_frame),
+                lifecycleScope,
+                p,
                     {
-                    activity?.runOnUiThread { adapter.remove(position) }
+                    adapter.remove(position)
                     },
                     {
                         vm.loadPending(1000, false)

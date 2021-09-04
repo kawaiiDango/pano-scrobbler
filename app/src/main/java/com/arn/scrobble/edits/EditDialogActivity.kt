@@ -1,7 +1,9 @@
 package com.arn.scrobble.edits
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
 import com.arn.scrobble.R
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.billing.BillingViewModel
@@ -24,4 +26,10 @@ class EditDialogActivity: AppCompatActivity() {
             ef.show(supportFragmentManager, null)
 //        }
     }
+
+    override fun attachBaseContext(newBase: Context?) {
+        if (newBase != null)
+            super.attachBaseContext(newBase.getLocaleContextWrapper())
+    }
+
 }

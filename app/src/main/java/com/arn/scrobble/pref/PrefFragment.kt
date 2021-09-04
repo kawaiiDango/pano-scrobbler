@@ -7,6 +7,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.*
+import android.provider.Settings
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -19,6 +20,8 @@ import android.webkit.URLUtil
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
@@ -29,8 +32,8 @@ import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.edits.BlockedMetadataFragment
-import com.arn.scrobble.edits.SimpleEditsFragment
 import com.arn.scrobble.edits.RegexEditsFragment
+import com.arn.scrobble.edits.SimpleEditsFragment
 import com.arn.scrobble.themes.ThemesFragment
 import com.arn.scrobble.ui.MyClickableSpan
 import com.arn.scrobble.widget.ChartsWidgetActivity
@@ -50,6 +53,21 @@ import java.util.*
 class PrefFragment : PreferenceFragmentCompat(){
 
     private val restoreHandler by lazy { Handler(Looper.getMainLooper()) }
+    private lateinit var exportRequest: ActivityResultLauncher<Intent>
+    private lateinit var importRequest: ActivityResultLauncher<Intent>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        exportRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null)
+                export(result.data!!)
+        }
+
+        importRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null)
+                import(result.data!!)
+        }
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = MultiPrefsDataStore(context!!)
@@ -66,9 +84,58 @@ class PrefFragment : PreferenceFragmentCompat(){
             master.summary = getString(R.string.pref_master_qs_hint)
         }
 
+        val notiCategories = findPreference<Preference>("noti_categories")!!
+
+        hideOnTV += notiCategories
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !Main.isTV){
-            val notif = findPreference<SwitchPreference>(Stuff.PREF_NOTIFICATIONS)!!
-            notif.summaryOn = getString(R.string.pref_noti_q)
+            notiCategories.summary = getString(R.string.pref_noti_q)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            arrayOf(
+                Stuff.CHANNEL_NOTI_SCROBBLING,
+                Stuff.CHANNEL_NOTI_DIGEST_WEEKLY,
+                Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
+            ).forEach {
+                findPreference<Preference>(it)?.isVisible = false
+            }
+            notiCategories.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                val intent = Intent().apply {
+                    action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                    putExtra(Settings.EXTRA_APP_PACKAGE, activity!!.packageName)
+                }
+                startActivity(intent)
+                true
+            }
+        } else {
+            notiCategories.isVisible = false
+        }
+
+        val changeLocalePref = findPreference<ListPreference>("locale")!!
+        val entryValues = LocaleUtils.localesSet.toTypedArray()
+        var prevLang = ""
+        val entries = entryValues.map {
+            val locale = Locale.forLanguageTag(it)
+
+            val displayStr = when {
+                locale.language in LocaleUtils.showScriptSet ->
+                    locale.displayLanguage + " (${locale.displayScript})"
+                prevLang == locale.language ->
+                    locale.displayLanguage + " (${locale.displayCountry})"
+                else ->
+                    locale.displayLanguage
+            }
+            prevLang = locale.language
+            displayStr
+        }.toTypedArray()
+
+        changeLocalePref.entries = arrayOf(getString(R.string.auto)) + entries
+        changeLocalePref.entryValues = arrayOf("auto") + entryValues
+
+        changeLocalePref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+            activity!!.recreate()
+            true
         }
 
         val appList = findPreference<Preference>(Stuff.PREF_WHITELIST)!!
@@ -92,10 +159,10 @@ class PrefFragment : PreferenceFragmentCompat(){
         val autoDetect = findPreference<SwitchPreference>(Stuff.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
 
-        findPreference<Preference>("digest_weekly")!!
+        findPreference<Preference>(Stuff.CHANNEL_NOTI_DIGEST_WEEKLY)!!
             .title = getString(R.string.s_top_scrobbles, getString(R.string.weekly))
 
-        findPreference<Preference>("digest_monthly")!!
+        findPreference<Preference>(Stuff.CHANNEL_NOTI_DIGEST_MONTHLY)!!
             .title = getString(R.string.s_top_scrobbles, getString(R.string.monthly))
 
         findPreference<Preference>("charts_widget")!!
@@ -131,14 +198,16 @@ class PrefFragment : PreferenceFragmentCompat(){
 
         findPreference<Preference>(Stuff.PREF_EXPORT)
                 ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "application/json"
-            val cal = Calendar.getInstance()
-            intent.putExtra(Intent.EXTRA_TITLE, getString(R.string.export_file_name,
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/json"
+                val cal = Calendar.getInstance()
+                putExtra(Intent.EXTRA_TITLE, getString(R.string.export_file_name,
                     "" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
-                    ))
-            startActivityForResult(intent, Stuff.REQUEST_CODE_EXPORT)
+                ))
+            }
+
+            exportRequest.launch(intent)
             true
         }
 
@@ -148,10 +217,11 @@ class PrefFragment : PreferenceFragmentCompat(){
             // Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider
             // from ProcessRecord{a608cee 5039:com.google.android.documentsui/u0a21}
             // (pid=5039, uid=10021) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "application/*"
-            startActivityForResult(intent, Stuff.REQUEST_CODE_IMPORT)
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/*"
+            }
+            importRequest.launch(intent)
             true
         }
         hideOnTV.add(findPreference("imexport")!!)
@@ -168,7 +238,6 @@ class PrefFragment : PreferenceFragmentCompat(){
                     .add(R.id.frame, wf)
                     .addToBackStack(null)
                     .commit()
-//                Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, context)
             },
                 Stuff.PREF_LASTFM_USERNAME, Stuff.PREF_LASTFM_SESS_KEY,
                 logout = {LastfmUnscrobbler(context!!).clearCookies()}
@@ -184,7 +253,6 @@ class PrefFragment : PreferenceFragmentCompat(){
                     .add(R.id.frame, wf)
                     .addToBackStack(null)
                     .commit()
-//                Stuff.openInBrowser(Stuff.LIBREFM_AUTH_CB_URL, context)
             },
                 Stuff.PREF_LIBREFM_USERNAME, Stuff.PREF_LIBREFM_SESS_KEY
         )
@@ -227,12 +295,12 @@ class PrefFragment : PreferenceFragmentCompat(){
 
 
         initAuthConfirmation("listenbrainz", {
-                val b = Bundle()
-                b.putString(LoginFragment.HEADING, getString(R.string.listenbrainz))
-                b.putString(LoginFragment.TEXTF1, getString(R.string.pref_user_label))
-                b.putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
+                val b = Bundle().apply {
+                    putString(LoginFragment.HEADING, getString(R.string.listenbrainz))
+                    putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
+                }
 
-                val loginFragment = LoginFragment()
+            val loginFragment = LoginFragment()
                 loginFragment.arguments = b
                 activity!!.supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, loginFragment)
@@ -243,13 +311,13 @@ class PrefFragment : PreferenceFragmentCompat(){
         )
 
         initAuthConfirmation("lb", {
-                val b = Bundle()
-                b.putString(LoginFragment.HEADING, getString(R.string.custom_listenbrainz))
-                b.putString(LoginFragment.TEXTF1, getString(R.string.pref_user_label))
-                b.putString(LoginFragment.TEXTF2, "API URL")
-                b.putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
+                val b = Bundle().apply {
+                    putString(LoginFragment.HEADING, getString(R.string.custom_listenbrainz))
+                    putString(LoginFragment.TEXTF1, getString(R.string.api_url))
+                    putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
+                }
 
-                val loginFragment = LoginFragment()
+            val loginFragment = LoginFragment()
                 loginFragment.arguments = b
                 parentFragmentManager.beginTransaction()
                         .replace(R.id.frame, loginFragment)
@@ -373,72 +441,66 @@ class PrefFragment : PreferenceFragmentCompat(){
             }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK){
-            if (requestCode == Stuff.REQUEST_CODE_EXPORT) {
-                if (data != null) {
-                    val currentUri = data.data ?: return
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        val exporter = ImExporter()
-                        exporter.setOutputUri(context!!, currentUri)
-                        val exported = exporter.export()
-                        exporter.close()
-                        if (!exported)
-                            withContext(Dispatchers.Main) {
-                                Stuff.toast(
-                                    context!!,
-                                    getString(R.string.export_failed),
-                                    Toast.LENGTH_LONG
-                                )
-                            }
-                        else
-                            Stuff.log("Exported")
+    private fun export(data: Intent) {
+        val currentUri = data.data ?: return
+        lifecycleScope.launch(Dispatchers.IO) {
+            val exporter = ImExporter()
+            exporter.setOutputUri(context!!, currentUri)
+            val exported = exporter.export()
+            exporter.close()
+            if (!exported)
+                withContext(Dispatchers.Main) {
+                    Stuff.toast(
+                        context!!,
+                        getString(R.string.export_failed),
+                        Toast.LENGTH_LONG
+                    )
+                }
+            else
+                Stuff.log("Exported")
+        }
+    }
+
+    private fun import(data: Intent) {
+        val currentUri = data.data ?: return
+        val binding = DialogImportBinding.inflate(layoutInflater)
+        MaterialAlertDialogBuilder(context!!)
+            .setView(binding.root)
+            .setTitle(R.string.import_options)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val editsModeMap = mapOf(
+                    R.id.import_edits_nope to Stuff.EDITS_NOPE,
+                    R.id.import_edits_replace_all to Stuff.EDITS_REPLACE_ALL,
+                    R.id.import_edits_replace_existing to Stuff.EDITS_REPLACE_EXISTING,
+                    R.id.import_edits_keep to Stuff.EDITS_KEEP_EXISTING
+                )
+                val editsMode = editsModeMap[binding.importRadioGroup.checkedRadioButtonId]!!
+                val settingsMode = binding.importSettings.isChecked
+                if (editsMode == Stuff.EDITS_NOPE && !settingsMode)
+                    return@setPositiveButton
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val importer = ImExporter()
+                    importer.setInputUri(context!!, currentUri)
+                    val imported = importer.import(editsMode, settingsMode)
+                    importer.close()
+                    withContext(Dispatchers.Main) {
+                        if (!imported)
+                            Stuff.toast(
+                                context!!,
+                                getString(R.string.import_hey_wtf),
+                                Toast.LENGTH_LONG
+                            )
+                        else {
+                            Stuff.toast(
+                                context!!,
+                                getString(R.string.imported)
+                            )
+                            parentFragmentManager.popBackStack()
+                        }
                     }
                 }
-            } else if (requestCode == Stuff.REQUEST_CODE_IMPORT) {
-                if (data != null) {
-                    val currentUri = data.data ?: return
-                    val binding = DialogImportBinding.inflate(layoutInflater)
-                    MaterialAlertDialogBuilder(context!!)
-                            .setView(binding.root)
-                            .setTitle(R.string.import_options)
-                            .setPositiveButton(android.R.string.ok) { _, _ ->
-                                val editsModeMap = mapOf(
-                                        R.id.import_edits_nope to Stuff.EDITS_NOPE,
-                                        R.id.import_edits_replace_all to Stuff.EDITS_REPLACE_ALL,
-                                        R.id.import_edits_replace_existing to Stuff.EDITS_REPLACE_EXISTING,
-                                        R.id.import_edits_keep to Stuff.EDITS_KEEP_EXISTING
-                                )
-                                val editsMode = editsModeMap[binding.importRadioGroup.checkedRadioButtonId]!!
-                                val settingsMode = binding.importSettings.isChecked
-                                if (editsMode == Stuff.EDITS_NOPE && !settingsMode)
-                                    return@setPositiveButton
-                                lifecycleScope.launch(Dispatchers.IO) {
-                                    val importer = ImExporter()
-                                    importer.setInputUri(context!!, currentUri)
-                                    val imported = importer.import(editsMode, settingsMode)
-                                    importer.close()
-                                    withContext(Dispatchers.Main) {
-                                        if (!imported)
-                                            Stuff.toast(
-                                                context!!,
-                                                getString(R.string.import_hey_wtf),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        else {
-                                            Stuff.toast(
-                                                context!!,
-                                                getString(R.string.imported)
-                                            )
-                                            parentFragmentManager.popBackStack()
-                                        }
-                                    }
-                                }
-                            }
-                            .show()
-                }
             }
-        }
+            .show()
     }
 
     override fun onStart() {

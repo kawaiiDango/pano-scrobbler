@@ -73,7 +73,7 @@ class UserTagsFragment: DialogFragment() {
                 viewModel.splitTags(tags).forEach{
                     if (viewModel.tags.value?.contains(it) == false)
                         addChip(it.trim())
-                    historyPref.add(it)
+                    historyPref.add(it.trim())
                 }
                 viewModel.addTag(tags)
                 binding.userTagsInputEdittext.text.clear()
@@ -110,6 +110,7 @@ class UserTagsFragment: DialogFragment() {
         }
 
         viewModel.entry = entry
+        viewModel.historyPref = historyPref
         _binding = DialogUserTagsBinding.inflate(layoutInflater)
 
         return MaterialAlertDialogBuilder(context!!)

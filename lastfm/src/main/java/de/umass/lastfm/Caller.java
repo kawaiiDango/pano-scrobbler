@@ -237,18 +237,14 @@ public class Caller {
 	 * @param session A Session instance or <code>null</code>
 	 * @return the result of the operation
 	 */
-    private Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
-                        Session session) {
-        return call(apiRootUrl,method,apiKey,params,session,session != null);
-    }
 
     public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
-                        Session session, boolean createSignature) {
-        return call(apiRootUrl,method,apiKey,params,session,createSignature, false);
+                        Session session) {
+        return call(apiRootUrl,method,apiKey,params,session, false);
     }
 
 	public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
-                        Session session, boolean createSignature, boolean cacheFirst) {
+                        Session session, boolean cacheFirst) {
 		params = new HashMap<String, String>(params); // create new Map in case params is an immutable Map
 		InputStream inputStream = null;
 		
@@ -256,7 +252,7 @@ public class Caller {
         //TODO: this is bugged for custom api root
 		String cacheEntryName = Cache.createCacheEntryName(method, params);
 		long cacheTime = cache != null ? cache.getExpirationPolicy().getExpirationTime(method, params) : -1;
-		if (!createSignature && cache != null &&
+		if (cache != null &&
                 (cacheTime != DefaultExpirationPolicy.NETWORK_AND_CACHE_CONST || cacheFirst)) {
 			inputStream = getStreamFromCache(cacheEntryName, cacheFirst);
 		}
@@ -268,8 +264,7 @@ public class Caller {
 			if (session != null) {
                 params.put(PARAM_API_KEY, session.getApiKey());
 				params.put("sk", session.getKey());
-				if (createSignature)
-				    params.put("api_sig", Authenticator.createSignature(method, params, session.getSecret()));
+                params.put("api_sig", Authenticator.createSignature(method, params, session.getSecret()));
 			}
 
             if (!params.containsKey(PARAM_API_KEY))

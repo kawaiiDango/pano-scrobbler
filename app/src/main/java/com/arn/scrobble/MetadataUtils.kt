@@ -19,7 +19,7 @@ object MetadataUtils {
     private val metaUnknown = arrayOf("unknown", "[unknown]", "unknown album", "[unknown album]", "unknown artist", "[unknown artist]")
     private val albumArtistUnknown = arrayOf("va")
 
-    fun sanitizeTitle(titleContentOriginal: String): Array<String> {
+    fun parseArtistTitle(titleContentOriginal: String): Array<String> {
         //New detection of trackinformation
         //remove (*) and/or [*] to remove unimportant data
         val titleContent = titleContentOriginal.replace(" *\\([^)]*?\\) *".toRegex(), " ")

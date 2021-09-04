@@ -26,6 +26,8 @@
         <item quantity="other">%1$d years</item>
     </plurals>
 
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="settings">Configure</string>
     <string name="bug_report">Bug report</string>
     <string name="album_art">Album art</string>
@@ -89,6 +91,12 @@
     <string name="recents"
         comment="Short for recently scrobbled"
         >Recents</string>
+    <string name="first_scrobbled_on" formatted="true"
+        comment="%1= date"
+        >First scrobbled on %1$s</string>
+    <string name="auto"
+        comment="automatic or default setting"
+        >Auto</string>
     <string name="graph_info">… last 5 months</string>
     <string name="enabled_apps">Enabled Apps</string>
     <string name="almost_there"
@@ -343,6 +351,9 @@
         >Text</string>
     <string name="edit_regex_warning">⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
     <string name="blocked_metadata_info">ℹ️ Filling in more than one of these fields will apply an AND operator between them</string>
+    <string name="regex_edits_suggestion" formatted="true"
+        comment="%1= the preset name (e.g. Remastered (Track))"
+        >Would you like to enable the pattern edit rule: %1$s?</string>
 
     <string name="scrobbler_off">Scrobbler disabled</string>
     <string name="scrobbler_on">Scrobbler active</string>
@@ -350,6 +361,7 @@
     <string name="pref_master_qs_hint">Can also be toggled from the quick settings tile</string>
     <string name="pref_noti_q">You may promote the notification, if the icon doesn\'t show up</string>
     <string name="pref_noti">Notifications</string>
+    <string name="pref_noti_categories">Notification categories</string>
     <string name="pref_scrobble_noti">Scrobble notifications</string>
     <string name="pref_lockscreen_noti">Lockscreen notifications</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves will be saved, to be sent later.</string>
@@ -378,11 +390,17 @@
     <string name="pref_token_label"
         comment="For Listenbrainz"
         >Authentication token</string>
+    <string name="api_url"
+        comment="For Listenbrainz"
+        >API URL</string>
+
     <string name="pref_now_playing">Submit now playing</string>
     <string name="pref_fetch_aa">Fetch album artists from lastFM</string>
     <string name="pref_fetch_aa_desc">For players that do not provide this data. The fetched data may differ from your tags. lastFM may not have the data for some songs.</string>
     <string name="pref_pixel_np">Scrobble Pixel\'s Now Playing</string>
     <string name="pref_pixel_np_nope">Available only on Pixel devices</string>
+    <string name="pref_change_locale">Change language</string>
+    <string name="locale_only_ui">Only applies to the main UI</string>
     <string name="pref_misc">Misc.</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Import &amp; export</string>

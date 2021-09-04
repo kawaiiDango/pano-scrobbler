@@ -1,9 +1,6 @@
 package com.arn.scrobble
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.text.util.Linkify
 import android.transition.Fade
@@ -19,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.pref.MultiPreferences
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -30,7 +28,7 @@ import org.json.JSONObject
 open class LoginFragment: DialogFragment() {
     protected lateinit var pref: MultiPreferences
     open val checksLogin = true
-    protected var standalone = false
+    protected var isStandalone = false
     protected var _binding: ContentLoginBinding? = null
     protected val binding
         get() = _binding!!
@@ -86,31 +84,20 @@ open class LoginFragment: DialogFragment() {
         super.onDestroyView()
     }
 
-    private val sessChangeReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                NLService.iSESS_CHANGED -> success()
-            }
-        }
-    }
-
     protected open fun success() {
         if (context == null || !isAdded)
             return
         binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_check)
         binding.loginStatus.visibility = View.VISIBLE
-        binding.loginProgress.postDelayed(
-                {
-                    if (showsDialog)
-                        try {
-                            dismiss()
-                        } catch (e:IllegalStateException) {}
-                    else
-                        activity?.onBackPressed()
-                },
-                500
-        )
+
+        lifecycleScope.launch {
+            delay(500)
+            if (showsDialog)
+                dismiss()
+            else
+                activity?.onBackPressed()
+        }
     }
 
     protected fun error(errMsg: String) {
@@ -121,15 +108,13 @@ open class LoginFragment: DialogFragment() {
         binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_ban)
         binding.loginStatus.visibility = View.VISIBLE
-        binding.loginProgress.postDelayed(
-                {
-                    _binding ?: return@postDelayed
-                    binding.loginStatus.visibility = View.GONE
-                    binding.loginSubmit.visibility = View.VISIBLE
-                    binding.loginProgress.hide()
-                },
-                1500
-        )
+
+        lifecycleScope.launch {
+            delay(1500)
+            binding.loginStatus.visibility = View.GONE
+            binding.loginSubmit.visibility = View.VISIBLE
+            binding.loginProgress.hide()
+        }
     }
 
     private fun validate() {
@@ -150,24 +135,39 @@ open class LoginFragment: DialogFragment() {
     open suspend fun validateAsync(): String? {
         val title = arguments?.getString(HEADING)
         val t1 = binding.loginTextfield1.editText!!.text.toString()
-        var t2 = binding.loginTextfield2.editText!!.text.toString()
+        val t2 = binding.loginTextfield2.editText!!.text.toString()
         val tlast = binding.loginTextfieldLast.editText!!.text.toString()
 
         var success = false
 
         when (title) {
             getString(R.string.listenbrainz) -> {
-                if (t1.isNotBlank() && tlast.isNotBlank())
-                    success = ListenBrainz(tlast).checkAuth(activity!!, pref, t1)
+                if (tlast.isNotBlank()) {
+                    val username = ListenBrainz(tlast).getUsername()
+                    if (username != null) {
+                        pref.putString(Stuff.PREF_LISTENBRAINZ_USERNAME, username)
+                        pref.putString(Stuff.PREF_LISTENBRAINZ_TOKEN, tlast)
+                        success = true
+                    }
+                }
             }
             getString(R.string.custom_listenbrainz) -> {
-                if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()) {
-                    if (URLUtil.isValidUrl(t2)) {
-                        if (!t2.endsWith('/'))
-                            t2 += '/'
-                        success = ListenBrainz(tlast)
-                                .setApiRoot(t2)
-                                .checkAuth(activity!!, pref, t1)
+                if (t1.isNotBlank() && tlast.isNotBlank()) {
+                    if (URLUtil.isValidUrl(t1)) {
+                        val url = if (!t1.endsWith('/'))
+                            "$t1/"
+                        else
+                            t1
+                        val username = ListenBrainz(tlast)
+                                .setApiRoot(url)
+                                .getUsername()
+
+                        if (username != null) {
+                            pref.putString(Stuff.PREF_LB_CUSTOM_ROOT, url)
+                            pref.putString(Stuff.PREF_LB_CUSTOM_USERNAME, username)
+                            pref.putString(Stuff.PREF_LB_CUSTOM_TOKEN, tlast)
+                            success = true
+                        }
                     } else
                         withContext(Dispatchers.Main) {
                             Stuff.toast(activity!!, getString(R.string.failed_encode_url))
@@ -223,18 +223,8 @@ open class LoginFragment: DialogFragment() {
 
         if (checksLogin) {
             Stuff.setTitle(activity, arguments?.getString(HEADING))
-
-            val iF = IntentFilter()
-            iF.addAction(NLService.iSESS_CHANGED)
-            activity!!.registerReceiver(sessChangeReceiver, iF)
         }
 
-    }
-
-    override fun onStop() {
-        if (checksLogin)
-            activity!!.unregisterReceiver(sessChangeReceiver)
-        super.onStop()
     }
 
     companion object {

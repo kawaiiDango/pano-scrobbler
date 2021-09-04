@@ -7,22 +7,26 @@ import android.app.Service
 import android.app.job.JobScheduler
 import android.content.Context
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.arn.scrobble.Main
-import com.arn.scrobble.NLService.Companion.NOTI_ID_FG
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.themes.ColorPatchUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 
 
 class PendingScrService: Service() {
 
     private lateinit var nb: NotificationCompat.Builder
+    private lateinit var nm: NotificationManager
+    private var job: Job? = null
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -44,31 +48,34 @@ class PendingScrService: Service() {
         val intent = Intent(applicationContext, Main::class.java)
         val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent,
             Stuff.updateCurrentOrImmutable)
-        nb = NotificationCompat.Builder(applicationContext, NOTI_ID_FG)
+        nb = NotificationCompat.Builder(applicationContext, Stuff.CHANNEL_NOTI_PENDING)
             .setSmallIcon(R.drawable.vd_noti)
             .setPriority(Notification.PRIORITY_MIN)
             .setContentIntent(launchIntent)
             .setColor(ColorPatchUtils.getNotiColor(this, MultiPreferences(this)))
             .setContentTitle(getString(R.string.pending_scrobbles_noti))
 
+        nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         startForeground(PendingScrJob.JOB_ID, nb.build())
     }
 
     private fun doTask() {
-        val ost = PendingScrJob.OfflineScrobbleTask(applicationContext)
-        ost.progressCb = { str ->
-            nb.setContentText(str)
-            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            nm.notify(PendingScrJob.JOB_ID, nb.build())
-        }
-        ost.doneCb = { done -> stop()}
-        ost.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-
+        job = SupervisorJob()
+        PendingScrJob.OfflineScrobbleTask(
+            applicationContext,
+            CoroutineScope(Dispatchers.IO + job!!),
+            { str ->
+                nb.setContentText(str)
+                nm.notify(PendingScrJob.JOB_ID, nb.build())
+            },
+        ) { stop() }
     }
 
     private fun stop() {
         stopForeground(true)
         stopSelf()
+        job?.cancel()
     }
 
     override fun onDestroy() {

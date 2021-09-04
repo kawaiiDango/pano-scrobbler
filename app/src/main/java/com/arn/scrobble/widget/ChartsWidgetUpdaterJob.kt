@@ -16,7 +16,11 @@ import kotlinx.coroutines.*
 
 class ChartsWidgetUpdaterJob : JobService() {
 
+    private lateinit var job: Job
+
     override fun onStartJob(jp: JobParameters): Boolean {
+        job = SupervisorJob()
+
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
         val pref = applicationContext.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
         val mpref = MultiPreferences(applicationContext)
@@ -25,6 +29,8 @@ class ChartsWidgetUpdaterJob : JobService() {
             return false
 
         val username = mpref.getString(Stuff.PREF_LASTFM_USERNAME, null) ?: return false
+        val lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, mpref.getString(Stuff.PREF_LASTFM_SESS_KEY, null))
+
         val appWidgetIdToPeriodInt = mutableMapOf<Int, Int>()
         appWidgetManager.getAppWidgetIds(ComponentName(this, ChartsWidgetProvider::class.java))
             .forEach {
@@ -64,28 +70,28 @@ class ChartsWidgetUpdaterJob : JobService() {
             jobFinished(jp, false)
         }
 
-        CoroutineScope(Dispatchers.IO + Job()).launch(exHandler) {
+        CoroutineScope(Dispatchers.IO + job).launch(exHandler) {
             for (periodInt in appWidgetIdToPeriodInt.values.toSet()) {
                 if (periodInt == -1)
                     continue
                 val period = Period.values()[periodInt]
 
                 val artists = async {
-                    val pr = User.getTopArtists(username, period, 50, 1, Stuff.LAST_KEY)
+                    val pr = User.getTopArtists(username, period, 50, 1, lastfmSession)
                     pr.username!!
                     ArrayList(
                         pr.pageResults!!.map { ChartsWidgetListItem(it.name, "", it.playcount) }
                     )
                 }
                 val albums = async {
-                    val pr = User.getTopAlbums(username, period, 50, 1, Stuff.LAST_KEY)
+                    val pr = User.getTopAlbums(username, period, 50, 1, lastfmSession)
                     pr.username!!
                     ArrayList(
                         pr.pageResults!!.map { ChartsWidgetListItem(it.name, it.artist, it.playcount) }
                     )
                 }
                 val tracks = async {
-                    val pr = User.getTopTracks(username, period, 50, 1, Stuff.LAST_KEY)
+                    val pr = User.getTopTracks(username, period, 50, 1, lastfmSession)
                     pr.username!!
                     ArrayList(
                         pr.pageResults!!.map { ChartsWidgetListItem(it.name, it.artist, it.playcount) }
@@ -104,6 +110,7 @@ class ChartsWidgetUpdaterJob : JobService() {
     }
 
     override fun onStopJob(params: JobParameters): Boolean {
+        job.cancel()
         return true
     }
 

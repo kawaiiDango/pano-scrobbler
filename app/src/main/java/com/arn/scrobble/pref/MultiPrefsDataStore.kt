@@ -2,7 +2,6 @@ package com.arn.scrobble.pref
 
 import android.content.Context
 import androidx.preference.PreferenceDataStore
-import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 
 class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
@@ -12,7 +11,7 @@ class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
     //workaround for bug in preferenceDataStore with PreferenceCompat. Views dont change to specified default values.
     private val defaults = mapOf<String, Any?>(
             Stuff.PREF_MASTER to true,
-            Stuff.PREF_NOTIFICATIONS to true,
+            Stuff.CHANNEL_NOTI_SCROBBLING to true,
             Stuff.PREF_AUTO_DETECT to true,
             Stuff.PREF_DELAY_SECS to Stuff.PREF_DELAY_SECS_DEFAULT,
             Stuff.PREF_DELAY_PER to Stuff.PREF_DELAY_PER_DEFAULT,
@@ -23,9 +22,10 @@ class MultiPrefsDataStore(context: Context): PreferenceDataStore() {
             Stuff.PREF_PIXEL_NP to true,
             Stuff.PREF_LOCKSCREEN_NOTI to false,
             Stuff.PREF_FETCH_AA to false,
-            Stuff.PREF_DIGEST_WEEKLY to true,
-            Stuff.PREF_DIGEST_MONTHLY to true,
+            Stuff.CHANNEL_NOTI_DIGEST_WEEKLY to true,
+            Stuff.CHANNEL_NOTI_DIGEST_MONTHLY to true,
             Stuff.PREF_SHOW_RECENTS_ALBUM to false,
+            Stuff.PREF_LOCALE to "auto",
     )
 
     override fun getString(key: String, defValue: String?) =

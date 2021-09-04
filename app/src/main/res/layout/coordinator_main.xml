@@ -165,6 +165,19 @@
                     tools:visibility="visible" />
 
                 <ImageButton
+                    android:id="@+id/hero_randomize"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:contentDescription="@string/more_info"
+                    android:padding="3dp"
+                    android:scaleType="centerInside"
+                    android:tooltipText="@string/random"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/vd_die"
+                    tools:visibility="visible" />
+
+                <ImageButton
                     android:id="@+id/hero_play"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="38dp"

@@ -1,28 +1,23 @@
 package com.arn.scrobble
 
-import android.content.Context
-import android.content.Intent
-import com.arn.scrobble.pref.MultiPreferences
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
-import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.net.URL
 
 
-class ListenBrainz (private val token:String? = null) {
+class ListenBrainz (private val token: String) {
     private var apiRoot = Stuff.LISTENBRAINZ_API_ROOT
 
-    fun setApiRoot(url: String?): ListenBrainz {
-        apiRoot = url!!
+    fun setApiRoot(url: String): ListenBrainz {
+        apiRoot = url
         return this
     }
 
     private fun submitListens(scrobbledatas: List<ScrobbleData>, listenType: String): ScrobbleResult {
-        token!!
         val payload = JSONArray()
         scrobbledatas.forEach {
             val payloadTrack = JSONObject()
@@ -115,41 +110,27 @@ class ListenBrainz (private val token:String? = null) {
         return null
     }
 
-    fun checkAuth(context:Context, pref: MultiPreferences, username:String): Boolean {
-        token!!
-        val url = URL("${apiRoot}1/validate-token?token=$token")
+    fun getUsername(): String? {
+        val url = URL("${apiRoot}1/validate-token")
 
-        var success = false
+        var username: String? = null
         try {
             val conn = url.openConnection() as HttpURLConnection
             conn.connectTimeout = Stuff.CONNECT_TIMEOUT
             conn.readTimeout = Stuff.READ_TIMEOUT
+            conn.setRequestProperty("Authorization", "token $token")
             conn.connect()
-            success = false
             if (conn.responseCode == 200) {
                 val respJson = JSONObject(conn.inputStream.bufferedReader().readText())
-                if (respJson.getString("message") == "Token valid.")
-                    success = true
+                if (respJson.getBoolean("valid"))
+                    username = respJson.getString("user_name")
             }
 
         } catch (e: Exception) {
-            Stuff.toast(context, e.toString())
+            e.printStackTrace()
         }
 
-        if (success){
-            if (apiRoot == Stuff.LISTENBRAINZ_API_ROOT) {
-                pref.putString(Stuff.PREF_LISTENBRAINZ_USERNAME, username)
-                pref.putString(Stuff.PREF_LISTENBRAINZ_TOKEN, token)
-            } else {
-                pref.putString(Stuff.PREF_LB_CUSTOM_ROOT, apiRoot)
-                pref.putString(Stuff.PREF_LB_CUSTOM_USERNAME, username)
-                pref.putString(Stuff.PREF_LB_CUSTOM_TOKEN, token)
-            }
-            val intent = Intent(NLService.iSESS_CHANGED)
-            intent.putExtra("root", apiRoot) //TODO: use some other type id
-            context.sendBroadcast(intent)
-        }
-        return success
+        return username
     }
 
 }

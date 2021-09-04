@@ -241,88 +241,88 @@ public class Geo {
 	 * Get a list of available chart periods for this metro, expressed as date ranges which can be sent to the chart services.
 	 *
 	 * @param metro The name of the metro, or <code>null</code>
-	 * @param apiKey A Last.fm API key
+     * @param session A Last.fm session.
 	 * @return a list of available charts as a Map
 	 */
-	public static LinkedHashMap<String, String> getMetroWeeklyChartList(String metro, String apiKey) {
-		return Chart.getWeeklyChartList("geo.getMetroWeeklyChartList", "metro", metro, apiKey);
+	public static LinkedHashMap<String, String> getMetroWeeklyChartList(String metro, Session session) {
+		return Chart.getWeeklyChartList("geo.getMetroWeeklyChartList", "metro", metro, session);
 	}
 
-	public static Chart<Artist> getMetroArtistChart(String country, String metro, String apiKey) {
-		return getMetroArtistChart(country, metro, null, null, apiKey);
+	public static Chart<Artist> getMetroArtistChart(String country, String metro, Session session) {
+		return getMetroArtistChart(country, metro, null, null, session);
 	}
 
-	public static Chart<Artist> getMetroArtistChart(Metro metro, String start, String end, String apiKey) {
-		return getMetroArtistChart(metro.getCountry(), metro.getName(), start, end, apiKey);
+	public static Chart<Artist> getMetroArtistChart(Metro metro, String start, String end, Session session) {
+		return getMetroArtistChart(metro.getCountry(), metro.getName(), start, end, session);
 	}
 
-	public static Chart<Artist> getMetroArtistChart(String country, String metro, String start, String end, String apiKey) {
+	public static Chart<Artist> getMetroArtistChart(String country, String metro, String start, String end, Session session) {
 		return Chart.getChart("geo.getMetroArtistChart", "artist", StringUtilities.map("country", country, "metro", metro), start, end, -1,
-				apiKey);
+				session);
 	}
 
-	public static Chart<Track> getMetroTrackChart(String country, String metro, String apiKey) {
-		return getMetroTrackChart(country, metro, null, null, apiKey);
+	public static Chart<Track> getMetroTrackChart(String country, String metro, Session session) {
+		return getMetroTrackChart(country, metro, null, null, session);
 	}
 
-	public static Chart<Track> getMetroTrackChart(Metro metro, String start, String end, String apiKey) {
-		return getMetroTrackChart(metro.getCountry(), metro.getName(), start, end, apiKey);
+	public static Chart<Track> getMetroTrackChart(Metro metro, String start, String end, Session session) {
+		return getMetroTrackChart(metro.getCountry(), metro.getName(), start, end, session);
 	}
 
-	public static Chart<Track> getMetroTrackChart(String country, String metro, String start, String end, String apiKey) {
+	public static Chart<Track> getMetroTrackChart(String country, String metro, String start, String end, Session session) {
 		return Chart.getChart("geo.getMetroTrackChart", "track", StringUtilities.map("country", country, "metro", metro), start, end, -1,
-				apiKey);
+				session);
 	}
 
-	public static Chart<Artist> getMetroHypeArtistChart(String country, String metro, String apiKey) {
-		return getMetroHypeArtistChart(country, metro, null, null, apiKey);
+	public static Chart<Artist> getMetroHypeArtistChart(String country, String metro, Session session) {
+		return getMetroHypeArtistChart(country, metro, null, null, session);
 	}
 
-	public static Chart<Artist> getMetroHypeArtistChart(Metro metro, String start, String end, String apiKey) {
-		return getMetroHypeArtistChart(metro.getCountry(), metro.getName(), start, end, apiKey);
+	public static Chart<Artist> getMetroHypeArtistChart(Metro metro, String start, String end, Session session) {
+		return getMetroHypeArtistChart(metro.getCountry(), metro.getName(), start, end, session);
 	}
 
-	public static Chart<Artist> getMetroHypeArtistChart(String country, String metro, String start, String end, String apiKey) {
+	public static Chart<Artist> getMetroHypeArtistChart(String country, String metro, String start, String end, Session session) {
 		return Chart.getChart("geo.getMetroHypeArtistChart", "artist", StringUtilities.map("country", country, "metro", metro), start, end,
-				-1, apiKey);
+				-1, session);
 	}
 
-	public static Chart<Track> getMetroHypeTrackChart(String country, String metro, String apiKey) {
-		return getMetroHypeTrackChart(country, metro, null, null, apiKey);
+	public static Chart<Track> getMetroHypeTrackChart(String country, String metro, Session session) {
+		return getMetroHypeTrackChart(country, metro, null, null, session);
 	}
 
-	public static Chart<Track> getMetroHypeTrackChart(Metro metro, String start, String end, String apiKey) {
-		return getMetroHypeTrackChart(metro.getCountry(), metro.getName(), start, end, apiKey);
+	public static Chart<Track> getMetroHypeTrackChart(Metro metro, String start, String end, Session session) {
+		return getMetroHypeTrackChart(metro.getCountry(), metro.getName(), start, end, session);
 	}
 
-	public static Chart<Track> getMetroHypeTrackChart(String country, String metro, String start, String end, String apiKey) {
+	public static Chart<Track> getMetroHypeTrackChart(String country, String metro, String start, String end, Session session) {
 		return Chart.getChart("geo.getMetroHypeTrackChart", "track", StringUtilities.map("country", country, "metro", metro), start, end,
-				-1, apiKey);
+				-1, session);
 	}
 
-	public static Chart<Artist> getMetroUniqueArtistChart(String country, String metro, String apiKey) {
-		return getMetroUniqueArtistChart(country, metro, null, null, apiKey);
+	public static Chart<Artist> getMetroUniqueArtistChart(String country, String metro, Session session) {
+		return getMetroUniqueArtistChart(country, metro, null, null, session);
 	}
 
-	public static Chart<Artist> getMetroUniqueArtistChart(Metro metro, String start, String end, String apiKey) {
-		return getMetroUniqueArtistChart(metro.getCountry(), metro.getName(), start, end, apiKey);
+	public static Chart<Artist> getMetroUniqueArtistChart(Metro metro, String start, String end, Session session) {
+		return getMetroUniqueArtistChart(metro.getCountry(), metro.getName(), start, end, session);
 	}
 
-	public static Chart<Artist> getMetroUniqueArtistChart(String country, String metro, String start, String end, String apiKey) {
+	public static Chart<Artist> getMetroUniqueArtistChart(String country, String metro, String start, String end, Session session) {
 		return Chart.getChart("geo.getMetroUniqueArtistChart", "artist", StringUtilities.map("country", country, "metro", metro), start,
-				end, -1, apiKey);
+				end, -1, session);
 	}
 
-	public static Chart<Track> getMetroUniqueTrackChart(String country, String metro, String apiKey) {
-		return getMetroUniqueTrackChart(country, metro, null, null, apiKey);
+	public static Chart<Track> getMetroUniqueTrackChart(String country, String metro, Session session) {
+		return getMetroUniqueTrackChart(country, metro, null, null, session);
 	}
 
-	public static Chart<Track> getMetroUniqueTrackChart(Metro metro, String start, String end, String apiKey) {
-		return getMetroUniqueTrackChart(metro.getCountry(), metro.getName(), start, end, apiKey);
+	public static Chart<Track> getMetroUniqueTrackChart(Metro metro, String start, String end, Session session) {
+		return getMetroUniqueTrackChart(metro.getCountry(), metro.getName(), start, end, session);
 	}
 
-	public static Chart<Track> getMetroUniqueTrackChart(String country, String metro, String start, String end, String apiKey) {
+	public static Chart<Track> getMetroUniqueTrackChart(String country, String metro, String start, String end, Session session) {
 		return Chart.getChart("geo.getMetroUniqueTrackChart", "track", StringUtilities.map("country", country, "metro", metro), start, end,
-				-1, apiKey);
+				-1, session);
 	}
 }

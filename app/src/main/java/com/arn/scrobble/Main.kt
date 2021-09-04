@@ -15,7 +15,6 @@ import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -33,7 +32,9 @@ import androidx.core.media.app.MediaStyleMod
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
+import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityMainBinding
@@ -53,6 +54,8 @@ import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.codechimp.apprater.AppRater
 import timber.log.Timber
 import java.io.File
@@ -181,13 +184,10 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     if (intent.getStringExtra(NLService.B_ARTIST) != null)
                             showInfoFragment(intent)
                     else {
-                        val handler = Handler(mainLooper)
-                        handler.post {
-                            if (!Stuff.isScrobblerRunning(this))
-                                showNotRunning()
-                            else if (!isTV && billingViewModel.proStatus.value != true)
-                                AppRater.app_launched(this)
-                        }
+                        if (!Stuff.isScrobblerRunning(this))
+                            showNotRunning()
+                        else if (!isTV && billingViewModel.proStatus.value != true)
+                            AppRater.app_launched(this)
                     }
                 }
             } else {
@@ -311,7 +311,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val icon = ContextCompat.getDrawable(this, R.drawable.ic_launcher)
 //        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
 
-        val nb = NotificationCompat.Builder(applicationContext, NLService.NOTI_ID_SCR)
+        val nb = NotificationCompat.Builder(applicationContext, Stuff.CHANNEL_NOTI_SCROBBLING)
                 .setSmallIcon(R.drawable.vd_noti)
 //                .setLargeIcon(Stuff.drawableToBitmap(icon))
                 .setVisibility(NotificationCompat.VISIBILITY_SECRET)
@@ -359,7 +359,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL))
             return
 
-        LFMRequester(applicationContext).getDrawerInfo().asAsyncTask(mainNotifierViewModel.drawerData)
+        LFMRequester(applicationContext, lifecycleScope, mainNotifierViewModel.drawerData).getDrawerInfo()
 
         val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
         val displayUsername = if (BuildConfig.DEBUG) "nobody" else username
@@ -379,17 +379,17 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             if (!c)
                 return
             navHeaderbinding.navName.tag = "☃️"
-            val runnable = object : Runnable {
-                override fun run() {
+            lifecycleScope.launch {
+                while (true) {
                     if (navHeaderbinding.navName.tag == "☃️")
                         navHeaderbinding.navName.tag = "⛄️"
                     else
                         navHeaderbinding.navName.tag = "☃️"
                     navHeaderbinding.navName.text = (navHeaderbinding.navName.tag as String) + displayUsername + "\uD83C\uDF84"
-                    navHeaderbinding.navName.postDelayed(this, 500)
+
+                    delay(500)
                 }
             }
-            runnable.run()
         }
     }
 
@@ -489,7 +489,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     override fun onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START) && coordinatorPadding == 0)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-        else
+        else if (mainNotifierViewModel.backButtonEnabled)
             super.onBackPressed()
     }
 
@@ -610,11 +610,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 Stuff.log("onNewIntent got token for $path")
                 when(path) {
                     "/lastfm" ->
-                        LFMRequester(applicationContext).doAuth(R.string.lastfm, token).asAsyncTask()
+                        LFMRequester(applicationContext, lifecycleScope).doAuth(R.string.lastfm, token)
                     "/librefm" ->
-                        LFMRequester(applicationContext).doAuth(R.string.librefm, token).asAsyncTask()
+                        LFMRequester(applicationContext, lifecycleScope).doAuth(R.string.librefm, token)
                     "/gnufm" ->
-                        LFMRequester(applicationContext).doAuth(R.string.gnufm, token).asAsyncTask()
+                        LFMRequester(applicationContext, lifecycleScope).doAuth(R.string.gnufm, token)
                     "/testFirstThings" -> {
                         pref.remove(Stuff.PREF_LASTFM_SESS_KEY)
                         for (i in 0..supportFragmentManager.backStackEntryCount)
@@ -648,6 +648,11 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
             backArrowShown = show
         }
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        if (newBase != null)
+            super.attachBaseContext(newBase.getLocaleContextWrapper())
     }
 
     public override fun onStart() {

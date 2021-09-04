@@ -9,5 +9,6 @@ class MainNotifierViewModel(application: Application): AndroidViewModel(applicat
 
     val drawerData by lazy { MutableLiveData(DrawerData.loadFromPref(application)) }
     val editData by lazy { MutableLiveData<Track>() }
+    var backButtonEnabled = true
 
 }

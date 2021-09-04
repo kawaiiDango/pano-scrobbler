@@ -15,15 +15,16 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tabMeta = arrayOf(
-                Pair(R.string.recents, R.drawable.vd_history),
-                Pair(R.string.loved, R.drawable.vd_heart),
-                Pair(R.string.friends, R.drawable.vd_friends),
-                Pair(R.string.charts, R.drawable.vd_charts)
+            R.string.recents to R.drawable.vd_history,
+            R.string.loved to R.drawable.vd_heart,
+            R.string.friends to R.drawable.vd_friends,
+            R.string.charts to R.drawable.vd_charts
         )
         adapter = HomePagerAdapter(childFragmentManager)
         if (arguments?.getString(Stuff.ARG_USERNAME) == null)
             setGestureExclusions(true)
-        backStackChecked = false
+        if (savedInstanceState == null)
+            backStackChecked = false
         (view as ViewPager).addOnPageChangeListener(this)
         super.onViewCreated(view, savedInstanceState)
     }

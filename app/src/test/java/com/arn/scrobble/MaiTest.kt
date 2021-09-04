@@ -45,7 +45,7 @@ class MaiTest {
         title.forEachIndexed { i, it ->
             print("\n $i-> ")
             val then = System.currentTimeMillis()
-            val splits = MetadataUtils.sanitizeTitle(it)
+            val splits = MetadataUtils.parseArtistTitle(it)
             val now = System.currentTimeMillis()
            print(" ("+(now-then)+") ")
             splits.forEach { print("$it, ") }

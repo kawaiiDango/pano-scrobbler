@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -66,9 +67,21 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             binding.infoExtraTitle.text = artist
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
-                LFMRequester(context!!).getSimilarArtists(artist).asAsyncTask(artistsFragment.viewModel.listReceiver)
-                LFMRequester(context!!).getArtistTopAlbums(artist).asAsyncTask(albumsFragment.viewModel.listReceiver)
-                LFMRequester(context!!).getArtistTopTracks(artist).asAsyncTask(tracksFragment.viewModel.listReceiver)
+                LFMRequester(
+                    context!!,
+                    artistsFragment.viewModel.viewModelScope,
+                    artistsFragment.viewModel.listReceiver
+                ).getSimilarArtists(artist)
+                LFMRequester(
+                    context!!,
+                    albumsFragment.viewModel.viewModelScope,
+                    albumsFragment.viewModel.listReceiver
+                ).getArtistTopAlbums(artist)
+                LFMRequester(
+                    context!!,
+                    tracksFragment.viewModel.viewModelScope,
+                    tracksFragment.viewModel.listReceiver
+                ).getArtistTopTracks(artist)
             }
         } else {
             initFragment(tracksFragment, binding.infoExtraFrame1)
@@ -83,7 +96,11 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             binding.infoExtraTitle.text = getString(R.string.artist_title, artist, track)
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
-                LFMRequester(context!!).getSimilarTracks(artist, track).asAsyncTask(tracksFragment.viewModel.listReceiver)
+                LFMRequester(
+                    context!!,
+                    tracksFragment.viewModel.viewModelScope,
+                    tracksFragment.viewModel.listReceiver
+                ).getSimilarTracks(artist, track)
             }
         }
         return binding.root

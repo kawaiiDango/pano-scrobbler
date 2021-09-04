@@ -78,17 +78,21 @@
         android:title="@string/pref_noti">
         <SwitchPreference
             android:defaultValue="true"
-            android:key="show_notifications"
+            android:key="noti_scrobbling"
             android:persistent="true"
             android:title="@string/pref_scrobble_noti"/>
         <SwitchPreference
             android:defaultValue="true"
-            android:key="digest_weekly"
+            android:key="noti_digest_weekly"
             android:persistent="true"/>
         <SwitchPreference
             android:defaultValue="true"
-            android:key="digest_monthly"
+            android:key="noti_digest_monthly"
             android:persistent="true"/>
+
+        <Preference
+            android:key="noti_categories"
+            android:title="@string/pref_noti_categories"/>
 
         <SwitchPreference
             android:defaultValue="false"
@@ -149,6 +153,13 @@
             android:persistent="true"
             android:title="@string/pref_fetch_aa"
             android:summary="@string/pref_fetch_aa_desc"/>
+
+        <ListPreference
+            android:key="locale"
+            android:persistent="true"
+            android:defaultValue="auto"
+            android:title="@string/pref_change_locale"
+            android:summary="@string/locale_only_ui"/>
 
     </PreferenceCategory>
     <PreferenceCategory

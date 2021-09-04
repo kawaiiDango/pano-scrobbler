@@ -14,6 +14,7 @@ import androidx.transition.TransitionManager
 import com.arn.scrobble.*
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.RegexEdit
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.CallException
 import de.umass.lastfm.Session
@@ -45,7 +46,7 @@ class EditDialogFragment: LoginFragment() {
         showsDialog = true
 
         if (arguments?.getBoolean(NLService.B_STANDALONE) == true)
-            standalone = true
+            isStandalone = true
 
         if (arguments?.getBoolean(NLService.B_FORCEABLE) == true) {
             binding.loginForce.visibility = View.VISIBLE
@@ -108,13 +109,13 @@ class EditDialogFragment: LoginFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        if (standalone)
+        if (isStandalone)
             activity?.finish()
     }
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        if (standalone)
+        if (isStandalone)
             activity?.finish()
     }
 
@@ -152,7 +153,7 @@ class EditDialogFragment: LoginFragment() {
             return errMsg
         }
 
-        if(!standalone && track == origTrack &&
+        if(!isStandalone && track == origTrack &&
                 artist == origArtist && album == origAlbum && album != "" && albumArtist == "") {
             return errMsg
         }
@@ -206,19 +207,24 @@ class EditDialogFragment: LoginFragment() {
                 val scrobbleData = ScrobbleData(artist, track, (timeMillis / 1000).toInt())
                 scrobbleData.album = album
                 scrobbleData.albumArtist = albumArtist
-                val result = Track.scrobble(scrobbleData, lastfmSession)
+                val isLastfmDisabled = pref.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
+                val result = if (isLastfmDisabled && isStandalone)
+                    null
+                else
+                    Track.scrobble(scrobbleData, lastfmSession)
                 val activity = activity!!
 
-                if (result?.isSuccessful == true && !result.isIgnored) {
+                if ((isLastfmDisabled && isStandalone) ||
+                    (result?.isSuccessful == true && !result.isIgnored)) {
                     coroutineScope {
-                        launch {
-                            if (!standalone) {
+                        if (!isStandalone) {
+                            launch {
                                 if (args.getLong(NLService.B_TIME) == 0L)
                                     Track.updateNowPlaying(scrobbleData, lastfmSession)
                                 else {
                                     val origTrackObj = Track(origTrack, null, origArtist)
                                     origTrackObj.playedWhen = Date(timeMillis)
-                                    LFMRequester(activity).delete(origTrackObj) { succ ->
+                                    LFMRequester(activity, lifecycleScope).delete(origTrackObj) { succ ->
                                         if (succ) {
                                             //editing just the album is a noop, scrobble again
                                             if (track.equals(origTrack, ignoreCase = true) &&
@@ -227,7 +233,6 @@ class EditDialogFragment: LoginFragment() {
                                                 Track.scrobble(scrobbleData, lastfmSession)
                                         }
                                     }
-                                        .asAsyncTask()
                                 }
                             }
                         }
@@ -267,7 +272,7 @@ class EditDialogFragment: LoginFragment() {
                         launch {
                             pref.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.let {
                                 ListenBrainz(it)
-                                    .setApiRoot(pref.getString(Stuff.PREF_LB_CUSTOM_ROOT, null))
+                                    .setApiRoot(pref.getString(Stuff.PREF_LB_CUSTOM_ROOT, null)!!)
                                     .scrobble(scrobbleData)
                             }
                         }
@@ -277,7 +282,7 @@ class EditDialogFragment: LoginFragment() {
                         val oldSet = pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, setOf())
                         pref.putStringSet(Stuff.PREF_ALLOWED_ARTISTS, oldSet + artist)
                     }
-                } else if (result.isIgnored) {
+                } else if (result?.isIgnored == true) {
                     if (System.currentTimeMillis() - timeMillis < Stuff.LASTFM_MAX_PAST_SCROBBLE)
                         errMsg = getString(R.string.lastfm) + ": " + getString(R.string.scrobble_ignored)
                     else {
@@ -297,8 +302,71 @@ class EditDialogFragment: LoginFragment() {
                     }
                 } else {
                     Stuff.log("edit scrobble err: $result")
-                    if (!standalone)
+                    if (!isStandalone)
                         errMsg = getString(R.string.network_error)
+                }
+
+                val activityPrefs = activity.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+
+                if (result?.isIgnored == false &&
+                    !activityPrefs.getBoolean(Stuff.PREF_ACTIVITY_REGEX_EDITS_LEARNT, false) &&
+                        !isStandalone) {
+                    val originalScrobbleData = ScrobbleData().apply {
+                        this.artist = origArtist
+                        this.album = origAlbum
+                        this.track = origTrack
+                    }
+
+                    val dao = PanoDb.getDb(context!!).getRegexEditsDao()
+                    val existingRegexReplacements = dao.performRegexReplace(originalScrobbleData)
+
+                    if (existingRegexReplacements.values.sum() == 0) {
+                        val allPresets = RegexPresets.presetKeys.mapIndexed { index, key ->
+                            RegexPresets.getPossiblePreset(
+                                RegexEdit(
+                                    order = index,
+                                    preset = key
+                                )
+                            )
+                        }
+                        val matchedRegexEdits = mutableListOf<RegexEdit>()
+                        val suggestedRegexReplacements = dao.performRegexReplace(originalScrobbleData, allPresets, matchedRegexEdits)
+                        val replacementsInEdit = dao.performRegexReplace(scrobbleData, allPresets)
+
+                        if (suggestedRegexReplacements.values.sum() > 0 && replacementsInEdit.values.sum() == 0) {
+                            withContext(Dispatchers.Main) {
+                                val presetName = RegexPresets.getString(context!!,
+                                    matchedRegexEdits.first().preset!!)
+
+                                MaterialAlertDialogBuilder(context!!)
+                                    .setMessage(
+                                        getString(
+                                            R.string.regex_edits_suggestion,
+                                            presetName
+                                        )
+                                    )
+                                    .setPositiveButton(android.R.string.yes) { _, _ ->
+                                        dismiss()
+                                        activity.supportFragmentManager
+                                            .beginTransaction()
+                                            .replace(R.id.frame, RegexEditsFragment().apply {
+                                                arguments = Bundle().apply {
+                                                    putBoolean(
+                                                        Stuff.ARG_SHOW_DIALOG,
+                                                        true
+                                                    )
+                                                }
+                                            })
+                                            .addToBackStack(null)
+                                            .commit()
+                                    }
+                                    .setNegativeButton(android.R.string.no) { _, _ ->
+                                        activityPrefs.edit().putBoolean(Stuff.PREF_ACTIVITY_REGEX_EDITS_LEARNT, true).apply()
+                                    }
+                                    .show()
+                            }
+                        }
+                    }
                 }
             }
         } catch (e: Exception){

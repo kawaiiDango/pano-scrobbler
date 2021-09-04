@@ -15,9 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.databinding.ContentFirstThingsBinding
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 
 
@@ -176,11 +179,11 @@ class FirstThingsFragment: Fragment() {
         (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         if (arguments?.getBoolean(Stuff.ARG_NOPASS) != true)
-        //prevent keyboard from showing up on start
-            binding.testingPass.postDelayed({
-                _binding ?: return@postDelayed
+            //prevent keyboard from showing up on start
+            lifecycleScope.launch {
+                delay(200)
                 binding.testingPass.visibility = View.VISIBLE
-            }, 200)
+            }
     }
 
     override fun onResume() {

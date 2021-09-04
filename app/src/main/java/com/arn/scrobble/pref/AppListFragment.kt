@@ -28,6 +28,7 @@ import java.util.*
 class AppListFragment : Fragment() {
     private var firstRun = false
     private var appListLoaded = false
+    private val mainNotifierViewModel by lazy { (activity as Main).mainNotifierViewModel }
     private var _binding: ContentAppListBinding? = null
     private val binding
         get() = _binding!!
@@ -44,16 +45,18 @@ class AppListFragment : Fragment() {
 
     override fun onDestroyView() {
         _binding = null
+        mainNotifierViewModel.backButtonEnabled = true
         super.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mainNotifierViewModel.backButtonEnabled = false
+
         if (!binding.appList.isInTouchMode)
             binding.appList.requestFocus()
 
         if (Main.isTV){
-            binding.appListDone.visibility = View.GONE
             Stuff.toast(context, getString(R.string.press_back))
         }
 
@@ -64,6 +67,9 @@ class AppListFragment : Fragment() {
             binding.appList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
+                    if (!mainNotifierViewModel.backButtonEnabled)
+                        return
+
                     if (scrollState == 0) { //scrolling stopped
                         binding.appListDone.show()
                     } else //scrolling
@@ -153,6 +159,7 @@ class AppListFragment : Fragment() {
                 appListLoaded = true
                 withContext(Dispatchers.Main) {
                     adapter.notifyItemRangeChanged(oldCount - 1, adapter.itemCount, 0)
+                    enableNavigation()
                 }
             }
         }
@@ -183,6 +190,11 @@ class AppListFragment : Fragment() {
         super.onStop()
     }
 
+    private fun enableNavigation() {
+        mainNotifierViewModel.backButtonEnabled = true
+        if (!Main.isTV)
+            binding.appListDone.show()
+    }
 
     private fun getMusicPlayers(adapter: AppListAdapter): MutableSet<String> {
         val prefs = MultiPreferences(context!!)

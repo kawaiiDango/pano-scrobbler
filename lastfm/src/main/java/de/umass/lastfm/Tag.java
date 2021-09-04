@@ -186,24 +186,24 @@ public class Tag implements Comparable<Tag> {
 		return tags;
 	}
 
-	public static Chart<Artist> getWeeklyArtistChart(String tag, String apiKey) {
-		return getWeeklyArtistChart(tag, null, null, -1, apiKey);
+	public static Chart<Artist> getWeeklyArtistChart(String tag, Session session) {
+		return getWeeklyArtistChart(tag, null, null, -1, session);
 	}
 
-	public static Chart<Artist> getWeeklyArtistChart(String tag, int limit, String apiKey) {
-		return getWeeklyArtistChart(tag, null, null, limit, apiKey);
+	public static Chart<Artist> getWeeklyArtistChart(String tag, int limit, Session session) {
+		return getWeeklyArtistChart(tag, null, null, limit, session);
 	}
 
-	public static Chart<Artist> getWeeklyArtistChart(String tag, String from, String to, int limit, String apiKey) {
-		return Chart.getChart("tag.getWeeklyArtistChart", "tag", tag, "artist", from, to, limit, apiKey);
+	public static Chart<Artist> getWeeklyArtistChart(String tag, String from, String to, int limit, Session session) {
+		return Chart.getChart("tag.getWeeklyArtistChart", "tag", tag, "artist", from, to, limit, session);
 	}
 
-	public static LinkedHashMap<String, String> getWeeklyChartList(String tag, String apiKey) {
-		return Chart.getWeeklyChartList("tag.getWeeklyChartList", "tag", tag, apiKey);
+	public static LinkedHashMap<String, String> getWeeklyChartList(String tag, Session session) {
+		return Chart.getWeeklyChartList("tag.getWeeklyChartList", "tag", tag, session);
 	}
 
-	public static Collection<Chart> getWeeklyChartListAsCharts(String tag, String apiKey) {
-		return Chart.getWeeklyChartListAsCharts("tag", tag, apiKey);
+	public static Collection<Chart> getWeeklyChartListAsCharts(String tag, Session session) {
+		return Chart.getWeeklyChartListAsCharts("tag", tag, session);
 	}
 
 	/**

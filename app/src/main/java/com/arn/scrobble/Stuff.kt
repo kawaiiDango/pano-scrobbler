@@ -2,6 +2,8 @@ package com.arn.scrobble
 
 import android.animation.ValueAnimator
 import android.app.*
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.DialogFragment
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -37,16 +39,17 @@ import com.arn.scrobble.pref.MultiPreferences
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.scrobble.ScrobbleData
-import timber.log.Timber
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import timber.log.Timber
 import java.io.IOException
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -67,6 +70,8 @@ object Stuff {
     const val ARG_REGISTERED_TIME = "registered"
     const val ARG_TYPE = "type"
     const val ARG_TAG = "tag"
+    const val ARG_SHOW_DIALOG = "dialog"
+    const val ARG_COUNT = "count"
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
     const val TYPE_TRACKS = 3
@@ -89,7 +94,6 @@ object Stuff {
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
 
     const val PREF_MASTER = "master"
-    const val PREF_NOTIFICATIONS = "show_notifications"
     const val PREF_WHITELIST = "app_whitelist"
     const val PREF_BLACKLIST = "app_blacklist"
     const val PREF_AUTO_DETECT = "auto_detect"
@@ -121,8 +125,6 @@ object Stuff {
     const val PREF_EXPORT = "export"
     const val PREF_INTENTS = "intents"
     const val PREF_FETCH_AA = "fetch_album_artist"
-    const val PREF_DIGEST_WEEKLY = "digest_weekly"
-    const val PREF_DIGEST_MONTHLY = "digest_monthly"
     const val PREF_SHOW_RECENTS_ALBUM = "show_album"
     const val PREF_THEME_PRIMARY = "theme_primary"
     const val PREF_THEME_SECONDARY = "theme_secondary"
@@ -132,6 +134,14 @@ object Stuff {
     const val PREF_PRO_STATUS = "pro_status"
     const val PREF_PRO_SKU_JSON = "pro_sku_json"
     const val PREF_DIGEST_SECONDS = "digest_seconds"
+    const val PREF_LOCALE = "locale"
+
+    const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
+    const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"
+    const val CHANNEL_NOTI_NEW_APP = "noti_new_app"
+    const val CHANNEL_NOTI_PENDING = "noti_pending_scrobbles"
+    const val CHANNEL_NOTI_DIGEST_WEEKLY = "noti_digest_weekly"
+    const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
 
     const val PREF_ACTIVITY_FIRST_RUN = "first_run"
     const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
@@ -149,6 +159,8 @@ object Stuff {
     const val PREF_ACTIVITY_SCRUB_LEARNT = "scrub_learnt"
     const val PREF_ACTIVITY_LONG_PRESS_LEARNT = "long_press_learnt"
     const val PREF_ACTIVITY_THEME_PALETTE_BG = "palette_bg"
+    const val PREF_ACTIVITY_REGEX_EDITS_LEARNT = "regex_edits_learnt"
+    const val PREF_ACTIVITY_USER_TOP_TAGS_FETCHED = "user_top_tags_fetched"
     const val ACTIVITY_PREFS = "activity_preferences"
 
     const val WIDGET_PREFS = "widget_preferences"
@@ -176,7 +188,6 @@ object Stuff {
     const val CONNECT_TIMEOUT = 20 * 1000
     const val READ_TIMEOUT = 20 * 1000
     const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
-    const val KEEPALIVE_JOB_INTERVAL: Long = 30 * 60 * 1000
     const val LASTFM_MAX_PAST_SCROBBLE: Long = 14 * 24 * 60 * 60 * 1000
     const val CRASH_REPORT_INTERVAL: Long = 120 * 60 * 1000
     const val TRACK_INFO_VALIDITY: Long = 5 * 1000
@@ -186,9 +197,6 @@ object Stuff {
     const val START_POS_LIMIT: Long = 1500
     const val PENDING_PURCHASE_NOTIFY_THRESHOLD: Long = 15 * 1000
     const val MIN_LISTENER_COUNT = 5
-    const val REQUEST_CODE_EXPORT = 10
-    const val REQUEST_CODE_IMPORT = 11
-    const val REQUEST_CODE_MIC_PERM = 20
     const val EDITS_NOPE = 0
     const val EDITS_REPLACE_ALL = 1
     const val EDITS_REPLACE_EXISTING = 2
@@ -242,6 +250,12 @@ object Stuff {
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
     const val PACKAGE_YOUTUBE_MUSIC = "com.google.android.apps.youtube.music"
+
+    val needSyntheticStates = arrayOf(
+        PACKAGE_BLACKPLAYER,
+        PACKAGE_BLACKPLAYEREX,
+//        PACKAGE_YOUTUBE_MUSIC,
+    )
 
     val STARTUPMGR_INTENTS = arrayOf( //pkg, class
             "com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity",
@@ -404,18 +418,15 @@ object Stuff {
     }
 
     fun getMatColor(c: Context, hash: Long, typeColor: String = "500"): Int {
-        var hash = hash
         var returnColor = Color.BLACK
         val arrayId = c.resources.getIdentifier("mdcolor_$typeColor", "array", c.packageName)
 
         if (arrayId != 0) {
             val colors = c.resources.obtainTypedArray(arrayId)
-            if (hash < 0)
-                hash = -hash
-            val index = if (hash.toInt() == 0)
+            val index = if (hash == 0L)
                 (Math.random() * colors.length()).toInt()
             else
-                (hash % colors.length()).toInt()
+                (abs(hash) % colors.length()).toInt()
             returnColor = colors.getColor(index, Color.BLACK)
             colors.recycle()
         }
@@ -585,11 +596,12 @@ object Stuff {
 
     fun getBrowsers(pm: PackageManager): List<ResolveInfo> {
         val browsersIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
-        return pm.queryIntentActivities(browsersIntent,
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    PackageManager.MATCH_ALL
-                else
-                    0
+        return pm.queryIntentActivities(
+            browsersIntent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                PackageManager.MATCH_ALL
+            else
+                0
         )
     }
 
@@ -606,6 +618,22 @@ object Stuff {
         }
         return result
     }
+
+    fun dismissAllDialogFragments(manager: FragmentManager) {
+        val fragments = manager.fragments
+        for (fragment in fragments) {
+            if (fragment is DialogFragment) {
+                fragment.dismissAllowingStateLoss()
+            }
+            dismissAllDialogFragments(fragment.childFragmentManager)
+        }
+    }
+
+    fun isNotiEnabled(nm: NotificationManager, pref: SharedPreferences, channelId: String) =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            nm.getNotificationChannel(channelId).importance != NotificationManager.IMPORTANCE_NONE
+        else
+            pref.getBoolean(channelId, true)
 
     fun Calendar.setMidnight() {
         this[Calendar.HOUR_OF_DAY] = 0
@@ -640,6 +668,8 @@ object Stuff {
         val now = System.currentTimeMillis()
 
         val cal = Calendar.getInstance()
+        cal.firstDayOfWeek = Calendar.MONDAY
+
         cal.setMidnight()
 
         cal[Calendar.DAY_OF_WEEK] = Calendar.MONDAY
@@ -697,12 +727,12 @@ object Stuff {
         var serviceRunning = false
         val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
         if (runningServices == null) {
-            log("${this::isScrobblerRunning} runningServices is NULL")
+            log("${this::isScrobblerRunning.name} runningServices is NULL")
             return true //just assume true for now. this throws SecurityException, might not work in future
         }
         for (service in runningServices) {
             if (service.service == serviceComponent) {
-                log("${this::isScrobblerRunning}  service - pid: " + service.pid + ", currentPID: " +
+                log("${this::isScrobblerRunning.name}  service - pid: " + service.pid + ", currentPID: " +
                         Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
                         service.clientCount + " process:" + service.process + ", clientLabel: " +
                         if (service.clientLabel == 0) "0" else "(" + context.resources.getString(service.clientLabel) + ")")
@@ -715,7 +745,7 @@ object Stuff {
         if (serviceRunning)
             return true
 
-        log("${this::isScrobblerRunning} : service not running")
+        log("${this::isScrobblerRunning.name} : service not running")
         return false
     }
 

@@ -11,13 +11,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
 import com.arn.scrobble.databinding.ListItemInfoBinding
+import com.arn.scrobble.recents.TrackHistoryFragment
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
 import de.umass.lastfm.MusicEntry
@@ -99,8 +102,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                             binding.infoHeart.visibility = View.VISIBLE
                             binding.infoHeart.setOnClickListener {
                                 entry.isLoved = !entry.isLoved
-                                LFMRequester(itemView.context).loveOrUnlove(entry.isLoved, entry.artist, entry.name)
-                                        .asSerialAsyncTask()
+                                LFMRequester(itemView.context, viewModel.viewModelScope).loveOrUnlove(entry, entry.isLoved)
                                 setLoved(entry)
                             }
                         } else {
@@ -123,6 +125,32 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                         InfoExtraFragment()
                                 .apply { arguments = b }
                                 .show(fragment.parentFragmentManager, null)
+                    }
+                    val secondaryColor = MaterialColors.getColor(itemView.context, R.attr.colorSecondary, null)
+                    if (entry.userPlaycount > 0) {
+                        binding.infoUserScrobbles.setTextColor(secondaryColor)
+                        binding.infoUserScrobblesLabel.setTextColor(secondaryColor)
+
+                        binding.infoUserScrobblesContainer.setBackgroundResource(R.drawable.selector_border_gentle)
+                        binding.infoUserScrobblesContainer.isFocusable = true
+
+                        binding.infoUserScrobblesContainer.setOnClickListener {
+                            fragment.parentFragmentManager
+                                .beginTransaction()
+                                .replace(R.id.frame,
+                                    TrackHistoryFragment().apply {
+                                        arguments = Bundle().apply {
+                                            putString(NLService.B_ARTIST, entry.artist)
+                                            putString(NLService.B_TRACK, entry.name)
+                                            putString(Stuff.ARG_USERNAME, username)
+                                            putInt(Stuff.ARG_COUNT, entry.userPlaycount)
+                                        }
+                                    }
+                                )
+                                .addToBackStack(null)
+                                .commit()
+                            Stuff.dismissAllDialogFragments(fragment.parentFragmentManager)
+                        }
                     }
                 }
                 NLService.B_ALBUM -> {
@@ -311,8 +339,10 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                     if (entry.url != null)
                         Stuff.openInBrowser(entry.url, itemView.context)
                 }
-            } else
-                binding.infoProgress.show()
+            } else {
+                // show() is not immediate, sometimes it may show after being set as GONE
+                binding.infoProgress.visibility = View.VISIBLE
+            }
         }
     }
 }

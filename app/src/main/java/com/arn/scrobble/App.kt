@@ -3,6 +3,7 @@ import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import android.os.LocaleList
 import com.github.anrwatchdog.ANRWatchDog
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -11,6 +12,7 @@ import de.umass.lastfm.cache.FileSystemCache
 import timber.log.Timber
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.util.*
 import java.util.logging.Level
 
 
@@ -19,6 +21,11 @@ class App : Application() {
     override fun onCreate() {
         DebugOnly.strictMode()
         super.onCreate()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            LocaleUtils.systemDefaultLocaleList = LocaleList.getDefault()
+        LocaleUtils.systemDefaultLocale = Locale.getDefault()
+
         initCaller()
         if (!BuildConfig.DEBUG) {
             FirebaseApp.initializeApp(applicationContext)

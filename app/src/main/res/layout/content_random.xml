@@ -92,6 +92,15 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="username"
+            android:layout_gravity="center_horizontal"
+            android:alpha="0.7"
+            android:textStyle="bold"/>
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/randomize"

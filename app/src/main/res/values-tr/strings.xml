@@ -24,6 +24,8 @@
         <item quantity="one">%1$d yıl</item>
         <item quantity="other">%1$d yıl</item>
     </plurals>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
     <string name="settings">Ayarlar</string>
     <string name="bug_report">Hata raporu</string>
     <string name="album_art">Albüm kapağı</string>
@@ -64,6 +66,8 @@
     <string name="recently_scrobbled">En Son Skroplananlar</string>
     <string name="recently_loved">♥ En Son Beğenilenler</string>
     <string name="recents" comment="Short for recently scrobbled">Son dinlemeler</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">İlk %1$s tarihinde skroplandı</string>
+    <string name="auto" comment="automatic or default setting">Otomatik</string>
     <string name="graph_info">… son 5 ay</string>
     <string name="enabled_apps">Etkin Uygulamalar</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Neredeyse tamam…</string>
@@ -225,6 +229,7 @@
     <string name="pref_master_qs_hint">Ayrıca hızlı ayarlar kutucuğundan da değiştirilebilir</string>
     <string name="pref_noti_q">Simge görünmüyorsa cihazınızın bildirim ayarlarından ekleyebilirsiniz</string>
     <string name="pref_noti">Bildirimler</string>
+    <string name="pref_noti_categories">Bildirim kategorileri</string>
     <string name="pref_scrobble_noti">Skrop bildirimleri</string>
     <string name="pref_lockscreen_noti">Kilit ekranı bildirimleri</string>
     <string name="pref_offline_info">ℹ️ Çevrmdışı skroplar &amp; beğeniler daha sonra gönderilmek üzere kaydedilecektir.</string>
@@ -245,11 +250,13 @@
     <string name="pref_scrobble_love_only">(Sadece skrop &amp; beğeni)</string>
     <string name="pref_user_label" comment="(Like username)">Kullanıcı</string>
     <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
+    <string name="api_url" comment="For Listenbrainz">API Adresi</string>
     <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
     <string name="pref_fetch_aa">Albüm sanatçılarını lastFM\'den al</string>
     <string name="pref_fetch_aa_desc">Bu bilgiyi sağlamayan oynatıcılar için kullanılır. Alınan veriler sizin etiketlerinizden farklı olabilir. LastFM bazı şarkıların verilerine sahip olmayabilir.</string>
     <string name="pref_pixel_np">Pixel\'de Şimdi Oynatılanı Skropla</string>
     <string name="pref_pixel_np_nope">Sadece Pixel cihazlarda mevcut</string>
+    <string name="pref_change_locale">Dili değiştir</string>
     <string name="pref_misc">Çeşitli</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL\'si</string>
     <string name="pref_imexport">İçe Aktar &amp; Dışa Aktar</string>

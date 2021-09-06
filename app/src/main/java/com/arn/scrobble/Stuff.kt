@@ -631,7 +631,7 @@ object Stuff {
 
     fun isNotiEnabled(nm: NotificationManager, pref: SharedPreferences, channelId: String) =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            nm.getNotificationChannel(channelId).importance != NotificationManager.IMPORTANCE_NONE
+            nm.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
         else
             pref.getBoolean(channelId, true)
 

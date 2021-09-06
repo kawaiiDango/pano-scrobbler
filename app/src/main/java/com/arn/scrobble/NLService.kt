@@ -35,8 +35,8 @@ import timber.log.Timber
 
 
 class NLService : NotificationListenerService() {
-    private lateinit var pref: SharedPreferences
-    private lateinit var nm: NotificationManager
+    private val pref by lazy { PreferenceManager.getDefaultSharedPreferences(applicationContext) }
+    private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
     private var sessListener: SessListener? = null
     lateinit var handler: ScrobbleHandler
     private var lastNpTask: LFMRequester? = null
@@ -82,6 +82,8 @@ class NLService : NotificationListenerService() {
 */
 
     private fun init() {
+        initChannels()
+
         job = SupervisorJob()
         coroutineScope = CoroutineScope(Dispatchers.IO + job!!)
 
@@ -108,10 +110,7 @@ class NLService : NotificationListenerService() {
         f.addAction(ACTION_PACKAGE_ADDED)
         applicationContext.registerReceiver(pkgInstallReceiver, f)
 
-        pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         notiColor = ColorPatchUtils.getNotiColor(applicationContext, pref)
-//        migratePrefs()
-        nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         handler = ScrobbleHandler(mainLooper)
         val sessManager = applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
@@ -134,7 +133,6 @@ class NLService : NotificationListenerService() {
             // Media controller needs notification listener service
             // permissions to be granted.
         }
-        initChannels()
 //        KeepNLSAliveJob.checkAndSchedule(applicationContext)
 
 //        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -196,12 +194,10 @@ class NLService : NotificationListenerService() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             return
 
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
         val channels = nm.notificationChannels
 
         // delete old channels, if they exist
-        if (channels.any { it.id == "fg" }) {
+        if (channels?.any { it.id == "fg" } == true) {
             channels.forEach { nm.deleteNotificationChannel(it.id) }
         }
 

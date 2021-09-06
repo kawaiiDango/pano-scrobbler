@@ -224,13 +224,15 @@ class EditDialogFragment: LoginFragment() {
                                 else {
                                     val origTrackObj = Track(origTrack, null, origArtist)
                                     origTrackObj.playedWhen = Date(timeMillis)
-                                    LFMRequester(activity, lifecycleScope).delete(origTrackObj) { succ ->
+                                    LFMRequester(activity, this).delete(origTrackObj) { succ ->
                                         if (succ) {
                                             //editing just the album is a noop, scrobble again
                                             if (track.equals(origTrack, ignoreCase = true) &&
                                                 artist.equals(origArtist, ignoreCase = true)
                                             )
-                                                Track.scrobble(scrobbleData, lastfmSession)
+                                                withContext(Dispatchers.IO) {
+                                                    Track.scrobble(scrobbleData, lastfmSession)
+                                                }
                                         }
                                     }
                                 }
@@ -291,9 +293,11 @@ class EditDialogFragment: LoginFragment() {
                             MaterialAlertDialogBuilder(context!!)
                                     .setMessage(R.string.scrobble_ignored_save_edit)
                                     .setPositiveButton(android.R.string.yes) { dialogInterface, i ->
-                                        dismiss()
-                                        lifecycleScope.launch(Dispatchers.IO) {
+                                        launch(Dispatchers.IO) {
                                             saveEdit(activity)
+                                            withContext(Dispatchers.Main) {
+                                                dismiss()
+                                            }
                                         }
                                     }
                                     .setNegativeButton(android.R.string.no, null)

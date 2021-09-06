@@ -1075,7 +1075,7 @@ class LFMRequester(
         }
     }
 
-    fun delete(track: Track, callback: ((Boolean) -> Unit)?) {
+    fun delete(track: Track, callback: (suspend (Boolean) -> Unit)?) {
         toExec = {
             val serviceIdToKeys = getServiceIdToKeys(true)
             val unscrobbler = LastfmUnscrobbler(context)

@@ -15,10 +15,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.pref.MultiPreferences
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.json.JSONObject
 
 
@@ -118,16 +115,14 @@ open class LoginFragment: DialogFragment() {
     }
 
     private fun validate() {
-        lifecycleScope.launch {
+        CoroutineScope(Dispatchers.Main + Job()).launch {
             val errMsg = withContext(Dispatchers.IO) {
                 validateAsync()
             }
-            withContext(Dispatchers.Main) {
-                if (errMsg == null)
-                    success()
-                else
-                    error(errMsg)
-            }
+            if (errMsg == null)
+                success()
+            else
+                error(errMsg)
         }
         hideKeyboard()
     }

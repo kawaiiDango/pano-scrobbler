@@ -70,7 +70,7 @@ object PopupMenuUtils {
         }
     }
 
-    fun deleteScrobble(activity: FragmentActivity, track: Track, deleteAction: (Boolean)-> Unit) {
+    fun deleteScrobble(activity: FragmentActivity, track: Track, deleteAction: suspend (Boolean)-> Unit) {
         if (!Main.isOnline)
             Stuff.toast(activity, activity.getString(R.string.unavailable_offline))
         else if (csrfTokenExists(activity)) {

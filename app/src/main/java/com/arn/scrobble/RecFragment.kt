@@ -23,9 +23,7 @@ import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MultiPreferences
 import com.google.android.material.snackbar.Snackbar
 import de.umass.lastfm.scrobble.ScrobbleData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -325,7 +323,7 @@ class RecFragment: Fragment(),
                 scrobbleData.album = album
                 scrobbleData.track = title
                 scrobbleData.timestamp = (System.currentTimeMillis() / 1000).toInt() // in secs
-                LFMRequester(context!!, lifecycleScope)
+                LFMRequester(context!!, CoroutineScope(Dispatchers.IO + Job()))
                     .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title, "rec"))
             }
             1001 -> binding.recStatus.text = getString(R.string.not_found)

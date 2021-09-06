@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
 import android.os.LocaleList
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import java.util.*
 
 object LocaleUtils {
@@ -28,12 +28,11 @@ object LocaleUtils {
     lateinit var systemDefaultLocaleList: LocaleList
 
     fun Context.getLocaleContextWrapper(): ContextWrapper {
-        val pref = MultiPreferences(this)
-        var lang: String? = pref.getString(Stuff.PREF_LOCALE, null) ?:
-            return ContextWrapper(this)
+        val prefs = MainPrefs(this)
+        var lang: String? = prefs.locale ?: return ContextWrapper(this)
 
         if (lang !in localesSet) {
-            pref.remove(Stuff.PREF_LOCALE)
+            prefs.locale = null
             lang = null
         }
 

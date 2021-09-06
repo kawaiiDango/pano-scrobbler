@@ -20,7 +20,7 @@ import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
@@ -105,17 +105,17 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
         else
             binding.firstScrobbledOn.visibility = View.GONE
 
-        (activity as Main).mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
+        (activity as MainActivity).mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
             it?.let {
                 adapter.editTrack(it)
-                (activity as? Main)?.mainNotifierViewModel?.editData?.value = null
+                (activity as? MainActivity)?.mainNotifierViewModel?.editData?.value = null
             }
         }
 
         adapter = TrackHistoryAdapter(
             viewModel,
             this,
-            MultiPreferences(context!!).getBoolean(Stuff.PREF_SHOW_RECENTS_ALBUM, false)
+            MainPrefs(context!!).showAlbumInRecents
         )
 
         val llm = LinearLayoutManager(context!!)

@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.HeaderDefaultBinding
 import com.arn.scrobble.databinding.ListItemAppBinding
 import com.arn.scrobble.ui.ItemClickListener
@@ -20,15 +19,16 @@ import com.squareup.picasso.Picasso
 /**
  * Created by arn on 05/09/2017.
  */
-class AppListAdapter
-(context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemClickListener {
+class AppListAdapter(
+    context: Context,
+    private val prefsSet: Set<String>,
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemClickListener {
 
     private val sectionHeaders = mutableMapOf<Int,String>()
     private val packageManager = context.packageManager
     private val appList = mutableListOf<ApplicationInfo?>()
     private var itemClickListener: ItemClickListener = this
     private val selectedItems = mutableSetOf<Int>()
-    private val prefsSet = MultiPreferences(context).getStringSet(Stuff.PREF_WHITELIST, setOf())
 
     private var picasso: Picasso = Picasso.Builder(context)
             .addRequestHandler(AppIconRequestHandler(context))

@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentFriendsBinding
@@ -111,7 +111,7 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
                 }
             }
         }
-        if (!Main.isTV && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.friends.size > 1 &&
+        if (!MainActivity.isTV && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.friends.size > 1 &&
                 !viewModel.friends.any { it.recentTrack == null }) {
             val sortButton = fragmentBinding.friendsSort
             sortButton.show()

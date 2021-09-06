@@ -119,7 +119,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         adapter.viewModel = viewModel
 
         viewModel.chartsReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !Main.isOnline && viewModel.chartsData.size == 0)
+            if (it == null && !MainActivity.isOnline && viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
             viewModel.totalCount = it.total
@@ -209,7 +209,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             else
                 getString(R.string.charts_share, period.lowercase(), topType.lowercase(), list)
 
-        if ((activity as Main).billingViewModel.proStatus.value != true)
+        if ((activity as MainActivity).billingViewModel.proStatus.value != true)
             shareText += "\n\n" + getString(R.string.share_sig)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"

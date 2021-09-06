@@ -39,7 +39,7 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
             view.requestFocus()
         binding.pager.offscreenPageLimit = adapter.count - 1
         binding.pager.adapter = adapter
-        val tabBar = (activity as Main).binding.coordinatorMain.tabBar
+        val tabBar = (activity as MainActivity).binding.coordinatorMain.tabBar
         tabBar.setupWithViewPager(binding.pager, false)
         super.onViewCreated(view, savedInstanceState)
     }
@@ -47,11 +47,11 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
     override fun onStart() {
         super.onStart()
         Stuff.setTitle(activity, 0)
-        (activity as Main).binding.coordinatorMain.tabBar.addOnTabSelectedListener(this)
+        (activity as MainActivity).binding.coordinatorMain.tabBar.addOnTabSelectedListener(this)
     }
 
     protected fun initTabs(selectedTab: Int) {
-        val tabBar = (activity as Main).binding.coordinatorMain.tabBar
+        val tabBar = (activity as MainActivity).binding.coordinatorMain.tabBar
         for (i in 0 until tabBar.tabCount) {
             val tabBinding = NavTabBinding.inflate(layoutInflater)
             tabBinding.tabLabel.text = resources.getString(tabMeta[i].first)
@@ -67,12 +67,12 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
     }
 
     override fun onStop() {
-        (activity as Main).binding.coordinatorMain.tabBar.removeOnTabSelectedListener(this)
+        (activity as MainActivity).binding.coordinatorMain.tabBar.removeOnTabSelectedListener(this)
         super.onStop()
     }
 
     override fun onDestroy() {
-        (activity as Main?)?.binding?.coordinatorMain?.tabBar?.removeOnTabSelectedListener(this)
+        (activity as MainActivity?)?.binding?.coordinatorMain?.tabBar?.removeOnTabSelectedListener(this)
         super.onDestroy()
     }
 

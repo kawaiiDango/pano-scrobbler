@@ -3,10 +3,10 @@ package com.arn.scrobble.pref
 import android.content.SharedPreferences
 
 class HistoryPref(
-        private val pref: SharedPreferences,
-        private val prefName: String,
-        private val maxItems: Int
-        ) {
+    private val pref: SharedPreferences,
+    private val prefName: String,
+    private val maxItems: Int
+) {
 
     val history = mutableListOf<String>()
 

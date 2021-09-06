@@ -9,7 +9,8 @@ import android.content.ComponentName
 import android.content.Context
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.pref.WidgetPrefs
 import de.umass.lastfm.*
 import kotlinx.coroutines.*
 
@@ -22,43 +23,33 @@ class ChartsWidgetUpdaterJob : JobService() {
         job = SupervisorJob()
 
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
-        val pref = applicationContext.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
-        val mpref = MultiPreferences(applicationContext)
+        val widgetPrefs = WidgetPrefs(applicationContext)
+        val mprefs = MainPrefs(applicationContext)
 
-        if (Stuff.willCrashOnMemeUI(mpref))
-            return false
-
-        val username = mpref.getString(Stuff.PREF_LASTFM_USERNAME, null) ?: return false
-        val lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, mpref.getString(Stuff.PREF_LASTFM_SESS_KEY, null))
+        val username = mprefs.lastfmUsername ?: return false
+        val lastfmSession = Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, mprefs.lastfmSessKey)
 
         val appWidgetIdToPeriodInt = mutableMapOf<Int, Int>()
         appWidgetManager.getAppWidgetIds(ComponentName(this, ChartsWidgetProvider::class.java))
-            .forEach {
-                appWidgetIdToPeriodInt[it] = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, it), -1)
+            .forEach { id ->
+                widgetPrefs[id].period?.let { period ->
+                    appWidgetIdToPeriodInt[id] = period
+                }
             }
 
-        fun updateData(all: Triple<ArrayList<ChartsWidgetListItem>, ArrayList<ChartsWidgetListItem>, ArrayList<ChartsWidgetListItem>>,
+        suspend fun updateData(all: Triple<ArrayList<ChartsWidgetListItem>, ArrayList<ChartsWidgetListItem>, ArrayList<ChartsWidgetListItem>>,
                        periodInt:Int, appWidgetIds: Collection<Int>) {
             val (artists, albums, tracks) = all
 
-            val editor = pref.edit()
-                .putString(
-                    ""+Stuff.TYPE_ARTISTS+"_"+periodInt,
-                    ObjectSerializeHelper.convertToString(artists)
-                )
-                .putString(
-                    ""+Stuff.TYPE_ALBUMS+"_"+periodInt,
-                    ObjectSerializeHelper.convertToString(albums)
-                )
-                .putString(
-                    ""+Stuff.TYPE_TRACKS+"_"+periodInt,
-                    ObjectSerializeHelper.convertToString(tracks)
-                )
-            appWidgetIds.forEach {
-                editor.putLong(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_LAST_UPDATED, it), System.currentTimeMillis())
-            }
-            editor.commit()
+            widgetPrefs.chartsData(Stuff.TYPE_ARTISTS,  periodInt).data = ObjectSerializeHelper.convertToString(artists)
+            widgetPrefs.chartsData(Stuff.TYPE_ALBUMS,  periodInt).data = ObjectSerializeHelper.convertToString(albums)
+            widgetPrefs.chartsData(Stuff.TYPE_TRACKS,  periodInt).data = ObjectSerializeHelper.convertToString(tracks)
 
+            appWidgetIds.forEach { id ->
+                widgetPrefs[id].lastUpdated = System.currentTimeMillis()
+            }
+
+            delay(200) // wait for apply()
 
             appWidgetIds.forEach {
                 appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.appwidget_list)

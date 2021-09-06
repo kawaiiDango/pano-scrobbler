@@ -7,21 +7,21 @@ import android.content.Context
 import android.widget.RemoteViews
 import com.arn.scrobble.R
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.view.View
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.pref.WidgetPrefs
 
 
 class ChartsWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        val pref = context.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
+        val prefs = WidgetPrefs(context)
 
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId, pref)
+            updateAppWidget(context, appWidgetManager, appWidgetId, prefs[appWidgetId])
         }
     }
 
@@ -36,8 +36,8 @@ class ChartsWidgetProvider : AppWidgetProvider() {
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         super.onDeleted(context, appWidgetIds)
-        val pref = context.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
-        pruneWidgetPrefs(pref, appWidgetIds)
+        val prefs = WidgetPrefs(context)
+        appWidgetIds.forEach { prefs[it].clear() }
 
     }
 
@@ -53,58 +53,45 @@ class ChartsWidgetProvider : AppWidgetProvider() {
                 return
             val appWidgetManager = AppWidgetManager.getInstance(context)
 
-            val pref = context.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
-            val tab = intent.getIntExtra(Stuff.PREF_WIDGET_TAB, -1)
+            val prefs = WidgetPrefs(context)[appWidgetId]
+            val tab = intent.getIntExtra(WidgetPrefs.PREF_WIDGET_TAB, -1)
             if (tab != -1) {
-                pref.edit()
-                    .putInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_TAB, appWidgetId), tab)
-                    .apply()
+                prefs.tab = tab
                 appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.appwidget_list)
             }
-            updateAppWidget(context, appWidgetManager, appWidgetId, pref)
+            updateAppWidget(context, appWidgetManager, appWidgetId, prefs)
         }
     }
-}
-
-internal fun pruneWidgetPrefs(pref: SharedPreferences, appWidgetIds: IntArray) {
-    val editor = pref.edit()
-    pref.all.keys.toList().forEach { prefKey ->
-        appWidgetIds.forEach { appWidgetId ->
-            if (prefKey.endsWith("_$appWidgetId"))
-                editor.remove(prefKey)
-        }
-    }
-    editor.apply()
 }
 
 internal fun updateAppWidget(
     context: Context,
     appWidgetManager: AppWidgetManager,
     appWidgetId: Int,
-    pref: SharedPreferences
+    prefs: WidgetPrefs.SpecificWidgetPrefs
 ) {
 
     // Here we setup the intent which points to the StackViewService which will
     // provide the views for this collection.
 
-    val tab = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_TAB, appWidgetId), Stuff.TYPE_ARTISTS)
-    val period = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), -1)
-    val bgAlpha = pref.getFloat(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_BG_ALPHA, appWidgetId), 0.5f)
-    val darkMode = pref.getBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_DARK, appWidgetId), true)
-    val shadow = pref.getBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_SHADOW, appWidgetId), true)
+    val tab = prefs.tab ?: Stuff.TYPE_ARTISTS
+    val period = prefs.period
+    val bgAlpha = prefs.bgAlpha
+    val isDark = prefs.isDark
+    val shadow = prefs.shadow
 
     val rv = RemoteViews(
         context.packageName,
         when {
-            darkMode && shadow -> R.layout.appwidget_charts_dark_shadow
-            darkMode && !shadow -> R.layout.appwidget_charts_dark
-            !darkMode && shadow -> R.layout.appwidget_charts_light_shadow
-            !darkMode && !shadow -> R.layout.appwidget_charts_light
+            isDark && shadow -> R.layout.appwidget_charts_dark_shadow
+            isDark && !shadow -> R.layout.appwidget_charts_dark
+            !isDark && shadow -> R.layout.appwidget_charts_light_shadow
+            !isDark && !shadow -> R.layout.appwidget_charts_light
             else -> R.layout.appwidget_charts_dark_shadow
         }
     )
 
-    if (period != -1) {
+    if (period != null) {
         val intent = Intent(context, ChartsListService::class.java)
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
 
@@ -118,7 +105,8 @@ internal fun updateAppWidget(
     // of the collection view.
     rv.setEmptyView(R.id.appwidget_list, R.id.appwidget_status)
 
-    if (pref.getString("${tab}_$period", null) == null)
+
+    if (period == null || WidgetPrefs(context).chartsData(tab,  period).data == null)
         rv.setInt(R.id.appwidget_status, "setText", R.string.appwidget_loading)
     else
         rv.setInt(R.id.appwidget_status, "setText", R.string.charts_no_data)
@@ -128,7 +116,7 @@ internal fun updateAppWidget(
     // cannot setup their own pending intents, instead, the collection as a whole can
     // setup a pending intent template, and the individual items can set a fillInIntent
     // to create unique before on an item to item basis.
-    val infoIntent = Intent(context, Main::class.java)
+    val infoIntent = Intent(context, MainActivity::class.java)
     val infoPendingIntent = PendingIntent.getActivity(
         context, 0, infoIntent,
         Stuff.updateCurrentOrMutable
@@ -139,21 +127,21 @@ internal fun updateAppWidget(
     tabIntent.action = NLService.iUPDATE_WIDGET
     tabIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
 
-    tabIntent.putExtra(Stuff.PREF_WIDGET_TAB, Stuff.TYPE_ARTISTS)
+    tabIntent.putExtra(WidgetPrefs.PREF_WIDGET_TAB, Stuff.TYPE_ARTISTS)
     var tabIntentPending = PendingIntent.getBroadcast(
         context, Stuff.genHashCode(appWidgetId, 1), tabIntent,
         Stuff.updateCurrentOrImmutable
     )
     rv.setOnClickPendingIntent(R.id.appwidget_artists, tabIntentPending)
 
-    tabIntent.putExtra(Stuff.PREF_WIDGET_TAB, Stuff.TYPE_ALBUMS)
+    tabIntent.putExtra(WidgetPrefs.PREF_WIDGET_TAB, Stuff.TYPE_ALBUMS)
     tabIntentPending = PendingIntent.getBroadcast(
         context, Stuff.genHashCode(appWidgetId, 2), tabIntent,
         Stuff.updateCurrentOrImmutable
     )
     rv.setOnClickPendingIntent(R.id.appwidget_albums, tabIntentPending)
 
-    tabIntent.putExtra(Stuff.PREF_WIDGET_TAB, Stuff.TYPE_TRACKS)
+    tabIntent.putExtra(WidgetPrefs.PREF_WIDGET_TAB, Stuff.TYPE_TRACKS)
     tabIntentPending = PendingIntent.getBroadcast(
         context, Stuff.genHashCode(appWidgetId, 3), tabIntent,
         Stuff.updateCurrentOrImmutable

@@ -3,7 +3,7 @@ package com.arn.scrobble.pending
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemRecentsBinding
@@ -21,7 +21,7 @@ class VHPendingScrobble(
         binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
         binding.recentsImgOverlay.visibility = View.VISIBLE
         binding.recentsImgOverlay.contentDescription = itemView.context.getString(R.string.pending_scrobble)
-        if (Main.isTV)
+        if (MainActivity.isTV)
             binding.root.setOnClickListener {
                 itemClickListener.onItemClick(binding.recentsMenu, adapterPosition)
             }

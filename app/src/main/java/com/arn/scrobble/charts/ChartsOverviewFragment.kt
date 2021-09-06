@@ -1,6 +1,5 @@
 package com.arn.scrobble.charts
 
-import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Bundle
@@ -110,7 +109,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
     }
 
     override fun postInit() {
-        if (Main.isTV)
+        if (MainActivity.isTV)
             for (i in 0 .. periodChipsBinding.chartsPeriod.childCount)
                 periodChipsBinding.chartsPeriod.getChildAt(i)?.nextFocusDownId = R.id.charts_overview_scrollview
 
@@ -149,10 +148,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             binding.chartsSparklineScrubInfo.text =
                     resources.getQuantityString(R.plurals.num_scrobbles_noti, intVal, NumberFormat.getInstance().format(intVal))
             if (binding.chartsScrubMessage.visibility == View.VISIBLE) {
-                activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-                        .edit()
-                        .putBoolean(Stuff.PREF_ACTIVITY_SCRUB_LEARNT, true)
-                        .apply()
+                prefs.scrubLearnt = true
                 binding.chartsScrubMessage.visibility = View.GONE
             }
         }
@@ -160,8 +156,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             loadMoreSectionsIfNeeded()
         }
 
-        if (!Main.isTV && !activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-                        .getBoolean(Stuff.PREF_ACTIVITY_SCRUB_LEARNT, false))
+        if (!MainActivity.isTV && !prefs.scrubLearnt)
             binding.chartsScrubMessage.visibility = View.VISIBLE
         viewModel.periodCountReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
@@ -211,7 +206,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         rootView.chartsList.adapter = adapter
 
         fragment.viewModel.chartsReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !Main.isOnline && fragment.viewModel.chartsData.size == 0)
+            if (it == null && !MainActivity.isOnline && fragment.viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
             fragment.viewModel.totalCount = it.total
@@ -305,7 +300,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         b.putString(Stuff.ARG_USERNAME, username)
         b.putLong(Stuff.ARG_REGISTERED_TIME, registeredTime)
         pf.arguments = b
-        (activity as Main).enableGestures()
+        (activity as MainActivity).enableGestures()
         activity!!.supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.frame, pf, Stuff.TAG_CHART_PAGER)

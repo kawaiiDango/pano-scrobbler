@@ -1,6 +1,5 @@
 package com.arn.scrobble
 
-import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
@@ -16,6 +15,7 @@ import androidx.transition.TransitionManager
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.info.InfoFragment
+import com.arn.scrobble.pref.MainPrefs
 import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
@@ -27,7 +27,7 @@ import de.umass.lastfm.Track
 class RandomFragment: Fragment() {
 
     private val viewModel by lazy { VMFactory.getVM(this, RandomVM::class.java) }
-    private val prefs by lazy { context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE) }
+    private val prefs by lazy { MainPrefs(context!!) }
     private var isLoading = false
     private var _binding: ContentRandomBinding? = null
     private val binding
@@ -102,16 +102,11 @@ class RandomFragment: Fragment() {
                 it.track?.isLoved = true
             }
             if (it.track != null)
-                prefs.edit()
-                        .putInt(Stuff.PREF_ACTIVITY_LAST_RANDOM_TYPE, it.type)
-                        .apply()
+                prefs.lastRandomType = it.type
             setTrack(it.track)
         }
         if (viewModel.track.value == null) {
-            val type = if (type != null)
-                type
-            else
-                prefs.getInt(Stuff.PREF_ACTIVITY_LAST_RANDOM_TYPE, Stuff.TYPE_TRACKS)
+            val type = type ?: prefs.lastRandomType
             if (type == Stuff.TYPE_TRACKS)
                 viewModel.loadRandomScrobble()
             else
@@ -124,7 +119,7 @@ class RandomFragment: Fragment() {
     private fun setLoading(loading: Boolean) {
         isLoading = loading
         if (loading) {
-            if (!Main.isOnline) {
+            if (!MainActivity.isOnline) {
                 binding.randomStatus.text = getString(R.string.unavailable_offline)
                 binding.randomStatus.visibility = View.VISIBLE
                 binding.randomProgress.hide()

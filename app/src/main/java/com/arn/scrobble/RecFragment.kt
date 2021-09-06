@@ -20,7 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.acrcloud.rec.*
 import com.arn.scrobble.databinding.ContentRecBinding
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.snackbar.Snackbar
 import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.coroutines.*
@@ -39,7 +39,7 @@ class RecFragment: Fragment(),
     private var fadeAnimator: ObjectAnimator? = null
     private var progressAnimator: ObjectAnimator? = null
     private val DURATION = 10000L
-    private val pref: MultiPreferences by lazy { MultiPreferences(context!!) }
+    private val prefs by lazy { MainPrefs(context!!) }
     private lateinit var micPermRequest: ActivityResultLauncher<String>
     private var _binding: ContentRecBinding? = null
     private val binding
@@ -59,7 +59,7 @@ class RecFragment: Fragment(),
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentRecBinding.inflate(inflater, container, false)
-        if (!Main.isTV)
+        if (!MainActivity.isTV)
             setHasOptionsMenu(true)
         return binding.root
     }
@@ -67,7 +67,7 @@ class RecFragment: Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Main.isTV)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || MainActivity.isTV)
             binding.recShazam.visibility = View.GONE
         else
             binding.recShazam.movementMethod = LinkMovementMethod.getInstance()
@@ -75,9 +75,9 @@ class RecFragment: Fragment(),
         acrConfig = ACRCloudConfig().apply {
             acrcloudListener = this@RecFragment
             context = this@RecFragment.context!!
-            host = pref.getString(Stuff.PREF_ACR_HOST, Tokens.ACR_HOST)
-            accessKey = pref.getString(Stuff.PREF_ACR_KEY, Tokens.ACR_KEY)
-            accessSecret = pref.getString(Stuff.PREF_ACR_SECRET, Tokens.ACR_SECRET)
+            host = prefs.acrcloudHost ?: Tokens.ACR_HOST
+            accessKey = prefs.acrcloudKey ?: Tokens.ACR_KEY
+            accessSecret = prefs.acrcloudSecret ?: Tokens.ACR_SECRET
             recorderConfig.isVolumeCallback = false
         }
 
@@ -105,7 +105,7 @@ class RecFragment: Fragment(),
         inflater.inflate(R.menu.rec_menu, menu)
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             menu.findItem(R.id.menu_add_to_hs).isVisible = false
-        if (pref.getString(Stuff.PREF_ACR_HOST, "") != "")
+        if (prefs.acrcloudHost != null)
             menu.findItem(R.id.menu_add_acr_key).title = getString(R.string.remove_acr_key)
     }
 
@@ -156,9 +156,9 @@ class RecFragment: Fragment(),
     }
 
     private fun removeKey() {
-        pref.remove(Stuff.PREF_ACR_HOST)
-        pref.remove(Stuff.PREF_ACR_KEY)
-        pref.remove(Stuff.PREF_ACR_SECRET)
+        prefs.acrcloudHost = null
+        prefs.acrcloudKey = null
+        prefs.acrcloudSecret = null
     }
 
     private fun showSnackbar(){
@@ -170,7 +170,7 @@ class RecFragment: Fragment(),
                 .addCallback(object : Snackbar.Callback() {
                     override fun onShown(sb: Snackbar?) {
                         super.onShown(sb)
-                        if (sb != null && Main.isTV)
+                        if (sb != null && MainActivity.isTV)
                             sb.view.postDelayed({
                                 sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
                                         .requestFocus()
@@ -188,7 +188,7 @@ class RecFragment: Fragment(),
             return
         }
 
-        if (!Main.isOnline){
+        if (!MainActivity.isOnline){
             binding.recStatus.setText(R.string.unavailable_offline)
             return
         }

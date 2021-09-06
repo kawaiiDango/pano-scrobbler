@@ -1,26 +1,25 @@
 package com.arn.scrobble
 
 import android.os.Build
-import androidx.preference.PreferenceManager
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
+import com.arn.scrobble.pref.MainPrefs
 
 @RequiresApi(Build.VERSION_CODES.N)
 class MasterSwitchQS: TileService() {
 
     override fun onClick() {
         qsTile ?: return
-        val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val isActive = qsTile.state == Tile.STATE_ACTIVE
-        pref.edit().putBoolean(Stuff.PREF_MASTER, !isActive).apply()
+        MainPrefs(applicationContext).scrobblerEnabled = !isActive
         setActive(!isActive)
     }
 
     override fun onStartListening() {
         qsTile ?: return
-        val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        setActive(pref.getBoolean(Stuff.PREF_MASTER, true))
+        val isActive = MainPrefs(applicationContext).scrobblerEnabled
+        setActive(isActive)
     }
 
     private fun setActive(isActive: Boolean){

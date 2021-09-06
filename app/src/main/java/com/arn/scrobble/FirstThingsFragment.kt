@@ -18,7 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentFirstThingsBinding
 import com.arn.scrobble.pref.AppListFragment
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -29,7 +29,7 @@ import java.text.NumberFormat
  */
 class FirstThingsFragment: Fragment() {
     private var stepsNeeded = 4
-    private lateinit var pref: MultiPreferences
+    private lateinit var prefs: MainPrefs
     private var startupMgrIntent:Intent? = null
     private var isOnTop = false
     private var _binding: ContentFirstThingsBinding? = null
@@ -43,7 +43,7 @@ class FirstThingsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        pref = MultiPreferences(context!!)
+        prefs = MainPrefs(context!!)
         startupMgrIntent = Stuff.getStartupIntent(context!!)
 
         if (startupMgrIntent != null) {
@@ -57,13 +57,13 @@ class FirstThingsFragment: Fragment() {
         }
 
         binding.firstThings1.setOnClickListener {
-            val intent = if (Main.isTV && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            val intent = if (MainActivity.isTV && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 Intent().setComponent(ComponentName("com.android.tv.settings","com.android.tv.settings.device.apps.AppsActivity"))
             else
                 Intent(Stuff.NLS_SETTINGS)
             if (context!!.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
                 startActivity(intent)
-                if (Main.isTV)
+                if (MainActivity.isTV)
                     Stuff.toast(activity, getString(R.string.check_nls_tv, getString(R.string.app_name)))
                 else
                     Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
@@ -105,7 +105,7 @@ class FirstThingsFragment: Fragment() {
             binding.testingPass.visibility = View.GONE
             binding.firstThings2.visibility = View.GONE
         } else {
-            if (Main.isTV)
+            if (MainActivity.isTV)
                 binding.testingPass.isFocusable = false
             binding.testingPass.showSoftInputOnFocus = false
             binding.testingPass.addTextChangedListener(object : TextWatcher {
@@ -119,8 +119,8 @@ class FirstThingsFragment: Fragment() {
                 override fun afterTextChanged(editable: Editable) {
                     val splits = editable.split('_')
                     if (splits.size == 3) {
-                        pref.putString(Stuff.PREF_LASTFM_USERNAME, splits[0])
-                        pref.putString(Stuff.PREF_LASTFM_SESS_KEY, splits[1])
+                        prefs.lastfmUsername = splits[0]
+                        prefs.lastfmSessKey = splits[1]
                         hideKeyboard()
                         checkAll(true)
                     } else
@@ -131,7 +131,7 @@ class FirstThingsFragment: Fragment() {
 
             binding.testingPass.setOnTouchListener { v, event ->
                 if (v != null) {
-                    if (Main.isTV)
+                    if (MainActivity.isTV)
                         v.isFocusable = true
                     v.onTouchEvent(event)
                     v.alpha = 0.2f
@@ -154,15 +154,15 @@ class FirstThingsFragment: Fragment() {
                 // needed for cases when a miui user enables autostart AFTER granting NLS permission
                 markAsDone(binding.firstThings0)
             else
-                stepsNeeded --
+                stepsNeeded--
         }
-        if (checkAuthTokenExists(pref))
+        if (checkAuthTokenExists(prefs))
             markAsDone(binding.firstThings2)
-        if (checkAppListExists(pref))
+        if (!prefs.firstRun)
             markAsDone(binding.firstThings3)
 
         if(stepsNeeded == 0 || skipChecks) {
-            (activity as Main).showHomePager()
+            (activity as MainActivity).showHomePager()
             if (activity.coordinatorPadding == 0)
                 activity.binding.drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -170,9 +170,10 @@ class FirstThingsFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        val iF = IntentFilter()
-        iF.addAction(NLService.iSESS_CHANGED)
-        iF.addAction(NLService.iNLS_STARTED)
+        val iF = IntentFilter().apply {
+            addAction(NLService.iSESS_CHANGED)
+            addAction(NLService.iNLS_STARTED)
+        }
         activity!!.registerReceiver(receiver, iF)
         Stuff.setTitle(activity, R.string.almost_there)
         (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
@@ -200,7 +201,7 @@ class FirstThingsFragment: Fragment() {
         super.onHiddenChanged(hidden)
         if (!hidden) {
             checkAll()
-            (activity as Main?)?.binding?.coordinatorMain?.toolbar?.title = getString(R.string.almost_there)
+            (activity as MainActivity?)?.binding?.coordinatorMain?.toolbar?.title = getString(R.string.almost_there)
         }
     }
 
@@ -240,23 +241,13 @@ class FirstThingsFragment: Fragment() {
     }
 
     companion object {
-        fun checkNLAccess(c:Context): Boolean {
+        fun checkNLAccess(c: Context): Boolean {
             val packages = NotificationManagerCompat.getEnabledListenerPackages(c)
             return packages.any { it == c.packageName }
         }
 
-        fun checkAuthTokenExists(pref: MultiPreferences): Boolean {
-            return !( pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)== null ||
-                    pref.getString(Stuff.PREF_LASTFM_USERNAME, null)== null)
-        }
-
-        fun checkAuthTokenExists(pref: SharedPreferences): Boolean {
-            return !( pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)== null ||
-                    pref.getString(Stuff.PREF_LASTFM_USERNAME, null)== null)
-        }
-
-        fun checkAppListExists(pref: MultiPreferences): Boolean {
-            return !pref.getBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, true)
+        fun checkAuthTokenExists(prefs: MainPrefs): Boolean {
+            return !( prefs.lastfmSessKey == null || prefs.lastfmUsername == null)
         }
 
         fun openStartupMgr(startupMgrIntent: Intent?, context: Context){

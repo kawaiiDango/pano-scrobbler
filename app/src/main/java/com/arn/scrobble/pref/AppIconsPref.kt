@@ -40,7 +40,7 @@ class AppIconsPref : Preference {
 
         holder.isDividerAllowedAbove = false
         val binding = PrefAppIconsBinding.bind(holder.itemView)
-        val packageNames = preferenceDataStore!!.getStringSet(key, setOf())!!
+        val packageNames = sharedPreferences.getStringSet(key, setOf())!!
 
         if (isIconSpaceReserved)
             binding.root.setPaddingRelative(72.dp, 0, 0, 0)

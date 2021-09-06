@@ -77,7 +77,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         _binding ?: return false
         binding.friendsGrid.layoutManager ?: return false
 
-        if (Main.isOnline) {
+        if (MainActivity.isOnline) {
             binding.friendsHeader.headerText.visibility = View.GONE
         } else {
             binding.friendsHeader.headerText.text = getString(R.string.offline)
@@ -278,7 +278,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 Stuff.openInBrowser(userLink, activity, v)
             }
             actionsBinding.friendsScrobbles.setOnClickListener { v:View ->
-                (activity as Main).enableGestures()
+                (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
                 val b = Bundle()
                 b.putString(Stuff.ARG_USERNAME, user.name)
@@ -291,7 +291,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                         .commit()
             }
             actionsBinding.friendsCharts.setOnClickListener { v:View ->
-                (activity as Main).enableGestures()
+                (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
                 val b = Bundle()
                 b.putString(Stuff.ARG_USERNAME, user.name)
@@ -355,7 +355,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun getNumColumns(): Int {
-        return (resources.displayMetrics.widthPixels - (activity as Main).coordinatorPadding) /
+        return (resources.displayMetrics.widthPixels - (activity as MainActivity).coordinatorPadding) /
                 resources.getDimension(R.dimen.grid_size).roundToInt()
     }
 }

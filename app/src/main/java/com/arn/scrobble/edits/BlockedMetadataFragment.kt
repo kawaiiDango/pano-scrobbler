@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.autoNotify
@@ -170,7 +170,7 @@ class BlockedMetadataFragment: Fragment(), ItemClickListener {
             .create()
 
         val focusClickListener = View.OnFocusChangeListener { view, isFocused ->
-            if (isFocused && (activity as Main).billingViewModel.proStatus.value != true) {
+            if (isFocused && (activity as MainActivity).billingViewModel.proStatus.value != true) {
                 dialog.dismiss()
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.frame, BillingFragment())

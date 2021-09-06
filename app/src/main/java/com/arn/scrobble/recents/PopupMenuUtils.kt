@@ -15,7 +15,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.edits.EditDialogFragment
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Track
 import kotlinx.coroutines.CoroutineScope
@@ -26,9 +26,9 @@ import kotlinx.coroutines.withContext
 object PopupMenuUtils {
 
     fun csrfTokenExists(activity: FragmentActivity): Boolean {
-        val prefs = MultiPreferences(activity)
+        val prefs = MainPrefs(activity)
         val exists = LastfmUnscrobbler(activity)
-            .checkCsrf(prefs.getString(Stuff.PREF_LASTFM_USERNAME, null))
+            .checkCsrf(prefs.lastfmUsername)
         if (!exists) {
             MaterialAlertDialogBuilder(activity)
                 .setMessage(R.string.lastfm_reauth)
@@ -50,7 +50,7 @@ object PopupMenuUtils {
     }
 
     fun editScrobble(activity: FragmentActivity, track: Track) {
-        if (!Main.isOnline)
+        if (!MainActivity.isOnline)
             Stuff.toast(activity, activity.getString(R.string.unavailable_offline))
         else if (csrfTokenExists(activity)) {
             val b = Bundle().apply {
@@ -71,7 +71,7 @@ object PopupMenuUtils {
     }
 
     fun deleteScrobble(activity: FragmentActivity, track: Track, deleteAction: suspend (Boolean)-> Unit) {
-        if (!Main.isOnline)
+        if (!MainActivity.isOnline)
             Stuff.toast(activity, activity.getString(R.string.unavailable_offline))
         else if (csrfTokenExists(activity)) {
             LFMRequester(activity, activity.lifecycleScope)

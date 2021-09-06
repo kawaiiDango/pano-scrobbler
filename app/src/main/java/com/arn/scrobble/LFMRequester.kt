@@ -1,13 +1,10 @@
 package com.arn.scrobble
 
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.content.SharedPreferences
 import android.util.LruCache
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
-import androidx.preference.PreferenceManager
 import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.Stuff.toBundle
@@ -17,7 +14,7 @@ import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pref.HistoryPref
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.search.SearchVM
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -47,8 +44,7 @@ class LFMRequester(
     private var contextWr = WeakReference(context.applicationContext)
     private val context
         get() = contextWr.get()!!
-    private val prefs by lazy { DualPref(skipCP, this.context) }
-    private var skipCP = false
+    private val prefs by lazy { MainPrefs(this.context) }
     private lateinit var job: Job
     private val coExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
         when(throwable) {
@@ -81,9 +77,9 @@ class LFMRequester(
                 }
             }
         }
-    private val lastfmSessKey by lazy { prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null) }
+    private val lastfmSessKey by lazy { prefs.lastfmSessKey }
     private val lastfmSession by lazy { Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey) }
-    private val lastfmUsername by lazy { prefs.getString(Stuff.PREF_LASTFM_USERNAME, null) }
+    private val lastfmUsername by lazy { prefs.lastfmUsername }
 
     private fun checkSession(usernamep: String? = null) {
         if (usernamep == null && lastfmSessKey == null)
@@ -167,7 +163,7 @@ class LFMRequester(
 
     fun getFriendsRecents(username: String) {
         toExec = {
-            Pair(username, User.getRecentTracks(username, 1, 1, false, 0, 0, !Main.isOnline, lastfmSession))
+            Pair(username, User.getRecentTracks(username, 1, 1, false, 0, 0, !MainActivity.isOnline, lastfmSession))
         }
     }
 
@@ -183,8 +179,8 @@ class LFMRequester(
 
             if (profile != null && recents != null)
                 DrawerData(
-                    todayScrobbles = recents.totalPages,
-                    totalScrobbles = profile.playcount,
+                    scrobblesToday = recents.totalPages,
+                    scrobblesTotal = profile.playcount,
                     registeredDate = profile.registeredDate?.time ?: 0,
                     profilePicUrl = profile.getWebpImageURL(ImageSize.EXTRALARGE) ?: "",
                 ).apply { saveToPref(context) }
@@ -200,7 +196,7 @@ class LFMRequester(
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             var pr: PaginatedResult<User>
             try {
-                pr = User.getFriends(username, page, 30, !Main.isOnline, lastfmSession)
+                pr = User.getFriends(username, page, 30, !MainActivity.isOnline, lastfmSession)
             } catch (e: NullPointerException) {
                 val url = URL("https://www.last.fm/user/$username/following?page=$page")
                 var urlConnection: HttpURLConnection? = null
@@ -274,9 +270,7 @@ class LFMRequester(
             var scrobblingSince = scrobblingSincep
             if (usernamep == null) {
                 username = lastfmUsername ?: throw Exception("Login required")
-                scrobblingSince = context
-                        .getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
-                        ?.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0) ?: 0
+                scrobblingSince = prefs.scrobblingSince
             } else {
                 username = usernamep
                 if (scrobblingSincep == 0L)
@@ -512,8 +506,7 @@ class LFMRequester(
         toExec = {
 
             // populate tag suggestions from User.getTopTags
-            val actPrefs = context.getSharedPreferences(Stuff.ACTIVITY_PREFS, MODE_PRIVATE)
-            if (!actPrefs.getBoolean(Stuff.PREF_ACTIVITY_USER_TOP_TAGS_FETCHED, false)) {
+            if (!prefs.userTopTagsFetched) {
                 val topUserTags = User.getTopTags(null, 20, lastfmSession)
                 topUserTags
                     ?.reversed()
@@ -521,7 +514,7 @@ class LFMRequester(
                        historyPref.add(it.name)
                     }
                 historyPref.save()
-                actPrefs.edit().putBoolean(Stuff.PREF_ACTIVITY_USER_TOP_TAGS_FETCHED, true).apply()
+                prefs.userTopTagsFetched = true
             }
 
             val list = when(entry) {
@@ -634,7 +627,7 @@ class LFMRequester(
     fun getListenerTrend(url: String) {
         toExec = {
             val monthlyPlayCounts = mutableListOf(0, 0, 0, 0, 0)
-            if (Main.isOnline && url != "") {
+            if (MainActivity.isOnline && url != "") {
                 var urlConnection: HttpURLConnection? = null
                 try {
                     urlConnection = URL(url).openConnection() as HttpURLConnection
@@ -725,7 +718,7 @@ class LFMRequester(
                     if (scrobbleData.track.isNullOrBlank())
                         scrobbleData.track = oldTrack
 
-                    if (prefs.getBoolean(Stuff.PREF_PRO_STATUS, false)) {
+                    if (prefs.proStatus) {
                         if (PanoDb.getDb(context)
                                 .getBlockedMetadataDao()
                                 .isBlocked(scrobbleData, ignoredArtist)
@@ -760,7 +753,7 @@ class LFMRequester(
                         context.sendBroadcast(i)
                     }
 
-                    if (Main.isOnline) {
+                    if (MainActivity.isOnline) {
                         val (lastScrobbleData, lastTime) = lastNp
                         lastNp = scrobbleData to System.currentTimeMillis()
 
@@ -798,7 +791,7 @@ class LFMRequester(
                                     scrobbleData.albumArtist = track.albumArtist
                                 scrobbleData.track = track.name
                             } else if (!track.albumArtist.isNullOrEmpty() &&
-                                prefs.getBoolean(Stuff.PREF_FETCH_AA, false) &&
+                                prefs.fetchAlbumArtist &&
                                 scrobbleData.album.equals(track.album, ignoreCase = true) &&
                                 (scrobbleData.albumArtist.isNullOrEmpty() || scrobbleData.artist == scrobbleData.albumArtist)
                             )
@@ -810,7 +803,7 @@ class LFMRequester(
                             else
                                 getValidArtist(
                                     scrobbleData.artist,
-                                    prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null)
+                                    prefs.allowedArtists
                                 )
                         if (correctedArtist != null && scrobbleData.album == "")
                             scrobbleData.artist = correctedArtist
@@ -842,9 +835,9 @@ class LFMRequester(
 
                         context.sendBroadcast(i)
                     }
-                    if (Main.isOnline) {
+                    if (MainActivity.isOnline) {
                         if (correctedArtist != null || edit != null) {
-                            if (prefs.getBoolean(Stuff.PREF_NOW_PLAYING, true)) {
+                            if (prefs.submitNowPlaying) {
                                 serviceIdToKeys[R.string.lastfm]?.let {
                                     scrobbleResults[R.string.lastfm] =
                                         getScrobbleResult(scrobbleData, lastfmSession!!, true)
@@ -860,7 +853,7 @@ class LFMRequester(
 
                                 serviceIdToKeys[R.string.gnufm]?.let {
                                     val gnufmSession: Session = Session.createCustomRootSession(
-                                        prefs.getString(Stuff.PREF_GNUFM_ROOT, null) + "2.0/",
+                                        prefs.gnufmRoot + "2.0/",
                                         Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
                                     )
                                     scrobbleResults[R.string.gnufm] =
@@ -876,10 +869,7 @@ class LFMRequester(
                                     scrobbleResults[R.string.custom_listenbrainz] =
                                         ListenBrainz(it)
                                             .setApiRoot(
-                                                prefs.getString(
-                                                    Stuff.PREF_LB_CUSTOM_ROOT,
-                                                    null
-                                                )!!
+                                                prefs.customListenbrainzRoot
                                             )
                                             .updateNowPlaying(scrobbleData)
                                 }
@@ -897,7 +887,7 @@ class LFMRequester(
                         }
                     }
                 } else {
-                    if (Main.isOnline) {
+                    if (MainActivity.isOnline) {
                         serviceIdToKeys[R.string.lastfm]?.let {
                             scrobbleResults[R.string.lastfm] =
                                 getScrobbleResult(scrobbleData, lastfmSession!!, false)
@@ -914,7 +904,7 @@ class LFMRequester(
 
                         serviceIdToKeys[R.string.gnufm]?.let {
                             val gnufmSession: Session = Session.createCustomRootSession(
-                                prefs.getString(Stuff.PREF_GNUFM_ROOT, null) + "2.0/",
+                                prefs.gnufmRoot + "2.0/",
                                 Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
                             )
                             scrobbleResults[R.string.gnufm] =
@@ -930,7 +920,7 @@ class LFMRequester(
                         serviceIdToKeys[R.string.custom_listenbrainz]?.let {
                             scrobbleResults[R.string.custom_listenbrainz] =
                                 ListenBrainz(it)
-                                    .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null)!!)
+                                    .setApiRoot(prefs.customListenbrainzRoot)
                                     .scrobble(scrobbleData)
                         }
 
@@ -1041,7 +1031,7 @@ class LFMRequester(
                 }
                 serviceIdToKeys[R.string.gnufm]?.let {
                     val gnufmSession: Session = Session.createCustomRootSession(
-                            prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                            prefs.gnufmRoot + "2.0/",
                             Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
                     results[R.string.gnufm] = try {
                         if (love)
@@ -1094,7 +1084,7 @@ class LFMRequester(
 
             serviceIdToKeys[R.string.gnufm]?.let {
                 val gnufmSession: Session = Session.createCustomRootSession(
-                        prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                        prefs.gnufmRoot + "2.0/",
                         Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
                 Library.removeScrobble(track.artist, track.name, track.playedWhen.time/1000, gnufmSession)
             }
@@ -1111,25 +1101,25 @@ class LFMRequester(
                     R.string.lastfm -> {
                         val lastfmSession = Authenticator.getSession(null, token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
                         if (lastfmSession != null) {
-                            prefs.putString(Stuff.PREF_LASTFM_USERNAME, lastfmSession.username)
-                            prefs.putString(Stuff.PREF_LASTFM_SESS_KEY, lastfmSession.key)
+                            prefs.lastfmUsername = lastfmSession.username
+                            prefs.lastfmUsername = lastfmSession.key
                         }
                     }
                     R.string.librefm -> {
                         val librefmSession = Authenticator.getSession(Stuff.LIBREFM_API_ROOT,
                                 token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY)
                         if (librefmSession != null) {
-                            prefs.putString(Stuff.PREF_LIBREFM_USERNAME, librefmSession.username)
-                            prefs.putString(Stuff.PREF_LIBREFM_SESS_KEY, librefmSession.key)
+                            prefs.librefmUsername = librefmSession.username
+                            prefs.librefmSessKey = librefmSession.key
                         }
                     }
                     R.string.gnufm -> {
                         val gnufmSession = Authenticator.getSession(
-                                prefs.getString(Stuff.PREF_GNUFM_ROOT, null) + "2.0/",
+                                prefs.gnufmRoot + "2.0/",
                                 token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY)
                         if (gnufmSession != null) {
-                            prefs.putString(Stuff.PREF_GNUFM_USERNAME, gnufmSession.username)
-                            prefs.putString(Stuff.PREF_GNUFM_SESS_KEY, gnufmSession.key)
+                            prefs.gnufmUsername = gnufmSession.username
+                            prefs.gnufmSessKey = gnufmSession.key
                         }
                     }
                 }
@@ -1162,24 +1152,19 @@ class LFMRequester(
     fun getServiceIdToKeys(lfmOnly: Boolean = false): Map<Int, String> {
         val map = mutableMapOf<Int, String>()
         var sessKey = ""
-        if (!prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false) && lastfmSessKey != null)
+        if (!prefs.lastfmDisabled && lastfmSessKey != null)
             map[R.string.lastfm] = lastfmSessKey!!
-        if (prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)?.also { sessKey = it } != null)
+        if (prefs.librefmSessKey?.also { sessKey = it } != null)
             map[R.string.librefm] = sessKey
-        if (prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)?.also { sessKey = it } != null)
+        if (prefs.gnufmSessKey?.also { sessKey = it } != null)
             map[R.string.gnufm] = sessKey
         if (!lfmOnly) {
-            if (prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null)?.also { sessKey = it } != null)
+            if (prefs.listenbrainzToken?.also { sessKey = it } != null)
                 map[R.string.listenbrainz] = sessKey
-            if (prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.also { sessKey = it } != null)
+            if (prefs.customListenbrainzToken?.also { sessKey = it } != null)
                 map[R.string.custom_listenbrainz] = sessKey
         }
         return map
-    }
-
-    fun skipContentProvider(): LFMRequester {
-        skipCP = true
-        return this
     }
 
     fun cancel() {
@@ -1321,53 +1306,5 @@ class LFMRequester(
                 Pair(cArtist, cTrack)
             }
         }
-    }
-}
-
-class DualPref(private val skipCp: Boolean, context: Context?) {
-
-    private lateinit var sPref: SharedPreferences
-    private lateinit var mPref: MultiPreferences
-
-    init {
-        if (skipCp)
-            sPref = PreferenceManager.getDefaultSharedPreferences(context)
-        else
-            mPref = MultiPreferences(context!!)
-    }
-
-    fun getBoolean(key: String, default: Boolean): Boolean {
-        return if (skipCp)
-            sPref.getBoolean(key, default)
-        else
-            mPref.getBoolean(key, default)
-    }
-
-    fun putBoolean(key: String, value: Boolean) {
-        return if (skipCp)
-            sPref.edit().putBoolean(key, value).apply()
-        else
-            mPref.putBoolean(key, value)
-    }
-
-    fun getStringSet(key: String, default: Set<String>?): Set<String>? {
-        return if (skipCp)
-            sPref.getStringSet(key, default)
-        else
-            mPref.getStringSet(key, default)
-    }
-
-    fun getString(key: String, default: String?): String? {
-        return if (skipCp)
-            sPref.getString(key, default)
-        else
-            mPref.getString(key, default)
-    }
-
-    fun putString(key: String, value: String) {
-        return if (skipCp)
-            sPref.edit().putString(key, value).apply()
-        else
-            mPref.putString(key, value)
     }
 }

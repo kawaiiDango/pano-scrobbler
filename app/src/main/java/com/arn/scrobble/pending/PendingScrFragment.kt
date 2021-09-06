@@ -12,7 +12,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.recents.TracksVM
 import com.arn.scrobble.VMFactory
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.ui.ItemClickListener
 
@@ -29,7 +29,7 @@ class PendingScrFragment: Fragment(), ItemClickListener {
         view.layoutManager = LinearLayoutManager(context!!)
         view.isNestedScrollingEnabled = false
         adapter = PendingScrAdapter(this)
-        adapter.isShowingAlbums = MultiPreferences(context!!).getBoolean(Stuff.PREF_SHOW_RECENTS_ALBUM, false)
+        adapter.isShowingAlbums = MainPrefs(context!!).showAlbumInRecents
         view.adapter = adapter
 
         vm = VMFactory.getVM(this, TracksVM::class.java)

@@ -2,14 +2,12 @@ package com.arn.scrobble.themes
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.getOrDefaultKey
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import kotlin.random.Random
 
 object ColorPatchUtils {
@@ -19,9 +17,9 @@ object ColorPatchUtils {
     const val backgroundDefault = "Black"
 
     fun setTheme(context: Context) {
-        val pref = MultiPreferences(context)
-        val random = pref.getBoolean(Stuff.PREF_THEME_RANDOM, false)
-        val sameTone = pref.getBoolean(Stuff.PREF_THEME_SAME_TONE, false)
+        val prefs = MainPrefs(context)
+        val random = prefs.themeRandom
+        val sameTone = prefs.themeSameTone
         val primaryStyle: String
         val secondaryStyle: String
         val backgroundStyle: String
@@ -41,14 +39,14 @@ object ColorPatchUtils {
             secondaryStyle = ColorPatchMap.secondaryStyles.keys.elementAt(i2)
             backgroundStyle = ColorPatchMap.backgroundStyles.keys.elementAt(i3)
 
-            pref.putString(Stuff.PREF_THEME_PRIMARY, primaryStyle)
-            pref.putString(Stuff.PREF_THEME_SECONDARY, secondaryStyle)
-            pref.putString(Stuff.PREF_THEME_BACKGROUND, backgroundStyle)
+            prefs.themePrimary = primaryStyle
+            prefs.themeSecondary = secondaryStyle
+            prefs.themeBackground = backgroundStyle
             context.sendBroadcast(Intent(NLService.iTHEME_CHANGED))
         } else {
-            primaryStyle = pref.getString(Stuff.PREF_THEME_PRIMARY, primaryDefault)!!
-            secondaryStyle = pref.getString(Stuff.PREF_THEME_SECONDARY, secondaryDefault)!!
-            backgroundStyle = pref.getString(Stuff.PREF_THEME_BACKGROUND, backgroundDefault)!!
+            primaryStyle = prefs.themePrimary
+            secondaryStyle = prefs.themeSecondary
+            backgroundStyle = prefs.themeBackground
         }
 
         context.theme.applyStyle(ColorPatchMap.primaryStyles
@@ -59,18 +57,9 @@ object ColorPatchUtils {
             .getOrDefaultKey(backgroundStyle, backgroundDefault), true)
     }
 
-    fun getNotiColor(context: Context, pref: SharedPreferences): Int {
-        val primaryStyle = if (pref.getBoolean(Stuff.PREF_PRO_STATUS, false))
-            pref.getString(Stuff.PREF_THEME_PRIMARY, primaryDefault)!!
-        else
-            primaryDefault
-        return context.getStyledColor(ColorPatchMap.primaryStyles
-            .getOrDefaultKey(primaryStyle, primaryDefault), R.attr.colorNoti)
-    }
-
-    fun getNotiColor(context: Context, pref: MultiPreferences): Int {
-        val primaryStyle = if (pref.getBoolean(Stuff.PREF_PRO_STATUS, false))
-            pref.getString(Stuff.PREF_THEME_PRIMARY, primaryDefault)!!
+    fun getNotiColor(context: Context, prefs: MainPrefs): Int {
+        val primaryStyle = if (prefs.proStatus)
+            prefs.themePrimary
         else
             primaryDefault
         return context.getStyledColor(ColorPatchMap.primaryStyles

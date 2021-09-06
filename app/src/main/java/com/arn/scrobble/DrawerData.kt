@@ -1,32 +1,32 @@
 package com.arn.scrobble
 
 import android.content.Context
+import com.arn.scrobble.pref.MainPrefs
 
 class DrawerData (
-    val todayScrobbles: Int,
-    val totalScrobbles: Int,
+    val scrobblesToday: Int,
+    val scrobblesTotal: Int,
     val registeredDate: Long,
     val profilePicUrl: String,
 ) {
     fun saveToPref(context: Context) {
-        val actPref = context.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-        actPref.edit()
-            .putInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, todayScrobbles)
-            .putInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, totalScrobbles)
-            .putLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, registeredDate)
-            .putString(Stuff.PREF_ACTIVITY_PROFILE_PIC, profilePicUrl)
-            .apply()
+        MainPrefs(context).apply {
+            scrobblesTodayCached = scrobblesToday
+            scrobblesTotalCached = scrobblesTotal
+            scrobblingSince = registeredDate
+            profilePicUrlCached = profilePicUrl
+        }
     }
 
     companion object {
         fun loadFromPref(context: Context): DrawerData {
-            val actPref = context.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
+            val prefs = MainPrefs(context)
 
             return DrawerData(
-                actPref.getInt(Stuff.PREF_ACTIVITY_TODAY_SCROBBLES, 0),
-                actPref.getInt(Stuff.PREF_ACTIVITY_TOTAL_SCROBBLES, 0),
-                actPref.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0),
-                actPref.getString(Stuff.PREF_ACTIVITY_PROFILE_PIC, "")!!
+                prefs.scrobblesTodayCached,
+                prefs.scrobblesTotalCached,
+                prefs.scrobblingSince,
+                prefs.profilePicUrlCached ?: "",
             )
         }
     }

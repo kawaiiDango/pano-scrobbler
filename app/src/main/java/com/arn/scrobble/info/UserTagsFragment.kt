@@ -1,7 +1,6 @@
 package com.arn.scrobble.info
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -18,6 +17,8 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.pref.HistoryPref
+import com.arn.scrobble.pref.MainPrefs
+import com.frybits.harmony.getHarmonySharedPreferences
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
@@ -28,8 +29,8 @@ import de.umass.lastfm.Track
 class UserTagsFragment: DialogFragment() {
     private val viewModel by lazy { VMFactory.getVM(this, UserTagsVM::class.java) }
     private val historyPref by lazy { HistoryPref(
-            activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE),
-            Stuff.PREF_ACTIVITY_TAG_HISTORY,
+            MainPrefs(context!!).sharedPreferences,
+            MainPrefs.PREF_ACTIVITY_TAG_HISTORY,
             20
     ) }
     private val historyAdapter by lazy { ArrayAdapter(context!!, R.layout.list_item_history, historyPref.history) }

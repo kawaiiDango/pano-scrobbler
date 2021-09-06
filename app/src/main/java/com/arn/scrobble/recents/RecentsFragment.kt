@@ -35,7 +35,7 @@ import com.arn.scrobble.Stuff.setProgressCircleColors
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.CoordinatorMainBinding
 import com.arn.scrobble.info.InfoFragment
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.*
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
@@ -57,13 +57,13 @@ import kotlin.math.max
 open class RecentsFragment : Fragment(),
         ItemClickListener, ItemLongClickListener, FocusChangeListener, RecentsAdapter.SetHeroTrigger {
     private lateinit var adapter: RecentsAdapter
-    private lateinit var appPrefs: SharedPreferences
+    private val prefs by lazy { MainPrefs(context!!) }
     private var timedRefresh = Runnable {
         if (viewModel.toTime == 0L)
             loadRecents(1)
         val ps = coordinatorBinding.coordinator.paddingStart
         if (activity != null && ps > 0)
-            LFMRequester(context!!, lifecycleScope, (activity as Main).mainNotifierViewModel.drawerData).getDrawerInfo()
+            LFMRequester(context!!, lifecycleScope, (activity as MainActivity).mainNotifierViewModel.drawerData).getDrawerInfo()
         lastRefreshTime = System.currentTimeMillis()
     }
     private lateinit var coordinatorBinding: CoordinatorMainBinding
@@ -81,7 +81,7 @@ open class RecentsFragment : Fragment(),
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentRecentsBinding.inflate(inflater, container, false)
-        coordinatorBinding = (activity as Main).binding.coordinatorMain
+        coordinatorBinding = (activity as MainActivity).binding.coordinatorMain
         return binding.root
     }
 
@@ -109,7 +109,7 @@ open class RecentsFragment : Fragment(),
         if (isShowingLoves) {
             coordinatorBinding.heroCalendar.visibility = View.INVISIBLE
             coordinatorBinding.heroCalendar.isEnabled = false
-        } else if (!Main.isTV){
+        } else if (!MainActivity.isTV){
             coordinatorBinding.heroCalendar.visibility = View.VISIBLE
             coordinatorBinding.heroCalendar.isEnabled = true
         }
@@ -126,7 +126,7 @@ open class RecentsFragment : Fragment(),
     }
 
     private fun postInit() {
-        val activity = activity as Main? ?: return
+        val activity = activity as MainActivity? ?: return
         coordinatorBinding.toolbar.title = null
         Stuff.setAppBarHeight(activity)
 //      https://stackoverflow.com/questions/31759171/recyclerview-and-java-lang-indexoutofboundsexception-inconsistency-detected-in
@@ -146,7 +146,7 @@ open class RecentsFragment : Fragment(),
         adapter = RecentsAdapter(binding)
         adapter.viewModel = viewModel
         adapter.isShowingLoves = isShowingLoves
-        adapter.isShowingAlbums = MultiPreferences(context!!).getBoolean(Stuff.PREF_SHOW_RECENTS_ALBUM, false)
+        adapter.isShowingAlbums = prefs.showAlbumInRecents
 
 //        adapter.setStatusHeader()
 
@@ -175,7 +175,6 @@ open class RecentsFragment : Fragment(),
         adapter.itemLongClickListener = this
         adapter.focusChangeListener = this
         adapter.setHeroListener = this
-        appPrefs = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
 
         if (coordinatorBinding.sparkline.adapter == null) { // not inited
             coordinatorBinding.sparkline.sparkAnimator = MorphSparkAnimator()
@@ -205,7 +204,7 @@ open class RecentsFragment : Fragment(),
                 }
                 adapter.populate(oldList)
             }
-            if (viewModel.page != it.page && Main.isTV)
+            if (viewModel.page != it.page && MainActivity.isTV)
                 loadRecents(1, true)
             loadMoreListener.currentPage = it.page
 
@@ -291,11 +290,9 @@ open class RecentsFragment : Fragment(),
                 b.putString(Stuff.ARG_USERNAME, username)
                 info.arguments = b
                 info.show(activity.supportFragmentManager, null)
-                if (!appPrefs.getBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, false)) {
+                if (!prefs.longPressLearnt) {
                     Stuff.toast(context, getString(R.string.info_long_press_hint), Toast.LENGTH_LONG)
-                    appPrefs.edit()
-                            .putBoolean(Stuff.PREF_ACTIVITY_LONG_PRESS_LEARNT, true)
-                            .apply()
+                    prefs.longPressLearnt = true
                 }
             }
         }
@@ -347,7 +344,7 @@ open class RecentsFragment : Fragment(),
             else
                 System.currentTimeMillis()
             val startTime = if (username == null)
-                appPrefs.getLong(Stuff.PREF_ACTIVITY_SCROBBLING_SINCE, 0)
+                prefs.scrobblingSince
             else
                 parentFragment!!.arguments?.getLong(Stuff.ARG_REGISTERED_TIME, 0) ?: 0
             val endTime = System.currentTimeMillis()
@@ -400,7 +397,7 @@ open class RecentsFragment : Fragment(),
             synchronized(viewModel.tracks) {
                 adapter.populate(viewModel.tracks)
             }
-        if (!Main.isTV) {
+        if (!MainActivity.isTV) {
 
             if (username != null) {
                 coordinatorBinding.heroInfo.visibility = View.GONE
@@ -434,7 +431,8 @@ open class RecentsFragment : Fragment(),
                 ObjectAnimator.ofArgb(coordinatorBinding.sparkline, "lineColor", tintFrom, colors.lightWhite),
             )
 
-            if (activity.billingViewModel.proStatus.value != true || appPrefs.getBoolean(Stuff.PREF_ACTIVITY_THEME_PALETTE_BG, true)) {
+            if (activity.billingViewModel.proStatus.value != true ||
+                prefs.themePaletteBackground) {
                 if (coordinatorBinding.coordinator.paddingStart > 0)
                     animSetList += ObjectAnimator.ofArgb(
                         activity.binding.navView,
@@ -493,7 +491,7 @@ open class RecentsFragment : Fragment(),
 
     private fun toggleGraphDetails(init: Boolean = false){
         _binding ?: return
-        var show = appPrefs.getBoolean(Stuff.PREF_ACTIVITY_GRAPH_DETAILS, true)
+        var show = prefs.heroGraphDetails
         if (!init)
             show = !show
 
@@ -510,9 +508,7 @@ open class RecentsFragment : Fragment(),
             coordinatorBinding.sparklineTickTop.visibility = View.GONE
             coordinatorBinding.sparklineTickBottom.visibility = View.GONE
         }
-        appPrefs.edit()
-                .putBoolean(Stuff.PREF_ACTIVITY_GRAPH_DETAILS, show)
-                .apply()
+        prefs.heroGraphDetails = show
     }
 
     private fun loadRecents(page: Int, force: Boolean = false): Boolean {

@@ -12,11 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentAppListBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -28,7 +29,8 @@ import java.util.*
 class AppListFragment : Fragment() {
     private var firstRun = false
     private var appListLoaded = false
-    private val mainNotifierViewModel by lazy { (activity as Main).mainNotifierViewModel }
+    private val mainNotifierViewModel by lazy { (activity as MainActivity).mainNotifierViewModel }
+    private val prefs by lazy { MainPrefs(context!!) }
     private var _binding: ContentAppListBinding? = null
     private val binding
         get() = _binding!!
@@ -56,14 +58,14 @@ class AppListFragment : Fragment() {
         if (!binding.appList.isInTouchMode)
             binding.appList.requestFocus()
 
-        if (Main.isTV){
+        if (MainActivity.isTV){
             Stuff.toast(context, getString(R.string.press_back))
         }
 
         binding.appList.layoutManager = LinearLayoutManager(context)
-        val adapter = AppListAdapter(activity!!)
+        val adapter = AppListAdapter(activity!!, prefs.allowedPackages)
         binding.appList.adapter = adapter
-        if (!Main.isTV) {
+        if (!MainActivity.isTV) {
             binding.appList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
@@ -81,15 +83,14 @@ class AppListFragment : Fragment() {
                 parentFragmentManager.popBackStack()
             }
             binding.appListDone.setOnLongClickListener {
-                MultiPreferences(context ?: return@setOnLongClickListener false)
-                        .putStringSet(Stuff.PREF_BLACKLIST, setOf())
+                prefs.blockedPackages = setOf()
                 Stuff.toast(activity, getString(R.string.cleared_disabled_apps))
                 true
             }
         }
         val excludePackageNames = getMusicPlayers(adapter)
         lifecycleScope.launch {
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 val pm = activity?.packageManager ?: return@withContext
 
                 val intent = Intent(Intent.ACTION_MAIN)
@@ -102,7 +103,7 @@ class AppListFragment : Fragment() {
                     if (ai.icon != 0 && ai.enabled)
                         pkgMap[it.activityInfo.applicationInfo.packageName] = it
                 }
-                if (Main.isTV) {
+                if (MainActivity.isTV) {
                     intent.removeCategory(Intent.CATEGORY_LAUNCHER)
                     intent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
                     val tvApps = pm.queryIntentActivities(intent, 0)
@@ -135,13 +136,15 @@ class AppListFragment : Fragment() {
                     pkgMap.remove(it)
                 }
 
+                if (!isActive)
+                    return@withContext
+
                 if (firstRun) {
-                    val prefs = MultiPreferences(context ?: return@withContext)
                     val wSet = mutableSetOf<String>()
                     wSet.addAll(adapter.getSelectedPackages())
-                    prefs.putStringSet(Stuff.PREF_WHITELIST, wSet)
-                    if (Main.isTV)
-                        prefs.putBoolean(Stuff.PREF_AUTO_DETECT, false)
+                    prefs.allowedPackages = wSet
+                    if (MainActivity.isTV)
+                        prefs.autoDetectApps = false
                 }
                 adapter.addSectionHeader(getString(R.string.other_apps))
 
@@ -170,35 +173,31 @@ class AppListFragment : Fragment() {
         Stuff.setTitle(activity, R.string.enabled_apps)
     }
     override fun onStop() {
-        val prefs = MultiPreferences(context ?: return)
         if (firstRun)
-            prefs.putBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, false)
+            prefs.firstRun = false
         if (_binding != null) {
             val wSet = mutableSetOf<String>()
 
             val adapter = binding.appList.adapter as AppListAdapter
-            wSet.addAll(adapter.getSelectedPackages())
+            wSet += adapter.getSelectedPackages()
 
             //BL = old WL - new WL
-            val bSet = prefs.getStringSet(Stuff.PREF_BLACKLIST, setOf()) +
-                    prefs.getStringSet(Stuff.PREF_WHITELIST, setOf()) -
-                    wSet
+            val bSet = prefs.blockedPackages + prefs.allowedPackages - wSet
 
-            prefs.putStringSet(Stuff.PREF_WHITELIST, wSet)
-            prefs.putStringSet(Stuff.PREF_BLACKLIST, bSet)
+            prefs.allowedPackages = wSet
+            prefs.blockedPackages = bSet
         }
         super.onStop()
     }
 
     private fun enableNavigation() {
         mainNotifierViewModel.backButtonEnabled = true
-        if (!Main.isTV)
+        if (!MainActivity.isTV)
             binding.appListDone.show()
     }
 
     private fun getMusicPlayers(adapter: AppListAdapter): MutableSet<String> {
-        val prefs = MultiPreferences(context!!)
-        firstRun = prefs.getBoolean(Stuff.PREF_ACTIVITY_FIRST_RUN, true)
+        firstRun = prefs.firstRun
 
         val pm = activity!!.packageManager
         val intent = Intent(MediaStore.INTENT_ACTION_MUSIC_PLAYER)

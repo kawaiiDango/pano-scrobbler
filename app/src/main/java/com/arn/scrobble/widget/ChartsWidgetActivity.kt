@@ -16,6 +16,7 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.*
+import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 
 class ChartsWidgetActivity: AppCompatActivity() {
@@ -34,7 +35,7 @@ class ChartsWidgetActivity: AppCompatActivity() {
 
     lateinit var binding: ActivityAppwidgetChartsConfigBinding
     lateinit var previewBinding: AppwidgetChartsContentBinding
-    private val pref by lazy { getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE) }
+    private val prefs by lazy { WidgetPrefs(this)[appWidgetId] }
     private val periodChipIds = arrayOf(R.id.charts_7day, R.id.charts_1month, R.id.charts_3month, R.id.charts_6month, R.id.charts_12month, R.id.charts_overall)
     private var widgetExists = false
     private val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
@@ -52,7 +53,6 @@ class ChartsWidgetActivity: AppCompatActivity() {
         setContentView(binding.root)
 
         setResult(false)
-        val editor = pref.edit()
         binding.widgetPeriod.chartsChooseWeek.visibility = View.GONE
         binding.widgetPeriod.charts7day.text = resources.getQuantityString(R.plurals.num_weeks, 1, 1)
         binding.widgetPeriod.charts1month.text = resources.getQuantityString(R.plurals.num_months, 1, 1)
@@ -64,25 +64,23 @@ class ChartsWidgetActivity: AppCompatActivity() {
         binding.widgetPeriod.chartsPeriod.setOnCheckedChangeListener { group, checkedId ->
             val idx = periodChipIds.indexOf(checkedId)
             if (idx != -1)
-                editor.putInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), idx)
+                prefs.period = idx
         }
 
         binding.widgetTheme.setOnCheckedChangeListener { group, checkedId ->
             val isDark = checkedId == R.id.chip_dark
-            editor.putBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_DARK, appWidgetId), isDark)
+            prefs.isDark = isDark
             initPreview(isDark, binding.widgetShadow.isChecked)
             previewAlpha(binding.widgetBgAlpha.value/100)
         }
 
         binding.widgetBgAlpha.addOnChangeListener { slider, value, fromUser ->
-            editor.putFloat(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_BG_ALPHA, appWidgetId),
-                value/100)
+            prefs.bgAlpha = value/100
             previewAlpha(value/100)
         }
 
         binding.widgetShadow.setOnCheckedChangeListener { compoundButton, checked ->
-            editor.putBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_SHADOW, appWidgetId),
-                checked)
+            prefs.shadow = checked
             initPreview(binding.widgetTheme.checkedChipId == R.id.chip_dark, checked)
             previewAlpha(binding.widgetBgAlpha.value/100)
         }
@@ -91,8 +89,7 @@ class ChartsWidgetActivity: AppCompatActivity() {
             setResult(true)
             val idx = periodChipIds.indexOf(binding.widgetPeriod.chartsPeriod.checkedChipId)
             if (idx != -1)
-                editor.putInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), idx)
-            editor.apply()
+                prefs.period = idx
             updateWidget()
 
             if (widgetExists)
@@ -118,8 +115,8 @@ class ChartsWidgetActivity: AppCompatActivity() {
     }
 
     private fun initFromPrefs() {
-        val period = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), -1)
-        if (period != -1)
+        val period = prefs.period
+        if (period != null)
             binding.widgetPeriod.chartsPeriod.check(periodChipIds[period])
         else {
             binding.widgetPeriod.charts7day.isChecked = true
@@ -127,8 +124,8 @@ class ChartsWidgetActivity: AppCompatActivity() {
             return
         }
 
-        val isDark = pref.getBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_DARK, appWidgetId), true)
-        val hasShadow = pref.getBoolean(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_SHADOW, appWidgetId), true)
+        val isDark = prefs.isDark
+        val hasShadow = prefs.shadow
 
         initPreview(isDark, hasShadow)
 
@@ -139,9 +136,8 @@ class ChartsWidgetActivity: AppCompatActivity() {
 
         binding.widgetShadow.isChecked = hasShadow
 
-        val alpha = pref.getFloat(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_BG_ALPHA, appWidgetId), -1f)
-        if (alpha != -1f)
-            binding.widgetBgAlpha.value = alpha * 100
+        val alpha = prefs.bgAlpha
+        binding.widgetBgAlpha.value = alpha * 100
 
         widgetExists = true
     }

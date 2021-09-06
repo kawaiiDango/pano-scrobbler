@@ -14,10 +14,10 @@ import android.view.LayoutInflater
 
 
 class FakeChartsAdapter(
-        context: Context,
-        private val isDark: Boolean,
-        private val hasShadow: Boolean,
-    ): ArrayAdapter<ChartsWidgetListItem>(context, R.layout.appwidget_charts_item) {
+    context: Context,
+    private val isDark: Boolean,
+    private val hasShadow: Boolean,
+): ArrayAdapter<ChartsWidgetListItem>(context, R.layout.appwidget_charts_item) {
     private val inflater by lazy { context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater }
 
     init {

@@ -22,6 +22,7 @@ import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.HistoryPref
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.textfield.TextInputLayout
 import de.umass.lastfm.Album
@@ -36,8 +37,8 @@ class SearchFragment: Fragment() {
     private val viewModel by lazy { VMFactory.getVM(this, SearchVM::class.java) }
     private val chartsVM by lazy { VMFactory.getVM(this, ChartsVM::class.java) }
     private val historyPref by lazy { HistoryPref(
-            activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE),
-        Stuff.PREF_ACTIVITY_SEARCH_HISTORY,
+            MainPrefs(context!!).sharedPreferences,
+            MainPrefs.PREF_ACTIVITY_SEARCH_HISTORY,
             20
     ) }
     private var _binding: ContentSearchBinding? = null

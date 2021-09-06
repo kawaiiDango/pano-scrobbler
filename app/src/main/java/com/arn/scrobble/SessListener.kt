@@ -10,6 +10,7 @@ import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
+import com.arn.scrobble.pref.MainPrefs
 import okhttp3.HttpUrl
 import java.util.Locale
 
@@ -18,7 +19,7 @@ import java.util.Locale
  */
 
 class SessListener (
-    private val pref: SharedPreferences,
+    private val prefs: MainPrefs,
     private val handler: NLService.ScrobbleHandler,
     private val audioManager: AudioManager,
 ) : OnActiveSessionsChangedListener,
@@ -29,19 +30,15 @@ class SessListener (
 
     private val blackList = mutableSetOf<String>()
     private val whiteList = mutableSetOf<String>()
-    private val autoDetectApps
-        get() = pref.getBoolean(Stuff.PREF_AUTO_DETECT, true)
-    private val scrobblingEnabled
-        get() = pref.getBoolean(Stuff.PREF_MASTER, true)
     private val loggedIn
-        get() = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null) != null
+        get() = prefs.lastfmSessKey != null
     lateinit var browserPackages: Set<String>
     val packageMap = mutableMapOf<String, HashesAndTimes>()
 
     init {
-        pref.registerOnSharedPreferenceChangeListener(this)
-        whiteList.addAll(pref.getStringSet(Stuff.PREF_WHITELIST, setOf())!!)
-        blackList.addAll(pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())!!)
+        prefs.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        whiteList.addAll(prefs.allowedPackages)
+        blackList.addAll(prefs.blockedPackages)
     }
 
     // this list of controllers is unreliable esp. with yt and yt music
@@ -51,7 +48,7 @@ class SessListener (
         this.controllers = controllers
         Stuff.log("controllers: " + controllers?.joinToString { it.packageName })
 
-        if (!scrobblingEnabled || controllers == null)
+        if (!prefs.scrobblerEnabled || controllers == null)
             return
 //        val tokens = mutableSetOf<MediaSession.Token>()
         for (controller in controllers) {
@@ -101,6 +98,10 @@ class SessListener (
                 it.remove()
             }
         }
+    }
+
+    fun unregisterPrefsChangeListener() {
+        prefs.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     inner class MyCallback(private val packageName: String,
@@ -364,26 +365,26 @@ class SessListener (
 
     private fun shouldScrobble(packageName: String): Boolean {
 
-        return scrobblingEnabled && loggedIn &&
+        return prefs.scrobblerEnabled && loggedIn &&
                 (packageName in whiteList ||
-                (autoDetectApps && packageName !in blackList))
+                (prefs.autoDetectApps && packageName !in blackList))
     }
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {
         when (key){
-            Stuff.PREF_WHITELIST -> synchronized(whiteList) {
+            MainPrefs.PREF_WHITELIST -> synchronized(whiteList) {
                 whiteList.clear()
                 whiteList.addAll(pref.getStringSet(key, setOf())!!)
             }
-            Stuff.PREF_BLACKLIST -> synchronized(blackList) {
+            MainPrefs.PREF_BLACKLIST -> synchronized(blackList) {
                 blackList.clear()
                 blackList.addAll(pref.getStringSet(key, setOf())!!)
             }
         }
-        if (key == Stuff.PREF_WHITELIST ||
-                key == Stuff.PREF_BLACKLIST ||
-                key == Stuff.PREF_AUTO_DETECT ||
-                key == Stuff.PREF_MASTER) {
+        if (key == MainPrefs.PREF_WHITELIST ||
+                key == MainPrefs.PREF_BLACKLIST ||
+                key == MainPrefs.PREF_AUTO_DETECT ||
+                key == MainPrefs.PREF_MASTER) {
 
             onActiveSessionsChanged(controllers)
             val pkgsToKeep = controllersMap.values

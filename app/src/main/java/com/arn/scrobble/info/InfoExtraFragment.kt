@@ -125,7 +125,7 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
         rootViewBinding.chartsList.adapter = adapter
 
         fragment.viewModel.listReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !Main.isOnline && fragment.viewModel.chartsData.size == 0)
+            if (it == null && !MainActivity.isOnline && fragment.viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
             fragment.viewModel.reachedEnd = true

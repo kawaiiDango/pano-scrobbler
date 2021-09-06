@@ -4,6 +4,7 @@ import android.content.Context
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
+import com.frybits.harmony.getHarmonySharedPreferences
 import okhttp3.*
 import okio.Buffer
 
@@ -11,7 +12,7 @@ import okio.Buffer
 class LastfmUnscrobbler(context: Context?) {
 
     private var csrfToken: String? = null
-    private var username = ""
+    private lateinit var username: String
     private val client by lazy {
             OkHttpClient.Builder()
                     .cookieJar(cookieJar)
@@ -39,7 +40,7 @@ class LastfmUnscrobbler(context: Context?) {
             println(String.format("<-- Received response for %s in %.1fms%n%s", response.request().url(), (t2 - t1) / 1e6, response.headers()))
 
             val contentType = response.body()?.contentType()
-            val content = response.body()?.string()
+            val content = response.body()?.string()!!
             println(content)
 
             val wrappedBody = ResponseBody.create(contentType, content)
@@ -49,11 +50,14 @@ class LastfmUnscrobbler(context: Context?) {
 
     init{
         if (context != null)
-            cookieJar = object: PersistentCookieJar(cookieCache, SharedPrefsCookiePersistor(context)) {
-                override fun saveFromResponse(url: HttpUrl, cookies: MutableList<Cookie>?) {
+            cookieJar = object: PersistentCookieJar(
+                cookieCache,
+                SharedPrefsCookiePersistor(context.getHarmonySharedPreferences("CookiePersistence"))
+            ) {
+                override fun saveFromResponse(url: HttpUrl, cookies: MutableList<Cookie>) {
                     super.saveFromResponse(url, cookies)
                     cookies
-                            ?.find { it.name() == COOKIE_CSRFTOKEN }
+                            .find { it.name() == COOKIE_CSRFTOKEN }
                             ?.let { csrfToken = it.value() }
                 }
             }
@@ -195,18 +199,20 @@ class LastfmUnscrobbler(context: Context?) {
     companion object {
         const val COOKIE_CSRFTOKEN = "csrftoken"
         const val COOKIE_SESSIONID = "sessionid"
+
+        private const val URL_LOGIN = "https://secure.last.fm/login"
+        private const val URL_USER = "https://www.last.fm/user/"
+
+        private const val FIELD_CSRFTOKEN = "csrfmiddlewaretoken"
+
+        private const val FIELD_USERNAME = "username"
+        private const val FIELD_PASSWORD = "password"
+
+        private const val FIELD_ARTIST = "artist_name"
+        private const val FIELD_TRACK = "track_name"
+        private const val FIELD_TIMESTAMP = "timestamp"
     }
 }
 
-private const val URL_LOGIN = "https://secure.last.fm/login"
-private const val URL_USER = "https://www.last.fm/user/"
 
-private const val FIELD_CSRFTOKEN = "csrfmiddlewaretoken"
-
-private const val FIELD_USERNAME = "username"
-private const val FIELD_PASSWORD = "password"
-
-private const val FIELD_ARTIST = "artist_name"
-private const val FIELD_TRACK = "track_name"
-private const val FIELD_TIMESTAMP = "timestamp"
 

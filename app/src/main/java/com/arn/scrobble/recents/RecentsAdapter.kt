@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentRecentsBinding
@@ -33,10 +33,9 @@ import java.lang.ref.WeakReference
  * Created by arn on 10/07/2017.
  */
 
-class RecentsAdapter
-
-(private val fragmentBinding: ContentRecentsBinding): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
-        LoadImgInterface, LoadMoreGetter {
+class RecentsAdapter(
+    private val fragmentBinding: ContentRecentsBinding
+): RecyclerView.Adapter<RecyclerView.ViewHolder>(), LoadImgInterface, LoadMoreGetter {
 
     lateinit var itemClickListener: ItemClickListener
     lateinit var itemLongClickListener: ItemLongClickListener
@@ -232,7 +231,7 @@ class RecentsAdapter
     }
 
     fun populate(oldTracks: MutableList<Track>) {
-        if (Main.isOnline)
+        if (MainActivity.isOnline)
             setStatusHeader()
         else
             setStatusHeader(fragmentBinding.root.context.getString(R.string.offline))
@@ -364,7 +363,7 @@ class RecentsAdapter
                 true
             }
             binding.root.onFocusChangeListener = this
-            if (viewModel.username != null && !Main.isTV) {
+            if (viewModel.username != null && !MainActivity.isTV) {
                 binding.recentsMenu.visibility = View.INVISIBLE
                 binding.recentsMenuText.visibility = View.GONE
             } else

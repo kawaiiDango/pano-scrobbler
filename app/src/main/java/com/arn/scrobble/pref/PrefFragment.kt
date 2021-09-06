@@ -70,7 +70,11 @@ class PrefFragment : PreferenceFragmentCompat(){
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        preferenceManager.preferenceDataStore = MultiPrefsDataStore(context!!)
+//        preferenceManager.preferenceDataStore = MainPrefsDataStore(context!!)
+
+        val field = preferenceManager::class.java.getDeclaredField("mSharedPreferences")
+        field.isAccessible = true
+        field.set(preferenceManager, MainPrefs(context!!).sharedPreferences)
 
         reenterTransition = Fade()
         exitTransition = Fade()
@@ -79,8 +83,8 @@ class PrefFragment : PreferenceFragmentCompat(){
 
         val hideOnTV = mutableListOf<Preference>()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !Main.isTV) {
-            val master = findPreference<SwitchPreference>(Stuff.PREF_MASTER)!!
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !MainActivity.isTV) {
+            val master = findPreference<SwitchPreference>(MainPrefs.PREF_MASTER)!!
             master.summary = getString(R.string.pref_master_qs_hint)
         }
 
@@ -88,15 +92,15 @@ class PrefFragment : PreferenceFragmentCompat(){
 
         hideOnTV += notiCategories
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !Main.isTV){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !MainActivity.isTV){
             notiCategories.summary = getString(R.string.pref_noti_q)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             arrayOf(
-                Stuff.CHANNEL_NOTI_SCROBBLING,
-                Stuff.CHANNEL_NOTI_DIGEST_WEEKLY,
-                Stuff.CHANNEL_NOTI_DIGEST_MONTHLY
+                MainPrefs.CHANNEL_NOTI_SCROBBLING,
+                MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY,
+                MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY
             ).forEach {
                 findPreference<Preference>(it)?.isVisible = false
             }
@@ -138,7 +142,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        val appList = findPreference<Preference>(Stuff.PREF_WHITELIST)!!
+        val appList = findPreference<Preference>(MainPrefs.PREF_WHITELIST)!!
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 parentFragmentManager.beginTransaction()
                     .remove(this)
@@ -148,7 +152,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        val pixelNp = findPreference<SwitchPreference>(Stuff.PREF_PIXEL_NP)!!
+        val pixelNp = findPreference<SwitchPreference>(MainPrefs.PREF_PIXEL_NP)!!
         hideOnTV.add(pixelNp)
         if (Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE) {
             pixelNp.summary = getString(R.string.pref_pixel_np_nope)
@@ -156,13 +160,13 @@ class PrefFragment : PreferenceFragmentCompat(){
             pixelNp.isPersistent = false
             pixelNp.isChecked = false
         }
-        val autoDetect = findPreference<SwitchPreference>(Stuff.PREF_AUTO_DETECT)!!
+        val autoDetect = findPreference<SwitchPreference>(MainPrefs.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
 
-        findPreference<Preference>(Stuff.CHANNEL_NOTI_DIGEST_WEEKLY)!!
+        findPreference<Preference>(MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY)!!
             .title = getString(R.string.s_top_scrobbles, getString(R.string.weekly))
 
-        findPreference<Preference>(Stuff.CHANNEL_NOTI_DIGEST_MONTHLY)!!
+        findPreference<Preference>(MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY)!!
             .title = getString(R.string.s_top_scrobbles, getString(R.string.monthly))
 
         findPreference<Preference>("charts_widget")!!
@@ -196,7 +200,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 true
             }
 
-        findPreference<Preference>(Stuff.PREF_EXPORT)
+        findPreference<Preference>(MainPrefs.PREF_EXPORT)
                 ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
@@ -211,7 +215,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        findPreference<Preference>(Stuff.PREF_IMPORT)
+        findPreference<Preference>(MainPrefs.PREF_IMPORT)
                 ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             // On Android 11 TV:
             // Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider
@@ -239,7 +243,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                     .addToBackStack(null)
                     .commit()
             },
-                Stuff.PREF_LASTFM_USERNAME, Stuff.PREF_LASTFM_SESS_KEY,
+                MainPrefs.PREF_LASTFM_USERNAME, MainPrefs.PREF_LASTFM_SESS_KEY,
                 logout = {LastfmUnscrobbler(context!!).clearCookies()}
         )
 
@@ -254,12 +258,12 @@ class PrefFragment : PreferenceFragmentCompat(){
                     .addToBackStack(null)
                     .commit()
             },
-                Stuff.PREF_LIBREFM_USERNAME, Stuff.PREF_LIBREFM_SESS_KEY
+                MainPrefs.PREF_LIBREFM_USERNAME, MainPrefs.PREF_LIBREFM_SESS_KEY
         )
 
         initAuthConfirmation("gnufm", {
             val nixtapeUrl =
-                    preferenceManager.preferenceDataStore?.getString(Stuff.PREF_GNUFM_ROOT, "https://")!!
+                    preferenceManager.sharedPreferences?.getString(MainPrefs.PREF_GNUFM_ROOT, "https://")!!
                 val et = EditText(context)
                 et.setText(nixtapeUrl)
                 val padding = 16.dp
@@ -271,7 +275,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                             if (URLUtil.isValidUrl(newUrl)) {
                                 if (!newUrl.endsWith('/'))
                                     newUrl += '/'
-                                preferenceManager.preferenceDataStore?.putString(Stuff.PREF_GNUFM_ROOT, newUrl)
+                                preferenceManager.sharedPreferences.edit().putString(MainPrefs.PREF_GNUFM_ROOT, newUrl).apply()
                                 val wf = WebViewFragment()
                                 val b = Bundle()
                                 b.putString(Stuff.ARG_URL, newUrl+"api/auth?api_key="+Stuff.LIBREFM_KEY+"&cb=pscrobble://auth/gnufm")
@@ -290,7 +294,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 dialog.setView(et,padding,padding/3,padding,0)
                 dialog.show()
             },
-                Stuff.PREF_GNUFM_USERNAME, Stuff.PREF_GNUFM_SESS_KEY, Stuff.PREF_GNUFM_ROOT
+                MainPrefs.PREF_GNUFM_USERNAME, MainPrefs.PREF_GNUFM_SESS_KEY, MainPrefs.PREF_GNUFM_ROOT
         )
 
 
@@ -307,7 +311,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                         .addToBackStack(null)
                         .commit()
             },
-                Stuff.PREF_LISTENBRAINZ_USERNAME, Stuff.PREF_LISTENBRAINZ_TOKEN
+                MainPrefs.PREF_LISTENBRAINZ_USERNAME, MainPrefs.PREF_LISTENBRAINZ_TOKEN
         )
 
         initAuthConfirmation("lb", {
@@ -324,10 +328,10 @@ class PrefFragment : PreferenceFragmentCompat(){
                         .addToBackStack(null)
                         .commit()
             },
-                Stuff.PREF_LB_CUSTOM_USERNAME, Stuff.PREF_LB_CUSTOM_TOKEN, Stuff.PREF_LB_CUSTOM_ROOT
+                MainPrefs.PREF_LB_CUSTOM_USERNAME, MainPrefs.PREF_LB_CUSTOM_TOKEN, MainPrefs.PREF_LB_CUSTOM_ROOT
         )
 
-        findPreference<Preference>(Stuff.PREF_INTENTS)
+        findPreference<Preference>(MainPrefs.PREF_INTENTS)
                 ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             val ss = SpannableString(getString(
                 R.string.pref_intents_dialog_desc,
@@ -378,7 +382,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             e.printStackTrace()
         }
 
-        if (Main.isTV)
+        if (MainActivity.isTV)
             hideOnTV.forEach {
                 it.isVisible = false
             }
@@ -393,7 +397,7 @@ class PrefFragment : PreferenceFragmentCompat(){
 
     private fun setAuthLabel(elem: Preference) {
         val username =
-                preferenceManager.preferenceDataStore?.getString(elem.key + "_username", null)
+                preferenceManager.sharedPreferences?.getString(elem.key + "_username", null)
         elem.extras.putInt("state", 1)
         if (username != null) {
             elem.summary = getString(R.string.pref_logout) + ": [$username]"
@@ -430,7 +434,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                     }
                     STATE_CONFIRM -> {
                         keysToClear.forEach {
-                            preferenceManager.preferenceDataStore?.putString(it, null)
+                            preferenceManager.sharedPreferences.edit().putString(it, null).apply()
                         }
                         logout?.invoke()
                         setAuthLabel(it)

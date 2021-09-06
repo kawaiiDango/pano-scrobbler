@@ -11,7 +11,7 @@ import com.arn.scrobble.*
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
@@ -51,7 +51,7 @@ class PendingScrJob : JobService() {
         ) {
         private val dao by lazy { PanoDb.getDb(context).getScrobblesDao() }
         private val lovesDao by lazy { PanoDb.getDb(context).getLovesDao() }
-        private val prefs by lazy { MultiPreferences(context) }
+        private val prefs by lazy { MainPrefs(context) }
 
         init {
             scope.launch {
@@ -61,14 +61,11 @@ class PendingScrJob : JobService() {
         }
 
         private suspend fun run(): Boolean {
-            if (Stuff.willCrashOnMemeUI(prefs))
-                return false
-
             var done = submitLoves()
 
             var aneCount = dao.getAutoCorrectedCount(false)
             var scrobbles = dao.allEmptyAlbumORAlbumArtist(1000)
-            if (!prefs.getBoolean(Stuff.PREF_FETCH_AA, false))
+            if (!prefs.fetchAlbumArtist)
                 scrobbles = scrobbles.filter { it.album == "" }
             scrobbles.forEach {
                 progressCb?.invoke(context.getString(R.string.pending_n_remaining, aneCount--))
@@ -80,7 +77,7 @@ class PendingScrJob : JobService() {
                             if (!track.albumArtist.isNullOrEmpty())
                                 it.albumArtist = track.albumArtist
                         } else if (!track.albumArtist.isNullOrEmpty() &&
-                                prefs.getBoolean(Stuff.PREF_FETCH_AA, false) &&
+                                prefs.fetchAlbumArtist &&
                                 it.album.equals(track.album, ignoreCase = true) &&
                                 (it.albumArtist == "" || it.artist == it.albumArtist))
                             it.albumArtist = track.albumArtist
@@ -101,7 +98,7 @@ class PendingScrJob : JobService() {
                 progressCb?.invoke(context.getString(R.string.pending_n_remaining, aneCount))
                 var correctedArtist: String?
                 try {
-                    correctedArtist = LFMRequester.getValidArtist(entry.artist, prefs.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null))
+                    correctedArtist = LFMRequester.getValidArtist(entry.artist, prefs.allowedArtists)
                 } catch (e: Exception){
                     Stuff.log("OfflineScrobble: n/w err1 - " + e.message)
                     done = false
@@ -140,25 +137,25 @@ class PendingScrJob : JobService() {
 
             progressCb?.invoke(context.getString(R.string.pending_batch))
 
-            val lastfmSessKey: String = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+            val lastfmSessKey: String = prefs.lastfmSessKey
                     ?: //user logged out
                     return done
 
-            val lastfmEnabled = !prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
+            val lastfmEnabled = !prefs.lastfmDisabled
 
             val lastfmSession: Session? = if (lastfmEnabled)
                         Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
                     else
                         null
-            val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
+            val librefmSessKey: String? = prefs.librefmSessKey
             val librefmSession: Session? = if (librefmSessKey != null)
                         Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
                                 Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
                     else
                         null
-            val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
+            val gnufmSessKey: String? = prefs.gnufmSessKey
             val gnufmSession: Session? = if (gnufmSessKey != null)
-                        Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                        Session.createCustomRootSession(prefs.gnufmRoot + "2.0/",
                                 Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
                     else
                         null
@@ -204,15 +201,15 @@ class PendingScrJob : JobService() {
                             ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
                         }
                     var token = ""
-                    if (prefs.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null)?.also { token = it } != null &&
+                    if (prefs.listenbrainzToken?.also { token = it } != null &&
                             filterForService(R.string.listenbrainz, scrobbleDataToEntry).also { filteredData = it }.isNotEmpty())
                         scrobbleResults[R.string.listenbrainz] = ListenBrainz(token)
                                         .scrobble(filteredData!!)
 
-                    if (prefs.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.also { token = it } != null &&
+                    if (prefs.customListenbrainzToken?.also { token = it } != null &&
                             filterForService(R.string.custom_listenbrainz, scrobbleDataToEntry).also { filteredData = it }.isNotEmpty())
                         scrobbleResults[R.string.custom_listenbrainz] = ListenBrainz(token)
-                                        .setApiRoot(prefs.getString(Stuff.PREF_LB_CUSTOM_ROOT, null)!!)
+                                        .setApiRoot(prefs.customListenbrainzRoot!!)
                                         .scrobble(filteredData!!)
 
                     val idsToDelete = mutableListOf<Int>()
@@ -265,23 +262,23 @@ class PendingScrJob : JobService() {
         }
 
         private fun submitLoves(): Boolean {
-            val lastfmSessKey = prefs.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+            val lastfmSessKey = prefs.lastfmSessKey
                     ?: return true //user logged out
-            val lastfmEnabled = !prefs.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
+            val lastfmEnabled = !prefs.lastfmDisabled
 
             val lastfmSession: Session? = if (lastfmEnabled)
                 Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, lastfmSessKey)
             else
                 null
-            val librefmSessKey: String? = prefs.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)
+            val librefmSessKey: String? = prefs.librefmSessKey
             val librefmSession: Session? = if (librefmSessKey != null)
                 Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
                         Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, librefmSessKey)
             else
                 null
-            val gnufmSessKey: String? = prefs.getString(Stuff.PREF_GNUFM_SESS_KEY, null)
+            val gnufmSessKey: String? = prefs.gnufmSessKey
             val gnufmSession: Session? = if (gnufmSessKey != null)
-                Session.createCustomRootSession(prefs.getString(Stuff.PREF_GNUFM_ROOT, null)+"2.0/",
+                Session.createCustomRootSession(prefs.gnufmRoot + "2.0/",
                         Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, gnufmSessKey)
             else
                 null

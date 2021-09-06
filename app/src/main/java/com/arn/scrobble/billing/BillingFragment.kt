@@ -75,7 +75,7 @@ class BillingFragment : Fragment() {
             .load("https://i.imgur.com/cYMoA6u.png")
             .into(binding.shareImage)
 */
-        billingViewModel = (activity as Main).billingViewModel
+        billingViewModel = (activity as MainActivity).billingViewModel
         billingViewModel.proSkuDetails.observe(viewLifecycleOwner) {
             it?.let {
                 Stuff.log("price: " + it.priceCurrencyCode + it.price)

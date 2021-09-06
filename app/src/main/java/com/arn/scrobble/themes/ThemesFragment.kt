@@ -1,6 +1,5 @@
 package com.arn.scrobble.themes
 
-import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -11,14 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.setArrowColors
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ContentThemesBinding
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -34,6 +33,9 @@ class ThemesFragment: Fragment() {
     lateinit var secondarySwatchIds: MutableList<Int>
     lateinit var backgroundSwatchIds: MutableList<Int>
 
+    private val prefs by lazy { MainPrefs(context!!) }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,24 +48,21 @@ class ThemesFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val pref = MultiPreferences(context!!)
-
-        var primaryPref = pref.getString(Stuff.PREF_THEME_PRIMARY, ColorPatchUtils.primaryDefault)!!
+        var primaryPref = prefs.themePrimary
         if (ColorPatchMap.primaryStyles[primaryPref] == null)
             primaryPref = ColorPatchUtils.primaryDefault
 
-        var secondaryPref = pref.getString(Stuff.PREF_THEME_SECONDARY, ColorPatchUtils.secondaryDefault)!!
+        var secondaryPref = prefs.themeSecondary
         if (ColorPatchMap.secondaryStyles[secondaryPref] == null)
             secondaryPref = ColorPatchUtils.secondaryDefault
 
-        var backgroundPref = pref.getString(Stuff.PREF_THEME_BACKGROUND, ColorPatchUtils.backgroundDefault)!!
+        var backgroundPref = prefs.themeBackground
         if (ColorPatchMap.backgroundStyles[backgroundPref] == null)
             backgroundPref = ColorPatchUtils.backgroundDefault
 
-        binding.themeRandom.isChecked = pref.getBoolean(Stuff.PREF_THEME_RANDOM, false)
-        binding.themeSameTone.isChecked = pref.getBoolean(Stuff.PREF_THEME_SAME_TONE, false)
-        binding.themePaletteBg.isChecked = activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-            .getBoolean(Stuff.PREF_ACTIVITY_THEME_PALETTE_BG, true)
+        binding.themeRandom.isChecked = prefs.themeRandom
+        binding.themeSameTone.isChecked = prefs.themeSameTone
+        binding.themePaletteBg.isChecked = prefs.themePaletteBackground
 
         primarySwatchIds = mutableListOf()
         secondarySwatchIds = mutableListOf()
@@ -145,7 +144,7 @@ class ThemesFragment: Fragment() {
         }
 
         binding.themeDone.setOnClickListener {
-            if ((activity as Main).billingViewModel.proStatus.value == true) {
+            if ((activity as MainActivity).billingViewModel.proStatus.value == true) {
                 saveTheme()
                 if (!binding.themeRandom.isChecked)
                     context!!.sendBroadcast(Intent(NLService.iTHEME_CHANGED))
@@ -161,7 +160,7 @@ class ThemesFragment: Fragment() {
     }
 
     override fun onDestroyView() {
-        val act = activity as Main
+        val act = activity as MainActivity
         act.binding.coordinatorMain.ctl.contentScrim =
             ColorDrawable(MaterialColors.getColor(context!!, android.R.attr.colorBackground, null))
         act.binding.coordinatorMain.toolbar.setTitleTextColor(
@@ -201,7 +200,7 @@ class ThemesFragment: Fragment() {
         val styleId = ColorPatchMap.primaryStyles[name]!!
         val color = context!!.getStyledColor(styleId, R.attr.colorPrimary)
         binding.themeDone.backgroundTintList = ColorStateList.valueOf(color)
-        val act = activity as Main
+        val act = activity as MainActivity
         act.binding.coordinatorMain.toolbar.setTitleTextColor(color)
         act.binding.coordinatorMain.toolbar.setArrowColors(
             color,
@@ -223,7 +222,7 @@ class ThemesFragment: Fragment() {
         val styleId = ColorPatchMap.backgroundStyles[name]!!
         val color = context!!.getStyledColor(styleId, android.R.attr.colorBackground)
         binding.root.background = ColorDrawable(color)
-        val act = activity as Main
+        val act = activity as MainActivity
         act.window.navigationBarColor = color
         act.binding.coordinatorMain.ctl.contentScrim = ColorDrawable(color)
     }
@@ -257,15 +256,13 @@ class ThemesFragment: Fragment() {
     }
 
     private fun saveTheme() {
-        val pref = MultiPreferences(context!!)
-        pref.putString(Stuff.PREF_THEME_PRIMARY, getThemeName(binding.themePrimarySwatches))
-        pref.putString(Stuff.PREF_THEME_SECONDARY, getThemeName(binding.themeSecondarySwatches))
-        pref.putString(Stuff.PREF_THEME_BACKGROUND, getThemeName(binding.themeBackgroundSwatches))
-        pref.putBoolean(Stuff.PREF_THEME_RANDOM, binding.themeRandom.isChecked)
-        pref.putBoolean(Stuff.PREF_THEME_SAME_TONE, binding.themeSameTone.isChecked)
-        activity!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(Stuff.PREF_ACTIVITY_THEME_PALETTE_BG, binding.themePaletteBg.isChecked)
-            .apply()
+        prefs.apply {
+            themePrimary = getThemeName(binding.themePrimarySwatches)
+            themeSecondary = getThemeName(binding.themeSecondarySwatches)
+            themeBackground = getThemeName(binding.themeBackgroundSwatches)
+            themeRandom = binding.themeRandom.isChecked
+            themeSameTone = binding.themeSameTone.isChecked
+            themePaletteBackground = binding.themePaletteBg.isChecked
+        }
     }
 }

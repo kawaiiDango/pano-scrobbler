@@ -9,6 +9,7 @@ import android.widget.RemoteViewsService
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.pref.WidgetPrefs
 import java.text.NumberFormat
 import java.util.ArrayList
 
@@ -30,14 +31,9 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         // The empty view is set in the StackWidgetProvider and should be a sibling of the
         // collection view.
 
-        val pref = context.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
-        val lastUpdated = pref.getLong(
-            Stuff.getWidgetPrefName(
-                Stuff.PREF_WIDGET_LAST_UPDATED,
-                appWidgetId
-            ), -1)
-
-        ChartsWidgetUpdaterJob.checkAndSchedule(context, lastUpdated == -1L)
+        val prefs = WidgetPrefs(context)[appWidgetId]
+        val lastUpdated = prefs.lastUpdated
+        ChartsWidgetUpdaterJob.checkAndSchedule(context, lastUpdated == null)
     }
 
     override fun onDestroy() {
@@ -117,19 +113,13 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
 
     private fun readData() {
         widgetItems.clear()
-        val pref = context.getSharedPreferences(Stuff.WIDGET_PREFS, Context.MODE_PRIVATE)
+        val prefs = WidgetPrefs(context)[appWidgetId]
 
-        tab = pref.getInt(
-            Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_TAB, appWidgetId),
-            Stuff.TYPE_ARTISTS
-        )
-        val period = pref.getInt(Stuff.getWidgetPrefName(Stuff.PREF_WIDGET_PERIOD, appWidgetId), -1)
-
-        if (period == -1)
-            return
+        tab = prefs.tab ?: Stuff.TYPE_ARTISTS
+        val period = prefs.period ?: return
 
         val list = ObjectSerializeHelper.convertFrom<ArrayList<ChartsWidgetListItem>>(
-            pref.getString("${tab}_$period", null)
+            prefs.sharedPreferences.getString("${tab}_$period", null)
         ) ?: arrayListOf()
         widgetItems.addAll(list)
     }

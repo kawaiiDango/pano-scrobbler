@@ -1,17 +1,18 @@
 package com.arn.scrobble
 
-import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.viewpager.widget.ViewPager
+import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.tabs.TabLayout
 
 
 class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
 
     private var backStackChecked = false
+    private val prefs by lazy { MainPrefs(context!!) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tabMeta = arrayOf(
@@ -57,10 +58,9 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
             else if(activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_CHARTS)
                 3
             else
-                context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-                        .getInt(Stuff.PREF_ACTIVITY_LAST_TAB, 0)
+                prefs.lastHomePagerTab
             initTabs(lastTab)
-            (activity as Main).onBackStackChanged()
+            (activity as MainActivity).onBackStackChanged()
             backStackChecked = true
         }
         super.onStart()
@@ -79,7 +79,7 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
     }
 
     override fun onPageSelected(position: Int) {
-        (activity as Main).onBackStackChanged()
+        (activity as MainActivity).onBackStackChanged()
     }
 
     override fun onTabSelected(tab: TabLayout.Tab) {
@@ -87,10 +87,7 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
         if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0 &&
                 arguments?.getString(Stuff.ARG_USERNAME) == null) {
             context ?: return
-            context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-                    .edit()
-                    .putInt(Stuff.PREF_ACTIVITY_LAST_TAB, tab.position)
-                    .apply()
+            prefs.lastHomePagerTab = tab.position
         }
     }
 }

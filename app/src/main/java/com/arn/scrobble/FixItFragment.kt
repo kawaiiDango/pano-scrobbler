@@ -26,7 +26,7 @@ class FixItFragment: BottomSheetDialogFragment() {
             FirstThingsFragment.openStartupMgr(startupMgrIntent, context!!)
         }
         addTouchDelegate(binding.fixItStartupAction, 24.dp, 10.dp)
-        if (!Main.isTV) {
+        if (!MainActivity.isTV) {
             binding.fixItNls.visibility = View.VISIBLE
             binding.fixItNlsAction.setOnClickListener {
                 startActivity(Intent(Stuff.NLS_SETTINGS))

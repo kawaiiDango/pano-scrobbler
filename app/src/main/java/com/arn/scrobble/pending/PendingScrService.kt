@@ -11,10 +11,10 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,14 +45,14 @@ class PendingScrService: Service() {
     }
 
     private fun showNotification() {
-        val intent = Intent(applicationContext, Main::class.java)
+        val intent = Intent(applicationContext, MainActivity::class.java)
         val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent,
             Stuff.updateCurrentOrImmutable)
-        nb = NotificationCompat.Builder(applicationContext, Stuff.CHANNEL_NOTI_PENDING)
+        nb = NotificationCompat.Builder(applicationContext, MainPrefs.CHANNEL_NOTI_PENDING)
             .setSmallIcon(R.drawable.vd_noti)
             .setPriority(Notification.PRIORITY_MIN)
             .setContentIntent(launchIntent)
-            .setColor(ColorPatchUtils.getNotiColor(this, MultiPreferences(this)))
+            .setColor(ColorPatchUtils.getNotiColor(this, MainPrefs(this)))
             .setContentTitle(getString(R.string.pending_scrobbles_noti))
 
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

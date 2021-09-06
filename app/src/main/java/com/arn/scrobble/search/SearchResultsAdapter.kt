@@ -7,7 +7,7 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.charts.ChartsVM
@@ -222,7 +222,7 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
                 }
                 else -> {
                     drawableRes = R.drawable.vd_ban
-                    text = if (Main.isOnline)
+                    text = if (MainActivity.isOnline)
                         itemView.context.getString(R.string.not_found)
                     else
                         itemView.context.getString(R.string.unavailable_offline)

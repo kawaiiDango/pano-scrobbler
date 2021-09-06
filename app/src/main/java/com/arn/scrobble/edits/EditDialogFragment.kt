@@ -174,12 +174,12 @@ class EditDialogFragment: LoginFragment() {
                 if (validTrack == null) {
                     validArtist = LFMRequester.getValidArtist(
                         artist,
-                        pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null)
+                        prefs.allowedArtists
                     )
                     if (albumArtist.isNotEmpty())
                         validAlbumArtist = LFMRequester.getValidArtist(
                             albumArtist,
-                            pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, null)
+                            prefs.allowedArtists
                         )
 
                 } else {
@@ -200,14 +200,14 @@ class EditDialogFragment: LoginFragment() {
             if (validTrack == null && (validArtist == null || validAlbumArtist == null) && !binding.loginForce.isChecked) {
                 errMsg = getString(R.string.state_unrecognised_artist)
             } else {
-                val lastfmSessKey: String? = pref.getString(Stuff.PREF_LASTFM_SESS_KEY, null)
+                val lastfmSessKey: String? = prefs.lastfmSessKey
                 val lastfmSession = Session.createSession(
                     Stuff.LAST_KEY,
                     Stuff.LAST_SECRET, lastfmSessKey)
                 val scrobbleData = ScrobbleData(artist, track, (timeMillis / 1000).toInt())
                 scrobbleData.album = album
                 scrobbleData.albumArtist = albumArtist
-                val isLastfmDisabled = pref.getBoolean(Stuff.PREF_LASTFM_DISABLE, false)
+                val isLastfmDisabled = prefs.lastfmDisabled
                 val result = if (isLastfmDisabled && isStandalone)
                     null
                 else
@@ -248,7 +248,7 @@ class EditDialogFragment: LoginFragment() {
                         }
 
                         launch {
-                            pref.getString(Stuff.PREF_LIBREFM_SESS_KEY, null)?.let {
+                            prefs.librefmSessKey?.let {
                                 val librefmSession: Session = Session.createCustomRootSession(
                                     Stuff.LIBREFM_API_ROOT,
                                     Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
@@ -257,32 +257,32 @@ class EditDialogFragment: LoginFragment() {
                             }
                         }
                         launch {
-                            pref.getString(Stuff.PREF_GNUFM_SESS_KEY, null)?.let {
+                            prefs.gnufmSessKey?.let {
                                 val gnufmSession: Session = Session.createCustomRootSession(
-                                    pref.getString(Stuff.PREF_GNUFM_ROOT, null) + "2.0/",
+                                    prefs.gnufmRoot + "2.0/",
                                     Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
                                 )
                                 getScrobbleResult(scrobbleData, gnufmSession)
                             }
                         }
                         launch {
-                            pref.getString(Stuff.PREF_LISTENBRAINZ_TOKEN, null)?.let {
+                            prefs.listenbrainzToken?.let {
                                 ListenBrainz(it)
                                     .scrobble(scrobbleData)
                             }
                         }
                         launch {
-                            pref.getString(Stuff.PREF_LB_CUSTOM_TOKEN, null)?.let {
+                            prefs.customListenbrainzToken?.let {
                                 ListenBrainz(it)
-                                    .setApiRoot(pref.getString(Stuff.PREF_LB_CUSTOM_ROOT, null)!!)
+                                    .setApiRoot(prefs.customListenbrainzRoot!!)
                                     .scrobble(scrobbleData)
                             }
                         }
                     }
                     saveEdit(context!!)
                     if (binding.loginForce.isChecked){
-                        val oldSet = pref.getStringSet(Stuff.PREF_ALLOWED_ARTISTS, setOf())
-                        pref.putStringSet(Stuff.PREF_ALLOWED_ARTISTS, oldSet + artist)
+                        val oldSet = prefs.allowedArtists.toSet()
+                        prefs.allowedArtists = oldSet + artist
                     }
                 } else if (result?.isIgnored == true) {
                     if (System.currentTimeMillis() - timeMillis < Stuff.LASTFM_MAX_PAST_SCROBBLE)
@@ -310,10 +310,8 @@ class EditDialogFragment: LoginFragment() {
                         errMsg = getString(R.string.network_error)
                 }
 
-                val activityPrefs = activity.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-
                 if (result?.isIgnored == false &&
-                    !activityPrefs.getBoolean(Stuff.PREF_ACTIVITY_REGEX_EDITS_LEARNT, false) &&
+                    !prefs.regexEditsLearnt &&
                         !isStandalone) {
                     val originalScrobbleData = ScrobbleData().apply {
                         this.artist = origArtist
@@ -365,7 +363,7 @@ class EditDialogFragment: LoginFragment() {
                                             .commit()
                                     }
                                     .setNegativeButton(android.R.string.no) { _, _ ->
-                                        activityPrefs.edit().putBoolean(Stuff.PREF_ACTIVITY_REGEX_EDITS_LEARNT, true).apply()
+                                        prefs.regexEditsLearnt = true
                                     }
                                     .show()
                             }
@@ -377,7 +375,7 @@ class EditDialogFragment: LoginFragment() {
             errMsg = e.message
         }
         if (errMsg == null) {
-            (activity as? Main)?.let {
+            (activity as? MainActivity)?.let {
                 it.mainNotifierViewModel.editData.postValue(
                         Track(track, null, album, artist).apply {
                             if (args.getLong(NLService.B_TIME) != 0L)

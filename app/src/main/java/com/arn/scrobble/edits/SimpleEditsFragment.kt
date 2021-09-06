@@ -16,7 +16,7 @@ import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentSimpleEditsBinding
 import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.db.SimpleEdit
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -187,15 +187,12 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
                     lifecycleScope.launch(Dispatchers.IO) {
                         if (checkArtist) {
                             val allowedSet =
-                                MultiPreferences(context!!).getStringSet(
-                                    Stuff.PREF_ALLOWED_ARTISTS,
-                                    setOf()
-                                )
+                                MainPrefs(context!!).allowedArtists
                             val artist =
                                 LFMRequester.getValidArtist(newEdit.artist, allowedSet)
                             if (artist == null) {
                                 withContext(Dispatchers.Main) {
-                                    if (Main.isOnline)
+                                    if (MainActivity.isOnline)
                                         Stuff.toast(
                                             activity!!,
                                             getString(R.string.state_unrecognised_artist)

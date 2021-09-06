@@ -252,7 +252,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
             }
             binding.infoName.text = entry?.name
             
-            if (entry?.url == null && (key in viewModel.loadedTypes || !Main.isOnline)) {
+            if (entry?.url == null && (key in viewModel.loadedTypes || !MainActivity.isOnline)) {
                 binding.infoProgress.visibility = View.GONE
                 return
             }

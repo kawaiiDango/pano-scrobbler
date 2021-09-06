@@ -13,8 +13,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentLoginBinding
-import com.arn.scrobble.pref.MultiPreferences
 import kotlinx.coroutines.*
+import com.arn.scrobble.pref.MainPrefs
 import org.json.JSONObject
 
 
@@ -22,7 +22,7 @@ import org.json.JSONObject
  * Created by arn on 06/09/2017.
  */
 open class LoginFragment: DialogFragment() {
-    protected lateinit var pref: MultiPreferences
+    protected val prefs by lazy { MainPrefs(context!!) }
     open val checksLogin = true
     protected var isStandalone = false
     private var _binding: ContentLoginBinding? = null
@@ -37,7 +37,6 @@ open class LoginFragment: DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         showsDialog = false
         _binding = ContentLoginBinding.inflate(inflater, container, false)
-        pref = MultiPreferences(context!!)
         val args = arguments
         args?.getString(INFO)?.let {
             binding.loginInfo.autoLinkMask = Linkify.WEB_URLS
@@ -89,7 +88,8 @@ open class LoginFragment: DialogFragment() {
 
         lifecycleScope.launch {
             delay(500)
-            _binding ?: return@launch  // why is this needed?
+            if (context == null || isStateSaved)
+                return@launch  // why is this needed?
 
             if (showsDialog)
                 dismiss()
@@ -109,7 +109,8 @@ open class LoginFragment: DialogFragment() {
 
         lifecycleScope.launch {
             delay(1500)
-            _binding ?: return@launch
+            if (context == null || isStateSaved)
+                return@launch
 
             binding.loginStatus.visibility = View.GONE
             binding.loginSubmit.visibility = View.VISIBLE
@@ -143,8 +144,8 @@ open class LoginFragment: DialogFragment() {
                 if (tlast.isNotBlank()) {
                     val username = ListenBrainz(tlast).getUsername()
                     if (username != null) {
-                        pref.putString(Stuff.PREF_LISTENBRAINZ_USERNAME, username)
-                        pref.putString(Stuff.PREF_LISTENBRAINZ_TOKEN, tlast)
+                        prefs.listenbrainzUsername = username
+                        prefs.listenbrainzToken = tlast
                         success = true
                     }
                 }
@@ -161,9 +162,9 @@ open class LoginFragment: DialogFragment() {
                                 .getUsername()
 
                         if (username != null) {
-                            pref.putString(Stuff.PREF_LB_CUSTOM_ROOT, url)
-                            pref.putString(Stuff.PREF_LB_CUSTOM_USERNAME, username)
-                            pref.putString(Stuff.PREF_LB_CUSTOM_TOKEN, tlast)
+                            prefs.customListenbrainzRoot = url
+                            prefs.customListenbrainzUsername = username
+                            prefs.customListenbrainzToken = tlast
                             success = true
                         }
                     } else
@@ -191,9 +192,9 @@ open class LoginFragment: DialogFragment() {
 
                         if (statusCode == 2004) {
                             // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
-                            pref.putString(Stuff.PREF_ACR_HOST, t1)
-                            pref.putString(Stuff.PREF_ACR_KEY, t2)
-                            pref.putString(Stuff.PREF_ACR_SECRET, tlast)
+                            prefs.acrcloudHost = t1
+                            prefs.acrcloudKey = t2
+                            prefs.acrcloudSecret = tlast
                             success = true
                         }
                     } catch (e: Exception) {

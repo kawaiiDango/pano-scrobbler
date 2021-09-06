@@ -6,14 +6,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.JsonReader
+import android.util.JsonToken
 import android.util.JsonWriter
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.*
 import com.arn.scrobble.pref.JsonHelpers.readJson
 import com.arn.scrobble.pref.JsonHelpers.writeJson
-import com.arn.scrobble.themes.ColorPatchUtils
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStreamReader
@@ -24,6 +24,33 @@ class ImExporter {
     private var reader: InputStreamReader? = null
     private var pfd: ParcelFileDescriptor? = null
     private var context: Context? = null
+
+    // DO not store longs, as they cannot be determined by JsonToken
+    private val prefsToConsider = setOf(
+        MainPrefs.PREF_MASTER,
+        MainPrefs.CHANNEL_NOTI_SCROBBLING,
+        MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY,
+        MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY,
+        MainPrefs.PREF_LOCKSCREEN_NOTI,
+        MainPrefs.PREF_PIXEL_NP,
+        MainPrefs.PREF_DELAY_SECS,
+        MainPrefs.PREF_DELAY_PER,
+        MainPrefs.PREF_NOW_PLAYING,
+        MainPrefs.PREF_FETCH_AA,
+        MainPrefs.PREF_LOCALE,
+        MainPrefs.PREF_AUTO_DETECT,
+        MainPrefs.PREF_SHOW_RECENTS_ALBUM,
+        MainPrefs.PREF_THEME_PRIMARY,
+        MainPrefs.PREF_THEME_SECONDARY,
+        MainPrefs.PREF_THEME_BACKGROUND,
+        MainPrefs.PREF_THEME_SAME_TONE,
+        MainPrefs.PREF_THEME_RANDOM,
+        MainPrefs.PREF_THEME_PALETTE_BG,
+        MainPrefs.PREF_LOCALE,
+
+        MainPrefs.PREF_WHITELIST,
+        MainPrefs.PREF_BLACKLIST,
+    )
 
     fun setOutputUri(context: Context, uri: Uri){
         pfd = context.contentResolver.openFileDescriptor(uri, "w")
@@ -49,8 +76,7 @@ class ImExporter {
 
     fun export(): Boolean {
         if (context == null || writer == null){
-            Stuff.log("ImExporter not inited")
-            return false
+            throw IllegalArgumentException("ImExporter not inited")
         }
         val context = context!!
         var written = false
@@ -89,37 +115,26 @@ class ImExporter {
                     endArray()
 
                     name("settings").beginObject()
-                    val pref = MultiPreferences(context)
-                    name(Stuff.PREF_MASTER).value(pref.getBoolean(Stuff.PREF_MASTER, true))
-                    name(Stuff.CHANNEL_NOTI_SCROBBLING).value(pref.getBoolean(Stuff.CHANNEL_NOTI_SCROBBLING, true))
-                    name(Stuff.CHANNEL_NOTI_DIGEST_WEEKLY).value(pref.getBoolean(Stuff.CHANNEL_NOTI_DIGEST_WEEKLY, true))
-                    name(Stuff.CHANNEL_NOTI_DIGEST_MONTHLY).value(pref.getBoolean(Stuff.CHANNEL_NOTI_DIGEST_MONTHLY, true))
-                    name(Stuff.PREF_LOCKSCREEN_NOTI).value(pref.getBoolean(Stuff.PREF_LOCKSCREEN_NOTI, false))
-                    name(Stuff.PREF_PIXEL_NP).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
-                    name(Stuff.PREF_DELAY_SECS).value(pref.getInt(Stuff.PREF_DELAY_SECS, Stuff.PREF_DELAY_SECS_DEFAULT))
-                    name(Stuff.PREF_DELAY_PER).value(pref.getInt(Stuff.PREF_DELAY_PER, Stuff.PREF_DELAY_PER_DEFAULT))
-                    name(Stuff.PREF_NOW_PLAYING).value(pref.getBoolean(Stuff.PREF_NOW_PLAYING, true))
-                    name(Stuff.PREF_FETCH_AA).value(pref.getBoolean(Stuff.PREF_FETCH_AA, false))
-                    name(Stuff.PREF_LOCALE).value(pref.getString(Stuff.PREF_LOCALE, null))
-                    name(Stuff.PREF_AUTO_DETECT).value(pref.getBoolean(Stuff.PREF_AUTO_DETECT, true))
-                    name(Stuff.PREF_SHOW_RECENTS_ALBUM).value(pref.getBoolean(Stuff.PREF_SHOW_RECENTS_ALBUM, false))
-                    name(Stuff.PREF_THEME_PRIMARY).value(pref.getString(Stuff.PREF_THEME_PRIMARY, ColorPatchUtils.primaryDefault))
-                    name(Stuff.PREF_THEME_SECONDARY).value(pref.getString(Stuff.PREF_THEME_SECONDARY, ColorPatchUtils.secondaryDefault))
-                    name(Stuff.PREF_THEME_BACKGROUND).value(pref.getString(Stuff.PREF_THEME_BACKGROUND, ColorPatchUtils.backgroundDefault))
-                    name(Stuff.PREF_THEME_SAME_TONE).value(pref.getBoolean(Stuff.PREF_THEME_SAME_TONE, false))
-                    name(Stuff.PREF_THEME_RANDOM).value(pref.getBoolean(Stuff.PREF_THEME_RANDOM, false))
-                    name(Stuff.PREF_WHITELIST).beginArray()
-                    pref.getStringSet(Stuff.PREF_WHITELIST, setOf())
-                            .forEach {
-                                value(it)
+
+                    MainPrefs(context).sharedPreferences.all.forEach { (prefKey, prefValue) ->
+                        if (prefValue == null || prefKey !in prefsToConsider)
+                            return@forEach
+
+                        name(prefKey)
+                        when (prefValue) {
+                            is Boolean -> value(prefValue)
+                            is Float -> value(prefValue)
+                            is Int -> value(prefValue)
+                            is Long -> value(prefValue)
+                            is String -> value(prefValue)
+                            is Set<*> -> {
+                                beginArray()
+                                prefValue.forEach { value(it as String) }
+                                endArray()
                             }
-                    endArray()
-                    name(Stuff.PREF_BLACKLIST).beginArray()
-                    pref.getStringSet(Stuff.PREF_BLACKLIST, setOf())
-                            .forEach {
-                                value(it)
-                            }
-                    endArray()
+                        }
+                    }
+
                     endObject()
 
                     endObject()
@@ -134,8 +149,7 @@ class ImExporter {
 
     fun import(editsMode: Int, settings: Boolean): Boolean {
         if (context == null || reader == null){
-            Stuff.log("ImExporter not inited")
-            return false
+            throw IllegalArgumentException("ImExporter not inited")
         }
         val context = context!!
         try {
@@ -208,49 +222,73 @@ class ImExporter {
 
 
                         } else if (name == "settings" && settings) {
-                            val pref = MultiPreferences(context)
+                            val prefs = MainPrefs(context).sharedPreferences.edit()
+                            val settingsNamesInJson = mutableSetOf<String>()
                             beginObject()
                             while (hasNext()) {
                                 val settingsName = nextName()
-                                if (settingsName == Stuff.PREF_WHITELIST || settingsName == Stuff.PREF_BLACKLIST) {
-                                    val list = mutableSetOf<String>()
-                                    beginArray()
-                                    while (hasNext()) {
-                                        val pkgName = nextString()
-                                        try {
-                                            context.packageManager?.getPackageInfo(pkgName, 0)
-                                            list += pkgName
-                                        } catch (e: PackageManager.NameNotFoundException) {
-                                            Stuff.log("$pkgName not installed")
-                                        }
-                                    }
-                                    pref.putStringSet(settingsName, list)
-                                    endArray()
-                                } else if (settingsName == Stuff.PREF_DELAY_SECS || settingsName == Stuff.PREF_DELAY_PER) {
-                                    pref.putInt(settingsName, nextInt())
-                                } else {
-                                    if (settingsName == Stuff.PREF_AUTO_DETECT && Main.isTV)
-                                        skipValue()
-                                    else if (settingsName == Stuff.PREF_PIXEL_NP) {
-                                        if (Build.MANUFACTURER.lowercase() == Stuff.MANUFACTURER_GOOGLE) {
-                                            pref.putBoolean(settingsName, nextBoolean())
-                                        } else {
-                                            skipValue()
-                                        }
-                                    } else if (settingsName in arrayOf(
-                                            Stuff.PREF_THEME_PRIMARY,
-                                            Stuff.PREF_THEME_SECONDARY,
-                                            Stuff.PREF_THEME_BACKGROUND,
-                                            Stuff.PREF_LOCALE,
-                                    ))
-                                        pref.putString(settingsName, nextString())
-                                    else if (settingsName in arrayOf(Stuff.PREF_PRO_STATUS)) {
+                                settingsNamesInJson += settingsName
 
-                                    } else
-                                        pref.putBoolean(settingsName, nextBoolean())
+                                if (settingsName !in prefsToConsider) {
+                                    skipValue()
+                                    continue
+                                }
+
+                                when(peek()) {
+                                    JsonToken.BEGIN_ARRAY -> {
+                                        val list = mutableSetOf<String>()
+                                        beginArray()
+                                        if (settingsName == MainPrefs.PREF_WHITELIST || settingsName == MainPrefs.PREF_BLACKLIST) {
+                                            while (hasNext()) {
+                                                val pkgName = nextString()
+                                                try {
+                                                    context.packageManager?.getPackageInfo(
+                                                        pkgName,
+                                                        0
+                                                    )
+                                                    list += pkgName
+                                                } catch (e: PackageManager.NameNotFoundException) {
+                                                    Stuff.log("$pkgName not installed")
+                                                }
+                                            }
+                                        } else {
+                                            while (hasNext()) {
+                                                list += nextString()
+                                            }
+                                        }
+                                        prefs.putStringSet(settingsName, list)
+                                        endArray()
+                                    }
+                                    JsonToken.NUMBER -> {
+                                        val numStr = nextString()
+                                        if ('.' in numStr)
+                                            prefs.putFloat(settingsName, numStr.toFloat())
+                                        else
+                                            prefs.putInt(settingsName, numStr.toInt())
+                                    }
+                                    JsonToken.STRING -> {
+                                        prefs.putString(settingsName, nextString())
+                                    }
+                                    JsonToken.BOOLEAN -> {
+                                        if (
+                                            settingsName == MainPrefs.PREF_AUTO_DETECT && MainActivity.isTV ||
+                                            settingsName == MainPrefs.PREF_PIXEL_NP && Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE
+                                        )
+                                            skipValue()
+                                        else
+                                            prefs.putBoolean(settingsName, nextBoolean())
+                                    }
+                                    else -> skipValue()
                                 }
                             }
                             endObject()
+                            if (settingsNamesInJson.isNotEmpty()) {
+                                val settingsToReset = prefsToConsider - settingsNamesInJson
+                                settingsToReset.forEach {
+                                    prefs.remove(it)
+                                }
+                            }
+                            prefs.apply()
                         } else if (name == "pano_version")
                             versionCode = nextInt()
                         else

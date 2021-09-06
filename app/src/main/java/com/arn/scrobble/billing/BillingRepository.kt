@@ -11,7 +11,7 @@ import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Tokens
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import timber.log.Timber
 import java.util.*
 import kotlin.math.min
@@ -26,11 +26,11 @@ class BillingRepository private constructor(private val application: Application
     private var reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
 
     private lateinit var playStoreBillingClient: BillingClient
-    private val pref by lazy { MultiPreferences(application) }
-    val proStatusLd by lazy { MutableLiveData(pref.getBoolean(Stuff.PREF_PRO_STATUS, false)) }
+    private val prefs by lazy { MainPrefs(application) }
+    val proStatusLd by lazy { MutableLiveData(prefs.proStatus) }
     val proPendingSinceLd by lazy { MutableLiveData(0L) }
     val proSkuDetailsLd by lazy {
-        val json = pref.getString(Stuff.PREF_PRO_SKU_JSON, null)
+        val json = prefs.proSkuJson
         val ld = MutableLiveData<SkuDetails>()
         if (json != null) {
             val skud = SkuDetails(json)
@@ -209,7 +209,7 @@ class BillingRepository private constructor(private val application: Application
      */
     private fun disburseNonConsumableEntitlement(purchase: Purchase) {
         if (Tokens.PRO_SKU_NAME in purchase.skus) {
-            pref.putBoolean(Stuff.PREF_PRO_STATUS, true)
+            prefs.proStatus = true
             if (proStatusLd.value != true) {
                 proStatusLd.postValue(true)
                 application.sendBroadcast(Intent(NLService.iTHEME_CHANGED))
@@ -219,7 +219,7 @@ class BillingRepository private constructor(private val application: Application
     }
 
     private fun revokePro() {
-        pref.putBoolean(Stuff.PREF_PRO_STATUS, false)
+        prefs.proStatus = false
         if (proStatusLd.value != false)
             proStatusLd.postValue(false)
     }
@@ -232,7 +232,7 @@ class BillingRepository private constructor(private val application: Application
         )
             skud
         else if (skud != null) {
-            pref.remove(Stuff.PREF_PRO_SKU_JSON)
+            prefs.proSkuJson = null
             proSkuDetailsLd.postValue(null)
             revokePro()
             null
@@ -258,7 +258,7 @@ class BillingRepository private constructor(private val application: Application
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
                     findProSku(skuDetailsList)?.let {
-                        pref.putString(Stuff.PREF_PRO_SKU_JSON, it.originalJson)
+                        prefs.proSkuJson = it.originalJson
                         proSkuDetailsLd.postValue(it)
                     }
                 }

@@ -8,7 +8,7 @@ import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
-import com.arn.scrobble.Main
+import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.dp
@@ -120,7 +120,7 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
         binding.chartsList.layoutAnimation = null
         if (viewModel.chartsData.isEmpty()) {
             if (itemCount == 0) {
-                if (!Main.isOnline)
+                if (!MainActivity.isOnline)
                     binding.chartsStatus.text = binding.root.context.getString(R.string.unavailable_offline)
                 else
                     binding.chartsStatus.text = binding.root.context.getString(emptyTextRes)

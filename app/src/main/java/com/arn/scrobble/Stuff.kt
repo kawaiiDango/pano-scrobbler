@@ -37,7 +37,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -94,84 +94,6 @@ object Stuff {
     const val FRIENDS_RECENTS_DELAY: Long = 800
     const val MAX_PATTERNS = 30
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
-
-    const val PREF_MASTER = "master"
-    const val PREF_WHITELIST = "app_whitelist"
-    const val PREF_BLACKLIST = "app_blacklist"
-    const val PREF_AUTO_DETECT = "auto_detect"
-    const val PREF_DELAY_SECS = "delay_secs"
-    const val PREF_DELAY_SECS_DEFAULT = 240
-    const val PREF_DELAY_PER = "delay_per"
-    const val PREF_DELAY_PER_DEFAULT = 50
-    const val PREF_ALLOWED_ARTISTS = "allowed_artists"
-    const val PREF_LASTFM_SESS_KEY = "lastfm_sesskey"
-    const val PREF_LASTFM_USERNAME = "lastfm_username"
-    const val PREF_LIBREFM_USERNAME = "librefm_username"
-    const val PREF_LIBREFM_SESS_KEY = "librefm_sesskey"
-    const val PREF_LISTENBRAINZ_USERNAME = "listenbrainz_username"
-    const val PREF_LISTENBRAINZ_TOKEN = "listenbrainz_token"
-    const val PREF_LB_CUSTOM_USERNAME = "lb_username"
-    const val PREF_LB_CUSTOM_ROOT = "lb_root"
-    const val PREF_LB_CUSTOM_TOKEN = "lb_token"
-    const val PREF_GNUFM_USERNAME = "gnufm_username"
-    const val PREF_GNUFM_ROOT = "gnufm_root"
-    const val PREF_GNUFM_SESS_KEY = "gnufm_sesskey"
-    const val PREF_LASTFM_DISABLE = "lastfm_disable"
-    const val PREF_NOW_PLAYING = "now_playing"
-    const val PREF_ACR_HOST = "acr_host"
-    const val PREF_ACR_KEY = "acr_key"
-    const val PREF_ACR_SECRET = "acr_secret"
-    const val PREF_PIXEL_NP = "pixel_np"
-    const val PREF_LOCKSCREEN_NOTI = "lockscreen_noti"
-    const val PREF_IMPORT = "import"
-    const val PREF_EXPORT = "export"
-    const val PREF_INTENTS = "intents"
-    const val PREF_FETCH_AA = "fetch_album_artist"
-    const val PREF_SHOW_RECENTS_ALBUM = "show_album"
-    const val PREF_THEME_PRIMARY = "theme_primary"
-    const val PREF_THEME_SECONDARY = "theme_secondary"
-    const val PREF_THEME_BACKGROUND = "theme_background"
-    const val PREF_THEME_RANDOM = "theme_random"
-    const val PREF_THEME_SAME_TONE = "theme_same_tone"
-    const val PREF_PRO_STATUS = "pro_status"
-    const val PREF_PRO_SKU_JSON = "pro_sku_json"
-    const val PREF_DIGEST_SECONDS = "digest_seconds"
-    const val PREF_LOCALE = "locale"
-
-    const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
-    const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"
-    const val CHANNEL_NOTI_NEW_APP = "noti_new_app"
-    const val CHANNEL_NOTI_PENDING = "noti_pending_scrobbles"
-    const val CHANNEL_NOTI_DIGEST_WEEKLY = "noti_digest_weekly"
-    const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
-
-    const val PREF_ACTIVITY_FIRST_RUN = "first_run"
-    const val PREF_ACTIVITY_GRAPH_DETAILS = "show_graph_details"
-    const val PREF_ACTIVITY_LAST_TAB = "last_tab"
-    const val PREF_ACTIVITY_LAST_CHARTS_PERIOD = "last_charts_period"
-    const val PREF_ACTIVITY_LAST_CHARTS_WEEK_TO = "last_charts_week_to"
-    const val PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM = "last_charts_week_from"
-    const val PREF_ACTIVITY_TODAY_SCROBBLES = "today_scrobbles_cached"
-    const val PREF_ACTIVITY_TOTAL_SCROBBLES = "total_scrobbles_cached"
-    const val PREF_ACTIVITY_SCROBBLING_SINCE = "scrobbling_since"
-    const val PREF_ACTIVITY_LAST_RANDOM_TYPE = "random_type"
-    const val PREF_ACTIVITY_PROFILE_PIC = "profile_cached"
-    const val PREF_ACTIVITY_SEARCH_HISTORY = "search_history"
-    const val PREF_ACTIVITY_TAG_HISTORY = "tag_history"
-    const val PREF_ACTIVITY_SCRUB_LEARNT = "scrub_learnt"
-    const val PREF_ACTIVITY_LONG_PRESS_LEARNT = "long_press_learnt"
-    const val PREF_ACTIVITY_THEME_PALETTE_BG = "palette_bg"
-    const val PREF_ACTIVITY_REGEX_EDITS_LEARNT = "regex_edits_learnt"
-    const val PREF_ACTIVITY_USER_TOP_TAGS_FETCHED = "user_top_tags_fetched"
-    const val ACTIVITY_PREFS = "activity_preferences"
-
-    const val WIDGET_PREFS = "widget_preferences"
-    const val PREF_WIDGET_TAB = "tab"
-    const val PREF_WIDGET_BG_ALPHA = "bg_alpha"
-    const val PREF_WIDGET_DARK = "dark"
-    const val PREF_WIDGET_PERIOD = "period"
-    const val PREF_WIDGET_SHADOW = "shadow"
-    const val PREF_WIDGET_LAST_UPDATED = "last_updated"
 
     const val EXTRA_PINNED = "pinned"
 
@@ -345,7 +267,7 @@ object Stuff {
     }
 
     fun setTitle(activity: Activity?, str: String?) {
-        activity as Main
+        activity as MainActivity
         if (activity.isDestroyed || activity.isFinishing)
             return
         if (str == null) { // = clear title
@@ -379,7 +301,7 @@ object Stuff {
     }
 
     fun setAppBarHeight(activity: Activity, additionalHeight: Int = 0) {
-        activity as Main
+        activity as MainActivity
         val sHeightPx: Int
         val dm = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(dm)
@@ -653,13 +575,11 @@ object Stuff {
             putLong(NLService.B_DURATION, duration * 1000L)
     }
 
-    fun scheduleDigests(context: Context, pref: SharedPreferences) {
-        if (!pref.contains(PREF_DIGEST_SECONDS))
-            pref.edit()
-                .putInt(PREF_DIGEST_SECONDS, (60..3600).random())
-                .apply()
+    fun scheduleDigests(context: Context, prefs: MainPrefs) {
+        if (prefs.digestSeconds == null)
+            prefs.digestSeconds = (60..3600).random()
 
-        val secondsToAdd = -pref.getInt(PREF_DIGEST_SECONDS, 60)
+        val secondsToAdd = -(prefs.digestSeconds ?: 60)
 
         val weeklyIntent = PendingIntent.getBroadcast(context, 20,
                 Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable)
@@ -710,17 +630,6 @@ object Stuff {
             val nextDay = cal.timeInMillis
             alarmManager.set(AlarmManager.RTC, nextDay, dailyIntent)
         }
-    }
-
-    fun getWidgetPrefName(name: String, appWidgetId: Int) = "${name}_$appWidgetId"
-
-    fun willCrashOnMemeUI(mpref: MultiPreferences): Boolean {
-        try {
-            mpref.getString(PREF_LASTFM_USERNAME, null)
-        } catch (e: NullPointerException) {
-            return true
-        }
-        return false
     }
 
     fun Fragment.hideKeyboard(){

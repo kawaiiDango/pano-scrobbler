@@ -43,7 +43,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pref.AppListFragment
-import com.arn.scrobble.pref.MultiPreferences
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
@@ -56,18 +56,17 @@ import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.codechimp.apprater.AppRater
 import timber.log.Timber
 import java.io.File
 import java.text.NumberFormat
 import java.util.*
 
 
-class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         FragmentManager.OnBackStackChangedListener{
 
     private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var pref: MultiPreferences
+    private lateinit var prefs: MainPrefs
     private var lastDrawerOpenTime: Long = 0
     private var backArrowShown = false
     var coordinatorPadding = 0
@@ -95,7 +94,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         setSupportActionBar(binding.coordinatorMain.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        pref = MultiPreferences(applicationContext)
+        prefs = MainPrefs(this)
         coordinatorPadding = binding.coordinatorMain.coordinator.paddingStart
         isTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
 
@@ -124,7 +123,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 this, binding.drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             override fun onDrawerOpened(drawerView: View) {
                 mainNotifierViewModel.drawerData.value?.let {
-                    this@Main.onDrawerOpened()
+                    this@MainActivity.onDrawerOpened()
                 }
             }
         }
@@ -145,13 +144,13 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         val hidePassBox =
             if (intent.data?.isHierarchical == true && intent.data?.path == "/testFirstThings"){
-                pref.remove(Stuff.PREF_LASTFM_SESS_KEY)
+                prefs.lastfmSessKey = null
                 true
             } else
                 false
 
         if (savedInstanceState == null) {
-            if (FirstThingsFragment.checkAuthTokenExists(pref) &&
+            if (FirstThingsFragment.checkAuthTokenExists(prefs) &&
                 FirstThingsFragment.checkNLAccess(this)) {
 
                 val directOpenExtra = intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) ?: 0
@@ -187,7 +186,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                         if (!Stuff.isScrobblerRunning(this))
                             showNotRunning()
                         else if (!isTV && billingViewModel.proStatus.value != true)
-                            AppRater.app_launched(this)
+                            AppRater(this, prefs).appLaunched()
                     }
                 }
             } else {
@@ -211,7 +210,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
                 val nf = NumberFormat.getInstance()
                 navHeaderbinding.navNumScrobbles.text = getString(R.string.num_scrobbles_nav,
-                    nf.format(drawerData.totalScrobbles), nf.format(drawerData.todayScrobbles))
+                    nf.format(drawerData.scrobblesTotal), nf.format(drawerData.scrobblesToday))
 
                 if (drawerData.profilePicUrl != "")
                     Picasso.get()
@@ -273,7 +272,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     fun testNoti (){
-        AppRater.showRateSnackbar(this)
+        AppRater(this, prefs).showRateSnackbar()
         val res = Resources.getSystem()
         val attrs = arrayOf(android.R.attr.textColor).toIntArray()
 
@@ -302,7 +301,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 //        longDescription.setSpan(StyleSpan(android.graphics.Typeface.BOLD), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         longDescription.append(" rest")
 
-        val launchIntent = PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, Main::class.java)
+        val launchIntent = PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, MainActivity::class.java)
                 .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST),
                 Stuff.updateCurrentOrImmutable)
 
@@ -311,7 +310,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         val icon = ContextCompat.getDrawable(this, R.drawable.ic_launcher)
 //        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
 
-        val nb = NotificationCompat.Builder(applicationContext, Stuff.CHANNEL_NOTI_SCROBBLING)
+        val nb = NotificationCompat.Builder(applicationContext, MainPrefs.CHANNEL_NOTI_SCROBBLING)
                 .setSmallIcon(R.drawable.vd_noti)
 //                .setLargeIcon(Stuff.drawableToBitmap(icon))
                 .setVisibility(NotificationCompat.VISIBILITY_SECRET)
@@ -361,7 +360,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         LFMRequester(applicationContext, lifecycleScope, mainNotifierViewModel.drawerData).getDrawerInfo()
 
-        val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
+        val username = prefs.lastfmUsername ?: "nobody"
         val displayUsername = if (BuildConfig.DEBUG) "nobody" else username
         if (navHeaderbinding.navName.tag == null)
             navHeaderbinding.navName.text = displayUsername
@@ -399,7 +398,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
 
         when (item.itemId) {
             R.id.nav_last_week -> {
-                val username = pref.getString(Stuff.PREF_LASTFM_USERNAME,"nobody")
+                val username = prefs.lastfmUsername ?: "nobody"
                 Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, binding.coordinatorMain.frame, 10, 200)
             }
             R.id.nav_recents -> {
@@ -616,7 +615,7 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                     "/gnufm" ->
                         LFMRequester(applicationContext, lifecycleScope).doAuth(R.string.gnufm, token)
                     "/testFirstThings" -> {
-                        pref.remove(Stuff.PREF_LASTFM_SESS_KEY)
+                        prefs.lastfmSessKey = null
                         for (i in 0..supportFragmentManager.backStackEntryCount)
                             supportFragmentManager.popBackStackImmediate()
                         showFirstThings(true)
@@ -731,7 +730,6 @@ class Main : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onDestroy() {
-        MultiPreferences.destroyClient()
         if (!PendingScrService.mightBeRunning)
             PanoDb.destroyInstance()
         super.onDestroy()

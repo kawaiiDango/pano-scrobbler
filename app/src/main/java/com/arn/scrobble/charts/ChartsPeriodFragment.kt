@@ -1,7 +1,5 @@
 package com.arn.scrobble.charts
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.Parcel
@@ -12,7 +10,8 @@ import androidx.fragment.app.Fragment
 import com.arn.scrobble.*
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.info.InfoFragment
-import com.arn.scrobble.ui.*
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.EntryItemClickListener
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.datepicker.CalendarConstraints
@@ -31,6 +30,8 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
     protected abstract val periodChipsBinding: ChipsChartsPeriodBinding
     private var showWeekPicker = false
 
+    protected val prefs by lazy { MainPrefs(context!!) }
+
     open fun removeHandlerCallbacks() {}
 
     open fun loadFirstPage() {}
@@ -47,8 +48,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         periodChipsBinding.charts12month.text = resources.getQuantityString(R.plurals.num_years, 1, 1)
         periodChipsBinding.chartsOverall.text = getString(R.string.charts_overall)
 
-        val pref = context!!.getSharedPreferences(Stuff.ACTIVITY_PREFS, Context.MODE_PRIVATE)
-        val periodIdx = pref.getInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, 1)
+        val periodIdx = prefs.lastChartsPeriod
         var firstLoad = periodChipsBinding.chartsPeriod.checkedChipId == View.NO_ID ||
                 periodChipsBinding.chartsPeriod.checkedChipId != periodChipIds.indexOf(periodIdx)
 
@@ -71,13 +71,13 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                         viewModel.periodIdx = idx
                         loadFirstPage()
                     }
-                    pref?.edit()?.putInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, idx)?.apply()
+                    prefs.lastChartsPeriod = idx
                 }
-                setWeeklyChipName(pref, false)
+                setWeeklyChipName(false)
             } else if (firstLoad) {
                 viewModel.periodIdx = idx
-                val from = pref?.getLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM, 0) ?: 0
-                val to = pref?.getLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_TO, 0) ?: 0
+                val from = prefs.lastChartsWeekFrom
+                val to = prefs.lastChartsWeekTo
 
                 if (!firstLoad || viewModel.totalCount == 0 || viewModel.weeklyChart?.from?.time != from) {
                     viewModel.weeklyChart = Chart(Date(from), Date(to), emptyList())
@@ -85,7 +85,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                 }
                 if (viewModel.weeklyListReceiver.value == null)
                     viewModel.loadWeeklyChartsList(registeredTime)
-                setWeeklyChipName(pref, true)
+                setWeeklyChipName(true)
             }
             firstLoad = false
 
@@ -104,7 +104,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         periodChipsBinding.chartsPeriod.setOnCheckedChangeListener(ccl)
         ccl.onCheckedChanged(periodChipsBinding.chartsPeriod, periodChipsBinding.chartsPeriod.checkedChipId)
         periodChipsBinding.chartsChooseWeek.setOnClickListener {
-            if (Main.isOnline)
+            if (MainActivity.isOnline)
                 periodChipsBinding.chartsPeriod.alpha = Stuff.LOADING_ALPHA
             showWeekPicker = true
             viewModel.loadWeeklyChartsList(registeredTime)
@@ -114,7 +114,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             if (viewModel.weeklyListReceiver.value != null && viewModel.weeklyChartIdx > 0) {
                 viewModel.weeklyChart = viewModel.weeklyListReceiver.value!![--viewModel.weeklyChartIdx]
                 loadWeeklyCharts()
-                setWeeklyChipName(pref, true)
+                setWeeklyChipName(true)
             }
         }
 
@@ -123,7 +123,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                     viewModel.weeklyChartIdx != -1 && viewModel.weeklyChartIdx < viewModel.weeklyListReceiver.value!!.size - 1) {
                 viewModel.weeklyChart = viewModel.weeklyListReceiver.value!![++viewModel.weeklyChartIdx]
                 loadWeeklyCharts()
-                setWeeklyChipName(pref, true)
+                setWeeklyChipName(true)
             }
         }
 
@@ -191,7 +191,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                 viewModel.periodIdx = 0
                 viewModel.weeklyChartIdx = weeklyList.indexOf(item)
                 loadWeeklyCharts()
-                setWeeklyChipName(pref, true)
+                setWeeklyChipName(true)
             }
             dpd.addOnNegativeButtonClickListener {
                 periodChipsBinding.chartsPeriod.check(periodChipIds[viewModel.periodIdx])
@@ -238,7 +238,7 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         }
     }
 
-    private fun setWeeklyChipName(pref: SharedPreferences, set: Boolean) {
+    private fun setWeeklyChipName(set: Boolean) {
         if (set) {
             periodChipsBinding.chartsChooseWeek.text = getString(
                     R.string.a_to_b,
@@ -246,11 +246,11 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
                     DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.to.time)
             )
             showArrows(true)
-            pref.edit()
-                    ?.putLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_FROM, viewModel.weeklyChart!!.from.time)
-                    ?.putLong(Stuff.PREF_ACTIVITY_LAST_CHARTS_WEEK_TO, viewModel.weeklyChart!!.to.time)
-                    ?.putInt(Stuff.PREF_ACTIVITY_LAST_CHARTS_PERIOD, 0)
-                    ?.apply()
+            prefs.apply {
+                lastChartsWeekFrom = viewModel.weeklyChart!!.from.time
+                lastChartsWeekTo = viewModel.weeklyChart!!.to.time
+                lastChartsPeriod = 0
+            }
         } else {
             periodChipsBinding.chartsChooseWeek.text = getString(R.string.charts_choose_week)
             showArrows(false)

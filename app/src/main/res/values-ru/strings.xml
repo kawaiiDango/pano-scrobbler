@@ -36,6 +36,8 @@
         <item quantity="many">%1$d лет</item>
         <item quantity="other">%1$d года</item>
     </plurals>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
     <string name="settings">Настроить</string>
     <string name="bug_report">Сообщить об ошибке</string>
     <string name="album_art">Обложка альбома</string>
@@ -76,6 +78,7 @@
     <string name="recently_scrobbled">Недавно заскроббленные</string>
     <string name="recently_loved">♥ Недавно понравившиеся</string>
     <string name="recents" comment="Short for recently scrobbled">Недавние</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Первый скроббл был %1$s</string>
     <string name="graph_info">… последние 5 месяцев</string>
     <string name="enabled_apps">Включенные приложения</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Почти готово…</string>

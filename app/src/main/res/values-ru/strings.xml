@@ -79,6 +79,7 @@
     <string name="recently_loved">♥ Недавно понравившиеся</string>
     <string name="recents" comment="Short for recently scrobbled">Недавние</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Первый скроббл был %1$s</string>
+    <string name="auto" comment="automatic or default setting">Автоматический выбор</string>
     <string name="graph_info">… последние 5 месяцев</string>
     <string name="enabled_apps">Включенные приложения</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Почти готово…</string>
@@ -234,12 +235,14 @@
     <string name="text" comment="text to test regex rules with">Текст</string>
     <string name="edit_regex_warning">ℹ️ Перед использованием убедитесь, что вы понимаете <a href="https://www.google.com/search?q=regex+tutorial">Java Regex</a> или используйте одну из <b>предустановок</b>. Поиск совпадений с регулярным выражением осуществляется сверху вниз</string>
     <string name="blocked_metadata_info">ℹ️ При заполнении более чем одного из этих полей между ними будет применяться оператор И</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Хотите включить правило редактирования шаблона: %1$s?</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
     <string name="pref_master">Скробблинг музыки</string>
     <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек</string>
     <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
     <string name="pref_noti">Уведомления</string>
+    <string name="pref_noti_categories">Категории уведомлений</string>
     <string name="pref_scrobble_noti">Уведомление скробблинга</string>
     <string name="pref_lockscreen_noti">Уведомления на экране блокировки</string>
     <string name="pref_offline_info">ℹ️ Офлайн-скробблы и лайки, будут сохранены для отправки позже.</string>
@@ -260,11 +263,14 @@
     <string name="pref_scrobble_love_only">(Только скробблинг &amp; лайки)</string>
     <string name="pref_user_label" comment="(Like username)">Пользователь</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентификации</string>
+    <string name="api_url" comment="For Listenbrainz">URL-адрес API</string>
     <string name="pref_now_playing">Отправить сейчас играет</string>
     <string name="pref_fetch_aa">Получить исполнителей альбома с lastFM</string>
     <string name="pref_fetch_aa_desc">Для плееров, которые не предоставляют эти данные. Полученные данные могут отличаться от ваших тегов. lastFM может не иметь данных для некоторых песен.</string>
     <string name="pref_pixel_np">Скробблить Now Playing на устройствах Pixel</string>
     <string name="pref_pixel_np_nope">Доступно только на устройствах Pixel</string>
+    <string name="pref_change_locale">Изменить язык</string>
+    <string name="locale_only_ui">Применяется только к основному пользовательскому интерфейсу</string>
     <string name="pref_misc">Разное</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Импорт и экспорт</string>

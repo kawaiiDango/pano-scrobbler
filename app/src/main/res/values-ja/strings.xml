@@ -6,6 +6,29 @@
     <string name="bug_report">バグ報告</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
     <string name="network_error">ネットワークエラー</string>
+    <string name="limit_exceeded_ignored">1日のScrobble回数の上限を超えました</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">必須項目が空欄です</string>
+    <string name="artist">アーティスト</string>
+    <string name="artists">アーティスト</string>
+    <string name="n_artists">%1$s組のアーティスト</string>
+    <string name="top_artists" comment="Top artists the user has listened to">トップアーティスト</string>
+    <string name="album_artist">アルバムアーティスト</string>
+    <string name="similar_artists">似ているアーティスト</string>
+    <string name="album_optional">アルバム (任意)</string>
+    <string name="album">アルバム</string>
+    <string name="albums">アルバム</string>
+    <string name="n_albums">%1$s件のアルバム</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">トップアルバム</string>
+    <string name="track">トラック</string>
+    <string name="tracks">トラック</string>
+    <string name="n_tracks">%1$s件のトラック</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">トップトラック</string>
+    <string name="similar_tracks">似ているトラック</string>
+    <string name="no_similar_tracks">似ているトラックはありません</string>
+    <string name="similar" comment="Similar tracks but in short">類似</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
+    <string name="state_scrobbling">Scrobble中…</string>
+    <string name="unscrobble">Scrobbleを取り消し</string>
     <!--  todo: don't concat  -->
     <!--  pro  -->
 </resources>

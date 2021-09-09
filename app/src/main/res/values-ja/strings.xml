@@ -116,6 +116,7 @@
     <string name="time_just_now">たった今</string>
     <string name="no_mail_apps">メールアプリがインストールされていません</string>
     <string name="loved">Loveトラック</string>
+    <string name="unloved">Love解除済みトラック</string>
     <string name="simple_edits">訂正</string>
     <string name="n_simple_edits" formatted="true">%1$d件の訂正</string>
     <string name="n_regex_edits" formatted="true">%1$d件のパターン訂正</string>
@@ -127,8 +128,10 @@
     <string name="scrobble_from_mic">マイクからScrobble</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">マイクから</string>
     <string name="add_to_hs">ホーム画面に追加</string>
+    <string name="listening">周囲で流れている音楽を聴き取り中…</string>
     <string name="uploading">アップロード中…</string>
     <string name="recording_failed">録音に失敗しました。このデバイスでは、マイクが使用中か使用できない可能性があります</string>
+    <string name="press_back">終了時に戻るを押す</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">詳細</string>
     <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">%1$sが後ほど%2$sに記録されます</string>
@@ -157,6 +160,7 @@
     <string name="charts_no_data">この期間のデータはありません</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">過去1週間のチャートはまだありません</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">幸運の一時</string>
     <string name="random_not_found">トラックが見つかりませんでした</string>
     <string name="loved_track">Loveトラック</string>
     <string name="randomize">ランダム表示</string>
@@ -241,6 +245,7 @@
     <string name="pref_scrobble_love_only">(Scrobble &amp; Loveのみ)</string>
     <string name="pref_user_label" comment="(Like username)">ユーザー</string>
     <string name="pref_token_label" comment="For Listenbrainz">認証トークン</string>
+    <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="pref_now_playing">再生中の状態情報を送信</string>
     <string name="pref_fetch_aa">LastFMからアルバムアーティストを取得する</string>
     <string name="pref_fetch_aa_desc">アルバムアーティストの表示が行われないプレーヤーの場合に行います。取得データがタグ付けされたものと異なっていたり、LastFMには一部曲が存在しない場合があります。</string>
@@ -321,10 +326,20 @@ TaskerやMacrodroidなどのマクロアプリで使用できます。"</string>
     <string name="cleared_disabled_apps">無効化されたアプリを消去しました</string>
     <string name="fix_it_title">修正可能な項目</string>
     <string name="fix_it_startup_title">バッテリー / スタートアップマネージャー</string>
+    <string name="fix_it_startup_desc_default">お使いのシステムにバッテリーマネージャーやスタートアップマネージャーがある場合は、バックグラウンドでもScrobbleできるように、このアプリを許可するようにしてください。</string>
+    <string name="fix_it_noti_title">通知へのアクセスのオン / オフの切り替え</string>
+    <string name="fix_it_noti_desc">これは一時的な修正です</string>
+    <string name="fix_it_battery_title">バッテリーの最適化の無効化</string>
+    <string name="fix_it_battery_desc">アプリが機能しない場合に使用してください</string>
+    <string name="fix_it_action" comment="(To open an app)">開く</string>
     <!--  pro  -->
     <string name="get_pro">このアプリを支援</string>
+    <string name="help">ヘルプ</string>
     <string name="pro_support">支援は、このアプリの価値を認識していることを示す方法の一つです。あなたのような素晴らしいユーザー様なら、きっと容易いことでしょう。</string>
+    <string name="pro_also_get">利用可能になる機能:</string>
     <string name="pro_benefits">支援してくださることで、🎨 テーマ (19 x 19 x 20色) や 🚫 Scrobbleからのメタデータ除去の機能が利用できます。また、共有時に含まれるアプリ名も削除されます。</string>
+    <string name="thank_you">ありがとうございます！</string>
+    <string name="purchase_pending">お支払いの確認が取れませんでした。後ほどお試しください。</string>
     <string name="billing_troubleshoot_title">購入の復元</string>
     <string name="billing_troubleshoot">"すでに支援してくださっていますか？
 
@@ -335,4 +350,6 @@ TaskerやMacrodroidなどのマクロアプリで使用できます。"</string>
 • お支払いを行ったアカウントでログイン
 • このアプリをストアページ上から直接インストール"</string>
     <string name="billing_themes">テーマ (19 x 19 x 20色)</string>
+    <string name="billing_block">Scrobble時にメタデータをブロックする</string>
+    <string name="billing_sharing">共有時にアプリ名を含まない</string>
 </resources>

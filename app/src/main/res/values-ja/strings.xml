@@ -92,7 +92,8 @@
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Last.FMの認証</string>
     <string name="authenticate_with_lastfm_desc">LibreFM、GNUFM、Listenbrainzの認証は後ほど設定から行えます</string>
     <string name="loved">Loveトラック</string>
-    <string name="n_simple_edits" formatted="true">%1$d件の編集</string>
+    <string name="simple_edits">訂正</string>
+    <string name="n_simple_edits" formatted="true">%1$d件の訂正</string>
     <string name="n_regex_edits" formatted="true">%1$d件のパターンの編集</string>
     <string name="n_blocked_metadata" formatted="true">%1$d件のブロックされたメタデータ</string>
     <string name="grant_rec_perm">マイクへのアクセス権限を許可してください</string>
@@ -114,12 +115,18 @@
     <string name="monthly">1ヶ月</string>
     <string name="charts_choose_week">週を選択</string>
     <string name="charts_overall">全期間</string>
+    <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="loved_track">Loveトラック</string>
     <string name="graph_daily">1日あたりのScrobble件数</string>
     <string name="graph_weekly">1週間あたりのScrobble件数</string>
     <string name="graph_monthly">1ヶ月あたりのScrobble件数</string>
     <string name="graph_yearly">1年あたりのScrobble件数</string>
+    <string name="original" comment="Original metadata before editing">元のメタデータ</string>
+    <string name="corrected" comment="Corrected metadata after editing">訂正内容</string>
+    <string name="tag" comment="last.fm tag">タグ</string>
+    <string name="taggings" comment="(total count of) a particular tag">タグ付け</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">過去%1$sのトップScrobble</string>
+    <string name="close">閉じる</string>
     <string name="appwidget_loading">読み込み中…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">期間</string>
     <string name="appwidget_theme">テーマ</string>
@@ -135,12 +142,29 @@
     <string name="same_tone">色調を統一する</string>
     <string name="random_theme">起動するたびにランダム化する</string>
     <string name="palette_bg">一部の背景にアルバムアートの色を使用する</string>
+    <string name="edit_name" comment="name for regex pattern">名前 (任意)</string>
+    <string name="edit_regex">正規表現パターン</string>
+    <string name="edit_regex_replacement">正規表現の置換</string>
+    <string name="edit_field" comment="Field like artist/album/track etc">対象項目</string>
+    <string name="edit_replace">置換対象:</string>
+    <string name="edit_first" comment="First occurrence of a pattern">初回一致分のみ</string>
+    <string name="edit_all" comment="All occurrences of a pattern">すべて</string>
+    <string name="edit_continue">これに一致した場合でも、他の正規表現も実行する</string>
+    <string name="edit_case_sensitive">大文字と小文字を区別する</string>
+    <string name="edit_regex_test">テスト</string>
+    <string name="edit_presets">プリセット</string>
+    <string name="edit_presets_available">プリセット一覧</string>
+    <string name="edit_no_presets_available">すべてのプリセットが使用されています</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">プリセット: %1$s</string>
+    <string name="text" comment="text to test regex rules with">テキスト</string>
+    <string name="edit_regex_warning">⚠ これを使用する前に、<a href="https://www.google.com/search?q=%E6%AD%A3%E8%A6%8F%E8%A1%A8%E7%8F%BE+%E4%BD%BF%E3%81%84%E6%96%B9">Javaの正規表現</a>を理解しておくか、用意された<b>プリセット</b>から1つ選ぶようにしてください。正規表現の一致判定は上から順に実行されます</string>
     <string name="blocked_metadata_info">ℹ️ 複数の項目を入力すると、各合間にAND演算子が適用されます</string>
     <string name="pref_master">音楽をScrobbleする</string>
     <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>
     <string name="pref_noti_q">アイコンが表示されない場合、通知を促せます</string>
     <string name="pref_noti">通知</string>
     <string name="pref_noti_categories">通知のカテゴリ</string>
+    <string name="pref_scrobble_noti">Scrobbleの通知</string>
     <string name="pref_lockscreen_noti">ロック画面での通知</string>
     <string name="pref_offline_info">ℹ️ オフライン時のScrobbleおよびLoveは保存され、ネットワークに接続された際に送信されます</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble対象</string>
@@ -151,6 +175,15 @@
     <string name="pref_delay">Scrobbleの遅延 (いずれかの早い方優先)</string>
     <string name="pref_delay_secs">秒</string>
     <string name="pref_delay_per">パーセント</string>
+    <string name="pref_logout">ログアウト</string>
+    <string name="pref_confirm_logout">ログイアウトしてもよろしいですか？再度タップで実行します</string>
+    <string name="pref_login">ログイン</string>
+    <string name="pref_about" comment="Info about this app">アプリ情報</string>
+    <string name="pref_search_title">曲検索アプリ</string>
+    <string name="pref_scrobble_only">(Scrobbleのみ)</string>
+    <string name="pref_scrobble_love_only">(Scrobble &amp; Loveのみ)</string>
+    <string name="pref_user_label" comment="(Like username)">ユーザー</string>
+    <string name="pref_token_label" comment="For Listenbrainz">認証トークン</string>
     <string name="pref_now_playing">再生中の状態情報を送信</string>
     <string name="pref_fetch_aa">LastFMからアルバムアーティストを取得する</string>
     <string name="pref_fetch_aa_desc">アルバムアーティストの表示が行われないプレーヤーの場合に行います。取得データがタグ付けされたものと異なっていたり、LastFMには一部曲が存在しない場合があります。</string>
@@ -159,8 +192,10 @@
     <string name="pref_change_locale">言語を変更</string>
     <string name="locale_only_ui">メインUIにのみ適用されます</string>
     <string name="pref_misc">その他</string>
+    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">インポート &amp; エクスポート</string>
     <string name="pref_export">エクスポート</string>
+    <string name="pref_export_desc">設定や訂正内容、ブロックリストをバックアップします。ログイン情報は、セキュリティ上の観点から保存されません。デバイス間や友人との共有にご利用ください。</string>
     <string name="pref_import">インポート</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">個人設定</string>
     <string name="pref_themes">テーマ</string>
@@ -169,8 +204,34 @@
     <string name="pref_show_albums">アルバム名を表示する</string>
     <string name="pref_show_albums_desc">…最近のScrobbleで</string>
     <string name="pref_lists" comment="Such as edits list and block lists">リスト</string>
+    <string name="pref_regex_edits">パターンの編集</string>
     <string name="pref_blocked_metadata">ブロックされたメタデータ</string>
+    <string name="pref_lastfm_disable">LastFMにScrobbleしない</string>
+    <string name="pref_lastfm_disable_desc">一部UIの操作には、LastFMへのログインが必要です</string>
+    <string name="pref_translate">このアプリを翻訳</string>
+    <string name="import_hey_wtf">選択したファイルは、おそらくPano Scrobblerのエクスポートファイルではありません</string>
     <string name="export_failed">エクスポートに失敗しました</string>
+    <string name="imported">インポートされました</string>
+    <string name="import_options">インポート設定</string>
+    <string name="import_lists_nope">訂正内容とブロックリストをインポートしない</string>
+    <string name="import_lists_replace_all">訂正内容とブロックリストをすべて置き換える</string>
+    <string name="import_lists_replace_existing">既存と融合させ、重複する訂正内容とブロックリストは置き換える</string>
+    <string name="import_lists_keep">既存と融合させ、重複する訂正内容とブロックリストは維持する</string>
+    <string name="import_settings">設定をインポートする</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">ブロードキャストされるインテント</string>
+    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"再生中の曲:
+%1$s
+%2$s
+%3$s
+
+Scrobbler関連:
+%4$s
+%5$s
+
+TaskerやMacrodroidなどのマクロアプリで使用できます。"</string>
+    <string name="pref_intents">Tasker等用のインテント</string>
+    <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>
+    <string name="custom_listenbrainz">Listenbrainzのサーバー</string>
     <string name="login_submit">認証</string>
     <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Host</string>

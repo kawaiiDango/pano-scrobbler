@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="other">%1$s件のScrobble</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="other">%1$s人のリスナー</item>
+    </plurals>
+    <plurals name="num_songs">
+        <item quantity="other">%1$d件の曲</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="other">%1$d週間</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="other">%1$dヶ月</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="other">%1$d年</item>
+    </plurals>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
     <string name="settings">設定</string>
     <string name="bug_report">バグ報告</string>
+    <string name="album_art">アルバムアート</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
     <string name="network_error">ネットワークエラー</string>
     <string name="limit_exceeded_ignored">1日のScrobble回数の上限を超えました</string>
@@ -29,6 +48,21 @@
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Scrobble中…</string>
     <string name="unscrobble">Scrobbleを取り消し</string>
+    <string name="tap_to_edit">(タップで編集)</string>
+    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(タップで編集または強制)</string>
+    <string name="recently_scrobbled">最近のScrobble</string>
+    <string name="recently_loved">最近のLoveトラック</string>
+    <string name="recents" comment="Short for recently scrobbled">履歴</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">初Scrobble: %1$s</string>
+    <string name="auto" comment="automatic or default setting">自動</string>
+    <string name="graph_info">… 過去5ヶ月</string>
+    <string name="enabled_apps">有効化済みアプリ</string>
+    <string name="pending_scrobbles">保留中のScrobble</string>
+    <string name="pending_scrobble">保留中のScrobble</string>
+    <string name="pending_scrobbles_noti">保留中のScrobbleを処理中</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s Scrobble • 本日%2$s回</string>
+    <string name="friends">フレンド</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobble %1$s件 — %2$sより</string>
     <!--  todo: don't concat  -->
     <!--  pro  -->
 </resources>

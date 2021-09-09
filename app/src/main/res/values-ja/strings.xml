@@ -25,7 +25,7 @@
     <string name="album_art">アルバムアート</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
     <string name="network_error">ネットワークエラー</string>
-    <string name="limit_exceeded_ignored">1日のScrobble回数の上限を超えました</string>
+    <string name="limit_exceeded_ignored">1日のScrobble件数の上限を超えました</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必須項目が空欄です</string>
     <string name="artist">アーティスト</string>
     <string name="artists">アーティスト</string>
@@ -57,12 +57,73 @@
     <string name="auto" comment="automatic or default setting">自動</string>
     <string name="graph_info">… 過去5ヶ月</string>
     <string name="enabled_apps">有効化済みアプリ</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">もう少しで完了です…</string>
+    <string name="music_players">音楽プレーヤー</string>
+    <string name="video_players">動画ストリーミングアプリ</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">他のアプリ</string>
+    <string name="choose_apps">Scrobbleするアプリを選択</string>
+    <string name="offline">現在オフラインです。表示中のデータは最新ではありません</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">サービス</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%1$s\nを%2$sに聴きました</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$sさんは%1$s\nを%2$sに聴きました</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">私の過去%1$sの%2$s:\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$sさんの過去%1$sの%2$s:\n%3$s</string>
+    <string name="share_sig">(via Pano Scrobbler)</string>
+    <string name="share_this_song">この曲を共有</string>
+    <string name="share">共有</string>
+    <string name="more_info">詳細</string>
+    <string name="search">検索</string>
+    <string name="profile">プロフィール</string>
+    <string name="profile_pic">プロフィール画像</string>
+    <string name="show_all">すべて表示</string>
+    <string name="unlove">Love解除</string>
     <string name="pending_scrobbles">保留中のScrobble</string>
     <string name="pending_scrobble">保留中のScrobble</string>
     <string name="pending_scrobbles_noti">保留中のScrobbleを処理中</string>
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s Scrobble • 本日%2$s回</string>
     <string name="friends">フレンド</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobble %1$s件 — %2$sより</string>
+    <string name="grant_notification_access">通知へのアクセスの許可</string>
+    <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
+    <string name="authenticate_with_lastfm" comment="Login with last.fm">last.FMの認証</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM、GNUFM、Listenbrainzの認証は後ほど設定から行えます</string>
+    <string name="loved">Loveトラック</string>
+    <string name="grant_rec_perm">マイクへのアクセス権限を許可してください</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts">チャート</string>
+    <string name="scrobble_from_mic">マイクからScrobble</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">マイクから</string>
+    <string name="add_to_hs">ホーム画面に追加</string>
+    <string name="recording_failed">録音に失敗しました。このデバイスでは、マイクが使用中か使用できない可能性があります</string>
+    <string name="past_scrobbles">過去のScrobble</string>
     <!--  todo: don't concat  -->
+    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$sの</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$sのScrobble</string>
+    <string name="listeners">リスナー</string>
+    <string name="scrobbles">Scrobble</string>
+    <string name="not_found" comment="Shown in search">見つかりませんでした</string>
+    <string name="share_this_chart">このチャートを共有</string>
+    <string name="weekly">1週間</string>
+    <string name="monthly">1ヶ月</string>
+    <string name="charts_choose_week">週を選択</string>
+    <string name="charts_overall">全期間</string>
+    <string name="loved_track">Loveトラック</string>
+    <string name="graph_daily">1日あたりのScrobble件数</string>
+    <string name="graph_weekly">1週間あたりのScrobble件数</string>
+    <string name="graph_monthly">1ヶ月あたりのScrobble件数</string>
+    <string name="graph_yearly">1年あたりのScrobble件数</string>
+    <string name="appwidget_loading">読み込み中…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">期間</string>
+    <string name="appwidget_theme">テーマ</string>
+    <string name="appwidget_shadow">影</string>
+    <string name="appwidget_show">表示</string>
+    <string name="light">ライト</string>
+    <string name="dark">ダーク</string>
+    <string name="appwidget_alpha">背景の透明度</string>
+    <string name="appwidget_refresh_every">ウィジェットは15分ごとに更新されます</string>
+    <string name="pref_enabled_apps_title">アプリを選択</string>
+    <string name="pref_themes">テーマ</string>
+    <string name="pref_widget_charts">ホーム画面ウィジェット - チャート</string>
+    <string name="scrobble">Scrobble</string>
+    <string name="shazam_scrobbling">連続してScrobbleする場合は、<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>を代わりに開き、Auto Shazamをオンにしてください。また、ShazamがScrobbleの対象アプリになっていることを確認してください。</string>
     <!--  pro  -->
 </resources>

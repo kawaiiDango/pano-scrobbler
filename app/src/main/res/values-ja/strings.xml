@@ -25,6 +25,8 @@
     <string name="album_art">アルバムアート</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
     <string name="network_error">ネットワークエラー</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">このScrobbleを無視しました</string>
+    <string name="scrobble_ignored_save_edit">LastFMは、このScrobbleが古すぎるためか、行った訂正を無視しました。今後扱える可能性もあるため、この訂正を保存しておきますか？</string>
     <string name="limit_exceeded_ignored">1日のScrobble件数の上限を超えました</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必須項目が空欄です</string>
     <string name="artist">アーティスト</string>
@@ -48,7 +50,11 @@
     <string name="similar" comment="Similar tracks but in short">類似</string>
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Scrobble中…</string>
+    <string name="state_scrobbled">Scrobble済み</string>
     <string name="unscrobble">Scrobbleを取り消し</string>
+    <string name="state_unscrobbled">Scrobble取り消し済み</string>
+    <string name="state_didnt_scrobble">未Scrobble</string>
+    <string name="state_unrecognised_artist">認識できないアーティスト</string>
     <string name="tap_to_edit">(タップで編集)</string>
     <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(タップで編集または強制)</string>
     <string name="recently_scrobbled">最近のScrobble</string>
@@ -64,6 +70,7 @@
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">他のアプリ</string>
     <string name="choose_apps">Scrobbleするアプリを選択</string>
     <string name="offline">現在オフラインです。表示中のデータは最新ではありません</string>
+    <string name="unavailable_offline">オフライン時は利用できません</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">サービス</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%1$s\nを%2$sに聴きました</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$sさんは%1$s\nを%2$sに聴きました</string>
@@ -76,10 +83,20 @@
     <string name="search">検索</string>
     <string name="profile">プロフィール</string>
     <string name="profile_pic">プロフィール画像</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">この項目のオプション</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$sの検出</string>
+    <string name="new_player_prompt">このアプリをScrobbleしますか？</string>
+    <string name="no_track_url">この曲はLastFMのページがありません</string>
+    <string name="no_scrobbles">曲はまだありません…</string>
+    <string name="no_friends">LastFMのフレンドはまだいません…</string>
     <string name="channel_err">Scrobbleの障害</string>
     <string name="new_app">新しいアプリ</string>
+    <string name="no_apps_enabled">有効化されたアプリはありません</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d件以上</string>
     <string name="show_all">すべて表示</string>
+    <string name="edit">訂正</string>
+    <string name="delete">削除</string>
+    <string name="love">Love</string>
     <string name="unlove">Love解除</string>
     <string name="pending_scrobbles">Scrobbleの保留</string>
     <string name="pending_scrobble">保留中のScrobble</string>
@@ -87,46 +104,80 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s Scrobble • 本日%2$s回</string>
     <string name="friends">フレンド</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobble %1$s件 — %2$sより</string>
+    <string name="grant_autostart">アプリを自動起動する</string>
+    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Scrobblerを起動するには、%1$sのデバイスが必要です</string>
     <string name="grant_notification_access">通知へのアクセスの許可</string>
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Last.FMの認証</string>
     <string name="authenticate_with_lastfm_desc">LibreFM、GNUFM、Listenbrainzの認証は後ほど設定から行えます</string>
+    <string name="swap" comment="(Swap title and artist)">入れ替え</string>
+    <string name="rate_msg">アプリに満足していただいていますか？</string>
+    <string name="rate_action">評価</string>
+    <string name="time_just_now">たった今</string>
+    <string name="no_mail_apps">メールアプリがインストールされていません</string>
     <string name="loved">Loveトラック</string>
     <string name="simple_edits">訂正</string>
     <string name="n_simple_edits" formatted="true">%1$d件の訂正</string>
-    <string name="n_regex_edits" formatted="true">%1$d件のパターンの編集</string>
+    <string name="n_regex_edits" formatted="true">%1$d件のパターン訂正</string>
     <string name="n_blocked_metadata" formatted="true">%1$d件のブロックされたメタデータ</string>
+    <string name="force_remembered">強制的にScrobble (次回以降も同様)</string>
+    <string name="force" comment="Force scrobble but in short">強制</string>
     <string name="grant_rec_perm">マイクへのアクセス権限を許可してください</string>
     <string name="charts" comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts">チャート</string>
     <string name="scrobble_from_mic">マイクからScrobble</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">マイクから</string>
     <string name="add_to_hs">ホーム画面に追加</string>
+    <string name="uploading">アップロード中…</string>
     <string name="recording_failed">録音に失敗しました。このデバイスでは、マイクが使用中か使用できない可能性があります</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
+    <string name="details">詳細</string>
+    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">%1$sが後ほど%2$sに記録されます</string>
+    <string name="saved_as_pending">保留中のScrobbleとして保存しました</string>
+    <string name="sort">並べ替え</string>
     <string name="past_scrobbles">過去のScrobble</string>
     <!--  todo: don't concat  -->
     <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$sの</string>
+    <string name="my_scrobbles">My Scrobble</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$sのScrobble</string>
     <string name="listeners">リスナー</string>
     <string name="scrobbles">Scrobble</string>
+    <string name="collapse" comment="(view only a few items)">閉じる</string>
+    <string name="expand" comment="(view all items)">開く</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$sのLoveトラックです</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">%1$sまでのScrobble</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
+    <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s — %2$s</string>
+    <string name="weekly_range" formatted="true" comment="%1= date %2= date">1週間 (%1$s — %2$s)</string>
     <string name="not_found" comment="Shown in search">見つかりませんでした</string>
     <string name="share_this_chart">このチャートを共有</string>
     <string name="weekly">1週間</string>
     <string name="monthly">1ヶ月</string>
     <string name="charts_choose_week">週を選択</string>
     <string name="charts_overall">全期間</string>
+    <string name="charts_no_data">この期間のデータはありません</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <string name="charts_no_weekly_charts">過去1週間のチャートはまだありません</string>
+    <string name="random_not_found">トラックが見つかりませんでした</string>
     <string name="loved_track">Loveトラック</string>
+    <string name="randomize">ランダム表示</string>
     <string name="graph_daily">1日あたりのScrobble件数</string>
     <string name="graph_weekly">1週間あたりのScrobble件数</string>
     <string name="graph_monthly">1ヶ月あたりのScrobble件数</string>
     <string name="graph_yearly">1年あたりのScrobble件数</string>
+    <string name="graph_scrub_msg">時間はあなたのタイムゾーンで表示されます\nグラフを長押やスライドしたりすると、正確な数がわかります</string>
     <string name="original" comment="Original metadata before editing">元のメタデータ</string>
     <string name="corrected" comment="Corrected metadata after editing">訂正内容</string>
     <string name="tag" comment="last.fm tag">タグ</string>
+    <string name="taggers" comment="(number of) people who have tagged">タグ編集者</string>
     <string name="taggings" comment="(total count of) a particular tag">タグ付け</string>
+    <string name="digest_weekly">先週のトップScrobble</string>
+    <string name="digest_monthly">先月のトップScrobble</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">過去%1$sのトップScrobble</string>
+    <string name="my_tags">マイタグ</string>
     <string name="close">閉じる</string>
+    <string name="user_tags_hint">新規タグ</string>
+    <string name="user_tags_empty">まだタグを追加していません</string>
+    <string name="info_long_press_hint">曲を長押ししても開くことが可能です</string>
     <string name="appwidget_loading">読み込み中…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">期間</string>
     <string name="appwidget_theme">テーマ</string>
@@ -156,9 +207,15 @@
     <string name="edit_presets_available">プリセット一覧</string>
     <string name="edit_no_presets_available">すべてのプリセットが使用されています</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">プリセット: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">パターンの上限 (%1$d) に達しました</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">ドラッグハンドル</string>
+    <string name="n_matches" formatted="true" comment="regex matches">%1$d件の一致</string>
     <string name="text" comment="text to test regex rules with">テキスト</string>
     <string name="edit_regex_warning">⚠ これを使用する前に、<a href="https://www.google.com/search?q=%E6%AD%A3%E8%A6%8F%E8%A1%A8%E7%8F%BE+%E4%BD%BF%E3%81%84%E6%96%B9">Javaの正規表現</a>を理解しておくか、用意された<b>プリセット</b>から1つ選ぶようにしてください。正規表現の一致判定は上から順に実行されます</string>
     <string name="blocked_metadata_info">ℹ️ 複数の項目を入力すると、各合間にAND演算子が適用されます</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">パターン訂正ルール: %1$sを有効化しますか？</string>
+    <string name="scrobbler_off">Scrobblerを無効化しました</string>
+    <string name="scrobbler_on">Scrobblerを有効化しました</string>
     <string name="pref_master">音楽をScrobbleする</string>
     <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>
     <string name="pref_noti_q">アイコンが表示されない場合、通知を促せます</string>
@@ -204,7 +261,7 @@
     <string name="pref_show_albums">アルバム名を表示する</string>
     <string name="pref_show_albums_desc">…最近のScrobbleで</string>
     <string name="pref_lists" comment="Such as edits list and block lists">リスト</string>
-    <string name="pref_regex_edits">パターンの編集</string>
+    <string name="pref_regex_edits">パターン訂正</string>
     <string name="pref_blocked_metadata">ブロックされたメタデータ</string>
     <string name="pref_lastfm_disable">LastFMにScrobbleしない</string>
     <string name="pref_lastfm_disable_desc">一部UIの操作には、LastFMへのログインが必要です</string>
@@ -230,8 +287,17 @@ Scrobbler関連:
 
 TaskerやMacrodroidなどのマクロアプリで使用できます。"</string>
     <string name="pref_intents">Tasker等用のインテント</string>
+    <string name="copied">コピーしました</string>
     <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>
     <string name="custom_listenbrainz">Listenbrainzのサーバー</string>
+    <string name="failed_encode_url">URLのエンコードに失敗しました</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$sを確認</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特別なアプリアクセス &gt; 通知へのアクセス &gt; %1$s</string>
+    <string name="artist_extra">トラック、アルバム &amp; 類似</string>
+    <string name="no_browser">ブラウザがインストールされていません</string>
+    <string name="no_player">音楽プレーヤーがインストールされていません</string>
+    <string name="not_running">⚠ Scrobblerはシステムによってタスクが終了されました</string>
+    <string name="not_running_fix_action">修正</string>
     <string name="login_submit">認証</string>
     <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Host</string>
@@ -245,6 +311,16 @@ TaskerやMacrodroidなどのマクロアプリで使用できます。"</string>
 • Projects &gt; Audio &amp; video recognitionに移動
 • Create Projectからプロジェクトを新規作成し、Audio SourceをRecorded Audioに、BucketsをACRCloud Musicに選択"</string>
     <string name="shazam_scrobbling">連続してScrobbleする場合は、<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>を代わりに開き、Auto Shazamをオンにしてください。また、ShazamがScrobbleの対象アプリになっていることを確認してください。</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">残り%1$d件</string>
+    <string name="submitting_loves" formatted="true">Loveを送信中、残り%1$d件</string>
+    <string name="pending_batch" comment="For pending scrobbles">バッチを送信中</string>
+    <string name="webview_error">ページの読み込みし失敗しました (インターネットに接続されていますか？)</string>
+    <string name="navigation_drawer_open">ナビゲーションドロワーを開くか、戻る</string>
+    <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
+    <string name="graph">折れ線グラフ</string>
+    <string name="cleared_disabled_apps">無効化されたアプリを消去しました</string>
+    <string name="fix_it_title">修正可能な項目</string>
+    <string name="fix_it_startup_title">バッテリー / スタートアップマネージャー</string>
     <!--  pro  -->
     <string name="get_pro">このアプリを支援</string>
     <string name="pro_support">支援は、このアプリの価値を認識していることを示す方法の一つです。あなたのような素晴らしいユーザー様なら、きっと容易いことでしょう。</string>

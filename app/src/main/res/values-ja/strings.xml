@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+    <string name="settings">設定</string>
+    <string name="bug_report">バグ報告</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
+    <string name="network_error">ネットワークエラー</string>
     <!--  todo: don't concat  -->
     <!--  pro  -->
 </resources>

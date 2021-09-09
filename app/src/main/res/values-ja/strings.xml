@@ -94,6 +94,7 @@
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">マイクから</string>
     <string name="add_to_hs">ホーム画面に追加</string>
     <string name="recording_failed">録音に失敗しました。このデバイスでは、マイクが使用中か使用できない可能性があります</string>
+    <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="past_scrobbles">過去のScrobble</string>
     <!--  todo: don't concat  -->
     <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$sの</string>
@@ -120,10 +121,41 @@
     <string name="dark">ダーク</string>
     <string name="appwidget_alpha">背景の透明度</string>
     <string name="appwidget_refresh_every">ウィジェットは15分ごとに更新されます</string>
+    <string name="pref_master">音楽をScrobbleする</string>
+    <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>
+    <string name="pref_offline_info">ℹ️ オフライン時のScrobbleおよびLoveは保存され、ネットワークに接続された際に送信されます</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble対象</string>
+    <string name="pref_enabled_apps_summary">ℹ️ 音楽のメタデータを表示するアプリに対応しています。Spotify利用時にScrobbleが重複する場合は、他の対象アプリを無効にしてみてください。</string>
     <string name="pref_enabled_apps_title">アプリを選択</string>
+    <string name="pref_auto_detect">音楽系アプリのインストールを自動検出</string>
+    <string name="pref_pixel_np">Pixelのこの曲なに？</string>
+    <string name="pref_pixel_np_nope">Pixel端末でのみ利用可能</string>
     <string name="pref_themes">テーマ</string>
     <string name="pref_widget_charts">ホーム画面ウィジェット - チャート</string>
+    <string name="login_submit">認証</string>
     <string name="scrobble">Scrobble</string>
+    <string name="acr_host" comment="Web hostname">Host</string>
+    <string name="acr_key">Access Key</string>
+    <string name="acr_secret">Secret Key</string>
+    <string name="add_acr_key">ACRCloudキーを追加</string>
+    <string name="remove_acr_key">ACRCloudキーを削除</string>
+    <string name="add_acr_consider">個別のACRCloudキーを追加することで、レート制限を防ぐことができます</string>
+    <string name="add">追加</string>
+    <string name="add_acr_key_info">"• https://console.acrcloud.com に登録
+• Projects &gt; Audio &amp; video recognitionに移動
+• Create Projectからプロジェクトを新規作成し、Audio SourceをRecorded Audioに、BucketsをACRCloud Musicに選択"</string>
     <string name="shazam_scrobbling">連続してScrobbleする場合は、<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>を代わりに開き、Auto Shazamをオンにしてください。また、ShazamがScrobbleの対象アプリになっていることを確認してください。</string>
     <!--  pro  -->
+    <string name="get_pro">このアプリを支援</string>
+    <string name="pro_support">支援は、このアプリの価値を認識していることを示す方法の一つです。あなたのような素晴らしいユーザー様なら、きっと容易いことでしょう。</string>
+    <string name="pro_benefits">支援してくださることで、🎨 テーマ (19 x 19 x 20色) や 🚫 Scrobbleからのメタデータ除去の機能が利用できます。また、共有時に含まれるアプリ名も削除されます。</string>
+    <string name="billing_troubleshoot_title">購入の復元</string>
+    <string name="billing_troubleshoot">"すでに支援してくださっていますか？
+
+お支払い情報はGoogle Playで管理され、それを行ったアカウントに記録されています。複数のアカウントが登録されたデバイスでこのアプリをインストールした際、別のアカウントが紐付けられる可能性があります。購入したアカウントを指定するには、PCでGoogle Playのストアページを開き、そちらからインストールを行う方法が最適です。手順は以下のとおりです。
+
+• このアプリをアンインストール
+• PCでGoogle Playのストアページを開く
+• お支払いを行ったアカウントでログイン
+• このアプリをストアページ上から直接インストール"</string>
 </resources>

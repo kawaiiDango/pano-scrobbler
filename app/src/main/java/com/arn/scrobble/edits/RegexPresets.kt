@@ -11,7 +11,7 @@ object RegexPresets {
         "remastered_track" to (
                 R.string.preset_remastered to
                     RegexEdit(
-                        pattern = " ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?| [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]",
+                        pattern = " [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]| ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?",
                         replacement = "",
                         field = NLService.B_TRACK,
                     )
@@ -19,7 +19,7 @@ object RegexPresets {
         "remastered_album" to (
                 R.string.preset_remastered to
                         RegexEdit(
-                        pattern = " ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?| [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]",
+                        pattern = " [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]| ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?",
                         replacement = "",
                         field = NLService.B_ALBUM,
                     )

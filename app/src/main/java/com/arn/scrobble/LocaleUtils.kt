@@ -9,11 +9,11 @@ import java.util.*
 
 object LocaleUtils {
 
-    // these should be lang-region splittable
     val localesSet = arrayOf(
         "zh-hans",
         "de",
         "en",
+        "ja",
         "pt",
         "pt-BR",
         "ru",
@@ -40,7 +40,7 @@ object LocaleUtils {
         val configuration = resources.configuration
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val newLocaleList = if (lang == null)
-                systemDefaultLocaleList!!
+                systemDefaultLocaleList
             else
                 LocaleList(Locale.forLanguageTag(lang))
 
@@ -48,7 +48,7 @@ object LocaleUtils {
             configuration.setLocales(newLocaleList)
         } else {
             val newLocale = if (lang == null)
-                systemDefaultLocale!!
+                systemDefaultLocale
             else
                 Locale.forLanguageTag(lang)
 

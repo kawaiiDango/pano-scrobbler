@@ -25,11 +25,13 @@ import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -719,6 +721,16 @@ object Stuff {
             return true
         }
         return false
+    }
+
+    fun Fragment.hideKeyboard(){
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
+    }
+
+    fun Fragment.showKeyboard(view: View){
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.showSoftInput(view, 0)
     }
 
     fun isScrobblerRunning(context: Context): Boolean {

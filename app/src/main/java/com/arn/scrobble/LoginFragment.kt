@@ -1,6 +1,5 @@
 package com.arn.scrobble
 
-import android.content.Context
 import android.os.Bundle
 import android.text.util.Linkify
 import android.transition.Fade
@@ -9,10 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.pref.MultiPreferences
 import kotlinx.coroutines.*
@@ -26,7 +25,7 @@ open class LoginFragment: DialogFragment() {
     protected lateinit var pref: MultiPreferences
     open val checksLogin = true
     protected var isStandalone = false
-    protected var _binding: ContentLoginBinding? = null
+    private var _binding: ContentLoginBinding? = null
     protected val binding
         get() = _binding!!
 
@@ -90,6 +89,8 @@ open class LoginFragment: DialogFragment() {
 
         lifecycleScope.launch {
             delay(500)
+            _binding ?: return@launch  // why is this needed?
+
             if (showsDialog)
                 dismiss()
             else
@@ -108,6 +109,8 @@ open class LoginFragment: DialogFragment() {
 
         lifecycleScope.launch {
             delay(1500)
+            _binding ?: return@launch
+
             binding.loginStatus.visibility = View.GONE
             binding.loginSubmit.visibility = View.VISIBLE
             binding.loginProgress.hide()
@@ -206,11 +209,6 @@ open class LoginFragment: DialogFragment() {
             null
         else
             ""
-    }
-
-    protected fun hideKeyboard(){
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     override fun onStart() {

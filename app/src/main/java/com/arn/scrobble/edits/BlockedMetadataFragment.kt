@@ -1,18 +1,20 @@
 package com.arn.scrobble.edits
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.*
+import com.arn.scrobble.Main
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.autoNotify
+import com.arn.scrobble.Stuff.hideKeyboard
+import com.arn.scrobble.VMFactory
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ContentBlockedMetadataBinding
 import com.arn.scrobble.databinding.DialogBlockedTagsBinding
@@ -54,8 +56,6 @@ class BlockedMetadataFragment: Fragment(), ItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-
         binding.blockAdd.setOnClickListener {
             showAddDialog(-1)
         }
@@ -68,8 +68,8 @@ class BlockedMetadataFragment: Fragment(), ItemClickListener {
         binding.blockList.layoutManager = LinearLayoutManager(context!!)
         binding.blockList.setOnTouchListener { v, motionEvent ->
             if (binding.searchTerm.editText!!.isFocused) {
+                hideKeyboard()
                 binding.searchTerm.clearFocus()
-                imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
             }
             false
         }

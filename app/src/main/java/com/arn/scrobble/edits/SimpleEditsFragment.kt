@@ -1,6 +1,5 @@
 package com.arn.scrobble.edits
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.autoNotify
+import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentSimpleEditsBinding
 import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.db.SimpleEdit
@@ -49,14 +48,13 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         adapter = SimpleEditsAdapter(viewModel, this)
         binding.editsList.layoutManager = LinearLayoutManager(context!!)
         binding.editsList.adapter = adapter
         binding.editsList.setOnTouchListener{ v, motionEvent ->
             if (binding.searchTerm.editText!!.isFocused) {
+                hideKeyboard()
                 binding.searchTerm.clearFocus()
-                imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
             }
             false
         }
@@ -78,7 +76,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
 
         binding.searchTerm.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH){
-                imm?.hideSoftInputFromWindow(binding.root.windowToken, 0)
+                hideKeyboard()
                 textView.clearFocus()
                 true
             } else

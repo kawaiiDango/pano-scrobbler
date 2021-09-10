@@ -9,13 +9,13 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentFirstThingsBinding
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MultiPreferences
@@ -121,8 +121,7 @@ class FirstThingsFragment: Fragment() {
                     if (splits.size == 3) {
                         pref.putString(Stuff.PREF_LASTFM_USERNAME, splits[0])
                         pref.putString(Stuff.PREF_LASTFM_SESS_KEY, splits[1])
-                        val imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-                        imm?.hideSoftInputFromWindow(view.windowToken, 0)
+                        hideKeyboard()
                         checkAll(true)
                     } else
                         Stuff.log("bad pass")

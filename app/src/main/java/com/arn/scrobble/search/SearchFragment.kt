@@ -7,7 +7,6 @@ import android.text.TextWatcher
 import android.transition.Fade
 import android.view.*
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.hideKeyboard
+import com.arn.scrobble.Stuff.showKeyboard
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.databinding.ContentSearchBinding
@@ -60,12 +61,11 @@ class SearchFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         binding.searchTerm.editText!!.requestFocus()
 
         lifecycleScope.launch {
             delay(100)
-            imm?.showSoftInput(binding.searchTerm.editText, 0)
+            showKeyboard(binding.searchTerm.editText!!)
             delay(400)
             binding.searchEdittext.showDropDown()
         }
@@ -73,7 +73,7 @@ class SearchFragment: Fragment() {
         binding.searchTerm.editText!!.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 loadSearches(textView.text.toString())
-                imm?.hideSoftInputFromWindow(view.windowToken, 0)
+                hideKeyboard()
                 textView.clearFocus()
                 true
             } else
@@ -108,8 +108,8 @@ class SearchFragment: Fragment() {
         arrayAdapter.addAll(historyPref.history)
         binding.searchEdittext.setAdapter(arrayAdapter)
         binding.searchEdittext.setOnItemClickListener { adapterView, v, pos, l ->
+            hideKeyboard()
             binding.searchTerm.clearFocus()
-            imm?.hideSoftInputFromWindow(view.windowToken, 0)
             val term = arrayAdapter.getItem(pos) as String
             loadSearches(term)
         }
@@ -157,8 +157,8 @@ class SearchFragment: Fragment() {
 
         val touchListener = View.OnTouchListener { p0, p1 ->
             if (binding.searchTerm.editText!!.isFocused) {
+                hideKeyboard()
                 binding.searchTerm.clearFocus()
-                imm?.hideSoftInputFromWindow(view.windowToken, 0)
             }
             false
         }

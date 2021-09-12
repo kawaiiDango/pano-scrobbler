@@ -74,7 +74,7 @@
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">サービス</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%1$s\nを%2$sに聴きました</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$sさんは%1$s\nを%2$sに聴きました</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">私の過去%1$sの%2$s:\n%3$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">過去%1$sの%2$s:\n%3$s</string>
     <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$sさんの過去%1$sの%2$s:\n%3$s</string>
     <string name="share_sig">(Pano Scrobblerより)</string>
     <string name="share_this_song">この曲を共有</string>

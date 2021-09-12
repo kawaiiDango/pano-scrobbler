@@ -223,6 +223,7 @@
     <string name="text" comment="text to test regex rules with">Metin</string>
     <string name="edit_regex_warning">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
     <string name="blocked_metadata_info">ℹ️ Bu alanların birinden fazlasının doldurulması, aralarında bir AND operatörü uygulamasına yol açacaktır</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">\"%1$s\" kalıp düzenlemesini etkinleştirmek istiyor musunuz?</string>
     <string name="scrobbler_off">Skroplayıcı devre dışı</string>
     <string name="scrobbler_on">Skroplayıcı aktif</string>
     <string name="pref_master">Müzik skropla</string>
@@ -257,6 +258,7 @@
     <string name="pref_pixel_np">Pixel\'de Şimdi Oynatılanı Skropla</string>
     <string name="pref_pixel_np_nope">Sadece Pixel cihazlarda mevcut</string>
     <string name="pref_change_locale">Dili değiştir</string>
+    <string name="locale_only_ui">Sadece uygulama için geçerlidir</string>
     <string name="pref_misc">Çeşitli</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL\'si</string>
     <string name="pref_imexport">İçe Aktar &amp; Dışa Aktar</string>

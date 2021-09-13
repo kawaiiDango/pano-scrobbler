@@ -24,6 +24,8 @@
         <item quantity="one">%1$d ano</item>
         <item quantity="other">%1$d anos</item>
     </plurals>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
     <string name="settings">Definições</string>
     <string name="bug_report">Relatório de erros</string>
     <string name="album_art">Capa do álbum</string>
@@ -64,6 +66,8 @@
     <string name="recently_scrobbled">Scrobbles recentes</string>
     <string name="recently_loved">♥ Favoritas recentes</string>
     <string name="recents" comment="Short for recently scrobbled">Recentes</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primeiro scrobble a %1$s</string>
+    <string name="auto" comment="automatic or default setting">Auto (Sistema)</string>
     <string name="graph_info">… últimos 5 meses</string>
     <string name="enabled_apps">Aplicações ativadas</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Quase lá…</string>
@@ -219,12 +223,14 @@
     <string name="text" comment="text to test regex rules with">Texto</string>
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Deseja ativar a regra de edição do padrão: %1$s?</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das definições rápidas</string>
     <string name="pref_noti_q">Pode incitar a notificação, se o ícone não aparecer</string>
     <string name="pref_noti">Notificações</string>
+    <string name="pref_noti_categories">Categorias de notificação</string>
     <string name="pref_scrobble_noti">Notificações de scrobble</string>
     <string name="pref_lockscreen_noti">Notificações no ecrã de bloqueio</string>
     <string name="pref_offline_info">ℹ️ Scrobbles offline &amp; e favoritas serão guardados, para ser tudo enviado mais tarde.</string>
@@ -245,11 +251,14 @@
     <string name="pref_scrobble_love_only">(Scrobble &amp; favoritas apenas)</string>
     <string name="pref_user_label" comment="(Like username)">Utilizador</string>
     <string name="pref_token_label" comment="For Listenbrainz">Código de autenticação</string>
+    <string name="api_url" comment="For Listenbrainz">URL da API</string>
     <string name="pref_now_playing">Submeter em reprodução</string>
     <string name="pref_fetch_aa">Obter artistas dos álbuns do lastFM</string>
     <string name="pref_fetch_aa_desc">Para reprodutores que não fornecem esses dados. Os dados obtidos podem ser diferentes dos seus identificadores. O lastFM pode não ter dados para algumas músicas.</string>
     <string name="pref_pixel_np">Scrobble do A Tocar do Pixel</string>
     <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
+    <string name="pref_change_locale">Alterar Idioma</string>
+    <string name="locale_only_ui">Aplica-se somente à interface principal</string>
     <string name="pref_misc">Diversos.</string>
     <string name="pref_gnufm_title">URL nixtape GNU FM</string>
     <string name="pref_imexport">Importar &amp; exportar</string>

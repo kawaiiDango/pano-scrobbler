@@ -89,7 +89,7 @@ class AppListFragment : Fragment() {
             }
         }
         val excludePackageNames = getMusicPlayers(adapter)
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 val pm = activity?.packageManager ?: return@withContext
 

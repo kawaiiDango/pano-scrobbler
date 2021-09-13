@@ -81,7 +81,7 @@ class RecFragment: Fragment(),
             recorderConfig.isVolumeCallback = false
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             delay(300)
             startOrCancel()
             binding.recProgress.setOnClickListener { startOrCancel() }
@@ -113,7 +113,7 @@ class RecFragment: Fragment(),
         if (item.itemId == R.id.menu_add_to_hs && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val shortcutManager = activity!!.getSystemService(ShortcutManager::class.java)
             if (shortcutManager!!.isRequestPinShortcutSupported) {
-                lifecycleScope.launch(Dispatchers.IO) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val pinShortcutInfo = ShortcutInfo.Builder(context, "rec").build()
                     val pinnedShortcutCallbackIntent =
                         shortcutManager.createShortcutResultIntent(pinShortcutInfo)

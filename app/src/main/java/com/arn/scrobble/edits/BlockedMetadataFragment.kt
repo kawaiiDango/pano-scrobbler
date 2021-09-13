@@ -100,7 +100,7 @@ class BlockedMetadataFragment: Fragment(), ItemClickListener {
     private fun update(blockedMetadata: List<BlockedMetadata>?) {
         blockedMetadata ?: return
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             mutex.withLock {
                 val oldList = viewModel.blockedMetadata.toList()
                 val searchTerm = binding.searchEdittext.text?.trim()?.toString()?.lowercase()

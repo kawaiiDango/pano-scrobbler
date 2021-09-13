@@ -447,7 +447,7 @@ class PrefFragment : PreferenceFragmentCompat(){
 
     private fun export(data: Intent) {
         val currentUri = data.data ?: return
-        lifecycleScope.launch(Dispatchers.IO) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val exporter = ImExporter()
             exporter.setOutputUri(context!!, currentUri)
             val exported = exporter.export()
@@ -482,7 +482,7 @@ class PrefFragment : PreferenceFragmentCompat(){
                 val settingsMode = binding.importSettings.isChecked
                 if (editsMode == Stuff.EDITS_NOPE && !settingsMode)
                     return@setPositiveButton
-                lifecycleScope.launch(Dispatchers.IO) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val importer = ImExporter()
                     importer.setInputUri(context!!, currentUri)
                     val imported = importer.import(editsMode, settingsMode)
@@ -530,7 +530,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
                 PanoDb.getDb(context!!).getSimpleEditsDao().count
             }
@@ -549,7 +549,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
                 PanoDb.getDb(context!!).getRegexEditsDao().count
             }
@@ -568,7 +568,7 @@ class PrefFragment : PreferenceFragmentCompat(){
             true
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
                 PanoDb.getDb(context!!).getBlockedMetadataDao().count
             }

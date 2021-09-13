@@ -63,7 +63,7 @@ open class RecentsFragment : Fragment(),
             loadRecents(1)
         val ps = coordinatorBinding.coordinator.paddingStart
         if (activity != null && ps > 0)
-            LFMRequester(context!!, lifecycleScope, (activity as MainActivity).mainNotifierViewModel.drawerData).getDrawerInfo()
+            LFMRequester(context!!, viewLifecycleOwner.lifecycleScope, (activity as MainActivity).mainNotifierViewModel.drawerData).getDrawerInfo()
         lastRefreshTime = System.currentTimeMillis()
     }
     private lateinit var coordinatorBinding: CoordinatorMainBinding
@@ -628,7 +628,7 @@ open class RecentsFragment : Fragment(),
         val dateFrame = (view.parent as ViewGroup).findViewById<FrameLayout>(R.id.date_frame)
         if (item !is Track) {
             if (view.id == R.id.recents_menu)
-                PopupMenuUtils.openPendingPopupMenu(dateFrame, lifecycleScope, item,
+                PopupMenuUtils.openPendingPopupMenu(dateFrame, viewLifecycleOwner.lifecycleScope, item,
                         {
                             viewModel.loadPending(2, false)
                         }

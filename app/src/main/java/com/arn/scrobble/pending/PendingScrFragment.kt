@@ -51,7 +51,7 @@ class PendingScrFragment: Fragment(), ItemClickListener {
         val p = adapter.getPending(position)
         if (view.id == R.id.recents_menu)
             PopupMenuUtils.openPendingPopupMenu((view.parent as ViewGroup).findViewById(R.id.date_frame),
-                lifecycleScope,
+                viewLifecycleOwner.lifecycleScope,
                 p,
                     {
                     adapter.remove(position)

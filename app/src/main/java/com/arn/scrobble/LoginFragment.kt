@@ -80,12 +80,14 @@ open class LoginFragment: DialogFragment() {
     }
 
     protected open fun success() {
-        if (context == null || !isAdded)
+        if (context == null || isStateSaved)
             return
         binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_check)
         binding.loginStatus.visibility = View.VISIBLE
 
+        // java.lang.IllegalStateException: Can't access the Fragment View's LifecycleOwner when getView() is null i.e., before onCreateView() or after onDestroyView()
+        // Seems to not work in DialogFragments
         lifecycleScope.launch {
             delay(500)
             if (context == null || isStateSaved)
@@ -99,10 +101,10 @@ open class LoginFragment: DialogFragment() {
     }
 
     protected fun error(errMsg: String) {
+        if (context == null || isStateSaved)
+            return
         if (errMsg.isNotEmpty())
             Stuff.toast(context, errMsg)
-        if (context == null || !isAdded)
-            return
         binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_ban)
         binding.loginStatus.visibility = View.VISIBLE

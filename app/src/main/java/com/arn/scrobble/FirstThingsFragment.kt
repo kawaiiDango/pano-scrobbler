@@ -180,7 +180,7 @@ class FirstThingsFragment: Fragment() {
 
         if (arguments?.getBoolean(Stuff.ARG_NOPASS) != true)
             //prevent keyboard from showing up on start
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
                 binding.testingPass.visibility = View.VISIBLE
             }

@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.*
 import android.view.inputmethod.EditorInfo
-import androidx.lifecycle.lifecycleScope
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.arn.scrobble.*

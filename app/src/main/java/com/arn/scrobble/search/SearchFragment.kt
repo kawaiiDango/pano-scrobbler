@@ -64,7 +64,7 @@ class SearchFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.searchTerm.editText!!.requestFocus()
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             delay(100)
             showKeyboard(binding.searchTerm.editText!!)
             delay(400)

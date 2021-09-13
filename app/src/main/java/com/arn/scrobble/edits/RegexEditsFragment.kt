@@ -75,7 +75,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
         }
 
         binding.editPresets.setOnClickListener {
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 showPresetsDialog()
             }
         }
@@ -185,7 +185,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
 
         binding.okButton.setOnClickListener {
             if (validate()) {
-                lifecycleScope.launch(Dispatchers.IO) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val dao = PanoDb.getDb(context!!).getRegexEditsDao()
 
                     val prevRegexEdit = regexEdit.copy()
@@ -251,7 +251,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
                 .map { RegexPresets.getString(context!!, it!!) }
                 .toTypedArray()
             ) { dialogInterface, idx ->
-                lifecycleScope.launch(Dispatchers.IO) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val regexEdit = RegexEdit(
                             preset = presetsAvailable[idx],
                             order = 0
@@ -277,7 +277,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
             }
 
             override fun afterTextChanged(editable: Editable) {
-                lifecycleScope.launch(Dispatchers.IO) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     mutex.withLock {
                         val text = editable.toString()
                         val sd = ScrobbleData()

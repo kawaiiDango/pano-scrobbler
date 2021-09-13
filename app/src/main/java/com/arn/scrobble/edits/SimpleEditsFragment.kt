@@ -67,7 +67,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
             }
 
             override fun afterTextChanged(editable: Editable?) {
-                lifecycleScope.launch(Dispatchers.Default) {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                     update(viewModel.editsReceiver.value)
                 }
             }
@@ -96,7 +96,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
     private fun update(simpleEdits: List<SimpleEdit>?) {
         simpleEdits ?: return
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             mutex.withLock {
                 val oldList = viewModel.edits.toList()
                 val searchTerm = binding.searchEdittext.text?.trim()?.toString()?.lowercase()
@@ -184,7 +184,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
                     val checkArtist = newEdit.artist.isNotEmpty() &&
                             edit.artist.lowercase() != newEdit.artist.lowercase()
                     adapter.tempUpdate(position, newEdit)
-                    lifecycleScope.launch(Dispatchers.IO) {
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                         if (checkArtist) {
                             val allowedSet =
                                 MainPrefs(context!!).allowedArtists

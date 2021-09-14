@@ -10,7 +10,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"
-            android:targetClass="com.arn.scrobble.Main" >
+            android:targetClass="com.arn.scrobble.MainActivity" >
             <extra android:name="directopen" android:value="31" />
         </intent>
     </shortcut>
@@ -24,7 +24,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"
-            android:targetClass="com.arn.scrobble.Main" >
+            android:targetClass="com.arn.scrobble.MainActivity" >
             <extra android:name="directopen" android:value="34" />
         </intent>
     </shortcut>
@@ -38,7 +38,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"
-            android:targetClass="com.arn.scrobble.Main" >
+            android:targetClass="com.arn.scrobble.MainActivity" >
             <extra android:name="directopen" android:value="35" />
         </intent>
     </shortcut>

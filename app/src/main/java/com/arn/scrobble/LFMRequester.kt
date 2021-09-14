@@ -1102,7 +1102,7 @@ class LFMRequester(
                         val lastfmSession = Authenticator.getSession(null, token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
                         if (lastfmSession != null) {
                             prefs.lastfmUsername = lastfmSession.username
-                            prefs.lastfmUsername = lastfmSession.key
+                            prefs.lastfmSessKey = lastfmSession.key
                         }
                     }
                     R.string.librefm -> {

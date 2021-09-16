@@ -285,7 +285,7 @@
     <string name="import_lists_replace_all">Substituir todas as edições e lista de bloqueio</string>
     <string name="import_lists_replace_existing">Fundir, substituindo as edições existentes e lista de bloqueio</string>
     <string name="import_lists_keep">Fundir, mantendo edições existentes e lista de bloqueio</string>
-    <string name="import_settings">Definições de importação</string>
+    <string name="import_settings">Importar definições</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Propostas de difusão</string>
     <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Para a música atual:
 %1$s

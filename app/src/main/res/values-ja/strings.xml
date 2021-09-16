@@ -58,7 +58,7 @@
     <string name="tap_to_edit">(タップで編集)</string>
     <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(タップで編集または強制)</string>
     <string name="recently_scrobbled">最近のScrobble</string>
-    <string name="recently_loved">最近のLoveトラック</string>
+    <string name="recently_loved">♥ 最近のLoveトラック</string>
     <string name="recents" comment="Short for recently scrobbled">履歴</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">初Scrobble: %1$s</string>
     <string name="auto" comment="automatic or default setting">自動</string>
@@ -101,7 +101,7 @@
     <string name="pending_scrobbles">Scrobbleの保留</string>
     <string name="pending_scrobble">保留中のScrobble</string>
     <string name="pending_scrobbles_noti">保留中のScrobbleを処理中</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s Scrobble • 本日%2$s回</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s Scrobble • 本日%2$s件</string>
     <string name="friends">フレンド</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobble %1$s件 — %2$sより</string>
     <string name="grant_autostart">アプリを自動起動する</string>
@@ -116,7 +116,7 @@
     <string name="time_just_now">たった今</string>
     <string name="no_mail_apps">メールアプリがインストールされていません</string>
     <string name="loved">Loveトラック</string>
-    <string name="unloved">Love解除済みトラック</string>
+    <string name="unloved">未Loveトラック</string>
     <string name="simple_edits">訂正</string>
     <string name="n_simple_edits" formatted="true">%1$d件の訂正</string>
     <string name="n_regex_edits" formatted="true">%1$d件のパターン訂正</string>

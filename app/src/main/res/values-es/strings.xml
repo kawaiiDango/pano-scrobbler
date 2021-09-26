@@ -24,6 +24,8 @@
         <item quantity="one">%1$d año</item>
         <item quantity="other">%1$d años</item>
     </plurals>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
     <string name="settings">Configuración</string>
     <string name="bug_report">Reportar error</string>
     <string name="album_art">Imagen del álbum</string>

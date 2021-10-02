@@ -48,7 +48,7 @@ class RegexEditsAdapter(
 
     class VHRegexEdit(val binding: ListItemRegexEditBinding, private val itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener { itemClickListener.onItemClick(it, adapterPosition) }
+            itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
         }
 
         fun setItemData(editParam: RegexEdit) {
@@ -100,10 +100,10 @@ class RegexEditsAdapter(
                 }
 
             binding.editHandle.setOnClickListener {
-                itemClickListener.onItemClick(it, adapterPosition)
+                itemClickListener.call(it, bindingAdapterPosition)
             }
             itemView.setOnClickListener{
-                itemClickListener.onItemClick(it, adapterPosition)
+                itemClickListener.call(it, bindingAdapterPosition)
             }
         }
     }

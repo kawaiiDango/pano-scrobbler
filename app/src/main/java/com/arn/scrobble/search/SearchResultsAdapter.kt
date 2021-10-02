@@ -3,37 +3,32 @@ package com.arn.scrobble.search
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.loadAny
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
-import com.arn.scrobble.ui.EntryInfoHandler
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.LoadImgInterface
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
-import de.umass.lastfm.*
-import java.lang.ref.WeakReference
+import com.arn.scrobble.ui.TransitionWithBeforeCallback
+import de.umass.lastfm.Album
+import de.umass.lastfm.ImageSize
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.Track
 import java.text.NumberFormat
 import kotlin.math.min
 
 
 class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
-        RecyclerView.Adapter<RecyclerView.ViewHolder>(),
-        LoadImgInterface {
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     lateinit var clickListener: ItemClickListener
-    lateinit var chartsVM: ChartsVM
     private val data = mutableListOf<Any>()
     var expandType = -1
-
-    private val handler by lazy { EntryInfoHandler(WeakReference(this)) }
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -52,7 +47,7 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
         when(getItemViewType(position)) {
             TYPE_HEADER -> (holder as VHSearchHeader).setData(data[position] as Pair<Int, Int>)
             TYPE_RESULT ->
-                (holder as VHSearchResult).setData(data[position] as MusicEntry, chartsVM.imgMap[getItem(position).hashCode()])
+                (holder as VHSearchResult).setData(data[position] as MusicEntry)
         }
     }
 
@@ -65,23 +60,7 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
 
     override fun getItemCount() = data.size
 
-    override fun loadImg(pos:Int){
-        if(pos >= 0 && pos < data.size && data[pos] is MusicEntry){
-            when (val entry = data[pos]) {
-                is Artist -> chartsVM.loadArtistInfo(entry, pos)
-                is Track -> chartsVM.loadTrackInfo(entry, pos)
-            }
-        }
-    }
-
     fun getItem(pos: Int) = data[pos]
-
-    fun setImg(pos: Int, imgUrl: String){
-        if(pos >= 0 && pos < data.size && data[pos] is MusicEntry){
-            chartsVM.imgMap[getItem(pos).hashCode()] = imgUrl
-            notifyItemChanged(pos)
-        }
-    }
 
     fun populate(searchResults: SearchVM.SearchResults, expandType: Int, diffAnimate: Boolean) {
         this.expandType = expandType
@@ -126,11 +105,6 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
         }
     }
 
-    fun queueEntryInfo(pos: Int, imageView: ImageView) {
-        if (!chartsVM.imgMap.containsKey(getItem(pos).hashCode()))
-            handler.sendMessage(imageView.hashCode(), pos)
-    }
-
     class DiffCallback(private var newList: List<Any>, private var oldList: List<Any>) : DiffUtil.Callback() {
 
         override fun getOldListSize() = oldList.size
@@ -149,11 +123,11 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
         init {
             binding.recentsMenuText.visibility = View.GONE
             binding.recentsMenu.visibility = View.INVISIBLE
-            itemView.setOnClickListener { clickListener.onItemClick(itemView, adapterPosition) }
+            itemView.setOnClickListener { clickListener.call(itemView, bindingAdapterPosition) }
         }
 
-        fun setData(entry: MusicEntry, imgUrlp:String?) {
-            var imgUrl = imgUrlp
+        fun setData(entry: MusicEntry) {
+            var imgUrl: String? = null
             binding.recentsTitle.text = entry.name
             if (entry.listeners > 0)
                 binding.recentsDate.text = itemView.context.resources.getQuantityString(
@@ -169,37 +143,39 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding):
                 is Track -> binding.recentsSubtitle.text = entry.artist
                 else -> binding.recentsSubtitle.text = ""
             }
-            if (imgUrl != null && imgUrl != "") {
-                Picasso.get()
-                        .load(imgUrl)
-                        .placeholder(R.drawable.vd_wave_simple_filled)
-                        .error(R.drawable.vd_wave_simple_filled)
-                        .into(binding.recentsImg, object : Callback {
-                            override fun onSuccess() {
-                                binding.recentsImg.clearColorFilter()
-                            }
-
-                            override fun onError(e: Exception) {
-                            }
-                        })
-
+            if (!imgUrl.isNullOrEmpty()) {
+                binding.recentsImg.clearColorFilter()
+                binding.recentsImg.load(imgUrl) {
+                    placeholder(R.drawable.vd_wave_simple_filled)
+                    error(R.drawable.vd_wave_simple_filled)
+                    allowHardware(false)
+                }
             } else {
-                binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
                 binding.recentsImg.setColorFilter(
                     Stuff.getMatColor(
                         itemView.context,
                         entry.name.hashCode().toLong()
                     )
                 )
-                if (entry !is Album)
-                    queueEntryInfo(adapterPosition, binding.recentsImg)
+
+                if (entry !is Album) {
+                    binding.recentsImg.loadAny(entry) {
+                        placeholder(R.drawable.vd_wave_simple_filled)
+                        error(R.drawable.vd_wave_simple_filled)
+                        allowHardware(false) // crashes on back otherwise
+                        transition(TransitionWithBeforeCallback {
+                            binding.recentsImg.clearColorFilter()
+                        })
+                    }
+                } else
+                    binding.recentsImg.load(R.drawable.vd_wave_simple_filled)
             }
         }
     }
 
     inner class VHSearchHeader(private val binding: HeaderWithActionBinding): RecyclerView.ViewHolder(binding.root) {
         init {
-            binding.headerAction.setOnClickListener { clickListener.onItemClick(itemView, adapterPosition) }
+            binding.headerAction.setOnClickListener { clickListener.call(itemView, bindingAdapterPosition) }
         }
 
         fun setData(headerData: Pair<Int, Int>) {

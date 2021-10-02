@@ -37,7 +37,7 @@ class BlockedMetadataAdapter(
 
     class VHBlockedTag(private val binding: ListItemSimpleEditBinding, private val itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener { itemClickListener.onItemClick(it, adapterPosition) }
+            itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
             binding.editsImg.setImageResource(R.drawable.vd_ban)
         }
 
@@ -55,7 +55,7 @@ class BlockedMetadataAdapter(
                 binding.editsAlbum.visibility = View.GONE
 
             binding.editsDelete.setOnClickListener {
-                itemClickListener.onItemClick(it, adapterPosition)
+                itemClickListener.call(it, bindingAdapterPosition)
             }
         }
     }

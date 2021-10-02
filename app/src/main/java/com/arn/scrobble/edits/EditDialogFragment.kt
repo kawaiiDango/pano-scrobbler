@@ -14,6 +14,7 @@ import com.arn.scrobble.*
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.db.TrackedPlayer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.CallException
 import de.umass.lastfm.Session
@@ -237,6 +238,16 @@ class EditDialogFragment: LoginFragment() {
                                 }
                             }
                         }
+
+                        // track playeer
+                        arguments?.getString(NLService.B_PACKAGE_NAME)?.let {
+                            val trackedPlayer = TrackedPlayer(
+                                timeMillis = scrobbleData.timestamp * 1000L,
+                                playerPackage = it
+                            )
+                            PanoDb.getDb(context!!).getTrackedPlayerDao().insert(trackedPlayer)
+                        }
+
                         //scrobble everywhere else
                         fun getScrobbleResult(scrobbleData: ScrobbleData, session: Session): ScrobbleResult {
                             return try {
@@ -383,7 +394,7 @@ class EditDialogFragment: LoginFragment() {
                 )
             }
             if (args.getLong(NLService.B_TIME) == 0L /* now playing */) {
-                context?.sendBroadcast(Intent(NLService.iCANCEL))
+                context?.sendBroadcast(Intent(NLService.iCANCEL), NLService.BROADCAST_PERMISSION)
             }
         }
         return errMsg

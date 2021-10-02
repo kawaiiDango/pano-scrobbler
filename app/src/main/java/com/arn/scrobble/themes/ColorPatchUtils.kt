@@ -42,7 +42,7 @@ object ColorPatchUtils {
             prefs.themePrimary = primaryStyle
             prefs.themeSecondary = secondaryStyle
             prefs.themeBackground = backgroundStyle
-            context.sendBroadcast(Intent(NLService.iTHEME_CHANGED))
+            context.sendBroadcast(Intent(NLService.iTHEME_CHANGED_S), NLService.BROADCAST_PERMISSION)
         } else {
             primaryStyle = prefs.themePrimary
             secondaryStyle = prefs.themeSecondary

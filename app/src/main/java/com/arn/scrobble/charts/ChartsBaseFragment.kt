@@ -8,7 +8,6 @@ import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.dp
@@ -54,14 +53,6 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             postInit()
     }
 
-    override fun onPause() {
-        if (chartsBinding.chartsList.adapter != null) {
-            adapter.removeHandlerCallbacks()
-            viewModel.removeAllInfoTasks()
-        }
-        super.onPause()
-    }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         val glm = chartsBinding.chartsList.layoutManager as GridLayoutManager?
@@ -75,10 +66,6 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         if (item.itemId == R.id.menu_share)
             share()
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun removeHandlerCallbacks() {
-        adapter.removeHandlerCallbacks()
     }
 
     override fun loadFirstPage() {
@@ -107,10 +94,8 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
         chartsBinding.chartsList.addItemDecoration(itemDecor)
 
-        val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadCharts(page)
-            }
+        val loadMoreListener = EndlessRecyclerViewScrollListener(glm) {
+            loadCharts(it)
         }
         loadMoreListener.currentPage = viewModel.page
         chartsBinding.chartsList.addOnScrollListener(loadMoreListener)
@@ -137,18 +122,6 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
 //            if (it.page == 1)
 //                chartsBinding.chartsList.smoothScrollToPosition(0)
             viewModel.chartsReceiver.value = null
-        }
-
-        viewModel.info.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            val imgUrl = when (val entry = it.second) {
-                is Artist -> entry.getImageURL(ImageSize.EXTRALARGE) ?: ""
-                is Album -> entry.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-                is Track -> entry.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-                else -> ""
-            }
-            adapter.setImg(it.first, imgUrl)
-            viewModel.removeInfoTask(it.first)
         }
 
         if (viewModel.chartsData.isNotEmpty())

@@ -11,7 +11,6 @@ import de.umass.lastfm.*
 
 class ChartsVM(application: Application) : AndroidViewModel(application) {
     val chartsData by lazy { mutableListOf<MusicEntry>() }
-    val imgMap by lazy { mutableMapOf<Int,String>() }
     val chartsReceiver by lazy { MutableLiveData<PaginatedResult<MusicEntry>>() }
     val listReceiver by lazy { MutableLiveData<List<MusicEntry>>() }
     val periodCountReceiver by lazy { MutableLiveData<List<ChartsOverviewFragment.ScrobbleCount>>() }
@@ -19,8 +18,6 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
     var periodCountHeader: String? = null
     val weeklyListReceiver by lazy { MutableLiveData<List<Chart<MusicEntry>>>() }
     private var lastChartsTasks = mutableMapOf<Int,LFMRequester>()
-    private val infoTasks by lazy { mutableMapOf<Int, LFMRequester>() }
-    val info by lazy { MutableLiveData<Pair<Int, MusicEntry?>>() }
     var weeklyChart: Chart<MusicEntry>? = null
     var weeklyChartIdx: Int = -1
     var username: String? = null
@@ -66,38 +63,6 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
         lastChartsTasks[Stuff.TYPE_SC]?.cancel()
         lastChartsTasks[Stuff.TYPE_SC] = LFMRequester(getApplication(), viewModelScope, periodCountReceiver).apply {
             getScrobbleCounts(periods, username)
-        }
-    }
-
-    fun loadTrackInfo(track: Track, pos: Int) {
-        infoTasks[pos]?.cancel()
-        infoTasks[pos] = LFMRequester(getApplication(), viewModelScope, info).apply {
-            getTrackInfo(track, pos)
-        }
-    }
-
-    fun loadArtistInfo(artist: Artist, pos: Int) {
-        infoTasks[pos]?.cancel()
-        infoTasks[pos] = LFMRequester(getApplication(), viewModelScope, info).apply {
-            getArtistInfo(artist, pos)
-        }
-    }
-
-    fun loadAlbumInfo(album: Album, pos: Int) {
-        infoTasks[pos]?.cancel()
-        infoTasks[pos] = LFMRequester(getApplication(), viewModelScope, info).apply {
-            getAlbumInfo(album, pos)
-        }
-    }
-
-    fun removeInfoTask(pos: Int) {
-        val task = infoTasks.remove(pos)
-        task?.cancel()
-    }
-
-    fun removeAllInfoTasks() {
-        infoTasks.keys.toList().forEach {
-            removeInfoTask(it)
         }
     }
 

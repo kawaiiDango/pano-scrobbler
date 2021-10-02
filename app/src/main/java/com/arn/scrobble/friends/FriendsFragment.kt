@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.dp
@@ -56,7 +55,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private val username: String?
         get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
     private val viewModel by lazy { VMFactory.getVM(this, FriendsVM::class.java) }
-    var lastRefreshTime = System.currentTimeMillis()
+    private var lastRefreshTime = System.currentTimeMillis()
     private var _binding: ContentFriendsBinding? = null
     private val binding
         get() = _binding!!
@@ -151,10 +150,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
         binding.friendsGrid.addItemDecoration(itemDecor)
 
 
-        val loadMoreListener = object : EndlessRecyclerViewScrollListener(glm) {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadFriends(page)
-            }
+        val loadMoreListener = EndlessRecyclerViewScrollListener(glm) {
+            loadFriends(it)
         }
 
         loadMoreListener.currentPage = viewModel.page
@@ -275,15 +272,15 @@ class FriendsFragment : Fragment(), ItemClickListener {
             }
 
             actionsBinding.friendsProfile.setOnClickListener { v:View ->
-                Stuff.openInBrowser(userLink, activity, v)
+                Stuff.openInBrowser(context!!, userLink)
             }
             actionsBinding.friendsScrobbles.setOnClickListener { v:View ->
                 (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
-                val b = Bundle()
-                b.putString(Stuff.ARG_USERNAME, user.name)
-                b.putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
-                f.arguments = b
+                f.arguments = Bundle().apply {
+                    putString(Stuff.ARG_USERNAME, user.name)
+                    putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
+                }
                 activity!!.supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
@@ -293,11 +290,11 @@ class FriendsFragment : Fragment(), ItemClickListener {
             actionsBinding.friendsCharts.setOnClickListener { v:View ->
                 (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
-                val b = Bundle()
-                b.putString(Stuff.ARG_USERNAME, user.name)
-                b.putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
-                b.putInt(Stuff.ARG_TYPE, 3)
-                f.arguments = b
+                f.arguments = Bundle().apply {
+                    putString(Stuff.ARG_USERNAME, user.name)
+                    putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
+                    putInt(Stuff.ARG_TYPE, 3)
+                }
                 activity!!.supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)

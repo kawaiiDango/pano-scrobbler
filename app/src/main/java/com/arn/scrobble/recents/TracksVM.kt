@@ -12,7 +12,6 @@ import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pending.PendingListData
-import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +28,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     val deletedTracksStringSet by lazy { mutableSetOf<String>() }
     val listenerTrend by lazy { MutableLiveData<MutableList<Int>>() }
     private var lastHeroInfoAsyncTask: LFMRequester? = null
-    val trackInfo by lazy { MutableLiveData<Pair<Int,Track?>>() }
-    val imgMap = mutableMapOf<Int, Map<ImageSize, String>>()
+    val pkgMap = mutableMapOf<Long, String>()
     val paletteColors by lazy { MutableLiveData(PaletteColors()) }
 
     private val pendingTracks by lazy { MutableLiveData<PendingListData>() }
@@ -75,10 +73,6 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
                 getListenerTrend(url)
             }
         }
-    }
-
-    fun loadInfo(track: Track, pos:Int) {
-        LFMRequester(getApplication(), viewModelScope, trackInfo).getTrackInfo(track, pos)
     }
 
     fun loadPending(limit: Int, submit: Boolean): MutableLiveData<PendingListData> {

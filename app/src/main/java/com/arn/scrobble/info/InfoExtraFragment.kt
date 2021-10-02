@@ -136,18 +136,6 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             fragment.viewModel.listReceiver.value = null
         }
 
-        fragment.viewModel.info.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            val imgUrl = when (val entry = it.second) {
-                is Artist -> entry.getImageURL(ImageSize.EXTRALARGE) ?: ""
-                is Album -> entry.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-                is Track -> entry.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-                else -> ""
-            }
-            adapter.setImg(it.first, imgUrl)
-            fragment.viewModel.removeInfoTask(it.first)
-        }
-
         if (fragment.viewModel.chartsData.isNotEmpty())
             adapter.populate()
     }
@@ -158,16 +146,6 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             val bottomSheetView = dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
         }
-    }
-
-    override fun onDestroyView() {
-        if (this::artistsFragment.isInitialized)
-            artistsFragment.viewModel.removeAllInfoTasks()
-        if (this::albumsFragment.isInitialized)
-            albumsFragment.viewModel.removeAllInfoTasks()
-        if (this::tracksFragment.isInitialized)
-            tracksFragment.viewModel.removeAllInfoTasks()
-        super.onDestroyView()
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {

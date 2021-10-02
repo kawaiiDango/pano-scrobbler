@@ -140,9 +140,9 @@ class AppListFragment : Fragment() {
                     return@withContext
 
                 if (firstRun) {
-                    val wSet = mutableSetOf<String>()
-                    wSet.addAll(adapter.getSelectedPackages())
-                    prefs.allowedPackages = wSet
+                    val aSet = mutableSetOf<String>()
+                    aSet.addAll(adapter.getSelectedPackages())
+                    prefs.allowedPackages = aSet
                     if (MainActivity.isTV)
                         prefs.autoDetectApps = false
                 }
@@ -176,15 +176,15 @@ class AppListFragment : Fragment() {
         if (firstRun)
             prefs.firstRun = false
         if (_binding != null) {
-            val wSet = mutableSetOf<String>()
+            val aSet = mutableSetOf<String>()
 
             val adapter = binding.appList.adapter as AppListAdapter
-            wSet += adapter.getSelectedPackages()
+            aSet += adapter.getSelectedPackages()
 
             //BL = old WL - new WL
-            val bSet = prefs.blockedPackages + prefs.allowedPackages - wSet
+            val bSet = prefs.blockedPackages + prefs.allowedPackages - aSet
 
-            prefs.allowedPackages = wSet
+            prefs.allowedPackages = aSet
             prefs.blockedPackages = bSet
         }
         super.onStop()

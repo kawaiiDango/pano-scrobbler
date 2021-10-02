@@ -50,11 +50,13 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 	protected static final long ONE_WEEK = ONE_DAY * 7;
     public static final long NETWORK_AND_CACHE_CONST = ONE_WEEK + 1;
     public static final long FIVE_MINUTES = 1000 * 60 * 5;
+    public static final long ONE_MONTH = ONE_DAY * 30;
 
 	/**
 	 * Contains the lower case method names for all requests that should be cached 1 week
 	 */
 	protected static final Set<String> ONE_WEEK_METHODS = new HashSet<String>();
+	protected static final Set<String> ONE_MONTH_METHODS = new HashSet<String>();
 
 	static {
 		// similar data
@@ -81,6 +83,10 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
         ONE_WEEK_METHODS.add("album.getinfo");
 
         ONE_WEEK_METHODS.add("artist.getinfo.spotify");
+
+        ONE_MONTH_METHODS.add("track.gettoptags");
+        ONE_MONTH_METHODS.add("album.gettoptags");
+        ONE_MONTH_METHODS.add("artist.gettoptags");
 	}
 
 	/**
@@ -110,7 +116,12 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 		if (method.equals("user.gettopalbums") || method.equals("user.gettopartists") || method.equals("user.gettoptracks"))
 		    return FIVE_MINUTES;
 
-		return ONE_WEEK_METHODS.contains(method) ? ONE_WEEK : -1;
+		if (ONE_WEEK_METHODS.contains(method))
+		    return ONE_WEEK;
+		else if (ONE_MONTH_METHODS.contains(method))
+            return ONE_MONTH;
+		else
+		    return -1;
 	}
 
 	public void setCacheRecentWeeklyCharts(long cacheRecentWeeklyCharts) {

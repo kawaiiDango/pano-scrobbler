@@ -3,7 +3,6 @@ package com.arn.scrobble.friends
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Handler
 import android.os.Looper
@@ -13,11 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import androidx.core.content.ContextCompat
-import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import coil.load
+import coil.transition.CrossfadeTransition
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -26,10 +26,9 @@ import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
+import com.arn.scrobble.ui.PaletteTransition
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
@@ -159,7 +158,7 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
 
         override fun onClick(view: View) {
             if (clickable)
-                itemClickListener.onItemClick(itemView, adapterPosition)
+                itemClickListener.call(itemView, bindingAdapterPosition)
         }
 
         fun setItemData(user: User) {
@@ -197,9 +196,9 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
                         binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat)
                     binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
 
-                if (!handler.hasMessages(user.name.hashCode()) && adapterPosition > -1) {
+                if (!handler.hasMessages(user.name.hashCode()) && bindingAdapterPosition > -1) {
                     val msg = handler.obtainMessage(user.name.hashCode())
-                    msg.arg1 = adapterPosition
+                    msg.arg1 = bindingAdapterPosition
                     handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
                 }
             }
@@ -222,39 +221,31 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
                     bg.setTint(color)
                 }
 
-                if (userImg != null && userImg != "") {
-                    Picasso.get()
-                            .load(userImg)
-                            .placeholder(R.drawable.vd_placeholder_user)
-                            .error(R.drawable.vd_placeholder_user)
-                            .into(binding.friendsPic, object : Callback {
-                                override fun onSuccess() {
-                                    val b = (binding.friendsPic.drawable as BitmapDrawable).bitmap
-                                    if (!wasCached)
-                                        Palette.from(b).generate { palette ->
-                                            palette ?: return@generate
-
-                                            val colorMutedBlack = palette.getDarkMutedColor(bgDark)
-                                            val anim = ValueAnimator.ofArgb(bgDark, colorMutedBlack)
-                                            anim.addUpdateListener {
-                                                val bg = itemView.background
-                                                if (bg is MaterialShapeDrawable) {
-                                                    bg.setTint(it.animatedValue as Int)
-                                                }
-                                            }
-//                                            val anim = ObjectAnimator.ofArgb(itemView, "backgroundColor", bgDark, colorMutedBlack)
-                                            anim.duration = 350
-                                            anim.interpolator = AccelerateInterpolator()
-                                            anim.start()
-                                            viewModel.paletteColorsCache[userImg] = colorMutedBlack
+                if (userImg != null) {
+                    binding.friendsPic
+                        .load(userImg) {
+                            placeholder(R.drawable.vd_placeholder_user)
+                            error(R.drawable.vd_placeholder_user)
+                            allowHardware(false)
+                            if (!wasCached)
+                                transition(PaletteTransition { palette ->
+                                    val colorMutedBlack = palette.getDarkMutedColor(bgDark)
+                                    val anim = ValueAnimator.ofArgb(bgDark, colorMutedBlack)
+                                    anim.addUpdateListener {
+                                        val bg = itemView.background
+                                        if (bg is MaterialShapeDrawable) {
+                                            bg.setTint(it.animatedValue as Int)
                                         }
-                                }
-
-                                override fun onError(e: Exception) {
-                                }
-                            })
+                                    }
+//                                            val anim = ObjectAnimator.ofArgb(itemView, "backgroundColor", bgDark, colorMutedBlack)
+                                    anim.duration = 350
+                                    anim.interpolator = AccelerateInterpolator()
+                                    anim.start()
+                                    viewModel.paletteColorsCache[userImg] = colorMutedBlack
+                                })
+                        }
                 } else {
-                    binding.friendsPic.setImageResource(R.drawable.vd_placeholder_user)
+                    binding.friendsPic.load(R.drawable.vd_placeholder_user)
                 }
             }
         }

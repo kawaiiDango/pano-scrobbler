@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.databinding.ContentWebviewBinding
 import okhttp3.Cookie
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 
 /**
@@ -71,7 +73,7 @@ class WebViewFragment: Fragment() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             if (url.startsWith("pscrobble://auth/lastfm?")){
                 if (saveCookies) {
-                    val httpUrl = HttpUrl.parse("https://www.last.fm/")!!
+                    val httpUrl = "https://www.last.fm/".toHttpUrl()
                     val cookieString: String = CookieManager.getInstance().getCookie(httpUrl.toString())
                     // intercept lastfm cookies for edit and delete to work
                     val cookies = mutableListOf<Cookie>()
@@ -103,7 +105,7 @@ class WebViewFragment: Fragment() {
                     url.startsWith("pscrobble://auth/") ||
                     url.startsWith("https://www.last.fm/join") ||
                     url.startsWith("https://secure.last.fm/settings/lostpassword")
-                    ) {
+            ) {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 view.context.startActivity(intent)
                 try {

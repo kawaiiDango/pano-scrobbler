@@ -11,7 +11,7 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
 import com.arn.scrobble.pref.MainPrefs
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.Locale
 
 /**
@@ -28,8 +28,8 @@ class SessListener (
     private val controllersMap = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
     private var controllers : List<MediaController>? = null
 
-    private val blackList = mutableSetOf<String>()
-    private val whiteList = mutableSetOf<String>()
+    private val blockedPackages = mutableSetOf<String>()
+    private val allowedPackages = mutableSetOf<String>()
     private val loggedIn
         get() = prefs.lastfmSessKey != null
     lateinit var browserPackages: Set<String>
@@ -37,8 +37,8 @@ class SessListener (
 
     init {
         prefs.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        whiteList.addAll(prefs.allowedPackages)
-        blackList.addAll(prefs.blockedPackages)
+        allowedPackages.addAll(prefs.allowedPackages)
+        blockedPackages.addAll(prefs.blockedPackages)
     }
 
     // this list of controllers is unreliable esp. with yt and yt music
@@ -124,13 +124,13 @@ class SessListener (
             fun isUrlOrDomain(s: String): Boolean {
                 // got some internal IOBE, catch everything
                 return try {
-                    HttpUrl.parse(s)?.topPrivateDomain() != null
+                    s.toHttpUrlOrNull()?.topPrivateDomain() != null
                 } catch (e: Exception) {
                     false
                 }
                  ||
                 try {
-                    HttpUrl.parse("https://$s")?.topPrivateDomain() != null
+                    "https://$s".toHttpUrlOrNull()?.topPrivateDomain() != null
                 } catch (e: Exception) {
                     false
                 }
@@ -141,28 +141,23 @@ class SessListener (
             scheduleSyntheticState()
 
             hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
-            val isWhitelisted = packageName in whiteList
-            val packageNameParam = if (!isWhitelisted)
-                    packageName
-                else
-                    null
             handler.removeMessages(hashesAndTimes.lastScrobbleHash)
 
             val ignoreArtistMeta = packageName in Stuff.IGNORE_ARTIST_META ||
                     packageName in browserPackages && isUrlOrDomain(artist)
 
             if (ignoreArtistMeta) {
-                val (artist, title) = MetadataUtils.parseArtistTitle(title)
+                val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(title)
                 handler.nowPlaying(
-                    artist,
+                    parsedArtist,
                     "",
-                    title,
+                    parsedTitle,
                     "",
                     hashesAndTimes.timePlayed,
                     duration,
                     currHash,
                     artist,
-                    packageNameParam
+                    packageName
                 )
             } else
                 handler.nowPlaying(
@@ -174,7 +169,7 @@ class SessListener (
                     duration,
                     currHash,
                     null,
-                    packageNameParam
+                    packageName
                 )
             hashesAndTimes.lastScrobbleHash = currHash
             hashesAndTimes.lastScrobbledHash = 0
@@ -366,23 +361,23 @@ class SessListener (
     private fun shouldScrobble(packageName: String): Boolean {
 
         return prefs.scrobblerEnabled && loggedIn &&
-                (packageName in whiteList ||
-                (prefs.autoDetectApps && packageName !in blackList))
+                (packageName in allowedPackages ||
+                (prefs.autoDetectApps && packageName !in blockedPackages))
     }
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {
         when (key){
-            MainPrefs.PREF_WHITELIST -> synchronized(whiteList) {
-                whiteList.clear()
-                whiteList.addAll(pref.getStringSet(key, setOf())!!)
+            MainPrefs.PREF_ALLOWED_PACKAGES -> synchronized(allowedPackages) {
+                allowedPackages.clear()
+                allowedPackages.addAll(pref.getStringSet(key, setOf())!!)
             }
-            MainPrefs.PREF_BLACKLIST -> synchronized(blackList) {
-                blackList.clear()
-                blackList.addAll(pref.getStringSet(key, setOf())!!)
+            MainPrefs.PREF_BLOCKED_PACKAGES -> synchronized(blockedPackages) {
+                blockedPackages.clear()
+                blockedPackages.addAll(pref.getStringSet(key, setOf())!!)
             }
         }
-        if (key == MainPrefs.PREF_WHITELIST ||
-                key == MainPrefs.PREF_BLACKLIST ||
+        if (key == MainPrefs.PREF_ALLOWED_PACKAGES ||
+                key == MainPrefs.PREF_BLOCKED_PACKAGES ||
                 key == MainPrefs.PREF_AUTO_DETECT ||
                 key == MainPrefs.PREF_MASTER) {
 

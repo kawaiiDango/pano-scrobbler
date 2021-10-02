@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppWidgetTheme.Dynamic" parent="android:Theme.DeviceDefault.DayNight">
+        <item name="fakeShadowAlpha">0</item>
+        <item name="android:textViewStyle">@style/WidgetText</item>
+        <item name="android:colorPrimary">?android:colorAccent</item>
+        <item name="android:colorBackground">@android:color/system_accent1_800</item>
+    </style>
+
+    <style name="AppWidgetTheme.Dynamic.Shadow">
+        <item name="fakeShadowAlpha">1</item>
+        <item name="android:textViewStyle">@style/WidgetText.Shadow</item>
+    </style>
+</resources>

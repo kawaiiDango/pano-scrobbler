@@ -147,7 +147,7 @@ class ThemesFragment: Fragment() {
             if ((activity as MainActivity).billingViewModel.proStatus.value == true) {
                 saveTheme()
                 if (!binding.themeRandom.isChecked)
-                    context!!.sendBroadcast(Intent(NLService.iTHEME_CHANGED))
+                    context!!.sendBroadcast(Intent(NLService.iTHEME_CHANGED_S), NLService.BROADCAST_PERMISSION)
                 parentFragmentManager.popBackStack()
                 activity!!.recreate()
             } else {

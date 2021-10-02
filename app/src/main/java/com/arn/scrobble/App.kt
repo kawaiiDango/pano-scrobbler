@@ -51,11 +51,16 @@ class App : Application() {
             .start()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 5)
-            exitReasons.forEachIndexed { index, applicationExitInfo ->
-                Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
-            }
+            try {
+                val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 5)
+                exitReasons.forEachIndexed { index, applicationExitInfo ->
+                    Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
+                }
+            } catch (e: Exception) {}
+            // Caused by java.lang.IllegalArgumentException at getHistoricalProcessExitReasons
+            // Comparison method violates its general contract!
+            // probably a samsung bug
         }
 
         // migrate prefs
@@ -82,7 +87,6 @@ class App : Application() {
         }
     }
 
-    @Synchronized
     private fun initCaller() {
         Caller.getInstance().apply {
             userAgent = Stuff.USER_AGENT
@@ -109,6 +113,6 @@ class App : Application() {
             }
             commit()
         }
-        // two processes may doing this at the same time
+        // two processes may be doing this at the same time
     }
 }

@@ -15,8 +15,8 @@ class RegexItemTouchHelper(
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        val fromPosition = viewHolder.adapterPosition
-        val toPosition = target.adapterPosition
+        val fromPosition = viewHolder.bindingAdapterPosition
+        val toPosition = target.bindingAdapterPosition
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
                 Collections.swap(viewModel.regexes, i, i + 1)

@@ -41,9 +41,9 @@ class TagInfoFragment: BottomSheetDialogFragment() {
 
         val tag = arguments!!.getString(Stuff.ARG_TAG)!!
         binding.tagInfoTitle.text = tag
-        binding.tagInfoLink.setOnClickListener { Stuff.openInBrowser("https://www.last.fm/tag/" +
-                URLEncoder.encode(tag, "UTF-8")
-                , context!!) }
+        binding.tagInfoLink.setOnClickListener { Stuff.openInBrowser(context!!,
+            "https://www.last.fm/tag/" + URLEncoder.encode(tag, "UTF-8")
+                ) }
         binding.tagInfoProgress.show()
 
         viewModel.info.observe(viewLifecycleOwner) {

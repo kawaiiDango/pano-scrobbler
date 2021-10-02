@@ -69,9 +69,9 @@ class FirstThingsFragment: Fragment() {
                     Stuff.toast(activity, getString(R.string.check_nls, getString(R.string.app_name)))
             } else {
                 val wf = WebViewFragment()
-                val b = Bundle()
-                b.putString(Stuff.ARG_URL, getString(R.string.tv_link))
-                wf.arguments = b
+                wf.arguments = Bundle().apply {
+                    putString(Stuff.ARG_URL, getString(R.string.tv_link))
+                }
                 parentFragmentManager.beginTransaction()
                         .hide(this)
                         .add(R.id.frame, wf)
@@ -82,10 +82,10 @@ class FirstThingsFragment: Fragment() {
         }
         binding.firstThings2.setOnClickListener {
             val wf = WebViewFragment()
-            val b = Bundle()
-            b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
-            b.putBoolean(Stuff.ARG_SAVE_COOKIES, true)
-            wf.arguments = b
+            wf.arguments = Bundle().apply {
+                putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
+                putBoolean(Stuff.ARG_SAVE_COOKIES, true)
+            }
             parentFragmentManager.beginTransaction()
                     .hide(this)
                     .add(R.id.frame, wf)
@@ -171,10 +171,10 @@ class FirstThingsFragment: Fragment() {
     override fun onStart() {
         super.onStart()
         val iF = IntentFilter().apply {
-            addAction(NLService.iSESS_CHANGED)
-            addAction(NLService.iNLS_STARTED)
+            addAction(NLService.iSESS_CHANGED_S)
+            addAction(NLService.iNLS_STARTED_S)
         }
-        activity!!.registerReceiver(receiver, iF)
+        activity!!.registerReceiver(receiver, iF, NLService.BROADCAST_PERMISSION, null)
         Stuff.setTitle(activity, R.string.almost_there)
         (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
@@ -231,8 +231,8 @@ class FirstThingsFragment: Fragment() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-                NLService.iSESS_CHANGED -> checkAll()
-                NLService.iNLS_STARTED -> {
+                NLService.iSESS_CHANGED_S -> checkAll()
+                NLService.iNLS_STARTED_S -> {
                     if (isOnTop)
                         checkAll()
                 }
@@ -252,12 +252,12 @@ class FirstThingsFragment: Fragment() {
 
         fun openStartupMgr(startupMgrIntent: Intent?, context: Context){
             if (startupMgrIntent == null)
-                Stuff.openInBrowser("https://dontkillmyapp.com", context)
+                Stuff.openInBrowser(context, "https://dontkillmyapp.com")
             else {
                 try {
                     context.startActivity(startupMgrIntent)
                 } catch (e: SecurityException) {
-                    Stuff.openInBrowser("https://dontkillmyapp.com", context)
+                    Stuff.openInBrowser(context, "https://dontkillmyapp.com")
                 }
             }
         }

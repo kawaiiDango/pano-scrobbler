@@ -34,10 +34,10 @@ object PopupMenuUtils {
                 .setMessage(R.string.lastfm_reauth)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     val wf = WebViewFragment()
-                    val b = Bundle()
-                    b.putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
-                    b.putBoolean(Stuff.ARG_SAVE_COOKIES, true)
-                    wf.arguments = b
+                    wf.arguments = Bundle().apply {
+                        putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
+                        putBoolean(Stuff.ARG_SAVE_COOKIES, true)
+                    }
                     activity.supportFragmentManager.beginTransaction()
                         .replace(R.id.frame, wf)
                         .addToBackStack(null)

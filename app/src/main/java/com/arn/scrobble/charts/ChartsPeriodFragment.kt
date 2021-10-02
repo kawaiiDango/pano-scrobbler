@@ -32,8 +32,6 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
 
     protected val prefs by lazy { MainPrefs(context!!) }
 
-    open fun removeHandlerCallbacks() {}
-
     open fun loadFirstPage() {}
 
     open fun loadWeeklyCharts() {}
@@ -59,10 +57,6 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         periodChipsBinding.chartsPeriod.check(periodChipIds[periodIdx])
 
         val ccl = ChipGroup.OnCheckedChangeListener { group, checkedId ->
-            if (!firstLoad) {
-                removeHandlerCallbacks()
-                viewModel.removeAllInfoTasks()
-            }
             viewModel.reachedEnd = false
             val idx = periodChipIds.indexOf(checkedId)
             if (checkedId != R.id.charts_choose_week) {
@@ -210,29 +204,29 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         when (entry) {
             is Artist -> {
                 val info = InfoFragment()
-                val b = Bundle()
-                b.putString(NLService.B_ARTIST, entry.name)
-                b.putString(Stuff.ARG_USERNAME, username)
-                info.arguments = b
+                info.arguments = Bundle().apply {
+                    putString(NLService.B_ARTIST, entry.name)
+                    putString(Stuff.ARG_USERNAME, username)
+                }
                 info.show(activity!!.supportFragmentManager, null)
             }
             is Album -> {
                 val info = InfoFragment()
-                val b = Bundle()
-                b.putString(NLService.B_ARTIST, entry.artist)
-                b.putString(NLService.B_ALBUM, entry.name)
-                b.putString(Stuff.ARG_USERNAME, username)
-                info.arguments = b
+                info.arguments = Bundle().apply {
+                    putString(NLService.B_ARTIST, entry.artist)
+                    putString(NLService.B_ALBUM, entry.name)
+                    putString(Stuff.ARG_USERNAME, username)
+                }
                 info.show(activity!!.supportFragmentManager, null)
             }
             is Track -> {
                 val info = InfoFragment()
-                val b = Bundle()
-                b.putString(NLService.B_ARTIST, entry.artist)
-                b.putString(NLService.B_ALBUM, entry.album)
-                b.putString(NLService.B_TRACK, entry.name)
-                b.putString(Stuff.ARG_USERNAME, username)
-                info.arguments = b
+                info.arguments = Bundle().apply {
+                    putString(NLService.B_ARTIST, entry.artist)
+                    putString(NLService.B_ALBUM, entry.album)
+                    putString(NLService.B_TRACK, entry.name)
+                    putString(Stuff.ARG_USERNAME, username)
+                }
                 info.show(activity!!.supportFragmentManager, null)
             }
         }

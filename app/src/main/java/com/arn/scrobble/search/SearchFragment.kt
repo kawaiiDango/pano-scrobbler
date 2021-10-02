@@ -1,6 +1,5 @@
 package com.arn.scrobble.search
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,7 +17,6 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.Stuff.showKeyboard
 import com.arn.scrobble.VMFactory
-import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.HistoryPref
@@ -27,7 +25,6 @@ import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.textfield.TextInputLayout
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
-import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -35,7 +32,6 @@ import kotlinx.coroutines.launch
 
 class SearchFragment: Fragment() {
     private val viewModel by lazy { VMFactory.getVM(this, SearchVM::class.java) }
-    private val chartsVM by lazy { VMFactory.getVM(this, ChartsVM::class.java) }
     private val historyPref by lazy { HistoryPref(
             MainPrefs(context!!).sharedPreferences,
             MainPrefs.PREF_ACTIVITY_SEARCH_HISTORY,
@@ -56,6 +52,7 @@ class SearchFragment: Fragment() {
     }
 
     override fun onDestroyView() {
+        hideKeyboard()
         _binding = null
         super.onDestroyView()
     }
@@ -116,7 +113,6 @@ class SearchFragment: Fragment() {
         }
 
         val resultsAdapter = SearchResultsAdapter(binding)
-        resultsAdapter.chartsVM = chartsVM
         val resultsItemClickListener = object : ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val item = resultsAdapter.getItem(position)
@@ -129,26 +125,26 @@ class SearchFragment: Fragment() {
                     when (item) {
                         is Artist -> {
                             val info = InfoFragment()
-                            val b = Bundle()
-                            b.putString(NLService.B_ARTIST, item.name)
-                            info.arguments = b
+                            info.arguments = Bundle().apply {
+                                putString(NLService.B_ARTIST, item.name)
+                            }
                             info.show(activity!!.supportFragmentManager, null)
                         }
                         is Album -> {
                             val info = InfoFragment()
-                            val b = Bundle()
-                            b.putString(NLService.B_ARTIST, item.artist)
-                            b.putString(NLService.B_ALBUM, item.name)
-                            info.arguments = b
+                            info.arguments = Bundle().apply {
+                                putString(NLService.B_ARTIST, item.artist)
+                                putString(NLService.B_ALBUM, item.name)
+                            }
                             info.show(activity!!.supportFragmentManager, null)
                         }
                         is Track -> {
                             val info = InfoFragment()
-                            val b = Bundle()
-                            b.putString(NLService.B_ARTIST, item.artist)
-                            b.putString(NLService.B_ALBUM, item.album)
-                            b.putString(NLService.B_TRACK, item.name)
-                            info.arguments = b
+                            info.arguments = Bundle().apply {
+                                putString(NLService.B_ARTIST, item.artist)
+                                putString(NLService.B_ALBUM, item.album)
+                                putString(NLService.B_TRACK, item.name)
+                            }
                             info.show(activity!!.supportFragmentManager, null)
                         }
                     }
@@ -182,17 +178,6 @@ class SearchFragment: Fragment() {
             resultsAdapter.populate(it, -1, false)
         }
 
-        chartsVM.info.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            val imgUrl = when (val entry = it.second) {
-                is Artist -> entry.getImageURL(ImageSize.EXTRALARGE) ?: ""
-                is Album -> entry.getWebpImageURL(ImageSize.LARGE) ?: ""
-                is Track -> entry.getWebpImageURL(ImageSize.LARGE) ?: ""
-                else -> ""
-            }
-            resultsAdapter.setImg(it.first, imgUrl)
-            chartsVM.removeInfoTask(it.first)
-        }
     }
 
     override fun onStart() {
@@ -209,6 +194,5 @@ class SearchFragment: Fragment() {
         binding.searchResultsList.visibility = View.GONE
         binding.searchProgress.show()
         viewModel.loadSearches(term)
-        chartsVM.imgMap.clear()
     }
 }

@@ -12,27 +12,40 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * Created by arn on 11/09/2017.
  */
 
-@Database(entities = [
-    PendingScrobble::class,
-    PendingLove::class,
-    SimpleEdit::class,
-    RegexEdit::class,
-    BlockedMetadata::class,
- ], version = 9)
+@Database(
+    entities = [
+        PendingScrobble::class,
+        PendingLove::class,
+        SimpleEdit::class,
+        RegexEdit::class,
+        BlockedMetadata::class,
+        TrackedPlayer::class,
+    ], version = 10
+)
 abstract class PanoDb : RoomDatabase() {
     abstract fun getScrobblesDao(): PendingScrobblesDao
     abstract fun getLovesDao(): PendingLovesDao
     abstract fun getSimpleEditsDao(): SimpleEditsDao
     abstract fun getRegexEditsDao(): RegexEditsDao
     abstract fun getBlockedMetadataDao(): BlockedMetadataDao
+    abstract fun getTrackedPlayerDao(): TrackedPlayerDao
 
     companion object {
         const val fileName = "pendingScrobbles"
         private var INSTANCE: PanoDb? = null
         fun getDb(context: Context): PanoDb {
             if (INSTANCE == null || INSTANCE?.isOpen == false) {
-                INSTANCE = Room.databaseBuilder(context.applicationContext, PanoDb::class.java, fileName)
-                        .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+                INSTANCE =
+                    Room.databaseBuilder(context.applicationContext, PanoDb::class.java, fileName)
+                        .addMigrations(
+                            MIGRATION_3_4,
+                            MIGRATION_4_5,
+                            MIGRATION_5_6,
+                            MIGRATION_6_7,
+                            MIGRATION_7_8,
+                            MIGRATION_8_9,
+                            MIGRATION_9_10,
+                        )
                         // allow queries on the main thread.
                         // Don't do this on a real app! See PersistenceBasicSample for an example.
 //                        .allowMainThreadQueries()
@@ -102,6 +115,14 @@ abstract class PanoDb : RoomDatabase() {
                 database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_simpleEdits_origArtist_origAlbum_origTrack` ON `$tableName` (`origArtist`, `origAlbum`, `origTrack`)")
                 database.execSQL("INSERT INTO $tableName SELECT null, legacyHash, origTrack, origAlbum, origArtist, track, album, albumArtist, artist FROM edits")
                 database.execSQL("DROP table edits")
+            }
+        }
+
+        private val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                val tableName = "trackedPlayers"
+                database.execSQL("CREATE TABLE IF NOT EXISTS `$tableName` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timeMillis` INTEGER NOT NULL, `playerPackage` TEXT NOT NULL)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_trackedPlayers_timeMillis` ON `$tableName` (`timeMillis`)")
             }
         }
 

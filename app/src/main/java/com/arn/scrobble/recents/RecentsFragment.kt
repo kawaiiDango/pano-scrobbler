@@ -5,9 +5,8 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -26,8 +25,15 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import coil.annotation.ExperimentalCoilApi
+import coil.clear
+import coil.load
+import coil.metadata
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.Stuff.setArrowColors
@@ -41,8 +47,6 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.robinhood.spark.animation.MorphSparkAnimator
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import java.net.URLEncoder
@@ -54,8 +58,7 @@ import kotlin.math.max
  * Created by arn on 09/07/2017.
  */
 
-open class RecentsFragment : Fragment(),
-        ItemClickListener, ItemLongClickListener, FocusChangeListener, RecentsAdapter.SetHeroTrigger {
+open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHeroTrigger {
     private lateinit var adapter: RecentsAdapter
     private val prefs by lazy { MainPrefs(context!!) }
     private var timedRefresh = Runnable {
@@ -78,6 +81,34 @@ open class RecentsFragment : Fragment(),
     private var animSet: AnimatorSet? = null
     private var smoothScroller: LinearSmoothScroller? = null
     open val isShowingLoves = false
+
+    private val focusChangeListener = object : FocusChangeListener {
+        //only called when !view.isInTouchMode
+        override fun onFocus(view: View, position: Int) {
+            if (!view.isInTouchMode) {
+                val pos = IntArray(2)
+                view.getLocationInWindow(pos)
+
+                if (pos[1] + view.height > coordinatorBinding.coordinator.height && coordinatorBinding.appBar.isExpanded)
+                    coordinatorBinding.appBar.setExpanded(false, true)
+            }
+        }
+    }
+
+    private val itemLongClickListener = object : ItemLongClickListener {
+        override fun onItemLongClick(view: View, position: Int) {
+            val t = adapter.getItem(position) as? Track ?: return
+            val info = InfoFragment()
+            info.arguments = Bundle().apply {
+                putString(NLService.B_ARTIST, t.artist)
+                if (!t.album.isNullOrEmpty())
+                    putString(NLService.B_ALBUM, t.album)
+                putString(NLService.B_TRACK, t.name)
+                putString(Stuff.ARG_USERNAME, username)
+            }
+            info.show(activity!!.supportFragmentManager, null)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ContentRecentsBinding.inflate(inflater, container, false)
@@ -118,17 +149,13 @@ open class RecentsFragment : Fragment(),
 
     override fun onPause() {
         animSet?.end()
-        if (isShowingLoves)
-            try {
-                adapter.removeHandlerCallbacks()
-            }catch (e: Exception){}
         super.onPause()
     }
 
     private fun postInit() {
         val activity = activity as MainActivity? ?: return
         coordinatorBinding.toolbar.title = null
-        Stuff.setAppBarHeight(activity)
+        Stuff.setCtlHeight(activity)
 //      https://stackoverflow.com/questions/31759171/recyclerview-and-java-lang-indexoutofboundsexception-inconsistency-detected-in
         val llm = object : LinearLayoutManager(context!!) {
             override fun onLayoutChildren(recycler: Recycler?, state: RecyclerView.State?) {
@@ -147,6 +174,9 @@ open class RecentsFragment : Fragment(),
         adapter.viewModel = viewModel
         adapter.isShowingLoves = isShowingLoves
         adapter.isShowingAlbums = prefs.showAlbumInRecents
+        adapter.isShowingPlayers = !isShowingLoves && username == null &&
+                prefs.proStatus && prefs.showTrackedPlayers
+        adapter.trackBundleLd = activity.mainNotifierViewModel.trackBundleLd
 
 //        adapter.setStatusHeader()
 
@@ -162,18 +192,16 @@ open class RecentsFragment : Fragment(),
         binding.recentsList.adapter = adapter
         (binding.recentsList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
 
-        val loadMoreListener = object : EndlessRecyclerViewScrollListener(llm) {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                loadRecents(page)
-            }
+        val loadMoreListener = EndlessRecyclerViewScrollListener(llm) {
+            loadRecents(it)
         }
         loadMoreListener.currentPage = viewModel.page
 
         binding.recentsList.addOnScrollListener(loadMoreListener)
         adapter.loadMoreListener = loadMoreListener
         adapter.itemClickListener = this
-        adapter.itemLongClickListener = this
-        adapter.focusChangeListener = this
+        adapter.itemLongClickListener = itemLongClickListener
+        adapter.focusChangeListener = focusChangeListener
         adapter.setHeroListener = this
 
         if (coordinatorBinding.sparkline.adapter == null) { // not inited
@@ -194,13 +222,6 @@ open class RecentsFragment : Fragment(),
                         return@forEach
                     if (!track.isNowPlaying || it.page == 1)
                         viewModel.tracks.add(track)
-                    if (isShowingLoves && viewModel.imgMap[Stuff.genHashCode(
-                            track.artist,
-                            track.name
-                        )] != null
-                    )
-                        track.imageUrlsMap =
-                            viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)]
                 }
                 adapter.populate(oldList)
             }
@@ -232,12 +253,7 @@ open class RecentsFragment : Fragment(),
                     it ?: return@observe
                     setGraph(it)
                 }
-        if (isShowingLoves)
-            viewModel.trackInfo.observe(viewLifecycleOwner) {
-                it ?: return@observe
-                adapter.setImg(it.first, it.second?.imageUrlsMap)
-            }
-        else if (username == null)
+        if (!isShowingLoves && username == null)
             viewModel.loadPending(2, !activity.pendingSubmitAttempted)
                     .observe(viewLifecycleOwner) {
                         it ?: return@observe
@@ -282,13 +298,13 @@ open class RecentsFragment : Fragment(),
             val t = coordinatorBinding.heroImg.tag
             if (t is Track) {
                 val info = InfoFragment()
-                val b = Bundle()
-                b.putString(NLService.B_ARTIST, t.artist)
-                if (!t.album.isNullOrEmpty())
-                    b.putString(NLService.B_ALBUM, t.album)
-                b.putString(NLService.B_TRACK, t.name)
-                b.putString(Stuff.ARG_USERNAME, username)
-                info.arguments = b
+                info.arguments = Bundle().apply {
+                    putString(NLService.B_ARTIST, t.artist)
+                    if (!t.album.isNullOrEmpty())
+                        putString(NLService.B_ALBUM, t.album)
+                    putString(NLService.B_TRACK, t.name)
+                    putString(Stuff.ARG_USERNAME, username)
+                }
                 info.show(activity.supportFragmentManager, null)
                 if (!prefs.longPressLearnt) {
                     Stuff.toast(context, getString(R.string.info_long_press_hint), Toast.LENGTH_LONG)
@@ -323,9 +339,9 @@ open class RecentsFragment : Fragment(),
             coordinatorBinding.heroPlay.setOnLongClickListener {
                 val t = coordinatorBinding.heroImg.tag
                 if (t is Track) {
-                    Stuff.openInBrowser("https://en.touhouwiki.net/index.php?search=" +
-                            URLEncoder.encode("${t.artist} - ${t.name}", "UTF-8"),
-                        context
+                    Stuff.openInBrowser(context!!,
+                        "https://en.touhouwiki.net/index.php?search=" +
+                            URLEncoder.encode("${t.artist} - ${t.name}", "UTF-8")
                     )
                 }
                 true
@@ -463,7 +479,7 @@ open class RecentsFragment : Fragment(),
                 cancel()
                 playTogether(animSetList)
                 interpolator = AccelerateDecelerateInterpolator()
-                duration = 1500
+                duration = 1000
                 start()
             }
         }
@@ -541,9 +557,10 @@ open class RecentsFragment : Fragment(),
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (isVisible)
-            Stuff.setAppBarHeight(activity!!)
+            Stuff.setCtlHeight(activity!!)
     }
 
+    @OptIn(ExperimentalCoilApi::class)
     override fun onSetHero(position: Int, track: Track, fullSize: Boolean) {
         _binding ?: return
 
@@ -574,53 +591,37 @@ open class RecentsFragment : Fragment(),
         }
         //load img, animate colors
         if (!imgUrl.isNullOrEmpty()) {
-            val req = Picasso.get()
-                    .load(imgUrl)
+            coordinatorBinding.heroImg.load(imgUrl) {
+                coordinatorBinding.heroImg.clearColorFilter()
 
-            if (fullSize)
-                req.placeholder(coordinatorBinding.heroImg.drawable)
-            else {
-                req.noPlaceholder()
-                req.error(R.drawable.vd_wave)
-            }
-            req.into(coordinatorBinding.heroImg, object : Callback {
-                override fun onSuccess() {
-                    coordinatorBinding.heroImg.clearColorFilter()
-
-                    if (!fullSize) {
-                        setPaletteColors()
-                        onSetHero(position, track, true)
+                placeholderMemoryCacheKey(coordinatorBinding.heroImg.metadata?.memoryCacheKey)
+                placeholder(R.drawable.vd_wave)
+                error(R.drawable.vd_wave)
+                allowHardware(false)
+                if (!fullSize)
+                    transition(PaletteTransition { palette ->
+                        if (context != null) {
+                            viewModel.paletteColors.value = PaletteColors(context!!, palette)
+                            onSetHero(position, track, true)
+                        }
+                    })
+                listener(
+                    onError = { imageRequest, throwable ->
+                        if (!fullSize)
+                            onSetHero(position, track, true)
+                        Stuff.log("Coil err for ${imageRequest.data} : $throwable")
                     }
-                }
-
-                override fun onError(e: Exception) {
-                    if (!fullSize)
-                        onSetHero(position, track, true)
-                    Stuff.log("Picasso err: $e $imgUrl")
-                }
-            })
-        } else {
-            Picasso.get().cancelRequest(coordinatorBinding.heroImg)
-            val color = Stuff.getMatColor(coordinatorBinding.heroImg.context, Stuff.genHashCode(track.artist, track.name).toLong())
-            coordinatorBinding.heroImg.setColorFilter(color)
-            coordinatorBinding.heroImg.setImageResource(R.drawable.vd_wave)
-            setPaletteColors(color)
-        }
-    }
-
-    private fun setPaletteColors(oneColor: Int? = null){
-        _binding ?: return
-
-        val d = coordinatorBinding.heroImg.drawable
-        if (oneColor != null) {
-            val swatch = Palette.Swatch(oneColor, 1)
-            val palette = Palette.from(listOf(swatch))
-            viewModel.paletteColors.value = PaletteColors(context!!, palette)
-        } else if (d is BitmapDrawable && d.bitmap != null)
-            Palette.from(d.bitmap).generate { palette ->
-                if (palette != null && context != null)
-                    viewModel.paletteColors.value = PaletteColors(context!!, palette)
+                )
             }
+        } else {
+            coordinatorBinding.heroImg.clear()
+            val color = Stuff.getMatColor(coordinatorBinding.heroImg.context, Stuff.genHashCode(track.artist, track.name).toLong())
+            val swatch = Palette.Swatch(color, 1)
+            val palette = Palette.from(listOf(swatch))
+            coordinatorBinding.heroImg.setColorFilter(color)
+            coordinatorBinding.heroImg.load(R.drawable.vd_wave)
+            viewModel.paletteColors.value = PaletteColors(context!!, palette)
+        }
     }
 
     override fun onItemClick(view: View, position: Int) {
@@ -665,30 +666,6 @@ open class RecentsFragment : Fragment(),
                 if (!view.isInTouchMode)
                     openTrackPopupMenu(dateFrame, item)
             }
-        }
-    }
-
-    override fun onItemLongClick(view: View, position: Int) {
-        val t = adapter.getItem(position) as? Track ?: return
-        val info = InfoFragment()
-        val b = Bundle()
-        b.putString(NLService.B_ARTIST, t.artist)
-        if (!t.album.isNullOrEmpty())
-            b.putString(NLService.B_ALBUM, t.album)
-        b.putString(NLService.B_TRACK, t.name)
-        b.putString(Stuff.ARG_USERNAME, username)
-        info.arguments = b
-        info.show(activity!!.supportFragmentManager, null)
-    }
-
-    //only called when !view.isInTouchMode
-    override fun onFocus(view: View, position: Int) {
-        if (!view.isInTouchMode) {
-            val pos = IntArray(2)
-            view.getLocationInWindow(pos)
-
-            if (pos[1] + view.height > coordinatorBinding.coordinator.height && coordinatorBinding.appBar.isExpanded)
-                coordinatorBinding.appBar.setExpanded(false, true)
         }
     }
 

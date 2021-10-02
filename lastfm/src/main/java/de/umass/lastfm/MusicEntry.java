@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * <code>MusicEntry</code> is the abstract superclass for {@link Track}, {@link Artist} and {@link Album}. It encapsulates data and provides
@@ -117,6 +118,14 @@ public abstract class MusicEntry extends ImageHolder {
 	public Collection<String> getTags() {
 		return tags;
 	}
+
+    public Map<ImageSize, String> getImageUrlsMap() {
+        return imageUrls;
+    }
+
+    public void setImageUrlsMap(Map<ImageSize, String> map) {
+        imageUrls = map;
+    }
 
 	/**
 	 * Returns the value of the "percentage change" fields in weekly hype charts responses, such as in {@link Group#getHype(String, String)}

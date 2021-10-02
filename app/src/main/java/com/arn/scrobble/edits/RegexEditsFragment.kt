@@ -16,6 +16,7 @@ import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.autoNotify
+import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentRegexEditBinding
 import com.arn.scrobble.databinding.DialogRegexEditBinding
@@ -58,6 +59,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
     }
 
     override fun onDestroyView() {
+        hideKeyboard()
         _binding = null
         super.onDestroyView()
     }

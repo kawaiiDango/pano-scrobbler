@@ -5,21 +5,20 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.arn.scrobble.*
 import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
-import com.arn.scrobble.NLService
-import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.VMFactory
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.*
 import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.pref.WidgetTheme
 import com.arn.scrobble.themes.ColorPatchUtils
 
-class ChartsWidgetActivity: AppCompatActivity() {
+class ChartsWidgetActivity : AppCompatActivity() {
     private val appWidgetId by lazy {
         intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -36,7 +35,14 @@ class ChartsWidgetActivity: AppCompatActivity() {
     lateinit var binding: ActivityAppwidgetChartsConfigBinding
     lateinit var previewBinding: AppwidgetChartsContentBinding
     private val prefs by lazy { WidgetPrefs(this)[appWidgetId] }
-    private val periodChipIds = arrayOf(R.id.charts_7day, R.id.charts_1month, R.id.charts_3month, R.id.charts_6month, R.id.charts_12month, R.id.charts_overall)
+    private val periodChipIds = arrayOf(
+        R.id.charts_7day,
+        R.id.charts_1month,
+        R.id.charts_3month,
+        R.id.charts_6month,
+        R.id.charts_12month,
+        R.id.charts_overall
+    )
     private var widgetExists = false
     private val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
 
@@ -54,12 +60,20 @@ class ChartsWidgetActivity: AppCompatActivity() {
 
         setResult(false)
         binding.widgetPeriod.chartsChooseWeek.visibility = View.GONE
-        binding.widgetPeriod.charts7day.text = resources.getQuantityString(R.plurals.num_weeks, 1, 1)
-        binding.widgetPeriod.charts1month.text = resources.getQuantityString(R.plurals.num_months, 1, 1)
-        binding.widgetPeriod.charts3month.text = resources.getQuantityString(R.plurals.num_months, 3, 3)
-        binding.widgetPeriod.charts6month.text = resources.getQuantityString(R.plurals.num_months, 6, 6)
-        binding.widgetPeriod.charts12month.text = resources.getQuantityString(R.plurals.num_years, 1, 1)
+        binding.widgetPeriod.charts7day.text =
+            resources.getQuantityString(R.plurals.num_weeks, 1, 1)
+        binding.widgetPeriod.charts1month.text =
+            resources.getQuantityString(R.plurals.num_months, 1, 1)
+        binding.widgetPeriod.charts3month.text =
+            resources.getQuantityString(R.plurals.num_months, 3, 3)
+        binding.widgetPeriod.charts6month.text =
+            resources.getQuantityString(R.plurals.num_months, 6, 6)
+        binding.widgetPeriod.charts12month.text =
+            resources.getQuantityString(R.plurals.num_years, 1, 1)
         binding.widgetPeriod.chartsOverall.text = getString(R.string.charts_overall)
+
+        if (!BuildConfig.DEBUG && Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
+            binding.chipDynamic.visibility = View.GONE
 
         binding.widgetPeriod.chartsPeriod.setOnCheckedChangeListener { group, checkedId ->
             val idx = periodChipIds.indexOf(checkedId)
@@ -68,21 +82,21 @@ class ChartsWidgetActivity: AppCompatActivity() {
         }
 
         binding.widgetTheme.setOnCheckedChangeListener { group, checkedId ->
-            val isDark = checkedId == R.id.chip_dark
-            prefs.isDark = isDark
-            initPreview(isDark, binding.widgetShadow.isChecked)
-            previewAlpha(binding.widgetBgAlpha.value/100)
+            val theme = themeFromChip(checkedId)
+            prefs.theme = theme.ordinal
+            initPreview(theme, binding.widgetShadow.isChecked)
+            previewAlpha(binding.widgetBgAlpha.value / 100)
         }
 
         binding.widgetBgAlpha.addOnChangeListener { slider, value, fromUser ->
-            prefs.bgAlpha = value/100
-            previewAlpha(value/100)
+            prefs.bgAlpha = value / 100
+            previewAlpha(value / 100)
         }
 
         binding.widgetShadow.setOnCheckedChangeListener { compoundButton, checked ->
             prefs.shadow = checked
-            initPreview(binding.widgetTheme.checkedChipId == R.id.chip_dark, checked)
-            previewAlpha(binding.widgetBgAlpha.value/100)
+            initPreview(themeFromChip(binding.widgetTheme.checkedChipId), checked)
+            previewAlpha(binding.widgetBgAlpha.value / 100)
         }
 
         binding.okButton.setOnClickListener {
@@ -106,7 +120,16 @@ class ChartsWidgetActivity: AppCompatActivity() {
 
         initFromPrefs()
 
-        previewAlpha(binding.widgetBgAlpha.value/100)
+        previewAlpha(binding.widgetBgAlpha.value / 100)
+    }
+
+    private fun themeFromChip(checkedId: Int): WidgetTheme {
+        return when (checkedId) {
+            R.id.chip_dark -> WidgetTheme.DARK
+            R.id.chip_light -> WidgetTheme.LIGHT
+            R.id.chip_dynamic -> WidgetTheme.DYNAMIC
+            else -> WidgetTheme.DARK
+        }
     }
 
     override fun attachBaseContext(newBase: Context?) {
@@ -120,19 +143,20 @@ class ChartsWidgetActivity: AppCompatActivity() {
             binding.widgetPeriod.chartsPeriod.check(periodChipIds[period])
         else {
             binding.widgetPeriod.charts7day.isChecked = true
-            initPreview(true, true)
+            initPreview(WidgetTheme.DARK, hasShadow = true)
             return
         }
 
-        val isDark = prefs.isDark
+        val theme = WidgetTheme.values()[prefs.theme]
         val hasShadow = prefs.shadow
 
-        initPreview(isDark, hasShadow)
+        initPreview(theme, hasShadow)
 
-        if (isDark)
-            binding.chipDark.isChecked = true
-        else
-            binding.chipLight.isChecked = true
+        when (theme) {
+            WidgetTheme.DARK -> binding.chipDark.isChecked = true
+            WidgetTheme.LIGHT -> binding.chipLight.isChecked = true
+            WidgetTheme.DYNAMIC -> binding.chipDynamic.isChecked = true
+        }
 
         binding.widgetShadow.isChecked = hasShadow
 
@@ -152,39 +176,50 @@ class ChartsWidgetActivity: AppCompatActivity() {
         val resultValue = Intent().apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         }
-        setResult(if (positive)
+        setResult(
+            if (positive)
                 Activity.RESULT_OK
             else
-                Activity.RESULT_CANCELED
-            , resultValue)
+                Activity.RESULT_CANCELED, resultValue
+        )
 
     }
 
-    private fun initPreview(isDark: Boolean, hasShadow: Boolean) {
+    private fun initPreview(theme: WidgetTheme, hasShadow: Boolean) {
         val b: ViewBinding
+
         when {
-            isDark && hasShadow ->{
+            theme == WidgetTheme.DARK && hasShadow -> {
                 b = AppwidgetChartsDarkShadowBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
-            isDark && !hasShadow -> {
+            theme == WidgetTheme.DARK && !hasShadow -> {
                 b = AppwidgetChartsDarkBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
-            !isDark && hasShadow -> {
+            theme == WidgetTheme.LIGHT && hasShadow -> {
                 b = AppwidgetChartsLightShadowBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
-            !isDark && !hasShadow -> {
+            theme == WidgetTheme.LIGHT && !hasShadow -> {
                 b = AppwidgetChartsLightBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
-            else -> throw Exception()
+            theme == WidgetTheme.DYNAMIC && hasShadow -> {
+                b = AppwidgetChartsDynamicShadowBinding.inflate(layoutInflater)
+                previewBinding = b.appwidgetOuterFrame
+            }
+            theme == WidgetTheme.DYNAMIC && !hasShadow -> {
+                b = AppwidgetChartsDynamicBinding.inflate(layoutInflater)
+                previewBinding = b.appwidgetOuterFrame
+            }
+            else -> throw IllegalArgumentException("Invalid theme")
         }
-            binding.widgetPreviewFrame.removeAllViews()
-            binding.widgetPreviewFrame.addView(b.root)
+
+        binding.widgetPreviewFrame.removeAllViews()
+        binding.widgetPreviewFrame.addView(b.root)
         previewBinding.appwidgetList.emptyView = previewBinding.appwidgetStatus
-        previewBinding.appwidgetList.adapter = FakeChartsAdapter(this, isDark, hasShadow)
+        previewBinding.appwidgetList.adapter = FakeChartsAdapter(previewBinding.appwidgetBg.context)
     }
 
     private fun previewAlpha(alpha: Float) {
@@ -192,10 +227,11 @@ class ChartsWidgetActivity: AppCompatActivity() {
     }
 
     private fun updateWidget() {
-        val i = Intent(this, ChartsWidgetProvider::class.java)
-        i.action = NLService.iUPDATE_WIDGET
-        i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-        i.data = Uri.parse(i.toUri(Intent.URI_INTENT_SCHEME))
+        val i = Intent(this, ChartsWidgetProvider::class.java).apply {
+            action = NLService.iUPDATE_WIDGET
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
+        }
         sendBroadcast(i)
     }
 }

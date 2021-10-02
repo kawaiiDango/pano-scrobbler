@@ -11,8 +11,8 @@ class MainPrefs(context: Context): Krate {
     override val sharedPreferences = context.getHarmonySharedPreferences(NAME)
 
     var scrobblerEnabled by booleanPref(PREF_MASTER, true)
-    var allowedPackages by stringSetPref(PREF_WHITELIST, setOf())
-    var blockedPackages by stringSetPref(PREF_BLACKLIST, setOf())
+    var allowedPackages by stringSetPref(PREF_ALLOWED_PACKAGES, setOf())
+    var blockedPackages by stringSetPref(PREF_BLOCKED_PACKAGES, setOf())
     var autoDetectApps by booleanPref(PREF_AUTO_DETECT, true)
     var delaySecs by intPref(PREF_DELAY_SECS, 240)
     var delayPercent by intPref(PREF_DELAY_PER, 50)
@@ -24,6 +24,8 @@ class MainPrefs(context: Context): Krate {
 
     var locale by stringPref(PREF_LOCALE)
     var showAlbumInRecents by booleanPref(PREF_SHOW_RECENTS_ALBUM, false)
+    var gifEnabled by booleanPref(PREF_GIF_ENABLED, true)
+    var showTrackedPlayers by booleanPref(PREF_SHOW_TRACKED_PLAYERS, true)
     var themePrimary by stringPref(PREF_THEME_PRIMARY, ColorPatchUtils.primaryDefault)
     var themeSecondary by stringPref(PREF_THEME_SECONDARY, ColorPatchUtils.secondaryDefault)
     var themeBackground by stringPref(PREF_THEME_BACKGROUND, ColorPatchUtils.backgroundDefault)
@@ -84,8 +86,8 @@ class MainPrefs(context: Context): Krate {
     companion object {
         const val NAME = "main"
         const val PREF_MASTER = "master"
-        const val PREF_WHITELIST = "app_whitelist"
-        const val PREF_BLACKLIST = "app_blacklist"
+        const val PREF_ALLOWED_PACKAGES = "app_whitelist"
+        const val PREF_BLOCKED_PACKAGES = "app_blacklist"
         const val PREF_AUTO_DETECT = "auto_detect"
         const val PREF_DELAY_SECS = "delay_secs"
         const val PREF_DELAY_SECS_DEFAULT = 240
@@ -115,6 +117,8 @@ class MainPrefs(context: Context): Krate {
         const val PREF_EXPORT = "export"
         const val PREF_INTENTS = "intents"
         const val PREF_FETCH_AA = "fetch_album_artist"
+        const val PREF_GIF_ENABLED = "gif_enabled"
+        const val PREF_SHOW_TRACKED_PLAYERS = "show_tracked_players"
         const val PREF_SHOW_RECENTS_ALBUM = "show_album"
         const val PREF_THEME_PRIMARY = "theme_primary"
         const val PREF_THEME_SECONDARY = "theme_secondary"

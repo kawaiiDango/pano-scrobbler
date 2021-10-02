@@ -25,6 +25,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageButton
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -34,6 +35,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
+import coil.*
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.size.Precision
 import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.billing.BillingViewModel
@@ -42,18 +47,17 @@ import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pending.PendingScrService
-import com.arn.scrobble.pref.AppListFragment
-import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.pref.PrefFragment
+import com.arn.scrobble.pref.*
 import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.ui.AppIconFetcher
+import com.arn.scrobble.ui.MusicEntryImageInterceptor
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.arn.scrobble.ui.StatefulAppBar
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -67,7 +71,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var prefs: MainPrefs
-    private var lastDrawerOpenTime: Long = 0
+    private var lastDrawerOpenTime = 0L
     private var backArrowShown = false
     var coordinatorPadding = 0
     private var drawerInited = false
@@ -77,6 +81,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var connectivityCb: ConnectivityManager.NetworkCallback
     val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
     val mainNotifierViewModel by lazy { VMFactory.getVM(this, MainNotifierViewModel::class.java) }
+    private val npReceiver by lazy { NPReceiver(mainNotifierViewModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Stuff.timeIt("onCreate start")
@@ -97,6 +102,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         prefs = MainPrefs(this)
         coordinatorPadding = binding.coordinatorMain.coordinator.paddingStart
         isTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+
+        val imageLoader = ImageLoader.Builder(applicationContext)
+            .componentRegistry {
+                add(AppIconFetcher())
+                add(MusicEntryImageInterceptor())
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    add(ImageDecoderDecoder(applicationContext))
+                } else {
+                    add(GifDecoder())
+                }
+            }
+            .crossfade(Stuff.CROSSFADE_DURATION)
+            .precision(Precision.INEXACT)
+            .build()
+        Coil.setImageLoader(imageLoader)
 
         binding.coordinatorMain.appBar.onStateChangeListener = { state ->
 
@@ -212,15 +232,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 navHeaderbinding.navNumScrobbles.text = getString(R.string.num_scrobbles_nav,
                     nf.format(drawerData.scrobblesTotal), nf.format(drawerData.scrobblesToday))
 
-                if (drawerData.profilePicUrl != "")
-                    Picasso.get()
-                        .load(drawerData.profilePicUrl)
-                        .noPlaceholder()
-                        .error(R.drawable.vd_wave)
-                        .into(navHeaderbinding.navProfilePic)
-                else
-                    navHeaderbinding.navProfilePic.setImageResource(R.drawable.vd_wave)
+                if (navHeaderbinding.navProfilePic.tag != drawerData.profilePicUrl) // prevent flash
+                    navHeaderbinding.navProfilePic.load(drawerData.profilePicUrl) {
+                        placeholderMemoryCacheKey(navHeaderbinding.navProfilePic.metadata?.memoryCacheKey)
+                        error(R.drawable.vd_wave)
+                        listener(
+                            onSuccess = { _, _ ->
+                                navHeaderbinding.navProfilePic.tag = drawerData.profilePicUrl
+                            },
+                            onError = { _, _ ->
+                                navHeaderbinding.navProfilePic.tag = drawerData.profilePicUrl
+                            }
+                        )
+                    }
             }
+        }
+
+        if (prefs.proStatus && prefs.showTrackedPlayers) {
+            val filter = IntentFilter().apply {
+                addAction(NLService.iNOW_PLAYING_INFO_S)
+            }
+            registerReceiver(npReceiver, filter, NLService.BROADCAST_PERMISSION, null)
+            sendBroadcast(
+                Intent(NLService.iNOW_PLAYING_INFO_REQUEST_S),
+                NLService.BROADCAST_PERMISSION
+            )
         }
 //        showNotRunning()
 //        testNoti()
@@ -234,10 +270,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showFirstThings(hidePassBox: Boolean) {
-        val b = Bundle()
-        b.putBoolean(Stuff.ARG_NOPASS, hidePassBox)
         val f = FirstThingsFragment()
-        f.arguments = b
+        f.arguments = Bundle().apply {
+            putBoolean(Stuff.ARG_NOPASS, hidePassBox)
+        }
         supportFragmentManager.beginTransaction()
                 .replace(R.id.frame, f, Stuff.TAG_FIRST_THINGS)
                 .commit()
@@ -366,7 +402,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             navHeaderbinding.navName.text = displayUsername
 
         navHeaderbinding.navProfileLink.setOnClickListener {
-            Stuff.openInBrowser("https://www.last.fm/user/$username", this)
+            val servicesToUrls = mutableMapOf<@androidx.annotation.StringRes Int, String>()
+
+            prefs.lastfmUsername?.let {
+                servicesToUrls[R.string.lastfm] = "https://www.last.fm/user/$it"
+            }
+            prefs.librefmUsername?.let {
+                servicesToUrls[R.string.librefm] = "https://www.libre.fm/user/$it"
+            }
+            prefs.gnufmUsername?.let {
+                servicesToUrls[R.string.gnufm] = prefs.gnufmRoot + "user/$it"
+            }
+            prefs.listenbrainzUsername?.let {
+                servicesToUrls[R.string.listenbrainz] = "https://listenbrainz.org/user/$it"
+            }
+            prefs.customListenbrainzUsername?.let {
+                servicesToUrls[R.string.custom_listenbrainz] = prefs.customListenbrainzRoot + "user/$it"
+            }
+
+            if (servicesToUrls.size == 1)
+                Stuff.openInBrowser(this, servicesToUrls.values.first())
+            else {
+                val popup = PopupMenu(this, it)
+                servicesToUrls.forEach { (strRes, url) ->
+                    popup.menu.add(0, strRes, 0, strRes)
+                }
+
+                popup.setOnMenuItemClickListener { menuItem: MenuItem ->
+                    Stuff.openInBrowser(this, servicesToUrls[menuItem.itemId]!!)
+                    true
+                }
+                popup.show()
+            }
         }
 
         lastDrawerOpenTime = System.currentTimeMillis()
@@ -399,7 +466,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_last_week -> {
                 val username = prefs.lastfmUsername ?: "nobody"
-                Stuff.openInBrowser("https://www.last.fm/user/$username/listening-report/week", this, binding.coordinatorMain.frame, 10, 200)
+                Stuff.openInBrowser(this, "https://www.last.fm/user/$username/listening-report/week")
             }
             R.id.nav_recents -> {
                 binding.coordinatorMain.tabBar.getTabAt(0)?.select()
@@ -575,12 +642,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val resolveInfos = packageManager.queryIntentActivities(emailIntent, 0)
         val intents = arrayListOf<LabeledIntent>()
         for (info in resolveInfos) {
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.component = ComponentName(info.activityInfo.packageName, info.activityInfo.name)
-            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
-            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) +" - Bug report")
-            intent.putExtra(Intent.EXTRA_TEXT, text)
-            intent.putExtra(Intent.EXTRA_STREAM, logUri)
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                component = ComponentName(info.activityInfo.packageName, info.activityInfo.name)
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
+                putExtra(
+                    Intent.EXTRA_SUBJECT,
+                    getString(R.string.app_name) + " - Bug report"
+                )
+                putExtra(Intent.EXTRA_TEXT, text)
+                putExtra(Intent.EXTRA_STREAM, logUri)
+            }
             intents.add(LabeledIntent(intent, info.activityInfo.packageName, info.loadLabel(packageManager), info.icon))
         }
         if (intents.size > 0) {
@@ -732,7 +803,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onDestroy() {
         if (!PendingScrService.mightBeRunning)
             PanoDb.destroyInstance()
+        try {
+            unregisterReceiver(npReceiver)
+        } catch (e: Exception) {
+        }
+        imageLoader.shutdown()
         super.onDestroy()
+    }
+
+    class NPReceiver(private val mainNotifierViewModel: MainNotifierViewModel):
+        BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == NLService.iNOW_PLAYING_INFO_S)
+                mainNotifierViewModel.trackBundleLd.value = intent.extras
+        }
     }
 
     companion object {

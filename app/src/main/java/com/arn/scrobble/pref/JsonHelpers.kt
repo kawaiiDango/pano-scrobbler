@@ -6,6 +6,7 @@ import android.util.JsonWriter
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.db.TrackedPlayer
 
 
 object JsonHelpers {
@@ -17,14 +18,14 @@ object JsonHelpers {
             if (edit.legacyHash != null)
                 name("hash").value(edit.legacyHash)
             else {
-                name("origTrack").value(edit.origTrack)
-                name("origAlbum").value(edit.origAlbum)
-                name("origArtist").value(edit.origArtist)
+                name(SimpleEdit::origTrack.name).value(edit.origTrack)
+                name(SimpleEdit::origAlbum.name).value(edit.origAlbum)
+                name(SimpleEdit::origArtist.name).value(edit.origArtist)
             }
-            name("track").value(edit.track)
-            name("album").value(edit.album)
-            name("albumArtist").value(edit.albumArtist)
-            name("artist").value(edit.artist)
+            name(SimpleEdit::track.name).value(edit.track)
+            name(SimpleEdit::album.name).value(edit.album)
+            name(SimpleEdit::albumArtist.name).value(edit.albumArtist)
+            name(SimpleEdit::artist.name).value(edit.artist)
             endObject()
         }
     }
@@ -42,13 +43,13 @@ object JsonHelpers {
                 val editVal = nextString()
                 when (editName) {
                     "hash" -> edit.legacyHash = editVal
-                    "track" -> edit.track = editVal
-                    "album" -> edit.album = editVal
-                    "albumArtist" -> edit.albumArtist = editVal
-                    "artist" -> edit.artist = editVal
-                    "origTrack" -> edit.origTrack = editVal
-                    "origAlbum" -> edit.origAlbum = editVal
-                    "origArtist" -> edit.origArtist = editVal
+                    SimpleEdit::track.name -> edit.track = editVal
+                    SimpleEdit::album.name -> edit.album = editVal
+                    SimpleEdit::albumArtist.name -> edit.albumArtist = editVal
+                    SimpleEdit::artist.name -> edit.artist = editVal
+                    SimpleEdit::origTrack.name -> edit.origTrack = editVal
+                    SimpleEdit::origAlbum.name -> edit.origAlbum = editVal
+                    SimpleEdit::origArtist.name -> edit.origArtist = editVal
                 }
             }
             if (edit.legacyHash != null) {
@@ -65,16 +66,16 @@ object JsonHelpers {
         val edit = this
         writer.apply {
             beginObject()
-            name("order").value(edit.order)
-            edit.preset?.let { name("preset").value(it) }
-            edit.name?.let { name("name").value(it) }
-            edit.pattern?.let { name("pattern").value(it) }
-            name("replacement").value(edit.replacement)
-            edit.field?.let { name("field").value(it) }
+            name(RegexEdit::order.name).value(edit.order)
+            edit.preset?.let { name(RegexEdit::preset.name).value(it) }
+            edit.name?.let { name(RegexEdit::name.name).value(it) }
+            edit.pattern?.let { name(RegexEdit::pattern.name).value(it) }
+            name(RegexEdit::replacement.name).value(edit.replacement)
+            edit.field?.let { name(RegexEdit::field.name).value(it) }
 
-            name("replaceAll").value(edit.replaceAll)
-            name("caseSensitive").value(edit.caseSensitive)
-            name("continueMatching").value(edit.continueMatching)
+            name(RegexEdit::replaceAll.name).value(edit.replaceAll)
+            name(RegexEdit::caseSensitive.name).value(edit.caseSensitive)
+            name(RegexEdit::continueMatching.name).value(edit.continueMatching)
             endObject()
         }
     }
@@ -89,15 +90,15 @@ object JsonHelpers {
                     skipValue()
                 else {
                     when (name) {
-                        "order" -> edit.order = nextInt()
-                        "preset" -> edit.preset = nextString()
-                        "name" -> edit.name = nextString()
-                        "pattern" -> edit.pattern = nextString()
-                        "replacement" -> edit.replacement = nextString()
-                        "field" -> edit.field = nextString()
-                        "replaceAll" -> edit.replaceAll = nextBoolean()
-                        "caseSensitive" -> edit.caseSensitive = nextBoolean()
-                        "continueMatching" -> edit.continueMatching = nextBoolean()
+                        RegexEdit::order.name -> edit.order = nextInt()
+                        RegexEdit::preset.name -> edit.preset = nextString()
+                        RegexEdit::name.name -> edit.name = nextString()
+                        RegexEdit::pattern.name -> edit.pattern = nextString()
+                        RegexEdit::replacement.name -> edit.replacement = nextString()
+                        RegexEdit::field.name -> edit.field = nextString()
+                        RegexEdit::replaceAll.name -> edit.replaceAll = nextBoolean()
+                        RegexEdit::caseSensitive.name -> edit.caseSensitive = nextBoolean()
+                        RegexEdit::continueMatching.name -> edit.continueMatching = nextBoolean()
                     }
                 }
             }
@@ -110,10 +111,10 @@ object JsonHelpers {
         val blockedMetadata = this
         writer.apply {
             beginObject()
-            name("track").value(blockedMetadata.track)
-            name("album").value(blockedMetadata.album)
-            name("albumArtist").value(blockedMetadata.albumArtist)
-            name("artist").value(blockedMetadata.artist)
+            name(BlockedMetadata::track.name).value(blockedMetadata.track)
+            name(BlockedMetadata::album.name).value(blockedMetadata.album)
+            name(BlockedMetadata::albumArtist.name).value(blockedMetadata.albumArtist)
+            name(BlockedMetadata::artist.name).value(blockedMetadata.artist)
             endObject()
         }
     }
@@ -128,15 +129,46 @@ object JsonHelpers {
                     skipValue()
                 else {
                     when (name) {
-                        "track" -> blockedMetadata.track = nextString()
-                        "album" -> blockedMetadata.album = nextString()
-                        "albumArtist" -> blockedMetadata.albumArtist = nextString()
-                        "artist" -> blockedMetadata.artist = nextString()
+                        BlockedMetadata::track.name -> blockedMetadata.track = nextString()
+                        BlockedMetadata::album.name -> blockedMetadata.album = nextString()
+                        BlockedMetadata::albumArtist.name -> blockedMetadata.albumArtist = nextString()
+                        BlockedMetadata::artist.name -> blockedMetadata.artist = nextString()
                     }
                 }
             }
             endObject()
         }
         return this
+    }
+
+    fun TrackedPlayer.writeJson(writer: JsonWriter) {
+        val trackedPlayer = this
+        writer.apply {
+            beginObject()
+            name(TrackedPlayer::timeMillis.name).value(trackedPlayer.timeMillis)
+            name(TrackedPlayer::playerPackage.name).value(trackedPlayer.playerPackage)
+            endObject()
+        }
+    }
+
+    fun TrackedPlayer.readJson(reader: JsonReader): TrackedPlayer {
+        var timeMillis: Long? = null
+        var playerPackage: String? = null
+        reader.apply {
+            beginObject()
+            while (hasNext()) {
+                val name = nextName()
+                if (reader.peek() == JsonToken.NULL)
+                    skipValue()
+                else {
+                    when (name) {
+                        TrackedPlayer::timeMillis.name -> timeMillis = nextLong()
+                        TrackedPlayer::playerPackage.name -> playerPackage = nextString()
+                    }
+                }
+            }
+            endObject()
+        }
+        return TrackedPlayer(timeMillis = timeMillis!!, playerPackage = playerPackage!!)
     }
 }

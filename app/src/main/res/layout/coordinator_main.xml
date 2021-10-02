@@ -15,7 +15,7 @@
     <com.arn.scrobble.ui.StatefulAppBar
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:stateListAnimator="@animator/appbar_always_elevated"
         app:layout_behavior="com.arn.scrobble.ui.DisableableAppBarLayoutBehavior"
@@ -24,7 +24,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/ctl"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/app_bar_height"
             android:fitsSystemWindows="true"
             app:contentScrim="?android:colorBackground"
             app:expandedTitleMarginEnd="@dimen/title_margin_right"
@@ -191,7 +191,7 @@
                     tools:visibility="visible" />
             </LinearLayout>
 
-            <androidx.appcompat.widget.Toolbar
+            <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
@@ -209,7 +209,7 @@
                     app:tabIconTint="?colorPrimary"
                     app:tabMinWidth="100dp"
                     />
-            </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.arn.scrobble.ui.StatefulAppBar>

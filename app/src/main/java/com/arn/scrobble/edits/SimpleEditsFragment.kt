@@ -43,6 +43,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
     }
 
     override fun onDestroyView() {
+        hideKeyboard()
         _binding = null
         super.onDestroyView()
     }
@@ -216,13 +217,10 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
 
 
     override fun onItemClick(view: View, position: Int) {
-        if (position != -1) {
-            //needed if the user quickly taps on the same item before the animation is done
-            if (view.id == R.id.edits_delete) {
-                viewModel.delete(position)
-            } else if (viewModel.edits[position].legacyHash == null) {
-                showEditDialog(position)
-            }
+        if (view.id == R.id.edits_delete) {
+            viewModel.delete(position)
+        } else if (viewModel.edits[position].legacyHash == null) {
+            showEditDialog(position)
         }
     }
 }

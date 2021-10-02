@@ -14,12 +14,9 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.*
 import com.arn.scrobble.pref.JsonHelpers.readJson
 import com.arn.scrobble.pref.JsonHelpers.writeJson
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.*
 
-class ImExporter {
+class ImExporter : Closeable {
     private var writer: OutputStreamWriter? = null
     private var reader: InputStreamReader? = null
     private var pfd: ParcelFileDescriptor? = null
@@ -40,6 +37,7 @@ class ImExporter {
         MainPrefs.PREF_LOCALE,
         MainPrefs.PREF_AUTO_DETECT,
         MainPrefs.PREF_SHOW_RECENTS_ALBUM,
+        MainPrefs.PREF_SHOW_TRACKED_PLAYERS,
         MainPrefs.PREF_THEME_PRIMARY,
         MainPrefs.PREF_THEME_SECONDARY,
         MainPrefs.PREF_THEME_BACKGROUND,
@@ -48,13 +46,13 @@ class ImExporter {
         MainPrefs.PREF_THEME_PALETTE_BG,
         MainPrefs.PREF_LOCALE,
 
-        MainPrefs.PREF_WHITELIST,
-        MainPrefs.PREF_BLACKLIST,
+        MainPrefs.PREF_ALLOWED_PACKAGES,
+        MainPrefs.PREF_BLOCKED_PACKAGES,
     )
 
-    fun setOutputUri(context: Context, uri: Uri){
+    fun setOutputUri(context: Context, uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "w")
-        if (pfd == null){
+        if (pfd == null) {
             Stuff.log("pfd was null")
             return
         }
@@ -63,9 +61,9 @@ class ImExporter {
         this.context = context
     }
 
-    fun setInputUri(context: Context, uri: Uri){
+    fun setInputUri(context: Context, uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "r")
-        if (pfd == null){
+        if (pfd == null) {
             Stuff.log("pfd was null")
             return
         }
@@ -75,7 +73,7 @@ class ImExporter {
     }
 
     fun export(): Boolean {
-        if (context == null || writer == null){
+        if (context == null || writer == null) {
             throw IllegalArgumentException("ImExporter not inited")
         }
         val context = context!!
@@ -141,14 +139,42 @@ class ImExporter {
                     written = true
                 }
             }
-        } catch (e: Exception){
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return written
+    }
+
+    fun exportPrivateData(): Boolean {
+        if (context == null || writer == null) {
+            throw IllegalArgumentException("ImExporter not inited")
+        }
+        val context = context!!
+        var written = false
+        try {
+            JsonWriter(writer!!).use {
+                it.apply {
+                    setIndent("  ")
+
+                    beginObject()
+                    name("pano_version").value(BuildConfig.VERSION_CODE)
+                    name("tracked_players").beginArray()
+                    PanoDb.getDb(context).getTrackedPlayerDao().all.forEach { trackedPlayer ->
+                        trackedPlayer.writeJson(this)
+                    }
+                    endArray()
+                    endObject()
+                }
+            }
+            written = true
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         return written
     }
 
     fun import(editsMode: Int, settings: Boolean): Boolean {
-        if (context == null || reader == null){
+        if (context == null || reader == null) {
             throw IllegalArgumentException("ImExporter not inited")
         }
         val context = context!!
@@ -156,11 +182,21 @@ class ImExporter {
             JsonReader(reader).use {
                 it.apply {
                     beginObject()
-                    var versionCode = -1
+
+                    if (!(nextName() == "pano_version" && nextInt() > 0))
+                        return false
+
                     while (hasNext()) {
                         val name = nextName()
-                        if (name in arrayOf("edits", "simple_edits", "regex_edits", "blocked_metadata") && editsMode != Stuff.EDITS_NOPE) {
-                            when(name) {
+                        if (name in arrayOf(
+                                "edits",
+                                "simple_edits",
+                                "regex_edits",
+                                "blocked_metadata",
+                                "tracked_players",
+                            ) && editsMode != Stuff.EDITS_NOPE
+                        ) {
+                            when (name) {
                                 "simple_edits",
                                 "edits" -> {
                                     val dao = PanoDb.getDb(context).getSimpleEditsDao()
@@ -191,7 +227,8 @@ class ImExporter {
 
                                     val existingEdits = dao.all
                                     existingEdits.forEach { it._id = 0 }
-                                    val deduplicatedEdits = (edits.toSet() - existingEdits.toSet()).toList()
+                                    val deduplicatedEdits =
+                                        (edits.toSet() - existingEdits.toSet()).toList()
                                     if (deduplicatedEdits.isNotEmpty()) {
                                         val offset = (dao.maxOrder ?: -1) + 1
                                         deduplicatedEdits.forEach { it.order += offset }
@@ -218,8 +255,20 @@ class ImExporter {
                                     else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
                                         dao.insertLowerCase(blockedMetadata, ignore = true)
                                 }
-                            }
+                                "tracked_players" -> {
+                                    val dao = PanoDb.getDb(context).getTrackedPlayerDao()
+                                    if (editsMode == Stuff.EDITS_REPLACE_ALL)
+                                        dao.nuke()
+                                    val trackedPlayers = mutableListOf<TrackedPlayer>()
+                                    beginArray()
+                                    while (hasNext()) {
+                                        trackedPlayers += TrackedPlayer(0, 0, "").readJson(this)
+                                    }
+                                    endArray()
 
+                                    dao.insert(trackedPlayers)
+                                }
+                            }
 
                         } else if (name == "settings" && settings) {
                             val prefs = MainPrefs(context).sharedPreferences.edit()
@@ -234,11 +283,11 @@ class ImExporter {
                                     continue
                                 }
 
-                                when(peek()) {
+                                when (peek()) {
                                     JsonToken.BEGIN_ARRAY -> {
                                         val list = mutableSetOf<String>()
                                         beginArray()
-                                        if (settingsName == MainPrefs.PREF_WHITELIST || settingsName == MainPrefs.PREF_BLACKLIST) {
+                                        if (settingsName == MainPrefs.PREF_ALLOWED_PACKAGES || settingsName == MainPrefs.PREF_BLOCKED_PACKAGES) {
                                             while (hasNext()) {
                                                 val pkgName = nextString()
                                                 try {
@@ -289,39 +338,31 @@ class ImExporter {
                                 }
                             }
                             prefs.apply()
-                        } else if (name == "pano_version")
-                            versionCode = nextInt()
-                        else
-                            skipValue()
+                        }
                     }
                     endObject()
-                    if (versionCode == -1)
-                        return false
                     return true
                 }
             }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         return false
     }
 
-    fun close(){
+    override fun close() {
         context = null
         try {
             writer?.close()
-        } catch (e: Exception){
+        } catch (e: Exception) {
         }
         try {
             reader?.close()
-        } catch (e: Exception){
+        } catch (e: Exception) {
         }
         try {
             pfd?.close()
-        } catch (e: Exception){
+        } catch (e: Exception) {
         }
-        writer = null
-        reader = null
-        pfd = null
     }
 }

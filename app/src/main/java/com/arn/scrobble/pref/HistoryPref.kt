@@ -12,7 +12,7 @@ class HistoryPref(
 
     fun load() {
         val historySet = pref.getStringSet(prefName, setOf())!!
-        val historyList = mutableListOf<Pair<Int,String>>()
+        val historyList = mutableListOf<Pair<Int, String>>()
         historySet.forEach {
             val parts = it.split('\n')
             historyList += parts[0].toInt() to parts[1]
@@ -26,7 +26,7 @@ class HistoryPref(
 
     fun save() {
         val historyPrefsSet = mutableSetOf<String>()
-        history.takeLast(maxItems).forEachIndexed { i, it ->
+        history.take(maxItems).forEachIndexed { i, it ->
             historyPrefsSet += "" + i + "\n" + it.replace(',', ' ')
         }
         pref.edit().putStringSet(prefName, historyPrefsSet).apply()

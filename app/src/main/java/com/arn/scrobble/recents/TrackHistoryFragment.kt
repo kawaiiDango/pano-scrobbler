@@ -15,7 +15,6 @@ import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.Stuff.dp
@@ -123,13 +122,8 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
         binding.tracksList.adapter = adapter
         (binding.tracksList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
 
-        val loadMoreListener = object : EndlessRecyclerViewScrollListener(llm) {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                if (page <= viewModel.totalPages)
-                    viewModel.loadTrackScrobbles(argToTrack, page)
-                else
-                    isAllPagesLoaded = true
-            }
+        val loadMoreListener = EndlessRecyclerViewScrollListener(llm) {
+            loadTracks(it)
         }
         loadMoreListener.currentPage = viewModel.page
         adapter.loadMoreListener = loadMoreListener
@@ -144,6 +138,13 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
         } else {
             populate(listOf())
         }
+    }
+
+    private fun loadTracks(page: Int) {
+        if (page <= viewModel.totalPages)
+            viewModel.loadTrackScrobbles(argToTrack, page)
+        else
+            adapter.loadMoreListener.isAllPagesLoaded = true
     }
 
     private fun populate(oldList: List<Track>) {

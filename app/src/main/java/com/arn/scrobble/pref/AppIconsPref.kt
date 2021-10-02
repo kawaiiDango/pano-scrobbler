@@ -1,18 +1,19 @@
 package com.arn.scrobble.pref
 
 import android.content.Context
-import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
+import coil.loadAny
+import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.PrefAppIconsBinding
+import com.arn.scrobble.ui.PackageName
 import com.google.android.material.imageview.ShapeableImageView
-import com.squareup.picasso.Picasso
 import java.text.NumberFormat
 
 
@@ -28,11 +29,6 @@ class AppIconsPref : Preference {
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
     constructor(context: Context) : super(context)
 
-    private val picasso by lazy {
-        Picasso.Builder(context)
-                .addRequestHandler(AppIconRequestHandler(context))
-                .build()!!
-    }
     private val wPx = 48.dp
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
@@ -53,16 +49,16 @@ class AppIconsPref : Preference {
                     binding.root.paddingLeft - binding.root.paddingRight - binding.appListAdd.measuredWidth
 
             val nIcons = (totalWidth / wPx) - 1
-            for (i in 0 until minOf(nIcons, packageNames.count())) {
+            for (i in 0 until minOf(nIcons, packageNames.size)) {
                 val icon = ShapeableImageView(context)
                 icon.scaleType = ImageView.ScaleType.FIT_CENTER
                 icon.layoutParams = LinearLayout.LayoutParams(wPx, wPx)
                 val padding = wPx / 8
                 icon.setPadding(padding, padding, padding, padding)
-                val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME + ":" + packageNames.elementAt(i))
-                picasso.load(uri)
-                        .resize(wPx - padding, wPx - padding)
-                        .into(icon)
+                icon.loadAny(PackageName(packageNames.elementAt(i))) {
+                    allowHardware(false)
+                    scale(Scale.FIT)
+                }
                 binding.appIconsContainer.addView(icon)
             }
 

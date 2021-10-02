@@ -40,7 +40,7 @@ class SimpleEditsAdapter(
 
     class VHSimpleEdit(private val binding: ListItemSimpleEditBinding, private val itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener { itemClickListener.onItemClick(it, adapterPosition) }
+            itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
         }
 
         fun setItemData(e: SimpleEdit) {
@@ -52,7 +52,7 @@ class SimpleEditsAdapter(
                 binding.editsAlbum.visibility = View.GONE
             binding.editsArtist.text = e.artist
             binding.editsDelete.setOnClickListener {
-                itemClickListener.onItemClick(it, adapterPosition)
+                itemClickListener.call(it, bindingAdapterPosition)
             }
             if (e.legacyHash != null)
                 binding.editsImg.visibility = View.INVISIBLE

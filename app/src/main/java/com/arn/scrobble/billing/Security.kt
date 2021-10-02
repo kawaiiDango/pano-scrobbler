@@ -133,7 +133,7 @@ object Security {
         }
         catch (ex: Exception) {
         }
-        android.os.Process.killProcess(android.os.Process.myPid());
+        android.os.Process.killProcess(android.os.Process.myPid())
         return false
     }
 }

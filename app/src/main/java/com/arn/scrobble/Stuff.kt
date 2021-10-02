@@ -8,8 +8,6 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.*
 import android.net.Uri
@@ -91,7 +89,8 @@ object Stuff {
     const val DL_SEARCH = 35
     const val DL_CHARTS = 36
     const val DIRECT_OPEN_KEY = "directopen"
-    const val FRIENDS_RECENTS_DELAY: Long = 800
+    const val FRIENDS_RECENTS_DELAY = 800L
+    const val CROSSFADE_DURATION = 200
     const val MAX_PATTERNS = 30
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
 
@@ -107,19 +106,19 @@ object Stuff {
 
     const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
-    const val RECENTS_REFRESH_INTERVAL: Long = 15 * 1000
-    const val NOTI_SCROBBLE_INTERVAL: Long = 5 * 60 * 1000
-    const val CONNECT_TIMEOUT = 20 * 1000
-    const val READ_TIMEOUT = 20 * 1000
-    const val OFFLINE_SCROBBLE_JOB_DELAY: Long = 20 * 1000
-    const val LASTFM_MAX_PAST_SCROBBLE: Long = 14 * 24 * 60 * 60 * 1000
-    const val CRASH_REPORT_INTERVAL: Long = 120 * 60 * 1000
-    const val TRACK_INFO_VALIDITY: Long = 5 * 1000
-    const val TRACK_INFO_WINDOW: Long = 60 * 1000
-    const val TRACK_INFO_REQUESTS: Long = 2
-    const val META_WAIT: Long = 400
-    const val START_POS_LIMIT: Long = 1500
-    const val PENDING_PURCHASE_NOTIFY_THRESHOLD: Long = 15 * 1000
+    const val RECENTS_REFRESH_INTERVAL = 15 * 1000L
+    const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
+    const val CONNECT_TIMEOUT = 20 * 1000L
+    const val READ_TIMEOUT = 20 * 1000L
+    const val OFFLINE_SCROBBLE_JOB_DELAY = 20 * 1000L
+    const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
+    const val CRASH_REPORT_INTERVAL = 120 * 60 * 1000L
+    const val TRACK_INFO_VALIDITY = 5 * 1000L
+    const val TRACK_INFO_WINDOW = 60 * 1000L
+    const val TRACK_INFO_REQUESTS = 2
+    const val META_WAIT = 400L
+    const val START_POS_LIMIT = 1500L
+    const val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
     const val MIN_LISTENER_COUNT = 5
     const val EDITS_NOPE = 0
     const val EDITS_REPLACE_ALL = 1
@@ -138,9 +137,9 @@ object Stuff {
     const val LASTFM_AUTH_CB_URL = "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=pscrobble://auth/lastfm"
     const val LIBREFM_AUTH_CB_URL = "https://www.libre.fm/api/auth?api_key=$LIBREFM_KEY&cb=pscrobble://auth/librefm"
 
-    private var timeIt: Long = 0
+    private var timeIt = 0L
 
-    val IGNORE_ARTIST_META = arrayOf(
+    val IGNORE_ARTIST_META = setOf(
             "com.google.android.youtube",
             "com.vanced.android.youtube",
             "com.google.android.ogyoutube",
@@ -149,10 +148,15 @@ object Stuff {
             "org.schabi.newpipe",
             "com.kapp.youtube.final",
             "jp.nicovideo.nicobox",
+            "com.soundcloud.android",
 
             // radios
             "tunein.player",
             "com.thehouseofcode.radio_nowy_swiat",
+    )
+
+    val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
+        "com.soundcloud.android",
     )
 
     const val MANUFACTURER_HUAWEI = "huawei"
@@ -300,7 +304,7 @@ object Stuff {
         }
     }
 
-    fun setAppBarHeight(activity: Activity, additionalHeight: Int = 0) {
+    fun setCtlHeight(activity: Activity, additionalHeight: Int = 0) {
         activity as MainActivity
         val sHeightPx: Int
         val dm = DisplayMetrics()
@@ -309,7 +313,7 @@ object Stuff {
 
         val abHeightPx = activity.resources.getDimension(R.dimen.app_bar_height)
         val targetAbHeight: Int
-        val lp = activity.binding.coordinatorMain.appBar.layoutParams
+        val lp = activity.binding.coordinatorMain.ctl.layoutParams
         val margin = 65.dp
 
         targetAbHeight = if (sHeightPx < abHeightPx + additionalHeight + margin)
@@ -325,7 +329,7 @@ object Stuff {
                 val anim = ValueAnimator.ofInt(start, targetAbHeight)
                 anim.addUpdateListener { valueAnimator ->
                     lp.height = valueAnimator.animatedValue as Int
-                    activity.binding.coordinatorMain.appBar.layoutParams = lp
+                    activity.binding.coordinatorMain.ctl.layoutParams = lp
                 }
                 anim.interpolator = DecelerateInterpolator()
                 anim.duration = 300
@@ -420,21 +424,6 @@ object Stuff {
         }
     }
 
-    fun drawableToBitmap(drawable: Drawable, width: Int, height: Int, forceDraw: Boolean = true): Bitmap {
-        if (!forceDraw && drawable is BitmapDrawable && !drawable.bitmap.isRecycled)
-            return drawable.bitmap
-
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        if (drawable is PictureDrawable)
-            canvas.drawPicture(drawable.picture)
-        else {
-            drawable.setBounds(0, 0, width, height)
-            drawable.draw(canvas)
-        }
-        return bitmap
-    }
-
     fun getStartupIntent(context: Context): Intent? {
         // https://stackoverflow.com/questions/48166206/how-to-start-power-manager-of-all-android-manufactures-to-enable-background-and/48166241#48166241
         for (i in STARTUPMGR_INTENTS.indices step 2) {
@@ -488,10 +477,11 @@ object Stuff {
     }
 
     fun launchSearchIntent(artist: String, track: String, context: Context) {
-        val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH)
-        intent.putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
-        intent.putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
-        intent.putExtra(SearchManager.QUERY, "$artist - $track")
+        val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
+            putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
+            putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
+            putExtra(SearchManager.QUERY, "$artist - $track")
+        }
         try {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException){
@@ -499,20 +489,10 @@ object Stuff {
         }
     }
 
-    fun openInBrowser(url: String, context: Context?, source: View? = null, startX: Int = 10, startY: Int = 10) {
-        context ?: return
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        var bundle: Bundle? = null
-        if (source != null) {
-            bundle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ActivityOptions.makeClipRevealAnimation(source, startX, startY, 10, 10)
-                        .toBundle()
-            } else
-                ActivityOptions.makeScaleUpAnimation(source, startX, startY, 100, 100)
-                        .toBundle()
-        }
+    fun openInBrowser(context: Context, url: String) {
         try {
-            context.startActivity(browserIntent, bundle)
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            context.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
             toast(context, context.getString(R.string.no_browser))
         }

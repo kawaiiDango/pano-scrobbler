@@ -2,18 +2,19 @@ package com.arn.scrobble.pref
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.loadAny
+import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.HeaderDefaultBinding
 import com.arn.scrobble.databinding.ListItemAppBinding
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.VHHeader
 import com.google.android.material.color.MaterialColors
-import com.squareup.picasso.Picasso
 
 
 /**
@@ -29,10 +30,6 @@ class AppListAdapter(
     private val appList = mutableListOf<ApplicationInfo?>()
     private var itemClickListener: ItemClickListener = this
     private val selectedItems = mutableSetOf<Int>()
-
-    private var picasso: Picasso = Picasso.Builder(context)
-            .addRequestHandler(AppIconRequestHandler(context))
-            .build()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -101,21 +98,19 @@ class AppListAdapter(
         }
 
         override fun onClick(view: View) {
-            itemClickListener.onItemClick(itemView, adapterPosition)
+            itemClickListener.call(itemView, bindingAdapterPosition)
         }
 
         fun setItemData(app: ApplicationInfo) {
             binding.appListName.text = app.loadLabel(packageManager)
-            val uri = Uri.parse(AppIconRequestHandler.SCHEME_PNAME + ":" + app.packageName)
-
-            picasso.load(uri)
-                    .fit()
-                    .into(binding.appListIcon)
+            binding.appListIcon.loadAny(PackageName(app.packageName)) {
+                scale(Scale.FIT)
+            }
             setChecked(true)
         }
 
         private fun setChecked(animate: Boolean) {
-            val isSelected = adapterPosition in selectedItems
+            val isSelected = bindingAdapterPosition in selectedItems
             if (!animate){
                 binding.appListCheckbox.setOnCheckedChangeListener(null)
             }

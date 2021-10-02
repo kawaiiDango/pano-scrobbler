@@ -18,10 +18,6 @@ import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.recents.SparkLineAdapter
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.Track
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -59,25 +55,9 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         Stuff.setTitle(activity, 0)
     }
 
-    override fun onPause() {
-        if (binding.chartsArtistsFrame.chartsList.adapter == null) {
-            artistsFragment.viewModel.removeAllInfoTasks()
-            albumsFragment.viewModel.removeAllInfoTasks()
-            tracksFragment.viewModel.removeAllInfoTasks()
-            removeHandlerCallbacks()
-        }
-        super.onPause()
-    }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         binding.chartsSparklineLabels.invalidate = true
-    }
-
-    override fun removeHandlerCallbacks() {
-        artistsFragment.adapter.removeHandlerCallbacks()
-        albumsFragment.adapter.removeHandlerCallbacks()
-        tracksFragment.adapter.removeHandlerCallbacks()
     }
 
     override fun loadFirstPage() {
@@ -225,18 +205,6 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             fragment.viewModel.chartsReceiver.value = null
         }
 
-        fragment.viewModel.info.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            val imgUrl = when (val entry = it.second) {
-                is Artist -> entry.getImageURL(ImageSize.EXTRALARGE) ?: ""
-                is Album -> entry.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-                is Track -> entry.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-                else -> ""
-            }
-            adapter.setImg(it.first, imgUrl)
-            fragment.viewModel.removeInfoTask(it.first)
-        }
-
         if (fragment.viewModel.chartsData.isNotEmpty())
             adapter.populate()
     }
@@ -295,11 +263,11 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
 
     private fun launchChartsPager(type: Int) {
         val pf = ChartsPagerFragment()
-        val b = Bundle()
-        b.putInt(Stuff.ARG_TYPE, type)
-        b.putString(Stuff.ARG_USERNAME, username)
-        b.putLong(Stuff.ARG_REGISTERED_TIME, registeredTime)
-        pf.arguments = b
+        pf.arguments = Bundle().apply {
+            putInt(Stuff.ARG_TYPE, type)
+            putString(Stuff.ARG_USERNAME, username)
+            putLong(Stuff.ARG_REGISTERED_TIME, registeredTime)
+        }
         (activity as MainActivity).enableGestures()
         activity!!.supportFragmentManager
                 .beginTransaction()

@@ -129,7 +129,7 @@
                     android:layout_weight="1"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
-                    android:tint="?colorSecondary"
+                    android:tint="?android:colorBackground"
                     android:alpha="?fakeShadowAlpha"
                     android:src="@drawable/vd_mic" />
 
@@ -139,7 +139,7 @@
                     android:layout_weight="1"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
-                    android:tint="?colorSecondary"
+                    android:tint="?android:colorBackground"
                     android:alpha="?fakeShadowAlpha"
                     android:src="@drawable/vd_album" />
 
@@ -149,7 +149,7 @@
                     android:layout_weight="1"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
-                    android:tint="?colorSecondary"
+                    android:tint="?android:colorBackground"
                     android:alpha="?fakeShadowAlpha"
                     android:src="@drawable/vd_note" />
             </LinearLayout>
@@ -166,7 +166,7 @@
                     android:background="?android:selectableItemBackgroundBorderless"
                     android:contentDescription="@string/artists"
                     android:src="@drawable/vd_mic"
-                    android:tint="?colorPrimary" />
+                    android:tint="?android:colorPrimary" />
 
                 <ImageButton
                     android:id="@+id/appwidget_albums"
@@ -175,7 +175,8 @@
                     android:layout_weight="1"
                     android:contentDescription="@string/albums"
                     android:background="?android:selectableItemBackgroundBorderless"
-                    android:src="@drawable/vd_album" />
+                    android:src="@drawable/vd_album"
+                    android:tint="?android:colorPrimary" />
 
                 <ImageButton
                     android:id="@+id/appwidget_tracks"
@@ -184,7 +185,8 @@
                     android:layout_weight="1"
                     android:background="?android:selectableItemBackgroundBorderless"
                     android:contentDescription="@string/tracks"
-                    android:src="@drawable/vd_note" />
+                    android:src="@drawable/vd_note"
+                    android:tint="?android:colorPrimary" />
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>

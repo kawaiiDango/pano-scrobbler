@@ -193,16 +193,14 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                             val adapter = AlbumTracksAdapter(tracks)
                             adapter.itemClickListener = object : ItemClickListener {
                                 override fun onItemClick(view: View, position: Int) {
-                                    if (position > -1) {
-                                        dialog.dismiss()
-                                        fragment.dismiss()
-                                        val info = InfoFragment()
-                                        val thisBundle = b.clone() as Bundle
-                                        thisBundle.putString(NLService.B_TRACK, tracks[position].name)
-                                        thisBundle.putString(Stuff.ARG_USERNAME, username)
-                                        info.arguments = thisBundle
-                                        info.show(fragment.parentFragmentManager, null)
-                                    }
+                                    dialog.dismiss()
+                                    fragment.dismiss()
+                                    val info = InfoFragment()
+                                    val thisBundle = b.clone() as Bundle
+                                    thisBundle.putString(NLService.B_TRACK, tracks[position].name)
+                                    thisBundle.putString(Stuff.ARG_USERNAME, username)
+                                    info.arguments = thisBundle
+                                    info.show(fragment.parentFragmentManager, null)
                                 }
                             }
                             rv.adapter = adapter
@@ -337,7 +335,7 @@ class InfoAdapter(private val viewModel: InfoVM, private val fragment: BottomShe
                 binding.infoLink.visibility = View.VISIBLE
                 binding.infoLink.setOnClickListener {
                     if (entry.url != null)
-                        Stuff.openInBrowser(entry.url, itemView.context)
+                        Stuff.openInBrowser(itemView.context, entry.url)
                 }
             } else {
                 // show() is not immediate, sometimes it may show after being set as GONE

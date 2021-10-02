@@ -12,11 +12,11 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
+import coil.load
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MainPrefs
-import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 
@@ -167,24 +167,23 @@ class RandomFragment: Fragment() {
         binding.randomInfo.setOnClickListener {
             if (track.url != null) {
                 val info = InfoFragment()
-                val b = Bundle()
-                b.putString(NLService.B_ARTIST, track.artist)
-                if (!track.album.isNullOrEmpty())
-                    b.putString(NLService.B_ALBUM, track.album)
-                b.putString(NLService.B_TRACK, track.name)
-                info.arguments = b
+                info.arguments = Bundle().apply {
+                    putString(NLService.B_ARTIST, track.artist)
+                    if (!track.album.isNullOrEmpty())
+                        putString(NLService.B_ALBUM, track.album)
+                    putString(NLService.B_TRACK, track.name)
+                    putString(Stuff.ARG_USERNAME, username)
+                }
                 info.show(parentFragmentManager, null)
             }
         }
         var imgUrl = track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600")
-        if (imgUrl?.isEmpty() == true)
-            imgUrl = null
-        Picasso.get()
-                .load(imgUrl)
-                .placeholder(R.drawable.vd_wave_simple_filled)
-                .error(R.drawable.vd_wave_simple_filled)
-                .into(binding.randomBigImg)
-
+        if (imgUrl == null)
+            imgUrl = ""
+        binding.randomBigImg.load(imgUrl) {
+            placeholder(R.drawable.vd_wave_simple_filled)
+            error(R.drawable.vd_wave_simple_filled)
+        }
     }
 
     private fun setContainerWidth() {

@@ -23,7 +23,7 @@ class WidgetPrefs(context: Context) {
 
         var tab by intPref(getWidgetPrefName(PREF_WIDGET_TAB))
         var bgAlpha by floatPref(getWidgetPrefName(PREF_WIDGET_BG_ALPHA), 0.4f)
-        var isDark by booleanPref(getWidgetPrefName(PREF_WIDGET_DARK), true)
+        var theme by intPref(getWidgetPrefName(PREF_WIDGET_THEME), WidgetTheme.DARK.ordinal)
         var period by intPref(getWidgetPrefName(PREF_WIDGET_PERIOD))
         var shadow by booleanPref(getWidgetPrefName(PREF_WIDGET_SHADOW), true)
         var lastUpdated by longPref(getWidgetPrefName(PREF_WIDGET_LAST_UPDATED))
@@ -49,8 +49,13 @@ class WidgetPrefs(context: Context) {
         const val PREF_WIDGET_TAB = "tab"
         const val PREF_WIDGET_BG_ALPHA = "bg_alpha"
         const val PREF_WIDGET_DARK = "dark"
+        const val PREF_WIDGET_THEME = "theme"
         const val PREF_WIDGET_PERIOD = "period"
         const val PREF_WIDGET_SHADOW = "shadow"
         const val PREF_WIDGET_LAST_UPDATED = "last_updated"
     }
+}
+
+enum class WidgetTheme {
+    LIGHT, DARK, DYNAMIC
 }

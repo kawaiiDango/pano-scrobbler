@@ -20,10 +20,10 @@ class VHPendingLove(
         binding.recentsImgOverlay.visibility = View.VISIBLE
         if (MainActivity.isTV)
             binding.root.setOnClickListener {
-                itemClickListener.onItemClick(binding.recentsMenu, adapterPosition)
+                itemClickListener.call(binding.recentsMenu, bindingAdapterPosition)
             }
         binding.recentsMenu.setOnClickListener {
-            itemClickListener.onItemClick(it, adapterPosition)
+            itemClickListener.call(it, bindingAdapterPosition)
         }
         if (isShowingAlbums) {
             val albumHeight = itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()

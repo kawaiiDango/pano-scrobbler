@@ -46,6 +46,7 @@ class BlockedMetadataFragment: Fragment(), ItemClickListener {
     }
 
     override fun onDestroyView() {
+        hideKeyboard()
         _binding = null
         super.onDestroyView()
     }

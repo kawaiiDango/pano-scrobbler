@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
+    <permission android:name="com.arn.scrobble.MY_AWESOME_PERMISSION" android:protectionLevel="signature" />
+    <uses-permission android:name="com.arn.scrobble.MY_AWESOME_PERMISSION" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -92,11 +95,8 @@
             android:exported="false"
             android:label="@string/edit"
             android:theme="@style/AppThemeDialog"
-            android:windowSoftInputMode="adjustPan" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
+            android:windowSoftInputMode="adjustPan"/>
+
         <activity
             android:name=".widget.ChartsWidgetActivity"
             android:theme="@style/AppTheme.Wallpaper"

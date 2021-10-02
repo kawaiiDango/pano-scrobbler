@@ -74,6 +74,64 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:icon="@drawable/vd_user"
+        android:title="@string/pref_personalization">
+
+        <Preference
+            android:title="@string/pref_themes"
+            android:summary="@string/pref_themes_desc"
+            android:key="themes"/>
+
+        <Preference
+            android:title="@string/pref_widget_charts"
+            android:key="charts_widget" />
+
+        <SwitchPreference
+            android:title="@string/pref_show_albums"
+            android:summary="@string/pref_show_albums_desc"
+            android:key="show_album"
+            android:persistent="true"/>
+
+        <SwitchPreference
+            android:title="@string/pref_show_tracked_players"
+            android:summary="@string/pref_show_tracked_players_desc"
+            android:key="fake_show_tracked_players"
+            android:persistent="false"/>
+
+        <SwitchPreference
+            android:title="@string/pref_show_tracked_players"
+            android:summary="@string/pref_show_tracked_players_desc"
+            android:key="show_tracked_players"
+            android:defaultValue="true"
+            android:persistent="true"/>
+
+        <ListPreference
+            android:key="locale"
+            android:persistent="true"
+            android:defaultValue="auto"
+            android:title="@string/pref_change_locale"
+            android:summary="@string/locale_only_ui"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:icon="@drawable/vd_list"
+        android:title="@string/pref_lists">
+
+        <Preference
+            android:title="@string/simple_edits"
+            android:key="simple_edits"/>
+
+        <Preference
+            android:title="@string/pref_regex_edits"
+            android:key="regex_edits"/>
+
+        <Preference
+            android:title="@string/pref_blocked_metadata"
+            android:key="blocked_metadata"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:icon="@drawable/vd_bell"
         android:title="@string/pref_noti">
         <SwitchPreference
@@ -102,43 +160,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:icon="@drawable/vd_user"
-        android:title="@string/pref_personalization">
-
-        <Preference
-            android:title="@string/pref_themes"
-            android:summary="@string/pref_themes_desc"
-            android:key="themes"/>
-
-        <Preference
-            android:title="@string/pref_widget_charts"
-            android:key="charts_widget" />
-
-        <SwitchPreference
-            android:title="@string/pref_show_albums"
-            android:summary="@string/pref_show_albums_desc"
-            android:key="show_album"
-            android:persistent="true"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        app:icon="@drawable/vd_list"
-        android:title="@string/pref_lists">
-
-        <Preference
-            android:title="@string/simple_edits"
-            android:key="simple_edits"/>
-
-        <Preference
-            android:title="@string/pref_regex_edits"
-            android:key="regex_edits"/>
-
-        <Preference
-            android:title="@string/pref_blocked_metadata"
-            android:key="blocked_metadata"/>
-    </PreferenceCategory>
-    <PreferenceCategory
         app:icon="@drawable/vd_more_horiz"
         android:title="@string/pref_misc">
         <SwitchPreference
@@ -153,13 +174,6 @@
             android:persistent="true"
             android:title="@string/pref_fetch_aa"
             android:summary="@string/pref_fetch_aa_desc"/>
-
-        <ListPreference
-            android:key="locale"
-            android:persistent="true"
-            android:defaultValue="auto"
-            android:title="@string/pref_change_locale"
-            android:summary="@string/locale_only_ui"/>
 
     </PreferenceCategory>
     <PreferenceCategory

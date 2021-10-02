@@ -1,21 +1,30 @@
 package com.arn.scrobble.recents
 
+import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
+import coil.clear
+import coil.load
+import coil.loadAny
+import coil.size.Scale
 import com.arn.scrobble.MainActivity
+import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.HeaderDefaultBinding
 import com.arn.scrobble.databinding.HeaderPendingBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pending.PendingScrFragment
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
@@ -23,10 +32,9 @@ import com.arn.scrobble.pending.PendingListData
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.*
-import com.squareup.picasso.Picasso
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
-import java.lang.ref.WeakReference
+import kotlinx.coroutines.*
 
 
 /**
@@ -35,7 +43,7 @@ import java.lang.ref.WeakReference
 
 class RecentsAdapter(
     private val fragmentBinding: ContentRecentsBinding
-): RecyclerView.Adapter<RecyclerView.ViewHolder>(), LoadImgInterface, LoadMoreGetter {
+): RecyclerView.Adapter<RecyclerView.ViewHolder>(), LoadMoreGetter {
 
     lateinit var itemClickListener: ItemClickListener
     lateinit var itemLongClickListener: ItemLongClickListener
@@ -50,13 +58,15 @@ class RecentsAdapter(
     private var fm: FragmentManager? = null
     private val myUpdateCallback = MyUpdateCallback(this)
     lateinit var viewModel: TracksVM
+    lateinit var trackBundleLd: LiveData<Bundle>
     var isShowingLoves = false
     var isShowingAlbums = false
+    var isShowingPlayers = false
     private var lastPopulateTime = System.currentTimeMillis()
-    val handler by lazy { EntryInfoHandler(WeakReference(this)) }
     private val nonTrackViewCount: Int
         get() = sectionHeaders.size + psMap.size + plMap.size +
                 if (actionHeaderPos == -1) 0 else 1
+    private val playerDao = PanoDb.getDb(fragmentBinding.root.context).getTrackedPlayerDao()
     
     init {
 //        setHasStableIds(true) //causes some opengl OOM and new holders to be created for no reason
@@ -268,30 +278,6 @@ class RecentsAdapter(
         lastPopulateTime = System.currentTimeMillis()
     }
 
-    override fun loadImg(pos: Int){
-        val idx = pos - nonTrackViewCount
-        if(idx >= 0 && idx < viewModel.tracks.size){
-            viewModel.loadInfo(viewModel.tracks[idx], pos)
-        }
-    }
-
-    // only called for loves fragment
-    fun setImg(pos: Int, imgMapp: Map<ImageSize, String>?){
-        val idx = pos - nonTrackViewCount
-        if(idx >= 0 && idx < viewModel.tracks.size){
-            val track = viewModel.tracks[idx]
-            track.imageUrlsMap = imgMapp
-            viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] = imgMapp ?: mapOf()
-            notifyItemChanged(pos)
-            if (pos == viewModel.selectedPos)
-                setHeroListener.onSetHero(pos, viewModel.tracks[idx], false)
-        }
-    }
-
-    fun removeHandlerCallbacks(){
-        handler.cancelAll()
-    }
-
     class DiffCallback(private val newList: List<Track>, private val oldList: List<Track>, private val lastPopulateTime: Long) : DiffUtil.Callback() {
 
         override fun getOldListSize() = oldList.size
@@ -354,12 +340,14 @@ class RecentsAdapter(
     }
 
     inner class VHTrack(private val binding: ListItemRecentsBinding) : RecyclerView.ViewHolder(binding.root), View.OnFocusChangeListener {
+        private var job: Job? = null
+
         init {
             binding.root.setOnClickListener {
-                itemClickListener.onItemClick(itemView, adapterPosition)
+                itemClickListener.call(itemView, bindingAdapterPosition)
             }
             binding.root.setOnLongClickListener {
-                itemLongClickListener.onItemLongClick(itemView, adapterPosition)
+                itemLongClickListener.call(itemView, bindingAdapterPosition)
                 true
             }
             binding.root.onFocusChangeListener = this
@@ -368,19 +356,55 @@ class RecentsAdapter(
                 binding.recentsMenuText.visibility = View.GONE
             } else
                 binding.recentsMenu.setOnClickListener {
-                    itemClickListener.onItemClick(it, adapterPosition)
+                    itemClickListener.call(it, bindingAdapterPosition)
                 }
         }
 
         override fun onFocusChange(view: View?, focused: Boolean) {
             if (view != null && !view.isInTouchMode && focused)
-                focusChangeListener.onFocus(itemView, adapterPosition)
+                focusChangeListener.call(itemView, bindingAdapterPosition)
         }
 
         private fun setSelected(selected:Boolean, track: Track = viewModel.tracks[viewModel.selectedPos - nonTrackViewCount]) {
             itemView.isActivated = selected
             if (selected)
-                setHeroListener.onSetHero(adapterPosition, track, false)
+                setHeroListener.onSetHero(bindingAdapterPosition, track, false)
+        }
+
+        private fun setPlayerIcon(track: Track) {
+            val timeMillis = track.playedWhen?.time
+            binding.playerIcon.visibility = View.VISIBLE
+
+            fun fetchIcon(pkgName: String) {
+                binding.playerIcon.loadAny(PackageName(pkgName)) {
+                    scale(Scale.FIT)
+                    listener(onSuccess = { _,_ ->
+                        binding.playerIcon.contentDescription = pkgName
+                    })
+                }
+            }
+
+            if (track.isNowPlaying && trackBundleLd.value?.getBoolean(NLService.B_IS_SCROBBLING) == true) {
+                trackBundleLd.value?.getString(NLService.B_PACKAGE_NAME)?.let {
+                    fetchIcon(it)
+                }
+            } else if (timeMillis != null && viewModel.pkgMap[timeMillis] != null) {
+                fetchIcon(viewModel.pkgMap[timeMillis]!!)
+            } else {
+                binding.playerIcon.clear()
+                binding.playerIcon.contentDescription = null
+                job?.cancel()
+
+                if (timeMillis != null) {
+                    job = viewModel.viewModelScope.launch(Dispatchers.IO) {
+                        delay(100)
+                        playerDao.findPlayer(timeMillis)?.playerPackage?.let { pkgName ->
+                            viewModel.pkgMap[timeMillis] = pkgName
+                            fetchIcon(pkgName)
+                        }
+                    }
+                }
+            }
         }
 
         fun setItemData(track: Track) {
@@ -429,18 +453,20 @@ class RecentsAdapter(
                 binding.recentsImgOverlay.visibility = View.INVISIBLE
             }
 
+            if (isShowingPlayers) {
+                setPlayerIcon(track)
+            }
+
             val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
 
-            if (imgUrl != null && imgUrl != "") {
+            if (!imgUrl.isNullOrEmpty()) {
                 binding.recentsImg.clearColorFilter()
-                Picasso.get()
-                        .load(imgUrl)
-                        .placeholder(R.drawable.vd_wave_simple_filled)
-                        .error(R.drawable.vd_wave_simple_filled)
-                        .into(binding.recentsImg)
-
+                binding.recentsImg.load(imgUrl) {
+                    placeholder(R.drawable.vd_wave_simple_filled)
+                    error(R.drawable.vd_wave_simple_filled)
+                }
             } else {
-                binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
+                binding.recentsImg.load(R.drawable.vd_wave_simple_filled)
                 binding.recentsImg.setColorFilter(
                     Stuff.getMatColor(
                         binding.recentsImg.context,
@@ -448,11 +474,25 @@ class RecentsAdapter(
                     )
                 )
                 if (isShowingLoves){
-                    if(viewModel.imgMap[Stuff.genHashCode(track.artist, track.name)] == null)
-                        handler.sendMessage(binding.recentsImg.hashCode(), adapterPosition)
+                    val musicEntryImageReq = MusicEntryImageReq(track, ImageSize.LARGE, true)
+                    binding.recentsImg.loadAny(musicEntryImageReq) {
+                        placeholder(R.drawable.vd_wave_simple_filled)
+                        error(R.drawable.vd_wave_simple_filled)
+                        transition(TransitionWithBeforeCallback {
+                            binding.recentsImg.clearColorFilter()
+                        })
+                        listener(onSuccess = { request, _ ->
+                            (request.data as? String)?.let {
+                                if (bindingAdapterPosition == viewModel.selectedPos) {
+                                    val idx = bindingAdapterPosition - nonTrackViewCount
+                                    setHeroListener.onSetHero(bindingAdapterPosition, viewModel.tracks[idx], false)
+                                }
+                            }
+                        })
+                    }
                 }
             }
-            setSelected(adapterPosition == viewModel.selectedPos, track)
+            setSelected(bindingAdapterPosition == viewModel.selectedPos, track)
         }
     }
 

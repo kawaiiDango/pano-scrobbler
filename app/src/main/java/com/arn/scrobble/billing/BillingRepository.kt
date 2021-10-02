@@ -212,7 +212,7 @@ class BillingRepository private constructor(private val application: Application
             prefs.proStatus = true
             if (proStatusLd.value != true) {
                 proStatusLd.postValue(true)
-                application.sendBroadcast(Intent(NLService.iTHEME_CHANGED))
+                application.sendBroadcast(Intent(NLService.iTHEME_CHANGED_S), NLService.BROADCAST_PERMISSION)
             }
             proPendingSinceLd.postValue(0)
         }

@@ -12,6 +12,7 @@ import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.TrackedPlayer
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
@@ -20,15 +21,14 @@ import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import timber.log.Timber
 import java.io.IOException
-import java.io.InputStreamReader
 import java.io.InterruptedIOException
 import java.lang.ref.WeakReference
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.*
-import java.util.zip.GZIPInputStream
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 
@@ -198,47 +198,43 @@ class LFMRequester(
             try {
                 pr = User.getFriends(username, page, 30, !MainActivity.isOnline, lastfmSession)
             } catch (e: NullPointerException) {
-                val url = URL("https://www.last.fm/user/$username/following?page=$page")
-                var urlConnection: HttpURLConnection? = null
+                val request = Request.Builder()
+                    .url("https://www.last.fm/user/$username/following?page=$page")
+                    .build()
                 val users = mutableListOf<User>()
                 try {
-                    var idx = 0
-                    urlConnection = url.openConnection() as HttpURLConnection
-                    urlConnection.setRequestProperty("Accept-Encoding", "gzip")
-                    urlConnection.instanceFollowRedirects = false
+                    okHttpClient.newCall(request).execute()
+                        .use { response ->
+                            if (!response.isSuccessful)
+                                throw IOException("Response code ${response.code}")
+                            val body = response.body!!.string()
+                            if (body.isEmpty())
+                                throw IOException("Empty body")
 
-                    if (urlConnection.responseCode != 200)
-                        idx = -1
-                    val resp = slurp(urlConnection, 1024)
-                    if (resp == "")
-                        idx = -1
-                    if (idx > -1)
-                        idx = resp.indexOf("<ul class=\"user-list\">", 50000)
-                    var idx2: Int
-                    if (idx > -1) {
-                        do {
-                            idx = resp.indexOf("  link-block-target", idx)
-                            if (idx > -1)
-                                idx = resp.indexOf(">", idx + 1)
+                            var idx = body.indexOf("<ul class=\"user-list\">", 50000)
+                            var idx2: Int
                             if (idx > -1) {
-                                idx += 1
-                                idx2 = resp.indexOf("<", idx)
-                                val uname = resp.substring(idx, idx2)
-                                idx = resp.indexOf("<img", idx2)
-                                idx = resp.indexOf("\"", idx)
-                                idx2 = resp.indexOf("\"", idx + 1)
-                                val imageUrl = resp.substring(idx + 1, idx2)
-                                val user = User(uname, "https://www.last.fm/user/$uname")
-                                user.imageURL = imageUrl
-                                users.add(user)
-                                idx = idx2
-                            }
-                        } while (idx > -1)
-
+                                do {
+                                    idx = body.indexOf("  link-block-target", idx)
+                                    if (idx > -1)
+                                        idx = body.indexOf(">", idx + 1)
+                                    if (idx > -1) {
+                                        idx += 1
+                                        idx2 = body.indexOf("<", idx)
+                                        val uname = body.substring(idx, idx2)
+                                        idx = body.indexOf("<img", idx2)
+                                        idx = body.indexOf("\"", idx)
+                                        idx2 = body.indexOf("\"", idx + 1)
+                                        val imageUrl = body.substring(idx + 1, idx2)
+                                        val user = User(uname, "https://www.last.fm/user/$uname")
+                                        user.imageURL = imageUrl
+                                        users.add(user)
+                                        idx = idx2
+                                    }
+                                } while (idx > -1)
+                        }
                     }
                 } catch (e: Exception) {
-                } finally {
-                    urlConnection?.disconnect()
                 }
                 val totalPages = if (users.isEmpty())
                     page
@@ -457,43 +453,6 @@ class LFMRequester(
         }
     }
 
-    fun getTrackInfo(track: Track, pos: Int) {
-        toExec = {
-            val info = try {
-                Track.getInfo(track.artist, track.name, Stuff.LAST_KEY)
-            } catch (e: Exception){
-                null
-            }
-            Pair(pos, info)
-        }
-    }
-
-    fun getArtistInfo(artist: Artist, pos: Int) {
-        toExec = {
-            val info = try {
-                val info = getArtistInfoSpotify(artist.name)
-                if (info?.name.equals(artist.name, ignoreCase = true))
-                    info
-                else
-                    null
-            } catch (e:Exception){
-                null
-            }
-            Pair(pos, info)
-        }
-    }
-
-    fun getAlbumInfo(album: Album, pos: Int) {
-        toExec = {
-            val info = try {
-                Album.getInfo(album.artist, album.name, Stuff.LAST_KEY)
-            } catch (e:Exception){
-                null
-            }
-            Pair(pos, info)
-        }
-    }
-
     fun getTagInfo(tag: String) {
         toExec = {
             Tag.getInfo(tag, Stuff.LAST_KEY) to
@@ -623,54 +582,54 @@ class LFMRequester(
         }
     }
 
-
     fun getListenerTrend(url: String) {
         toExec = {
             val monthlyPlayCounts = mutableListOf(0, 0, 0, 0, 0)
             if (MainActivity.isOnline && url != "") {
-                var urlConnection: HttpURLConnection? = null
+                val request = Request.Builder()
+                    .url(url)
+                    .build()
                 try {
-                    urlConnection = URL(url).openConnection() as HttpURLConnection
-                    urlConnection.setRequestProperty("Accept-Encoding", "gzip")
+                    okHttpClient.newCall(request).execute()
+                        .use { response ->
+                            if (!response.isSuccessful)
+                                throw IOException("Response code ${response.code}")
+                            val body = response.body!!.string()
 
-                    if (urlConnection.responseCode != 200)
-                        throw IOException()
-                    val resp = slurp(urlConnection, 1024)
-                    if (resp == "")
-                        throw IOException()
+                            if (body.isEmpty())
+                                throw IOException("Empty body")
 
-                    var idx = resp.indexOf("charts/listener-trend", 200000)
-                    var idx2: Int
-                    var days = 0
-                    val daily = arrayListOf<Int>()
-                    if (idx > -1) {
-                        val stop1 = "data-value=\""
-                        do {
-                            idx = resp.indexOf(stop1, idx)
+                            var idx = body.indexOf("charts/listener-trend", 200000)
+                            var idx2: Int
+                            var days = 0
+                            val daily = arrayListOf<Int>()
                             if (idx > -1) {
-                                idx += stop1.length
-                                idx2 = resp.indexOf("\"", idx)
-                                val value = resp.substring(idx, idx2).toInt()
-                                daily.add(value)
+                                val stop1 = "data-value=\""
+                                do {
+                                    idx = body.indexOf(stop1, idx)
+                                    if (idx > -1) {
+                                        idx += stop1.length
+                                        idx2 = body.indexOf("\"", idx)
+                                        val value = body.substring(idx, idx2).toInt()
+                                        daily.add(value)
+                                    }
+                                } while (idx > -1)
+                                for (i in daily.size - 1 downTo 0) {
+                                    monthlyPlayCounts[4 - days / 30] += daily[i]
+                                    days++
+                                    if (days / 30 > 4)
+                                        break
+                                }
                             }
-                        } while (idx > -1)
-                        for (i in daily.size - 1 downTo 0) {
-                            monthlyPlayCounts[4 - days / 30] += daily[i]
-                            days++
-                            if (days / 30 > 4)
-                                break
                         }
-                    }
                 } catch (e: Exception) {
-                } finally {
-                    urlConnection?.disconnect()
                 }
             }
             monthlyPlayCounts
         }
     }
 
-    fun scrobble(nowPlaying: Boolean, scrobbleData: ScrobbleData, hash: Int, ignoredArtist: String? = null) {
+    fun scrobble(nowPlaying: Boolean, scrobbleData: ScrobbleData, hash: Int, packageName: String, ignoredArtist: String? = null) {
         toExec = {
             Stuff.log(
                 this::scrobble.name + " " +
@@ -726,31 +685,41 @@ class LFMRequester(
                             val i = Intent(NLService.iCANCEL).apply {
                                 putExtra(NLService.B_HASH, hash)
                             }
-                            context.sendBroadcast(i)
+                            context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                             return@coroutineScope
                         }
                     }
 
                     if (scrobbleData.artist.isNullOrBlank() || scrobbleData.track.isNullOrBlank()) {
-                        val b = scrobbleData.toBundle().apply {
-                            putInt(NLService.B_HASH, hash)
-                            putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
-                            putString(NLService.B_ERR_MSG, context.getString(R.string.parse_error))
+                        if (packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && !ignoredArtist.isNullOrEmpty()) {
+                            scrobbleData.artist = ignoredArtist
+                            LFMRequester(context, scope, liveData)
+                                .scrobble(nowPlaying, scrobbleData, hash, packageName)
+                        } else {
+                            val b = scrobbleData.toBundle().apply {
+                                putInt(NLService.B_HASH, hash)
+                                putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
+                                putString(
+                                    NLService.B_ERR_MSG,
+                                    context.getString(R.string.parse_error)
+                                )
+                                putString(NLService.B_PACKAGE_NAME, packageName)
+                            }
+                            val i = Intent(NLService.iBAD_META_S).apply {
+                                putExtras(b)
+                            }
+                            context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                         }
-                        val i = Intent(NLService.iBAD_META).apply {
-                            putExtras(b)
-                        }
-                        context.sendBroadcast(i)
                         return@coroutineScope
                     } else if (edit != null || regexEdits.values.sum() > 0) {
                         val b = scrobbleData.toBundle().apply {
                             putInt(NLService.B_HASH, hash)
                         }
-                        val i = Intent(NLService.iMETA_UPDATE).apply {
+                        val i = Intent(NLService.iMETA_UPDATE_S).apply {
                             putExtras(b)
                         }
 
-                        context.sendBroadcast(i)
+                        context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
 
                     if (MainActivity.isOnline) {
@@ -829,11 +798,11 @@ class LFMRequester(
                                 putInt(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
                             }
                         }
-                        val i = Intent(NLService.iMETA_UPDATE).apply {
+                        val i = Intent(NLService.iMETA_UPDATE_S).apply {
                             putExtras(b)
                         }
 
-                        context.sendBroadcast(i)
+                        context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
                     if (MainActivity.isOnline) {
                         if (correctedArtist != null || edit != null) {
@@ -876,17 +845,34 @@ class LFMRequester(
                             }
                         } else {
                             // unrecognized artist
-                            val b = scrobbleData.toBundle().apply {
-                                putInt(NLService.B_HASH, hash)
-                                putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
+                            if (packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && !ignoredArtist.isNullOrEmpty()) {
+                                scrobbleData.artist = ignoredArtist
+                                LFMRequester(context, scope, liveData)
+                                    .scrobble(nowPlaying, scrobbleData, hash, packageName)
+                            } else {
+                                val b = scrobbleData.toBundle().apply {
+                                    putInt(NLService.B_HASH, hash)
+                                    putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
+                                    putString(NLService.B_PACKAGE_NAME, packageName)
+                                }
+                                val i = Intent(NLService.iBAD_META_S).apply {
+                                    putExtras(b)
+                                }
+                                context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                             }
-                            val i = Intent(NLService.iBAD_META).apply {
-                                putExtras(b)
-                            }
-                            context.sendBroadcast(i)
                         }
                     }
                 } else {
+
+                    // track player
+                    val trackedPlayer = TrackedPlayer(
+                        timeMillis = scrobbleData.timestamp * 1000L,
+                        playerPackage = packageName
+                    )
+                    PanoDb.getDb(context)
+                        .getTrackedPlayerDao()
+                        .insert(trackedPlayer)
+
                     if (MainActivity.isOnline) {
                         serviceIdToKeys[R.string.lastfm]?.let {
                             scrobbleResults[R.string.lastfm] =
@@ -972,12 +958,12 @@ class LFMRequester(
                     if (failedTextLines.isNotEmpty()) {
                         val failedText = failedTextLines.joinToString("<br>\n")
                         Stuff.log("failedText= $failedText")
-                        val i = Intent(NLService.iOTHER_ERR).apply {
+                        val i = Intent(NLService.iOTHER_ERR_S).apply {
                             putExtra(NLService.B_ERR_MSG, failedText)
                             putExtra(NLService.B_PENDING, savedAsPending)
                             putExtra(NLService.B_HASH, hash)
                         }
-                        context.sendBroadcast(i)
+                        context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
 
                 } catch (e: NullPointerException) {
@@ -1123,8 +1109,8 @@ class LFMRequester(
                         }
                     }
                 }
-                val intent = Intent(NLService.iSESS_CHANGED)
-                context.sendBroadcast(intent)
+                val intent = Intent(NLService.iSESS_CHANGED_S)
+                context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
             }
             null
         }
@@ -1181,31 +1167,14 @@ class LFMRequester(
         private var lastNpInfoTime = 0L
         private var lastNpInfoCount = 0
 
-        private fun slurp(urlConnection: HttpURLConnection, bufferSize: Int): String {
-            val buffer = CharArray(bufferSize)
-            val out = StringBuilder()
-            var res = ""
-            try {
-                val ir = if ("gzip" == urlConnection.contentEncoding) {
-                    InputStreamReader(GZIPInputStream(urlConnection.inputStream), "UTF-8")
-                } else {
-                    InputStreamReader(urlConnection.inputStream, "UTF-8")
-                }
-                ir.use { `in` ->
-                    while (true) {
-                        val rsz = `in`.read(buffer, 0, buffer.size)
-                        if (rsz < 0)
-                            break
-                        out.append(buffer, 0, rsz)
-                    }
-                }
-                res = out.toString()
-            } catch (ex: InterruptedException){
-            } catch (ex: InterruptedIOException){
-            } catch (ex: IOException) {
-                ex.printStackTrace()
-            }
-            return res
+        val okHttpClient by lazy {
+            OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .writeTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .callTimeout(20, TimeUnit.SECONDS)
+                .followRedirects(false)
+                .build()
         }
 
         fun getValidTrack(artist: String, title: String, lastfmUsername: String, cacheOnly: Boolean = false): Track? {

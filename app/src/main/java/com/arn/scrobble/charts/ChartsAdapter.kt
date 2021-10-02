@@ -3,11 +3,12 @@ package com.arn.scrobble.charts
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
+import coil.load
+import coil.loadAny
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -15,19 +16,15 @@ import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.GridItemChartBinding
 import com.arn.scrobble.ui.*
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import de.umass.lastfm.*
-import java.lang.ref.WeakReference
 import java.text.NumberFormat
 
 
 open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
-        RecyclerView.Adapter<ChartsAdapter.VHChart>(), LoadImgInterface, LoadMoreGetter {
+        RecyclerView.Adapter<ChartsAdapter.VHChart>(), LoadMoreGetter {
 
     lateinit var clickListener: EntryItemClickListener
     lateinit var viewModel: ChartsVM
-    private val handler by lazy { EntryInfoHandler(WeakReference(this)) }
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
     open val itemSizeDp = 185.dp
     open val forceDimensions = false
@@ -38,17 +35,13 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
     var showArtists = true
     var requestAlbumInfo = true
 
-    private val queueEntryInfo = { pos: Int, imageView: ImageView ->
-        if (!viewModel.imgMap.containsKey(getItemId(pos).toInt()))
-            handler.sendMessage(imageView.hashCode(), pos)
-    }
     private val getMaxCount = {
         if (checkAllForMax) {
             if (maxCount == -2)
                 maxCount = viewModel.chartsData.maxOfOrNull { it.playcount } ?: -1
             maxCount
         } else
-            getItem(0).playcount
+            viewModel.chartsData[0].playcount
     }
 
     init {
@@ -69,40 +62,14 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
                 holderBinding,
                 itemSizeDp,
                 clickListener,
-                queueEntryInfo,
                 getMaxCount
         )
-    }
-
-    fun getItem(pos: Int) = viewModel.chartsData[pos]
-
-    private fun getImgUrl(pos: Int): String? {
-        val id = getItemId(pos).toInt()
-        return viewModel.imgMap[id]
-    }
-
-    override fun loadImg(pos:Int){
-        if(pos >= 0 && pos < viewModel.chartsData.size){
-            val entry = viewModel.chartsData[pos]
-            when (entry) {
-                is Artist -> viewModel.loadArtistInfo(entry, pos)
-                is Album -> viewModel.loadAlbumInfo(entry, pos)
-                is Track -> viewModel.loadTrackInfo(entry, pos)
-            }
-        }
-    }
-
-    fun setImg(pos: Int, imgUrl: String){
-        if(pos >= 0 && pos < viewModel.chartsData.size){
-            viewModel.imgMap[getItemId(pos).toInt()] = imgUrl
-            notifyItemChanged(pos)
-        }
     }
 
     override fun getItemCount() = viewModel.chartsData.size
 
     override fun getItemId(position: Int): Long {
-        return when (val item = getItem(position)) {
+        return when (val item = viewModel.chartsData[position]) {
             is Artist -> item.name.hashCode().toLong()
             is Album -> Stuff.genHashCode(item.artist, item.name).toLong()
             is Track -> Stuff.genHashCode(item.artist, item.name).toLong()
@@ -111,9 +78,8 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
     }
 
     override fun onBindViewHolder(holder: VHChart, position: Int) {
-        val item =  getItem(position)
-        val imgUrl =  getImgUrl(position)
-        holder.setItemData(position, item, imgUrl, showArtists, requestAlbumInfo)
+        val item =  viewModel.chartsData[position]
+        holder.setItemData(position, item, showArtists, requestAlbumInfo)
     }
 
     open fun populate(){
@@ -141,15 +107,10 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
         notifyDataSetChanged()
     }
 
-    fun removeHandlerCallbacks(){
-        handler.cancelAll()
-    }
-
     class VHChart(
             private val binding: GridItemChartBinding,
             itemSizeDp: Int,
             private val clickListener: EntryItemClickListener,
-            private val queueEntryInfo: (Int, ImageView) -> Unit,
             private val getMaxCount: () -> Int
     ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
@@ -167,17 +128,16 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
             }
         }
 
-        fun setItemData(pos: Int, entry: MusicEntry, imgUrlp:String?, showArtists: Boolean, requestAlbumInfo: Boolean) {
+        fun setItemData(pos: Int, entry: MusicEntry, showArtists: Boolean, requestAlbumInfo: Boolean) {
             entryData = entry
-            var imgUrl = imgUrlp
+            var imgUrl: String? = null
             when (entry) {
                 is Artist -> {
                     binding.chartInfoSubtitle.visibility = View.GONE
                 }
                 is Album -> {
                     binding.chartInfoSubtitle.text = entry.artist
-                    if (imgUrlp == null)
-                        imgUrl = entry.getWebpImageURL(ImageSize.EXTRALARGE)
+                    imgUrl = entry.getWebpImageURL(ImageSize.EXTRALARGE)
                 }
                 is Track -> binding.chartInfoSubtitle.text = entry.artist
             }
@@ -198,25 +158,26 @@ open class ChartsAdapter (protected val binding: FrameChartsListBinding) :
                 binding.chartInfoBar.visibility = View.VISIBLE
                 binding.chartInfoScrobbles.visibility = View.VISIBLE
             }
-            if (imgUrl != null && imgUrl != "") {
-                Picasso.get()
-                        .load(imgUrl)
-                        .placeholder(R.drawable.vd_wave_simple_filled)
-                        .error(R.drawable.vd_wave_simple_filled)
-                        .into(binding.chartImg, object : Callback{
-                            override fun onSuccess() {
-                                binding.chartImg.clearColorFilter()
-                            }
-
-                            override fun onError(e: Exception) {
-                            }
-                        })
-
-            } else {
-                binding.chartImg.setImageResource(R.drawable.vd_wave_simple_filled)
+            if (!imgUrl.isNullOrEmpty()) {
+                binding.chartImg.clearColorFilter()
+                binding.chartImg.load(imgUrl) {
+                    placeholder(R.drawable.vd_wave_simple_filled)
+                    error(R.drawable.vd_wave_simple_filled)
+                    listener(
+                        onError = { _, _ ->
+                            binding.chartImg.setColorFilter(Stuff.getMatColor(itemView.context, entry.name.hashCode().toLong()))
+                        }
+                    )
+                }
+            } else if (entry !is Album || requestAlbumInfo) {
                 binding.chartImg.setColorFilter(Stuff.getMatColor(itemView.context, entry.name.hashCode().toLong()))
-                if (!(entry is Album && !requestAlbumInfo))
-                    queueEntryInfo(adapterPosition, binding.chartImg)
+                binding.chartImg.loadAny(entry) {
+                    placeholder(R.drawable.vd_wave_simple_filled)
+                    error(R.drawable.vd_wave_simple_filled)
+                    transition(TransitionWithBeforeCallback {
+                        binding.chartImg.clearColorFilter()
+                    })
+                }
             }
         }
     }

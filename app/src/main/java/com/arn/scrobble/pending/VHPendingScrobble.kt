@@ -23,10 +23,10 @@ class VHPendingScrobble(
         binding.recentsImgOverlay.contentDescription = itemView.context.getString(R.string.pending_scrobble)
         if (MainActivity.isTV)
             binding.root.setOnClickListener {
-                itemClickListener.onItemClick(binding.recentsMenu, adapterPosition)
+                itemClickListener.call(binding.recentsMenu, bindingAdapterPosition)
             }
         binding.recentsMenu.setOnClickListener {
-            itemClickListener.onItemClick(it, adapterPosition)
+            itemClickListener.call(it, bindingAdapterPosition)
         }
     }
 

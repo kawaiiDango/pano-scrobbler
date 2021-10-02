@@ -13,6 +13,7 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.pref.WidgetTheme
 
 
 class ChartsWidgetProvider : AppWidgetProvider() {
@@ -77,19 +78,19 @@ internal fun updateAppWidget(
     val tab = prefs.tab ?: Stuff.TYPE_ARTISTS
     val period = prefs.period
     val bgAlpha = prefs.bgAlpha
-    val isDark = prefs.isDark
-    val shadow = prefs.shadow
+    val theme = WidgetTheme.values()[prefs.theme]
+    val hasShadow = prefs.shadow
 
-    val rv = RemoteViews(
-        context.packageName,
-        when {
-            isDark && shadow -> R.layout.appwidget_charts_dark_shadow
-            isDark && !shadow -> R.layout.appwidget_charts_dark
-            !isDark && shadow -> R.layout.appwidget_charts_light_shadow
-            !isDark && !shadow -> R.layout.appwidget_charts_light
-            else -> R.layout.appwidget_charts_dark_shadow
-        }
-    )
+    val layoutId = when {
+        theme == WidgetTheme.DARK && hasShadow -> R.layout.appwidget_charts_dark_shadow
+        theme == WidgetTheme.DARK && !hasShadow -> R.layout.appwidget_charts_dark
+        theme == WidgetTheme.LIGHT && hasShadow -> R.layout.appwidget_charts_light_shadow
+        theme == WidgetTheme.LIGHT && !hasShadow -> R.layout.appwidget_charts_light
+        theme == WidgetTheme.DYNAMIC && hasShadow -> R.layout.appwidget_charts_dynamic_shadow
+        theme == WidgetTheme.DYNAMIC && !hasShadow -> R.layout.appwidget_charts_dynamic
+        else -> R.layout.appwidget_charts_dark_shadow
+    }
+    val rv = RemoteViews(context.packageName, layoutId)
 
     if (period != null) {
         val intent = Intent(context, ChartsListService::class.java)

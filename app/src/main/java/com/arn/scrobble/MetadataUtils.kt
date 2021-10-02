@@ -31,7 +31,7 @@ object MetadataUtils {
                         , " ")
 
 //        get remix info
-        val remixInfo = "\\([^)]*(?:remix|mix|cover|version|edit|booty?leg)\\)".toRegex(RegexOption.IGNORE_CASE).find(titleContentOriginal)
+        val remixInfo = "\\([^)]*(?:remix|mix|cover|version|edit|ft\\.[^)]+|feat\\.[^)]+|booty?leg)\\)".toRegex(RegexOption.IGNORE_CASE).find(titleContentOriginal)
 
         var musicInfo: Array<String>? = null
         for (s in seperators) {

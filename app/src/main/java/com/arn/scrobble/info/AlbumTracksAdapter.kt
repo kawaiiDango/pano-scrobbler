@@ -32,7 +32,7 @@ class AlbumTracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter
 
     class VHAlbumTrack(private val binding: ListItemAlbumTracksBinding, itemClickListener: ItemClickListener): RecyclerView.ViewHolder(binding.root){
         init {
-            itemView.setOnClickListener { itemClickListener.onItemClick(it,  adapterPosition) }
+            itemView.setOnClickListener { itemClickListener.call(it,  bindingAdapterPosition) }
         }
 
         fun setItemData(pos: Int, track: Track) {

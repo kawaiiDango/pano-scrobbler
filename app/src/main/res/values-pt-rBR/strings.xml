@@ -67,6 +67,7 @@
     <string name="recently_loved">♥ Faixas favoritadas recentes</string>
     <string name="recents" comment="Short for recently scrobbled">Recentes</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primeiro scrobble em %1$s</string>
+    <string name="auto" comment="automatic or default setting">Automático</string>
     <string name="graph_info">… últimos 5 meses</string>
     <string name="enabled_apps">Apps ativados</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Quase lá…</string>

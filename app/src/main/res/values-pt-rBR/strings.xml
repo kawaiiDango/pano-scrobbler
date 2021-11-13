@@ -177,6 +177,7 @@
     <string name="original" comment="Original metadata before editing">Original</string>
     <string name="corrected" comment="Corrected metadata after editing">Corrigido</string>
     <string name="tag" comment="last.fm tag">Marcação</string>
+    <string name="taggers" comment="(number of) people who have tagged">Marcador</string>
     <string name="digest_weekly">O meu top de scrobbles da semana passada</string>
     <string name="digest_monthly">O meu top de scrobbles do mês passado</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Top %1$s de scrobbles</string>

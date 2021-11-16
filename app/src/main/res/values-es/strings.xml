@@ -66,6 +66,8 @@
     <string name="recently_scrobbled">Recientemente Scrobbled</string>
     <string name="recently_loved">Favoritos recientes</string>
     <string name="recents" comment="Short for recently scrobbled">Recientes</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primer scrobble el %1$s</string>
+    <string name="auto" comment="automatic or default setting">Automático</string>
     <string name="graph_info">… últimos 5 meses</string>
     <string name="enabled_apps">Aplicaciones habilitadas</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ya casi está…</string>
@@ -221,12 +223,14 @@
     <string name="text" comment="text to test regex rules with">Texto</string>
     <string name="edit_regex_warning">⚠ Asegúrate de entender <a href="https://www.google.com/search?q=regex+tutorial">regex java</a> antes de usar esto, o usa uno de los <b>presets</b> proporcionados. Partidas regex intentadas desde arriba hacia abajo</string>
     <string name="blocked_metadata_info">ℹ️ Completa más de uno de estos campos aplicará un operador AND entre ellos</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">¿Quieres activar la regla de edición de patrones: %1$s?</string>
     <string name="scrobbler_off">Scrobbler desactivado</string>
     <string name="scrobbler_on">Scrobbler activado</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">También se puede cambiar desde el panel de ajustes rápidos</string>
     <string name="pref_noti_q">Puedes promover la notificación, si el icono no se muestra</string>
     <string name="pref_noti">Notificaciones</string>
+    <string name="pref_noti_categories">Categorías de notificaciones</string>
     <string name="pref_scrobble_noti">Notificaciones de Scrobble</string>
     <string name="pref_lockscreen_noti">Notificaciones en la pantalla de bloqueo</string>
     <string name="pref_offline_info">ℹ️ Scrobbles sin conexión &amp; los favoritos se guardarán, para ser enviados más tarde.</string>
@@ -247,11 +251,14 @@
     <string name="pref_scrobble_love_only">(Scrobbles &amp; solo favoritos)</string>
     <string name="pref_user_label" comment="(Like username)">Usuario</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token de autenticación</string>
+    <string name="api_url" comment="For Listenbrainz">URL de la API</string>
     <string name="pref_now_playing">Enviar reproducción</string>
     <string name="pref_fetch_aa">Obtener artistas del último álbum</string>
     <string name="pref_fetch_aa_desc">Para los reproductores que no facilitan estos datos. Los datos obtenidos pueden diferir a los de tús etiquetas. Es posible que lastFM no tenga los datos de algunas canciones.</string>
     <string name="pref_pixel_np">Scrobble Pixel ahora reproduciendo</string>
     <string name="pref_pixel_np_nope">Disponible sólo en dispositivos Pixel</string>
+    <string name="pref_change_locale">Elegir idioma</string>
+    <string name="locale_only_ui">Sólo se aplica a la interfaz principal</string>
     <string name="pref_misc">Misceláneo.</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Importar &amp; Exportar</string>
@@ -267,6 +274,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="pref_regex_edits">Edición de patrones</string>
     <string name="pref_blocked_metadata">Metadatos bloqueados</string>
+    <string name="pref_lastfm_disable">No hacer scrobble a LastFM</string>
+    <string name="pref_lastfm_disable_desc">Para que el resto de la interfaz de funcione, es necesario iniciar sesión en LastFM</string>
     <string name="pref_translate">Traducir esta aplicación</string>
     <string name="import_hey_wtf">Probablemente no sea un archivo de exportación de Pano Scrobbler</string>
     <string name="export_failed">Exportación fallida</string>
@@ -319,6 +328,7 @@ Pueden utilizarse con aplicaciones como Tasker, Macrodroid, etc."</string>
     <string name="webview_error">No se pudo cargar la página (¿Está funcionando tu internet?)</string>
     <string name="navigation_drawer_open">Abrir el cajón de navegación o volver</string>
     <string name="navigation_drawer_close">Cerrar el cajón de navegación</string>
+    <string name="graph">Gráfico de líneas</string>
     <string name="cleared_disabled_apps">Limpiar aplicaciones desactivadas</string>
     <string name="fix_it_title">Posibles soluciones</string>
     <string name="fix_it_startup_title">Gestor de batería / inicio</string>

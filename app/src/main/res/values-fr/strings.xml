@@ -1,8 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="settings">Configurer</string>
     <string name="bug_report">Rapporter un bug</string>
     <string name="album_art">Pochette d\'album</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Impossible d\'analyser le titre</string>
     <string name="network_error">Erreur de réseau</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">le scrobble a été ignoré</string>
+    <string name="limit_exceeded_ignored">Limite de scrobble journalière dépassée</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Les champs nécessaires sont vides</string>
+    <string name="artist">Artiste</string>
+    <string name="artists">Artistes</string>
+    <string name="n_artists">%1$s artistes</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Meilleurs artistes</string>
+    <string name="album_artist">Artiste de l\'album</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Artiste / Chaîne</string>
+    <string name="similar_artists">Artistes similaires</string>
+    <string name="album_optional">Album (optionnel)</string>
+    <string name="album">Album</string>
+    <string name="albums">Albums</string>
+    <string name="n_albums">%1$s albums</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albums</string>
+    <string name="track">Morceau</string>
+    <string name="tracks">Morceaux</string>
+    <string name="n_tracks">%1$s morceaux</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Meilleurs titres</string>
+    <string name="similar_tracks">Morceaux similaires</string>
+    <string name="no_similar_tracks">Aucun morceau similaire trouvé</string>
+    <string name="similar" comment="Similar tracks but in short">Similaire</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
+    <string name="state_scrobbling">Maintenant en scrobbling…</string>
+    <string name="state_unrecognised_artist">Artiste non reconnu</string>
     <!--  todo: don't concat  -->
     <!--  pro  -->
 </resources>

@@ -28,6 +28,7 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossible d\'analyser le titre</string>
     <string name="network_error">Erreur de réseau</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">le scrobble a été ignoré</string>
+    <string name="scrobble_ignored_save_edit">Lastfm a ignoré l\'édition probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cet édition pour les scrobbles futurs à la place ?</string>
     <string name="limit_exceeded_ignored">Limite de scrobble journalière dépassée</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Les champs nécessaires sont vides</string>
     <string name="artist">Artiste</string>
@@ -54,6 +55,8 @@
     <string name="state_scrobbled">Scrobbled</string>
     <string name="state_unrecognised_artist">Artiste non reconnu</string>
     <string name="tap_to_edit">(Appuyez pour modifier)</string>
+    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Appuyer pour modifier ou forcer)</string>
+    <string name="recently_scrobbled">Récemment Scrobbled</string>
     <string name="recently_loved">♥ Récemment aimé</string>
     <string name="recents" comment="Short for recently scrobbled">Récents</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Première fois scrobbled le %1$s</string>
@@ -82,6 +85,7 @@
     <string name="no_track_url">Cette musique ne possède pas de page sur lastFM</string>
     <string name="no_scrobbles">Aucunes chansons ici pour le moment…</string>
     <string name="no_friends">Aucun ami lastFM pour le moment…</string>
+    <string name="channel_err">Erreurs de scrobble</string>
     <string name="new_app">Nouvelle application</string>
     <string name="no_apps_enabled">Aucune application activée</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d plus</string>
@@ -90,11 +94,18 @@
     <string name="delete">Supprimer</string>
     <string name="love">J\'aime</string>
     <string name="unlove">Je n\'aime pas</string>
+    <string name="pending_scrobbles">Scrobbles en attente</string>
+    <string name="pending_scrobble">Scrobble en attente</string>
+    <string name="pending_scrobbles_noti">Traitement des scrobbles en attente</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s aujourd\'hui</string>
     <string name="friends">Amis</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
     <string name="grant_autostart">Autoriser le démarrage automatique</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Nécessaires sur les appareils %1$s pour le lancement du scrobbler</string>
     <string name="grant_notification_access">Autoriser l\'accès aux notifications</string>
+    <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n\'est lue</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">S\'authentifier avec last.FM</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM et Listenbrainz peuvent être authentifiés après cela, à partir des paramètres</string>
     <string name="swap" comment="(Swap title and artist)">Changer</string>
     <string name="rate_msg">Vous aimez cette application ?</string>
     <string name="rate_action">Notez-la</string>
@@ -102,9 +113,17 @@
     <string name="no_mail_apps">Aucun client mail n\'est installé</string>
     <string name="loved">J\'aime</string>
     <string name="unloved">Je n\'aime pas</string>
+    <string name="simple_edits">Modifications</string>
+    <string name="n_simple_edits" formatted="true">%1$d modifications</string>
+    <string name="n_blocked_metadata" formatted="true">%1$d métadonnées bloquées</string>
+    <string name="force" comment="Force scrobble but in short">Forcer</string>
+    <string name="grant_rec_perm">Veuillez accorder l\'autorisation d\'utiliser le microphone</string>
     <string name="charts" comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts">Graphiques</string>
+    <string name="scrobble_from_mic">Scrobbler depuis le micro</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Depuis le micro</string>
     <string name="add_to_hs">Ajouter à l\'écran d\'accueil</string>
+    <string name="listening">Écoute la musique qui vous entoure…</string>
+    <string name="uploading">Envoi en cours…</string>
     <string name="details">Détails</string>
     <string name="sort">Filtrer</string>
     <!--  todo: don't concat  -->
@@ -157,5 +176,15 @@
     <string name="edit_no_presets_available">Tous les préréglages sont utilisés</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Présélection %1$s</string>
     <string name="text" comment="text to test regex rules with">Texte</string>
+    <string name="imported">Importé</string>
+    <string name="import_options">Options d\'import</string>
     <!--  pro  -->
+    <string name="pro_also_get">Vous obtiendrez également:</string>
+    <string name="pro_benefits">Vous obtiendrez également 🎨 Thèmes (19 x 19 x 20 couleurs) et la possibilité de 🚫 bloquer les métadonnées du scrobbling. Le nom de l\'application sera supprimé lors du partage.</string>
+    <string name="thank_you">Merci !</string>
+    <string name="purchase_pending">Votre achat n\'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>
+    <string name="billing_troubleshoot_title">Restaurer l\'achat</string>
+    <string name="billing_themes">Thèmes (19 x 19 x 20 couleurs)</string>
+    <string name="billing_block">Bloquer les métadonnées du scrobbling</string>
+    <string name="billing_sharing">Supprimer le nom de l\'application lors du partage</string>
 </resources>

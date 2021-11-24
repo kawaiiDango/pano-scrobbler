@@ -126,6 +126,8 @@
     <string name="add_to_hs">Ajouter à l\'écran d\'accueil</string>
     <string name="listening">Écoute la musique qui vous entoure…</string>
     <string name="uploading">Envoi en cours…</string>
+    <string name="recording_failed">Impossible de démarrer l\'enregistrement. Le micro est peut-être occupé ou indisponible sur cet appareil</string>
+    <string name="press_back">Appuyer sur retour une fois terminé</string>
     <string name="details">Détails</string>
     <string name="sort">Filtrer</string>
     <string name="past_scrobbles">Scrobbles précédents</string>
@@ -145,6 +147,7 @@
     <string name="charts_choose_week">Sélectionner une semaine</string>
     <string name="charts_overall">Global</string>
     <string name="charts_no_data">Aucune donnée pour cette période</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Je me sens chanceux</string>
     <string name="random_not_found">Aucun morceau trouvé</string>
     <string name="loved_track">Chanson aimée</string>
     <string name="randomize">Aléatoire</string>

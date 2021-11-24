@@ -218,6 +218,7 @@
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
     <string name="pref_fetch_aa">Récupérer les artistes de l\'album depuis lastFM</string>
+    <string name="pref_pixel_np">Scrabble Pixel est en cours de lecture</string>
     <string name="pref_pixel_np_nope">Disponible uniquement sur les appareils Pixel</string>
     <string name="pref_change_locale">Changer de langage</string>
     <string name="locale_only_ui">S\'applique uniquement à l\'interface principale</string>
@@ -244,6 +245,7 @@
     <string name="import_lists_replace_all">Remplacer toutes les modifications et la liste noire</string>
     <string name="import_settings">Importer les paramètres</string>
     <string name="copied">Copié !</string>
+    <string name="lastfm_reauth">Vous devez vous authentifier à nouveau pour éditer ou supprimer des scrobbles</string>
     <string name="custom_listenbrainz">Serveur personnalisé Listenbrainz</string>
     <string name="failed_encode_url">L\'encodage de l\'URL a échoué</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Vérifier %1$s</string>

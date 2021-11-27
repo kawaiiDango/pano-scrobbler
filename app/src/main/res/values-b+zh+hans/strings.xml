@@ -190,7 +190,7 @@
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>
     <string name="background_color">背景颜色</string>
-    <string name="same_tone">所有相同的音调</string>
+    <string name="same_tone">全局应用相同色调</string>
     <string name="random_theme">每次启动时随机显示</string>
     <string name="palette_bg">对某些背景使用专辑封面颜色</string>
     <string name="edit_name" comment="name for regex pattern">好友名称 (可选)</string>
@@ -219,14 +219,15 @@
     <string name="pref_master_qs_hint">也可从快速设置磁贴中勾选</string>
     <string name="pref_noti_q">如果此图标不显示，你可以提升通知权限。</string>
     <string name="pref_noti">通知</string>
+    <string name="pref_noti_categories">通知类别</string>
     <string name="pref_scrobble_noti">抓取通知</string>
     <string name="pref_lockscreen_noti">锁屏界面通知</string>
     <string name="pref_offline_info">ℹ️ 离线歌曲记录 &amp; 喜爱曲目将会被保存，以便稍后发送。</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">抓取来源</string>
-    <string name="pref_enabled_apps_summary">ℹ️ 支持可以显示音乐元数据的应用。为了避免在 Spotify 中出现重复抓取，只能在一个地方启用它。</string>
+    <string name="pref_enabled_apps_summary">ℹ️ 支持能够提供音乐元数据的应用。为了避免出现 Spotify 的重复记录，请仅在一个地方启用抓取。</string>
     <string name="pref_enabled_apps_title">选择应用</string>
     <string name="pref_auto_detect_summary">…我们仍将要求你确认或忽略该应用</string>
-    <string name="pref_auto_detect">自动检测新的类似于音乐播放器的应用</string>
+    <string name="pref_auto_detect">自动检测音乐类应用</string>
     <string name="pref_delay">抓取延迟（以较早者为准）</string>
     <string name="pref_delay_secs">延迟秒数</string>
     <string name="pref_delay_per">延迟比例</string>
@@ -242,7 +243,7 @@
     <string name="pref_now_playing">提交当前播放的音乐</string>
     <string name="pref_fetch_aa">从 lastFM 获取专辑艺术家</string>
     <string name="pref_fetch_aa_desc">对于不提供此数据的播放器，获取的数据可能不同于你的标签。Last.fm可能没有某些歌曲的数据。</string>
-    <string name="pref_pixel_np">记录于Pixel正在播放音乐的时候</string>
+    <string name="pref_pixel_np">对 Pixel 的闻曲知音结果进行记录</string>
     <string name="pref_pixel_np_nope">仅适用于 Pixel 设备</string>
     <string name="pref_misc">杂项</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL链接</string>
@@ -252,7 +253,7 @@
     <string name="pref_import">导入</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">个性化</string>
     <string name="pref_themes">主题</string>
-    <string name="pref_themes_desc">混合与配对\n同时更改通知颜色</string>
+    <string name="pref_themes_desc">自由混搭\n同时更改通知配色</string>
     <string name="pref_widget_charts">主屏幕小部件 - 图表</string>
     <string name="pref_show_albums">显示专辑名称</string>
     <string name="pref_show_albums_desc">…在最近的音乐记录</string>

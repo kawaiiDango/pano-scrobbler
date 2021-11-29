@@ -85,21 +85,21 @@
     <string name="profile_pic">用户图片</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">该项目的选项</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">检测到 %1$s</string>
-    <string name="new_player_prompt">要在此应用保持记录吗?</string>
-    <string name="no_track_url">这首歌在 lastFM 上没有页面</string>
+    <string name="new_player_prompt">继续为此应用启用听歌记录吗？</string>
+    <string name="no_track_url">lastFM 上没有这首歌的对应页面</string>
     <string name="no_scrobbles">这里还没有歌曲…</string>
-    <string name="no_friends">还没有 lastFM 朋友…</string>
+    <string name="no_friends">还没有 lastFM 好友…</string>
     <string name="channel_err">音乐记录错误</string>
     <string name="new_app">新应用</string>
-    <string name="no_apps_enabled">没有应用程序被启用</string>
-    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">还有%1$d个歌曲记录</string>
+    <string name="no_apps_enabled">未在任何应用中启用</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">还有 %1$d 项待记录</string>
     <string name="show_all">查看所有</string>
     <string name="edit">编辑</string>
     <string name="delete">删除</string>
     <string name="love">喜爱</string>
     <string name="unlove">不再喜爱</string>
-    <string name="pending_scrobbles">待处理的音乐记录</string>
-    <string name="pending_scrobble">待处理的音乐记录</string>
+    <string name="pending_scrobbles">待记录的音乐</string>
+    <string name="pending_scrobble">待记录的音乐</string>
     <string name="pending_scrobbles_noti">正在加载待处理的音乐记录</string>
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">总记录：%1$s • 今日记录：%2$s</string>
     <string name="friends">好友</string>

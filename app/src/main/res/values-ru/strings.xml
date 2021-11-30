@@ -316,7 +316,7 @@
     <string name="failed_encode_url">Не удалось закодировать URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Проверьте %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Доступ к специальному приложению&gt; Доступ к уведомлениям&gt; %1$s</string>
-    <string name="artist_extra">Популярные треки, албомы и похожие исполнители</string>
+    <string name="artist_extra">Популярные треки, альбомы и похожие исполнители</string>
     <string name="no_browser">Браузер не установлен</string>
     <string name="no_player">Музыкальный плеер не установлен</string>
     <string name="not_running">⚠ Скробблер был остановлен вашей системой</string>

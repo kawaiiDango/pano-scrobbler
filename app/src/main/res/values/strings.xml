@@ -379,7 +379,6 @@
 
     <string name="show_persistent_noti">Show a persistent notification</string>
     <string name="fix_it_desc">These can help keep the scrobbler running in the background on some devices</string>
-    <string name="persistent_noti_title">Scrobbler is running</string>
     <string name="persistent_noti_desc">Long press to hide this</string>
 
     <string name="scrobbler_off">Scrobbler disabled</string>

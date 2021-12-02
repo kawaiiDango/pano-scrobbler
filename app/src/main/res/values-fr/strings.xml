@@ -4,10 +4,6 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
-    <plurals name="num_songs">
-        <item quantity="one">%1$d chanson</item>
-        <item quantity="other">%1$d chansons</item>
-    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$d semaine</item>
         <item quantity="other">%1$d semaines</item>
@@ -29,11 +25,9 @@
     <string name="network_error">Erreur de réseau</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">le scrobble a été ignoré</string>
     <string name="scrobble_ignored_save_edit">Lastfm a ignoré l\'édition probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cet édition pour les scrobbles futurs à la place ?</string>
-    <string name="limit_exceeded_ignored">Limite de scrobble journalière dépassée</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Les champs nécessaires sont vides</string>
     <string name="artist">Artiste</string>
     <string name="artists">Artistes</string>
-    <string name="n_artists">%1$s artistes</string>
     <string name="top_artists" comment="Top artists the user has listened to">Meilleurs artistes</string>
     <string name="album_artist">Artiste de l\'album</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artiste / Chaîne</string>
@@ -41,14 +35,11 @@
     <string name="album_optional">Album (optionnel)</string>
     <string name="album">Album</string>
     <string name="albums">Albums</string>
-    <string name="n_albums">%1$s albums</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albums</string>
     <string name="track">Morceau</string>
     <string name="tracks">Morceaux</string>
-    <string name="n_tracks">%1$s morceaux</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Meilleurs titres</string>
     <string name="similar_tracks">Morceaux similaires</string>
-    <string name="no_similar_tracks">Aucun morceau similaire trouvé</string>
     <string name="similar" comment="Similar tracks but in short">Similaire</string>
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Maintenant en scrobbling…</string>
@@ -102,7 +93,6 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s aujourd\'hui</string>
     <string name="friends">Amis</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
-    <string name="grant_autostart">Autoriser le démarrage automatique</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Nécessaires sur les appareils %1$s pour le lancement du scrobbler</string>
     <string name="grant_notification_access">Autoriser l\'accès aux notifications</string>
     <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n\'est lue</string>
@@ -116,11 +106,8 @@
     <string name="loved">J\'aime</string>
     <string name="unloved">Je n\'aime pas</string>
     <string name="simple_edits">Modifications</string>
-    <string name="n_simple_edits" formatted="true">%1$d modifications</string>
-    <string name="n_blocked_metadata" formatted="true">%1$d métadonnées bloquées</string>
-    <string name="force" comment="Force scrobble but in short">Forcer</string>
     <string name="grant_rec_perm">Veuillez accorder l\'autorisation d\'utiliser le microphone</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts">Graphiques</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Graphiques</string>
     <string name="scrobble_from_mic">Scrobbler depuis le micro</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Depuis le micro</string>
     <string name="add_to_hs">Ajouter à l\'écran d\'accueil</string>
@@ -131,7 +118,6 @@
     <string name="details">Détails</string>
     <string name="sort">Filtrer</string>
     <string name="past_scrobbles">Scrobbles précédents</string>
-    <!--  todo: don't concat  -->
     <string name="my_scrobbles">Mes scrobbles</string>
     <string name="listeners">Auditeurs</string>
     <string name="scrobbles">Scrobbles</string>
@@ -162,7 +148,6 @@
     <string name="close">Fermer</string>
     <string name="user_tags_hint">Nouveau tag</string>
     <string name="user_tags_empty">Vous n\'avez pas encore ajouté de tags</string>
-    <string name="info_long_press_hint">Vous pouvez aussi appuyer longuement sur une chanson pour ouvrir cela</string>
     <string name="appwidget_loading">Chargement…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Période</string>
     <string name="appwidget_theme">Thème</string>
@@ -174,8 +159,6 @@
     <string name="appwidget_refresh_every">Le widget sera actualisé toutes les 15 minutes</string>
     <string name="primary_color">Couleur principale</string>
     <string name="secondary_color">Couleur secondaire</string>
-    <string name="background_color">Couleur d\'arrière-plan</string>
-    <string name="same_tone">Même ton pour tous</string>
     <string name="random_theme">Aléatoire à chaque lancement</string>
     <string name="palette_bg">Utiliser la couleur des pochettes d\'album pour certains arrière-plans</string>
     <string name="edit_name" comment="name for regex pattern">Nom simple (facultatif)</string>
@@ -205,8 +188,6 @@
     <string name="pref_enabled_apps_title">Choisir les applications</string>
     <string name="pref_auto_detect_summary">…nous vous demanderons toujours de confirmer/ignorer cette application</string>
     <string name="pref_auto_detect">Détection automatique des nouvelles applications de musique</string>
-    <string name="pref_delay_secs">Délai en secondes</string>
-    <string name="pref_delay_per">Délai en pourcentage</string>
     <string name="pref_logout">Se déconnecter</string>
     <string name="pref_confirm_logout">CONFIRMER LA DÉCONNEXION ? Appuyez à nouveau</string>
     <string name="pref_login">Se connecter</string>
@@ -230,7 +211,6 @@
     <string name="pref_themes">Thèmes</string>
     <string name="pref_widget_charts">Widget de l\'écran d\'accueil - Graphiques</string>
     <string name="pref_show_albums">Afficher le titre des albums</string>
-    <string name="pref_show_albums_desc">…dans les scrobbles récents</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listes</string>
     <string name="pref_regex_edits">Modifications des paternes</string>
     <string name="pref_blocked_metadata">Métadonnées bloquées</string>
@@ -268,21 +248,14 @@
     <string name="graph">Graphique en courbes</string>
     <string name="cleared_disabled_apps">Applications désactivées effacées</string>
     <string name="fix_it_title">Corrections possibles</string>
-    <string name="fix_it_startup_title">Gestionnaires de batterie/démarrage</string>
-    <string name="fix_it_noti_title">Activer/désactiver l\'accès aux notifications</string>
-    <string name="fix_it_noti_desc">Il s\'agit d\'une solution temporaire</string>
     <string name="fix_it_battery_title">Désactiver les optimisations de la batterie</string>
-    <string name="fix_it_battery_desc">Seulement si rien d\'autre n\'a fonctionné</string>
     <string name="fix_it_action" comment="(To open an app)">Ouvrir</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="help">Aide</string>
-    <string name="pro_also_get">Vous obtiendrez également:</string>
-    <string name="pro_benefits">Vous obtiendrez également 🎨 Thèmes (19 x 19 x 20 couleurs) et la possibilité de 🚫 bloquer les métadonnées du scrobbling. Le nom de l\'application sera supprimé lors du partage.</string>
     <string name="thank_you">Merci !</string>
     <string name="purchase_pending">Votre achat n\'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>
     <string name="billing_troubleshoot_title">Restaurer l\'achat</string>
-    <string name="billing_themes">Thèmes (19 x 19 x 20 couleurs)</string>
     <string name="billing_block">Bloquer les métadonnées du scrobbling</string>
     <string name="billing_sharing">Supprimer le nom de l\'application lors du partage</string>
 </resources>

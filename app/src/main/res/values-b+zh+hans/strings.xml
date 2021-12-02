@@ -6,9 +6,6 @@
     <plurals name="num_listeners">
         <item quantity="other">%1$s 位听众</item>
     </plurals>
-    <plurals name="num_songs">
-        <item quantity="other">%1$d 首歌</item>
-    </plurals>
     <plurals name="num_weeks">
         <item quantity="other">%1$d 周</item>
     </plurals>
@@ -27,11 +24,9 @@
     <string name="network_error">网络异常</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">忽略该记录</string>
     <string name="scrobble_ignored_save_edit">可能由于本次记录太过陈旧，Last.fm忽略了此次编辑。你想保存此次编辑，以便可以为未来的歌曲记录所用吗？</string>
-    <string name="limit_exceeded_ignored">超出每日记录限制</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必填字段不能为空</string>
     <string name="artist">艺术家</string>
     <string name="artists">艺术家</string>
-    <string name="n_artists">%1$s 位艺术家</string>
     <string name="top_artists" comment="Top artists the user has listened to">热门艺术家</string>
     <string name="album_artist">专辑艺术家</string>
     <string name="artist_channel" comment="Artist or youtube channel">艺术家/频道</string>
@@ -39,21 +34,17 @@
     <string name="album_optional">专辑（可选）</string>
     <string name="album">专辑</string>
     <string name="albums">专辑</string>
-    <string name="n_albums">%1$s 张专辑</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">热门专辑</string>
     <string name="track">曲目</string>
     <string name="tracks">曲目</string>
-    <string name="n_tracks">%1$s 首曲目</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">热门曲目</string>
     <string name="similar_tracks">相似的曲目</string>
-    <string name="no_similar_tracks">未找到相似的曲目</string>
     <string name="similar" comment="Similar tracks but in short">找相似</string>
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">正在记录…</string>
     <string name="state_scrobbled">已记录</string>
     <string name="unscrobble">撤销记录</string>
     <string name="state_unscrobbled">已撤销记录</string>
-    <string name="state_didnt_scrobble">没有记录</string>
     <string name="state_unrecognised_artist">无法识别的艺术家</string>
     <string name="tap_to_edit">（点击以编辑）</string>
     <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(点击编辑或强制执行)</string>
@@ -104,7 +95,6 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">总记录：%1$s • 今日记录：%2$s</string>
     <string name="friends">好友</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s 项记录，始于 %2$s</string>
-    <string name="grant_autostart">允许自启动</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">在 %1$s 设备上需要借助该选项来启用音乐记录</string>
     <string name="grant_notification_access">授予通知访问权限</string>
     <string name="grant_notification_access_desc">借此获取音乐元数据信息，不会读取非音乐类通知</string>
@@ -118,13 +108,9 @@
     <string name="loved">喜爱的</string>
     <string name="unloved">不再喜爱的</string>
     <string name="simple_edits">编辑</string>
-    <string name="n_simple_edits" formatted="true">%1$d 项编辑记录</string>
-    <string name="n_regex_edits" formatted="true">%1$d 项编辑模板</string>
-    <string name="n_blocked_metadata" formatted="true">%1$d 则已屏蔽的元数据条目</string>
     <string name="force_remembered">强制记录（并记住该选择）</string>
-    <string name="force" comment="Force scrobble but in short">强制执行</string>
     <string name="grant_rec_perm">请授予使用麦克风的权限</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts">图表</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">图表</string>
     <string name="scrobble_from_mic">从麦克风记录</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">来自麦克风</string>
     <string name="add_to_hs">添加到主屏幕</string>
@@ -138,7 +124,6 @@
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
     <string name="past_scrobbles">过去的音乐记录</string>
-    <!--  todo: don't concat  -->
     <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s 的</string>
     <string name="my_scrobbles">我的收听记录</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s 的音乐记录</string>
@@ -181,7 +166,6 @@
     <string name="close">关闭</string>
     <string name="user_tags_hint">新标记</string>
     <string name="user_tags_empty">您还没有添加任何标记</string>
-    <string name="info_long_press_hint">您也可以长按一首歌来打开</string>
     <string name="appwidget_loading">正在加载…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">时间段</string>
     <string name="appwidget_theme">主题</string>
@@ -193,8 +177,6 @@
     <string name="appwidget_refresh_every">小部件每 15 分钟刷新一次</string>
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>
-    <string name="background_color">背景颜色</string>
-    <string name="same_tone">全局应用相同色调</string>
     <string name="random_theme">每次启动时随机显示</string>
     <string name="palette_bg">在某些背景中使用专辑封面颜色</string>
     <string name="edit_name" comment="name for regex pattern">友善的昵称 (可选)</string>
@@ -213,7 +195,6 @@
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">预设：%1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">已达模板限制 (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">拖拽滑柄</string>
-    <string name="n_matches" formatted="true" comment="regex matches">%1$d 项匹配</string>
     <string name="text" comment="text to test regex rules with">文本</string>
     <string name="edit_regex_warning">⚠ 请确保您在使用前了解 <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> 或直接从提供的 <b>预设</b> 中选择一个。正则表达式将从上往下逐一尝试匹配</string>
     <string name="blocked_metadata_info">ℹ️ 填写多个字段时将自动插入 AND 运算符</string>
@@ -234,8 +215,6 @@
     <string name="pref_auto_detect_summary">…我们仍将要求您确认是否选择该应用</string>
     <string name="pref_auto_detect">自动检测音乐类应用</string>
     <string name="pref_delay">记录延迟（以较早者为准）</string>
-    <string name="pref_delay_secs">延迟秒数</string>
-    <string name="pref_delay_per">延迟比例</string>
     <string name="pref_logout">退出登录</string>
     <string name="pref_confirm_logout">确认退出？再次点击以确认</string>
     <string name="pref_login">登录</string>
@@ -264,7 +243,6 @@
     <string name="pref_themes_desc">自由混搭\n同时更改通知配色</string>
     <string name="pref_widget_charts">主屏幕微件 - 图表</string>
     <string name="pref_show_albums">显示专辑名称</string>
-    <string name="pref_show_albums_desc">…在最近的音乐记录中</string>
     <string name="pref_lists" comment="Such as edits list and block lists">列表</string>
     <string name="pref_regex_edits">模板编辑</string>
     <string name="pref_blocked_metadata">已屏蔽的元数据条目</string>
@@ -325,19 +303,12 @@
     <string name="graph">折线图</string>
     <string name="cleared_disabled_apps">已清除禁用应用</string>
     <string name="fix_it_title">可能的解决方案</string>
-    <string name="fix_it_startup_title">电池/启动管理器</string>
-    <string name="fix_it_startup_desc_default">如果您的系统中有自启动管理器或电池管理器，请为该应用开启通行，否则它们可能会阻止应用在后台进行记录。</string>
-    <string name="fix_it_noti_title">关闭通知访问开关再重新打开</string>
-    <string name="fix_it_noti_desc">这只是个临时解决方案</string>
     <string name="fix_it_battery_title">禁用电池优化</string>
-    <string name="fix_it_battery_desc">如果其它办法没用</string>
     <string name="fix_it_action" comment="(To open an app)">打开</string>
     <!--  pro  -->
     <string name="get_pro">支持本应用</string>
     <string name="help">帮助</string>
     <string name="pro_support">下面向您这样的宝贵用户提供一种简单、直接的方式，如果您觉得这款应用有价值，不妨以此对其表示支持。</string>
-    <string name="pro_also_get">您还将获得：</string>
-    <string name="pro_benefits">您还将获得 🎨 主题（19 x 19 x 20 种颜色）以及 🚫 特定元数据记录屏蔽功能。分享时该应用的名称也将被移除。</string>
     <string name="thank_you">感谢！</string>
     <string name="purchase_pending">您的购买尚未被付款提供商确认。请稍等几分钟后重试。</string>
     <string name="billing_troubleshoot_title">恢复购买</string>
@@ -350,7 +321,6 @@
 • 登录关联了购买记录的账户
 • 通过 Google Play 网页端直接安装应用
 "</string>
-    <string name="billing_themes">主题 (19 x 19 x 20 种颜色)</string>
     <string name="billing_block">阻止记录元数据</string>
     <string name="billing_sharing">分享时移除应用名称</string>
 </resources>

@@ -9,10 +9,6 @@
         <item quantity="one">%1$s listener</item>
         <item quantity="other">%1$s listeners</item>
     </plurals>
-    <plurals name="num_songs">
-        <item quantity="one">%1$d song</item>
-        <item quantity="other">%1$d songs</item>
-    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$d week</item>
         <item quantity="other">%1$d weeks</item>
@@ -24,6 +20,35 @@
     <plurals name="num_years">
         <item quantity="one">%1$d year</item>
         <item quantity="other">%1$d years</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$d artist</item>
+        <item quantity="other">%1$d artists</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$d album</item>
+        <item quantity="other">%1$d albums</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d track</item>
+        <item quantity="other">%1$d tracks</item>
+    </plurals>
+    <plurals name="num_matches"
+        comment="regex pattern matches"
+        >
+        <item quantity="one">%1$d match</item>
+        <item quantity="other">%1$d matches</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$d edit</item>
+        <item quantity="other">%1$d edits</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$d pattern edit</item>
+        <item quantity="other">%1$d pattern edits</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="other">%1$d blocked metadata</item>
     </plurals>
 
     <string name="yes">Yes</string>
@@ -39,13 +64,11 @@
         comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)"
         >ignored this scrobble</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignored the edit probably because the scrobble is too old. Would you like to save this edit for future scrobbles instead?</string>
-    <string name="limit_exceeded_ignored">Daily scrobble limit exceeded</string>
     <string name="required_fields_empty"
         comment="Shown on filling a form"
         >Required fields are empty</string>
     <string name="artist">Artist</string>
     <string name="artists">Artists</string>
-    <string name="n_artists">%1$s artists</string>
     <string name="top_artists"
         comment="Top artists the user has listened to"
         >Top artists</string>
@@ -57,18 +80,15 @@
     <string name="album_optional">Album (optional)</string>
     <string name="album">Album</string>
     <string name="albums">Albums</string>
-    <string name="n_albums">%1$s albums</string>
     <string name="top_albums"
         comment="top albums the user has listened to, or most scrobbled albums of an artist"
         >Top albums</string>
     <string name="track">Track</string>
     <string name="tracks">Tracks</string>
-    <string name="n_tracks">%1$s tracks</string>
     <string name="top_tracks"
         comment="top tracks the user has listened to, or most scrobbled tracks of an artist"
         >Top tracks</string>
     <string name="similar_tracks">Similar tracks</string>
-    <string name="no_similar_tracks">No similar tracks found</string>
     <string name="similar"
         comment="Similar tracks but in short"
         >Similar</string>
@@ -80,7 +100,6 @@
     <string name="state_scrobbled">Scrobbled</string>
     <string name="unscrobble">Unscrobble</string>
     <string name="state_unscrobbled">Unscrobbled</string>
-    <string name="state_didnt_scrobble">Didn\'t scrobble</string>
     <string name="state_unrecognised_artist">Unrecognised artist</string>
     <string name="tap_to_edit">(Tap to edit)</string>
     <string name="tap_to_edit_force"
@@ -164,7 +183,7 @@
     <string name="num_scrobbles_since" formatted="true"
         comment="%1= number, %2= date of joining lastfm"
         >%1$s scrobbles, since %2$s</string>
-    <string name="grant_autostart">Enable autostart</string>
+    <string name="allow_background">Allow scrobbling in background</string>
     <string name="grant_autostart_desc" formatted="true"
         comment="%1= Brand name"
         >Needed on %1$s devices, for the scrobbler to start</string>
@@ -184,17 +203,14 @@
     <string name="loved">Loved</string>
     <string name="unloved">Unloved</string>
     <string name="simple_edits">Edits</string>
-    <string name="n_simple_edits" formatted="true">%1$d edits</string>
-    <string name="n_regex_edits" formatted="true">%1$d pattern edits</string>
-    <string name="n_blocked_metadata" formatted="true">%1$d blocked metadata</string>
     <string name="force_remembered">Force scrobble (will remember)</string>
-    <string name="force"
-        comment="Force scrobble but in short"
-        >Force</string>
     <string name="grant_rec_perm">Please grant permission to use the microphone</string>
     <string name="charts"
-        comment="User\'s top artists, albums, tracks and line chart of daily scrobble counts"
+        comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud"
         >Charts</string>
+    <string name="tag_cloud"
+        comment="https://www.google.com/search?&amp;q=tag+cloud"
+        >Tag cloud</string>
     <string name="scrobble_from_mic">Scrobble from mic</string>
     <string name="from_mic"
         comment="(Scrobble from mic in short, ideally 10 characters or less)"
@@ -212,7 +228,6 @@
     <string name="saved_as_pending">Saved as a pending scrobble</string>
     <string name="sort">Sort</string>
     <string name="past_scrobbles">Past scrobbles</string>
-<!--  todo: don't concat  -->
     <string name="possession" formatted="true"
         comment="%1= name (e.g. Reimu's)"
         >%1$s\'s</string>
@@ -253,6 +268,9 @@
     <string name="charts_choose_week">Choose a week</string>
     <string name="charts_overall">Overall</string>
     <string name="charts_no_data">No data for this period</string>
+    <string name="not_enough_data"
+        comment="(not enough data to draw a chart etc)"
+        >Not enough data</string>
     <string name="charts_num_text" formatted="true"
         comment="%1= number, %2= List text (e.g. 1. Text)"
         >%1$d. %2$s</string>
@@ -292,7 +310,7 @@
     <string name="close">Close</string>
     <string name="user_tags_hint">New tag</string>
     <string name="user_tags_empty">You haven\'t added any tags</string>
-    <string name="info_long_press_hint">You can also long press on a song to open this</string>
+    <string name="info_long_press_hint">Long press on a track to open this</string>
 
     <string name="appwidget_loading">Loading…</string>
     <string name="appwidget_period"
@@ -303,13 +321,15 @@
     <string name="appwidget_show">Show</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
+    <string name="dynamic"
+        comment="Material You wallpaper based theming"
+        >Dynamic (Material You)</string>
     <string name="appwidget_alpha">Background Opacity</string>
     <string name="appwidget_refresh_every">Widget will refresh every 15 minutes</string>
 
     <string name="primary_color">Primary color</string>
     <string name="secondary_color">Secondary color</string>
-    <string name="background_color">Background color</string>
-    <string name="same_tone">Same tone for all</string>
+    <string name="tint_background">Tint background</string>
     <string name="random_theme">Randomize on every launch</string>
     <string name="palette_bg">Use album art color for some backgrounds</string>
 
@@ -343,17 +363,24 @@
     <string name="edit_drag_handle"
         comment="screen reader text for drag and drop button"
         >Drag handle</string>
-    <string name="n_matches" formatted="true"
-        comment="regex matches"
-        >%1$d matches</string>
     <string name="text"
         comment="text to test regex rules with"
         >Text</string>
     <string name="edit_regex_warning">⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
     <string name="blocked_metadata_info">ℹ️ Filling in more than one of these fields will apply an AND operator between them</string>
+    <string name="blocked_metadata_noti">Tap to block this from scrobbling</string>
+    <string name="block">Block</string>
+    <string name="use_channel"
+        comment="(Use youtube channel name)"
+        >Use channel name</string>
     <string name="regex_edits_suggestion" formatted="true"
         comment="%1= the preset name (e.g. Remastered (Track))"
         >Would you like to enable the pattern edit rule: %1$s?</string>
+
+    <string name="show_persistent_noti">Show a persistent notification</string>
+    <string name="fix_it_desc">These can help keep the scrobbler running in the background on some devices</string>
+    <string name="persistent_noti_title">Scrobbler is running</string>
+    <string name="persistent_noti_desc">Long press to hide this</string>
 
     <string name="scrobbler_off">Scrobbler disabled</string>
     <string name="scrobbler_on">Scrobbler active</string>
@@ -373,14 +400,19 @@
     <string name="pref_auto_detect_summary">…we will still ask you to confirm/ignore that app</string>
     <string name="pref_auto_detect">Auto detect new music-like apps</string>
     <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
-    <string name="pref_delay_secs">Delay in seconds</string>
-    <string name="pref_delay_per">Delay in percent</string>
+    <string name="pref_delay_mins"
+        comment="(Scrobble delay in minutes)"
+        >Minutes</string>
+    <string name="pref_delay_per"
+        comment="(Scrobble delay in percent)"
+        >Percent</string>
     <string name="pref_logout">Logout</string>
     <string name="pref_confirm_logout">CONFIRM LOGOUT? Tap again</string>
     <string name="pref_login">Login</string>
     <string name="pref_about"
         comment="Info about this app"
         >About</string>
+    <string name="pref_privacy_policy">Privacy policy</string>
     <string name="pref_search_title">Song search app</string>
     <string name="pref_scrobble_only">(Scrobble only)</string>
     <string name="pref_scrobble_love_only">(Scrobble &amp; love only)</string>
@@ -414,7 +446,11 @@
     <string name="pref_themes_desc">Mix and match\nAlso changes the notification color</string>
     <string name="pref_widget_charts">Homescreen widget - Charts</string>
     <string name="pref_show_albums">Show album names</string>
-    <string name="pref_show_albums_desc">…in recent scrobbles</string>
+    <string name="pref_show_albums_desc">…for scrobbles</string>
+    <string name="pref_show_scrobble_sources">Show icons of apps you scrobbled from</string>
+    <string name="pref_show_scrobble_sources_desc">…beside each scrobble. This data stays on your device</string>
+    <string name="pref_search_in_source">Search &amp; play on the app you scrobbled from</string>
+    <string name="pref_search_in_source_desc">For supported apps</string>
     <string name="pref_lists"
         comment="Such as edits list and block lists"
         >Lists</string>
@@ -494,12 +530,8 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="cleared_disabled_apps">Cleared disabled apps</string>
 
     <string name="fix_it_title">Possible fixes</string>
-    <string name="fix_it_startup_title">Battery / startup Managers</string>
-    <string name="fix_it_startup_desc_default">If your system has startup managers or battery managers, please allowlist this app, as they can prevent it from scrobbling in the background.</string>
-    <string name="fix_it_noti_title">Toggle notification access off and on</string>
-    <string name="fix_it_noti_desc">This is a temporary fix</string>
+    <string name="fix_it_startup_title">Power savers / startup managers</string>
     <string name="fix_it_battery_title">Disable battery optimizations</string>
-    <string name="fix_it_battery_desc">Only if nothing else worked</string>
     <string name="fix_it_action"
         comment="(To open an app)"
         >Open</string>
@@ -508,8 +540,7 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="get_pro">Support this app</string>
     <string name="help">Help</string>
     <string name="pro_support">This is a simple and quick way for amazing users like you to make a show of support recognizing the value this app provides.</string>
-    <string name="pro_also_get">You will also get:</string>
-    <string name="pro_benefits">You will also get 🎨 Themes (19 x 19 x 20 colors) and the ability to 🚫 block metadata from scrobbling. The app name will be removed when sharing.</string>
+    <string name="pro_also_get">You will also get the following features:</string>
     <string name="thank_you">Thank you!</string>
     <string name="purchase_pending">Your purchase has not been confirmed by your payment provider yet. Please check back after a few minutes.</string>
     <string name="billing_troubleshoot_title">Restore purchase</string>
@@ -522,7 +553,6 @@ Your purchases are managed by Google Play. They are linked with a Google Play ac
 • Login with an account owning the purchase.
 • Install this app directly from the Google Play web page.
 "</string>
-    <string name="billing_themes">Themes (19 x 19 x 20 colors)</string>
     <string name="billing_block">Block metadata from scrobbling</string>
     <string name="billing_sharing">Remove app name when sharing</string>
 

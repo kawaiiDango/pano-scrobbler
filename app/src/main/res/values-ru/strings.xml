@@ -230,10 +230,12 @@
     <string name="pref_auto_detect_summary">…мы все равно будем просить вас подтвердить/игнорировать это приложение</string>
     <string name="pref_auto_detect">Автоматическое определение новых музыкальных приложений</string>
     <string name="pref_delay">Задержка скробблирования (в зависимости от того, что наступит раньше)</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Процентов</string>
     <string name="pref_logout">Выход из системы</string>
     <string name="pref_confirm_logout">ПОДТВЕРДИТЬ ВЫХОД? Нажмите еще раз</string>
     <string name="pref_login">Войти</string>
     <string name="pref_about" comment="Info about this app">О программе</string>
+    <string name="pref_privacy_policy">Политика конфиденциальности</string>
     <string name="pref_search_title">Сервис поиска песен</string>
     <string name="pref_scrobble_only">(Только скробблинг)</string>
     <string name="pref_scrobble_love_only">(Только скробблинг &amp; лайки)</string>
@@ -258,6 +260,11 @@
     <string name="pref_themes_desc">Смешивайте и комбинируйте,\nа также меняйте цвет уведомлений</string>
     <string name="pref_widget_charts">Виджет на главном экране</string>
     <string name="pref_show_albums">Показать названия альбомов</string>
+    <string name="pref_show_albums_desc">… для скробблов</string>
+    <string name="pref_show_scrobble_sources">Показывать значки приложений, из которых вы скробблили</string>
+    <string name="pref_show_scrobble_sources_desc">…рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
+    <string name="pref_search_in_source">Поиск &amp; играть в приложении, из которого вы скробблили</string>
+    <string name="pref_search_in_source_desc">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Редактирование шаблонов</string>
     <string name="pref_blocked_metadata">Заблокированные метаданные</string>
@@ -318,12 +325,14 @@
     <string name="graph">Линейный график</string>
     <string name="cleared_disabled_apps">Отключенные приложения очищены</string>
     <string name="fix_it_title">Возможные исправления</string>
+    <string name="fix_it_startup_title">Экономия энергии / менеджеры запусков</string>
     <string name="fix_it_battery_title">Отключить оптимизацию батареи</string>
     <string name="fix_it_action" comment="(To open an app)">Открыть</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="help">Помощь</string>
     <string name="pro_support">Это простой и быстрый способ для таких замечательных пользователей, как вы, продемонстрировать поддержку, осознавая ценность этого приложения.</string>
+    <string name="pro_also_get">Вы также получите следующие возможности:</string>
     <string name="thank_you">Спасибо!</string>
     <string name="purchase_pending">Ваша покупка еще не подтверждена вашим платежным провайдером. Пожалуйста, повторите попытку через несколько минут.</string>
     <string name="billing_troubleshoot_title">Восстановить покупку</string>

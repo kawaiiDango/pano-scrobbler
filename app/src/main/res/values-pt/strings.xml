@@ -128,6 +128,7 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s hoje</string>
     <string name="friends">Amigos</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
+    <string name="allow_background">Permitir scrobbles em segundo plano</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Necessário em dispositivos %1$s, para o scrobbler começar</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para obter metadados da música. Nenhum outro tipo notificação é lida</string>
@@ -144,6 +145,7 @@
     <string name="force_remembered">Forçar scrobble (será lembrado)</string>
     <string name="grant_rec_perm">Por favor, conceda permissão para usar o microfone</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Tabelas</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuvem de etiquetas</string>
     <string name="scrobble_from_mic">Scrobble do micro</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Do microfone</string>
     <string name="add_to_hs">Adicionar ao ecrã principal</string>
@@ -200,6 +202,7 @@
     <string name="close">Fechar</string>
     <string name="user_tags_hint">Nova etiqueta</string>
     <string name="user_tags_empty">Ainda não adicionou nenhuma equipa</string>
+    <string name="info_long_press_hint">Pressione e segure numa faixa para abrir isto</string>
     <string name="appwidget_loading">A carregar…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Período</string>
     <string name="appwidget_theme">Tema</string>
@@ -235,6 +238,7 @@
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
     <string name="use_channel" comment="(Use youtube channel name)">Utilizar nome do canal</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Deseja ativar a regra de edição do padrão: %1$s?</string>
+    <string name="show_persistent_noti">Mostrar uma notificação persistente</string>
     <string name="persistent_noti_desc">Pressione e segure para ocultar isto</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
@@ -283,6 +287,8 @@
     <string name="pref_widget_charts">Widget no ecrã inicial - Tabelas</string>
     <string name="pref_show_albums">Mostrar nomes dos álbuns</string>
     <string name="pref_show_albums_desc">…para scrobbles</string>
+    <string name="pref_show_scrobble_sources">Mostrar ícones de aplicações ativadas para scrobbles</string>
+    <string name="pref_search_in_source">Pesquisar &amp; reproduzir na aplicação de origem do scrobble</string>
     <string name="pref_search_in_source_desc">Para aplicações suportadas</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="pref_regex_edits">Edições padrão</string>

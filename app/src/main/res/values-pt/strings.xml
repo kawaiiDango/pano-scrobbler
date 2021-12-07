@@ -236,6 +236,7 @@
     <string name="text" comment="text to test regex rules with">Texto</string>
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
+    <string name="block">Bloquear</string>
     <string name="use_channel" comment="(Use youtube channel name)">Utilizar nome do canal</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Deseja ativar a regra de edição do padrão: %1$s?</string>
     <string name="show_persistent_noti">Mostrar uma notificação persistente</string>
@@ -257,6 +258,7 @@
     <string name="pref_auto_detect">Detetar automaticamente novas apps de música</string>
     <string name="pref_delay">Atraso de scrobble (o que for mais cedo)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutos</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentagem</string>
     <string name="pref_logout">Sair</string>
     <string name="pref_confirm_logout">ENCERRAR A SESSÃO? Toque novamente</string>
     <string name="pref_login">Iniciar sessão</string>
@@ -288,6 +290,7 @@
     <string name="pref_show_albums">Mostrar nomes dos álbuns</string>
     <string name="pref_show_albums_desc">…para scrobbles</string>
     <string name="pref_show_scrobble_sources">Mostrar ícones de aplicações ativadas para scrobbles</string>
+    <string name="pref_show_scrobble_sources_desc">…ao lado de cada scrobble. Estes dados permanecem no seu dispositivo</string>
     <string name="pref_search_in_source">Pesquisar &amp; reproduzir na aplicação de origem do scrobble</string>
     <string name="pref_search_in_source_desc">Para aplicações suportadas</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,7 +85,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
                 false
         }
 
-        binding.empty.text = getString(R.string.n_simple_edits, 0)
+        binding.empty.text = resources.getQuantityString(R.plurals.num_simple_edits, 0, 0)
 
         if (!binding.root.isInTouchMode)
             binding.searchTerm.requestFocus()
@@ -138,7 +139,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.simple_edits)
+        Stuff.setTitle(activity!!, R.string.simple_edits)
     }
 
     private fun showEditDialog(position: Int) {
@@ -160,10 +161,15 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
             editArtist.edittext.setText(edit.artist)
             editAlbumArtist.edittext.setText(edit.albumArtist)
         }
-        MaterialAlertDialogBuilder(context!!)
+        val dialog = MaterialAlertDialogBuilder(context!!)
             .setView(dialogBinding.root)
-            .setPositiveButton(android.R.string.ok){ dialogInterface, i ->
+            .setPositiveButton(android.R.string.ok, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val newEdit = SimpleEdit(
+                    _id = edit._id,
                     origTrack = dialogBinding.editTrackOrig.edittext.text.toString().trim(),
                     track = dialogBinding.editTrack.edittext.text.toString().trim(),
                     origAlbum = dialogBinding.editAlbumOrig.edittext.text.toString().trim(),
@@ -179,7 +185,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
                     newEdit.track.isEmpty()
                 ) {
                     Stuff.toast(context, getString(R.string.required_fields_empty))
-                    return@setPositiveButton
+                    return@setOnClickListener
                 }
                 if (edit != newEdit) {
                     val checkArtist = newEdit.artist.isNotEmpty() &&
@@ -211,8 +217,8 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
                         viewModel.upsert(newEdit)
                     }
                 }
+            dialog.dismiss()
             }
-            .show()
     }
 
 

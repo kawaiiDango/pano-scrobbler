@@ -43,10 +43,7 @@ class BlockedMetadataAdapter(
 
         fun setItemData(blockedMetadata: BlockedMetadata) {
             binding.editsTrack.text = blockedMetadata.track
-            binding.editsArtist.text = if (blockedMetadata.artist.isNotEmpty())
-                blockedMetadata.artist
-            else
-                blockedMetadata.albumArtist
+            binding.editsArtist.text = blockedMetadata.artist.ifEmpty { blockedMetadata.albumArtist }
 
             if (blockedMetadata.album.isNotEmpty()) {
                 binding.editsAlbum.visibility = View.VISIBLE

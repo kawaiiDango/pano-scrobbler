@@ -8,14 +8,17 @@
     android:focusable="false"
     android:padding="16dp">
 
+    <include layout="@layout/image_frame"/>
+
     <TextView
         android:id="@+id/app_list_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackgroundBorderless"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        android:textAppearance="?textAppearanceBodySmall"
         android:text="@string/pref_enabled_apps_title"
-        app:drawableTopCompat="@drawable/vd_add" />
+        app:drawableTopCompat="@drawable/vd_add"
+        app:drawableTint="?colorSecondary" />
     <LinearLayout
         android:id="@+id/app_icons_container"
         android:layout_width="wrap_content"
@@ -28,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        android:textAppearance="?textAppearanceTitleLarge"
         android:visibility="gone"
         tools:text="+50"
         tools:visibility="visible"/>

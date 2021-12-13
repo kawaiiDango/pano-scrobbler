@@ -1,17 +1,23 @@
 <resources>
 
     <!-- Base application theme. -->
-<!--    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">-->
-    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorNoti">@color/pinkNoti</item>
+    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/pinkPrimary</item>
+        <item name="colorPrimaryVariant">@color/pinkNoti</item>
+        <item name="colorPrimaryContainer">@color/pinkPrimaryContainer</item>
+        <item name="colorSecondaryContainer">@color/pinkPrimary_t</item>
         <item name="colorSecondary">@color/purpleSecondary</item>
+        <item name="colorTertiary">@color/purpleTertiary</item>
 
         <item name="colorOnPrimary">@android:color/black</item>
+        <item name="colorOnPrimaryContainer">@color/pinkPrimaryLight</item>
         <item name="colorOnSecondary">@android:color/black</item>
-        <item name="colorSurface">#010101</item>
-        <item name="android:colorBackground">@android:color/black</item>
+        <item name="colorOnSecondaryContainer">@color/purpleTertiary</item>
+        <item name="colorSurface">@color/Pink_Background</item>
+        <item name="colorSurfaceVariant">@color/pinkSurfaceVariant</item>
+        <item name="colorOutline">@color/purpleOutline</item>
+        <item name="android:colorBackground">@color/Pink_Background</item>
+
         <item name="android:windowContentTransitions">true</item>
         <item name="android:textDirection">locale</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
@@ -21,12 +27,30 @@
 
         <item name="snackbarStyle">@style/snackbarStyle</item>
         <item name="snackbarTextViewStyle">@style/snackbarText</item>
+        <item name="snackbarButtonStyle">@style/snackbarButton</item>
         <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
         <item name="bottomSheetDialogTheme">@style/RoundedBottomSheetDialog</item>
         <item name="android:selectableItemBackground">@drawable/ripple_rounded</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material.M3</item>
+        <item name="textInputOutlinedStyle">@style/Widget.App.TextInputLayout.OutlinedBox</item>
+        <item name="textInputOutlinedExposedDropdownMenuStyle">@style/Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+    <style name="PreferenceThemeOverlay.v14.Material.M3">
+        <item name="switchPreferenceStyle">@style/Preference.SwitchPreference.Material.M3</item>
+    </style>
+
+    <style name="Preference.SwitchPreference.Material.M3">
+        <item name="android:widgetLayout">@layout/pref_switch</item>
+    </style>
+
+    <style name="Widget.App.TextInputLayout.OutlinedBox" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="shapeAppearanceOverlay">@style/roundedCorners</item>
+    </style>
+
+    <style name="Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="shapeAppearanceOverlay">@style/roundedCorners</item>
+    </style>
 
     <style name="AppTheme.Wallpaper">
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -34,24 +58,27 @@
         <item name="android:windowShowWallpaper">true</item>
     </style>
 
-    <style name="snackbarStyle" parent="@style/Widget.MaterialComponents.Snackbar">
-        <item name="android:background">@color/dialogBg</item>
+    <style name="snackbarStyle" parent="@style/Widget.Material3.Snackbar">
+        <item name="backgroundTint">?colorPrimaryContainer</item>
         <item name="actionTextColorAlpha">1.0</item>
     </style>
 
-    <style name="snackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+    <style name="snackbarText" parent="@style/Widget.Material3.Snackbar.TextView">
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="Widget.App.CircularProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+    <style name="snackbarButton" parent="@style/Widget.Material3.Button.TextButton.Snackbar">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.App.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
         <item name="hideAnimationBehavior">inward</item>
         <item name="showAnimationBehavior">outward</item>
         <item name="showDelay">100</item>
         <item name="android:indeterminate">true</item>
     </style>
 
-    <style name="AppThemeDialog" parent="Theme.MaterialComponents.Dialog.Alert">
-        <item name="colorSurface">#010101</item>
+    <style name="AppThemeDialog" parent="Theme.Material3.Dark.Dialog.Alert">
         <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -65,18 +92,22 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
+        <item name="textInputOutlinedStyle">@style/Widget.App.TextInputLayout.OutlinedBox</item>
+        <item name="textInputOutlinedExposedDropdownMenuStyle">@style/Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
+
         <!--<item name="android:windowNoTitle">true</item>-->
         <!--<item name="android:windowIsFloating">false</item>-->
         <!--<item name="android:backgroundDimEnabled">true</item>-->
     </style>
 
-    <style name="RoundedBottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+    <style name="RoundedBottomSheetDialog" parent="@style/ThemeOverlay.Material3.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
     </style>
 
-    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+    <style name="CustomBottomSheet" parent="Widget.Material3.BottomSheet">
         <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
-        <item name="android:elevation">0dp</item>
+        <item name="android:elevation">1dp</item>
+        <item name="behavior_saveFlags">all</item>
     </style>
 
     <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
@@ -102,8 +133,8 @@
         <item name="android:translationZ">@dimen/tz_hero_btn</item>
     </style>
 
-    <style name="friendsLinks" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textSize">12sp</item>
+    <style name="friendsLinks" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textAppearance">?textAppearanceTitleSmall</item>
         <item name="drawableTint">?colorSecondary</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:layout_width">wrap_content</item>
@@ -111,7 +142,7 @@
     </style>
 
     <style name="ProFeaturesText">
-        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="android:textAppearance">?textAppearanceBodyLarge</item>
         <item name="android:layout_marginStart">8dp</item>
     </style>
 

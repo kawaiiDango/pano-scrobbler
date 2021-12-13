@@ -3,7 +3,6 @@ package com.arn.scrobble
 import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import de.umass.lastfm.Track
 

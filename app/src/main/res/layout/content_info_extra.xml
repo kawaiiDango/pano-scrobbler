@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingVertical="10dp">
+    android:paddingVertical="16dp">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -14,8 +14,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textAppearance="?textAppearanceTitleLarge"
             android:textColor="?colorPrimary"
+            android:textIsSelectable="true"
             tools:text="title" />
 
         <include android:id="@+id/info_extra_header1" layout="@layout/header_with_action" />

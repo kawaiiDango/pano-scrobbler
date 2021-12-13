@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp">
+    android:padding="16dp">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -30,8 +30,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textAppearance="?textAppearanceTitleLarge"
                     android:textColor="?colorPrimary"
+                    android:textIsSelectable="true"
                     tools:text="title"/>
 
                 <ImageButton
@@ -54,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
-                style="@style/Widget.MaterialComponents.CircularProgressIndicator.Small"
+                style="@style/Widget.Material3.CircularProgressIndicator.Small"
                 app:hideAnimationBehavior="none"
                 android:layout_gravity="center"/>
 
@@ -85,7 +86,7 @@
                             android:id="@+id/tag_info_taggers"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:textAppearance="?textAppearanceTitleMedium"
                             android:textSize="18sp"
                             tools:text="1" />
 
@@ -109,7 +110,7 @@
                             android:id="@+id/tag_info_taggings"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:textAppearance="?textAppearanceTitleMedium"
                             android:textSize="18sp"
                             tools:text="1" />
 
@@ -174,7 +175,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@string/similar_tags"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:textAppearance="?textAppearanceBodyLarge"
                     android:textColor="?colorPrimary"
                     android:visibility="gone"
                     tools:visibility="visible" />

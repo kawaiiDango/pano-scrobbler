@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="pinkDark">#880e4f</color>
-    <color name="pinkExtraDark">#5a0934</color>
-    <color name="lightDivider">#11ffffff</color>
-    <color name="lightInfoDivider">#38FFFFFF</color>
-    <color name="darkBg">#80000000</color>
+    <color name="pinkLight">#FFB0CD</color>
+    <color name="pinkDark">#AB2C5D</color>
+    <color name="pinkExtraDark">#66002E</color>
     <color name="chipBgOnBlack">#1a1a1a</color>
     <color name="statusBarScrim">#32000000</color>
-    <color name="dialogBg">#212121</color>
+    <color name="darkGrey">#212121</color>
     <color name="gradient_launcher_fg">#fff</color>
     <color name="shortcut_launcher_fg">#fff</color>
     <color name="gradient_shortcut_fg">#fff</color>
-    <color name="edit_elevation">#1FFFFFFF</color>
 
-    <color name="pinkNoti">#ec407a</color>
-    <color name="purpleSecondary">#e1bee7</color>
-    <color name="pinkPrimary">#f06292</color>
+<!--    <color name="pinkNoti">#ec407a</color>-->
+<!--    <color name="purpleOutline">#66c79bcf</color>-->
+<!--    <color name="purpleSecondary">#e1bee7</color>-->
+<!--    <color name="pinkPrimary">#f06292</color>-->
+<!--    <color name="pinkPrimaryContainer">#880E4F</color>-->
+<!--    <color name="pinkPrimary_t">#45F06292</color>-->
+<!--    <color name="pinkSurfaceVariant">#45d37e9b</color> -->
+
+    <color name="pinkNoti">#EC5F8F</color>
+    <color name="purpleOutline">#50F8F0F7</color>
+    <color name="purpleSecondary">#EFB2F2</color>
+    <color name="purpleTertiary">#FFEAFE</color>
+    <color name="pinkPrimary">#FFB1C7</color>
+    <color name="pinkPrimaryLight">#FFEAFE</color>
+    <color name="pinkPrimaryContainer">#8B0E45</color>
+    <color name="pinkPrimary_t">#45FFB1C7</color>
+    <color name="pinkSurfaceVariant">#45EBC4CF</color>
 </resources>

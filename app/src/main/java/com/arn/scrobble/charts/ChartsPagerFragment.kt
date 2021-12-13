@@ -15,9 +15,9 @@ class ChartsPagerFragment: PagerBaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         backStackChecked = false
         tabMeta = arrayOf(
-                Pair(R.string.artists, R.drawable.vd_mic),
-                Pair(R.string.albums, R.drawable.vd_album),
-                Pair(R.string.tracks, R.drawable.vd_note)
+            R.string.artists to R.drawable.vd_mic,
+            R.string.albums to R.drawable.vd_album,
+            R.string.tracks to R.drawable.vd_note
         )
         adapter = ChartsPagerAdapter(childFragmentManager)
         super.onViewCreated(view, savedInstanceState)

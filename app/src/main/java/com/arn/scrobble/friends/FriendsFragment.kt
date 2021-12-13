@@ -7,10 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
-import android.transition.ChangeBounds
 import android.transition.Fade
-import android.transition.Transition
-import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +27,7 @@ import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.google.android.material.transition.platform.MaterialElevationScale
 import de.umass.lastfm.User
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
@@ -115,7 +113,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         else if (System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
                 (viewModel.page == 1 || viewModel.sorted))
             runnable.run()
-        Stuff.setTitle(activity, 0)
+        Stuff.setTitle(activity!!, 0)
     }
 
     override fun onPause() {
@@ -124,7 +122,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun postInit() {
-        Stuff.setTitle(activity, 0)
+        Stuff.setTitle(activity!!, 0)
 
         binding.friendsSwipeRefresh.setProgressCircleColors()
         binding.friendsSwipeRefresh.setOnRefreshListener {
@@ -242,14 +240,16 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private fun showPopupWindow(contentBinding: GridItemFriendBinding, anchor: View, user: User) {
         val userLink = user.url ?: return
         val popup = PopupWindow(contentBinding.root, anchor.measuredWidth, anchor.measuredHeight, true)
-        popupWr = WeakReference(popup)
-        popup.elevation = 10.dp.toFloat()
-        popup.isTouchable = true
-        popup.isOutsideTouchable = true
-        popup.setBackgroundDrawable(ColorDrawable())
+            .apply {
+                elevation = 16.dp.toFloat()
+                isTouchable = true
+                isOutsideTouchable = true
+                setBackgroundDrawable(ColorDrawable())
+                popupWr = WeakReference(this)
+            }
 
         fun postTransition() {
-            TransitionManager.beginDelayedTransition(contentBinding.root, ChangeBounds().setDuration(150))
+//            TransitionManager.beginDelayedTransition(contentBinding.root, ChangeBounds().setDuration(150))
             val actionsBinding = ActionFriendsBinding.inflate(layoutInflater, contentBinding.root, false)
             contentBinding.root.addView(actionsBinding.root, 4)
 
@@ -271,10 +271,10 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 contentBinding.friendsCountry.visibility = View.VISIBLE
             }
 
-            actionsBinding.friendsProfile.setOnClickListener { v:View ->
+            actionsBinding.friendsProfile.setOnClickListener {
                 Stuff.openInBrowser(context!!, userLink)
             }
-            actionsBinding.friendsScrobbles.setOnClickListener { v:View ->
+            actionsBinding.friendsScrobbles.setOnClickListener {
                 (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
                 f.arguments = Bundle().apply {
@@ -287,7 +287,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                         .addToBackStack(null)
                         .commit()
             }
-            actionsBinding.friendsCharts.setOnClickListener { v:View ->
+            actionsBinding.friendsCharts.setOnClickListener {
                 (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
                 f.arguments = Bundle().apply {
@@ -306,37 +306,25 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
             val point = Point()
             activity!!.windowManager.defaultDisplay.getSize(point)
-            val screenW = point.x
-            val screenH = point.y
-            val w = min((0.8 * screenW).toInt(), 400.dp)
+            val screenPoint = intArrayOf(0, 0)
+            binding.root.getLocationInWindow(screenPoint)
+            val (screenX, screenY) = screenPoint
+            val fragmentW = binding.root.measuredWidth
+            val fragmentH = binding.root.measuredHeight
+            val w = min((0.8 * fragmentW).toInt(), 400.dp)
             val h = contentBinding.root.measuredHeight
-            popup.update((screenW - w )/2, ((screenH - h )/1.2).toInt(), w,h)
+            popup.update((fragmentW - w )/2 + screenX, ((fragmentH - h )/1.2).toInt() + screenY, w,h)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val exitTrans = Fade()
-            exitTrans.duration = 100
-            popup.exitTransition = exitTrans
-
-            val enterTrans = Fade()
-            enterTrans.duration = 50
-            enterTrans.addListener(object : Transition.TransitionListener{
-                override fun onTransitionEnd(p0: Transition?) {
-                    postTransition()
-                }
-
-                override fun onTransitionResume(p0: Transition?){}
-
-                override fun onTransitionPause(p0: Transition?) {}
-
-                override fun onTransitionCancel(p0: Transition?) {}
-
-                override fun onTransitionStart(p0: Transition?) {}
-
-            })
-            popup.enterTransition = enterTrans
-        } else
-            contentBinding.root.postDelayed( { postTransition() }, 10)
+            popup.exitTransition = Fade().apply {
+                duration = 100
+            }
+            popup.enterTransition = MaterialElevationScale(true).apply {
+                duration = 300
+            }
+        }
+        contentBinding.root.postDelayed( { postTransition() }, 10)
 
         val coords = IntArray(2)
         anchor.getLocationInWindow(coords)

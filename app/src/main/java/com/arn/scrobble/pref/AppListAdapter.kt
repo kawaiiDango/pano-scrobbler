@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import coil.loadAny
 import coil.size.Scale
 import com.arn.scrobble.R
@@ -103,7 +104,7 @@ class AppListAdapter(
 
         fun setItemData(app: ApplicationInfo) {
             binding.appListName.text = app.loadLabel(packageManager)
-            binding.appListIcon.loadAny(PackageName(app.packageName)) {
+            binding.appListIcon.load(PackageName(app.packageName)) {
                 scale(Scale.FIT)
             }
             setChecked(true)

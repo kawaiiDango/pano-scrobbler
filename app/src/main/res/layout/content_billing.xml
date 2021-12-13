@@ -1,40 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center_vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            app:srcCompat="@drawable/vd_heart"
-            android:contentDescription="@string/love"
-            android:layout_gravity="center_horizontal"
-            app:tint="?colorPrimary"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            android:text="@string/pro_support"
-            android:layout_marginBottom="16dp"
-            android:textAlignment="center"/>
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            android:text="@string/pro_benefits"
-            android:textAlignment="center"/>
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
 
-    </LinearLayout>
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/love"
+                app:srcCompat="@drawable/vd_heart"
+                app:tint="?colorPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:justificationMode="inter_word"
+                android:text="@string/pro_support"
+                android:textAppearance="?textAppearanceBodyLarge" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:justificationMode="inter_word"
+                android:text="@string/pro_also_get"
+                android:textAppearance="?textAppearanceBodyLarge" />
+
+            <TextView
+                android:id="@+id/pro_benefits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:justificationMode="inter_word"
+                android:textAppearance="?textAppearanceBodyLarge"
+                android:layout_marginBottom="16dp"
+                tools:text="@string/pro_also_get" />
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -48,7 +64,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/get_pro"
-            app:backgroundTint="?colorPrimary"
             app:icon="@drawable/vd_heart" />
 
         <Button
@@ -56,14 +71,14 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/help"
             android:minWidth="0dp"
             android:minHeight="0dp"
             android:text="\?"
-            android:contentDescription="@string/help"
-            android:textStyle="bold"
+            android:textAppearance="?textAppearanceHeadlineSmall"
             android:textColor="?colorPrimary"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

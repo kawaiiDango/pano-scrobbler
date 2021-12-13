@@ -1,20 +1,21 @@
 package com.arn.scrobble.info
 
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.expandIfNeeded
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentInfoBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
@@ -31,13 +32,22 @@ class InfoFragment: BottomSheetDialogFragment() {
         val album = arguments!!.getString(NLService.B_ALBUM)
         val track = arguments!!.getString(NLService.B_TRACK)
         val username = arguments!!.getString(Stuff.ARG_USERNAME)
+        val pkgName = arguments!!.getString(Stuff.ARG_PKG)
 
-        val adapter = InfoAdapter(viewModel, this, username)
+        val adapter = InfoAdapter(viewModel, this, username, pkgName)
         binding.infoList.layoutManager = LinearLayoutManager(context!!)
         binding.infoList.itemAnimator = null
 
+//        val itemDecor = MaterialDividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
+//        itemDecor.setDividerInsetStartResource(context!!, R.dimen.divider_inset)
+//        itemDecor.setDividerInsetEndResource(context!!, R.dimen.divider_inset)
+        // this puts divider after the last item
+
         val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
-        itemDecor.setDrawable(ColorDrawable(ContextCompat.getColor(context!!, R.color.lightInfoDivider)))
+        val colorDrawable = ColorDrawable(MaterialColors.getColor(context!!, R.attr.colorOutline, null))
+        val inset = resources.getDimensionPixelSize(R.dimen.divider_inset)
+        val insetDrawable = InsetDrawable(colorDrawable, inset, 0, inset, 0)
+        itemDecor.setDrawable(insetDrawable)
         binding.infoList.addItemDecoration(itemDecor)
         binding.infoList.adapter = adapter
         if (viewModel.loadedTypes.isEmpty()) {
@@ -85,10 +95,7 @@ class InfoFragment: BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (view?.isInTouchMode == false) {
-            val bottomSheetView = dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
-        }
+        expandIfNeeded()
     }
 
     override fun onDestroyView() {

@@ -37,13 +37,15 @@ class ImExporter : Closeable {
         MainPrefs.PREF_LOCALE,
         MainPrefs.PREF_AUTO_DETECT,
         MainPrefs.PREF_SHOW_RECENTS_ALBUM,
-        MainPrefs.PREF_SHOW_TRACKED_PLAYERS,
+        MainPrefs.PREF_SHOW_SCROBBLE_SOURCES,
         MainPrefs.PREF_THEME_PRIMARY,
         MainPrefs.PREF_THEME_SECONDARY,
         MainPrefs.PREF_THEME_BACKGROUND,
-        MainPrefs.PREF_THEME_SAME_TONE,
         MainPrefs.PREF_THEME_RANDOM,
         MainPrefs.PREF_THEME_PALETTE_BG,
+        MainPrefs.PREF_THEME_TINT_BG,
+        MainPrefs.PREF_THEME_DYNAMIC,
+        MainPrefs.PREF_SEARCH_IN_SOURCE,
         MainPrefs.PREF_LOCALE,
 
         MainPrefs.PREF_ALLOWED_PACKAGES,
@@ -158,9 +160,9 @@ class ImExporter : Closeable {
 
                     beginObject()
                     name("pano_version").value(BuildConfig.VERSION_CODE)
-                    name("tracked_players").beginArray()
-                    PanoDb.getDb(context).getTrackedPlayerDao().all.forEach { trackedPlayer ->
-                        trackedPlayer.writeJson(this)
+                    name("scrobble_sources").beginArray()
+                    PanoDb.getDb(context).getScrobbleSourcesDao().all.forEach { scrobbleSource ->
+                        scrobbleSource.writeJson(this)
                     }
                     endArray()
                     endObject()
@@ -193,7 +195,7 @@ class ImExporter : Closeable {
                                 "simple_edits",
                                 "regex_edits",
                                 "blocked_metadata",
-                                "tracked_players",
+                                "scrobble_sources",
                             ) && editsMode != Stuff.EDITS_NOPE
                         ) {
                             when (name) {
@@ -255,18 +257,18 @@ class ImExporter : Closeable {
                                     else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
                                         dao.insertLowerCase(blockedMetadata, ignore = true)
                                 }
-                                "tracked_players" -> {
-                                    val dao = PanoDb.getDb(context).getTrackedPlayerDao()
+                                "scrobble_sources" -> {
+                                    val dao = PanoDb.getDb(context).getScrobbleSourcesDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
-                                    val trackedPlayers = mutableListOf<TrackedPlayer>()
+                                    val scrobbleSources = mutableListOf<ScrobbleSource>()
                                     beginArray()
                                     while (hasNext()) {
-                                        trackedPlayers += TrackedPlayer(0, 0, "").readJson(this)
+                                        scrobbleSources += ScrobbleSource(0, 0, "").readJson(this)
                                     }
                                     endArray()
 
-                                    dao.insert(trackedPlayers)
+                                    dao.insert(scrobbleSources)
                                 }
                             }
 

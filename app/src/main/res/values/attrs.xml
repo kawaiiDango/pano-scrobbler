@@ -24,6 +24,6 @@
 
     </declare-styleable>
 
-    <attr name="colorNoti" format="reference|color" />
+<!--    <attr name="colorNoti" format="reference|color" />-->
     <attr name="fakeShadowAlpha" format="reference|float" />
 </resources>

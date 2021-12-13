@@ -90,7 +90,7 @@
                 android:resource="@xml/shortcuts" />
         </activity>
         <activity
-            android:name=".edits.EditDialogActivity"
+            android:name=".MainDialogActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:label="@string/edit"
@@ -131,6 +131,8 @@
             android:name=".widget.ChartsWidgetUpdaterJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".pending.PendingScrService" />
+        <service android:name=".PersistentNotificationService"
+            android:process=":bgScrobbler"/>
         <service
             android:name=".MasterSwitchQS"
             android:exported="true"

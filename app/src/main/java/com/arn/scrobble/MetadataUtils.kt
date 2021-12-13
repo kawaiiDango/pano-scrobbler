@@ -5,36 +5,49 @@ import java.util.*
 
 object MetadataUtils {
 
-    private val seperators = arrayOf( // in priority order
-            "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", /*"ー", */" • ",
+    private val separators = arrayOf( // in priority order
+        "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", /*"ー", */" • ",
 
-            "【", "〖", "〔",
-            "】", "〗", "』", "」", "〕",
-            // ":",
-            " \"", " / ", "／")
-    private val unwantedSeperators = arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
+        "【", "〖", "〔",
+        "】", "〗", "』", "」", "〕",
+        // ":",
+        " \"", " / ", "／"
+    )
+    private val unwantedSeparators =
+        arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
 
     // in lower case
-    private val metaSpam = arrayOf("downloaded", ".com", ".co.", "www.")
-    private val metaUnknown = arrayOf("unknown", "[unknown]", "unknown album", "[unknown album]", "unknown artist", "[unknown artist]")
-    private val albumArtistUnknown = arrayOf("va")
+    private val albumSpam = arrayOf("downloaded", ".com", ".co.", "www.")
+    private val metaUnknown = arrayOf(
+        "unknown",
+        "[unknown]",
+        "unknown album",
+        "[unknown album]",
+        "unknown artist",
+        "[unknown artist]"
+    )
+    private val artistSpam = arrayOf("va")
 
     fun parseArtistTitle(titleContentOriginal: String): Array<String> {
         //New detection of trackinformation
         //remove (*) and/or [*] to remove unimportant data
         val titleContent = titleContentOriginal.replace(" *\\([^)]*?\\) *".toRegex(), " ")
-                .replace(" *\\[[^)]*?] *".toRegex(), " ")
+            .replace(" *\\[[^)]*?] *".toRegex(), " ")
 
-                //remove HD info
-                .replace("\\W* HD|HQ|4K|MV|M/V|Official Music Video|Music Video|Lyric Video|Official Audio( \\W*)?"
-                        .toRegex(RegexOption.IGNORE_CASE)
-                        , " ")
+            //remove HD info
+            .replace(
+                "\\W* HD|HQ|4K|MV|M/V|Official Music Video|Music Video|Lyric Video|Official Audio( \\W*)?"
+                    .toRegex(RegexOption.IGNORE_CASE), " "
+            )
 
 //        get remix info
-        val remixInfo = "\\([^)]*(?:remix|mix|cover|version|edit|ft\\.[^)]+|feat\\.[^)]+|booty?leg)\\)".toRegex(RegexOption.IGNORE_CASE).find(titleContentOriginal)
+        val remixInfo =
+            "\\([^)]*(?:remix|mix|cover|version|edit|ft\\.[^)]+|feat\\.[^)]+|booty?leg)\\)".toRegex(
+                RegexOption.IGNORE_CASE
+            ).find(titleContentOriginal)
 
         var musicInfo: Array<String>? = null
-        for (s in seperators) {
+        for (s in separators) {
             //parsing artist - title
             musicInfo = titleContent.split(s).filter { it.isNotBlank() }.toTypedArray()
             if (s == "／")
@@ -43,8 +56,8 @@ object MetadataUtils {
 //            println("musicInfo= "+musicInfo[0] + (if (musicInfo.size >1) "," + musicInfo[1] else "") + "|" + musicInfo.size)
             //got artist, parsing title - audio (cover) [blah]
             if (musicInfo.size > 1) {
-                for (j in 0 until seperators.size - 2) {
-                    val splits = musicInfo[1].split(seperators[j]).filter { it.isNotEmpty() }
+                for (j in 0 until separators.size - 2) {
+                    val splits = musicInfo[1].split(separators[j]).filter { it.isNotEmpty() }
 //                    println("splits= $splits |" + splits.size + "|" + seperators[j])
                     if (splits.size > 1) {
                         musicInfo[1] = splits[0]
@@ -63,13 +76,19 @@ object MetadataUtils {
         }
 
         //remove ", ', 」, 』 from musicInfo
-        val allUnwantedSeperators = "(" + unwantedSeperators.joinToString("|") + ")"
+        val allUnwantedSeperators = "(" + unwantedSeparators.joinToString("|") + ")"
         for (i in musicInfo.indices) {
-            musicInfo[i] = musicInfo[i].replace("^\\s*$allUnwantedSeperators|$allUnwantedSeperators\\s*$".toRegex(), " ")
+            musicInfo[i] = musicInfo[i].replace(
+                "^\\s*$allUnwantedSeperators|$allUnwantedSeperators\\s*$".toRegex(),
+                " "
+            )
         }
 
-        musicInfo[1] = musicInfo[1].replace("\\.(avi|wmv|mp4|mpeg4|mov|3gpp|flv|webm)$".toRegex(RegexOption.IGNORE_CASE), " ")
-                .replace("Full Album".toRegex(RegexOption.IGNORE_CASE), "")
+        musicInfo[1] = musicInfo[1].replace(
+            "\\.(avi|wmv|mp4|mpeg4|mov|3gpp|flv|webm)$".toRegex(RegexOption.IGNORE_CASE),
+            " "
+        )
+            .replace("Full Album".toRegex(RegexOption.IGNORE_CASE), "")
         //Full Album Video
 //        println("mi1="+musicInfo[1])
         //move feat. info from artist to
@@ -94,14 +113,16 @@ object MetadataUtils {
 
     fun sanitizeAlbum(albumOrig: String): String {
         val albumLower = albumOrig.lowercase(Locale.ENGLISH)
-        if (metaSpam.any { albumLower.contains(it) } || metaUnknown.any { albumLower == it })
+        if (albumSpam.any { albumLower.contains(it) } || metaUnknown.any { albumLower == it })
             return ""
 
         return albumOrig
     }
 
-    fun sanitizeArtist(artistOrig: String): String {
-        val splits = artistOrig.split("; ").filter { it.isNotBlank() }
+    fun sanitizeArtist(artist: String): String {
+        if (artist.lowercase(Locale.ENGLISH) in artistSpam)
+            return ""
+        val splits = artist.split("; ").filter { it.isNotBlank() }
         if (splits.isEmpty())
             return ""
         return splits[0]
@@ -109,29 +130,29 @@ object MetadataUtils {
 
     fun sanitizeAlbumArtist(artistOrig: String): String {
         val artist = sanitizeAlbum(artistOrig)
-        if (artist.lowercase(Locale.ENGLISH) in albumArtistUnknown)
+        if (artist.lowercase(Locale.ENGLISH) in artistSpam)
             return ""
         return artist
     }
 
-    fun scrobbleFromNotiExtractMeta(titleStr: String, formatStr: String):Array<String>? {
+    fun scrobbleFromNotiExtractMeta(titleStr: String, formatStr: String): Pair<String, String>? {
         val tpos = formatStr.indexOf("%1\$s")
         val apos = formatStr.indexOf("%2\$s")
         val regex = formatStr.replace("(", "\\(")
-                .replace(")", "\\)")
-                .replace("%1\$s", "(.*)")
-                .replace("%2\$s", "(.*)")
+            .replace(")", "\\)")
+            .replace("%1\$s", "(.*)")
+            .replace("%2\$s", "(.*)")
         return try {
             val m = regex.toRegex().find(titleStr)!!
             val g = m.groupValues
             if (g.size != 3)
                 throw Exception("group size != 3")
             if (tpos > apos)
-                arrayOf(g[1],g[2])
+                g[1] to g[2]
             else
-                arrayOf(g[2],g[1])
+                g[2] to g[1]
 
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             print("err in $titleStr $formatStr")
             null
         }

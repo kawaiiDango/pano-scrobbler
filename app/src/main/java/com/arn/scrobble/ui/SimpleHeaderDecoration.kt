@@ -7,7 +7,6 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.dp
 
 

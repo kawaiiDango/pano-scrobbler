@@ -30,12 +30,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
-import coil.annotation.ExperimentalCoilApi
-import coil.clear
+import coil.dispose
 import coil.load
-import coil.metadata
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.Stuff.getTintedDrwable
+import com.arn.scrobble.Stuff.memoryCacheKey
 import com.arn.scrobble.Stuff.setArrowColors
 import com.arn.scrobble.Stuff.setProgressCircleColors
 import com.arn.scrobble.databinding.ContentRecentsBinding
@@ -90,23 +90,15 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 view.getLocationInWindow(pos)
 
                 if (pos[1] + view.height > coordinatorBinding.coordinator.height && coordinatorBinding.appBar.isExpanded)
-                    coordinatorBinding.appBar.setExpanded(false, true)
+                    coordinatorBinding.appBar.setExpanded(expanded = false, animate = true)
             }
         }
     }
 
     private val itemLongClickListener = object : ItemLongClickListener {
         override fun onItemLongClick(view: View, position: Int) {
-            val t = adapter.getItem(position) as? Track ?: return
-            val info = InfoFragment()
-            info.arguments = Bundle().apply {
-                putString(NLService.B_ARTIST, t.artist)
-                if (!t.album.isNullOrEmpty())
-                    putString(NLService.B_ALBUM, t.album)
-                putString(NLService.B_TRACK, t.name)
-                putString(Stuff.ARG_USERNAME, username)
-            }
-            info.show(activity!!.supportFragmentManager, null)
+            val track = adapter.getItem(position) as? Track ?: return
+            showTrackInfo(track)
         }
     }
 
@@ -175,7 +167,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         adapter.isShowingLoves = isShowingLoves
         adapter.isShowingAlbums = prefs.showAlbumInRecents
         adapter.isShowingPlayers = !isShowingLoves && username == null &&
-                prefs.proStatus && prefs.showTrackedPlayers
+                prefs.proStatus && prefs.showScrobbleSources
         adapter.trackBundleLd = activity.mainNotifierViewModel.trackBundleLd
 
 //        adapter.setStatusHeader()
@@ -295,17 +287,9 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         }
 
         coordinatorBinding.heroInfo.setOnClickListener {
-            val t = coordinatorBinding.heroImg.tag
-            if (t is Track) {
-                val info = InfoFragment()
-                info.arguments = Bundle().apply {
-                    putString(NLService.B_ARTIST, t.artist)
-                    if (!t.album.isNullOrEmpty())
-                        putString(NLService.B_ALBUM, t.album)
-                    putString(NLService.B_TRACK, t.name)
-                    putString(Stuff.ARG_USERNAME, username)
-                }
-                info.show(activity.supportFragmentManager, null)
+            val track = coordinatorBinding.heroImg.tag
+            if (track is Track) {
+                showTrackInfo(track)
                 if (!prefs.longPressLearnt) {
                     Stuff.toast(context, getString(R.string.info_long_press_hint), Toast.LENGTH_LONG)
                     prefs.longPressLearnt = true
@@ -337,20 +321,27 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
         if (BuildConfig.DEBUG)
             coordinatorBinding.heroPlay.setOnLongClickListener {
-                val t = coordinatorBinding.heroImg.tag
-                if (t is Track) {
+                val track = coordinatorBinding.heroImg.tag
+                if (track is Track) {
                     Stuff.openInBrowser(context!!,
                         "https://en.touhouwiki.net/index.php?search=" +
-                            URLEncoder.encode("${t.artist} - ${t.name}", "UTF-8")
+                            URLEncoder.encode("${track.artist} - ${track.name}", "UTF-8")
                     )
                 }
                 true
             }
 
             coordinatorBinding.heroPlay.setOnClickListener {
-            val t =  coordinatorBinding.heroImg.tag
-            if (t is Track)
-                Stuff.launchSearchIntent(t.artist, t.name, context!!)
+            val track =  coordinatorBinding.heroImg.tag
+            if (track is Track) {
+                val pkgName = if (track.playedWhen != null)
+                    viewModel.pkgMap[track.playedWhen.time]
+                else if (track.isNowPlaying)
+                    viewModel.pkgMap[0]
+                else
+                    null
+                Stuff.launchSearchIntent(context!!, track, pkgName)
+            }
         }
 
         coordinatorBinding.heroCalendar.setOnClickListener { view ->
@@ -386,6 +377,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                                     .build()
                     )
                     .setSelection(time)
+                    .apply {
+                        if (viewModel.toTime != 0L)
+                            setNegativeButtonText(R.string.reset)
+                    }
                     .build()
             dpd.addOnPositiveButtonClickListener {
                 val tzOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis())
@@ -453,16 +448,17 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     animSetList += ObjectAnimator.ofArgb(
                         activity.binding.navView,
                         "backgroundColor",
-                        colors.mutedBlack
+                        contentBgFrom,
+                        colors.mutedBg
                     )
-                animSetList += ValueAnimator.ofArgb(contentBgFrom, colors.mutedBlack).apply {
+                animSetList += ValueAnimator.ofArgb(contentBgFrom, colors.mutedBg).apply {
                     addUpdateListener{
                         //setNavigationBarColor uses binders and lags
                         activity.window.navigationBarColor = it.animatedValue as Int
                     }
                 }
-                animSetList += ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom, colors.mutedBlack)
-                activity.binding.coordinatorMain.ctl.setContentScrimColor(colors.mutedBlack)
+                animSetList += ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom, colors.mutedBg)
+                activity.binding.coordinatorMain.ctl.setContentScrimColor(colors.mutedBg)
             } else {
                 animSetList += ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom,
                     MaterialColors.getColor(context, android.R.attr.colorBackground, null))
@@ -560,7 +556,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             Stuff.setCtlHeight(activity!!)
     }
 
-    @OptIn(ExperimentalCoilApi::class)
     override fun onSetHero(position: Int, track: Track, fullSize: Boolean) {
         _binding ?: return
 
@@ -590,16 +585,17 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             return
         }
         //load img, animate colors
+        val errorDrawable = context!!.getTintedDrwable(R.drawable.vd_wave, Stuff.genHashCode(track.artist, track.name))
+
         if (!imgUrl.isNullOrEmpty()) {
             coordinatorBinding.heroImg.load(imgUrl) {
-                coordinatorBinding.heroImg.clearColorFilter()
 
-                placeholderMemoryCacheKey(coordinatorBinding.heroImg.metadata?.memoryCacheKey)
+                placeholderMemoryCacheKey(coordinatorBinding.heroImg.memoryCacheKey)
                 placeholder(R.drawable.vd_wave)
-                error(R.drawable.vd_wave)
+                error(errorDrawable)
                 allowHardware(false)
                 if (!fullSize)
-                    transition(PaletteTransition { palette ->
+                    transitionFactory(PaletteTransition.Factory { palette ->
                         if (context != null) {
                             viewModel.paletteColors.value = PaletteColors(context!!, palette)
                             onSetHero(position, track, true)
@@ -614,12 +610,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 )
             }
         } else {
-            coordinatorBinding.heroImg.clear()
-            val color = Stuff.getMatColor(coordinatorBinding.heroImg.context, Stuff.genHashCode(track.artist, track.name).toLong())
+            coordinatorBinding.heroImg.dispose()
+            val color = Stuff.getMatColor(coordinatorBinding.heroImg.context, Stuff.genHashCode(track.artist, track.name))
             val swatch = Palette.Swatch(color, 1)
             val palette = Palette.from(listOf(swatch))
-            coordinatorBinding.heroImg.setColorFilter(color)
-            coordinatorBinding.heroImg.load(R.drawable.vd_wave)
+            coordinatorBinding.heroImg.load(errorDrawable)
             viewModel.paletteColors.value = PaletteColors(context!!, palette)
         }
     }
@@ -660,7 +655,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                         }
                     smoothScroller?.targetPosition = position
                     binding.recentsList.layoutManager?.startSmoothScroll(smoothScroller)
-                    coordinatorBinding.appBar.setExpanded(true, true)
+                    coordinatorBinding.appBar.setExpanded(true, animate = true)
                 }
 
                 if (!view.isInTouchMode)
@@ -758,5 +753,24 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         aSet.start()
 
         track.isLoved = !track.isLoved
+    }
+
+    private fun showTrackInfo(track: Track) {
+        val info = InfoFragment()
+        info.arguments = Bundle().apply {
+            putString(NLService.B_ARTIST, track.artist)
+            if (!track.album.isNullOrEmpty())
+                putString(NLService.B_ALBUM, track.album)
+            putString(NLService.B_TRACK, track.name)
+            putString(Stuff.ARG_USERNAME, username)
+            val pkgName = if (track.playedWhen != null)
+                viewModel.pkgMap[track.playedWhen.time]
+            else if (track.isNowPlaying)
+                viewModel.pkgMap[0]
+            else
+                null
+            putString(Stuff.ARG_PKG, pkgName)
+        }
+        info.show(activity!!.supportFragmentManager, null)
     }
 }

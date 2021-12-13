@@ -9,26 +9,21 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.VMFactory
-import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ContentBlockedMetadataBinding
-import com.arn.scrobble.databinding.DialogBlockedTagsBinding
-import com.arn.scrobble.databinding.TextInputEditBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.ui.ItemClickListener
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-class BlockedMetadataFragment: Fragment(), ItemClickListener {
+class BlockedMetadataFragment : Fragment(), ItemClickListener {
     private var _binding: ContentBlockedMetadataBinding? = null
     private val binding
         get() = _binding!!
@@ -53,12 +48,12 @@ class BlockedMetadataFragment: Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.pref_blocked_metadata)
+        Stuff.setTitle(activity!!, R.string.pref_blocked_metadata)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.blockAdd.setOnClickListener {
-            showAddDialog(-1)
+            showAddEditDialog(null)
         }
 
         adapter = BlockedMetadataAdapter(
@@ -77,7 +72,7 @@ class BlockedMetadataFragment: Fragment(), ItemClickListener {
 
         if (!binding.root.isInTouchMode)
             binding.blockAdd.requestFocus()
-        binding.empty.text = getString(R.string.n_blocked_metadata, 0)
+        binding.empty.text = resources.getQuantityString(R.plurals.num_blocked_metadata, 0, 0)
 
         viewModel.blockedMetadataReceiver.observe(viewLifecycleOwner) {
             update(it)
@@ -140,70 +135,19 @@ class BlockedMetadataFragment: Fragment(), ItemClickListener {
         }
     }
 
-    private fun showAddDialog(position: Int) {
-        val binding = DialogBlockedTagsBinding.inflate(layoutInflater)
-        val isNew = position == -1
-        val blockedMetadata = if (isNew)
-            BlockedMetadata()
-        else
-            viewModel.blockedMetadata[position].copy()
-
-        fun trimmedText(tib: TextInputEditBinding) = tib.edittext.text.toString().trim()
-
-        val dialog = MaterialAlertDialogBuilder(context!!)
-            .setView(binding.root)
-            .setPositiveButton(android.R.string.ok) { dialogInterface, i ->
-                val prevBlockedTag = blockedMetadata.copy()
-                blockedMetadata.apply {
-                    artist = trimmedText(binding.blockArtist)
-                    albumArtist = trimmedText(binding.blockAlbumArtist)
-                    album = trimmedText(binding.blockAlbum)
-                    track = trimmedText(binding.blockTrack)
-
-                    if (listOf(artist, albumArtist, album, track)
-                            .all { it == ""})
-                        return@setPositiveButton
-                }
-                if (prevBlockedTag != blockedMetadata)
-                    viewModel.upsert(blockedMetadata)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .create()
-
-        val focusClickListener = View.OnFocusChangeListener { view, isFocused ->
-            if (isFocused && (activity as MainActivity).billingViewModel.proStatus.value != true) {
-                dialog.dismiss()
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, BillingFragment())
-                    .addToBackStack(null)
-                    .commit()
-            }
+    private fun showAddEditDialog(blockedMetadata: BlockedMetadata?) {
+        val df = BlockedMetadataAddDialogFragment()
+        df.arguments = Bundle().apply {
+            putParcelable(Stuff.ARG_DATA, blockedMetadata)
         }
-
-        binding.apply {
-            blockArtist.root.hint = getString(R.string.artist_channel)
-            blockAlbumArtist.root.hint = getString(R.string.album_artist)
-            blockAlbum.root.hint = getString(R.string.album)
-            blockTrack.root.hint = getString(R.string.track)
-
-            blockArtist.edittext.setText(blockedMetadata.artist)
-            blockAlbumArtist.edittext.setText(blockedMetadata.albumArtist)
-            blockAlbum.edittext.setText(blockedMetadata.album)
-            blockTrack.edittext.setText(blockedMetadata.track)
-
-            blockArtist.edittext.onFocusChangeListener = focusClickListener
-            blockAlbumArtist.edittext.onFocusChangeListener = focusClickListener
-            blockAlbum.edittext.onFocusChangeListener = focusClickListener
-            blockTrack.edittext.onFocusChangeListener = focusClickListener
-        }
-        dialog.show()
+        df.show(childFragmentManager, null)
     }
 
     override fun onItemClick(view: View, position: Int) {
         if (view.id == R.id.edits_delete)
             viewModel.delete(position)
         else {
-            showAddDialog(position)
+            showAddEditDialog(viewModel.blockedMetadata[position])
         }
     }
 }

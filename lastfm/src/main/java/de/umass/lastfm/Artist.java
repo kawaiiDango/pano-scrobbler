@@ -183,7 +183,11 @@ public class Artist extends MusicEntry {
 	 * @return list of top albums
 	 */
 	public static Collection<Album> getTopAlbums(String artist, String apiKey) {
-		Result result = Caller.getInstance().call("artist.getTopAlbums", apiKey, "artist", artist);
+		return getTopAlbums(artist, 50, apiKey);
+	}
+
+	public static Collection<Album> getTopAlbums(String artist, int limit, String apiKey) {
+		Result result = Caller.getInstance().call("artist.getTopAlbums", apiKey, "artist", artist, "limit", Integer.toString(limit));
 		return ResponseBuilder.buildCollection(result, Album.class);
 	}
 
@@ -219,7 +223,11 @@ public class Artist extends MusicEntry {
 	 * @return list of top tracks
 	 */
 	public static Collection<Track> getTopTracks(String artist, String apiKey) {
-		Result result = Caller.getInstance().call("artist.getTopTracks", apiKey, "artist", artist);
+		return getTopTracks(artist, 50, apiKey);
+	}
+
+	public static Collection<Track> getTopTracks(String artist, int limit, String apiKey) {
+		Result result = Caller.getInstance().call("artist.getTopTracks", apiKey, "artist", artist, "limit", Integer.toString(limit));
 		return ResponseBuilder.buildCollection(result, Track.class);
 	}
 

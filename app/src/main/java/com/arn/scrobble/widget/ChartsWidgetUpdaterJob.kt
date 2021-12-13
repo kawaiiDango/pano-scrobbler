@@ -145,7 +145,6 @@ class ChartsWidgetUpdaterJob : JobService() {
             val id = js.allPendingJobs.firstOrNull { it.id == JOB_ID }?.id
             id?.let { js.cancel(it) }
             Stuff.log("cancelled WidgetUpdaterJob")
-
         }
     }
 }

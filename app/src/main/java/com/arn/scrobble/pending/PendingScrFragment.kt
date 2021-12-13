@@ -44,7 +44,7 @@ class PendingScrFragment: Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.pending_scrobbles)
+        Stuff.setTitle(activity!!, R.string.pending_scrobbles)
     }
 
     override fun onItemClick(view: View, position: Int) {

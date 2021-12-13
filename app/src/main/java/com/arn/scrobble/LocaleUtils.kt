@@ -13,6 +13,7 @@ object LocaleUtils {
         "zh-hans",
         "de",
         "en",
+        "fr",
         "ja",
         "pt",
         "pt-BR",

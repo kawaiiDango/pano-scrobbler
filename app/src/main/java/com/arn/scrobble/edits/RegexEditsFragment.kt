@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -66,7 +67,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.pref_regex_edits)
+        Stuff.setTitle(activity!!, R.string.pref_regex_edits)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -94,7 +95,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
         binding.editsList.adapter = adapter
         binding.editsList.layoutManager = LinearLayoutManager(context!!)
 
-        binding.empty.text = getString(R.string.n_regex_edits, 0)
+        binding.empty.text = resources.getQuantityString(R.plurals.num_regex_edits, 0, 0)
 
         viewModel.regexesReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
@@ -134,9 +135,10 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
             return
 
         val binding = DialogRegexEditBinding.inflate(layoutInflater)
-        val dialog = MaterialAlertDialogBuilder(context!!)
+        val dialogBuilder = MaterialAlertDialogBuilder(context!!)
             .setView(binding.root)
-            .create()
+            .setPositiveButton(android.R.string.ok, null)
+            .setNegativeButton(android.R.string.cancel, null)
         val regexEdit = if (isNew)
             RegexEdit()
         else
@@ -155,7 +157,9 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
             binding.editContinueMatching.isChecked = true
 
         if (!isNew)
-            binding.deleteButton.visibility = View.VISIBLE
+            dialogBuilder.setNeutralButton(R.string.delete) { _, _ ->
+                viewModel.delete(position)
+            }
 
 
         binding.editField.setAdapter(
@@ -185,7 +189,9 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
             return true
         }
 
-        binding.okButton.setOnClickListener {
+        val dialog = dialogBuilder.show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             if (validate()) {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val dao = PanoDb.getDb(context!!).getRegexEditsDao()
@@ -219,14 +225,6 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
                 dialog.dismiss()
             }
         }
-
-        binding.cancelButton.setOnClickListener { dialog.dismiss() }
-
-        binding.deleteButton.setOnClickListener {
-            viewModel.delete(position)
-            dialog.dismiss()
-        }
-        dialog.show()
     }
 
     private suspend fun showPresetsDialog() {
@@ -269,7 +267,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
         val binding = DialogRegexTestBinding.inflate(layoutInflater)
         val mutex = Mutex()
         val dao = PanoDb.getDb(context!!).getRegexEditsDao()
-        binding.matches.text = getString(R.string.n_matches, 0)
+        binding.matches.text = resources.getQuantityString(R.plurals.num_matches, 0, 0)
         binding.text.addTextChangedListener(object : TextWatcher {
 
             override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
@@ -291,7 +289,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
 
                         withContext(Dispatchers.Main) {
                             if (numMatches.all { it.value == 0 })
-                                binding.matches.text = getString(R.string.n_matches, 0)
+                                binding.matches.text = resources.getQuantityString(R.plurals.num_matches, 0, 0)
                             else {
                                 val lines = mutableListOf<String>()
                                 numMatches.forEach { (field, count) ->
@@ -304,7 +302,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
                                             else -> throw IllegalArgumentException()
                                         }
                                         lines += "<b>${localizedFieldsMap[field]!!}</b> " +
-                                                "<i>(${getString(R.string.n_matches, count)}):</i>" +
+                                                "<i>(${resources.getQuantityString(R.plurals.num_matches, count, count)}):</i>" +
                                                 "<br/>$replacement"
                                     }
                                 }

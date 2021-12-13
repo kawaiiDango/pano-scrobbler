@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +16,7 @@ import com.arn.scrobble.databinding.*
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetTheme
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.google.android.material.color.DynamicColors
 
 class ChartsWidgetActivity : AppCompatActivity() {
     private val appWidgetId by lazy {
@@ -32,8 +32,8 @@ class ChartsWidgetActivity : AppCompatActivity() {
         ) ?: false
     }
 
-    lateinit var binding: ActivityAppwidgetChartsConfigBinding
-    lateinit var previewBinding: AppwidgetChartsContentBinding
+    private lateinit var binding: ActivityAppwidgetChartsConfigBinding
+    private lateinit var previewBinding: AppwidgetChartsContentBinding
     private val prefs by lazy { WidgetPrefs(this)[appWidgetId] }
     private val periodChipIds = arrayOf(
         R.id.charts_7day,
@@ -48,10 +48,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        if (billingViewModel.proStatus.value == true)
-            ColorPatchUtils.setTheme(this)
-        else
-            theme.applyStyle(R.style.ColorPatch_Pink_Main, true)
+        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
 
         super.onCreate(savedInstanceState)
 
@@ -72,7 +69,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
             resources.getQuantityString(R.plurals.num_years, 1, 1)
         binding.widgetPeriod.chartsOverall.text = getString(R.string.charts_overall)
 
-        if (!BuildConfig.DEBUG && Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
+        if (!BuildConfig.DEBUG || !DynamicColors.isDynamicColorAvailable())
             binding.chipDynamic.visibility = View.GONE
 
         binding.widgetPeriod.chartsPeriod.setOnCheckedChangeListener { group, checkedId ->
@@ -123,13 +120,11 @@ class ChartsWidgetActivity : AppCompatActivity() {
         previewAlpha(binding.widgetBgAlpha.value / 100)
     }
 
-    private fun themeFromChip(checkedId: Int): WidgetTheme {
-        return when (checkedId) {
-            R.id.chip_dark -> WidgetTheme.DARK
-            R.id.chip_light -> WidgetTheme.LIGHT
-            R.id.chip_dynamic -> WidgetTheme.DYNAMIC
-            else -> WidgetTheme.DARK
-        }
+    private fun themeFromChip(checkedId: Int) = when (checkedId) {
+        R.id.chip_dark -> WidgetTheme.DARK
+        R.id.chip_light -> WidgetTheme.LIGHT
+        R.id.chip_dynamic -> WidgetTheme.DYNAMIC
+        else -> WidgetTheme.DARK
     }
 
     override fun attachBaseContext(newBase: Context?) {
@@ -138,17 +133,10 @@ class ChartsWidgetActivity : AppCompatActivity() {
     }
 
     private fun initFromPrefs() {
-        val period = prefs.period
-        if (period != null)
-            binding.widgetPeriod.chartsPeriod.check(periodChipIds[period])
-        else {
-            binding.widgetPeriod.charts7day.isChecked = true
-            initPreview(WidgetTheme.DARK, hasShadow = true)
-            return
-        }
-
         val theme = WidgetTheme.values()[prefs.theme]
         val hasShadow = prefs.shadow
+
+        binding.widgetPeriod.chartsPeriod.check(periodChipIds[prefs.period ?: 0])
 
         initPreview(theme, hasShadow)
 
@@ -159,11 +147,8 @@ class ChartsWidgetActivity : AppCompatActivity() {
         }
 
         binding.widgetShadow.isChecked = hasShadow
-
-        val alpha = prefs.bgAlpha
-        binding.widgetBgAlpha.value = alpha * 100
-
-        widgetExists = true
+        binding.widgetBgAlpha.value = prefs.bgAlpha * 100
+        widgetExists = prefs.period != null
     }
 
     override fun onDestroy() {

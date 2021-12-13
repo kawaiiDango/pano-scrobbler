@@ -43,6 +43,7 @@
 - Mix and match themes
 - Block metadata from scrobbling
 - Pattern edits (upto 30)
+- Show icons and search in apps you scrobbled from
 
 #### Building:
 See [instructions.md](instructions.md)

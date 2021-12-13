@@ -17,6 +17,7 @@ import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MainPrefs
+import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 
@@ -39,7 +40,10 @@ class RandomFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enterTransition = android.transition.Fade()
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -54,7 +58,7 @@ class RandomFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.random)
+        Stuff.setTitle(activity!!, R.string.random)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -159,10 +163,10 @@ class RandomFragment: Fragment() {
         binding.randomTrack.recentsDate.text = Stuff.myRelativeTime(context!!, track.playedWhen?.time ?: 0)
 
         binding.randomPlay.setOnClickListener {
-            Stuff.launchSearchIntent(track.artist, track.name, context!!)
+            Stuff.launchSearchIntent(context!!, track, null)
         }
         binding.randomTrack.root.setOnClickListener {
-            Stuff.launchSearchIntent(track.artist, track.name, context!!)
+            Stuff.launchSearchIntent(context!!, track, null)
         }
         binding.randomInfo.setOnClickListener {
             if (track.url != null) {

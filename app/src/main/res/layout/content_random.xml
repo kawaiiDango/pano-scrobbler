@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="@string/random_not_found"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+        android:textAppearance="?textAppearanceHeadlineSmall"
         android:layout_gravity="center"
         android:visibility="gone" />
 
@@ -63,27 +63,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:paddingTop="8dp"
             android:orientation="horizontal">
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/random_info"
-                style="@style/Widget.AppCompat.Button.Borderless"
+                style="?materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/more_info"
-                android:tooltipText="@string/more_info"
-                app:drawableTint="?colorPrimary"
-                app:srcCompat="@drawable/vd_info" />
+                android:layout_marginEnd="16dp"
+                android:text="@string/more_info"
+                app:iconTint="?colorSecondary"
+                android:textColor="?colorSecondary"
+                app:icon="@drawable/vd_info" />
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/random_play"
-                style="@style/Widget.AppCompat.Button.Borderless"
+                style="?materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/search"
-                android:tooltipText="@string/search"
-                app:drawableTint="?colorPrimary"
-                app:srcCompat="@drawable/vd_search_play" />
+                android:text="@string/search"
+                app:iconTint="?colorSecondary"
+                android:textColor="?colorSecondary"
+                app:icon="@drawable/vd_search_play" />
 
         </LinearLayout>
 
@@ -106,7 +108,8 @@
             android:text="@string/randomize"
             android:layout_gravity="center_horizontal"
             android:alpha="0.7"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Button" />
+            android:textAllCaps="true"
+            android:textAppearance="?textAppearanceTitleSmall" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -115,7 +118,7 @@
 
             <Button
                 android:id="@+id/random_get_scrobble"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/vd_note"
@@ -125,7 +128,7 @@
 
             <Button
                 android:id="@+id/random_get_loved"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/vd_heart"

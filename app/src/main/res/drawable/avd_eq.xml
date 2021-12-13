@@ -7,7 +7,7 @@
             android:height="20dp"
             android:viewportWidth="30"
             android:viewportHeight="20"
-            android:tint="?colorSecondary">
+            android:tint="?colorTertiary">
             <group
                 android:name="group"
                 android:pivotY="20">

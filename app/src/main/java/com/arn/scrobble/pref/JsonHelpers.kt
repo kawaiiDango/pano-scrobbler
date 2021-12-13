@@ -6,7 +6,7 @@ import android.util.JsonWriter
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.db.TrackedPlayer
+import com.arn.scrobble.db.ScrobbleSource
 
 
 object JsonHelpers {
@@ -141,19 +141,19 @@ object JsonHelpers {
         return this
     }
 
-    fun TrackedPlayer.writeJson(writer: JsonWriter) {
-        val trackedPlayer = this
+    fun ScrobbleSource.writeJson(writer: JsonWriter) {
+        val scrobbleSource = this
         writer.apply {
             beginObject()
-            name(TrackedPlayer::timeMillis.name).value(trackedPlayer.timeMillis)
-            name(TrackedPlayer::playerPackage.name).value(trackedPlayer.playerPackage)
+            name(ScrobbleSource::timeMillis.name).value(scrobbleSource.timeMillis)
+            name(ScrobbleSource::pkg.name).value(scrobbleSource.pkg)
             endObject()
         }
     }
 
-    fun TrackedPlayer.readJson(reader: JsonReader): TrackedPlayer {
+    fun ScrobbleSource.readJson(reader: JsonReader): ScrobbleSource {
         var timeMillis: Long? = null
-        var playerPackage: String? = null
+        var pkg: String? = null
         reader.apply {
             beginObject()
             while (hasNext()) {
@@ -162,13 +162,13 @@ object JsonHelpers {
                     skipValue()
                 else {
                     when (name) {
-                        TrackedPlayer::timeMillis.name -> timeMillis = nextLong()
-                        TrackedPlayer::playerPackage.name -> playerPackage = nextString()
+                        ScrobbleSource::timeMillis.name -> timeMillis = nextLong()
+                        ScrobbleSource::pkg.name -> pkg = nextString()
                     }
                 }
             }
             endObject()
         }
-        return TrackedPlayer(timeMillis = timeMillis!!, playerPackage = playerPackage!!)
+        return ScrobbleSource(timeMillis = timeMillis!!, pkg = pkg!!)
     }
 }

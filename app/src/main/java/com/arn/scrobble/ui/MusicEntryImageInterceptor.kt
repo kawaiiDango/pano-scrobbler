@@ -1,7 +1,6 @@
 package com.arn.scrobble.ui
 
 import androidx.collection.LruCache
-import coil.annotation.ExperimentalCoilApi
 import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -13,8 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 
-@OptIn(ExperimentalCoilApi::class)
-class MusicEntryImageInterceptor: Interceptor {
+class MusicEntryImageInterceptor : Interceptor {
 
     private var nwReqCount = 0
     private val delayMs = 50L
@@ -28,10 +26,10 @@ class MusicEntryImageInterceptor: Interceptor {
         }
         val entry = musicEntryImageReq.musicEntry
         val key = genKey(entry)
-        val cachedOption =  musicEntryCache[key]
-        var fetchedEntry = cachedOption?.value
+        val cachedOptional = musicEntryCache[key]
+        var fetchedEntry = cachedOptional?.value
 
-        if (cachedOption == null) {
+        if (cachedOptional == null) {
             withContext(Dispatchers.IO) {
                 try {
                     delay(nwReqCount * delayMs)
@@ -62,7 +60,8 @@ class MusicEntryImageInterceptor: Interceptor {
             entry.imageUrlsMap = fetchedEntry?.imageUrlsMap
 
         val imgUrl = if (entry is Artist)
-            fetchedEntry?.getImageURL(ImageSize.EXTRALARGE) ?: "" // Spotify image is always EXTRALARGE
+            fetchedEntry?.getImageURL(ImageSize.EXTRALARGE)
+                ?: "" // Spotify image is always EXTRALARGE
         else
             fetchedEntry?.getWebpImageURL(musicEntryImageReq.size) ?: ""
 

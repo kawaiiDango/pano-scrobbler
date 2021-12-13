@@ -19,7 +19,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         SimpleEdit::class,
         RegexEdit::class,
         BlockedMetadata::class,
-        TrackedPlayer::class,
+        ScrobbleSource::class,
     ], version = 10
 )
 abstract class PanoDb : RoomDatabase() {
@@ -28,7 +28,7 @@ abstract class PanoDb : RoomDatabase() {
     abstract fun getSimpleEditsDao(): SimpleEditsDao
     abstract fun getRegexEditsDao(): RegexEditsDao
     abstract fun getBlockedMetadataDao(): BlockedMetadataDao
-    abstract fun getTrackedPlayerDao(): TrackedPlayerDao
+    abstract fun getScrobbleSourcesDao(): ScrobbleSourcesDao
 
     companion object {
         const val fileName = "pendingScrobbles"
@@ -120,9 +120,9 @@ abstract class PanoDb : RoomDatabase() {
 
         private val MIGRATION_9_10 = object : Migration(9, 10) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                val tableName = "trackedPlayers"
-                database.execSQL("CREATE TABLE IF NOT EXISTS `$tableName` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timeMillis` INTEGER NOT NULL, `playerPackage` TEXT NOT NULL)")
-                database.execSQL("CREATE INDEX IF NOT EXISTS `index_trackedPlayers_timeMillis` ON `$tableName` (`timeMillis`)")
+                val tableName = "scrobbleSources"
+                database.execSQL("CREATE TABLE IF NOT EXISTS `$tableName` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timeMillis` INTEGER NOT NULL, `pkg` TEXT NOT NULL)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS `index_scrobbleSources_timeMillis` ON `$tableName` (`timeMillis`)")
             }
         }
 

@@ -8,16 +8,10 @@ import com.arn.scrobble.db.PanoDb
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class BlockedMetadataVM(app: Application): AndroidViewModel(app) {
+class BlockedMetadataVM(app: Application) : AndroidViewModel(app) {
     private val dao = PanoDb.getDb(getApplication()).getBlockedMetadataDao()
     val blockedMetadata = mutableListOf<BlockedMetadata>()
     val blockedMetadataReceiver = dao.allLd
-
-    fun upsert(blockedMetadata: BlockedMetadata) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.insertLowerCase(listOf(blockedMetadata), ignore = false)
-        }
-    }
 
     fun delete(index: Int) {
         viewModelScope.launch(Dispatchers.IO) {

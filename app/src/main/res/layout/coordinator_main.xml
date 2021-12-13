@@ -18,8 +18,7 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:stateListAnimator="@animator/appbar_always_elevated"
-        app:layout_behavior="com.arn.scrobble.ui.DisableableAppBarLayoutBehavior"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        app:layout_behavior="com.arn.scrobble.ui.DisableableAppBarLayoutBehavior">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/ctl"
@@ -38,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:background="#000"
+                android:background="@android:color/black"
                 android:contentDescription="@string/album_art"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
@@ -92,17 +91,16 @@
                             android:layout_marginBottom="5sp"
                             android:importantForAccessibility="no"
                             android:alpha="0.9"
-                            app:spark_lineColor="?colorSecondary"
+                            app:spark_lineColor="?colorOutline"
                             app:spark_animateChanges="true"
-                            app:spark_lineWidth="6dp"
-                            />
+                            app:spark_lineWidth="6dp" />
 
                         <TextView
                             android:id="@+id/sparkline_tick_top"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="top|start"
-                            style="@style/TextAppearance.MaterialComponents.Caption"
+                            style="?textAppearanceBodySmall"
                             tools:text="10000"/>
 
                         <TextView
@@ -111,7 +109,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="bottom|start"
                             android:layout_marginBottom="12sp"
-                            style="@style/TextAppearance.MaterialComponents.Caption"
+                            style="?textAppearanceBodySmall"
                             tools:text="000"/>
 
                         <TextView
@@ -121,7 +119,7 @@
                             android:layout_gravity="bottom|center_horizontal"
                             android:layout_marginStart="20dp"
                             android:text="@string/graph_info"
-                            style="@style/TextAppearance.MaterialComponents.Caption"/>
+                            style="?textAppearanceBodySmall"/>
 
                     </FrameLayout>
 

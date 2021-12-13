@@ -1,6 +1,7 @@
 package com.arn.scrobble
 
 import android.content.Context
+import com.arn.scrobble.pref.MainPrefs
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
@@ -12,8 +13,6 @@ import okio.Buffer
 
 class LastfmUnscrobbler(context: Context?) {
 
-    private var csrfToken: String? = null
-    private lateinit var username: String
     private val client by lazy {
         LFMRequester.okHttpClient.newBuilder()
             .cookieJar(cookieJar)
@@ -21,8 +20,14 @@ class LastfmUnscrobbler(context: Context?) {
 //                .followRedirects(false)
             .build()
     }
-    private var cookieCache = SetCookieCache()
+    private val cookieCache = SetCookieCache()
     private val cookieJar: CookieJar
+    private val username by lazy { MainPrefs(context!!).lastfmUsername!! }
+    private val csrfToken by lazy {
+        cookieCache.find {
+            it.name == COOKIE_CSRFTOKEN && it.expiresAt > System.currentTimeMillis()
+        }?.value
+    }
 
     class LoggingInterceptor : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
@@ -60,25 +65,14 @@ class LastfmUnscrobbler(context: Context?) {
     }
 
     init {
-        if (context != null)
-            cookieJar = object : PersistentCookieJar(
+        cookieJar = if (context != null)
+            PersistentCookieJar(
                 cookieCache,
                 SharedPrefsCookiePersistor(context.getHarmonySharedPreferences("CookiePersistence"))
-            ) {
-                override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-                    super.saveFromResponse(url, cookies)
-                    cookies
-                        .find { it.name == COOKIE_CSRFTOKEN }
-                        ?.let { csrfToken = it.value }
-                }
-            }
+            )
         else { //for unit tests
-            cookieJar = object : CookieJar {
+            object : CookieJar {
                 override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-                    cookies
-                        .find { it.name == COOKIE_CSRFTOKEN }
-                        ?.let { csrfToken = it.value }
-
                     cookieCache.addAll(cookies)
                 }
 
@@ -95,15 +89,7 @@ class LastfmUnscrobbler(context: Context?) {
         (cookieJar as PersistentCookieJar).clear()
     }
 
-    fun checkCsrf(username: String?): Boolean {
-        csrfToken = cookieCache.find {
-            it.name == COOKIE_CSRFTOKEN && it.expiresAt > System.currentTimeMillis()
-        }?.value
-        if (csrfToken == null || username == null)
-            return false
-        this.username = username
-        return true
-    }
+    fun haveCsrfCookie() = csrfToken != null
 
     fun loginWithPassword(password: String): String? {
         var errMsg: String? = "" //null if success

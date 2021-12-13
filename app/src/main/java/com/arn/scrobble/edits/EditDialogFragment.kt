@@ -2,25 +2,27 @@ package com.arn.scrobble.edits
 
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.arn.scrobble.*
-import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.db.TrackedPlayer
+import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.db.ScrobbleSource
+import com.arn.scrobble.scrobbleable.Scrobblable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import de.umass.lastfm.CallException
+import com.google.android.material.textfield.TextInputLayout
 import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
-import de.umass.lastfm.scrobble.ScrobbleResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -50,12 +52,6 @@ class EditDialogFragment: LoginFragment() {
 
         if (arguments?.getBoolean(NLService.B_FORCEABLE) == true) {
             binding.loginForce.visibility = View.VISIBLE
-            binding.loginForce.setOnCheckedChangeListener { compoundButton, checked ->
-                if (checked)
-                    binding.loginSubmit.setText(R.string.force)
-                else
-                    binding.loginSubmit.setText(R.string.edit)
-            }
         }
 
         arguments?.getString(NLService.B_TRACK)?.let {
@@ -74,16 +70,22 @@ class EditDialogFragment: LoginFragment() {
             binding.loginTextfieldLast2.editText!!.setText(it)
         }
 
-        binding.editSwap.visibility = View.VISIBLE
-        binding.editSwap.setOnClickListener {
+        binding.loginTextfield2.endIconMode = TextInputLayout.END_ICON_CUSTOM
+        binding.loginTextfield2.setEndIconDrawable(R.drawable.vd_swap)
+        binding.loginTextfield2.setEndIconContentDescription(R.string.swap)
+
+        binding.loginTextfield2.setEndIconOnClickListener {
             val tmp = binding.loginTextfield1.editText?.text
             binding.loginTextfield1.editText!!.text = binding.loginTextfieldLast.editText!!.text
             binding.loginTextfieldLast.editText!!.text = tmp
         }
 
-        binding.editAlbumArtist.visibility = View.VISIBLE
-        binding.editAlbumArtist.setOnClickListener {
-            it.visibility = View.GONE
+        binding.loginTextfieldLast.endIconMode = TextInputLayout.END_ICON_CUSTOM
+        binding.loginTextfieldLast.setEndIconDrawable(R.drawable.vd_album_artist)
+        binding.loginTextfieldLast.setEndIconContentDescription(R.string.album_artist)
+
+        binding.loginTextfieldLast.setEndIconOnClickListener {
+            binding.loginTextfieldLast.isEndIconVisible = false
             binding.loginTextfieldLast2.hint = getString(R.string.album_artist)
             binding.loginTextfieldLast2.editText!!.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
             binding.loginTextfieldLast.editText!!.imeOptions = EditorInfo.IME_NULL
@@ -105,18 +107,6 @@ class EditDialogFragment: LoginFragment() {
         return MaterialAlertDialogBuilder(context!!)
         .setView(binding.root)
         .create()
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        if (isStandalone)
-            activity?.finish()
-    }
-
-    override fun onCancel(dialog: DialogInterface) {
-        super.onCancel(dialog)
-        if (isStandalone)
-            activity?.finish()
     }
 
     override suspend fun validateAsync(): String? {
@@ -198,12 +188,17 @@ class EditDialogFragment: LoginFragment() {
                 }
             }
             if (validTrack == null && (validArtist == null || validAlbumArtist == null) && !binding.loginForce.isChecked) {
+                if (!isStandalone)
+                    withContext(Dispatchers.Main) {
+                        binding.loginForce.visibility = View.VISIBLE
+                    }
                 errMsg = getString(R.string.state_unrecognised_artist)
             } else {
                 val lastfmSessKey: String? = prefs.lastfmSessKey
                 val lastfmSession = Session.createSession(
                     Stuff.LAST_KEY,
-                    Stuff.LAST_SECRET, lastfmSessKey)
+                    Stuff.LAST_SECRET, lastfmSessKey
+                )
                 val scrobbleData = ScrobbleData(artist, track, (timeMillis / 1000).toInt())
                 scrobbleData.album = album
                 scrobbleData.albumArtist = albumArtist
@@ -239,55 +234,21 @@ class EditDialogFragment: LoginFragment() {
                             }
                         }
 
-                        // track playeer
+                        // track player
                         arguments?.getString(NLService.B_PACKAGE_NAME)?.let {
-                            val trackedPlayer = TrackedPlayer(
+                            val scrobbleSource = ScrobbleSource(
                                 timeMillis = scrobbleData.timestamp * 1000L,
-                                playerPackage = it
+                                pkg = it
                             )
-                            PanoDb.getDb(context!!).getTrackedPlayerDao().insert(trackedPlayer)
+                            PanoDb.getDb(context!!).getScrobbleSourcesDao().insert(scrobbleSource)
                         }
 
                         //scrobble everywhere else
-                        fun getScrobbleResult(scrobbleData: ScrobbleData, session: Session): ScrobbleResult {
-                            return try {
-                                Track.scrobble(scrobbleData, session)
-                            } catch (e: CallException) {
-                                ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
-                            }
+                        Scrobblable.getScrobblablesMap(prefs).forEach { (strId, scrobblable) ->
+                            if (strId != R.string.lastfm && scrobblable != null)
+                                launch { scrobblable.scrobble(scrobbleData) }
                         }
 
-                        launch {
-                            prefs.librefmSessKey?.let {
-                                val librefmSession: Session = Session.createCustomRootSession(
-                                    Stuff.LIBREFM_API_ROOT,
-                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
-                                )
-                                getScrobbleResult(scrobbleData, librefmSession)
-                            }
-                        }
-                        launch {
-                            prefs.gnufmSessKey?.let {
-                                val gnufmSession: Session = Session.createCustomRootSession(
-                                    prefs.gnufmRoot + "2.0/",
-                                    Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
-                                )
-                                getScrobbleResult(scrobbleData, gnufmSession)
-                            }
-                        }
-                        launch {
-                            prefs.listenbrainzToken?.let {
-                                ListenBrainz(it)
-                                    .scrobble(scrobbleData)
-                            }
-                        }
-                        launch {
-                            prefs.customListenbrainzToken?.let {
-                                ListenBrainz(it)
-                                    .setApiRoot(prefs.customListenbrainzRoot!!)
-                                    .scrobble(scrobbleData)
-                            }
-                        }
                     }
                     saveEdit(context!!)
                     if (binding.loginForce.isChecked){
@@ -302,7 +263,7 @@ class EditDialogFragment: LoginFragment() {
                         withContext(Dispatchers.Main) {
                             MaterialAlertDialogBuilder(context!!)
                                     .setMessage(R.string.scrobble_ignored_save_edit)
-                                    .setPositiveButton(android.R.string.yes) { dialogInterface, i ->
+                                    .setPositiveButton(R.string.yes) { _, _ ->
                                         launch(Dispatchers.IO) {
                                             saveEdit(activity)
                                             withContext(Dispatchers.Main) {
@@ -310,7 +271,7 @@ class EditDialogFragment: LoginFragment() {
                                             }
                                         }
                                     }
-                                    .setNegativeButton(android.R.string.no, null)
+                                    .setNegativeButton(R.string.no, null)
                                     .show()
                         }
                     }
@@ -357,7 +318,7 @@ class EditDialogFragment: LoginFragment() {
                                             presetName
                                         )
                                     )
-                                    .setPositiveButton(android.R.string.yes) { _, _ ->
+                                    .setPositiveButton(R.string.yes) { _, _ ->
                                         dismiss()
                                         activity.supportFragmentManager
                                             .beginTransaction()
@@ -372,7 +333,7 @@ class EditDialogFragment: LoginFragment() {
                                             .addToBackStack(null)
                                             .commit()
                                     }
-                                    .setNegativeButton(android.R.string.no) { _, _ ->
+                                    .setNegativeButton(R.string.no) { _, _ ->
                                         prefs.regexEditsLearnt = true
                                     }
                                     .show()

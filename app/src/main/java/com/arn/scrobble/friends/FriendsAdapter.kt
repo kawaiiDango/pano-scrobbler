@@ -17,12 +17,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.load
-import coil.transition.CrossfadeTransition
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
+import com.arn.scrobble.recents.PaletteColors
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
@@ -185,8 +185,8 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
                         binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
                 }
 
-                binding.friendsTrackFrame.setOnClickListener { v: View ->
-                    Stuff.launchSearchIntent(track.artist, track.name, itemView.context)
+                binding.friendsTrackFrame.setOnClickListener {
+                    Stuff.launchSearchIntent(itemView.context, track, null)
                 }
             } else {
                 binding.friendsTrackLl.visibility = View.INVISIBLE
@@ -206,7 +206,7 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
             val userImg = user.getWebpImageURL(ImageSize.EXTRALARGE)
             if (userImg != binding.friendsPic.tag) {
                 binding.friendsPic.tag = userImg
-                val bgDark = ContextCompat.getColor(itemView.context, R.color.dialogBg)
+                val bgDark = ContextCompat.getColor(itemView.context, R.color.darkGrey)
                 val wasCached = viewModel.paletteColorsCache[userImg] != null
                 val color = if (wasCached)
                     viewModel.paletteColorsCache[userImg]!!
@@ -228,20 +228,20 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
                             error(R.drawable.vd_placeholder_user)
                             allowHardware(false)
                             if (!wasCached)
-                                transition(PaletteTransition { palette ->
-                                    val colorMutedBlack = palette.getDarkMutedColor(bgDark)
-                                    val anim = ValueAnimator.ofArgb(bgDark, colorMutedBlack)
+                                transitionFactory(PaletteTransition.Factory { palette ->
+                                    val paletteColors = PaletteColors(itemView.context, palette)
+                                    val anim = ValueAnimator.ofArgb(bgDark, paletteColors.mutedBg)
                                     anim.addUpdateListener {
                                         val bg = itemView.background
                                         if (bg is MaterialShapeDrawable) {
                                             bg.setTint(it.animatedValue as Int)
                                         }
                                     }
-//                                            val anim = ObjectAnimator.ofArgb(itemView, "backgroundColor", bgDark, colorMutedBlack)
+
                                     anim.duration = 350
                                     anim.interpolator = AccelerateInterpolator()
                                     anim.start()
-                                    viewModel.paletteColorsCache[userImg] = colorMutedBlack
+                                    viewModel.paletteColorsCache[userImg] = paletteColors.mutedBg
                                 })
                         }
                 } else {

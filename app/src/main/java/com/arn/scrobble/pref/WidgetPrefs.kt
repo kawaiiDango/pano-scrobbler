@@ -2,7 +2,9 @@ package com.arn.scrobble.pref
 
 import android.content.Context
 import com.frybits.harmony.getHarmonySharedPreferences
+import com.google.android.material.color.DynamicColors
 import hu.autsoft.krate.*
+import hu.autsoft.krate.default.withDefault
 
 class WidgetPrefs(context: Context) {
 
@@ -21,12 +23,17 @@ class WidgetPrefs(context: Context) {
     inner class SpecificWidgetPrefs(private val widgetId: Int): Krate {
         override val sharedPreferences = this@WidgetPrefs.sharedPreferences
 
-        var tab by intPref(getWidgetPrefName(PREF_WIDGET_TAB))
-        var bgAlpha by floatPref(getWidgetPrefName(PREF_WIDGET_BG_ALPHA), 0.4f)
-        var theme by intPref(getWidgetPrefName(PREF_WIDGET_THEME), WidgetTheme.DARK.ordinal)
-        var period by intPref(getWidgetPrefName(PREF_WIDGET_PERIOD))
-        var shadow by booleanPref(getWidgetPrefName(PREF_WIDGET_SHADOW), true)
-        var lastUpdated by longPref(getWidgetPrefName(PREF_WIDGET_LAST_UPDATED))
+        var tab by intPref(PREF_WIDGET_TAB.prefName)
+        var bgAlpha by floatPref(PREF_WIDGET_BG_ALPHA.prefName).withDefault(0.6f)
+        var theme by intPref(PREF_WIDGET_THEME.prefName).withDefault(
+            if (DynamicColors.isDynamicColorAvailable())
+                WidgetTheme.DYNAMIC.ordinal
+            else
+                WidgetTheme.DARK.ordinal
+        )
+        var period by intPref(PREF_WIDGET_PERIOD.prefName)
+        var shadow by booleanPref(PREF_WIDGET_SHADOW.prefName).withDefault(true)
+        var lastUpdated by longPref(PREF_WIDGET_LAST_UPDATED.prefName)
 
         fun clear() {
             sharedPreferences.edit().apply {
@@ -41,14 +48,13 @@ class WidgetPrefs(context: Context) {
             }
         }
 
-        private fun getWidgetPrefName(name: String) = "${name}_$widgetId"
+        private val String.prefName inline get() = "${this}_$widgetId"
     }
 
     companion object {
         const val NAME = "widget"
         const val PREF_WIDGET_TAB = "tab"
         const val PREF_WIDGET_BG_ALPHA = "bg_alpha"
-        const val PREF_WIDGET_DARK = "dark"
         const val PREF_WIDGET_THEME = "theme"
         const val PREF_WIDGET_PERIOD = "period"
         const val PREF_WIDGET_SHADOW = "shadow"

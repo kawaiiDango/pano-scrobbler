@@ -23,7 +23,8 @@
         android:alpha="0.7"
         android:paddingHorizontal="20dp"
         app:srcCompat="@drawable/vd_edit"
-        app:tint="?colorSecondary" />
+        android:importantForAccessibility="no"
+        app:tint="?colorTertiary" />
 
     <TextView
         android:id="@+id/edits_track"
@@ -35,8 +36,8 @@
         android:ellipsize="end"
         android:gravity="start"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-        android:textColor="?colorSecondary"
+        android:textAppearance="?textAppearanceTitleLarge"
+        android:textColor="?colorTertiary"
         app:autoSizeMaxTextSize="22sp"
         app:autoSizeMinTextSize="14sp"
         app:autoSizeStepGranularity="1sp"
@@ -54,7 +55,7 @@
         android:layout_toEndOf="@+id/edits_img"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textAppearance="?textAppearanceBodyLarge"
         app:autoSizeMaxTextSize="20sp"
         app:autoSizeMinTextSize="12sp"
         app:autoSizeStepGranularity="1sp"

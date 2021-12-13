@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 10,
-    "identityHash": "c930f354e8799056245ecdc810e7ee6c",
+    "identityHash": "bdc8befe28bb0fec34ad594989626445",
     "entities": [
       {
         "tableName": "PendingScrobbles",
@@ -363,8 +363,8 @@
         "foreignKeys": []
       },
       {
-        "tableName": "trackedPlayers",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timeMillis` INTEGER NOT NULL, `playerPackage` TEXT NOT NULL)",
+        "tableName": "scrobbleSources",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timeMillis` INTEGER NOT NULL, `pkg` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "_id",
@@ -379,8 +379,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "playerPackage",
-            "columnName": "playerPackage",
+            "fieldPath": "pkg",
+            "columnName": "pkg",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -393,12 +393,12 @@
         },
         "indices": [
           {
-            "name": "index_trackedPlayers_timeMillis",
+            "name": "index_scrobbleSources_timeMillis",
             "unique": false,
             "columnNames": [
               "timeMillis"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_trackedPlayers_timeMillis` ON `${TABLE_NAME}` (`timeMillis`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scrobbleSources_timeMillis` ON `${TABLE_NAME}` (`timeMillis`)"
           }
         ],
         "foreignKeys": []
@@ -407,7 +407,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c930f354e8799056245ecdc810e7ee6c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bdc8befe28bb0fec34ad594989626445')"
     ]
   }
 }

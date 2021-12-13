@@ -6,43 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center">
-    <FrameLayout
+
+    <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
-            android:layout_marginLeft="1dp"
-            android:scaleType="fitCenter"
-            android:id="@+id/tab_icon_shadow"
-            app:tint="@android:color/black"
-            android:alpha="0.4"
-            tools:srcCompat="@drawable/vd_heart"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
-            android:id="@+id/tab_icon"
-            app:tint="?colorPrimary"
-            android:alpha="0.7"
-            tools:srcCompat="@drawable/vd_heart"/>
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:id="@+id/tab_icon"
+        app:tint="?colorPrimary"
+        android:alpha="0.7"
+        tools:srcCompat="@drawable/vd_heart"/>
 
     <TextView
         android:id="@+id/tab_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:shadowRadius="5"
-        android:shadowDx="2"
-        android:shadowDy="2"
-        android:shadowColor="@android:color/black"
         android:maxLines="1"
         android:textAlignment="center"
-        android:textAllCaps="true"
         android:textColor="?colorPrimary"
-        android:textSize="12dp"
+        android:textAppearance="?textAppearanceLabelSmall"
         android:visibility="gone"
+        android:scrollbars="none"
         tools:text="title"
         tools:visibility="visible" />
 </LinearLayout>

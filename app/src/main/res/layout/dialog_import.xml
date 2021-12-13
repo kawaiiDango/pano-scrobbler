@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:paddingTop="24dp"
+    android:paddingHorizontal="24dp">
 
     <RadioGroup
         android:id="@+id/import_radio_group"
@@ -17,7 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/list_item_padding"
             android:text="@string/import_lists_nope"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+            android:textAppearance="?textAppearanceBodyLarge" />
 
         <RadioButton
             android:id="@+id/import_edits_replace_all"
@@ -25,7 +27,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/list_item_padding"
             android:text="@string/import_lists_replace_all"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+            android:textAppearance="?textAppearanceBodyLarge" />
 
         <RadioButton
             android:id="@+id/import_edits_replace_existing"
@@ -33,7 +35,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/list_item_padding"
             android:text="@string/import_lists_replace_existing"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+            android:textAppearance="?textAppearanceBodyLarge" />
 
         <RadioButton
             android:id="@+id/import_edits_keep"
@@ -41,13 +43,14 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/list_item_padding"
             android:text="@string/import_lists_keep"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+            android:textAppearance="?textAppearanceBodyLarge" />
     </RadioGroup>
 
-    <View
+    <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
+        android:layout_height="wrap_content"
+        app:dividerInsetEnd="24dp"
+        app:dividerInsetStart="24dp"/>
 
     <CheckBox
         android:id="@+id/import_settings"
@@ -55,5 +58,5 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/list_item_padding"
         android:text="@string/import_settings"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+        android:textAppearance="?textAppearanceBodyLarge" />
 </LinearLayout>

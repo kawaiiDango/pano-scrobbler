@@ -9,7 +9,8 @@
         android:id="@+id/app_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/list_item_app" />
+        tools:listitem="@layout/list_item_app"
+        android:layoutAnimation="@anim/layout_animation_slide_up"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/app_list_done"
@@ -22,7 +23,6 @@
         android:contentDescription="@android:string/ok"
         android:focusable="true"
         android:visibility="invisible"
-        app:backgroundTint="?colorPrimary"
         app:srcCompat="@drawable/vd_check_simple" />
 
 </FrameLayout>

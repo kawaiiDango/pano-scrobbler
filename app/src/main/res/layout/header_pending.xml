@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingEnd="8dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textAppearance="?textAppearanceTitleMedium"
         android:textDirection="firstStrong"
         tools:text="@string/n_more"/>
 
@@ -29,7 +29,6 @@
         android:clickable="false"
         android:text="@string/show_all"
         android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        android:textColor="?colorPrimary"
-        android:textStyle="bold"/>
+        android:textAppearance="?textAppearanceTitleMedium"
+        android:textColor="?colorPrimary"/>
 </LinearLayout>

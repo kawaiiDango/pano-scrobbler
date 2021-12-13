@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        android:textAppearance="?textAppearanceTitleSmall"
         tools:text="name" />
 
     <TextView
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        android:textAppearance="?textAppearanceBodySmall"
         android:visibility="gone"
         tools:visibility="visible"
         tools:text="cunt ry"/>
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        android:textAppearance="?textAppearanceBodySmall"
         android:visibility="gone"
         tools:visibility="visible"
         tools:text="10 scrobbles since 2010"/>
@@ -75,8 +75,8 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="?colorSecondary"
+                android:textAppearance="?textAppearanceBodyMedium"
+                android:textColor="?colorTertiary"
                 tools:text="tit"
                 app:drawableEndCompat="@drawable/vd_rounded_corner" />
 
@@ -88,7 +88,7 @@
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:paddingEnd="4dp"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textAppearance="?textAppearanceBodyMedium"
                 android:textSize="12sp"
                 tools:text="subtit"/>
 
@@ -100,7 +100,7 @@
                 android:layout_marginEnd="11dp"
                 android:gravity="bottom"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:textAppearance="?textAppearanceBodySmall"
                 tools:text="date"/>
         </LinearLayout>
 

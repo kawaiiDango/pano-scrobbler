@@ -57,6 +57,7 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 	 */
 	protected static final Set<String> ONE_WEEK_METHODS = new HashSet<String>();
 	protected static final Set<String> ONE_MONTH_METHODS = new HashSet<String>();
+	protected static final Set<String> FIVE_MINUTES_METHODS = new HashSet<String>();
 
 	static {
 		// similar data
@@ -87,6 +88,13 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
         ONE_MONTH_METHODS.add("track.gettoptags");
         ONE_MONTH_METHODS.add("album.gettoptags");
         ONE_MONTH_METHODS.add("artist.gettoptags");
+
+        FIVE_MINUTES_METHODS.add("track.getsimilar");
+        FIVE_MINUTES_METHODS.add("artist.gettopalbums");
+        FIVE_MINUTES_METHODS.add("artist.gettoptracks");
+        FIVE_MINUTES_METHODS.add("user.gettopalbums");
+        FIVE_MINUTES_METHODS.add("user.gettopartists");
+        FIVE_MINUTES_METHODS.add("user.gettoptracks");
 	}
 
 	/**
@@ -113,13 +121,12 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 		if (method.equals("track.getinfo") || method.equals("album.getinfo"))
 			return !params.containsKey("username") ? ONE_WEEK : -1;
 
-		if (method.equals("user.gettopalbums") || method.equals("user.gettopartists") || method.equals("user.gettoptracks"))
-		    return FIVE_MINUTES;
-
 		if (ONE_WEEK_METHODS.contains(method))
 		    return ONE_WEEK;
 		else if (ONE_MONTH_METHODS.contains(method))
             return ONE_MONTH;
+        else if (FIVE_MINUTES_METHODS.contains(method))
+            return FIVE_MINUTES;
 		else
 		    return -1;
 	}

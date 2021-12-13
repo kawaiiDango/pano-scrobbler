@@ -9,7 +9,6 @@ import android.content.pm.ShortcutManager
 import android.media.MediaRecorder
 import android.os.*
 import android.text.method.LinkMovementMethod
-import android.transition.Fade
 import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
@@ -22,6 +21,7 @@ import com.acrcloud.rec.*
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.coroutines.*
 import org.json.JSONException
@@ -47,7 +47,9 @@ class RecFragment: Fragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enterTransition = Fade()
+
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
 
         micPermRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted)
@@ -90,7 +92,7 @@ class RecFragment: Fragment(),
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.scrobble_from_mic)
+        Stuff.setTitle(activity!!, R.string.scrobble_from_mic)
 //        showSnackbar()
     }
 

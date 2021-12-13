@@ -9,6 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="0dp"
+        android:background="@android:color/transparent"
+        app:liftOnScroll="false"
         android:touchscreenBlocksFocus="false">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -16,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            style="?textInputOutlinedExposedDropdownMenuStyle"
             app:hintEnabled="false"
             app:layout_scrollFlags="enterAlways|scroll|snap"
             app:endIconMode="dropdown_menu"

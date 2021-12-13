@@ -20,7 +20,17 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         AppWidgetManager.EXTRA_APPWIDGET_ID,
         AppWidgetManager.INVALID_APPWIDGET_ID
     )
+    private val periodStrings = arrayOf(
+        context.resources.getQuantityString(R.plurals.num_weeks, 1, 1),
+        context.resources.getQuantityString(R.plurals.num_months, 1, 1),
+        context.resources.getQuantityString(R.plurals.num_months, 3, 3),
+        context.resources.getQuantityString(R.plurals.num_months, 6, 6),
+        context.resources.getQuantityString(R.plurals.num_years, 1, 1),
+        context.getString(R.string.charts_overall)
+    )
+
     private var tab = Stuff.TYPE_ARTISTS
+    private var period = 0
 
     override fun onCreate() {
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
@@ -42,15 +52,27 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         widgetItems.clear()
     }
 
-    override fun getCount() = widgetItems.size
+    override fun getCount() = widgetItems.size + 1
 
     override fun getViewAt(position: Int): RemoteViews {
         // position will always range from 0 to getCount() - 1.
         // We construct a remote views item based on our widget item xml file, and set the
         // text based on the position.
-        val item = widgetItems[position]
+
+        if (position == 0) {
+            val headerView = RemoteViews(context.packageName, R.layout.appwidget_list_header)
+            if (period in periodStrings.indices)
+                headerView.setTextViewText(R.id.appwidget_period, periodStrings[period])
+//            val fillInIntent = Intent().putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_CHARTS)
+//            headerView.setOnClickFillInIntent(R.id.appwidget_period, fillInIntent)
+            return headerView
+        }
+
+        val idx = position - 1
+
+        val item = widgetItems[idx]
         val rv = RemoteViews(context.packageName, R.layout.appwidget_charts_item)
-        rv.setTextViewText(R.id.appwidget_charts_serial, NumberFormat.getInstance().format(position + 1) + ".")
+        rv.setTextViewText(R.id.appwidget_charts_serial, NumberFormat.getInstance().format(idx + 1) + ".")
         rv.setTextViewText(R.id.appwidget_charts_title, item.title)
 
         if (item.subtitle != "") {
@@ -94,7 +116,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         return null
     }
 
-    override fun getViewTypeCount() = 1
+    override fun getViewTypeCount() = 2
 
     override fun getItemId(position: Int) = position.toLong()
 
@@ -116,7 +138,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         val prefs = WidgetPrefs(context)[appWidgetId]
 
         tab = prefs.tab ?: Stuff.TYPE_ARTISTS
-        val period = prefs.period ?: return
+        period = prefs.period ?: return
 
         val list = ObjectSerializeHelper.convertFrom<ArrayList<ChartsWidgetListItem>>(
             prefs.sharedPreferences.getString("${tab}_$period", null)

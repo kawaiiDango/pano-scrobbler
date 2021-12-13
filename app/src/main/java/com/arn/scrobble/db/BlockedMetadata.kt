@@ -1,12 +1,15 @@
 package com.arn.scrobble.db
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "blockedMetadata",
     indices = [Index(value = ["track", "album", "artist", "albumArtist"], unique = true)]
     )
+@Parcelize
 data class BlockedMetadata (
     @PrimaryKey(autoGenerate = true)
     var _id: Int = 0,
@@ -18,4 +21,4 @@ data class BlockedMetadata (
     var album: String = "",
     var artist: String = "",
     var albumArtist: String = "",
-)
+) : Parcelable

@@ -33,7 +33,6 @@
             android:layout_gravity="top|end"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="11dp"
-            android:alpha="0.9"
             android:elevation="8dp"
             android:rotation="@dimen/recents_overlay_rotate"
             android:transformPivotX="25dp"
@@ -59,8 +58,8 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            android:textColor="?colorSecondary"
+            android:textAppearance="?textAppearanceTitleMedium"
+            android:textColor="?colorTertiary"
             app:autoSizeMaxTextSize="22sp"
             app:autoSizeMinTextSize="14sp"
             app:autoSizeStepGranularity="1sp"
@@ -75,7 +74,7 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textAppearance="?textAppearanceBodyLarge"
             app:autoSizeMaxTextSize="20sp"
             app:autoSizeMinTextSize="12sp"
             app:autoSizeStepGranularity="1sp"
@@ -141,10 +140,10 @@
 
                 <ImageView
                     android:id="@+id/player_icon"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="bottom"
-                    android:paddingTop="2dp"
+                    android:layout_marginBottom="4dp"
                     android:visibility="gone"
                     tools:srcCompat="@drawable/vd_note"
                     tools:visibility="visible" />
@@ -158,7 +157,7 @@
                     android:paddingHorizontal="15dp"
                     android:paddingTop="5dp"
                     android:text="⋮"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textAppearance="?textAppearanceTitleLarge"
                     android:textStyle="bold"
                     tools:ignore="HardcodedText" />
             </LinearLayout>
@@ -176,6 +175,5 @@
             android:paddingEnd="15dp"
             android:paddingBottom="10dp"/>
     </FrameLayout>
-
 
 </LinearLayout>

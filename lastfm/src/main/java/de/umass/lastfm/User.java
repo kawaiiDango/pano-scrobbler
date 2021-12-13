@@ -261,7 +261,7 @@ public class User extends ImageHolder {
 
 	public static Collection<Tag> getTopTags(String user, int limit, Session session) {
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("user", user);
+        MapUtilities.nullSafePut(params, "user", user);
 		MapUtilities.nullSafePut(params, "limit", limit);
 		Result result = Caller.getInstance().call("user.getTopTags", session, params);
 		return ResponseBuilder.buildCollection(result, Tag.class);

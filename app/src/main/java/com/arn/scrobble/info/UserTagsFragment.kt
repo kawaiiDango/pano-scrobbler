@@ -1,6 +1,7 @@
 package com.arn.scrobble.info
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.arn.scrobble.NLService
@@ -18,7 +20,6 @@ import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
-import com.frybits.harmony.getHarmonySharedPreferences
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
@@ -26,7 +27,7 @@ import de.umass.lastfm.Artist
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 
-class UserTagsFragment: DialogFragment() {
+class UserTagsFragment: DialogFragment(), DialogInterface.OnShowListener {
     private val viewModel by lazy { VMFactory.getVM(this, UserTagsVM::class.java) }
     private val historyPref by lazy { HistoryPref(
             MainPrefs(context!!).sharedPreferences,
@@ -46,7 +47,7 @@ class UserTagsFragment: DialogFragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onShow(p0: DialogInterface?) {
         viewModel.tags.observe(viewLifecycleOwner, object : Observer<MutableSet<String>> {
             override fun onChanged(it: MutableSet<String>?) {
                 it ?: return
@@ -60,15 +61,17 @@ class UserTagsFragment: DialogFragment() {
             }
         })
 
+        val addButton = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+
         binding.userTagsInputEdittext.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)) {
-                binding.userTagsAdd.callOnClick()
+                addButton.callOnClick()
                 true
             } else
                 false
         }
-        binding.userTagsAdd.setOnClickListener {
+        addButton.setOnClickListener {
             val tags = binding.userTagsInputEdittext.text.toString().trim()
             if (tags.isNotEmpty()) {
                 viewModel.splitTags(tags).forEach{
@@ -118,7 +121,11 @@ class UserTagsFragment: DialogFragment() {
             .setTitle(Stuff.getColoredTitle(context!!, entry.name))
             .setIcon(icon)
             .setView(binding.root)
+            .setPositiveButton(R.string.add, null)
             .create()
+            .apply {
+                setOnShowListener(this@UserTagsFragment)
+            }
     }
 
     override fun onDestroyView() {

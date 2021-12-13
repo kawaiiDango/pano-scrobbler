@@ -1,5 +1,9 @@
-package com.arn.scrobble
+package com.arn.scrobble.scrobbleable
 
+import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.Stuff
+import de.umass.lastfm.Result
+import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import okhttp3.MediaType.Companion.toMediaType
@@ -11,20 +15,15 @@ import java.io.IOException
 import java.net.URL
 
 
-class ListenBrainz(private val token: String) {
-    private var apiRoot = Stuff.LISTENBRAINZ_API_ROOT
-
-    fun setApiRoot(url: String): ListenBrainz {
-        apiRoot = url
-        return this
-    }
+class ListenBrainz : Scrobblable() {
+    override var apiRoot = Stuff.LISTENBRAINZ_API_ROOT
 
     private fun submitListens(
-        scrobbledatas: List<ScrobbleData>,
+        scrobbleDatas: List<ScrobbleData>,
         listenType: String
     ): ScrobbleResult {
         val payload = JSONArray()
-        scrobbledatas.forEach {
+        scrobbleDatas.forEach {
             val payloadTrack = JSONObject()
                 .put(
                     "track_metadata", JSONObject()
@@ -81,11 +80,18 @@ class ListenBrainz(private val token: String) {
         }
     }
 
-    fun updateNowPlaying(scrobbledata: ScrobbleData) =
-        submitListens(listOf(scrobbledata), "playing_now")
+    override fun updateNowPlaying(scrobbleData: ScrobbleData) =
+        submitListens(listOf(scrobbleData), "playing_now")
 
-    fun scrobble(scrobbledata: ScrobbleData) = submitListens(listOf(scrobbledata), "single")
-    fun scrobble(scrobbledatas: MutableList<ScrobbleData>) = submitListens(scrobbledatas, "import")
+    override fun scrobble(scrobbleData: ScrobbleData) =
+        submitListens(listOf(scrobbleData), "single")
+
+    override fun scrobble(scrobbleDatas: MutableList<ScrobbleData>) =
+        submitListens(scrobbleDatas, "import")
+
+    override fun loveOrUnlove(track: Track, love: Boolean): Result {
+        throw NotImplementedError("Not implemented")
+    }
 
     fun recents(username: String, limit: Int): JSONObject? {
         val url = URL("${apiRoot}1/user/$username/listens?count=$limit")

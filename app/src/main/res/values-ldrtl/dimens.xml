@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="recents_overlay_rotate">-10</dimen>
+</resources>

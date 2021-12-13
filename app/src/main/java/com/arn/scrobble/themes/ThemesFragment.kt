@@ -9,11 +9,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.AttrRes
 import androidx.fragment.app.Fragment
-import com.arn.scrobble.MainActivity
-import com.arn.scrobble.NLService
-import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.Stuff.setArrowColors
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ContentThemesBinding
@@ -21,18 +20,17 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 
-class ThemesFragment: Fragment() {
+class ThemesFragment : Fragment() {
 
     private var _binding: ContentThemesBinding? = null
     private val binding
         get() = _binding!!
 
-    lateinit var primarySwatchIds: MutableList<Int>
-    lateinit var secondarySwatchIds: MutableList<Int>
-    lateinit var backgroundSwatchIds: MutableList<Int>
-
+    private lateinit var primarySwatchIds: List<Int>
+    private lateinit var secondarySwatchIds: List<Int>
     private val prefs by lazy { MainPrefs(context!!) }
 
 
@@ -56,87 +54,39 @@ class ThemesFragment: Fragment() {
         if (ColorPatchMap.secondaryStyles[secondaryPref] == null)
             secondaryPref = ColorPatchUtils.secondaryDefault
 
-        var backgroundPref = prefs.themeBackground
-        if (ColorPatchMap.backgroundStyles[backgroundPref] == null)
-            backgroundPref = ColorPatchUtils.backgroundDefault
-
         binding.themeRandom.isChecked = prefs.themeRandom
-        binding.themeSameTone.isChecked = prefs.themeSameTone
         binding.themePaletteBg.isChecked = prefs.themePaletteBackground
+        binding.themeTintBg.isChecked = prefs.themeTintBackground
+        binding.themeDynamic.isChecked = prefs.themeDynamic
 
-        primarySwatchIds = mutableListOf()
-        secondarySwatchIds = mutableListOf()
-        backgroundSwatchIds = mutableListOf()
+        primarySwatchIds = createSwatches(
+            styles = ColorPatchMap.primaryStyles,
+            group = binding.themePrimarySwatches,
+            attr = R.attr.colorPrimary,
+            isDark = false,
+            selectedName = primaryPref,
+        )
+        secondarySwatchIds = createSwatches(
+            styles = ColorPatchMap.secondaryStyles,
+            group = binding.themeSecondarySwatches,
+            attr = R.attr.colorSecondary,
+            isDark = false,
+            selectedName = secondaryPref,
+        )
 
-        ColorPatchMap.primaryStyles.forEach { (name, style) ->
-            val swatch = layoutInflater.inflate(R.layout.chip_swatch, binding.themePrimarySwatches, false) as Chip
-            val color = context!!.getStyledColor(style, R.attr.colorPrimary)
-            swatch.chipBackgroundColor = ColorStateList.valueOf(color)
-            swatch.checkedIconTint = ColorStateList.valueOf(Color.BLACK)
-            val id = View.generateViewId()
-            primarySwatchIds.add(id)
-            swatch.id = id
-            swatch.contentDescription = name
-            swatch.isChecked = primaryPref == name
-            binding.themePrimarySwatches.addView(swatch)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                swatch.tooltipText = name
-            }
-        }
-
-        ColorPatchMap.secondaryStyles.forEach { (name, style) ->
-            val swatch = layoutInflater.inflate(R.layout.chip_swatch, binding.themeSecondarySwatches, false) as Chip
-            val color = context!!.getStyledColor(style, R.attr.colorSecondary)
-            swatch.chipBackgroundColor = ColorStateList.valueOf(color)
-            swatch.checkedIconTint = ColorStateList.valueOf(Color.BLACK)
-            val id = View.generateViewId()
-            secondarySwatchIds.add(id)
-            swatch.id = id
-            swatch.contentDescription = name
-            swatch.isChecked = secondaryPref == name
-            binding.themeSecondarySwatches.addView(swatch)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                swatch.tooltipText = name
-            }
-        }
-
-        ColorPatchMap.backgroundStyles.forEach { (name, style) ->
-            val swatch = layoutInflater.inflate(R.layout.chip_swatch, binding.themeBackgroundSwatches, false) as Chip
-            val color = context!!.getStyledColor(style, android.R.attr.colorBackground)
-            swatch.chipBackgroundColor = ColorStateList.valueOf(color)
-            val id = View.generateViewId()
-            backgroundSwatchIds.add(id)
-            swatch.id = id
-            swatch.contentDescription = name
-            swatch.isChecked = backgroundPref == name
-            binding.themeBackgroundSwatches.addView(swatch)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                swatch.tooltipText = name
-            }
-        }
-
-        setSwatchesEnabled(!binding.themeRandom.isChecked)
+        setSwatchesEnabled(!(binding.themeRandom.isChecked || binding.themeDynamic.isChecked))
+        setCheckboxesEnabled(!binding.themeDynamic.isChecked)
 
         binding.themePrimarySwatches.setOnCheckedChangeListener { group, checkedId ->
-            val name = group.findViewById<Chip>(checkedId)?.contentDescription ?: return@setOnCheckedChangeListener
+            val name = group.findViewById<Chip>(checkedId)?.contentDescription
+                ?: return@setOnCheckedChangeListener
             previewPrimary(name.toString())
-            applySameTone(group, primarySwatchIds)
         }
 
         binding.themeSecondarySwatches.setOnCheckedChangeListener { group, checkedId ->
-            val name = group.findViewById<Chip>(checkedId)?.contentDescription ?: return@setOnCheckedChangeListener
+            val name = group.findViewById<Chip>(checkedId)?.contentDescription
+                ?: return@setOnCheckedChangeListener
             previewSecondary(name.toString())
-            applySameTone(group, secondarySwatchIds)
-        }
-
-        binding.themeBackgroundSwatches.setOnCheckedChangeListener { group, checkedId ->
-            val name = group.findViewById<Chip>(checkedId)?.contentDescription ?: return@setOnCheckedChangeListener
-            previewBackground(name.toString())
-            applySameTone(group, backgroundSwatchIds)
-        }
-
-        binding.themeSameTone.setOnCheckedChangeListener { compoundButton, checked ->
-            applySameTone(binding.themePrimarySwatches, primarySwatchIds)
         }
 
         binding.themeRandom.setOnCheckedChangeListener { compoundButton, checked ->
@@ -147,7 +97,10 @@ class ThemesFragment: Fragment() {
             if ((activity as MainActivity).billingViewModel.proStatus.value == true) {
                 saveTheme()
                 if (!binding.themeRandom.isChecked)
-                    context!!.sendBroadcast(Intent(NLService.iTHEME_CHANGED_S), NLService.BROADCAST_PERMISSION)
+                    context!!.sendBroadcast(
+                        Intent(NLService.iTHEME_CHANGED_S),
+                        NLService.BROADCAST_PERMISSION
+                    )
                 parentFragmentManager.popBackStack()
                 activity!!.recreate()
             } else {
@@ -156,6 +109,20 @@ class ThemesFragment: Fragment() {
                     .addToBackStack(null)
                     .commit()
             }
+        }
+
+        if (BuildConfig.DEBUG || DynamicColors.isDynamicColorAvailable()) {
+            binding.themeDynamic.visibility = View.VISIBLE
+            binding.themeDynamic.setOnCheckedChangeListener { compoundButton, checked ->
+                setSwatchesEnabled(!checked)
+                setCheckboxesEnabled(!checked)
+            }
+        }
+
+        binding.themeTintBg.setOnCheckedChangeListener { compoundButton, checked ->
+            val name = binding.themePrimarySwatches.findViewById<Chip>(binding.themePrimarySwatches.checkedChipId)?.contentDescription
+                ?: return@setOnCheckedChangeListener
+            previewPrimary(name.toString())
         }
     }
 
@@ -176,36 +143,59 @@ class ThemesFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, getString(R.string.pref_themes))
+        Stuff.setTitle(activity!!, getString(R.string.pref_themes))
     }
 
-    private fun applySameTone(group: ChipGroup, idList: List<Int>) {
-        if (binding.themeSameTone.isChecked) {
-            val id = group.checkedChipId
-            val idx = idList.indexOf(id)
-
-            primarySwatchIds.elementAtOrNull(idx)?.let {
-                binding.themePrimarySwatches.check(it)
-            }
-            secondarySwatchIds.elementAtOrNull(idx)?.let {
-                binding.themeSecondarySwatches.check(it)
-            }
-            backgroundSwatchIds.elementAtOrNull(idx)?.let {
-                binding.themeBackgroundSwatches.check(it)
+    private fun createSwatches(
+        styles: Map<String, Int>,
+        group: ChipGroup,
+        @AttrRes attr: Int,
+        isDark: Boolean,
+        selectedName: String
+    ): List<Int> {
+        val idList = mutableListOf<Int>()
+        styles.forEach { (name, style) ->
+            val color = context!!.getStyledColor(style, attr)
+            val id = View.generateViewId()
+            idList.add(id)
+            val swatch =
+                (layoutInflater.inflate(R.layout.chip_swatch, group, false) as Chip).apply {
+                    chipBackgroundColor = ColorStateList.valueOf(color)
+                    checkedIconTint =
+                        ColorStateList.valueOf(if (isDark) Color.WHITE else Color.BLACK)
+                    this.id = id
+                    contentDescription = name
+                    setOnCheckedChangeListener { chip, checked ->
+                        chip as Chip
+                        chip.chipStrokeWidth = if (checked) 4.dp.toFloat() else 2.dp.toFloat()
+                    }
+                    isChecked = selectedName == name
+                }
+            group.addView(swatch)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                swatch.tooltipText = name
             }
         }
+        return idList
     }
 
     private fun previewPrimary(name: String) {
         val styleId = ColorPatchMap.primaryStyles[name]!!
-        val color = context!!.getStyledColor(styleId, R.attr.colorPrimary)
-        binding.themeDone.backgroundTintList = ColorStateList.valueOf(color)
+        val colorPrimary = context!!.getStyledColor(styleId, R.attr.colorPrimary)
+        val colorPrimaryContainer = context!!.getStyledColor(styleId, R.attr.colorPrimaryContainer)
+        val colorOnPrimaryContainer = context!!.getStyledColor(styleId, R.attr.colorOnPrimaryContainer)
+        binding.themeDone.backgroundTintList = ColorStateList.valueOf(colorPrimaryContainer)
+        binding.themeDone.supportImageTintList = ColorStateList.valueOf(colorOnPrimaryContainer)
         val act = activity as MainActivity
-        act.binding.coordinatorMain.toolbar.setTitleTextColor(color)
+        act.binding.coordinatorMain.toolbar.setTitleTextColor(colorPrimary)
         act.binding.coordinatorMain.toolbar.setArrowColors(
-            color,
+            colorPrimary,
             Color.TRANSPARENT
         )
+        if (binding.themeTintBg.isChecked)
+            previewBackground(name)
+        else
+            previewBackground(ColorPatchUtils.backgroundBlack)
     }
 
     private fun previewSecondary(name: String) {
@@ -213,9 +203,10 @@ class ThemesFragment: Fragment() {
         val color = context!!.getStyledColor(styleId, R.attr.colorSecondary)
         binding.themePrimaryHeader.setTextColor(color)
         binding.themeSecondaryHeader.setTextColor(color)
-        binding.themeBackgroundHeader.setTextColor(color)
-        binding.themeSameTone.buttonTintList = ColorStateList.valueOf(color)
         binding.themeRandom.buttonTintList = ColorStateList.valueOf(color)
+        binding.themeDynamic.buttonTintList = ColorStateList.valueOf(color)
+        binding.themeTintBg.buttonTintList = ColorStateList.valueOf(color)
+        binding.themePaletteBg.buttonTintList = ColorStateList.valueOf(color)
     }
 
     private fun previewBackground(name: String) {
@@ -225,6 +216,11 @@ class ThemesFragment: Fragment() {
         val act = activity as MainActivity
         act.window.navigationBarColor = color
         act.binding.coordinatorMain.ctl.contentScrim = ColorDrawable(color)
+    }
+
+    private fun setCheckboxesEnabled(enabled: Boolean) {
+        binding.themeRandom.isEnabled = enabled
+        binding.themeTintBg.isEnabled = enabled
     }
 
     private fun setSwatchesEnabled(enabled: Boolean) {
@@ -245,8 +241,7 @@ class ThemesFragment: Fragment() {
 
         setEnabled(
             binding.themePrimarySwatches,
-            binding.themeSecondarySwatches,
-            binding.themeBackgroundSwatches,
+            binding.themeSecondarySwatches
         )
     }
 
@@ -259,10 +254,10 @@ class ThemesFragment: Fragment() {
         prefs.apply {
             themePrimary = getThemeName(binding.themePrimarySwatches)
             themeSecondary = getThemeName(binding.themeSecondarySwatches)
-            themeBackground = getThemeName(binding.themeBackgroundSwatches)
             themeRandom = binding.themeRandom.isChecked
-            themeSameTone = binding.themeSameTone.isChecked
             themePaletteBackground = binding.themePaletteBg.isChecked
+            themeTintBackground = binding.themeTintBg.isChecked
+            themeDynamic = binding.themeDynamic.isChecked
         }
     }
 }

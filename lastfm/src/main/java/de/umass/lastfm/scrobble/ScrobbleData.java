@@ -88,6 +88,21 @@ public class ScrobbleData {
 	public ScrobbleData() {
 	}
 
+	public ScrobbleData(ScrobbleData scrobbleData) {
+        this(
+                scrobbleData.getArtist(),
+                scrobbleData.getTrack(),
+                scrobbleData.getTimestamp(),
+                scrobbleData.getDuration(),
+                scrobbleData.getAlbum(),
+                scrobbleData.getAlbumArtist(),
+                scrobbleData.getMusicBrainzId(),
+                scrobbleData.getTrackNumber(),
+                scrobbleData.getStreamId(),
+                scrobbleData.isChosenByUser()
+        );
+	}
+
 	public ScrobbleData(String artist, String track, int timestamp) {
 		this.artist = artist;
 		this.track = track;
@@ -201,7 +216,46 @@ public class ScrobbleData {
 		this.chosenByUser = chosenByUser;
 	}
 
-	/*
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ScrobbleData that = (ScrobbleData) o;
+
+        if (getTimestamp() != that.getTimestamp()) return false;
+        if (getDuration() != that.getDuration()) return false;
+        if (getTrackNumber() != that.getTrackNumber()) return false;
+        if (isChosenByUser() != that.isChosenByUser()) return false;
+        if (getArtist() != null ? !getArtist().equals(that.getArtist()) : that.getArtist() != null)
+            return false;
+        if (getTrack() != null ? !getTrack().equals(that.getTrack()) : that.getTrack() != null)
+            return false;
+        if (getAlbum() != null ? !getAlbum().equals(that.getAlbum()) : that.getAlbum() != null)
+            return false;
+        if (getAlbumArtist() != null ? !getAlbumArtist().equals(that.getAlbumArtist()) : that.getAlbumArtist() != null)
+            return false;
+        if (getMusicBrainzId() != null ? !getMusicBrainzId().equals(that.getMusicBrainzId()) : that.getMusicBrainzId() != null)
+            return false;
+        return getStreamId() != null ? getStreamId().equals(that.getStreamId()) : that.getStreamId() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getArtist() != null ? getArtist().hashCode() : 0;
+        result = 31 * result + (getTrack() != null ? getTrack().hashCode() : 0);
+        result = 31 * result + getTimestamp();
+        result = 31 * result + getDuration();
+        result = 31 * result + (getAlbum() != null ? getAlbum().hashCode() : 0);
+        result = 31 * result + (getAlbumArtist() != null ? getAlbumArtist().hashCode() : 0);
+        result = 31 * result + (getMusicBrainzId() != null ? getMusicBrainzId().hashCode() : 0);
+        result = 31 * result + getTrackNumber();
+        result = 31 * result + (getStreamId() != null ? getStreamId().hashCode() : 0);
+        result = 31 * result + (isChosenByUser() ? 1 : 0);
+        return result;
+    }
+
+    /*
 	 * (non-Javadoc)
 	 *
 	 * @see java.lang.Object#toString()

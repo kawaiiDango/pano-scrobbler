@@ -21,4 +21,6 @@
     <dimen name="corner_radius">10dp</dimen>
     <dimen name="widgetBackgroundRadius">30dp</dimen>
     <dimen name="album_text_height">20sp</dimen>
+    <dimen name="divider_inset">32dp</dimen>
+    <dimen name="text_input_margin">3dp</dimen>
 </resources>

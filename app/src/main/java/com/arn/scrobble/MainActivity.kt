@@ -40,6 +40,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.size.Precision
 import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
+import com.arn.scrobble.Stuff.memoryCacheKey
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityMainBinding
@@ -50,10 +51,7 @@ import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pref.*
 import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
-import com.arn.scrobble.ui.AppIconFetcher
-import com.arn.scrobble.ui.MusicEntryImageInterceptor
-import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
-import com.arn.scrobble.ui.StatefulAppBar
+import com.arn.scrobble.ui.*
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
@@ -87,8 +85,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Stuff.timeIt("onCreate start")
         super.onCreate(savedInstanceState)
 
-        if (billingViewModel.proStatus.value == true)
-            ColorPatchUtils.setTheme(this)
+        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         navHeaderbinding = HeaderNavBinding.inflate(layoutInflater, binding.navView, false)
@@ -104,13 +101,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         isTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
 
         val imageLoader = ImageLoader.Builder(applicationContext)
-            .componentRegistry {
-                add(AppIconFetcher())
+            .components {
+                add(AppIconKeyer())
+                add(AppIconFetcher.Factory())
                 add(MusicEntryImageInterceptor())
+                add(StarInterceptor())
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    add(ImageDecoderDecoder(applicationContext))
+                    add(ImageDecoderDecoder.Factory())
                 } else {
-                    add(GifDecoder())
+                    add(GifDecoder.Factory())
                 }
             }
             .crossfade(Stuff.CROSSFADE_DURATION)
@@ -173,40 +172,44 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (FirstThingsFragment.checkAuthTokenExists(prefs) &&
                 FirstThingsFragment.checkNLAccess(this)) {
 
-                val directOpenExtra = intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) ?: 0
+                var directOpenExtra = intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) ?: 0
+                if (intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
+                    directOpenExtra = Stuff.DL_SETTINGS
 
-                if (directOpenExtra == Stuff.DL_SETTINGS || intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
-                    supportFragmentManager.beginTransaction()
-                            .replace(R.id.frame, PrefFragment())
-                            .addToBackStack(null)
-                            .commit()
-                else if (directOpenExtra == Stuff.DL_APP_LIST)
-                    supportFragmentManager.beginTransaction()
-                            .replace(R.id.frame, AppListFragment())
-                            .addToBackStack(null)
-                            .commit()
-                else if (directOpenExtra == Stuff.DL_MIC)
-                    supportFragmentManager.beginTransaction()
-                            .replace(R.id.frame, RecFragment())
-                            .addToBackStack(null)
-                            .commit()
-                else if (directOpenExtra == Stuff.DL_SEARCH)
-                    supportFragmentManager.beginTransaction()
-                            .replace(R.id.frame, SearchFragment())
-                            .addToBackStack(null)
-                            .commit()
-                else {
-                    if (coordinatorPadding > 0)
-                        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
-                    showHomePager()
+                when (directOpenExtra) {
+                    Stuff.DL_SETTINGS -> supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, PrefFragment())
+                        .addToBackStack(null)
+                        .commit()
+                    Stuff.DL_APP_LIST -> supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, AppListFragment())
+                        .addToBackStack(null)
+                        .commit()
+                    Stuff.DL_MIC -> supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, RecFragment())
+                        .addToBackStack(null)
+                        .commit()
+                    Stuff.DL_SEARCH -> supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, SearchFragment())
+                        .addToBackStack(null)
+                        .commit()
+                    Stuff.DL_PRO -> supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame, BillingFragment())
+                        .addToBackStack(null)
+                        .commit()
+                    else -> {
+                        if (coordinatorPadding > 0)
+                            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
+                        showHomePager()
 
-                    if (intent.getStringExtra(NLService.B_ARTIST) != null)
+                        if (intent.getStringExtra(NLService.B_ARTIST) != null)
                             showInfoFragment(intent)
-                    else {
-                        if (!Stuff.isScrobblerRunning(this))
-                            showNotRunning()
-                        else if (!isTV && billingViewModel.proStatus.value != true)
-                            AppRater(this, prefs).appLaunched()
+                        else {
+                            if (!Stuff.isScrobblerRunning(this))
+                                showNotRunning()
+                            else if (!isTV && billingViewModel.proStatus.value != true)
+                                AppRater(this, prefs).appLaunched()
+                        }
                     }
                 }
             } else {
@@ -234,7 +237,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 if (navHeaderbinding.navProfilePic.tag != drawerData.profilePicUrl) // prevent flash
                     navHeaderbinding.navProfilePic.load(drawerData.profilePicUrl) {
-                        placeholderMemoryCacheKey(navHeaderbinding.navProfilePic.metadata?.memoryCacheKey)
+                        placeholderMemoryCacheKey(navHeaderbinding.navProfilePic.memoryCacheKey)
                         error(R.drawable.vd_wave)
                         listener(
                             onSuccess = { _, _ ->
@@ -248,7 +251,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        if (prefs.proStatus && prefs.showTrackedPlayers) {
+        if (prefs.proStatus && prefs.showScrobbleSources) {
             val filter = IntentFilter().apply {
                 addAction(NLService.iNOW_PLAYING_INFO_S)
             }
@@ -277,7 +280,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportFragmentManager.beginTransaction()
                 .replace(R.id.frame, f, Stuff.TAG_FIRST_THINGS)
                 .commit()
-        binding.coordinatorMain.appBar.setExpanded(false, true)
+        binding.coordinatorMain.appBar.setExpanded(expanded = false, animate = true)
         closeLockDrawer()
     }
 
@@ -307,88 +310,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Stuff.timeIt("onPostCreate")
     }
 
-    fun testNoti (){
-        AppRater(this, prefs).showRateSnackbar()
-        val res = Resources.getSystem()
-        val attrs = arrayOf(android.R.attr.textColor).toIntArray()
-
-        var sysStyle = res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
-        val titleTextColor = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
-
-        sysStyle = res.getIdentifier("TextAppearance.Material.Notification", "style", "android")
-        val secondaryTextColor = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
-
-        Stuff.log("clr: $titleTextColor $secondaryTextColor")
-
-        val longDescription = SpannableStringBuilder()
-        longDescription.append("def ")
-
-        var start = longDescription.length
-        longDescription.append("c1 ")
-        longDescription.setSpan(ForegroundColorSpan(ContextCompat.getColor(applicationContext, android.R.color.secondary_text_light)), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        start = longDescription.length
-        longDescription.append("c2 ")
-        longDescription.setSpan(ForegroundColorSpan(titleTextColor), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        start = longDescription.length
-        longDescription.append("c3 ")
-        longDescription.setSpan(ForegroundColorSpan(secondaryTextColor), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-//        longDescription.setSpan(StyleSpan(android.graphics.Typeface.BOLD), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        longDescription.append(" rest")
-
-        val launchIntent = PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, MainActivity::class.java)
-                .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST),
-                Stuff.updateCurrentOrImmutable)
-
-        val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
-        style.setShowActionsInCompactView(0, 1)
-        val icon = ContextCompat.getDrawable(this, R.drawable.ic_launcher)
-//        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
-
-        val nb = NotificationCompat.Builder(applicationContext, MainPrefs.CHANNEL_NOTI_SCROBBLING)
-                .setSmallIcon(R.drawable.vd_noti)
-//                .setLargeIcon(Stuff.drawableToBitmap(icon))
-                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                .setAutoCancel(true)
-                .setShowWhen(false)
-                .setUsesChronometer(true)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .addAction(R.drawable.vd_undo, getString(R.string.unscrobble), launchIntent)
-                .addAction(R.drawable.vd_check, getString(R.string.unscrobble), launchIntent)
-                .setContentTitle("setContentTitle")
-                .setContentText("longDescription")
-                .setSubText("setSubText")
-                .setColor(MaterialColors.getColor(this, R.attr.colorNoti, null))
-                .setStyle(style)
-//                .setCustomBigContentView(null)
-//                .setCustomContentView(null)
-
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val n = nb.build()
-        n.bigContentView = null
-        val rv = n.contentView
-/*
-        var resId = res.getIdentifier("title", "id", "android")
-        rv.setTextColor(resId, Color.BLACK)
-        resId = res.getIdentifier("text", "id", "android")
-        rv.setTextColor(resId, Color.BLACK)
-        resId = res.getIdentifier("text2", "id", "android")
-        rv.setTextColor(resId, Color.BLACK)
-        resId = res.getIdentifier("status_bar_latest_event_content", "id", "android")
-        Stuff.log("resId $resId")
-        rv.setInt(resId, "setBackgroundColor", R.drawable.notification_bg)
-
-        resId = res.getIdentifier("action0", "id", "android")
-        val c = Class.forName("android.widget.RemoteViews")
-        val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
-        m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
-        rv.setImageViewResource(resId, R.drawable.vd_ban)
-*/
-        nm.notify(9, n)
-
-    }
-
     private fun onDrawerOpened(){
         if (!binding.drawerLayout.isDrawerVisible(GravityCompat.START) || (
                         System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL))
@@ -402,7 +323,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             navHeaderbinding.navName.text = displayUsername
 
         navHeaderbinding.navProfileLink.setOnClickListener {
-            val servicesToUrls = mutableMapOf<@androidx.annotation.StringRes Int, String>()
+            val servicesToUrls = mutableMapOf</*@StringRes */Int, String>()
 
             prefs.lastfmUsername?.let {
                 servicesToUrls[R.string.lastfm] = "https://www.last.fm/user/$it"
@@ -528,11 +449,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onBackStackChanged() {
-//        if (app_bar != null) {
             val animate = true
             if (supportFragmentManager.backStackEntryCount == 0) {
                 val firstThingsVisible = supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
-                // what the fuck, kotlin extensions? stop giving me old instances
 
                 if (firstThingsVisible != true)
                     showBackArrow(false)
@@ -549,7 +468,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible != true
 
             binding.coordinatorMain.appBar.setExpanded(expand, animate)
-//        }
     }
 
     override fun onBackPressed() {
@@ -809,6 +727,89 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         imageLoader.shutdown()
         super.onDestroy()
+    }
+
+
+    fun testNoti (){
+        AppRater(this, prefs).showRateSnackbar()
+        val res = Resources.getSystem()
+        val attrs = arrayOf(android.R.attr.textColor).toIntArray()
+
+        var sysStyle = res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
+        val titleTextColor = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
+
+        sysStyle = res.getIdentifier("TextAppearance.Material.Notification", "style", "android")
+        val secondaryTextColor = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
+
+        Stuff.log("clr: $titleTextColor $secondaryTextColor")
+
+        val longDescription = SpannableStringBuilder()
+        longDescription.append("def ")
+
+        var start = longDescription.length
+        longDescription.append("c1 ")
+        longDescription.setSpan(ForegroundColorSpan(ContextCompat.getColor(applicationContext, android.R.color.secondary_text_light)), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        start = longDescription.length
+        longDescription.append("c2 ")
+        longDescription.setSpan(ForegroundColorSpan(titleTextColor), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        start = longDescription.length
+        longDescription.append("c3 ")
+        longDescription.setSpan(ForegroundColorSpan(secondaryTextColor), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//        longDescription.setSpan(StyleSpan(android.graphics.Typeface.BOLD), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        longDescription.append(" rest")
+
+        val launchIntent = PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, MainActivity::class.java)
+            .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST),
+            Stuff.updateCurrentOrImmutable)
+
+        val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
+        style.setShowActionsInCompactView(0, 1)
+        val icon = ContextCompat.getDrawable(this, R.drawable.ic_launcher)
+//        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
+
+        val nb = NotificationCompat.Builder(applicationContext, MainPrefs.CHANNEL_NOTI_SCROBBLING)
+            .setSmallIcon(R.drawable.vd_noti)
+//                .setLargeIcon(Stuff.drawableToBitmap(icon))
+            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+            .setAutoCancel(true)
+            .setShowWhen(false)
+            .setUsesChronometer(true)
+            .setPriority(Notification.PRIORITY_HIGH)
+            .addAction(R.drawable.vd_undo, getString(R.string.unscrobble), launchIntent)
+            .addAction(R.drawable.vd_check, getString(R.string.unscrobble), launchIntent)
+            .setContentTitle("setContentTitle")
+            .setContentText("longDescription")
+            .setSubText("setSubText")
+            .setColor(MaterialColors.getColor(this, R.attr.colorPrimary, null))
+            .setStyle(style)
+//                .setCustomBigContentView(null)
+//                .setCustomContentView(null)
+
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val n = nb.build()
+        n.bigContentView = null
+        val rv = n.contentView
+/*
+        var resId = res.getIdentifier("title", "id", "android")
+        rv.setTextColor(resId, Color.BLACK)
+        resId = res.getIdentifier("text", "id", "android")
+        rv.setTextColor(resId, Color.BLACK)
+        resId = res.getIdentifier("text2", "id", "android")
+        rv.setTextColor(resId, Color.BLACK)
+        resId = res.getIdentifier("status_bar_latest_event_content", "id", "android")
+        Stuff.log("resId $resId")
+        rv.setInt(resId, "setBackgroundColor", R.drawable.notification_bg)
+
+        resId = res.getIdentifier("action0", "id", "android")
+        val c = Class.forName("android.widget.RemoteViews")
+        val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
+        m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
+        rv.setImageViewResource(resId, R.drawable.vd_ban)
+*/
+        nm.notify(9, n)
+
     }
 
     class NPReceiver(private val mainNotifierViewModel: MainNotifierViewModel):

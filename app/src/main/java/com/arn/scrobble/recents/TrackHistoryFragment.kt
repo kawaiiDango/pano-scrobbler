@@ -18,15 +18,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.Stuff.equalsExt
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.Track
 import java.text.NumberFormat
 
-class TrackHistoryFragment: Fragment(), ItemClickListener {
+class TrackHistoryFragment : Fragment(), ItemClickListener {
     private var _binding: ContentTrackHistoryBinding? = null
     private val binding
         get() = _binding!!
@@ -42,6 +45,13 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
             null,
             arguments!!.getString(NLService.B_ARTIST)
         )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
     override fun onCreateView(
@@ -69,7 +79,7 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
             getString(R.string.my_scrobbles) + ": " + formattedCount
         else
             "$username: $formattedCount"
-        Stuff.setTitle(activity, title)
+        Stuff.setTitle(activity!!, title)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -97,7 +107,10 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
                         DateFormat.SHORT,
                     ).format(it)
                 else
-                    Stuff.myRelativeTime(context!!, it) // this might be grammatically wrong for < 24h
+                    Stuff.myRelativeTime(
+                        context!!,
+                        it
+                    ) // this might be grammatically wrong for < 24h
                 binding.firstScrobbledOn.visibility = View.VISIBLE
                 binding.firstScrobbledOn.text = getString(R.string.first_scrobbled_on, dateStr)
             }
@@ -111,10 +124,15 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
             }
         }
 
+        val prefs = MainPrefs(context!!)
+        val isShowingPlayers = username == null && prefs.proStatus && prefs.showScrobbleSources
+
         adapter = TrackHistoryAdapter(
             viewModel,
             this,
-            MainPrefs(context!!).showAlbumInRecents
+            prefs.showAlbumInRecents,
+            isShowingPlayers,
+            PanoDb.getDb(context!!).getScrobbleSourcesDao()
         )
 
         val llm = LinearLayoutManager(context!!)
@@ -154,7 +172,7 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
         if (oldList.isNotEmpty())
             adapter.notifyItemChanged(oldList.size - 1) // for the footer to redraw
         adapter.autoNotify(oldList, viewModel.tracks) { o, n ->
-            o.playedWhen.time == n.playedWhen.time
+            o.equalsExt(n)
         }
     }
 
@@ -185,9 +203,12 @@ class TrackHistoryFragment: Fragment(), ItemClickListener {
                     R.id.menu_edit -> PopupMenuUtils.editScrobble(activity!!, track)
                     R.id.menu_delete -> PopupMenuUtils.deleteScrobble(activity!!, track) { succ ->
                         if (succ) {
+                            val oldList = viewModel.tracks.toList()
                             val wasInList = viewModel.tracks.remove(track)
                             if (wasInList) {
-                                adapter.notifyItemRemoved(position)
+                                adapter.autoNotify(oldList, viewModel.tracks) { o, n ->
+                                    o.equalsExt(n)
+                                }
                                 arguments!!.putInt(
                                     Stuff.ARG_COUNT,
                                     scrobbleCount - 1

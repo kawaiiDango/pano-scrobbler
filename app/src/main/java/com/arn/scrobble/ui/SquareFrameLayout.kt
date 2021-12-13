@@ -2,10 +2,7 @@ package com.arn.scrobble.ui
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View.MeasureSpec
 import android.widget.FrameLayout
-import com.arn.scrobble.Stuff
-import kotlin.math.min
 
 // from https://stackoverflow.com/a/16018517/1067596
 

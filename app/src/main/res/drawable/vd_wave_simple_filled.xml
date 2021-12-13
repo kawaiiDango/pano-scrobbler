@@ -8,7 +8,7 @@
     <path
         android:pathData="M0,0 24,0 24,24 0,24"
         android:fillColor="#ccc"
-        android:fillAlpha="0.2"
+        android:fillAlpha="0.15"
         />
     <path
       android:fillColor="#ccc"

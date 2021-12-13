@@ -53,6 +53,7 @@
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="reset">Reset</string>
     <string name="settings">Configure</string>
     <string name="bug_report">Bug report</string>
     <string name="album_art">Album art</string>

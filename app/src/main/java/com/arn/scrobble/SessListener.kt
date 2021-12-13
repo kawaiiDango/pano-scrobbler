@@ -11,7 +11,6 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
 import com.arn.scrobble.pref.MainPrefs
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.Locale
 
 /**
@@ -32,7 +31,6 @@ class SessListener (
     private val allowedPackages = mutableSetOf<String>()
     private val loggedIn
         get() = prefs.lastfmSessKey != null
-    lateinit var browserPackages: Set<String>
     val packageMap = mutableMapOf<String, HashesAndTimes>()
 
     init {
@@ -120,47 +118,14 @@ class SessListener (
         private val syntheticStateHandler = Handler(handler.looper)
 
         fun scrobble() {
-
-            fun isUrlOrDomain(s: String): Boolean {
-                // got some internal IOBE, catch everything
-                return try {
-                    s.toHttpUrlOrNull()?.topPrivateDomain() != null
-                } catch (e: Exception) {
-                    false
-                }
-                 ||
-                try {
-                    "https://$s".toHttpUrlOrNull()?.topPrivateDomain() != null
-                } catch (e: Exception) {
-                    false
-                }
-            }
-
             Stuff.log("playing: timePlayed=${hashesAndTimes.timePlayed} $title")
 
-            scheduleSyntheticState()
+            scheduleSyntheticStateIfNeeded()
 
             hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
             handler.removeMessages(hashesAndTimes.lastScrobbleHash)
 
-            val ignoreArtistMeta = packageName in Stuff.IGNORE_ARTIST_META ||
-                    packageName in browserPackages && isUrlOrDomain(artist)
-
-            if (ignoreArtistMeta) {
-                val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(title)
-                handler.nowPlaying(
-                    parsedArtist,
-                    "",
-                    parsedTitle,
-                    "",
-                    hashesAndTimes.timePlayed,
-                    duration,
-                    currHash,
-                    artist,
-                    packageName
-                )
-            } else
-                handler.nowPlaying(
+            handler.nowPlaying(
                     artist,
                     album,
                     title,
@@ -168,14 +133,14 @@ class SessListener (
                     hashesAndTimes.timePlayed,
                     duration,
                     currHash,
-                    null,
                     packageName
                 )
+
             hashesAndTimes.lastScrobbleHash = currHash
             hashesAndTimes.lastScrobbledHash = 0
         }
 
-        private fun scheduleSyntheticState() {
+        private fun scheduleSyntheticStateIfNeeded() {
             if (packageName in Stuff.needSyntheticStates && duration > 0) {
                 syntheticStateHandler.removeCallbacksAndMessages(null)
                 syntheticStateHandler.postDelayed({
@@ -205,9 +170,11 @@ class SessListener (
                 duration = -1
 
             when (packageName) {
-                Stuff.PACKAGE_XIAMI -> artist = artist.replace(";", "; ")
+                Stuff.PACKAGE_XIAMI -> {
+                    artist = artist.replace(";", "; ")
+                }
                 Stuff.PACKAGE_PANDORA -> {
-                    artist = artist.replace("Ofln - ", "")
+                    artist = artist.replace("^Ofln - ".toRegex(), "")
                     albumArtist = ""
                 }
                 Stuff.PACKAGE_PODCAST_ADDICT -> {
@@ -239,6 +206,16 @@ class SessListener (
                         albumArtist = ""
                     }
                 }
+                Stuff.PACKAGE_SPOTIFY -> {
+                    // ads look like these:
+                    // e.g. GCTC () [] ~ Free Spring Tuition
+                    // Beef Its Whats For Dinner () [] ~
+                    // Kroger () [] ~ Advertisement
+                    if (albumArtist.isEmpty() && album.isEmpty() && title.isNotEmpty()) {
+                        resetMeta()
+                        return
+                    }
+                }
             }
 
             val sameAsOld = artist == this.artist && title == this.title && album == this.album
@@ -256,11 +233,11 @@ class SessListener (
                 currHash = Stuff.genHashCode(artist, album, title, packageName)
 
                 // scrobbled when ad was playing
-                if (!handler.hasMessages(currHash) && onlyDurationUpdated &&
-                    packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)) {
-//                        scheduleSyntheticState()
+                if (onlyDurationUpdated && packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)) {
+                    scheduleSyntheticStateIfNeeded()
+                    if (!handler.hasMessages(currHash))
                         return
-                    }
+                }
 
                 // for cases:
                 // - meta is sent after play
@@ -355,6 +332,14 @@ class SessListener (
         fun stop() {
             pause()
             syntheticStateHandler.removeCallbacksAndMessages(null)
+        }
+
+        private fun resetMeta() {
+            artist = ""
+            album = ""
+            title = ""
+            albumArtist = ""
+            duration = -1L
         }
     }
 

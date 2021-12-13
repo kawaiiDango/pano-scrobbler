@@ -3,7 +3,6 @@ package com.arn.scrobble.search
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.transition.Fade
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
@@ -23,6 +22,7 @@ import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
@@ -30,23 +30,32 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class SearchFragment: Fragment() {
+class SearchFragment : Fragment() {
     private val viewModel by lazy { VMFactory.getVM(this, SearchVM::class.java) }
-    private val historyPref by lazy { HistoryPref(
+    private val historyPref by lazy {
+        HistoryPref(
             MainPrefs(context!!).sharedPreferences,
             MainPrefs.PREF_ACTIVITY_SEARCH_HISTORY,
             20
-    ) }
+        )
+    }
     private var _binding: ContentSearchBinding? = null
     private val binding
         get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enterTransition = Fade()
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -69,7 +78,9 @@ class SearchFragment: Fragment() {
         }
 
         binding.searchTerm.editText!!.setOnEditorActionListener { textView, actionId, keyEvent ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)
+            ) {
                 loadSearches(textView.text.toString())
                 hideKeyboard()
                 textView.clearFocus()
@@ -118,7 +129,11 @@ class SearchFragment: Fragment() {
                 val item = resultsAdapter.getItem(position)
                 if (item is Pair<*, *> && viewModel.searchResults.value != null) {
                     if (resultsAdapter.expandType != item.first as Int)
-                        resultsAdapter.populate(viewModel.searchResults.value!!, item.first as Int, true)
+                        resultsAdapter.populate(
+                            viewModel.searchResults.value!!,
+                            item.first as Int,
+                            true
+                        )
                     else
                         resultsAdapter.populate(viewModel.searchResults.value!!, -1, true)
                 } else {
@@ -165,7 +180,8 @@ class SearchFragment: Fragment() {
         resultsAdapter.clickListener = resultsItemClickListener
         binding.searchResultsList.adapter = resultsAdapter
         binding.searchResultsList.layoutManager = LinearLayoutManager(context)
-        (binding.searchResultsList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
+        (binding.searchResultsList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations =
+            false
 
         viewModel.searchResults.observe(viewLifecycleOwner) {
             it ?: return@observe
@@ -182,7 +198,7 @@ class SearchFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, getString(R.string.search))
+        Stuff.setTitle(activity!!, getString(R.string.search))
     }
 
     override fun onStop() {

@@ -28,7 +28,7 @@ object PopupMenuUtils {
     fun csrfTokenExists(activity: FragmentActivity): Boolean {
         val prefs = MainPrefs(activity)
         val exists = LastfmUnscrobbler(activity)
-            .checkCsrf(prefs.lastfmUsername)
+            .haveCsrfCookie()
         if (!exists) {
             MaterialAlertDialogBuilder(activity)
                 .setMessage(R.string.lastfm_reauth)

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -52,7 +53,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         super.onResume()
         if (binding.chartsArtistsFrame.chartsList.adapter == null)
             postInit()
-        Stuff.setTitle(activity, 0)
+        Stuff.setTitle(activity!!, 0)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -214,27 +215,27 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         var text = ""
         lateinit var header: HeaderWithActionBinding
 
-        fun getQString(@StringRes zeroStrRes: Int, @StringRes strRes: Int): String {
+        fun getQString(@StringRes zeroStrRes: Int, @PluralsRes pluralRes: Int): String {
             return if (count <= 0)
                 getString(zeroStrRes)
             else
-                getString(strRes, NumberFormat.getInstance().format(count))
+                resources.getQuantityString(pluralRes, count, count)
         }
 
         when (type) {
             Stuff.TYPE_ARTISTS -> {
                 count = artistsFragment.viewModel.totalCount
-                text = getQString(R.string.artists, R.string.n_artists)
+                text = getQString(R.string.artists, R.plurals.num_artists)
                 header = binding.chartsArtistsHeader
             }
             Stuff.TYPE_ALBUMS -> {
                 count = albumsFragment.viewModel.totalCount
-                text = getQString(R.string.albums, R.string.n_albums)
+                text = getQString(R.string.albums, R.plurals.num_albums)
                 header = binding.chartsAlbumsHeader
             }
             Stuff.TYPE_TRACKS -> {
                 count = tracksFragment.viewModel.totalCount
-                text = getQString(R.string.tracks, R.string.n_tracks)
+                text = getQString(R.string.tracks, R.plurals.num_tracks)
                 header = binding.chartsTracksHeader
             }
             Stuff.TYPE_SC -> {

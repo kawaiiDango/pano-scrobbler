@@ -12,6 +12,7 @@ import androidx.transition.TransitionManager
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.databinding.NavTabBinding
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.transition.MaterialSharedAxis
 
 
 open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
@@ -46,7 +47,7 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, 0)
+        Stuff.setTitle(activity!!, 0)
         (activity as MainActivity).binding.coordinatorMain.tabBar.addOnTabSelectedListener(this)
     }
 
@@ -56,7 +57,6 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
             val tabBinding = NavTabBinding.inflate(layoutInflater)
             tabBinding.tabLabel.text = resources.getString(tabMeta[i].first)
             tabBinding.tabIcon.setImageResource(tabMeta[i].second)
-            tabBinding.tabIconShadow.setImageResource(tabMeta[i].second)
             tabBinding.tabIcon.imageTintList = tabBar.tabIconTint
             if (selectedTab == i) {
                 tabBinding.tabLabel.visibility = View.VISIBLE

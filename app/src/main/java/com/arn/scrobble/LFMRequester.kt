@@ -12,10 +12,12 @@ import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.TrackedPlayer
+import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.Lastfm
+import com.arn.scrobble.scrobbleable.Scrobblable
 import com.arn.scrobble.search.SearchVM
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -29,7 +31,6 @@ import java.io.InterruptedIOException
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.random.Random
 
 
 /**
@@ -140,24 +141,24 @@ class LFMRequester(
 
     fun getSimilarTracks(artist: String, track: String) {
         toExec = {
-            Track.getSimilar(artist, track, Stuff.LAST_KEY, 50)
+            Track.getSimilar(artist, track, Stuff.LAST_KEY, 100)
         }
     }
 
     fun getSimilarArtists(artist: String) {
         toExec = {
-            Artist.getSimilar(artist, 50, Stuff.LAST_KEY)
+            Artist.getSimilar(artist, 100, Stuff.LAST_KEY)
         }
     }
 
     fun getArtistTopTracks(artist: String) {
         toExec = {
-            Artist.getTopTracks(artist, Stuff.LAST_KEY)
+            Artist.getTopTracks(artist, 100, Stuff.LAST_KEY)
         }
     }
     fun getArtistTopAlbums(artist: String) {
         toExec = {
-            Artist.getTopAlbums(artist, Stuff.LAST_KEY)
+            Artist.getTopAlbums(artist, 100, Stuff.LAST_KEY)
         }
     }
 
@@ -361,11 +362,10 @@ class LFMRequester(
         }
     }
 
-    fun getRandom(type: Int, totalp: Int, rnd: Random, usernamep: String?) {
+    fun getRandom(type: Int, totalp: Int, usernamep: String?) {
         toExec = {
-            Stuff.log(this::getRandom.name + " " + type + " " + totalp)
             checkSession()
-            var page = 1
+            val page: Int
             var total = totalp
             if (total == -1) {
                 total = when (type) {
@@ -378,7 +378,7 @@ class LFMRequester(
             }
             var track: Track? = null
             if (total > 0) {
-                page = rnd.nextInt(1, total + 1)
+                page = (1..total).random()
                 track = when (type) {
                     Stuff.TYPE_TRACKS -> User.getRecentTracks(usernamep, page, 1, true, lastfmSession)?.pageResults?.last()
                     //if there's a now playing, it returns two items
@@ -629,22 +629,57 @@ class LFMRequester(
         }
     }
 
-    fun scrobble(nowPlaying: Boolean, scrobbleData: ScrobbleData, hash: Int, packageName: String, ignoredArtist: String? = null) {
+    fun scrobble(nowPlaying: Boolean, scrobbleData: ScrobbleData, hash: Int, packageName: String, unparsedData: ScrobbleData? = null) {
         toExec = {
             Stuff.log(
                 this::scrobble.name + " " +
                         (if (nowPlaying) "np" else "submit")
                         + " " + scrobbleData.artist + " - " + scrobbleData.track
             )
+
             coroutineScope {
                 checkSession()
 
-                val scrobbleResults = mutableMapOf<@StringRes Int, ScrobbleResult>()
+                val scrobbleResults = mutableMapOf</*@StringRes */Int, ScrobbleResult>()
                 var savedAsPending = false
+                val forceable = unparsedData == null
 
                 if (scrobbleData.duration < 30)
-                    scrobbleData.duration = -1 //default
-                val serviceIdToKeys by lazy { getServiceIdToKeys() }
+                    scrobbleData.duration = -1 // default
+                val scrobblablesMap by lazy { Scrobblable.getScrobblablesMap(prefs) }
+
+                fun doFallbackScrobble(): Boolean {
+                    if (packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && unparsedData != null) {
+                        val b = unparsedData.toBundle().apply {
+                            putInt(NLService.B_HASH, hash)
+                            putString(NLService.B_PACKAGE_NAME, packageName)
+                        }
+                        val i = Intent(NLService.iMETA_UPDATE_S).apply {
+                            putExtras(b)
+                        }
+                        context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+                        LFMRequester(context, scope, liveData)
+                            .scrobble(nowPlaying, unparsedData, hash, packageName)
+                        return true
+                    }
+                    return false
+                }
+
+                fun shouldBlockScrobble(otherArtist: String?): Boolean {
+                    if (prefs.proStatus) {
+                        if (PanoDb.getDb(context)
+                                .getBlockedMetadataDao()
+                                .isBlocked(scrobbleData, otherArtist)
+                        ) {
+                            val i = Intent(NLService.iCANCEL).apply {
+                                putExtra(NLService.B_HASH, hash)
+                            }
+                            context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+                            return true
+                        }
+                    }
+                    return false
+                }
 
                 if (nowPlaying) {
                     // some players put the previous song and then switch to the current song in like 150ms
@@ -677,28 +712,14 @@ class LFMRequester(
                     if (scrobbleData.track.isNullOrBlank())
                         scrobbleData.track = oldTrack
 
-                    if (prefs.proStatus) {
-                        if (PanoDb.getDb(context)
-                                .getBlockedMetadataDao()
-                                .isBlocked(scrobbleData, ignoredArtist)
-                        ) {
-                            val i = Intent(NLService.iCANCEL).apply {
-                                putExtra(NLService.B_HASH, hash)
-                            }
-                            context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
-                            return@coroutineScope
-                        }
-                    }
+                    if (shouldBlockScrobble(unparsedData?.artist))
+                        return@coroutineScope
 
                     if (scrobbleData.artist.isNullOrBlank() || scrobbleData.track.isNullOrBlank()) {
-                        if (packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && !ignoredArtist.isNullOrEmpty()) {
-                            scrobbleData.artist = ignoredArtist
-                            LFMRequester(context, scope, liveData)
-                                .scrobble(nowPlaying, scrobbleData, hash, packageName)
-                        } else {
+                        if (!doFallbackScrobble()) {
                             val b = scrobbleData.toBundle().apply {
                                 putInt(NLService.B_HASH, hash)
-                                putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
+                                putBoolean(NLService.B_FORCEABLE, forceable)
                                 putString(
                                     NLService.B_ERR_MSG,
                                     context.getString(R.string.parse_error)
@@ -725,32 +746,28 @@ class LFMRequester(
                     if (MainActivity.isOnline) {
                         val (lastScrobbleData, lastTime) = lastNp
                         lastNp = scrobbleData to System.currentTimeMillis()
+                        lastScrobbleData.timestamp = scrobbleData.timestamp
 
-                        if (
-                            lastScrobbleData.artist == scrobbleData.artist &&
-                            lastScrobbleData.album == scrobbleData.album &&
-                            lastScrobbleData.albumArtist == scrobbleData.albumArtist &&
-                            lastScrobbleData.track == scrobbleData.track &&
-                            System.currentTimeMillis() - lastTime < Stuff.TRACK_INFO_VALIDITY
-                        ) {
+                        val cacheOnly = if (lastScrobbleData == scrobbleData &&
+                            System.currentTimeMillis() - lastTime < Stuff.TRACK_INFO_VALIDITY) {
                             if (System.currentTimeMillis() - lastTime < 1000)
                                 Timber.tag(Stuff.TAG).w(Exception("Possible duplicate scrobble"))
-                            track = getValidTrack(
-                                scrobbleData.artist,
-                                scrobbleData.track,
-                                lastfmUsername!!,
-                                cacheOnly = true
-                            )
-                        } else if (validArtistsCache[scrobbleData.artist] == "") {
-                        } else
-                            track = getValidTrack(
-                                scrobbleData.artist,
-                                scrobbleData.track,
-                                lastfmUsername!!
-                            )
+                            true
+                        }
+                        else
+                            false
+
+                        track = getValidTrack(
+                            scrobbleData.artist,
+                            scrobbleData.track,
+                            lastfmUsername!!,
+                            cacheOnly = cacheOnly
+                        )
                         //works even if the username is wrong
+
                         if (!isActive)
                             return@coroutineScope
+                        val scrobbleDataBeforeAutocorrect = ScrobbleData(scrobbleData)
                         if (track != null) {
                             if (scrobbleData.album == "") {
                                 scrobbleData.artist = track.artist
@@ -763,12 +780,15 @@ class LFMRequester(
                                 prefs.fetchAlbumArtist &&
                                 scrobbleData.album.equals(track.album, ignoreCase = true) &&
                                 (scrobbleData.albumArtist.isNullOrEmpty() || scrobbleData.artist == scrobbleData.albumArtist)
-                            )
+                            ) {
                                 scrobbleData.albumArtist = track.albumArtist
+                            }
                         }
                         correctedArtist =
-                            if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT)
+                            if (track != null && (track.listeners >= Stuff.MIN_LISTENER_COUNT || forceable))
                                 track.artist
+                            else if (forceable)
+                                scrobbleData.artist
                             else
                                 getValidArtist(
                                     scrobbleData.artist,
@@ -776,83 +796,65 @@ class LFMRequester(
                                 )
                         if (correctedArtist != null && scrobbleData.album == "")
                             scrobbleData.artist = correctedArtist
+
+                        if (scrobbleDataBeforeAutocorrect != scrobbleData) {
+                            edit = editsDao.find(
+                                scrobbleData.artist,
+                                scrobbleData.album,
+                                scrobbleData.track
+                            )
+                            edit?.let {
+                                scrobbleData.artist = it.artist
+                                scrobbleData.album = it.album
+                                if (it.albumArtist.isNotBlank())
+                                    scrobbleData.albumArtist = it.albumArtist
+                                scrobbleData.track = it.track
+                                track =
+                                    getValidTrack(
+                                        scrobbleData.artist,
+                                        scrobbleData.track,
+                                        lastfmUsername!!
+                                    )
+                            }
+                            PanoDb.getDb(context)
+                                .getRegexEditsDao()
+                                .performRegexReplace(scrobbleData)
+
+                            if (shouldBlockScrobble(null))
+                                return@coroutineScope
+                        }
                     }
-                    edit = if (track != null)
-                        editsDao.find(track.artist, scrobbleData.album, track.name)
-                    else
-                        editsDao.find(scrobbleData.artist, scrobbleData.album, scrobbleData.track)
-                    if (edit != null) {
-                        scrobbleData.artist = edit.artist
-                        scrobbleData.album = edit.album
-                        if (edit.albumArtist.isNotBlank())
-                            scrobbleData.albumArtist = edit.albumArtist
-                        scrobbleData.track = edit.track
-                        track =
-                            getValidTrack(scrobbleData.artist, scrobbleData.track, lastfmUsername!!)
-                    }
+
                     if (edit != null || track != null) {
                         val b = scrobbleData.toBundle().apply {
                             putInt(NLService.B_HASH, hash)
                             if (track != null) {
-                                putBoolean(NLService.B_USER_LOVED, track.isLoved)
-                                putInt(NLService.B_USER_PLAY_COUNT, track.userPlaycount)
+                                putBoolean(NLService.B_USER_LOVED, track!!.isLoved)
+                                putInt(NLService.B_USER_PLAY_COUNT, track!!.userPlaycount)
                             }
                         }
-                        val i = Intent(NLService.iMETA_UPDATE_S).apply {
-                            putExtras(b)
-                        }
+                        val i = Intent(NLService.iMETA_UPDATE_S)
+                            .putExtras(b)
 
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
                     if (MainActivity.isOnline) {
                         if (correctedArtist != null || edit != null) {
                             if (prefs.submitNowPlaying) {
-                                serviceIdToKeys[R.string.lastfm]?.let {
-                                    scrobbleResults[R.string.lastfm] =
-                                        getScrobbleResult(scrobbleData, lastfmSession!!, true)
-                                }
-                                serviceIdToKeys[R.string.librefm]?.let {
-                                    val librefmSession: Session = Session.createCustomRootSession(
-                                        Stuff.LIBREFM_API_ROOT,
-                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
-                                    )
-                                    scrobbleResults[R.string.librefm] =
-                                        getScrobbleResult(scrobbleData, librefmSession, true)
-                                }
-
-                                serviceIdToKeys[R.string.gnufm]?.let {
-                                    val gnufmSession: Session = Session.createCustomRootSession(
-                                        prefs.gnufmRoot + "2.0/",
-                                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
-                                    )
-                                    scrobbleResults[R.string.gnufm] =
-                                        getScrobbleResult(scrobbleData, gnufmSession, true)
-                                }
-
-                                serviceIdToKeys[R.string.listenbrainz]?.let {
-                                    scrobbleResults[R.string.listenbrainz] =
-                                        ListenBrainz(it)
-                                            .updateNowPlaying(scrobbleData)
-                                }
-                                serviceIdToKeys[R.string.custom_listenbrainz]?.let {
-                                    scrobbleResults[R.string.custom_listenbrainz] =
-                                        ListenBrainz(it)
-                                            .setApiRoot(
-                                                prefs.customListenbrainzRoot
-                                            )
-                                            .updateNowPlaying(scrobbleData)
+                                scrobblablesMap.forEach { (stringId, scrobblable) ->
+                                    if (scrobblable != null) {
+                                        if (!isActive)
+                                            throw CancellationException()
+                                        scrobbleResults[stringId] = scrobblable.updateNowPlaying(scrobbleData)
+                                    }
                                 }
                             }
                         } else {
                             // unrecognized artist
-                            if (packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && !ignoredArtist.isNullOrEmpty()) {
-                                scrobbleData.artist = ignoredArtist
-                                LFMRequester(context, scope, liveData)
-                                    .scrobble(nowPlaying, scrobbleData, hash, packageName)
-                            } else {
+                            if (!doFallbackScrobble()) {
                                 val b = scrobbleData.toBundle().apply {
                                     putInt(NLService.B_HASH, hash)
-                                    putBoolean(NLService.B_FORCEABLE, ignoredArtist == null)
+                                    putBoolean(NLService.B_FORCEABLE, forceable)
                                     putString(NLService.B_PACKAGE_NAME, packageName)
                                 }
                                 val i = Intent(NLService.iBAD_META_S).apply {
@@ -862,71 +864,42 @@ class LFMRequester(
                             }
                         }
                     }
-                } else {
+                } else { // scrobble
 
                     // track player
-                    val trackedPlayer = TrackedPlayer(
+                    val scrobbleSource = ScrobbleSource(
                         timeMillis = scrobbleData.timestamp * 1000L,
-                        playerPackage = packageName
+                        pkg = packageName
                     )
                     PanoDb.getDb(context)
-                        .getTrackedPlayerDao()
-                        .insert(trackedPlayer)
+                        .getScrobbleSourcesDao()
+                        .insert(scrobbleSource)
 
                     if (MainActivity.isOnline) {
-                        serviceIdToKeys[R.string.lastfm]?.let {
-                            scrobbleResults[R.string.lastfm] =
-                                getScrobbleResult(scrobbleData, lastfmSession!!, false)
+                        scrobblablesMap.forEach { (stringId, scrobblable) ->
+                            if (scrobblable != null) {
+                                scrobbleResults[stringId] = scrobblable.scrobble(scrobbleData)
+                            }
                         }
-
-                        serviceIdToKeys[R.string.librefm]?.let {
-                            val librefmSession: Session = Session.createCustomRootSession(
-                                Stuff.LIBREFM_API_ROOT,
-                                Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
-                            )
-                            scrobbleResults[R.string.librefm] =
-                                getScrobbleResult(scrobbleData, librefmSession, false)
-                        }
-
-                        serviceIdToKeys[R.string.gnufm]?.let {
-                            val gnufmSession: Session = Session.createCustomRootSession(
-                                prefs.gnufmRoot + "2.0/",
-                                Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it
-                            )
-                            scrobbleResults[R.string.gnufm] =
-                                getScrobbleResult(scrobbleData, gnufmSession, false)
-                        }
-
-                        serviceIdToKeys[R.string.listenbrainz]?.let {
-                            scrobbleResults[R.string.listenbrainz] =
-                                ListenBrainz(it)
-                                    .scrobble(scrobbleData)
-                        }
-
-                        serviceIdToKeys[R.string.custom_listenbrainz]?.let {
-                            scrobbleResults[R.string.custom_listenbrainz] =
-                                ListenBrainz(it)
-                                    .setApiRoot(prefs.customListenbrainzRoot)
-                                    .scrobble(scrobbleData)
-                        }
-
                     }
                     if (scrobbleResults.isEmpty() ||
                         scrobbleResults.values.any { !it.isSuccessful }
                     ) {
                         val dao = PanoDb.getDb(context).getScrobblesDao()
-                        val entry = PendingScrobble()
-                        entry.artist = scrobbleData.artist
-                        entry.album = scrobbleData.album
-                        entry.track = scrobbleData.track
-                        if (scrobbleData.albumArtist != null)
-                            entry.albumArtist = scrobbleData.albumArtist
-                        entry.timestamp = scrobbleData.timestamp.toLong() * 1000
-                        entry.duration = scrobbleData.duration.toLong() * 1000
+                        val entry = PendingScrobble().apply {
+                            artist = scrobbleData.artist
+                            album = scrobbleData.album
+                            track = scrobbleData.track
+                            if (scrobbleData.albumArtist != null)
+                                albumArtist = scrobbleData.albumArtist
+                            timestamp = scrobbleData.timestamp.toLong() * 1000
+                            duration = scrobbleData.duration.toLong() * 1000
+                        }
 
                         if (scrobbleResults.isEmpty())
-                            serviceIdToKeys.keys.forEach { key ->
-                                entry.state = entry.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
+                            scrobblablesMap.forEach { (key, scrobblable) ->
+                                if (scrobblable != null)
+                                    entry.state = entry.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
                             }
                         else
                             scrobbleResults.forEach { (key, result) ->
@@ -977,57 +950,29 @@ class LFMRequester(
             checkSession()
             Stuff.log(this::loveOrUnlove.name+ " " + love)
             var submittedAll = true
-            val serviceIdToKeys = getServiceIdToKeys(true)
+            val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs, shouldSupportLove = true)
 
             val dao = PanoDb.getDb(context).getLovesDao()
             val pl = dao.find(track.artist, track.name)
             if (pl != null){
                 if (pl.shouldLove == !love) {
                     pl.shouldLove = love
-                    serviceIdToKeys.keys.forEach { key ->
-                        pl.state = pl.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
+                    scrobblablesMap.forEach { (key, scrobblable) ->
+                        if (scrobblable != null)
+                            pl.state = pl.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
                     }
                     dao.update(pl)
                 }
                 submittedAll = false
             } else {
-                val results = mutableMapOf<@StringRes Int, Result>()
+                val results = mutableMapOf</*@StringRes */Int, Result>()
 
-                serviceIdToKeys[R.string.lastfm]?.let {
-                    results[R.string.lastfm] = try {
-                        if (love)
-                            Track.love(track.artist, track.name, lastfmSession)
-                        else
-                            Track.unlove(track.artist, track.name, lastfmSession)
-                    } catch (e: CallException) {
-                        ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
+                scrobblablesMap.forEach { (stringId, scrobblable) ->
+                    if (scrobblable != null) {
+                        results[stringId] = scrobblable.loveOrUnlove(track, love)
                     }
                 }
-                serviceIdToKeys[R.string.librefm]?.let {
-                    val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
-                            Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
-                    results[R.string.librefm] = try {
-                        if (love)
-                            Track.love(track.artist, track.name, librefmSession)
-                        else
-                            Track.unlove(track.artist, track.name, librefmSession)
-                    } catch (e: CallException) {
-                        ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
-                    }
-                }
-                serviceIdToKeys[R.string.gnufm]?.let {
-                    val gnufmSession: Session = Session.createCustomRootSession(
-                            prefs.gnufmRoot + "2.0/",
-                            Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
-                    results[R.string.gnufm] = try {
-                        if (love)
-                            Track.love(track.artist, track.name, gnufmSession)
-                        else
-                            Track.unlove(track.artist, track.name, gnufmSession)
-                    } catch (e: CallException) {
-                        ScrobbleResult.createHttp200OKResult(0, e.toString(), "")
-                    }
-                }
+
                 if (results.values.any { !it.isSuccessful }) {
                     val entry = PendingLove()
                     entry.artist = track.artist
@@ -1053,26 +998,23 @@ class LFMRequester(
 
     fun delete(track: Track, callback: (suspend (Boolean) -> Unit)?) {
         toExec = {
-            val serviceIdToKeys = getServiceIdToKeys(true)
+            val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs, shouldSupportLove = true)
             val unscrobbler = LastfmUnscrobbler(context)
-            val success = unscrobbler.checkCsrf(lastfmUsername!!) &&
+            val success = unscrobbler.haveCsrfCookie() &&
                     unscrobbler.unscrobble(track.artist, track.name, track.playedWhen.time)
 
             withContext(Dispatchers.Main) {
                 callback!!.invoke(success)
             }
 
-            serviceIdToKeys[R.string.librefm]?.let {
-                val librefmSession: Session = Session.createCustomRootSession(Stuff.LIBREFM_API_ROOT,
-                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
-                Library.removeScrobble(track.artist, track.name, track.playedWhen.time/1000, librefmSession)
+            scrobblablesMap[R.string.librefm]?.let {
+                it as Lastfm
+                Library.removeScrobble(track.artist, track.name, track.playedWhen.time/1000, it.session)
             }
 
-            serviceIdToKeys[R.string.gnufm]?.let {
-                val gnufmSession: Session = Session.createCustomRootSession(
-                        prefs.gnufmRoot + "2.0/",
-                        Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY, it)
-                Library.removeScrobble(track.artist, track.name, track.playedWhen.time/1000, gnufmSession)
+            scrobblablesMap[R.string.gnufm]?.let {
+                it as Lastfm
+                Library.removeScrobble(track.artist, track.name, track.playedWhen.time/1000, it.session)
             }
             null
         }
@@ -1114,43 +1056,6 @@ class LFMRequester(
             }
             null
         }
-    }
-
-    private suspend fun getScrobbleResult(scrobbleData: ScrobbleData, session: Session, nowPlaying: Boolean): ScrobbleResult {
-        return coroutineScope {
-            if (!isActive && nowPlaying)
-                throw CancellationException()
-            try {
-                if (nowPlaying)
-                    Track.updateNowPlaying(scrobbleData, session)
-                else
-                    Track.scrobble(scrobbleData, session)
-            } catch (e: CallException) {
-                if (!isActive && nowPlaying)
-                    throw CancellationException()
-//     SocketTimeoutException extends InterruptedIOException
-                e.printStackTrace()
-                ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
-            }
-        }
-    }
-
-    fun getServiceIdToKeys(lfmOnly: Boolean = false): Map<Int, String> {
-        val map = mutableMapOf<Int, String>()
-        var sessKey = ""
-        if (!prefs.lastfmDisabled && lastfmSessKey != null)
-            map[R.string.lastfm] = lastfmSessKey!!
-        if (prefs.librefmSessKey?.also { sessKey = it } != null)
-            map[R.string.librefm] = sessKey
-        if (prefs.gnufmSessKey?.also { sessKey = it } != null)
-            map[R.string.gnufm] = sessKey
-        if (!lfmOnly) {
-            if (prefs.listenbrainzToken?.also { sessKey = it } != null)
-                map[R.string.listenbrainz] = sessKey
-            if (prefs.customListenbrainzToken?.also { sessKey = it } != null)
-                map[R.string.custom_listenbrainz] = sessKey
-        }
-        return map
     }
 
     fun cancel() {
@@ -1203,7 +1108,7 @@ class LFMRequester(
             }
             validTracksCache.put(artist to title, track to System.currentTimeMillis())
 
-            if (track != null)
+            if (track != null && track.listeners >= Stuff.MIN_LISTENER_COUNT)
                 validArtistsCache.put(artist, track.artist)
 
             return track

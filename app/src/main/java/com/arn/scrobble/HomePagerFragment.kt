@@ -16,7 +16,7 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tabMeta = arrayOf(
-            R.string.recents to R.drawable.vd_history,
+            R.string.scrobbles to R.drawable.vd_history,
             R.string.loved to R.drawable.vd_heart,
             R.string.friends to R.drawable.vd_friends,
             R.string.charts to R.drawable.vd_charts

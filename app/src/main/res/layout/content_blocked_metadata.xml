@@ -9,13 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="0dp"
+        android:background="@android:color/transparent"
+        app:liftOnScroll="false"
         android:touchscreenBlocksFocus="false">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/search_term"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            style="?textInputOutlinedDenseStyle"
             app:hintEnabled="false"
             android:layout_marginHorizontal="10dp"
             app:layout_scrollFlags="enterAlways|scroll|snap"
@@ -50,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textAppearance="?textAppearanceHeadlineMedium"
             android:visibility="gone"
             tools:text="0 saved edits"
             tools:visibility="visible" />
@@ -73,6 +75,5 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:contentDescription="@string/add"
-        app:backgroundTint="?colorPrimary"/>
+        android:contentDescription="@string/add"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

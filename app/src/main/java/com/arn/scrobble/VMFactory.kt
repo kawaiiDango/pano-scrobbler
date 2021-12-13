@@ -23,16 +23,16 @@ object VMFactory: ViewModelProvider.Factory {
 
     fun <T : ViewModel>getVM(fr: Fragment, vmClass: Class<T>): T {
         application = fr.activity?.application
-        return ViewModelProvider(fr, this).get(vmClass)
+        return ViewModelProvider(fr, this)[vmClass]
     }
 
     fun <T : ViewModel>getVM(act: AppCompatActivity, vmClass: Class<T>): T {
         application = act.application
-        return ViewModelProvider(act, this).get(vmClass)
+        return ViewModelProvider(act, this)[vmClass]
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(TracksVM::class.java) -> TracksVM(application!!) as T
             modelClass.isAssignableFrom(FriendsVM::class.java) -> FriendsVM(application!!) as T

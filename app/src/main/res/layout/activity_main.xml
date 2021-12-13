@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:focusable="false"
+    android:elevation="1dp"
     tools:openDrawer="start">
 
     <include

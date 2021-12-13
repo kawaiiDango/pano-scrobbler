@@ -28,7 +28,7 @@
             android:id="@+id/edit_pattern"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:textAppearance="?textAppearanceBodyLarge"
             android:maxLines="1"
             tools:text="regex pattern"/>
         <TextView

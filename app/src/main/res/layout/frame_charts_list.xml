@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+        android:textAppearance="?textAppearanceHeadlineSmall"
         android:visibility="gone"
         tools:text="@string/charts_no_data" />
 

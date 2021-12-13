@@ -2,7 +2,6 @@ package com.arn.scrobble
 
 import android.os.Bundle
 import android.text.util.Linkify
-import android.transition.Fade
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +14,8 @@ import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentLoginBinding
 import kotlinx.coroutines.*
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.ListenBrainz
+import com.google.android.material.transition.MaterialSharedAxis
 import org.json.JSONObject
 
 
@@ -31,7 +32,8 @@ open class LoginFragment: DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enterTransition = Fade()
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -121,14 +123,16 @@ open class LoginFragment: DialogFragment() {
     }
 
     private fun validate() {
-        CoroutineScope(Dispatchers.Main + Job()).launch {
+        GlobalScope.launch {
             val errMsg = withContext(Dispatchers.IO) {
                 validateAsync()
             }
-            if (errMsg == null)
-                success()
-            else
-                error(errMsg)
+            withContext(Dispatchers.Main) {
+                if (errMsg == null)
+                    success()
+                else
+                    error(errMsg)
+            }
         }
         hideKeyboard()
     }
@@ -144,7 +148,7 @@ open class LoginFragment: DialogFragment() {
         when (title) {
             getString(R.string.listenbrainz) -> {
                 if (tlast.isNotBlank()) {
-                    val username = ListenBrainz(tlast).username()
+                    val username = (ListenBrainz().setToken(tlast) as? ListenBrainz)?.username()
                     if (username != null) {
                         prefs.listenbrainzUsername = username
                         prefs.listenbrainzToken = tlast
@@ -159,9 +163,9 @@ open class LoginFragment: DialogFragment() {
                             "$t1/"
                         else
                             t1
-                        val username = ListenBrainz(tlast)
-                                .setApiRoot(url)
-                                .username()
+                        val username = (ListenBrainz().setToken(tlast)
+                            ?.setApiRoot(url) as? ListenBrainz)
+                                ?.username()
 
                         if (username != null) {
                             prefs.customListenbrainzRoot = url
@@ -218,7 +222,7 @@ open class LoginFragment: DialogFragment() {
         super.onStart()
 
         if (checksLogin) {
-            Stuff.setTitle(activity, arguments?.getString(HEADING))
+            Stuff.setTitle(activity!!, arguments?.getString(HEADING))
         }
 
     }

@@ -12,14 +12,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
-import coil.clear
+import coil.dispose
 import coil.load
-import coil.loadAny
 import coil.size.Scale
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.getTintedDrwable
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.HeaderDefaultBinding
 import com.arn.scrobble.databinding.HeaderPendingBinding
@@ -66,7 +66,7 @@ class RecentsAdapter(
     private val nonTrackViewCount: Int
         get() = sectionHeaders.size + psMap.size + plMap.size +
                 if (actionHeaderPos == -1) 0 else 1
-    private val playerDao = PanoDb.getDb(fragmentBinding.root.context).getTrackedPlayerDao()
+    private val playerDao = PanoDb.getDb(fragmentBinding.root.context).getScrobbleSourcesDao()
     
     init {
 //        setHasStableIds(true) //causes some opengl OOM and new holders to be created for no reason
@@ -376,7 +376,7 @@ class RecentsAdapter(
             binding.playerIcon.visibility = View.VISIBLE
 
             fun fetchIcon(pkgName: String) {
-                binding.playerIcon.loadAny(PackageName(pkgName)) {
+                binding.playerIcon.load(PackageName(pkgName)) {
                     scale(Scale.FIT)
                     listener(onSuccess = { _,_ ->
                         binding.playerIcon.contentDescription = pkgName
@@ -386,19 +386,21 @@ class RecentsAdapter(
 
             if (track.isNowPlaying && trackBundleLd.value?.getBoolean(NLService.B_IS_SCROBBLING) == true) {
                 trackBundleLd.value?.getString(NLService.B_PACKAGE_NAME)?.let {
+                    viewModel.pkgMap[0] = it
                     fetchIcon(it)
                 }
             } else if (timeMillis != null && viewModel.pkgMap[timeMillis] != null) {
                 fetchIcon(viewModel.pkgMap[timeMillis]!!)
             } else {
-                binding.playerIcon.clear()
+                binding.playerIcon.dispose()
+                binding.playerIcon.load(null)
                 binding.playerIcon.contentDescription = null
                 job?.cancel()
 
                 if (timeMillis != null) {
                     job = viewModel.viewModelScope.launch(Dispatchers.IO) {
                         delay(100)
-                        playerDao.findPlayer(timeMillis)?.playerPackage?.let { pkgName ->
+                        playerDao.findPlayer(timeMillis)?.pkg?.let { pkgName ->
                             viewModel.pkgMap[timeMillis] = pkgName
                             fetchIcon(pkgName)
                         }
@@ -458,38 +460,28 @@ class RecentsAdapter(
             }
 
             val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
+            val errorDrawable = itemView.context.getTintedDrwable(R.drawable.vd_wave_simple_filled, Stuff.genHashCode(track.artist, track.name))
 
-            if (!imgUrl.isNullOrEmpty()) {
-                binding.recentsImg.clearColorFilter()
-                binding.recentsImg.load(imgUrl) {
+            if (!isShowingLoves) {
+                binding.recentsImg.load(imgUrl ?: "") {
                     placeholder(R.drawable.vd_wave_simple_filled)
-                    error(R.drawable.vd_wave_simple_filled)
+                    error(errorDrawable)
                 }
             } else {
-                binding.recentsImg.load(R.drawable.vd_wave_simple_filled)
-                binding.recentsImg.setColorFilter(
-                    Stuff.getMatColor(
-                        binding.recentsImg.context,
-                        Stuff.genHashCode(track.artist, track.name).toLong()
-                    )
-                )
-                if (isShowingLoves){
-                    val musicEntryImageReq = MusicEntryImageReq(track, ImageSize.LARGE, true)
-                    binding.recentsImg.loadAny(musicEntryImageReq) {
-                        placeholder(R.drawable.vd_wave_simple_filled)
-                        error(R.drawable.vd_wave_simple_filled)
-                        transition(TransitionWithBeforeCallback {
-                            binding.recentsImg.clearColorFilter()
-                        })
-                        listener(onSuccess = { request, _ ->
-                            (request.data as? String)?.let {
-                                if (bindingAdapterPosition == viewModel.selectedPos) {
-                                    val idx = bindingAdapterPosition - nonTrackViewCount
-                                    setHeroListener.onSetHero(bindingAdapterPosition, viewModel.tracks[idx], false)
-                                }
+                val musicEntryImageReq = MusicEntryImageReq(track, ImageSize.LARGE, true)
+                binding.recentsImg.load(musicEntryImageReq) {
+                    placeholder(R.drawable.vd_wave_simple_filled)
+                    error(errorDrawable)
+//                    transitionFactory { _, _ -> NoCrossfadeOnErrorTransition() }
+
+                    listener(onSuccess = { request, _ ->
+                        (request.data as? String)?.let {
+                            if (bindingAdapterPosition == viewModel.selectedPos) {
+                                val idx = bindingAdapterPosition - nonTrackViewCount
+                                setHeroListener.onSetHero(bindingAdapterPosition, viewModel.tracks[idx], false)
                             }
-                        })
-                    }
+                        }
+                    })
                 }
             }
             setSelected(bindingAdapterPosition == viewModel.selectedPos, track)

@@ -17,7 +17,7 @@
         android:layout_weight="1"
         android:layout_height="0dp"
         android:padding="16dp"
-        android:background="?android:colorBackground">
+        android:background="@drawable/shape_widget_config_rounded_bg">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,8 +27,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="?colorSecondary"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="?colorPrimary"
+                android:textAppearance="?textAppearanceTitleLarge"
                 android:layout_marginTop="16dp"
                 android:text="@string/appwidget_period" />
 
@@ -41,8 +41,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="?colorSecondary"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="?colorPrimary"
+                android:textAppearance="?textAppearanceTitleLarge"
                 android:layout_marginTop="16dp"
                 android:text="@string/appwidget_theme" />
 
@@ -51,35 +51,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:singleSelection="true"
+                app:selectionRequired="true"
                 app:checkedChip="@id/chip_dark">
 
                 <com.google.android.material.chip.Chip
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:id="@+id/chip_dark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dark" />
+                    android:text="@string/dark"
+                    app:checkedIconEnabled="false" />
 
                 <com.google.android.material.chip.Chip
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:id="@+id/chip_light"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/light" />
+                    android:text="@string/light"
+                    app:checkedIconEnabled="false" />
 
                 <com.google.android.material.chip.Chip
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:id="@+id/chip_dynamic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dynamic" />
+                    android:text="@string/dynamic"
+                    app:checkedIconEnabled="false"/>
             </com.google.android.material.chip.ChipGroup>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="?colorSecondary"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="?colorPrimary"
+                android:textAppearance="?textAppearanceTitleLarge"
                 android:layout_marginTop="16dp"
                 android:text="@string/appwidget_alpha" />
 
@@ -97,18 +101,17 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="?colorSecondary"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="?colorPrimary"
+                android:textAppearance="?textAppearanceTitleLarge"
                 android:layout_marginTop="16dp"
                 android:text="@string/appwidget_shadow" />
 
             <com.google.android.material.chip.Chip
-                style="@style/Widget.MaterialComponents.Chip.Choice"
+                style="@style/Widget.Material3.Chip.Filter"
                 android:id="@+id/widget_shadow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                app:checkedIconVisible="true"
                 app:checkedIconTint="?colorSecondary"
                 android:text="@string/appwidget_show"/>
             
@@ -124,21 +127,22 @@
         android:background="?android:colorBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="16dp"
         android:gravity="end">
 
         <Button
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            style="@style/Widget.Material3.Button.TextButton.Dialog"
             android:text="@android:string/cancel"/>
 
         <Button
             android:id="@+id/ok_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            style="@style/Widget.Material3.Button.TextButton.Dialog"
             android:text="@android:string/ok"/>
 
     </LinearLayout>

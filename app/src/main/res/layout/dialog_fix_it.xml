@@ -1,145 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:nestedScrollingEnabled="true"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:background="#222">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/fab_margin"
+    android:paddingVertical="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fix_it_title"
+        android:textAppearance="?textAppearanceTitleLarge" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="4dp"
+        android:text="@string/fix_it_desc" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="7dp"
-        android:paddingEnd="@dimen/fab_margin"
-        android:paddingStart="@dimen/fab_margin">
-
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:paddingStart="16dp">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/fix_it_title"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
+            android:layout_weight="1"
+            android:text="@string/fix_it_startup_title"
+            android:textAppearance="?textAppearanceTitleMedium" />
 
-        <LinearLayout
-            style="@style/bottomSheetContent"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/fix_it_dkma_action"
+            style="?materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="14dp">
+            android:layout_marginStart="8dp"
+            android:text="@string/fix_it_action" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:paddingBottom="@dimen/fixit_bottom_padding"
-                android:text="@string/fix_it_startup_title"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/fix_it_startup_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:text="@string/fix_it_startup_desc_default"/>
+    <LinearLayout
+        android:id="@+id/fix_it_persistent_noti_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:paddingStart="16dp"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-            <TextView
-                android:focusable="true"
-                android:id="@+id/fix_it_startup_action"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="?selectableItemBackgroundBorderless"
-                android:paddingEnd="@dimen/fab_margin"
-                android:paddingStart="@dimen/fab_margin"
-                android:text="@string/fix_it_action"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textColor="?colorPrimary" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            style="@style/bottomSheetContent"
-            android:id="@+id/fix_it_nls"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="14dp"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:layout_weight="1"
+            android:text="@string/show_persistent_noti"
+            android:textAppearance="?textAppearanceTitleMedium" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:paddingBottom="@dimen/fixit_bottom_padding"
-                android:text="@string/fix_it_noti_title"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:text="@string/fix_it_noti_desc"/>
-
-            <TextView
-                android:focusable="true"
-                android:id="@+id/fix_it_nls_action"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="?selectableItemBackgroundBorderless"
-                android:paddingEnd="@dimen/fab_margin"
-                android:paddingStart="@dimen/fab_margin"
-                android:text="@string/fix_it_action"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textColor="?colorPrimary"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/fix_it_battery"
-            style="@style/bottomSheetContent"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/fix_it_persistent_noti_action"
+            style="?materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="14dp"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:layout_marginStart="8dp"
+            android:text="@string/appwidget_show" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:paddingBottom="@dimen/fixit_bottom_padding"
-                android:text="@string/fix_it_battery_title"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:text="@string/fix_it_battery_desc"/>
+    <LinearLayout
+        android:id="@+id/fix_it_battery"
+        style="@style/bottomSheetContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:paddingStart="16dp">
 
-            <TextView
-                android:focusable="true"
-                android:id="@+id/fix_it_battery_action"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="?selectableItemBackgroundBorderless"
-                android:paddingEnd="@dimen/fab_margin"
-                android:paddingStart="@dimen/fab_margin"
-                android:text="@string/fix_it_action"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textColor="?colorPrimary"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/fix_it_battery_title"
+            android:textAppearance="?textAppearanceTitleMedium" />
 
-        </LinearLayout>
+        <Button
+            android:id="@+id/fix_it_battery_action"
+            style="?materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/fix_it_action" />
 
-    </LinearLayout></ScrollView>
+    </LinearLayout>
+
+</LinearLayout>

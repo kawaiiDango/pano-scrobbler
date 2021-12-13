@@ -1,4 +1,5 @@
 package com.arn.scrobble
+
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
@@ -9,14 +10,12 @@ import androidx.preference.PreferenceManager
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.WidgetPrefs
 import com.frybits.harmony.getHarmonySharedPreferences
-import com.github.anrwatchdog.ANRWatchDog
+import com.google.android.material.color.DynamicColors
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Caller
 import de.umass.lastfm.cache.FileSystemCache
 import timber.log.Timber
-import java.io.PrintWriter
-import java.io.StringWriter
 import java.util.*
 import java.util.logging.Level
 
@@ -42,14 +41,6 @@ class App : Application() {
 
         Timber.plant(Timber.DebugTree())
 
-        ANRWatchDog(4500)
-            .setANRListener {
-                val sw = StringWriter()
-                it.printStackTrace(PrintWriter(sw))
-                Timber.tag("anrWatchDog").e(RuntimeException(sw.toString().take(2500)))
-            }
-            .start()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
                 val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -57,7 +48,8 @@ class App : Application() {
                 exitReasons.forEachIndexed { index, applicationExitInfo ->
                     Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+            }
             // Caused by java.lang.IllegalArgumentException at getHistoricalProcessExitReasons
             // Comparison method violates its general contract!
             // probably a samsung bug
@@ -85,6 +77,9 @@ class App : Application() {
 
             mainPrefs.prefVersion = 1
         }
+        DynamicColors.applyToActivitiesIfAvailable(this) { _, _ ->
+            mainPrefs.themeDynamic && mainPrefs.proStatus
+        }
     }
 
     private fun initCaller() {
@@ -101,7 +96,7 @@ class App : Application() {
 
     private fun migratePrefs(prefFrom: SharedPreferences, prefTo: SharedPreferences) {
         prefTo.edit().apply {
-            prefFrom.all.forEach{ (key, value) ->
+            prefFrom.all.forEach { (key, value) ->
                 when (value) {
                     is Boolean -> putBoolean(key, value)
                     is Float -> putFloat(key, value)

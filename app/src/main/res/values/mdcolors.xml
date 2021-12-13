@@ -1,0 +1,250 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <array name="mdcolors_0">
+    <item name="blue_0" type="color">#FFFFFF</item>
+    <item name="lightblue_0" type="color">#FFFFFF</item>
+    <item name="cyan_0" type="color">#FFFFFF</item>
+    <item name="indigo_0" type="color">#FFFFFF</item>
+    <item name="deeppurple_0" type="color">#FFFFFF</item>
+    <item name="purple_0" type="color">#FFFFFF</item>
+    <item name="teal_0" type="color">#FFFFFF</item>
+    <item name="green_0" type="color">#FFFFFF</item>
+    <item name="lightgreen_0" type="color">#FFFFFF</item>
+    <item name="lime_0" type="color">#FFFFFF</item>
+    <item name="yellow_0" type="color">#FFFFFF</item>
+    <item name="amber_0" type="color">#FFFFFF</item>
+    <item name="orange_0" type="color">#FFFFFF</item>
+    <item name="deeporange_0" type="color">#FFFFFF</item>
+    <item name="pink_0" type="color">#FFFFFF</item>
+    <item name="sakurapink_0" type="color">#FFFFFF</item>
+    <item name="red_0" type="color">#FFFFFF</item>
+  </array>
+  <array name="mdcolors_10">
+    <item name="blue_10" type="color">#FDFBFF</item>
+    <item name="lightblue_10" type="color">#FBFCFF</item>
+    <item name="cyan_10" type="color">#F6FEFF</item>
+    <item name="indigo_10" type="color">#FEFBFF</item>
+    <item name="deeppurple_10" type="color">#FFFBFD</item>
+    <item name="purple_10" type="color">#FFFBFA</item>
+    <item name="teal_10" type="color">#F1FFFC</item>
+    <item name="green_10" type="color">#F3FFF3</item>
+    <item name="lightgreen_10" type="color">#F8FFE4</item>
+    <item name="lime_10" type="color">#FEFFCD</item>
+    <item name="yellow_10" type="color">#FFFBF7</item>
+    <item name="amber_10" type="color">#FFFBF8</item>
+    <item name="orange_10" type="color">#FFFBF9</item>
+    <item name="deeporange_10" type="color">#FFFBFA</item>
+    <item name="pink_10" type="color">#FFFBFA</item>
+    <item name="sakurapink_10" type="color">#FFFBFA</item>
+    <item name="red_10" type="color">#FFFBFA</item>
+  </array>
+  <array name="mdcolors_50">
+    <item name="blue_50" type="color">#EBF0FF</item>
+    <item name="lightblue_50" type="color">#E4F2FF</item>
+    <item name="cyan_50" type="color">#D0F7FF</item>
+    <item name="indigo_50" type="color">#EFEFFF</item>
+    <item name="deeppurple_50" type="color">#F8EDFF</item>
+    <item name="purple_50" type="color">#FFEAFD</item>
+    <item name="teal_50" type="color">#B3FFF3</item>
+    <item name="green_50" type="color">#C0FFD1</item>
+    <item name="lightgreen_50" type="color">#D7FDA9</item>
+    <item name="lime_50" type="color">#EFF896</item>
+    <item name="yellow_50" type="color">#FFF38C</item>
+    <item name="amber_50" type="color">#FFEFD3</item>
+    <item name="orange_50" type="color">#FFEDDF</item>
+    <item name="deeporange_50" type="color">#FFEDE9</item>
+    <item name="pink_50" type="color">#FFEDEF</item>
+    <item name="sakurapink_50" type="color">#FFECF1</item>
+    <item name="red_50" type="color">#FFECED</item>
+  </array>
+  <array name="mdcolors_100">
+    <item name="blue_100" type="color">#D6E2FF</item>
+    <item name="lightblue_100" type="color">#C9E6FF</item>
+    <item name="cyan_100" type="color">#9DEFFF</item>
+    <item name="indigo_100" type="color">#DDE0FF</item>
+    <item name="deeppurple_100" type="color">#EBDCFF</item>
+    <item name="purple_100" type="color">#FFD6FF</item>
+    <item name="teal_100" type="color">#92F4E3</item>
+    <item name="green_100" type="color">#AAF3BD</item>
+    <item name="lightgreen_100" type="color">#C9EF9C</item>
+    <item name="lime_100" type="color">#E0EA8A</item>
+    <item name="yellow_100" type="color">#F2E57F</item>
+    <item name="amber_100" type="color">#FFDE9E</item>
+    <item name="orange_100" type="color">#FFDCBB</item>
+    <item name="deeporange_100" type="color">#FFDAD3</item>
+    <item name="pink_100" type="color">#FFD9DF</item>
+    <item name="sakurapink_100" type="color">#FFD8E5</item>
+    <item name="red_100" type="color">#FFD9DB</item>
+  </array>
+  <array name="mdcolors_200">
+    <item name="blue_200" type="color">#ACC7FF</item>
+    <item name="lightblue_200" type="color">#8ECDFF</item>
+    <item name="cyan_200" type="color">#75D4E7</item>
+    <item name="indigo_200" type="color">#B9C3FF</item>
+    <item name="deeppurple_200" type="color">#D4BBFF</item>
+    <item name="purple_200" type="color">#EFB2F2</item>
+    <item name="teal_200" type="color">#76D7C8</item>
+    <item name="green_200" type="color">#8FD6A2</item>
+    <item name="lightgreen_200" type="color">#AED282</item>
+    <item name="lime_200" type="color">#C4CD71</item>
+    <item name="yellow_200" type="color">#D5C967</item>
+    <item name="amber_200" type="color">#EFC061</item>
+    <item name="orange_200" type="color">#FFB86E</item>
+    <item name="deeporange_200" type="color">#FFB4A8</item>
+    <item name="pink_200" type="color">#FFB1BF</item>
+    <item name="sakurapink_200" type="color">#FFB0CD</item>
+    <item name="red_200" type="color">#FFB2B6</item>
+  </array>
+  <array name="mdcolors_300">
+    <item name="blue_300" type="color">#8CABEB</item>
+    <item name="lightblue_300" type="color">#72B1E2</item>
+    <item name="cyan_300" type="color">#58B8CB</item>
+    <item name="indigo_300" type="color">#9CA7EC</item>
+    <item name="deeppurple_300" type="color">#B79FE7</item>
+    <item name="purple_300" type="color">#D298D5</item>
+    <item name="teal_300" type="color">#59BBAD</item>
+    <item name="green_300" type="color">#74BA88</item>
+    <item name="lightgreen_300" type="color">#94B66A</item>
+    <item name="lime_300" type="color">#A9B159</item>
+    <item name="yellow_300" type="color">#B9AD4E</item>
+    <item name="amber_300" type="color">#D1A549</item>
+    <item name="orange_300" type="color">#E39C54</item>
+    <item name="deeporange_300" type="color">#F09285</item>
+    <item name="pink_300" type="color">#ED91A0</item>
+    <item name="sakurapink_300" type="color">#E891B1</item>
+    <item name="red_300" type="color">#EF9195</item>
+  </array>
+  <array name="mdcolors_400">
+    <item name="blue_400" type="color">#7291CF</item>
+    <item name="lightblue_400" type="color">#5597C5</item>
+    <item name="cyan_400" type="color">#389DB0</item>
+    <item name="indigo_400" type="color">#828CD0</item>
+    <item name="deeppurple_400" type="color">#9C85CA</item>
+    <item name="purple_400" type="color">#B57DB9</item>
+    <item name="teal_400" type="color">#3AA093</item>
+    <item name="green_400" type="color">#5A9F6F</item>
+    <item name="lightgreen_400" type="color">#7A9B52</item>
+    <item name="lime_400" type="color">#8E9741</item>
+    <item name="yellow_400" type="color">#9E9237</item>
+    <item name="amber_400" type="color">#B48A31</item>
+    <item name="orange_400" type="color">#C4823C</item>
+    <item name="deeporange_400" type="color">#D1786D</item>
+    <item name="pink_400" type="color">#CF7787</item>
+    <item name="sakurapink_400" type="color">#C97896</item>
+    <item name="red_400" type="color">#D0787C</item>
+  </array>
+  <array name="mdcolors_500">
+    <item name="blue_500" type="color">#5776B2</item>
+    <item name="lightblue_500" type="color">#377CA9</item>
+    <item name="cyan_500" type="color">#018293</item>
+    <item name="indigo_500" type="color">#6772B3</item>
+    <item name="deeppurple_500" type="color">#816BAE</item>
+    <item name="purple_500" type="color">#98639D</item>
+    <item name="teal_500" type="color">#0C8577</item>
+    <item name="green_500" type="color">#3E8456</item>
+    <item name="lightgreen_500" type="color">#607F3A</item>
+    <item name="lime_500" type="color">#747B29</item>
+    <item name="yellow_500" type="color">#82771E</item>
+    <item name="amber_500" type="color">#967016</item>
+    <item name="orange_500" type="color">#A56925</item>
+    <item name="deeporange_500" type="color">#B15F54</item>
+    <item name="pink_500" type="color">#AF5D6D</item>
+    <item name="sakurapink_500" type="color">#AA5E7B</item>
+    <item name="red_500" type="color">#B05D62</item>
+  </array>
+  <array name="mdcolors_600">
+    <item name="blue_600" type="color">#3E5E98</item>
+    <item name="lightblue_600" type="color">#156490</item>
+    <item name="cyan_600" type="color">#006877</item>
+    <item name="indigo_600" type="color">#4F5A99</item>
+    <item name="deeppurple_600" type="color">#685394</item>
+    <item name="purple_600" type="color">#7E4B84</item>
+    <item name="teal_600" type="color">#006B5F</item>
+    <item name="green_600" type="color">#246B40</item>
+    <item name="lightgreen_600" type="color">#496725</item>
+    <item name="lime_600" type="color">#5C6312</item>
+    <item name="yellow_600" type="color">#696001</item>
+    <item name="amber_600" type="color">#7B5800</item>
+    <item name="orange_600" type="color">#89510C</item>
+    <item name="deeporange_600" type="color">#94473E</item>
+    <item name="pink_600" type="color">#924655</item>
+    <item name="sakurapink_600" type="color">#8F4764</item>
+    <item name="red_600" type="color">#93474B</item>
+  </array>
+  <array name="mdcolors_700">
+    <item name="blue_700" type="color">#24457F</item>
+    <item name="lightblue_700" type="color">#004B71</item>
+    <item name="cyan_700" type="color">#004E5A</item>
+    <item name="indigo_700" type="color">#374280</item>
+    <item name="deeppurple_700" type="color">#503B7A</item>
+    <item name="purple_700" type="color">#64346B</item>
+    <item name="teal_700" type="color">#005047</item>
+    <item name="green_700" type="color">#00522B</item>
+    <item name="lightgreen_700" type="color">#324E0E</item>
+    <item name="lime_700" type="color">#444B00</item>
+    <item name="yellow_700" type="color">#504700</item>
+    <item name="amber_700" type="color">#5E4200</item>
+    <item name="orange_700" type="color">#6A3B00</item>
+    <item name="deeporange_700" type="color">#763129</item>
+    <item name="pink_700" type="color">#752F3E</item>
+    <item name="sakurapink_700" type="color">#72304C</item>
+    <item name="red_700" type="color">#763035</item>
+  </array>
+  <array name="mdcolors_800">
+    <item name="blue_800" type="color">#032E67</item>
+    <item name="lightblue_800" type="color">#003450</item>
+    <item name="cyan_800" type="color">#00363F</item>
+    <item name="indigo_800" type="color">#1F2A68</item>
+    <item name="deeppurple_800" type="color">#392363</item>
+    <item name="purple_800" type="color">#4B1D53</item>
+    <item name="teal_800" type="color">#003730</item>
+    <item name="green_800" type="color">#00391A</item>
+    <item name="lightgreen_800" type="color">#1C3700</item>
+    <item name="lime_800" type="color">#2E3400</item>
+    <item name="yellow_800" type="color">#373100</item>
+    <item name="amber_800" type="color">#422D00</item>
+    <item name="orange_800" type="color">#4B2800</item>
+    <item name="deeporange_800" type="color">#5A1B15</item>
+    <item name="pink_800" type="color">#591A29</item>
+    <item name="sakurapink_800" type="color">#571A35</item>
+    <item name="red_800" type="color">#5A1A20</item>
+  </array>
+  <array name="mdcolors_900">
+    <item name="blue_900" type="color">#001A43</item>
+    <item name="lightblue_900" type="color">#001E31</item>
+    <item name="cyan_900" type="color">#001F25</item>
+    <item name="indigo_900" type="color">#061353</item>
+    <item name="deeppurple_900" type="color">#240A4D</item>
+    <item name="purple_900" type="color">#33053C</item>
+    <item name="teal_900" type="color">#00201B</item>
+    <item name="green_900" type="color">#00210C</item>
+    <item name="lightgreen_900" type="color">#0E2000</item>
+    <item name="lime_900" type="color">#1A1E00</item>
+    <item name="yellow_900" type="color">#201C00</item>
+    <item name="amber_900" type="color">#271900</item>
+    <item name="orange_900" type="color">#2D1600</item>
+    <item name="deeporange_900" type="color">#3D0604</item>
+    <item name="pink_900" type="color">#3D0315</item>
+    <item name="sakurapink_900" type="color">#3C031F</item>
+    <item name="red_900" type="color">#3D040D</item>
+  </array>
+  <array name="mdcolors_1000">
+    <item name="blue_1000" type="color">#000000</item>
+    <item name="lightblue_1000" type="color">#000000</item>
+    <item name="cyan_1000" type="color">#000000</item>
+    <item name="indigo_1000" type="color">#000000</item>
+    <item name="deeppurple_1000" type="color">#000000</item>
+    <item name="purple_1000" type="color">#000000</item>
+    <item name="teal_1000" type="color">#000000</item>
+    <item name="green_1000" type="color">#000000</item>
+    <item name="lightgreen_1000" type="color">#000000</item>
+    <item name="lime_1000" type="color">#000000</item>
+    <item name="yellow_1000" type="color">#000000</item>
+    <item name="amber_1000" type="color">#000000</item>
+    <item name="orange_1000" type="color">#000000</item>
+    <item name="deeporange_1000" type="color">#000000</item>
+    <item name="pink_1000" type="color">#000000</item>
+    <item name="sakurapink_1000" type="color">#000000</item>
+    <item name="red_1000" type="color">#000000</item>
+  </array>
+</resources>

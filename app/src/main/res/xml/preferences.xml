@@ -23,11 +23,11 @@
         android:persistent="false"
     />
     -->
+
     <PreferenceCategory
         app:icon="@drawable/vd_apps"
         android:title="@string/pref_scrobble_from">
         <com.arn.scrobble.pref.AppIconsPref
-            app:iconSpaceReserved="true"
             android:key="app_whitelist"/>
         <Preference
             android:selectable="false"
@@ -54,22 +54,26 @@
         app:icon="@drawable/vd_hourglass"
         android:title="@string/pref_delay">
 
-        <SeekBarPreference
+        <com.arn.scrobble.pref.PersistedSliderPref
             app:showSeekBarValue="true"
             android:key="delay_per"
             android:title="@string/pref_delay_per"
             android:defaultValue="50"
             android:max="95"
             app:min="30"
+            app:seekBarIncrement="1"
+            android:persistent="true"
             />
 
-        <SeekBarPreference
+        <com.arn.scrobble.pref.PersistedSliderPref
             app:showSeekBarValue="true"
             android:key="delay_secs"
-            android:title="@string/pref_delay_secs"
+            android:title="@string/pref_delay_mins"
             android:defaultValue="240"
             android:max="360"
             app:min="30"
+            app:seekBarIncrement="10"
+            android:persistent="true"
             />
     </PreferenceCategory>
 
@@ -93,22 +97,28 @@
             android:persistent="true"/>
 
         <SwitchPreference
-            android:title="@string/pref_show_tracked_players"
-            android:summary="@string/pref_show_tracked_players_desc"
-            android:key="fake_show_tracked_players"
+            android:title="@string/pref_show_scrobble_sources"
+            android:summary="@string/pref_show_scrobble_sources_desc"
+            android:key="fake_show_scrobble_sources"
             android:persistent="false"/>
 
         <SwitchPreference
-            android:title="@string/pref_show_tracked_players"
-            android:summary="@string/pref_show_tracked_players_desc"
-            android:key="show_tracked_players"
+            android:title="@string/pref_show_scrobble_sources"
+            android:summary="@string/pref_show_scrobble_sources_desc"
+            android:key="show_scrobble_sources"
             android:defaultValue="true"
             android:persistent="true"/>
 
-        <ListPreference
+        <SwitchPreference
+            android:title="@string/pref_search_in_source"
+            android:summary="@string/pref_search_in_source_desc"
+            android:key="search_in_source"
+            android:defaultValue="false"
+            android:dependency="show_scrobble_sources"
+            android:persistent="true"/>
+
+        <Preference
             android:key="locale"
-            android:persistent="true"
-            android:defaultValue="auto"
             android:title="@string/pref_change_locale"
             android:summary="@string/locale_only_ui"/>
 
@@ -174,7 +184,10 @@
             android:persistent="true"
             android:title="@string/pref_fetch_aa"
             android:summary="@string/pref_fetch_aa_desc"/>
-
+        
+        <Preference
+            android:title="@string/pref_intents"
+            android:key="intents" />
     </PreferenceCategory>
     <PreferenceCategory
         app:icon="@drawable/vd_swap"
@@ -224,11 +237,11 @@
         app:icon="@drawable/vd_info"
         android:title="@string/pref_about">
         <Preference
-            android:title="@string/pref_intents"
-            android:key="intents" />
-        <Preference
             android:title="@string/pref_translate"
             android:key="translate" />
+        <Preference
+            android:title="@string/pref_privacy_policy"
+            android:key="privacy" />
         <Preference
             android:summary="@string/github_link"
             android:key="about" />

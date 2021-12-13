@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
             tools:text="0."
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
+            android:textAppearance="?textAppearanceTitleLarge"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,18 +29,18 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:gravity="center_vertical"
-                android:text="@string/grant_autostart"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
+                android:text="@string/allow_background"
+                android:textAppearance="?textAppearanceTitleMedium" />
 
-            <TextView
-                android:id="@+id/first_things_0_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/list_item_padding"
-                android:text="@string/grant_autostart_desc"
-                android:textSize="13sp"/>
+<!--            <TextView-->
+<!--                android:id="@+id/first_things_0_desc"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/list_item_padding"-->
+<!--                android:text="@string/grant_autostart_desc"-->
+<!--                android:textSize="13sp"/>-->
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -53,7 +53,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
             tools:text="1."
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
+            android:textAppearance="?textAppearanceTitleLarge"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/grant_notification_access"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+                android:textAppearance="?textAppearanceTitleMedium"/>
 
             <TextView
                 android:id="@+id/first_things_1_desc"
@@ -90,7 +90,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
             tools:text="2."
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
+            android:textAppearance="?textAppearanceTitleLarge"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/authenticate_with_lastfm"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+                android:textAppearance="?textAppearanceTitleMedium"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -122,14 +122,14 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical|center"
             tools:text="3."
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
+            android:textAppearance="?textAppearanceTitleLarge"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:text="@string/choose_apps"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+            android:textAppearance="?textAppearanceTitleMedium"/>
     </LinearLayout>
     <EditText
         android:id="@+id/testing_pass"

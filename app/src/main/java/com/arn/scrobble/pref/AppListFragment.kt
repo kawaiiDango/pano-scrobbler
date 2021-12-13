@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.os.Bundle
 import android.provider.MediaStore
-import android.transition.Fade
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentAppListBinding
+import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -37,7 +37,9 @@ class AppListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enterTransition = Fade()
+
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y,true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y,false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -170,7 +172,7 @@ class AppListFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity, R.string.enabled_apps)
+        Stuff.setTitle(activity!!, R.string.enabled_apps)
     }
     override fun onStop() {
         if (firstRun)

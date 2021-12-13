@@ -11,9 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.expandIfNeeded
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentTagInfoBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.net.URLEncoder
 import java.text.NumberFormat
@@ -123,9 +123,6 @@ class TagInfoFragment: BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (view?.isInTouchMode == false) {
-            val bottomSheetView = dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
-        }
+        expandIfNeeded()
     }
 }

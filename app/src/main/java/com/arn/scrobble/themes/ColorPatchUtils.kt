@@ -4,66 +4,70 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
+import androidx.core.content.ContextCompat
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.getOrDefaultKey
 import com.arn.scrobble.pref.MainPrefs
-import kotlin.random.Random
+import com.google.android.material.color.DynamicColors
 
 object ColorPatchUtils {
 
-    const val primaryDefault = "Pink"
-    const val secondaryDefault = "Purple"
-    const val backgroundDefault = "Black"
+    const val primaryDefault = "Sakurapink"
+    const val secondaryDefault = "Deeporange"
+    const val backgroundBlack = "Black"
 
-    fun setTheme(context: Context) {
+    fun setTheme(context: Context, proStatus: Boolean) {
         val prefs = MainPrefs(context)
-        val random = prefs.themeRandom
-        val sameTone = prefs.themeSameTone
+
+        if (prefs.themeDynamic && DynamicColors.isDynamicColorAvailable())
+            return
+
+        val isRandom = prefs.themeRandom
         val primaryStyle: String
         val secondaryStyle: String
-        val backgroundStyle: String
-        if (random) {
-            val r = Random(System.currentTimeMillis())
-            val i1 = r.nextInt(0, ColorPatchMap.primaryStyles.size)
-            val i2: Int
-            val i3: Int
-            if (sameTone) {
-                i2 = i1
-                i3 = i1
-            } else {
-                i2 = r.nextInt(0, ColorPatchMap.secondaryStyles.size)
-                i3 = r.nextInt(0, ColorPatchMap.backgroundStyles.size)
-            }
-            primaryStyle = ColorPatchMap.primaryStyles.keys.elementAt(i1)
-            secondaryStyle = ColorPatchMap.secondaryStyles.keys.elementAt(i2)
-            backgroundStyle = ColorPatchMap.backgroundStyles.keys.elementAt(i3)
+
+        if (!proStatus) {
+            primaryStyle = primaryDefault
+            secondaryStyle = secondaryDefault
+        } else if (isRandom) {
+            val primaryIdx = (0 until ColorPatchMap.primaryStyles.size).random()
+            val secondaryIndex = (0 until  ColorPatchMap.secondaryStyles.size).random()
+            primaryStyle = ColorPatchMap.primaryStyles.keys.elementAt(primaryIdx)
+            secondaryStyle = ColorPatchMap.secondaryStyles.keys.elementAt(secondaryIndex)
 
             prefs.themePrimary = primaryStyle
             prefs.themeSecondary = secondaryStyle
-            prefs.themeBackground = backgroundStyle
             context.sendBroadcast(Intent(NLService.iTHEME_CHANGED_S), NLService.BROADCAST_PERMISSION)
         } else {
             primaryStyle = prefs.themePrimary
             secondaryStyle = prefs.themeSecondary
-            backgroundStyle = prefs.themeBackground
         }
 
         context.theme.applyStyle(ColorPatchMap.primaryStyles
             .getOrDefaultKey(primaryStyle, primaryDefault), true)
         context.theme.applyStyle(ColorPatchMap.secondaryStyles
             .getOrDefaultKey(secondaryStyle, secondaryDefault), true)
-        context.theme.applyStyle(ColorPatchMap.backgroundStyles
-            .getOrDefaultKey(backgroundStyle, backgroundDefault), true)
+
+        if (prefs.themeTintBackground || !proStatus)
+            context.theme.applyStyle(ColorPatchMap.backgroundStyles
+                .getOrDefaultKey(primaryStyle, primaryDefault), true)
+        else
+            context.theme.applyStyle(ColorPatchMap.backgroundStyles[backgroundBlack]!!, true)
     }
 
-    fun getNotiColor(context: Context, prefs: MainPrefs): Int {
+    fun getNotiColor(context: Context): Int {
+        val prefs = MainPrefs(context)
+
+        if (prefs.proStatus && prefs.themeDynamic && DynamicColors.isDynamicColorAvailable())
+            return ContextCompat.getColor(context, android.R.color.system_accent1_200)
+
         val primaryStyle = if (prefs.proStatus)
             prefs.themePrimary
         else
             primaryDefault
         return context.getStyledColor(ColorPatchMap.primaryStyles
-            .getOrDefaultKey(primaryStyle, primaryDefault), R.attr.colorNoti)
+            .getOrDefaultKey(primaryStyle, primaryDefault), R.attr.colorPrimary)
     }
 
     fun Context.getStyledColor(@StyleRes style: Int, @AttrRes attr: Int): Int {

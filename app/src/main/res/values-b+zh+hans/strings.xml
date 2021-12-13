@@ -15,6 +15,27 @@
     <plurals name="num_years">
         <item quantity="other">%1$d 年</item>
     </plurals>
+    <plurals name="num_artists">
+        <item quantity="other">%1$d 位艺术家</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="other">%1$d 张专辑</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="other">%1$d 首曲目</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="other">%1$d 项匹配</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="other">%1$d 项编辑记录</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="other">%1$d 项编辑模板</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="other">%1$d 则已屏蔽的元数据条目</item>
+    </plurals>
     <string name="yes">确定</string>
     <string name="no">取消</string>
     <string name="settings">设置</string>

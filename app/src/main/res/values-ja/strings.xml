@@ -15,6 +15,27 @@
     <plurals name="num_years">
         <item quantity="other">%1$d年</item>
     </plurals>
+    <plurals name="num_artists">
+        <item quantity="other">%1$d組のアーティスト</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="other">%1$d件のアルバム</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="other">%1$d件のトラック</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="other">%1$d件の一致</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="other">%1$d件の訂正</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="other">%1$d件のパターン訂正</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="other">%1$d件のブロックされたメタデータ</item>
+    </plurals>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
     <string name="settings">設定</string>
@@ -215,6 +236,7 @@
     <string name="pref_auto_detect_summary">…そのアプリの取捨選択をお願いすることになります</string>
     <string name="pref_auto_detect">音楽系アプリのインストールを自動検出</string>
     <string name="pref_delay">Scrobbleの遅延 (いずれかの早い方優先)</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">パーセント</string>
     <string name="pref_logout">ログアウト</string>
     <string name="pref_confirm_logout">ログイアウトしてもよろしいですか？再度タップで実行します</string>
     <string name="pref_login">ログイン</string>

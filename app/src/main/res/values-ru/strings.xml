@@ -74,6 +74,7 @@
     </plurals>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="reset">Сбросить</string>
     <string name="settings">Настроить</string>
     <string name="bug_report">Сообщить об ошибке</string>
     <string name="album_art">Обложка альбома</string>

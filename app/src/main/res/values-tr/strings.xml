@@ -203,6 +203,7 @@
     <string name="close">Kapat</string>
     <string name="user_tags_hint">Yeni etiket</string>
     <string name="user_tags_empty">Henüz bir etiket eklemediniz</string>
+    <string name="info_long_press_hint">Açmak için bir parçaya uzunca bas</string>
     <string name="appwidget_loading">Yükleniyor…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Süre</string>
     <string name="appwidget_theme">Tema</string>
@@ -215,6 +216,7 @@
     <string name="appwidget_refresh_every">Widget her 15 dakikada bir yenilenir</string>
     <string name="primary_color">Ana renk</string>
     <string name="secondary_color">İkincil renk</string>
+    <string name="tint_background">Renkli arkaplan</string>
     <string name="random_theme">Her açılışta rastgele seç</string>
     <string name="palette_bg">Arkaplan için albüm kapağı rengini kullan</string>
     <string name="edit_name" comment="name for regex pattern">İsim (isteğe bağlı)</string>
@@ -241,6 +243,8 @@
     <string name="use_channel" comment="(Use youtube channel name)">Kanal ismini kullan</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">\"%1$s\" kalıp düzenlemesini etkinleştirmek istiyor musunuz?</string>
     <string name="show_persistent_noti">Kalıcı bildirim göster</string>
+    <string name="fix_it_desc">Bu düzeltmeler, bazı cihazlarda skroplayıcının arkaplanda çalışmasını sağlayabilir</string>
+    <string name="persistent_noti_desc">Saklamak için uzun bas</string>
     <string name="scrobbler_off">Skroplayıcı devre dışı</string>
     <string name="scrobbler_on">Skroplayıcı aktif</string>
     <string name="pref_master">Müzik skropla</string>
@@ -288,6 +292,11 @@
     <string name="pref_themes_desc">Karıştır ve eşle\nAyrıca bildirim rengini de değiştirir</string>
     <string name="pref_widget_charts">Ana ekran widget\'ı - Listeler</string>
     <string name="pref_show_albums">Albüm isimlerini göster</string>
+    <string name="pref_show_albums_desc">(skroplar için)</string>
+    <string name="pref_show_scrobble_sources">Skroplanan uygulamanın simgesini göster</string>
+    <string name="pref_show_scrobble_sources_desc">Bu veri kimseyle paylaşılmaz</string>
+    <string name="pref_search_in_source">Skropladığın uygulamada ara &amp; oynat</string>
+    <string name="pref_search_in_source_desc">Desteklenen uygulamalar içindir</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listeler</string>
     <string name="pref_regex_edits">Kalıp düzenlemeleri</string>
     <string name="pref_blocked_metadata">Engellenmiş metaveri</string>
@@ -348,12 +357,14 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="graph">Grafik</string>
     <string name="cleared_disabled_apps">Devre dışı uygulamalar temizlendi</string>
     <string name="fix_it_title">Muhtemel düzeltmeler</string>
+    <string name="fix_it_startup_title">Pil tasarufu ve başlangıç yöneticileri</string>
     <string name="fix_it_battery_title">Pil optimizasyonlarını devre dışı bırak</string>
     <string name="fix_it_action" comment="(To open an app)">Aç</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="help">Yardım</string>
     <string name="pro_support">Bu, sizin gibi harika kullanıcılarımızın, bu uygulamanın sağladığı hizmetlerin hatırına desteklerini göstermeleri için hızlı ve basit bir yoldur.</string>
+    <string name="pro_also_get">Ayrıca aşağıdaki özelliklere sahip olacaksın:</string>
     <string name="thank_you">Teşekkürler!</string>
     <string name="purchase_pending">Satın alma işleminiz henüz ödeme sağlayıcınız tarafından onaylanmadı. Lütfen birkaç dakika sonra tekrar kontrol edin.</string>
     <string name="billing_troubleshoot_title">Satın almayı geri yükle</string>

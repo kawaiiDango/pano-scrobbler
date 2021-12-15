@@ -9,7 +9,7 @@ import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.tabs.TabLayout
 
 
-class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
+class HomePagerFragment : PagerBaseFragment(), ViewPager.OnPageChangeListener {
 
     private var backStackChecked = false
     private val prefs by lazy { MainPrefs(context!!) }
@@ -35,9 +35,10 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
         super.onDestroyView()
     }
 
-    fun setGestureExclusions(set: Boolean){
+    fun setGestureExclusions(set: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                !resources.getBoolean(R.bool.is_rtl)) {
+            !resources.getBoolean(R.bool.is_rtl)
+        ) {
             val list = if (set)
                 listOf(Rect(0, 0, 100, resources.displayMetrics.heightPixels))
             else
@@ -53,9 +54,9 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
                 arguments!!.getInt(Stuff.ARG_TYPE)
             else if (arguments?.getString(Stuff.ARG_USERNAME) != null)
                 (view as ViewPager).currentItem
-            else if(activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_RECENTS)
+            else if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_RECENTS)
                 0
-            else if(activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_CHARTS)
+            else if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_CHARTS)
                 3
             else
                 prefs.lastHomePagerTab
@@ -85,7 +86,8 @@ class HomePagerFragment: PagerBaseFragment(), ViewPager.OnPageChangeListener {
     override fun onTabSelected(tab: TabLayout.Tab) {
         super.onTabSelected(tab)
         if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0 &&
-                arguments?.getString(Stuff.ARG_USERNAME) == null) {
+            arguments?.getString(Stuff.ARG_USERNAME) == null
+        ) {
             context ?: return
             prefs.lastHomePagerTab = tab.position
         }

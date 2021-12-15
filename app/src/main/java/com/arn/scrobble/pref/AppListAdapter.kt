@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.loadAny
 import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.HeaderDefaultBinding
@@ -26,7 +25,7 @@ class AppListAdapter(
     private val prefsSet: Set<String>,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemClickListener {
 
-    private val sectionHeaders = mutableMapOf<Int,String>()
+    private val sectionHeaders = mutableMapOf<Int, String>()
     private val packageManager = context.packageManager
     private val appList = mutableListOf<ApplicationInfo?>()
     private var itemClickListener: ItemClickListener = this
@@ -55,7 +54,12 @@ class AppListAdapter(
             }
             is VHHeader -> {
                 holder.setHeaderText(sectionHeaders[position] ?: "...")
-                holder.setHeaderTextColor(MaterialColors.getColor(holder.itemView, R.attr.colorSecondary))
+                holder.setHeaderTextColor(
+                    MaterialColors.getColor(
+                        holder.itemView,
+                        R.attr.colorSecondary
+                    )
+                )
             }
             else -> throw RuntimeException("Invalid view type $holder")
         }
@@ -66,14 +70,14 @@ class AppListAdapter(
         add(null)
     }
 
-    fun add(app: ApplicationInfo?, selected:Boolean = false) {
+    fun add(app: ApplicationInfo?, selected: Boolean = false) {
         if (selected || app?.packageName in prefsSet)
             selectedItems.add(itemCount)
         appList.add(app)
     }
 
     override fun onItemClick(view: View, position: Int) {
-        if(getItemViewType(position) == TYPE_ITEM) {
+        if (getItemViewType(position) == TYPE_ITEM) {
             if (position in selectedItems)
                 selectedItems.remove(position)
             else
@@ -90,9 +94,11 @@ class AppListAdapter(
         }
         return list
     }
+
     override fun getItemCount() = appList.size
 
-    inner class VHItem(private val binding: ListItemAppBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
+    inner class VHItem(private val binding: ListItemAppBinding) :
+        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         init {
             binding.root.setOnClickListener(this)
             binding.appListCheckbox.setOnCheckedChangeListener(null)
@@ -112,7 +118,7 @@ class AppListAdapter(
 
         private fun setChecked(animate: Boolean) {
             val isSelected = bindingAdapterPosition in selectedItems
-            if (!animate){
+            if (!animate) {
                 binding.appListCheckbox.setOnCheckedChangeListener(null)
             }
             itemView.isActivated = isSelected

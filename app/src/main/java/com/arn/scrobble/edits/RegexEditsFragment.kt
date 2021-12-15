@@ -34,7 +34,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 
-class RegexEditsFragment: Fragment(), ItemClickListener {
+class RegexEditsFragment : Fragment(), ItemClickListener {
     private var _binding: ContentRegexEditBinding? = null
     private val binding
         get() = _binding!!
@@ -101,9 +101,9 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
             it ?: return@observe
 
             binding.empty.visibility = if (it.isEmpty())
-                    View.VISIBLE
-                else
-                    View.INVISIBLE
+                View.VISIBLE
+            else
+                View.INVISIBLE
 
             binding.editsList.visibility = if (it.isNotEmpty())
                 View.VISIBLE
@@ -163,7 +163,11 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
 
 
         binding.editField.setAdapter(
-            ArrayAdapter(context!!, R.layout.list_item_field, localizedFieldsMap.values.toTypedArray())
+            ArrayAdapter(
+                context!!,
+                R.layout.list_item_field,
+                localizedFieldsMap.values.toTypedArray()
+            )
         )
 
         fun validate(): Boolean {
@@ -179,7 +183,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
                 return false
             }
 
-            if(binding.editField.text.isNullOrBlank()) {
+            if (binding.editField.text.isNullOrBlank()) {
                 binding.editField.error = "❗"
                 return false
             }
@@ -218,7 +222,7 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
                         regexEdit.preset = null
 
                     withContext(Dispatchers.Main) {
-                            viewModel.upsert(regexEdit)
+                        viewModel.upsert(regexEdit)
                     }
                 }
 
@@ -253,9 +257,9 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
             ) { dialogInterface, idx ->
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val regexEdit = RegexEdit(
-                            preset = presetsAvailable[idx],
-                            order = 0
-                        )
+                        preset = presetsAvailable[idx],
+                        order = 0
+                    )
                     dao.shiftDown()
                     dao.insert(regexEdit)
                 }
@@ -289,7 +293,8 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
 
                         withContext(Dispatchers.Main) {
                             if (numMatches.all { it.value == 0 })
-                                binding.matches.text = resources.getQuantityString(R.plurals.num_matches, 0, 0)
+                                binding.matches.text =
+                                    resources.getQuantityString(R.plurals.num_matches, 0, 0)
                             else {
                                 val lines = mutableListOf<String>()
                                 numMatches.forEach { (field, count) ->
@@ -302,7 +307,13 @@ class RegexEditsFragment: Fragment(), ItemClickListener {
                                             else -> throw IllegalArgumentException()
                                         }
                                         lines += "<b>${localizedFieldsMap[field]!!}</b> " +
-                                                "<i>(${resources.getQuantityString(R.plurals.num_matches, count, count)}):</i>" +
+                                                "<i>(${
+                                                    resources.getQuantityString(
+                                                        R.plurals.num_matches,
+                                                        count,
+                                                        count
+                                                    )
+                                                }):</i>" +
                                                 "<br/>$replacement"
                                     }
                                 }

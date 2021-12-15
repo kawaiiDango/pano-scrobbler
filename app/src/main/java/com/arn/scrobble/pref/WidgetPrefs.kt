@@ -10,17 +10,17 @@ class WidgetPrefs(context: Context) {
 
     val sharedPreferences = context.getHarmonySharedPreferences(NAME)
 
-    operator fun get(widgetId: Int)  = SpecificWidgetPrefs(widgetId)
+    operator fun get(widgetId: Int) = SpecificWidgetPrefs(widgetId)
 
     fun chartsData(tab: Int, period: Int) = ChartsData(tab, period)
 
-    inner class ChartsData(tab: Int, period: Int): Krate {
+    inner class ChartsData(tab: Int, period: Int) : Krate {
         override val sharedPreferences = this@WidgetPrefs.sharedPreferences
 
         var data by stringPref("${tab}_$period")
     }
 
-    inner class SpecificWidgetPrefs(private val widgetId: Int): Krate {
+    inner class SpecificWidgetPrefs(private val widgetId: Int) : Krate {
         override val sharedPreferences = this@WidgetPrefs.sharedPreferences
 
         var tab by intPref(PREF_WIDGET_TAB.prefName)

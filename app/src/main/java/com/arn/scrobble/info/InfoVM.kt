@@ -8,7 +8,7 @@ import com.arn.scrobble.LFMRequester
 import de.umass.lastfm.MusicEntry
 
 
-class InfoVM(app: Application): AndroidViewModel(app) {
+class InfoVM(app: Application) : AndroidViewModel(app) {
     val info = mutableListOf<Pair<String, MusicEntry?>>()
     val loadedTypes = mutableSetOf<String>()
     val receiver = MutableLiveData<Pair<String, MusicEntry?>>()

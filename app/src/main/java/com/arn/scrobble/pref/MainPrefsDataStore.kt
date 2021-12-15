@@ -3,7 +3,7 @@ package com.arn.scrobble.pref
 import android.content.Context
 import androidx.preference.PreferenceDataStore
 
-class MainPrefsDataStore(context: Context): PreferenceDataStore() {
+class MainPrefsDataStore(context: Context) : PreferenceDataStore() {
 
     private val prefs = MainPrefs(context.applicationContext).sharedPreferences
 
@@ -17,12 +17,16 @@ class MainPrefsDataStore(context: Context): PreferenceDataStore() {
     override fun putLong(key: String, value: Long) = prefs.edit().putLong(key, value).apply()
 
     override fun getBoolean(key: String, defValue: Boolean) = prefs.getBoolean(key, defValue)
-    override fun putBoolean(key: String, value: Boolean) = prefs.edit().putBoolean(key, value).apply()
+    override fun putBoolean(key: String, value: Boolean) =
+        prefs.edit().putBoolean(key, value).apply()
 
     override fun getFloat(key: String, defValue: Float) = prefs.getFloat(key, defValue)
     override fun putFloat(key: String, value: Float) = prefs.edit().putFloat(key, value).apply()
 
-    override fun getStringSet(key: String, defValue: Set<String>?) = prefs.getStringSet(key, defValue)
-    override fun putStringSet(key: String, value: Set<String>?) = prefs.edit().putStringSet(key, value).apply()
+    override fun getStringSet(key: String, defValue: Set<String>?) =
+        prefs.getStringSet(key, defValue)
+
+    override fun putStringSet(key: String, value: Set<String>?) =
+        prefs.edit().putStringSet(key, value).apply()
 
 }

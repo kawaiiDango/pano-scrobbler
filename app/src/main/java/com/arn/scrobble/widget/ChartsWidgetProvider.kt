@@ -4,20 +4,24 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.widget.RemoteViews
-import com.arn.scrobble.R
 import android.content.Intent
 import android.net.Uri
 import android.view.View
+import android.widget.RemoteViews
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetTheme
 
 
 class ChartsWidgetProvider : AppWidgetProvider() {
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
         val prefs = WidgetPrefs(context)
 
         // There may be multiple widgets active, so update all of them
@@ -107,7 +111,7 @@ internal fun updateAppWidget(
     rv.setEmptyView(R.id.appwidget_list, R.id.appwidget_status)
 
 
-    if (period == null || WidgetPrefs(context).chartsData(tab,  period).data == null)
+    if (period == null || WidgetPrefs(context).chartsData(tab, period).data == null)
         rv.setInt(R.id.appwidget_status, "setText", R.string.appwidget_loading)
     else
         rv.setInt(R.id.appwidget_status, "setText", R.string.charts_no_data)
@@ -149,11 +153,16 @@ internal fun updateAppWidget(
     )
     rv.setOnClickPendingIntent(R.id.appwidget_tracks, tabIntentPending)
 
-    rv.setInt(R.id.appwidget_bg, "setImageAlpha", (bgAlpha*255).toInt())
+    rv.setInt(R.id.appwidget_bg, "setImageAlpha", (bgAlpha * 255).toInt())
 
-    val tabShadowIds = arrayOf(R.id.appwidget_tracks_glow, R.id.appwidget_albums_glow, R.id.appwidget_artists_glow)
-    val tabIndicatorShadowIds = arrayOf(R.id.appwidget_tracks_glow_shadow, R.id.appwidget_albums_glow_shadow, R.id.appwidget_artists_glow_shadow)
-    val glowId = when(tab) {
+    val tabShadowIds =
+        arrayOf(R.id.appwidget_tracks_glow, R.id.appwidget_albums_glow, R.id.appwidget_artists_glow)
+    val tabIndicatorShadowIds = arrayOf(
+        R.id.appwidget_tracks_glow_shadow,
+        R.id.appwidget_albums_glow_shadow,
+        R.id.appwidget_artists_glow_shadow
+    )
+    val glowId = when (tab) {
         Stuff.TYPE_TRACKS -> R.id.appwidget_tracks_glow
         Stuff.TYPE_ALBUMS -> R.id.appwidget_albums_glow
         else -> R.id.appwidget_artists_glow

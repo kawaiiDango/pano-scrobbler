@@ -7,24 +7,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include android:id="@+id/chips_charts_period" layout="@layout/chips_charts_period" />
+    <include
+        android:id="@+id/chips_charts_period"
+        layout="@layout/chips_charts_period" />
 
     <ScrollView
         android:id="@+id/charts_overview_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include android:id="@+id/charts_artists_header" layout="@layout/header_with_action" />
-            <include android:id="@+id/charts_artists_frame" layout="@layout/frame_charts_list" />
-            <include android:id="@+id/charts_albums_header" layout="@layout/header_with_action" />
-            <include android:id="@+id/charts_albums_frame" layout="@layout/frame_charts_list" />
-            <include android:id="@+id/charts_tracks_header" layout="@layout/header_with_action" />
-            <include android:id="@+id/charts_tracks_frame" layout="@layout/frame_charts_list" />
-            <include android:id="@+id/charts_sparkline_header" layout="@layout/header_with_action" />
+            <include
+                android:id="@+id/charts_artists_header"
+                layout="@layout/header_with_action" />
+
+            <include
+                android:id="@+id/charts_artists_frame"
+                layout="@layout/frame_charts_list" />
+
+            <include
+                android:id="@+id/charts_albums_header"
+                layout="@layout/header_with_action" />
+
+            <include
+                android:id="@+id/charts_albums_frame"
+                layout="@layout/frame_charts_list" />
+
+            <include
+                android:id="@+id/charts_tracks_header"
+                layout="@layout/header_with_action" />
+
+            <include
+                android:id="@+id/charts_tracks_frame"
+                layout="@layout/frame_charts_list" />
+
+            <include
+                android:id="@+id/charts_sparkline_header"
+                layout="@layout/header_with_action" />
+
             <FrameLayout
                 android:id="@+id/charts_sparkline_frame"
                 android:layout_width="match_parent"
@@ -40,22 +64,21 @@
                     app:spark_lineColor="?colorSecondary"
                     app:spark_animateChanges="true"
                     app:spark_scrubEnabled="true"
-                    app:spark_lineWidth="6dp"
-                    />
+                    app:spark_lineWidth="6dp" />
 
                 <TextView
                     android:id="@+id/charts_sparkline_tick_top"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|start"
-                    tools:text="10000"/>
+                    tools:text="10000" />
 
                 <TextView
                     android:id="@+id/charts_sparkline_tick_bottom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|start"
-                    tools:text="000"/>
+                    tools:text="000" />
 
                 <TextView
                     android:id="@+id/charts_sparkline_scrub_info"
@@ -76,16 +99,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    app:showAnimationBehavior="none"
-                    />
+                    app:showAnimationBehavior="none" />
 
             </FrameLayout>
+
             <com.uncopt.android.widget.text.justify.JustifiedTextView
                 android:id="@+id/charts_sparkline_labels"
                 android:layout_marginStart="60dp"
                 android:layout_marginEnd="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
             <TextView
                 android:id="@+id/charts_scrub_message"
                 android:visibility="gone"
@@ -94,7 +118,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="10dp"
-                android:text="@string/graph_scrub_msg"/>
+                android:text="@string/graph_scrub_msg" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

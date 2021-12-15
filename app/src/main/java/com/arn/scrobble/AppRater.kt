@@ -45,24 +45,24 @@ class AppRater(
     fun showRateSnackbar() {
         val coordinatorLayout = (context as Activity).findViewById<View>(R.id.frame)
         Snackbar.make(coordinatorLayout, R.string.rate_msg, Snackbar.LENGTH_INDEFINITE)
-                .setAction("\uD83C\uDF1F " + context.getString(R.string.rate_action)) {
-                    rateNow()
-                    prefs.dontAskForRating = true
+            .setAction("\uD83C\uDF1F " + context.getString(R.string.rate_action)) {
+                rateNow()
+                prefs.dontAskForRating = true
+            }
+            .addCallback(object : Snackbar.Callback() {
+                override fun onShown(sb: Snackbar?) {
+                    super.onShown(sb)
+
+                    prefs.firstLaunchTime = System.currentTimeMillis()
+                    prefs.scrobbleCount = 0
+
+                    if (sb != null && MainActivity.isTV)
+                        sb.view.postDelayed({
+                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                                .requestFocus()
+                        }, 200)
                 }
-                .addCallback(object : Snackbar.Callback() {
-                    override fun onShown(sb: Snackbar?) {
-                        super.onShown(sb)
-
-                        prefs.firstLaunchTime = System.currentTimeMillis()
-                        prefs.scrobbleCount = 0
-
-                        if (sb != null && MainActivity.isTV)
-                            sb.view.postDelayed({
-                                sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                                        .requestFocus()
-                            }, 200)
-                    }
-                })
+            })
             .show()
     }
 

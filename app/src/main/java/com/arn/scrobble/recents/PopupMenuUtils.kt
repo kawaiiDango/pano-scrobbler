@@ -70,7 +70,11 @@ object PopupMenuUtils {
         }
     }
 
-    fun deleteScrobble(activity: FragmentActivity, track: Track, deleteAction: suspend (Boolean)-> Unit) {
+    fun deleteScrobble(
+        activity: FragmentActivity,
+        track: Track,
+        deleteAction: suspend (Boolean) -> Unit
+    ) {
         if (!MainActivity.isOnline)
             Stuff.toast(activity, activity.getString(R.string.unavailable_offline))
         else if (csrfTokenExists(activity)) {
@@ -80,12 +84,12 @@ object PopupMenuUtils {
     }
 
     @SuppressLint("RestrictedApi")
-    fun openPendingPopupMenu (
+    fun openPendingPopupMenu(
         anchor: View,
         scope: CoroutineScope,
         p: Any,
-        deleteAction: ()-> Unit,
-        loveAction: (()-> Unit)? = null
+        deleteAction: () -> Unit,
+        loveAction: (() -> Unit)? = null
     ) {
         val context = anchor.context
         val menuBuilder = MenuBuilder(context)
@@ -119,11 +123,15 @@ object PopupMenuUtils {
                                 servicesList += context.getString(id)
                         }
                         MaterialAlertDialogBuilder(context)
-                                .setMessage(context.getString(R.string.details_text,
-                                        context.getString(actionRes).lowercase(),
-                                        servicesList.joinToString(", ")))
-                                .setPositiveButton(android.R.string.ok, null)
-                                .show()
+                            .setMessage(
+                                context.getString(
+                                    R.string.details_text,
+                                    context.getString(actionRes).lowercase(),
+                                    servicesList.joinToString(", ")
+                                )
+                            )
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show()
                     }
                     R.id.menu_delete -> {
                         scope.launch(Dispatchers.IO) {
@@ -141,14 +149,20 @@ object PopupMenuUtils {
                     }
                     R.id.menu_love -> {
                         if (p is PendingScrobble) {
-                            LFMRequester(context!!, scope).loveOrUnlove(Track(p.track, null, p.artist), true) {
-                                        if (!it) {
-                                            if (loveAction != null)
-                                                loveAction.invoke()
-                                            else
-                                                deleteAction.invoke()
-                                        }
-                                    }
+                            LFMRequester(context!!, scope).loveOrUnlove(
+                                Track(
+                                    p.track,
+                                    null,
+                                    p.artist
+                                ), true
+                            ) {
+                                if (!it) {
+                                    if (loveAction != null)
+                                        loveAction.invoke()
+                                    else
+                                        deleteAction.invoke()
+                                }
+                            }
                         }
                     }
                 }

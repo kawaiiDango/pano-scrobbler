@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/AppWidgetTheme.Dynamic.Shadow">
-    <include android:id="@+id/appwidget_outer_frame"
+
+    <include
+        android:id="@+id/appwidget_outer_frame"
         layout="@layout/appwidget_charts_content" />
 </FrameLayout>

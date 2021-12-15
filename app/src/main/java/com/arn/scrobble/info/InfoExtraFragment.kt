@@ -24,7 +24,7 @@ import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 
 
-class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
+class InfoExtraFragment : BottomSheetDialogFragment(), EntryItemClickListener {
     private lateinit var artistsFragment: FakeArtistFragment
     private lateinit var albumsFragment: FakeAlbumFragment
     private lateinit var tracksFragment: FakeTrackFragment
@@ -38,20 +38,33 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
     private val username: String?
         get() = arguments?.getString(Stuff.ARG_USERNAME)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val binding = ContentInfoExtraBinding.inflate(inflater, container, false)
 
-        tracksFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_TRACKS.toString()) as? FakeTrackFragment ?: FakeTrackFragment()
+        tracksFragment =
+            childFragmentManager.findFragmentByTag(Stuff.TYPE_TRACKS.toString()) as? FakeTrackFragment
+                ?: FakeTrackFragment()
         if (!tracksFragment.isAdded)
-                childFragmentManager.beginTransaction().add(tracksFragment, Stuff.TYPE_TRACKS.toString()).commitNow()
+            childFragmentManager.beginTransaction()
+                .add(tracksFragment, Stuff.TYPE_TRACKS.toString()).commitNow()
 
         if (track == null) {
-            artistsFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_ARTISTS.toString()) as? FakeArtistFragment ?: FakeArtistFragment()
+            artistsFragment =
+                childFragmentManager.findFragmentByTag(Stuff.TYPE_ARTISTS.toString()) as? FakeArtistFragment
+                    ?: FakeArtistFragment()
             if (!artistsFragment.isAdded)
-                childFragmentManager.beginTransaction().add(artistsFragment, Stuff.TYPE_ARTISTS.toString()).commitNow()
-            albumsFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_ALBUMS.toString()) as? FakeAlbumFragment ?: FakeAlbumFragment()
+                childFragmentManager.beginTransaction()
+                    .add(artistsFragment, Stuff.TYPE_ARTISTS.toString()).commitNow()
+            albumsFragment =
+                childFragmentManager.findFragmentByTag(Stuff.TYPE_ALBUMS.toString()) as? FakeAlbumFragment
+                    ?: FakeAlbumFragment()
             if (!albumsFragment.isAdded)
-                childFragmentManager.beginTransaction().add(albumsFragment, Stuff.TYPE_ALBUMS.toString()).commitNow()
+                childFragmentManager.beginTransaction()
+                    .add(albumsFragment, Stuff.TYPE_ALBUMS.toString()).commitNow()
 
             initFragment(artistsFragment, binding.infoExtraFrame3)
             initFragment(albumsFragment, binding.infoExtraFrame2)
@@ -65,17 +78,32 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
             binding.infoExtraHeader3.headerAction.setOnClickListener {
                 showFullFragment(InfoPagerFragment(), Stuff.TYPE_ARTISTS)
             }
-            binding.infoExtraHeader3.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_mic, 0, 0, 0)
+            binding.infoExtraHeader3.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.vd_mic,
+                0,
+                0,
+                0
+            )
             binding.infoExtraHeader2.headerText.text = getString(R.string.top_albums)
             binding.infoExtraHeader2.headerAction.setOnClickListener {
                 showFullFragment(InfoPagerFragment(), Stuff.TYPE_ALBUMS)
             }
-            binding.infoExtraHeader2.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_album, 0, 0, 0)
+            binding.infoExtraHeader2.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.vd_album,
+                0,
+                0,
+                0
+            )
             binding.infoExtraHeader1.headerText.text = getString(R.string.top_tracks)
             binding.infoExtraHeader1.headerAction.setOnClickListener {
                 showFullFragment(InfoPagerFragment(), Stuff.TYPE_TRACKS)
             }
-            binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
+            binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.vd_note,
+                0,
+                0,
+                0
+            )
 
             binding.infoExtraTitle.text = artist
 
@@ -103,7 +131,12 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
                 showFullFragment(TrackExtraFragment(), Stuff.TYPE_TRACKS)
             }
 
-            binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
+            binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.vd_note,
+                0,
+                0,
+                0
+            )
             binding.infoExtraHeader2.root.visibility = View.GONE
             binding.infoExtraFrame2.root.visibility = View.GONE
             binding.infoExtraHeader3.root.visibility = View.GONE
@@ -122,22 +155,33 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
         return binding.root
     }
 
-    private fun initFragment(fragment: ShittyArchitectureFragment, rootViewBinding: FrameChartsListBinding) {
+    private fun initFragment(
+        fragment: ShittyArchitectureFragment,
+        rootViewBinding: FrameChartsListBinding
+    ) {
         fragment.viewModel = VMFactory.getVM(fragment, ChartsVM::class.java)
 
         val adapter = ChartsOverviewAdapter(rootViewBinding)
         adapter.viewModel = fragment.viewModel
         adapter.clickListener = this
         adapter.emptyTextRes = R.string.not_found
-        adapter.checkAllForMax = true //top tracks/albums are ordered by listeners and not by play count
+        adapter.checkAllForMax =
+            true //top tracks/albums are ordered by listeners and not by play count
         fragment.adapter = adapter
 
         val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
-        itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
+        itemDecor.setDrawable(
+            ContextCompat.getDrawable(
+                context!!,
+                R.drawable.shape_divider_chart
+            )!!
+        )
         rootViewBinding.chartsList.addItemDecoration(itemDecor)
 
-        rootViewBinding.chartsList.layoutManager = LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
-        (rootViewBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        rootViewBinding.chartsList.layoutManager =
+            LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+        (rootViewBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations =
+            false
         rootViewBinding.chartsList.adapter = adapter
 
         fragment.viewModel.listReceiver.observe(viewLifecycleOwner) {
@@ -166,7 +210,7 @@ class InfoExtraFragment: BottomSheetDialogFragment(), EntryItemClickListener {
         val b = Bundle()
 //        b.putString(Stuff.ARG_USERNAME, username)
 
-        when(entry) {
+        when (entry) {
             is Artist -> {
                 b.putString(NLService.B_ARTIST, entry.name)
             }

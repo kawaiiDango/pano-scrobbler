@@ -9,8 +9,8 @@ import com.arn.scrobble.friends.FriendsFragment
 import com.arn.scrobble.recents.LovesFragment
 import com.arn.scrobble.recents.RecentsFragment
 
-class HomePagerAdapter(fm: FragmentManager):
-        FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class HomePagerAdapter(fm: FragmentManager) :
+    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     private val tabCount = 4
 
     //Overriding method getItem

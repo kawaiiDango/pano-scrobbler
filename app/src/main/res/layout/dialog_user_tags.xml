@@ -18,13 +18,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Widget.Material3.CircularProgressIndicator.Small"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/user_tags_chip_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"/>
+            android:animateLayoutChanges="true" />
+
         <TextView
             android:id="@+id/user_tags_status"
             android:layout_width="wrap_content"
@@ -49,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
-            android:singleLine="true"/>
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

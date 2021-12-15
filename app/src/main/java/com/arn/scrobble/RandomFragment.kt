@@ -25,7 +25,7 @@ import de.umass.lastfm.Track
 /**
  * Created by arn on 06/09/2017.
  */
-class RandomFragment: Fragment() {
+class RandomFragment : Fragment() {
 
     private val viewModel by lazy { VMFactory.getVM(this, RandomVM::class.java) }
     private val prefs by lazy { MainPrefs(context!!) }
@@ -46,7 +46,11 @@ class RandomFragment: Fragment() {
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentRandomBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -132,8 +136,10 @@ class RandomFragment: Fragment() {
                 binding.randomStatus.visibility = View.GONE
                 binding.randomProgress.show()
             }
-            TransitionManager.beginDelayedTransition(binding.root,
-                    Fade().setInterpolator(DecelerateInterpolator()))
+            TransitionManager.beginDelayedTransition(
+                binding.root,
+                Fade().setInterpolator(DecelerateInterpolator())
+            )
             binding.randomTrackContainer.visibility = View.INVISIBLE
             binding.randomTrackButtons.visibility = View.INVISIBLE
         } else {
@@ -149,8 +155,10 @@ class RandomFragment: Fragment() {
             return
         }
         binding.randomStatus.visibility = View.GONE
-        TransitionManager.beginDelayedTransition(binding.root,
-                Fade().setInterpolator(DecelerateInterpolator()))
+        TransitionManager.beginDelayedTransition(
+            binding.root,
+            Fade().setInterpolator(DecelerateInterpolator())
+        )
         binding.randomTrackContainer.visibility = View.VISIBLE
         binding.randomTrackButtons.visibility = View.VISIBLE
 
@@ -160,7 +168,8 @@ class RandomFragment: Fragment() {
 
         binding.randomTrack.recentsTitle.text = name
         binding.randomTrack.recentsSubtitle.text = track.artist
-        binding.randomTrack.recentsDate.text = Stuff.myRelativeTime(context!!, track.playedWhen?.time ?: 0)
+        binding.randomTrack.recentsDate.text =
+            Stuff.myRelativeTime(context!!, track.playedWhen?.time ?: 0)
 
         binding.randomPlay.setOnClickListener {
             Stuff.launchSearchIntent(context!!, track, null)

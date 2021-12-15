@@ -128,11 +128,21 @@ class InfoAdapter(
                         max(parentRecyclerView.height - 300.dp, 300.dp)
                     )
                 }
-                binding.infoExtra.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.vd_arrow_up, 0)
+                binding.infoExtra.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.vd_arrow_up,
+                    0
+                )
                 fragment.arguments?.putBoolean(Stuff.ARG_SHOW_ALBUM_TRACKS, true)
             } else {
                 linearLayout.removeView(recyclerView)
-                binding.infoExtra.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.vd_arrow_right, 0)
+                binding.infoExtra.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.vd_arrow_right,
+                    0
+                )
                 fragment.arguments?.putBoolean(Stuff.ARG_SHOW_ALBUM_TRACKS, false)
             }
         }
@@ -250,7 +260,11 @@ class InfoAdapter(
                             toggleAlbumTracks(entry, binding.root)
                         }
 
-                        if (fragment.arguments?.getBoolean(Stuff.ARG_SHOW_ALBUM_TRACKS, false) == true) {
+                        if (fragment.arguments?.getBoolean(
+                                Stuff.ARG_SHOW_ALBUM_TRACKS,
+                                false
+                            ) == true
+                        ) {
                             toggleAlbumTracks(entry, binding.root)
                         }
                     } else

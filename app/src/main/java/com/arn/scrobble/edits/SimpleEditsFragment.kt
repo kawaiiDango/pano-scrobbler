@@ -27,7 +27,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 
-class SimpleEditsFragment: Fragment(), ItemClickListener {
+class SimpleEditsFragment : Fragment(), ItemClickListener {
 
     private var _binding: ContentSimpleEditsBinding? = null
     private val binding
@@ -37,7 +37,11 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
     private lateinit var adapter: SimpleEditsAdapter
     private val viewModel by lazy { VMFactory.getVM(this, SimpleEditsVM::class.java) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentSimpleEditsBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -53,7 +57,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
         adapter = SimpleEditsAdapter(viewModel, this)
         binding.editsList.layoutManager = LinearLayoutManager(context!!)
         binding.editsList.adapter = adapter
-        binding.editsList.setOnTouchListener{ v, motionEvent ->
+        binding.editsList.setOnTouchListener { v, motionEvent ->
             if (binding.searchTerm.editText!!.isFocused) {
                 hideKeyboard()
                 binding.searchTerm.clearFocus()
@@ -61,7 +65,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
             false
         }
 
-        binding.searchTerm.editText?.addTextChangedListener(object : TextWatcher{
+        binding.searchTerm.editText?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -77,7 +81,7 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
         })
 
         binding.searchTerm.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH){
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 hideKeyboard()
                 textView.clearFocus()
                 true
@@ -168,57 +172,57 @@ class SimpleEditsFragment: Fragment(), ItemClickListener {
             .show()
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val newEdit = SimpleEdit(
-                    _id = edit._id,
-                    origTrack = dialogBinding.editTrackOrig.edittext.text.toString().trim(),
-                    track = dialogBinding.editTrack.edittext.text.toString().trim(),
-                    origAlbum = dialogBinding.editAlbumOrig.edittext.text.toString().trim(),
-                    album = dialogBinding.editAlbum.edittext.text.toString().trim(),
-                    origArtist = dialogBinding.editArtistOrig.edittext.text.toString().trim(),
-                    artist = dialogBinding.editArtist.edittext.text.toString().trim(),
-                    albumArtist = dialogBinding.editAlbumArtist.edittext.text.toString().trim(),
-                )
+            val newEdit = SimpleEdit(
+                _id = edit._id,
+                origTrack = dialogBinding.editTrackOrig.edittext.text.toString().trim(),
+                track = dialogBinding.editTrack.edittext.text.toString().trim(),
+                origAlbum = dialogBinding.editAlbumOrig.edittext.text.toString().trim(),
+                album = dialogBinding.editAlbum.edittext.text.toString().trim(),
+                origArtist = dialogBinding.editArtistOrig.edittext.text.toString().trim(),
+                artist = dialogBinding.editArtist.edittext.text.toString().trim(),
+                albumArtist = dialogBinding.editAlbumArtist.edittext.text.toString().trim(),
+            )
 
-                if (
-                    newEdit.origTrack.isEmpty() ||
-                    newEdit.artist.isEmpty() ||
-                    newEdit.track.isEmpty()
-                ) {
-                    Stuff.toast(context, getString(R.string.required_fields_empty))
-                    return@setOnClickListener
-                }
-                if (edit != newEdit) {
-                    val checkArtist = newEdit.artist.isNotEmpty() &&
-                            edit.artist.lowercase() != newEdit.artist.lowercase()
-                    adapter.tempUpdate(position, newEdit)
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        if (checkArtist) {
-                            val allowedSet =
-                                MainPrefs(context!!).allowedArtists
-                            val artist =
-                                LFMRequester.getValidArtist(newEdit.artist, allowedSet)
-                            if (artist == null) {
-                                withContext(Dispatchers.Main) {
-                                    if (MainActivity.isOnline)
-                                        Stuff.toast(
-                                            activity!!,
-                                            getString(R.string.state_unrecognised_artist)
-                                        )
-                                    else
-                                        Stuff.toast(
-                                            activity!!,
-                                            getString(R.string.unavailable_offline)
-                                        )
-                                    adapter.tempUpdate(position, edit)
-                                }
-                                return@launch
-                            }
-                        }
-                        viewModel.upsert(newEdit)
-                    }
-                }
-            dialog.dismiss()
+            if (
+                newEdit.origTrack.isEmpty() ||
+                newEdit.artist.isEmpty() ||
+                newEdit.track.isEmpty()
+            ) {
+                Stuff.toast(context, getString(R.string.required_fields_empty))
+                return@setOnClickListener
             }
+            if (edit != newEdit) {
+                val checkArtist = newEdit.artist.isNotEmpty() &&
+                        edit.artist.lowercase() != newEdit.artist.lowercase()
+                adapter.tempUpdate(position, newEdit)
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    if (checkArtist) {
+                        val allowedSet =
+                            MainPrefs(context!!).allowedArtists
+                        val artist =
+                            LFMRequester.getValidArtist(newEdit.artist, allowedSet)
+                        if (artist == null) {
+                            withContext(Dispatchers.Main) {
+                                if (MainActivity.isOnline)
+                                    Stuff.toast(
+                                        activity!!,
+                                        getString(R.string.state_unrecognised_artist)
+                                    )
+                                else
+                                    Stuff.toast(
+                                        activity!!,
+                                        getString(R.string.unavailable_offline)
+                                    )
+                                adapter.tempUpdate(position, edit)
+                            }
+                            return@launch
+                        }
+                    }
+                    viewModel.upsert(newEdit)
+                }
+            }
+            dialog.dismiss()
+        }
     }
 
 

@@ -25,16 +25,19 @@ import com.arn.scrobble.databinding.HeaderDefaultBinding
 import com.arn.scrobble.databinding.HeaderPendingBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.pending.PendingScrFragment
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.pending.PendingListData
+import com.arn.scrobble.pending.PendingScrFragment
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.*
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 /**
@@ -43,13 +46,13 @@ import kotlinx.coroutines.*
 
 class RecentsAdapter(
     private val fragmentBinding: ContentRecentsBinding
-): RecyclerView.Adapter<RecyclerView.ViewHolder>(), LoadMoreGetter {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), LoadMoreGetter {
 
     lateinit var itemClickListener: ItemClickListener
     lateinit var itemLongClickListener: ItemLongClickListener
     lateinit var focusChangeListener: FocusChangeListener
     lateinit var setHeroListener: SetHeroTrigger
-    private val sectionHeaders = mutableMapOf<Int,String>()
+    private val sectionHeaders = mutableMapOf<Int, String>()
     private val psMap = mutableMapOf<Int, PendingScrobble>()
     private val plMap = mutableMapOf<Int, PendingLove>()
     private var actionHeaderPos = -1
@@ -67,7 +70,7 @@ class RecentsAdapter(
         get() = sectionHeaders.size + psMap.size + plMap.size +
                 if (actionHeaderPos == -1) 0 else 1
     private val playerDao = PanoDb.getDb(fragmentBinding.root.context).getScrobbleSourcesDao()
-    
+
     init {
 //        setHasStableIds(true) //causes some opengl OOM and new holders to be created for no reason
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -77,15 +80,27 @@ class RecentsAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_TRACK -> VHTrack(ListItemRecentsBinding.inflate(inflater, parent, false))
-            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(ListItemRecentsBinding.inflate(inflater, parent, false), isShowingAlbums, itemClickListener)
-            TYPE_PENDING_LOVE -> VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), isShowingAlbums, itemClickListener)
+            TYPE_PENDING_SCROBBLE -> VHPendingScrobble(
+                ListItemRecentsBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                ), isShowingAlbums, itemClickListener
+            )
+            TYPE_PENDING_LOVE -> VHPendingLove(
+                ListItemRecentsBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                ), isShowingAlbums, itemClickListener
+            )
             TYPE_HEADER -> VHHeader(HeaderDefaultBinding.inflate(inflater, parent, false))
             TYPE_ACTION -> VHAction(HeaderPendingBinding.inflate(inflater, parent, false), fm)
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }
 
-    override fun onBindViewHolder(holder:RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is VHTrack -> holder.setItemData(viewModel.tracks[position - nonTrackViewCount])
             is VHPendingScrobble -> holder.setItemData(psMap[position] ?: return)
@@ -106,7 +121,7 @@ class RecentsAdapter(
         }
     }
 
-    fun setLoading(b:Boolean){
+    fun setLoading(b: Boolean) {
         loadMoreListener.loading = b
         fragmentBinding.recentsSwipeRefresh.isRefreshing = false
     }
@@ -121,8 +136,10 @@ class RecentsAdapter(
     }
 
     fun removeTrack(track: Track) {
-        val idx = viewModel.tracks.indexOfFirst { it.playedWhen == track.playedWhen &&
-                    it.name == track.name && it.artist == track.artist }
+        val idx = viewModel.tracks.indexOfFirst {
+            it.playedWhen == track.playedWhen &&
+                    it.name == track.name && it.artist == track.artist
+        }
         if (idx != -1) {
             viewModel.deletedTracksStringSet += track.toString()
             synchronized(viewModel.tracks) {
@@ -146,7 +163,7 @@ class RecentsAdapter(
 
     override fun getItemCount() = viewModel.tracks.size + nonTrackViewCount
 
-    fun setPending(fm:FragmentManager?, pendingListData: PendingListData) {
+    fun setPending(fm: FragmentManager?, pendingListData: PendingListData) {
         val headerText = fragmentBinding.root.context.getString(R.string.pending_scrobbles)
         var shift = 0
         val lastDisplaySize = psMap.size + plMap.size
@@ -159,7 +176,7 @@ class RecentsAdapter(
             displayCount += pendingListData.plList.size
 
         actionHeaderPos = -1
-        if (totalCount == 0){
+        if (totalCount == 0) {
             this.fm = null
             if (sectionHeaders.containsValue(headerText)) {
                 val lastval = sectionHeaders[nonTrackViewCount - 1] ?: return
@@ -175,7 +192,8 @@ class RecentsAdapter(
             if (totalCount < 3) {
                 shift = 1
                 if (sectionHeaders[shift + displayCount] == null)
-                    sectionHeaders[shift + displayCount] = sectionHeaders[sectionHeaders.keys.last()]!!
+                    sectionHeaders[shift + displayCount] =
+                        sectionHeaders[sectionHeaders.keys.last()]!!
             } else {
                 shift = 2
                 actionHeaderPos = 3
@@ -205,23 +223,25 @@ class RecentsAdapter(
             notifyDataSetChanged()
     }
 
-    fun setStatusHeader(){
+    fun setStatusHeader() {
         val username = if (viewModel.username != null)
             fragmentBinding.root.context.getString(R.string.possession, viewModel.username) + " "
         else
             ""
-        val header =  if (isShowingLoves)
+        val header = if (isShowingLoves)
             username + fragmentBinding.root.context.getString(R.string.recently_loved)
         else if (viewModel.toTime > 0)
             username + fragmentBinding.root.context.getString(
                 R.string.scrobbles_till,
-                    DateFormat.getMediumDateFormat(fragmentBinding.root.context).format(viewModel.toTime))
+                DateFormat.getMediumDateFormat(fragmentBinding.root.context)
+                    .format(viewModel.toTime)
+            )
         else
             username + fragmentBinding.root.context.getString(R.string.recently_scrobbled)
         setStatusHeader(header)
     }
 
-    fun setStatusHeader(s:String){
+    fun setStatusHeader(s: String) {
         var idx = nonTrackViewCount
         if (idx == 0)
             idx++
@@ -232,7 +252,7 @@ class RecentsAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return if(position < nonTrackViewCount)
+        return if (position < nonTrackViewCount)
             position.toLong()
         else if (position < viewModel.tracks.size)
             viewModel.tracks[position - nonTrackViewCount].playedWhen?.time ?: Stuff.NP_ID.toLong()
@@ -278,7 +298,11 @@ class RecentsAdapter(
         lastPopulateTime = System.currentTimeMillis()
     }
 
-    class DiffCallback(private val newList: List<Track>, private val oldList: List<Track>, private val lastPopulateTime: Long) : DiffUtil.Callback() {
+    class DiffCallback(
+        private val newList: List<Track>,
+        private val oldList: List<Track>,
+        private val lastPopulateTime: Long
+    ) : DiffUtil.Callback() {
 
         override fun getOldListSize() = oldList.size
 
@@ -294,11 +318,13 @@ class RecentsAdapter(
                     oldList[oldItemPosition].album == newList[newItemPosition].album &&
                     oldList[oldItemPosition].artist == newList[newItemPosition].artist &&
                     oldList[oldItemPosition].isLoved == newList[newItemPosition].isLoved &&
-                    oldList[oldItemPosition].getImageURL(ImageSize.MEDIUM) == newList[newItemPosition].getImageURL(ImageSize.MEDIUM)
+                    oldList[oldItemPosition].getImageURL(ImageSize.MEDIUM) == newList[newItemPosition].getImageURL(
+                ImageSize.MEDIUM
+            )
         }
     }
 
-    class MyUpdateCallback(private val adapter: RecyclerView.Adapter<*>): ListUpdateCallback {
+    class MyUpdateCallback(private val adapter: RecyclerView.Adapter<*>) : ListUpdateCallback {
         var offset = 0
         var selectedPos = 0
 
@@ -322,15 +348,16 @@ class RecentsAdapter(
         }
     }
 
-    class VHAction(private val binding: HeaderPendingBinding, fm: FragmentManager?) : RecyclerView.ViewHolder(binding.root){
+    class VHAction(private val binding: HeaderPendingBinding, fm: FragmentManager?) :
+        RecyclerView.ViewHolder(binding.root) {
         init {
-            if (fm!= null)
+            if (fm != null)
                 binding.root.setOnClickListener {
                     fm.beginTransaction()
-                            .replace(R.id.frame, PendingScrFragment())
-                            .addToBackStack(null)
-                            .commit()
-                    }
+                        .replace(R.id.frame, PendingScrFragment())
+                        .addToBackStack(null)
+                        .commit()
+                }
         }
 
         fun setItemData(n: Int) {
@@ -339,7 +366,8 @@ class RecentsAdapter(
         }
     }
 
-    inner class VHTrack(private val binding: ListItemRecentsBinding) : RecyclerView.ViewHolder(binding.root), View.OnFocusChangeListener {
+    inner class VHTrack(private val binding: ListItemRecentsBinding) :
+        RecyclerView.ViewHolder(binding.root), View.OnFocusChangeListener {
         private var job: Job? = null
 
         init {
@@ -365,7 +393,10 @@ class RecentsAdapter(
                 focusChangeListener.call(itemView, bindingAdapterPosition)
         }
 
-        private fun setSelected(selected:Boolean, track: Track = viewModel.tracks[viewModel.selectedPos - nonTrackViewCount]) {
+        private fun setSelected(
+            selected: Boolean,
+            track: Track = viewModel.tracks[viewModel.selectedPos - nonTrackViewCount]
+        ) {
             itemView.isActivated = selected
             if (selected)
                 setHeroListener.onSetHero(bindingAdapterPosition, track, false)
@@ -378,7 +409,7 @@ class RecentsAdapter(
             fun fetchIcon(pkgName: String) {
                 binding.playerIcon.load(PackageName(pkgName)) {
                     scale(Scale.FIT)
-                    listener(onSuccess = { _,_ ->
+                    listener(onSuccess = { _, _ ->
                         binding.playerIcon.contentDescription = pkgName
                     })
                 }
@@ -424,13 +455,14 @@ class RecentsAdapter(
                         0
                     )
                 } else {
-                    val albumHeight = itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
+                    val albumHeight =
+                        itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
                     binding.recentsAlbum.visibility = View.GONE
                     binding.recentsTrackLl.setPaddingRelative(
                         0,
-                        albumHeight/2,
+                        albumHeight / 2,
                         0,
-                        albumHeight/2
+                        albumHeight / 2
                     )
                 }
             }
@@ -447,7 +479,8 @@ class RecentsAdapter(
 
             if (track.isLoved) {
                 if (binding.recentsImgOverlay.background == null)
-                    binding.recentsImgOverlay.background = ContextCompat.getDrawable(binding.recentsImgOverlay.context,
+                    binding.recentsImgOverlay.background = ContextCompat.getDrawable(
+                        binding.recentsImgOverlay.context,
                         R.drawable.vd_heart_stroked
                     )
                 binding.recentsImgOverlay.visibility = View.VISIBLE
@@ -460,7 +493,10 @@ class RecentsAdapter(
             }
 
             val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
-            val errorDrawable = itemView.context.getTintedDrwable(R.drawable.vd_wave_simple_filled, Stuff.genHashCode(track.artist, track.name))
+            val errorDrawable = itemView.context.getTintedDrwable(
+                R.drawable.vd_wave_simple_filled,
+                Stuff.genHashCode(track.artist, track.name)
+            )
 
             if (!isShowingLoves) {
                 binding.recentsImg.load(imgUrl ?: "") {
@@ -478,7 +514,11 @@ class RecentsAdapter(
                         (request.data as? String)?.let {
                             if (bindingAdapterPosition == viewModel.selectedPos) {
                                 val idx = bindingAdapterPosition - nonTrackViewCount
-                                setHeroListener.onSetHero(bindingAdapterPosition, viewModel.tracks[idx], false)
+                                setHeroListener.onSetHero(
+                                    bindingAdapterPosition,
+                                    viewModel.tracks[idx],
+                                    false
+                                )
                             }
                         }
                     })

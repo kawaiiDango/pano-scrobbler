@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/first_scrobbled_on"
         app:drawableStartCompat="@drawable/vd_cake"
-        android:drawablePadding="8dp"/>
+        android:drawablePadding="8dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tracks_list"

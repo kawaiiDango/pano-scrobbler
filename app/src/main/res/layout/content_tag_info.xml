@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -25,25 +26,25 @@
                 app:tint="?colorPrimary"
                 app:srcCompat="@drawable/vd_tag" />
 
-                <TextView
-                    android:id="@+id/tag_info_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAppearance="?textAppearanceTitleLarge"
-                    android:textColor="?colorPrimary"
-                    android:textIsSelectable="true"
-                    tools:text="title"/>
+            <TextView
+                android:id="@+id/tag_info_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?textAppearanceTitleLarge"
+                android:textColor="?colorPrimary"
+                android:textIsSelectable="true"
+                tools:text="title" />
 
-                <ImageButton
-                    android:id="@+id/tag_info_link"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:contentDescription="@string/more_info"
-                    android:tooltipText="@string/more_info"
-                    app:srcCompat="@drawable/vd_open_in_new"
-                    app:tint="?colorSecondary" />
+            <ImageButton
+                android:id="@+id/tag_info_link"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:contentDescription="@string/more_info"
+                android:tooltipText="@string/more_info"
+                app:srcCompat="@drawable/vd_open_in_new"
+                app:tint="?colorSecondary" />
         </LinearLayout>
 
         <FrameLayout
@@ -57,7 +58,7 @@
                 android:visibility="invisible"
                 style="@style/Widget.Material3.CircularProgressIndicator.Small"
                 app:hideAnimationBehavior="none"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center" />
 
             <LinearLayout
                 android:id="@+id/tag_info_content"
@@ -94,7 +95,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/taggers"
-                            android:textAlignment="center"/>
+                            android:textAlignment="center" />
 
                     </LinearLayout>
 
@@ -118,7 +119,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/taggings"
-                            android:textAlignment="center"/>
+                            android:textAlignment="center" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -127,9 +128,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-
-
-
 
 
                 </LinearLayout>
@@ -156,7 +154,7 @@
                         android:ellipsize="end"
                         android:maxLines="4"
                         tools:text="wiki"
-                        android:scrollbars="none"/>
+                        android:scrollbars="none" />
 
                     <ImageView
                         android:id="@+id/tag_info_wiki_expand"
@@ -168,23 +166,23 @@
                         app:srcCompat="@drawable/vd_arrow_down"
                         tools:visibility="visible" />
                 </LinearLayout>
-<!--
-                <TextView
-                    android:id="@+id/tag_info_similar_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/similar_tags"
-                    android:textAppearance="?textAppearanceBodyLarge"
-                    android:textColor="?colorPrimary"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+                <!--
+                                <TextView
+                                    android:id="@+id/tag_info_similar_title"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="10dp"
+                                    android:text="@string/similar_tags"
+                                    android:textAppearance="?textAppearanceBodyLarge"
+                                    android:textColor="?colorPrimary"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/tag_info_tags"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
--->
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/tag_info_tags"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+                -->
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>

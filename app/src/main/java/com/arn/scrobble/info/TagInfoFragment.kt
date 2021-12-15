@@ -19,14 +19,18 @@ import java.net.URLEncoder
 import java.text.NumberFormat
 
 
-class TagInfoFragment: BottomSheetDialogFragment() {
+class TagInfoFragment : BottomSheetDialogFragment() {
 
     private val viewModel by lazy { VMFactory.getVM(this, TagInfoVM::class.java) }
     private var _binding: ContentTagInfoBinding? = null
     private val binding
         get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentTagInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -41,9 +45,12 @@ class TagInfoFragment: BottomSheetDialogFragment() {
 
         val tag = arguments!!.getString(Stuff.ARG_TAG)!!
         binding.tagInfoTitle.text = tag
-        binding.tagInfoLink.setOnClickListener { Stuff.openInBrowser(context!!,
-            "https://www.last.fm/tag/" + URLEncoder.encode(tag, "UTF-8")
-                ) }
+        binding.tagInfoLink.setOnClickListener {
+            Stuff.openInBrowser(
+                context!!,
+                "https://www.last.fm/tag/" + URLEncoder.encode(tag, "UTF-8")
+            )
+        }
         binding.tagInfoProgress.show()
 
         viewModel.info.observe(viewLifecycleOwner) {
@@ -69,15 +76,20 @@ class TagInfoFragment: BottomSheetDialogFragment() {
                     binding.tagInfoWikiContainer.visibility = View.VISIBLE
                     binding.tagInfoWiki.text = Html.fromHtml(wikiText)
 
-                    val urls = (binding.tagInfoWiki.text as? Spanned)?.getSpans(0, binding.tagInfoWiki.text.length, URLSpan::class.java)
+                    val urls = (binding.tagInfoWiki.text as? Spanned)?.getSpans(
+                        0,
+                        binding.tagInfoWiki.text.length,
+                        URLSpan::class.java
+                    )
                     if (urls.isNullOrEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                         binding.tagInfoWiki.justificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD
 
-                    binding.tagInfoWiki.post{
+                    binding.tagInfoWiki.post {
                         if (_binding == null || binding.tagInfoWiki.layout == null)
                             return@post
                         if (binding.tagInfoWiki.lineCount > 4 ||
-                                binding.tagInfoWiki.layout.getEllipsisCount(binding.tagInfoWiki.lineCount - 1) > 0) {
+                            binding.tagInfoWiki.layout.getEllipsisCount(binding.tagInfoWiki.lineCount - 1) > 0
+                        ) {
                             val clickListener = { view: View ->
                                 if (!(view is TextView && (view.selectionStart != -1 || view.selectionEnd != -1))) {
                                     if (binding.tagInfoWiki.maxLines == 4) {

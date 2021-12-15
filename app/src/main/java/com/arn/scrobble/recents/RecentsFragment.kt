@@ -66,7 +66,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             loadRecents(1)
         val ps = coordinatorBinding.coordinator.paddingStart
         if (activity != null && ps > 0)
-            LFMRequester(context!!, viewLifecycleOwner.lifecycleScope, (activity as MainActivity).mainNotifierViewModel.drawerData).getDrawerInfo()
+            LFMRequester(
+                context!!,
+                viewLifecycleOwner.lifecycleScope,
+                (activity as MainActivity).mainNotifierViewModel.drawerData
+            ).getDrawerInfo()
         lastRefreshTime = System.currentTimeMillis()
     }
     private lateinit var coordinatorBinding: CoordinatorMainBinding
@@ -102,7 +106,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentRecentsBinding.inflate(inflater, container, false)
         coordinatorBinding = (activity as MainActivity).binding.coordinatorMain
         return binding.root
@@ -124,15 +132,16 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     onSetHero(viewModel.selectedPos, track, false)
             }
             if (!isShowingLoves &&
-                    System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
-                    viewModel.page == 1)
+                System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
+                viewModel.page == 1
+            )
                 timedRefresh.run()
         }
         activity ?: return
         if (isShowingLoves) {
             coordinatorBinding.heroCalendar.visibility = View.INVISIBLE
             coordinatorBinding.heroCalendar.isEnabled = false
-        } else if (!MainActivity.isTV){
+        } else if (!MainActivity.isTV) {
             coordinatorBinding.heroCalendar.visibility = View.VISIBLE
             coordinatorBinding.heroCalendar.isEnabled = true
         }
@@ -241,23 +250,23 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             }
 
         viewModel.listenerTrend
-                .observe(viewLifecycleOwner) {
-                    it ?: return@observe
-                    setGraph(it)
-                }
+            .observe(viewLifecycleOwner) {
+                it ?: return@observe
+                setGraph(it)
+            }
         if (!isShowingLoves && username == null)
             viewModel.loadPending(2, !activity.pendingSubmitAttempted)
-                    .observe(viewLifecycleOwner) {
-                        it ?: return@observe
-                        activity.pendingSubmitAttempted = true
-                        adapter.setPending(activity.supportFragmentManager, it)
-                    }
+                .observe(viewLifecycleOwner) {
+                    it ?: return@observe
+                    activity.pendingSubmitAttempted = true
+                    adapter.setPending(activity.supportFragmentManager, it)
+                }
 
-        coordinatorBinding.sparkline.setOnClickListener{
+        coordinatorBinding.sparkline.setOnClickListener {
             toggleGraphDetails()
         }
 
-        coordinatorBinding.heroShare.setOnClickListener{
+        coordinatorBinding.heroShare.setOnClickListener {
             val track = coordinatorBinding.heroImg.tag
             if (track is Track) {
                 val heart = if (track.isLoved) "♥️" else ""
@@ -291,7 +300,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             if (track is Track) {
                 showTrackInfo(track)
                 if (!prefs.longPressLearnt) {
-                    Stuff.toast(context, getString(R.string.info_long_press_hint), Toast.LENGTH_LONG)
+                    Stuff.toast(
+                        context,
+                        getString(R.string.info_long_press_hint),
+                        Toast.LENGTH_LONG
+                    )
                     prefs.longPressLearnt = true
                 }
             }
@@ -323,16 +336,17 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             coordinatorBinding.heroPlay.setOnLongClickListener {
                 val track = coordinatorBinding.heroImg.tag
                 if (track is Track) {
-                    Stuff.openInBrowser(context!!,
+                    Stuff.openInBrowser(
+                        context!!,
                         "https://en.touhouwiki.net/index.php?search=" +
-                            URLEncoder.encode("${track.artist} - ${track.name}", "UTF-8")
+                                URLEncoder.encode("${track.artist} - ${track.name}", "UTF-8")
                     )
                 }
                 true
             }
 
-            coordinatorBinding.heroPlay.setOnClickListener {
-            val track =  coordinatorBinding.heroImg.tag
+        coordinatorBinding.heroPlay.setOnClickListener {
+            val track = coordinatorBinding.heroImg.tag
             if (track is Track) {
                 val pkgName = if (track.playedWhen != null)
                     viewModel.pkgMap[track.playedWhen.time]
@@ -356,35 +370,35 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 parentFragment!!.arguments?.getLong(Stuff.ARG_REGISTERED_TIME, 0) ?: 0
             val endTime = System.currentTimeMillis()
             val dpd = MaterialDatePicker.Builder.datePicker()
-                    .setTitleText(R.string.past_scrobbles)
-                    .setCalendarConstraints(
-                            CalendarConstraints.Builder()
-                                    .setStart(startTime)
-                                    .setEnd(endTime)
-                                    .setOpenAt(time)
-                                    .setValidator(object: CalendarConstraints.DateValidator{
-                                        override fun describeContents(): Int {
-                                            return 0
-                                        }
+                .setTitleText(R.string.past_scrobbles)
+                .setCalendarConstraints(
+                    CalendarConstraints.Builder()
+                        .setStart(startTime)
+                        .setEnd(endTime)
+                        .setOpenAt(time)
+                        .setValidator(object : CalendarConstraints.DateValidator {
+                            override fun describeContents(): Int {
+                                return 0
+                            }
 
-                                        override fun writeToParcel(p0: Parcel?, p1: Int) {
-                                        }
+                            override fun writeToParcel(p0: Parcel?, p1: Int) {
+                            }
 
-                                        override fun isValid(date: Long): Boolean {
-                                            return date in startTime..endTime
-                                        }
-                                    })
-                                    .build()
-                    )
-                    .setSelection(time)
-                    .apply {
-                        if (viewModel.toTime != 0L)
-                            setNegativeButtonText(R.string.reset)
-                    }
-                    .build()
+                            override fun isValid(date: Long): Boolean {
+                                return date in startTime..endTime
+                            }
+                        })
+                        .build()
+                )
+                .setSelection(time)
+                .apply {
+                    if (viewModel.toTime != 0L)
+                        setNegativeButtonText(R.string.reset)
+                }
+                .build()
             dpd.addOnPositiveButtonClickListener {
                 val tzOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis())
-                viewModel.toTime = it  - tzOffset + (24 * 60 * 60 - 1) * 1000
+                viewModel.toTime = it - tzOffset + (24 * 60 * 60 - 1) * 1000
 //                Stuff.log("time=" + Date(viewModel.toTime))
                 loadRecents(1, true)
                 view.isEnabled = true
@@ -431,19 +445,65 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             val tintFrom = coordinatorBinding.sparklineHorizontalLabel.textColors.defaultColor
 
             val animSetList = mutableListOf<Animator>(
-                ObjectAnimator.ofArgb(coordinatorBinding.heroShare, "colorFilter", tintFrom, colors.lightWhite),
-                ObjectAnimator.ofArgb(coordinatorBinding.heroCalendar, "colorFilter", tintFrom, colors.lightWhite),
-                ObjectAnimator.ofArgb(coordinatorBinding.heroInfo, "colorFilter", tintFrom, colors.lightWhite),
-                ObjectAnimator.ofArgb(coordinatorBinding.heroRandomize, "colorFilter", tintFrom, colors.lightWhite),
-                ObjectAnimator.ofArgb(coordinatorBinding.heroPlay, "colorFilter", tintFrom, colors.lightWhite),
-                ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickTop, "textColor", tintFrom, colors.lightWhite),
-                ObjectAnimator.ofArgb(coordinatorBinding.sparklineTickBottom, "textColor", tintFrom, colors.lightWhite),
-                ObjectAnimator.ofArgb(coordinatorBinding.sparklineHorizontalLabel, "textColor", tintFrom, colors.lightWhite),
-                ObjectAnimator.ofArgb(coordinatorBinding.sparkline, "lineColor", tintFrom, colors.lightWhite),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.heroShare,
+                    "colorFilter",
+                    tintFrom,
+                    colors.lightWhite
+                ),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.heroCalendar,
+                    "colorFilter",
+                    tintFrom,
+                    colors.lightWhite
+                ),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.heroInfo,
+                    "colorFilter",
+                    tintFrom,
+                    colors.lightWhite
+                ),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.heroRandomize,
+                    "colorFilter",
+                    tintFrom,
+                    colors.lightWhite
+                ),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.heroPlay,
+                    "colorFilter",
+                    tintFrom,
+                    colors.lightWhite
+                ),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.sparklineTickTop,
+                    "textColor",
+                    tintFrom,
+                    colors.lightWhite
+                ),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.sparklineTickBottom,
+                    "textColor",
+                    tintFrom,
+                    colors.lightWhite
+                ),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.sparklineHorizontalLabel,
+                    "textColor",
+                    tintFrom,
+                    colors.lightWhite
+                ),
+                ObjectAnimator.ofArgb(
+                    coordinatorBinding.sparkline,
+                    "lineColor",
+                    tintFrom,
+                    colors.lightWhite
+                ),
             )
 
             if (activity.billingViewModel.proStatus.value != true ||
-                prefs.themePaletteBackground) {
+                prefs.themePaletteBackground
+            ) {
                 if (coordinatorBinding.coordinator.paddingStart > 0)
                     animSetList += ObjectAnimator.ofArgb(
                         activity.binding.navView,
@@ -452,16 +512,23 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                         colors.mutedBg
                     )
                 animSetList += ValueAnimator.ofArgb(contentBgFrom, colors.mutedBg).apply {
-                    addUpdateListener{
+                    addUpdateListener {
                         //setNavigationBarColor uses binders and lags
                         activity.window.navigationBarColor = it.animatedValue as Int
                     }
                 }
-                animSetList += ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom, colors.mutedBg)
+                animSetList += ObjectAnimator.ofArgb(
+                    binding.recentsSwipeRefresh,
+                    "backgroundColor",
+                    contentBgFrom,
+                    colors.mutedBg
+                )
                 activity.binding.coordinatorMain.ctl.setContentScrimColor(colors.mutedBg)
             } else {
-                animSetList += ObjectAnimator.ofArgb(binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom,
-                    MaterialColors.getColor(context, android.R.attr.colorBackground, null))
+                animSetList += ObjectAnimator.ofArgb(
+                    binding.recentsSwipeRefresh, "backgroundColor", contentBgFrom,
+                    MaterialColors.getColor(context, android.R.attr.colorBackground, null)
+                )
             }
 
             val arrowBgColor = if (colors.primDark != colors.lightWhite)
@@ -501,16 +568,18 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         }
     }
 
-    private fun toggleGraphDetails(init: Boolean = false){
+    private fun toggleGraphDetails(init: Boolean = false) {
         _binding ?: return
         var show = prefs.heroGraphDetails
         if (!init)
             show = !show
 
         if (show) {
-            coordinatorBinding.sparkline.setPadding(2 * resources.getDimensionPixelSize(R.dimen.graph_margin_details),
-                    0, 0,
-                    resources.getDimensionPixelSize(R.dimen.graph_margin_details))
+            coordinatorBinding.sparkline.setPadding(
+                2 * resources.getDimensionPixelSize(R.dimen.graph_margin_details),
+                0, 0,
+                resources.getDimensionPixelSize(R.dimen.graph_margin_details)
+            )
             coordinatorBinding.sparklineHorizontalLabel.visibility = View.VISIBLE
             coordinatorBinding.sparklineTickTop.visibility = View.VISIBLE
             coordinatorBinding.sparklineTickBottom.visibility = View.VISIBLE
@@ -527,7 +596,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         _binding ?: return false
 
         if (page <= viewModel.totalPages) {
-            val firstVisible = ((binding.recentsList.layoutManager ?: return false) as LinearLayoutManager)
+            val firstVisible =
+                ((binding.recentsList.layoutManager ?: return false) as LinearLayoutManager)
                     .findFirstVisibleItemPosition()
             if (force || (page == 1 && firstVisible < 5) || page > 1) {
                 if (isShowingLoves)
@@ -571,13 +641,14 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             }
         //TODO: check
         coordinatorBinding.heroImg.tag = trackCopy
-        val imgUrl = if(fullSize)
+        val imgUrl = if (fullSize)
             track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600")
         else
             track.getWebpImageURL(ImageSize.LARGE)
 
         if (!fullSize &&
-                (oldTrack?.artist != track.artist || oldTrack?.album != track.album || oldTrack?.name != track.name)){
+            (oldTrack?.artist != track.artist || oldTrack?.album != track.album || oldTrack?.name != track.name)
+        ) {
             viewModel.loadListenerTrend(track.url)
         }
 
@@ -585,7 +656,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             return
         }
         //load img, animate colors
-        val errorDrawable = context!!.getTintedDrwable(R.drawable.vd_wave, Stuff.genHashCode(track.artist, track.name))
+        val errorDrawable = context!!.getTintedDrwable(
+            R.drawable.vd_wave,
+            Stuff.genHashCode(track.artist, track.name)
+        )
 
         if (!imgUrl.isNullOrEmpty()) {
             coordinatorBinding.heroImg.load(imgUrl) {
@@ -611,7 +685,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             }
         } else {
             coordinatorBinding.heroImg.dispose()
-            val color = Stuff.getMatColor(coordinatorBinding.heroImg.context, Stuff.genHashCode(track.artist, track.name))
+            val color = Stuff.getMatColor(
+                coordinatorBinding.heroImg.context,
+                Stuff.genHashCode(track.artist, track.name)
+            )
             val swatch = Palette.Swatch(color, 1)
             val palette = Palette.from(listOf(swatch))
             coordinatorBinding.heroImg.load(errorDrawable)
@@ -624,10 +701,12 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         val dateFrame = (view.parent as ViewGroup).findViewById<FrameLayout>(R.id.date_frame)
         if (item !is Track) {
             if (view.id == R.id.recents_menu)
-                PopupMenuUtils.openPendingPopupMenu(dateFrame, viewLifecycleOwner.lifecycleScope, item,
-                        {
-                            viewModel.loadPending(2, false)
-                        }
+                PopupMenuUtils.openPendingPopupMenu(dateFrame,
+                    viewLifecycleOwner.lifecycleScope,
+                    item,
+                    {
+                        viewModel.loadPending(2, false)
+                    }
                 )
             return
         }
@@ -647,12 +726,13 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 //                  recents_list.smoothScrollToPosition(position) //wont work even witrh smoothscroller
 
                     if (smoothScroller == null)
-                        smoothScroller = object : LinearSmoothScroller(binding.recentsList.context) {
-                            override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?) =
+                        smoothScroller =
+                            object : LinearSmoothScroller(binding.recentsList.context) {
+                                override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?) =
                                     super.calculateSpeedPerPixel(displayMetrics) * 3
 
-                            override fun getVerticalSnapPreference() = SNAP_TO_START
-                        }
+                                override fun getVerticalSnapPreference() = SNAP_TO_START
+                            }
                     smoothScroller?.targetPosition = position
                     binding.recentsList.layoutManager?.startSmoothScroll(smoothScroller)
                     coordinatorBinding.appBar.setExpanded(true, animate = true)
@@ -674,7 +754,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
             if (track.isLoved) {
                 loveMenu.title = getString(R.string.unlove)
-                loveMenu.icon = ContextCompat.getDrawable(context!!, R.drawable.vd_heart_break_outline)
+                loveMenu.icon =
+                    ContextCompat.getDrawable(context!!, R.drawable.vd_heart_break_outline)
             }
             if (track.playedWhen == null)
                 menuBuilder.removeItem(R.id.menu_delete)
@@ -690,7 +771,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         menuBuilder.setCallback(object : MenuBuilder.Callback {
             override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
                 when (item.itemId) {
-                    R.id.menu_love -> loveToggle((anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay), track)
+                    R.id.menu_love -> loveToggle(
+                        (anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay),
+                        track
+                    )
                     R.id.menu_edit -> PopupMenuUtils.editScrobble(activity!!, track)
                     R.id.menu_delete -> PopupMenuUtils.deleteScrobble(activity!!, track) { succ ->
                         if (succ)
@@ -733,7 +817,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             rotAnimator.setFloatValues(startRot, toRot)
         } else {
             if (loveIcon.background == null)
-                loveIcon.background = ContextCompat.getDrawable(context!!, R.drawable.vd_heart_stroked)
+                loveIcon.background =
+                    ContextCompat.getDrawable(context!!, R.drawable.vd_heart_stroked)
 
             LFMRequester(context!!, lifecycleScope).loveOrUnlove(track, true)
 

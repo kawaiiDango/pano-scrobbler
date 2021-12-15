@@ -10,43 +10,43 @@ object RegexPresets {
     private val presets = mapOf(
         "remastered_track" to (
                 R.string.preset_remastered to
-                    RegexEdit(
-                        pattern = " [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]| ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?",
-                        replacement = "",
-                        field = NLService.B_TRACK,
-                    )
+                        RegexEdit(
+                            pattern = " [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]| ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?",
+                            replacement = "",
+                            field = NLService.B_TRACK,
+                        )
                 ),
         "remastered_album" to (
                 R.string.preset_remastered to
                         RegexEdit(
-                        pattern = " [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]| ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?",
-                        replacement = "",
-                        field = NLService.B_ALBUM,
-                    )
+                            pattern = " [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]| ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?",
+                            replacement = "",
+                            field = NLService.B_ALBUM,
+                        )
                 ),
         "explicit_track" to (
                 R.string.preset_explicit to
                         RegexEdit(
-                        pattern = " ([/-] )? ?explicit ?(.*?version)?| [(\\[][^()\\[\\]]*?explicit[^()\\[\\]]*[)\\]]",
-                        replacement = "",
-                        field = NLService.B_TRACK,
-                    )
+                            pattern = " ([/-] )? ?explicit ?(.*?version)?| [(\\[][^()\\[\\]]*?explicit[^()\\[\\]]*[)\\]]",
+                            replacement = "",
+                            field = NLService.B_TRACK,
+                        )
                 ),
         "explicit_album" to (
                 R.string.preset_explicit to
                         RegexEdit(
-                        pattern = " ([/-] )? ?explicit ?(.*?version)?| [(\\[][^()\\[\\]]*?explicit[^()\\[\\]]*[)\\]]",
-                        replacement = "",
-                        field = NLService.B_ALBUM,
-                    )
+                            pattern = " ([/-] )? ?explicit ?(.*?version)?| [(\\[][^()\\[\\]]*?explicit[^()\\[\\]]*[)\\]]",
+                            replacement = "",
+                            field = NLService.B_ALBUM,
+                        )
                 ),
         "album_ver_track" to (
                 R.string.preset_album_version to
                         RegexEdit(
-                        pattern = " ([/-] .*)? ?album version.*| [(\\[][^()\\[\\]]*?album version[^()\\[\\]]*[)\\]]",
-                        replacement = "",
-                        field = NLService.B_TRACK,
-                    )
+                            pattern = " ([/-] .*)? ?album version.*| [(\\[][^()\\[\\]]*?album version[^()\\[\\]]*[)\\]]",
+                            replacement = "",
+                            field = NLService.B_TRACK,
+                        )
                 )
     )
 
@@ -75,5 +75,5 @@ object RegexPresets {
             caseSensitive = false,
             continueMatching = true,
         )
-            ?: regexEdit
+        ?: regexEdit
 }

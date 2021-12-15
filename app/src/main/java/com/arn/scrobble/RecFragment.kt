@@ -28,10 +28,9 @@ import org.json.JSONException
 import org.json.JSONObject
 
 
-class RecFragment: Fragment(),
+class RecFragment : Fragment(),
     IACRCloudListener,
-    IACRCloudRadioMetadataListener
-{
+    IACRCloudRadioMetadataListener {
     private var started = false
     private val handler by lazy { Handler(Looper.getMainLooper()) }
     private var client: ACRCloudClient? = null
@@ -51,15 +50,20 @@ class RecFragment: Fragment(),
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
 
-        micPermRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted)
-                startOrCancel()
-            else
-                Stuff.toast(context, getString(R.string.grant_rec_perm))
-        }
+        micPermRequest =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted)
+                    startOrCancel()
+                else
+                    Stuff.toast(context, getString(R.string.grant_rec_perm))
+            }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentRecBinding.inflate(inflater, container, false)
         if (!MainActivity.isTV)
             setHasOptionsMenu(true)
@@ -97,7 +101,7 @@ class RecFragment: Fragment(),
     }
 
     override fun onDestroyView() {
-        if(started)
+        if (started)
             startOrCancel()
         _binding = null
         super.onDestroyView()
@@ -105,14 +109,14 @@ class RecFragment: Fragment(),
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.rec_menu, menu)
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             menu.findItem(R.id.menu_add_to_hs).isVisible = false
         if (prefs.acrcloudHost != null)
             menu.findItem(R.id.menu_add_acr_key).title = getString(R.string.remove_acr_key)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_add_to_hs && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (item.itemId == R.id.menu_add_to_hs && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val shortcutManager = activity!!.getSystemService(ShortcutManager::class.java)
             if (shortcutManager!!.isRequestPinShortcutSupported) {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
@@ -152,9 +156,9 @@ class RecFragment: Fragment(),
             putString(LoginFragment.TEXTFL, getString(R.string.acr_secret))
         }
         parentFragmentManager.beginTransaction()
-                .replace(R.id.frame, loginFragment)
-                .addToBackStack(null)
-                .commit()
+            .replace(R.id.frame, loginFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun removeKey() {
@@ -163,40 +167,44 @@ class RecFragment: Fragment(),
         prefs.acrcloudSecret = null
     }
 
-    private fun showSnackbar(){
+    private fun showSnackbar() {
         Snackbar
-                .make(view!!, R.string.add_acr_consider, 8*1000)
-                .setAction(R.string.add) {
-                    openAddKey()
+            .make(view!!, R.string.add_acr_consider, 8 * 1000)
+            .setAction(R.string.add) {
+                openAddKey()
+            }
+            .addCallback(object : Snackbar.Callback() {
+                override fun onShown(sb: Snackbar?) {
+                    super.onShown(sb)
+                    if (sb != null && MainActivity.isTV)
+                        sb.view.postDelayed({
+                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                                .requestFocus()
+                        }, 200)
                 }
-                .addCallback(object : Snackbar.Callback() {
-                    override fun onShown(sb: Snackbar?) {
-                        super.onShown(sb)
-                        if (sb != null && MainActivity.isTV)
-                            sb.view.postDelayed({
-                                sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                                        .requestFocus()
-                            }, 200)
-                    }
-                })
-                .show()
+            })
+            .show()
     }
 
-    private fun startOrCancel(){
+    private fun startOrCancel() {
         context ?: return
 
-        if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context!!,
+                RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             micPermRequest.launch(RECORD_AUDIO)
             return
         }
 
-        if (!MainActivity.isOnline){
+        if (!MainActivity.isOnline) {
             binding.recStatus.setText(R.string.unavailable_offline)
             return
         }
-        if(!started) {
+        if (!started) {
 
-            if(!startRecording() || _binding == null)
+            if (!startRecording() || _binding == null)
                 return
             binding.recStatus.setText(R.string.listening)
             binding.recImg.setImageResource(R.drawable.vd_wave_simple)
@@ -226,7 +234,8 @@ class RecFragment: Fragment(),
             try {
                 client?.release()
                 client = null
-            } catch (e:Exception) {}
+            } catch (e: Exception) {
+            }
             binding.recStatus.text = ""
 
             if (fadeAnimator?.isRunning == true)
@@ -270,10 +279,11 @@ class RecFragment: Fragment(),
     private fun finishRecording() {
         try {
             client?.release()
-        } catch (e:Exception) {}
+        } catch (e: Exception) {
+        }
         client = null
 
-        if(started)
+        if (started)
             startOrCancel()
     }
 
@@ -282,7 +292,7 @@ class RecFragment: Fragment(),
         var artist = ""
         var album = ""
         var title = ""
-        var statusCode:Int
+        var statusCode: Int
         var statusMsg = ""
         try {
             val j = JSONObject(result)
@@ -312,10 +322,10 @@ class RecFragment: Fragment(),
             Stuff.log(result)
             e.printStackTrace()
         }
-        if(started)
+        if (started)
             startOrCancel()
 
-        when(statusCode) {
+        when (statusCode) {
             0 -> {
                 binding.recImg.setImageResource(R.drawable.vd_check_simple)
                 binding.recStatus.text = getString(R.string.state_scrobbled) + "\n" +
@@ -326,7 +336,12 @@ class RecFragment: Fragment(),
                 scrobbleData.track = title
                 scrobbleData.timestamp = (System.currentTimeMillis() / 1000).toInt() // in secs
                 LFMRequester(context!!, CoroutineScope(Dispatchers.IO + Job()))
-                    .scrobble(false, scrobbleData, Stuff.genHashCode(artist, album, title, "rec"), BuildConfig.APPLICATION_ID)
+                    .scrobble(
+                        false,
+                        scrobbleData,
+                        Stuff.genHashCode(artist, album, title, "rec"),
+                        BuildConfig.APPLICATION_ID
+                    )
             }
             1001 -> binding.recStatus.text = getString(R.string.not_found)
             2000 -> {

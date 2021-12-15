@@ -4,9 +4,9 @@ import android.util.JsonReader
 import android.util.JsonToken
 import android.util.JsonWriter
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.ScrobbleSource
+import com.arn.scrobble.db.SimpleEdit
 
 
 object JsonHelpers {
@@ -131,7 +131,8 @@ object JsonHelpers {
                     when (name) {
                         BlockedMetadata::track.name -> blockedMetadata.track = nextString()
                         BlockedMetadata::album.name -> blockedMetadata.album = nextString()
-                        BlockedMetadata::albumArtist.name -> blockedMetadata.albumArtist = nextString()
+                        BlockedMetadata::albumArtist.name -> blockedMetadata.albumArtist =
+                            nextString()
                         BlockedMetadata::artist.name -> blockedMetadata.artist = nextString()
                     }
                 }

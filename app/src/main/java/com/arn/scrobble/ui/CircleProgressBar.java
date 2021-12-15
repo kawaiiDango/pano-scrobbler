@@ -31,7 +31,7 @@ import androidx.annotation.Keep;
 
 /**
  * A subclass of {@link android.view.View} class for creating a custom circular progressBar
- *
+ * <p>
  * Created by Pedram on 2015-01-06.
  */
 public class CircleProgressBar extends View {

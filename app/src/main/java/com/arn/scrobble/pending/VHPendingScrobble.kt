@@ -17,10 +17,12 @@ class VHPendingScrobble(
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
         binding.recentsPlaying.visibility = View.GONE
-        binding.recentsImgOverlay.background = ContextCompat.getDrawable(itemView.context, R.drawable.vd_hourglass)
+        binding.recentsImgOverlay.background =
+            ContextCompat.getDrawable(itemView.context, R.drawable.vd_hourglass)
         binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
         binding.recentsImgOverlay.visibility = View.VISIBLE
-        binding.recentsImgOverlay.contentDescription = itemView.context.getString(R.string.pending_scrobble)
+        binding.recentsImgOverlay.contentDescription =
+            itemView.context.getString(R.string.pending_scrobble)
         if (MainActivity.isTV)
             binding.root.setOnClickListener {
                 itemClickListener.call(binding.recentsMenu, bindingAdapterPosition)
@@ -46,13 +48,14 @@ class VHPendingScrobble(
                     0
                 )
             } else {
-                val albumHeight = itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
+                val albumHeight =
+                    itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
                 binding.recentsAlbum.visibility = View.GONE
                 binding.recentsTrackLl.setPaddingRelative(
                     0,
-                    albumHeight/2,
+                    albumHeight / 2,
                     0,
-                    albumHeight/2
+                    albumHeight / 2
                 )
             }
         }

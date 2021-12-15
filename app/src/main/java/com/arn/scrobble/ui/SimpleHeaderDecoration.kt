@@ -14,10 +14,12 @@ import com.arn.scrobble.Stuff.dp
  * https://gist.github.com/uhfath/368804ce8fe08274e019bcaeab501783
  * An empty header (or footer) decoration for RecyclerView, since RecyclerView can't clipToPadding
  */
-class SimpleHeaderDecoration(private val headerHeight: Int, private val footerHeight: Int) : RecyclerView.ItemDecoration() {
+class SimpleHeaderDecoration(private val headerHeight: Int, private val footerHeight: Int) :
+    RecyclerView.ItemDecoration() {
 
     private val paint = Paint()
     private val path = Path()
+
     init {
         paint.setARGB(255, 255, 255, 255)
         paint.style = Paint.Style.STROKE
@@ -30,15 +32,15 @@ class SimpleHeaderDecoration(private val headerHeight: Int, private val footerHe
         if (lm.loading && !lm.isAllPagesLoaded) {
             for (i in (parent.childCount - 1) downTo 0) {
                 val view = parent.getChildAt(i) ?: break
-                if (parent.getChildAdapterPosition(view) + 1 == parent.adapter?.itemCount){
-                    val center = parent.width/2f
+                if (parent.getChildAdapterPosition(view) + 1 == parent.adapter?.itemCount) {
+                    val center = parent.width / 2f
                     val step = 20.dp
                     val y = (view.bottom + footerHeight / 2).toFloat()
 
                     path.reset()
-                    path.addCircle(center - step, y, step/6f, Path.Direction.CCW)
-                    path.addCircle(center, y, step/6f, Path.Direction.CCW)
-                    path.addCircle(center + step, y, step/6f, Path.Direction.CCW)
+                    path.addCircle(center - step, y, step / 6f, Path.Direction.CCW)
+                    path.addCircle(center, y, step / 6f, Path.Direction.CCW)
+                    path.addCircle(center + step, y, step / 6f, Path.Direction.CCW)
                     c.drawPath(path, paint)
                     break
                 }
@@ -47,8 +49,11 @@ class SimpleHeaderDecoration(private val headerHeight: Int, private val footerHe
         }
 //        c.drawText("...", )
     }
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView,
-                                state: RecyclerView.State) {
+
+    override fun getItemOffsets(
+        outRect: Rect, view: View, parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
         val childAdapterPosition = parent.getChildAdapterPosition(view)
         val span =
             if (parent.layoutManager is GridLayoutManager)

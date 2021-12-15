@@ -63,31 +63,36 @@
                 android:id="@+id/charts_7day"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:checkedIconEnabled="false"/>
+                app:checkedIconEnabled="false" />
+
             <com.google.android.material.chip.Chip
                 style="@style/Widget.Material3.Chip.Filter"
                 android:id="@+id/charts_1month"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:checkedIconEnabled="false" />
+
             <com.google.android.material.chip.Chip
                 style="@style/Widget.Material3.Chip.Filter"
                 android:id="@+id/charts_3month"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:checkedIconEnabled="false" />
+
             <com.google.android.material.chip.Chip
                 style="@style/Widget.Material3.Chip.Filter"
                 android:id="@+id/charts_6month"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:checkedIconEnabled="false" />
+
             <com.google.android.material.chip.Chip
                 style="@style/Widget.Material3.Chip.Filter"
                 android:id="@+id/charts_12month"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:checkedIconEnabled="false" />
+
             <com.google.android.material.chip.Chip
                 style="@style/Widget.Material3.Chip.Filter"
                 android:id="@+id/charts_overall"

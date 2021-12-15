@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="?selectableItemBackground"
-              android:clickable="true"
-              android:focusable="true"
-              android:gravity="end|center_vertical"
-              android:orientation="horizontal"
-              android:paddingBottom="5dp"
-              android:paddingLeft="16dp"
-              android:paddingRight="16dp"
-              android:paddingTop="5dp">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="end|center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="5dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="5dp">
 
     <TextView
         android:id="@+id/pending_text"
@@ -20,7 +20,7 @@
         android:paddingEnd="8dp"
         android:textAppearance="?textAppearanceTitleMedium"
         android:textDirection="firstStrong"
-        tools:text="@string/n_more"/>
+        tools:text="@string/n_more" />
 
     <TextView
         android:id="@+id/pending_action"
@@ -30,5 +30,5 @@
         android:text="@string/show_all"
         android:textAllCaps="true"
         android:textAppearance="?textAppearanceTitleMedium"
-        android:textColor="?colorPrimary"/>
+        android:textColor="?colorPrimary" />
 </LinearLayout>

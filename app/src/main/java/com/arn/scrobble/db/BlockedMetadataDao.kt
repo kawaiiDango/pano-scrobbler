@@ -17,15 +17,23 @@ interface BlockedMetadataDao {
     @get:Query("SELECT count(1) FROM $tableName")
     val count: Int
 
-    @Query("""SELECT count(1) FROM $tableName
+    @Query(
+        """SELECT count(1) FROM $tableName
           WHERE (artist IN ("", :artist) OR
           artist IN ("", :ignoredArtist)) AND
           album IN ("", :album) AND
           albumArtist IN ("", :albumArtist) AND
           track IN ("", :track) AND
           NOT (artist == "" AND album == "" AND albumArtist == "" AND track == "")
-    """)
-    fun isBlocked(artist: String, album: String, albumArtist: String, track: String, ignoredArtist: String?): Boolean
+    """
+    )
+    fun isBlocked(
+        artist: String,
+        album: String,
+        albumArtist: String,
+        track: String,
+        ignoredArtist: String?
+    ): Boolean
 
     fun isBlocked(scrobbleData: ScrobbleData, ignoredArtist: String?) = isBlocked(
         scrobbleData.artist?.lowercase() ?: "",

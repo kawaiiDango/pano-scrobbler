@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2018 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +15,7 @@
   -->
 
 <!-- Layout used by SeekBarPreference for the seekbar widget style. -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
@@ -31,7 +29,7 @@
     android:clipToPadding="false"
     android:baselineAligned="false">
 
-    <include layout="@layout/image_frame"/>
+    <include layout="@layout/image_frame" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceListItem"
-                android:ellipsize="marquee"/>
+                android:ellipsize="marquee" />
 
             <TextView
                 android:id="@android:id/summary"
@@ -66,7 +64,7 @@
                 android:textAlignment="viewStart"
                 android:textColor="?android:attr/textColorSecondary"
                 android:maxLines="4"
-                style="@style/PreferenceSummaryTextStyle"/>
+                style="@style/PreferenceSummaryTextStyle" />
 
         </RelativeLayout>
 
@@ -105,7 +103,7 @@
                 android:paddingEnd="@dimen/preference_seekbar_padding_horizontal"
                 android:paddingTop="@dimen/preference_seekbar_padding_vertical"
                 android:paddingBottom="@dimen/preference_seekbar_padding_vertical"
-                android:background="@null"/>
+                android:background="@null" />
 
             <!-- If the value is shown, we reserve a minimum width of 36dp to allow for consistent
             seekbar width for smaller values. If the value is ~4 or more digits, it will expand
@@ -124,7 +122,7 @@
                 android:textAppearance="?android:attr/textAppearanceListItem"
                 android:ellipsize="marquee"
                 android:fadingEdge="horizontal"
-                android:scrollbars="none"/>
+                android:scrollbars="none" />
 
         </LinearLayout>
     </LinearLayout>

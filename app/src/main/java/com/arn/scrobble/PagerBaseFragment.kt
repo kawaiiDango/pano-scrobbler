@@ -12,10 +12,9 @@ import androidx.transition.TransitionManager
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.databinding.NavTabBinding
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.transition.MaterialSharedAxis
 
 
-open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
+open class PagerBaseFragment : Fragment(), TabLayout.OnTabSelectedListener {
 
     lateinit var tabMeta: Array<Pair<Int, Int>>
     lateinit var adapter: FragmentStatePagerAdapter
@@ -24,7 +23,11 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
         get() = _binding!!
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         _binding = ContentPagerBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -72,7 +75,9 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
     }
 
     override fun onDestroy() {
-        (activity as MainActivity?)?.binding?.coordinatorMain?.tabBar?.removeOnTabSelectedListener(this)
+        (activity as MainActivity?)?.binding?.coordinatorMain?.tabBar?.removeOnTabSelectedListener(
+            this
+        )
         super.onDestroy()
     }
 
@@ -80,12 +85,18 @@ open class PagerBaseFragment: Fragment(), TabLayout.OnTabSelectedListener {
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab) {
-        TransitionManager.beginDelayedTransition(tab.customView as ViewGroup, AutoTransition().setDuration(200))
+        TransitionManager.beginDelayedTransition(
+            tab.customView as ViewGroup,
+            AutoTransition().setDuration(200)
+        )
         tab.customView!!.findViewById<TextView>(R.id.tab_label)?.visibility = View.GONE
     }
 
     override fun onTabSelected(tab: TabLayout.Tab) {
-        TransitionManager.beginDelayedTransition(tab.customView as ViewGroup, AutoTransition().setDuration(200))
+        TransitionManager.beginDelayedTransition(
+            tab.customView as ViewGroup,
+            AutoTransition().setDuration(200)
+        )
         tab.customView!!.findViewById<TextView>(R.id.tab_label)?.visibility = View.VISIBLE
     }
 }

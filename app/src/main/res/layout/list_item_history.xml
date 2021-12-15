@@ -12,4 +12,4 @@
     tools:text="Despacito"
     app:drawableStartCompat="@drawable/vd_history"
     app:drawableTint="?colorSecondary"
-    android:drawablePadding="20dp"/>
+    android:drawablePadding="20dp" />

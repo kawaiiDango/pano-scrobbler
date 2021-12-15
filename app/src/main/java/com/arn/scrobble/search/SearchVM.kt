@@ -10,17 +10,17 @@ import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
 
 
-class SearchVM(app: Application): AndroidViewModel(app) {
+class SearchVM(app: Application) : AndroidViewModel(app) {
     val searchResults by lazy { MutableLiveData<SearchResults>() }
 
     fun loadSearches(term: String) {
         LFMRequester(getApplication(), viewModelScope, searchResults).getSearches(term)
     }
 
-    class SearchResults (
-            val term: String,
-            val artists: List<Artist>,
-            val albums: List<Album>,
-            val tracks: List<Track>
+    class SearchResults(
+        val term: String,
+        val artists: List<Artist>,
+        val albums: List<Album>,
+        val tracks: List<Track>
     )
 }

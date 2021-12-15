@@ -5,7 +5,6 @@ import android.view.View
 import com.arn.scrobble.PagerBaseFragment
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.google.android.material.transition.MaterialSharedAxis
 
 
 class InfoPagerFragment : PagerBaseFragment() {

@@ -35,8 +35,7 @@
                 android:focusableInTouchMode="true"
                 android:imeOptions="actionSearch"
                 android:contentDescription="@string/search"
-                android:singleLine="true"
-                />
+                android:singleLine="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -63,7 +62,7 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             android:visibility="invisible"
-            android:layoutAnimation="@anim/layout_animation_slide_up"/>
+            android:layoutAnimation="@anim/layout_animation_slide_up" />
 
     </FrameLayout>
 
@@ -75,5 +74,5 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:contentDescription="@string/add"/>
+        android:contentDescription="@string/add" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

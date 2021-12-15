@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_header"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
 
     <ImageView
@@ -22,8 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="45dp"
-        android:background="@drawable/gradient_dark_overlay_nav"
-        />
+        android:background="@drawable/gradient_dark_overlay_nav" />
 
     <TextView
         android:id="@+id/nav_name"
@@ -33,7 +30,7 @@
         android:layout_toStartOf="@+id/nav_profile_link"
         android:gravity="end"
         android:textStyle="bold"
-        tools:text="nav_name"/>
+        tools:text="nav_name" />
 
     <TextView
         android:id="@+id/nav_num_scrobbles"
@@ -44,7 +41,7 @@
         android:layout_toStartOf="@+id/nav_profile_link"
         android:gravity="end"
         android:textDirection="firstStrong"
-        tools:text="nav_num_scrobbles"/>
+        tools:text="nav_num_scrobbles" />
 
     <ImageButton
         android:id="@+id/nav_profile_link"

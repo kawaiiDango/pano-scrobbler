@@ -7,7 +7,7 @@ import com.frybits.harmony.getHarmonySharedPreferences
 import hu.autsoft.krate.*
 import hu.autsoft.krate.default.withDefault
 
-class MainPrefs(context: Context): Krate {
+class MainPrefs(context: Context) : Krate {
 
     override val sharedPreferences = context.getHarmonySharedPreferences(NAME)
 

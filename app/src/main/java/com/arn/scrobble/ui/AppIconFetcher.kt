@@ -50,7 +50,11 @@ class AppIconFetcher(
 
     class Factory : Fetcher.Factory<PackageName> {
 
-        override fun create(data: PackageName, options: Options, imageLoader: ImageLoader): Fetcher {
+        override fun create(
+            data: PackageName,
+            options: Options,
+            imageLoader: ImageLoader
+        ): Fetcher {
             return AppIconFetcher(data, options)
         }
 

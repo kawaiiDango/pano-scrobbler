@@ -65,7 +65,7 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-        FragmentManager.OnBackStackChangedListener{
+    FragmentManager.OnBackStackChangedListener {
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var prefs: MainPrefs
@@ -129,7 +129,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 StatefulAppBar.COLLAPSED -> {
                     if (supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.isVisible == true ||
-                    supportFragmentManager.findFragmentByTag(Stuff.TAG_CHART_PAGER)?.isVisible == true) {
+                        supportFragmentManager.findFragmentByTag(Stuff.TAG_CHART_PAGER)?.isVisible == true
+                    ) {
                         binding.coordinatorMain.tabBar.visibility = View.VISIBLE
                     } else {
                         binding.coordinatorMain.tabBar.visibility = View.GONE
@@ -138,15 +139,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        toggle = object: ActionBarDrawerToggle(
-                this, binding.drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+        toggle = object : ActionBarDrawerToggle(
+            this,
+            binding.drawerLayout,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        ) {
             override fun onDrawerOpened(drawerView: View) {
                 mainNotifierViewModel.drawerData.value?.let {
                     this@MainActivity.onDrawerOpened()
                 }
             }
         }
-        toggle.drawerArrowDrawable = ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
+        toggle.drawerArrowDrawable =
+            ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
 
         if (isTV) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -162,7 +168,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.navView.setNavigationItemSelectedListener(this)
 
         val hidePassBox =
-            if (intent.data?.isHierarchical == true && intent.data?.path == "/testFirstThings"){
+            if (intent.data?.isHierarchical == true && intent.data?.path == "/testFirstThings") {
                 prefs.lastfmSessKey = null
                 true
             } else
@@ -170,7 +176,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (savedInstanceState == null) {
             if (FirstThingsFragment.checkAuthTokenExists(prefs) &&
-                FirstThingsFragment.checkNLAccess(this)) {
+                FirstThingsFragment.checkNLAccess(this)
+            ) {
 
                 var directOpenExtra = intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) ?: 0
                 if (intent?.categories?.contains(INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true)
@@ -216,9 +223,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 showFirstThings(hidePassBox)
             }
         } else {
-            binding.coordinatorMain.tabBar.visibility = savedInstanceState.getInt("tab_bar_visible", View.GONE)
+            binding.coordinatorMain.tabBar.visibility =
+                savedInstanceState.getInt("tab_bar_visible", View.GONE)
             if (supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.isAdded == true &&
-                    supportFragmentManager.backStackEntryCount == 0)
+                supportFragmentManager.backStackEntryCount == 0
+            )
                 openLockDrawer()
         }
         supportFragmentManager.addOnBackStackChangedListener(this)
@@ -232,8 +241,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             it?.let { drawerData ->
 
                 val nf = NumberFormat.getInstance()
-                navHeaderbinding.navNumScrobbles.text = getString(R.string.num_scrobbles_nav,
-                    nf.format(drawerData.scrobblesTotal), nf.format(drawerData.scrobblesToday))
+                navHeaderbinding.navNumScrobbles.text = getString(
+                    R.string.num_scrobbles_nav,
+                    nf.format(drawerData.scrobblesTotal), nf.format(drawerData.scrobblesToday)
+                )
 
                 if (navHeaderbinding.navProfilePic.tag != drawerData.profilePicUrl) // prevent flash
                     navHeaderbinding.navProfilePic.load(drawerData.profilePicUrl) {
@@ -265,11 +276,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        testNoti()
     }
 
-    fun showHomePager(){
+    fun showHomePager() {
         openLockDrawer()
         supportFragmentManager.beginTransaction()
-                .replace(R.id.frame, HomePagerFragment(), Stuff.TAG_HOME_PAGER)
-                .commit()
+            .replace(R.id.frame, HomePagerFragment(), Stuff.TAG_HOME_PAGER)
+            .commit()
     }
 
     private fun showFirstThings(hidePassBox: Boolean) {
@@ -278,13 +289,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             putBoolean(Stuff.ARG_NOPASS, hidePassBox)
         }
         supportFragmentManager.beginTransaction()
-                .replace(R.id.frame, f, Stuff.TAG_FIRST_THINGS)
-                .commit()
+            .replace(R.id.frame, f, Stuff.TAG_FIRST_THINGS)
+            .commit()
         binding.coordinatorMain.appBar.setExpanded(expanded = false, animate = true)
         closeLockDrawer()
     }
 
-    private fun showInfoFragment(intent: Intent){
+    private fun showInfoFragment(intent: Intent) {
         val artist = intent.getStringExtra(NLService.B_ARTIST)
         val album = intent.getStringExtra(NLService.B_ALBUM)
         val track = intent.getStringExtra(NLService.B_TRACK)
@@ -310,12 +321,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Stuff.timeIt("onPostCreate")
     }
 
-    private fun onDrawerOpened(){
+    private fun onDrawerOpened() {
         if (!binding.drawerLayout.isDrawerVisible(GravityCompat.START) || (
-                        System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL))
+                    System.currentTimeMillis() - lastDrawerOpenTime < Stuff.RECENTS_REFRESH_INTERVAL)
+        )
             return
 
-        LFMRequester(applicationContext, lifecycleScope, mainNotifierViewModel.drawerData).getDrawerInfo()
+        LFMRequester(
+            applicationContext,
+            lifecycleScope,
+            mainNotifierViewModel.drawerData
+        ).getDrawerInfo()
 
         val username = prefs.lastfmUsername ?: "nobody"
         val displayUsername = if (BuildConfig.DEBUG) "nobody" else username
@@ -338,7 +354,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 servicesToUrls[R.string.listenbrainz] = "https://listenbrainz.org/user/$it"
             }
             prefs.customListenbrainzUsername?.let {
-                servicesToUrls[R.string.custom_listenbrainz] = prefs.customListenbrainzRoot + "user/$it"
+                servicesToUrls[R.string.custom_listenbrainz] =
+                    prefs.customListenbrainzRoot + "user/$it"
             }
 
             if (servicesToUrls.size == 1)
@@ -372,7 +389,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         navHeaderbinding.navName.tag = "⛄️"
                     else
                         navHeaderbinding.navName.tag = "☃️"
-                    navHeaderbinding.navName.text = (navHeaderbinding.navName.tag as String) + displayUsername + "\uD83C\uDF84"
+                    navHeaderbinding.navName.text =
+                        (navHeaderbinding.navName.tag as String) + displayUsername + "\uD83C\uDF84"
 
                     delay(500)
                 }
@@ -387,7 +405,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_last_week -> {
                 val username = prefs.lastfmUsername ?: "nobody"
-                Stuff.openInBrowser(this, "https://www.last.fm/user/$username/listening-report/week")
+                Stuff.openInBrowser(
+                    this,
+                    "https://www.last.fm/user/$username/listening-report/week"
+                )
             }
             R.id.nav_recents -> {
                 binding.coordinatorMain.tabBar.getTabAt(0)?.select()
@@ -404,30 +425,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_random -> {
                 enableGestures()
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, RandomFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    .replace(R.id.frame, RandomFragment())
+                    .addToBackStack(null)
+                    .commit()
             }
             R.id.nav_rec -> {
                 enableGestures()
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, RecFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    .replace(R.id.frame, RecFragment())
+                    .addToBackStack(null)
+                    .commit()
             }
             R.id.nav_search -> {
                 enableGestures()
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, SearchFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    .replace(R.id.frame, SearchFragment())
+                    .addToBackStack(null)
+                    .commit()
             }
             R.id.nav_settings -> {
                 enableGestures()
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.frame, PrefFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    .replace(R.id.frame, PrefFragment())
+                    .addToBackStack(null)
+                    .commit()
             }
             R.id.nav_report -> {
                 mailLogs()
@@ -444,30 +465,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun enableGestures() {
-        val hp = supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER) as? HomePagerFragment
+        val hp =
+            supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER) as? HomePagerFragment
         hp?.setGestureExclusions(false)
     }
 
     override fun onBackStackChanged() {
-            val animate = true
-            if (supportFragmentManager.backStackEntryCount == 0) {
-                val firstThingsVisible = supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
+        val animate = true
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            val firstThingsVisible =
+                supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible
 
-                if (firstThingsVisible != true)
-                    showBackArrow(false)
+            if (firstThingsVisible != true)
+                showBackArrow(false)
 
-                if (supportFragmentManager.fragments.isEmpty()) //came back from direct open
-                    showHomePager()
-            } else {
-                showBackArrow(true)
-            }
+            if (supportFragmentManager.fragments.isEmpty()) //came back from direct open
+                showHomePager()
+        } else {
+            showBackArrow(true)
+        }
 
-            val pager = supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.view?.findViewById<ViewPager>(R.id.pager)
+        val pager =
+            supportFragmentManager.findFragmentByTag(Stuff.TAG_HOME_PAGER)?.view?.findViewById<ViewPager>(
+                R.id.pager
+            )
 
-            val expand = pager != null && pager.currentItem != 2 && pager.currentItem != 3 &&
-                    supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible != true
+        val expand = pager != null && pager.currentItem != 2 && pager.currentItem != 3 &&
+                supportFragmentManager.findFragmentByTag(Stuff.TAG_FIRST_THINGS)?.isVisible != true
 
-            binding.coordinatorMain.appBar.setExpanded(expand, animate)
+        binding.coordinatorMain.appBar.setExpanded(expand, animate)
     }
 
     override fun onBackPressed() {
@@ -477,27 +503,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onBackPressed()
     }
 
-    private fun showNotRunning(){
+    private fun showNotRunning() {
         Snackbar
-                .make(binding.coordinatorMain.frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.not_running_fix_action) {
-                    FixItFragment().show(supportFragmentManager, null)
-                }
-                .addCallback(object : Snackbar.Callback() {
-                    override fun onShown(sb: Snackbar?) {
-                        super.onShown(sb)
-                        if (sb != null && isTV)
-                            sb.view.postDelayed({
-                                sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                                        .requestFocus()
+            .make(binding.coordinatorMain.frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
+            .setAction(R.string.not_running_fix_action) {
+                FixItFragment().show(supportFragmentManager, null)
+            }
+            .addCallback(object : Snackbar.Callback() {
+                override fun onShown(sb: Snackbar?) {
+                    super.onShown(sb)
+                    if (sb != null && isTV)
+                        sb.view.postDelayed({
+                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                                .requestFocus()
                         }, 200)
-                    }
+                }
             })
             .show()
         Timber.tag(Stuff.TAG).w(Exception("bgScrobbler not running"))
     }
 
-    private fun mailLogs(){
+    private fun mailLogs() {
         val activeSessions = try {
             val sessManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
             sessManager.getActiveSessions(ComponentName(this, NLService::class.java))
@@ -507,8 +533,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         var bgRam = -1
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (proc in manager.runningAppProcesses){
-            if (proc?.processName?.contains("bgScrobbler") == true){
+        for (proc in manager.runningAppProcesses) {
+            if (proc?.processName?.contains("bgScrobbler") == true) {
                 // https://stackoverflow.com/questions/2298208/how-do-i-discover-memory-usage-of-my-application-in-android
                 val memInfo = manager.getProcessMemoryInfo(intArrayOf(proc.pid)).first()
                 bgRam = memInfo.totalPss / 1024
@@ -518,9 +544,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         var text = ""
-        text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME+ "\n"
-        text += "Android " + Build.VERSION.RELEASE+ "\n"
-        text += "ROM: " + Build.DISPLAY+ "\n"
+        text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME + "\n"
+        text += "Android " + Build.VERSION.RELEASE + "\n"
+        text += "ROM: " + Build.DISPLAY + "\n"
         text += "Device: " + Build.BRAND + " " + Build.MODEL + " / " + Build.DEVICE + "\n" //Build.PRODUCT is obsolete
 
         val mi = ActivityManager.MemoryInfo()
@@ -554,8 +580,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        getDatabasePath(PendingScrobblesDb.tableName).copyTo(dbFile, true)
 //        val dbUri = FileProvider.getUriForFile(this, "com.arn.scrobble.fileprovider", dbFile)
 
-        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", "huh@huh.com", null))
+        val emailIntent = Intent(
+            Intent.ACTION_SENDTO, Uri.fromParts(
+                "mailto", "huh@huh.com", null
+            )
+        )
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "huh?")
         val resolveInfos = packageManager.queryIntentActivities(emailIntent, 0)
         val intents = arrayListOf<LabeledIntent>()
@@ -570,13 +599,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 putExtra(Intent.EXTRA_TEXT, text)
                 putExtra(Intent.EXTRA_STREAM, logUri)
             }
-            intents.add(LabeledIntent(intent, info.activityInfo.packageName, info.loadLabel(packageManager), info.icon))
+            intents.add(
+                LabeledIntent(
+                    intent,
+                    info.activityInfo.packageName,
+                    info.loadLabel(packageManager),
+                    info.icon
+                )
+            )
         }
         if (intents.size > 0) {
-            val chooser = Intent.createChooser(intents.removeAt(intents.size - 1), getString(R.string.bug_report))
+            val chooser = Intent.createChooser(
+                intents.removeAt(intents.size - 1),
+                getString(R.string.bug_report)
+            )
             chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
             startActivity(chooser)
-        }else
+        } else
             Stuff.toast(this, getString(R.string.no_mail_apps))
     }
 
@@ -594,15 +633,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val uri = intent.data!!
             val path = uri.path
             val token = uri.getQueryParameter("token")
-            if (token != null){
+            if (token != null) {
                 Stuff.log("onNewIntent got token for $path")
-                when(path) {
+                when (path) {
                     "/lastfm" ->
-                        LFMRequester(applicationContext, lifecycleScope).doAuth(R.string.lastfm, token)
+                        LFMRequester(applicationContext, lifecycleScope).doAuth(
+                            R.string.lastfm,
+                            token
+                        )
                     "/librefm" ->
-                        LFMRequester(applicationContext, lifecycleScope).doAuth(R.string.librefm, token)
+                        LFMRequester(applicationContext, lifecycleScope).doAuth(
+                            R.string.librefm,
+                            token
+                        )
                     "/gnufm" ->
-                        LFMRequester(applicationContext, lifecycleScope).doAuth(R.string.gnufm, token)
+                        LFMRequester(applicationContext, lifecycleScope).doAuth(
+                            R.string.gnufm,
+                            token
+                        )
                     "/testFirstThings" -> {
                         prefs.lastfmSessKey = null
                         for (i in 0..supportFragmentManager.backStackEntryCount)
@@ -615,7 +663,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             showInfoFragment(intent)
     }
 
-    private fun showBackArrow(show: Boolean){
+    private fun showBackArrow(show: Boolean) {
         if (backArrowShown != show) {
             val start = if (show) 0f else 1f
             val anim = ValueAnimator.ofFloat(start, 1 - start)
@@ -668,26 +716,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         isOnline = ni?.isConnected == true
     }
 
-    private fun closeLockDrawer(){
+    private fun closeLockDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         if (coordinatorPadding > 0)
-            binding.coordinatorMain.coordinator.setPadding(0,0,0,0)
+            binding.coordinatorMain.coordinator.setPadding(0, 0, 0, 0)
     }
 
 
-    private fun openLockDrawer(){
-        if(coordinatorPadding > 0) {
+    private fun openLockDrawer() {
+        if (coordinatorPadding > 0) {
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
             if (!drawerInited) {
                 binding.navView.addOnLayoutChangeListener { view, left, top, right, bottom,
-                                                     leftWas, topWas, rightWas, bottomWas ->
+                                                            leftWas, topWas, rightWas, bottomWas ->
                     if (left != leftWas || right != rightWas)
                         onDrawerOpened()
                 }
                 drawerInited = true
             }
             if (binding.coordinatorMain.coordinator.paddingStart != coordinatorPadding)
-                binding.coordinatorMain.coordinator.setPaddingRelative(coordinatorPadding,0,0,0)
+                binding.coordinatorMain.coordinator.setPaddingRelative(coordinatorPadding, 0, 0, 0)
         }
     }
 
@@ -730,12 +778,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    fun testNoti (){
+    fun testNoti() {
         AppRater(this, prefs).showRateSnackbar()
         val res = Resources.getSystem()
         val attrs = arrayOf(android.R.attr.textColor).toIntArray()
 
-        var sysStyle = res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
+        var sysStyle =
+            res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
         val titleTextColor = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
 
         sysStyle = res.getIdentifier("TextAppearance.Material.Notification", "style", "android")
@@ -748,21 +797,40 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         var start = longDescription.length
         longDescription.append("c1 ")
-        longDescription.setSpan(ForegroundColorSpan(ContextCompat.getColor(applicationContext, android.R.color.secondary_text_light)), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        longDescription.setSpan(
+            ForegroundColorSpan(
+                ContextCompat.getColor(
+                    applicationContext,
+                    android.R.color.secondary_text_light
+                )
+            ), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         start = longDescription.length
         longDescription.append("c2 ")
-        longDescription.setSpan(ForegroundColorSpan(titleTextColor), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        longDescription.setSpan(
+            ForegroundColorSpan(titleTextColor),
+            start,
+            longDescription.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         start = longDescription.length
         longDescription.append("c3 ")
-        longDescription.setSpan(ForegroundColorSpan(secondaryTextColor), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        longDescription.setSpan(
+            ForegroundColorSpan(secondaryTextColor),
+            start,
+            longDescription.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 //        longDescription.setSpan(StyleSpan(android.graphics.Typeface.BOLD), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         longDescription.append(" rest")
 
-        val launchIntent = PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, MainActivity::class.java)
-            .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST),
-            Stuff.updateCurrentOrImmutable)
+        val launchIntent = PendingIntent.getActivity(
+            applicationContext, 0, Intent(applicationContext, MainActivity::class.java)
+                .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST),
+            Stuff.updateCurrentOrImmutable
+        )
 
         val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
         style.setShowActionsInCompactView(0, 1)
@@ -812,7 +880,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    class NPReceiver(private val mainNotifierViewModel: MainNotifierViewModel):
+    class NPReceiver(private val mainNotifierViewModel: MainNotifierViewModel) :
         BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == NLService.iNOW_PLAYING_INFO_S)

@@ -24,13 +24,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_weight="1">
+
         <TextView
             android:id="@+id/edit_pattern"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceBodyLarge"
             android:maxLines="1"
-            tools:text="regex pattern"/>
+            tools:text="regex pattern" />
+
         <TextView
             android:id="@+id/edit_replacement"
             android:layout_width="match_parent"
@@ -39,10 +41,12 @@
             tools:text="replacement"
             android:maxLines="1"
             app:drawableStartCompat="@drawable/vd_arrow_right_bottom"
-            app:drawableTint="?colorPrimary"/>
+            app:drawableTint="?colorPrimary" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
             <ImageView
                 android:id="@+id/edit_field"
                 android:layout_width="40dp"
@@ -50,7 +54,8 @@
                 android:padding="10dp"
                 app:tint="?colorPrimary"
                 android:contentDescription="@string/edit_field"
-                tools:srcCompat="@drawable/vd_album_artist"/>
+                tools:srcCompat="@drawable/vd_album_artist" />
+
             <TextView
                 android:id="@+id/edit_replace_all"
                 android:layout_width="40dp"
@@ -58,7 +63,8 @@
                 android:textSize="18dp"
                 android:gravity="center"
                 android:textColor="?colorPrimary"
-                android:text="@string/edit_all"/>
+                android:text="@string/edit_all" />
+
             <TextView
                 android:id="@+id/edit_case_sensitive"
                 android:layout_width="40dp"
@@ -67,14 +73,15 @@
                 android:gravity="center"
                 android:textColor="?colorPrimary"
                 android:contentDescription="@string/edit_case_sensitive"
-                android:text="@string/edit_case_sensitive_aa"/>
+                android:text="@string/edit_case_sensitive_aa" />
+
             <ImageView
                 android:id="@+id/edit_continue_matching"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:contentDescription="@string/edit_continue"
                 app:tint="?colorPrimary"
-                app:srcCompat="@drawable/vd_arrow_right_filled"/>
+                app:srcCompat="@drawable/vd_arrow_right_filled" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

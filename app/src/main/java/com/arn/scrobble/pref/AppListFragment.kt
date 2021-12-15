@@ -38,11 +38,15 @@ class AppListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y,true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y,false)
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentAppListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -60,7 +64,7 @@ class AppListFragment : Fragment() {
         if (!binding.appList.isInTouchMode)
             binding.appList.requestFocus()
 
-        if (MainActivity.isTV){
+        if (MainActivity.isTV) {
             Stuff.toast(context, getString(R.string.press_back))
         }
 
@@ -174,6 +178,7 @@ class AppListFragment : Fragment() {
         super.onStart()
         Stuff.setTitle(activity!!, R.string.enabled_apps)
     }
+
     override fun onStop() {
         if (firstRun)
             prefs.firstRun = false

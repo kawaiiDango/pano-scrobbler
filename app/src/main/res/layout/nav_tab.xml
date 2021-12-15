@@ -14,7 +14,7 @@
         android:id="@+id/tab_icon"
         app:tint="?colorPrimary"
         android:alpha="0.7"
-        tools:srcCompat="@drawable/vd_heart"/>
+        tools:srcCompat="@drawable/vd_heart" />
 
     <TextView
         android:id="@+id/tab_label"

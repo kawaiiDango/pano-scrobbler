@@ -8,7 +8,7 @@ import com.arn.scrobble.LFMRequester
 import de.umass.lastfm.Tag
 
 
-class TagInfoVM(app: Application): AndroidViewModel(app) {
+class TagInfoVM(app: Application) : AndroidViewModel(app) {
     val info = MutableLiveData<Pair<Tag?, List<Tag>?>>()
 
     fun loadInfo(tag: String) {

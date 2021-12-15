@@ -229,18 +229,20 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
 
         val showScrobbleSources = findPreference<SwitchPreference>("show_scrobble_sources")!!
-        val fakeShowScrobbleSources = findPreference<SwitchPreference>("fake_show_scrobble_sources")!!
+        val fakeShowScrobbleSources =
+            findPreference<SwitchPreference>("fake_show_scrobble_sources")!!
         val searchInSource = findPreference<SwitchPreference>("search_in_source")!!
 
         fakeShowScrobbleSources.isVisible = !prefs.proStatus
         showScrobbleSources.isVisible = prefs.proStatus
         searchInSource.isVisible = prefs.proStatus && prefs.showScrobbleSources
-        showScrobbleSources.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                searchInSource.isVisible = newValue
+        showScrobbleSources.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    searchInSource.isVisible = newValue
+                }
+                true
             }
-            true
-        }
 
         findPreference<Preference>(MainPrefs.PREF_EXPORT)
             ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -713,7 +715,8 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
 
         findPreference<SwitchPreference>("show_scrobble_sources")!!.isVisible = prefs.proStatus
-        findPreference<SwitchPreference>("fake_show_scrobble_sources")!!.isVisible = !prefs.proStatus
+        findPreference<SwitchPreference>("fake_show_scrobble_sources")!!.isVisible =
+            !prefs.proStatus
 
         if (!prefs.proStatus) {
             val fakeShowScrobbleSources =

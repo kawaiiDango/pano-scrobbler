@@ -8,7 +8,7 @@
     android:focusable="false"
     android:padding="16dp">
 
-    <include layout="@layout/image_frame"/>
+    <include layout="@layout/image_frame" />
 
     <TextView
         android:id="@+id/app_list_add"
@@ -19,6 +19,7 @@
         android:text="@string/pref_enabled_apps_title"
         app:drawableTopCompat="@drawable/vd_add"
         app:drawableTint="?colorSecondary" />
+
     <LinearLayout
         android:id="@+id/app_icons_container"
         android:layout_width="wrap_content"
@@ -34,5 +35,5 @@
         android:textAppearance="?textAppearanceTitleLarge"
         android:visibility="gone"
         tools:text="+50"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 </LinearLayout>

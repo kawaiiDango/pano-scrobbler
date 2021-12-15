@@ -9,7 +9,6 @@ import androidx.core.content.res.TypedArrayUtils
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import coil.load
-import coil.loadAny
 import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.dp

@@ -10,10 +10,10 @@ import de.umass.lastfm.Track
 import de.umass.lastfm.User
 
 
-class FriendsVM(app: Application): AndroidViewModel(app) {
+class FriendsVM(app: Application) : AndroidViewModel(app) {
     val friends = mutableListOf<User>()
     val receiver = MutableLiveData<PaginatedResult<User>>()
-    val track = MutableLiveData<Pair<String,PaginatedResult<Track>>>()
+    val track = MutableLiveData<Pair<String, PaginatedResult<Track>>>()
     val paletteColorsCache = mutableMapOf<String, Int>()
     var username: String? = null
     var page = 1
@@ -24,6 +24,7 @@ class FriendsVM(app: Application): AndroidViewModel(app) {
         this.page = page
         LFMRequester(getApplication(), viewModelScope, receiver).getFriends(page, username)
     }
+
     fun loadFriendsRecents(user: String) {
         LFMRequester(getApplication(), viewModelScope, track).getFriendsRecents(user)
     }

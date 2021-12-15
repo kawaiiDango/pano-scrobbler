@@ -12,7 +12,7 @@ import com.arn.scrobble.ui.ItemClickListener
 class SimpleEditsAdapter(
     private val viewModel: SimpleEditsVM,
     private val itemClickListener: ItemClickListener,
- ) : RecyclerView.Adapter<SimpleEditsAdapter.VHSimpleEdit>() {
+) : RecyclerView.Adapter<SimpleEditsAdapter.VHSimpleEdit>() {
 
     init {
         setHasStableIds(true)
@@ -21,10 +21,13 @@ class SimpleEditsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHSimpleEdit {
         val inflater = LayoutInflater.from(parent.context)
-        return VHSimpleEdit(ListItemSimpleEditBinding.inflate(inflater, parent, false), itemClickListener)
+        return VHSimpleEdit(
+            ListItemSimpleEditBinding.inflate(inflater, parent, false),
+            itemClickListener
+        )
     }
 
-    override fun onBindViewHolder(holder:VHSimpleEdit, position: Int) {
+    override fun onBindViewHolder(holder: VHSimpleEdit, position: Int) {
         holder.setItemData(viewModel.edits[position])
     }
 
@@ -38,7 +41,10 @@ class SimpleEditsAdapter(
         notifyItemChanged(pos)
     }
 
-    class VHSimpleEdit(private val binding: ListItemSimpleEditBinding, private val itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(binding.root) {
+    class VHSimpleEdit(
+        private val binding: ListItemSimpleEditBinding,
+        private val itemClickListener: ItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
         }

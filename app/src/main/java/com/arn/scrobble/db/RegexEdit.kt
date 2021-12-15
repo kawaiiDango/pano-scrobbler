@@ -4,12 +4,14 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "regexEdits",
+@Entity(
+    tableName = "regexEdits",
     indices = [
         Index(value = ["preset"], unique = true),
         Index(value = ["order"]),
-    ])
-data class RegexEdit (
+    ]
+)
+data class RegexEdit(
     @PrimaryKey(autoGenerate = true)
     var _id: Int = 0,
 

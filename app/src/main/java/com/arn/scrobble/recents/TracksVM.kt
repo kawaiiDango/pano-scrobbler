@@ -8,10 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainActivity
-import com.arn.scrobble.pending.PendingScrJob
-import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pending.PendingListData
+import com.arn.scrobble.pending.PendingScrJob
+import com.arn.scrobble.pending.PendingScrService
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +33,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
 
     private val pendingTracks by lazy { MutableLiveData<PendingListData>() }
     private val mutex = Mutex()
+
     //for room's built in livedata to work, data must be inserted, deleted from the same dao object
     var username: String? = null
     var page = 1
@@ -59,19 +60,24 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
 
     fun loadTrackScrobbles(track: Track, page: Int) {
         this.page = page
-        LFMRequester(getApplication(), viewModelScope, tracksReceiver).getTrackScrobbles(track, page, username)
+        LFMRequester(getApplication(), viewModelScope, tracksReceiver).getTrackScrobbles(
+            track,
+            page,
+            username
+        )
     }
 
     fun loadFirstScrobbleDate(pr: PaginatedResult<Track>) {
         LFMRequester(getApplication(), viewModelScope, firstScrobbledDate).getTrackFirstScrobble(pr)
     }
 
-    fun loadListenerTrend(url: String?){
+    fun loadListenerTrend(url: String?) {
         lastHeroInfoAsyncTask?.cancel()
         if (url != null) {
-            lastHeroInfoAsyncTask = LFMRequester(getApplication(), viewModelScope, listenerTrend).apply {
-                getListenerTrend(url)
-            }
+            lastHeroInfoAsyncTask =
+                LFMRequester(getApplication(), viewModelScope, listenerTrend).apply {
+                    getListenerTrend(url)
+                }
         }
     }
 

@@ -18,7 +18,7 @@ import kotlin.math.min
 
 
 class BillingRepository private constructor(private val application: Application) :
-        PurchasesUpdatedListener, BillingClientStateListener {
+    PurchasesUpdatedListener, BillingClientStateListener {
 
     // Breaking change in billing v4: callbacks don't run on main thread, always use ld.postValue()
 
@@ -129,8 +129,7 @@ class BillingRepository private constructor(private val application: Application
         if (!playStoreBillingClient.isReady)
             return
 
-        playStoreBillingClient.queryPurchasesAsync(BillingClient.SkuType.INAPP) {
-            billingResult, purchases ->
+        playStoreBillingClient.queryPurchasesAsync(BillingClient.SkuType.INAPP) { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 processPurchases(purchases.toHashSet())
             }
@@ -138,37 +137,37 @@ class BillingRepository private constructor(private val application: Application
     }
 
     private fun processPurchases(purchasesResult: Set<Purchase>) {
-                val validPurchases = HashSet<Purchase>(purchasesResult.size)
-                purchasesResult.forEach { purchase ->
-                    if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                        if (Security.verifyPurchase(application, purchase)) {
-                            validPurchases.add(purchase)
-                        }
-                    } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
-                        if (Tokens.PRO_SKU_NAME in purchase.skus) {
-                            Timber.tag(LOG_TAG).d(
-                                "Received a pending purchase from " + Stuff.myRelativeTime(
-                                    application,
-                                    purchase.purchaseTime
-                                )
-                            )
-                            proPendingSinceLd.postValue(purchase.purchaseTime)
-                        }
-                    }
+        val validPurchases = HashSet<Purchase>(purchasesResult.size)
+        purchasesResult.forEach { purchase ->
+            if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                if (Security.verifyPurchase(application, purchase)) {
+                    validPurchases.add(purchase)
                 }
-                /*
-                  As is being done in this sample, for extra reliability you may store the
-                  receipts/purchases to a your own remote/local database for until after you
-                  disburse entitlements. That way if the Google Play Billing library fails at any
-                  given point, you can independently verify whether entitlements were accurately
-                  disbursed. In this sample, the receipts are then removed upon entitlement
-                  disbursement.
-                 */
+            } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
+                if (Tokens.PRO_SKU_NAME in purchase.skus) {
+                    Timber.tag(LOG_TAG).d(
+                        "Received a pending purchase from " + Stuff.myRelativeTime(
+                            application,
+                            purchase.purchaseTime
+                        )
+                    )
+                    proPendingSinceLd.postValue(purchase.purchaseTime)
+                }
+            }
+        }
+        /*
+          As is being done in this sample, for extra reliability you may store the
+          receipts/purchases to a your own remote/local database for until after you
+          disburse entitlements. That way if the Google Play Billing library fails at any
+          given point, you can independently verify whether entitlements were accurately
+          disbursed. In this sample, the receipts are then removed upon entitlement
+          disbursement.
+         */
 //                val testing = localCacheBillingClient.purchaseDao().getPurchases()
 //                Timber.tag(LOG_TAG).d("processPurchases purchases in the lcl db ${testing.size}")
 //                localCacheBillingClient.purchaseDao().insert(*validPurchases.toTypedArray())
-                acknowledgeNonConsumablePurchasesAsync(validPurchases)
-        }
+        acknowledgeNonConsumablePurchasesAsync(validPurchases)
+    }
 
 
     /**
@@ -177,13 +176,15 @@ class BillingRepository private constructor(private val application: Application
      * [BillingClient.acknowledgePurchaseAsync] inside your app.
      */
     private fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
-        if (nonConsumables.isEmpty() || !nonConsumables.any { Tokens.PRO_SKU_NAME in it.skus  }) {
+        if (nonConsumables.isEmpty() || !nonConsumables.any { Tokens.PRO_SKU_NAME in it.skus }) {
             revokePro()
         }
 
         nonConsumables.forEach { purchase ->
-            val params = AcknowledgePurchaseParams.newBuilder().setPurchaseToken(purchase
-                    .purchaseToken).build()
+            val params = AcknowledgePurchaseParams.newBuilder().setPurchaseToken(
+                purchase
+                    .purchaseToken
+            ).build()
             playStoreBillingClient.acknowledgePurchase(params) { billingResult ->
                 when (billingResult.responseCode) {
                     BillingClient.BillingResponseCode.OK -> {
@@ -195,7 +196,8 @@ class BillingRepository private constructor(private val application: Application
                         }
                     }
                     else -> {
-                        Timber.tag(LOG_TAG).d("acknowledgeNonConsumablePurchasesAsync response is ${billingResult.debugMessage}")
+                        Timber.tag(LOG_TAG)
+                            .d("acknowledgeNonConsumablePurchasesAsync response is ${billingResult.debugMessage}")
                     }
                 }
             }
@@ -212,7 +214,10 @@ class BillingRepository private constructor(private val application: Application
             prefs.proStatus = true
             if (proStatusLd.value != true) {
                 proStatusLd.postValue(true)
-                application.sendBroadcast(Intent(NLService.iTHEME_CHANGED_S), NLService.BROADCAST_PERMISSION)
+                application.sendBroadcast(
+                    Intent(NLService.iTHEME_CHANGED_S),
+                    NLService.BROADCAST_PERMISSION
+                )
             }
             proPendingSinceLd.postValue(0)
         }
@@ -236,8 +241,7 @@ class BillingRepository private constructor(private val application: Application
             proSkuDetailsLd.postValue(null)
             revokePro()
             null
-        }
-        else null
+        } else null
     }
 
     /**
@@ -248,8 +252,9 @@ class BillingRepository private constructor(private val application: Application
      * The result is passed to [onSkuDetailsResponse]
      */
     private fun querySkuDetailsAsync(
-            @BillingClient.SkuType skuType: String,
-            skuList: List<String>) {
+        @BillingClient.SkuType skuType: String,
+        skuList: List<String>
+    ) {
         val params = SkuDetailsParams.newBuilder()
             .setSkusList(skuList)
             .setType(skuType)
@@ -298,8 +303,8 @@ class BillingRepository private constructor(private val application: Application
      * [queryPurchasesAsync].
      */
     override fun onPurchasesUpdated(
-            billingResult: BillingResult,
-            purchases: MutableList<Purchase>?
+        billingResult: BillingResult,
+        purchases: MutableList<Purchase>?
     ) {
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
@@ -331,11 +336,11 @@ class BillingRepository private constructor(private val application: Application
         private val handler = Handler(Looper.getMainLooper())
 
         fun getInstance(application: Application): BillingRepository =
-                INSTANCE ?: synchronized(this) {
-                    INSTANCE
-                            ?: BillingRepository(application)
-                                    .also { INSTANCE = it }
-                }
+            INSTANCE ?: synchronized(this) {
+                INSTANCE
+                    ?: BillingRepository(application)
+                        .also { INSTANCE = it }
+            }
     }
 }
 

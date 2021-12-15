@@ -9,7 +9,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.*
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
@@ -17,11 +18,13 @@ import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.google.android.material.chip.Chip
-import de.umass.lastfm.*
+import de.umass.lastfm.Album
+import de.umass.lastfm.Artist
+import de.umass.lastfm.Track
 import kotlin.math.roundToInt
 
 
-open class ChartsBaseFragment: ChartsPeriodFragment() {
+open class ChartsBaseFragment : ChartsPeriodFragment() {
 
     lateinit var adapter: ChartsAdapter
 
@@ -33,7 +36,11 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         get() = _periodChipsBinding!!
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         setHasOptionsMenu(true)
         val binding = ContentChartsBinding.inflate(inflater, container, false)
         _chartsBinding = binding.frameChartsList
@@ -62,6 +69,7 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.charts_menu, menu)
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_share)
             share()
@@ -82,16 +90,27 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
 
         val glm = GridLayoutManager(context!!, getNumColumns())
         chartsBinding.chartsList.layoutManager = glm
-        (chartsBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        (chartsBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations =
+            false
         chartsBinding.chartsList.adapter = adapter
         chartsBinding.chartsList.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
 
         var itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
-        itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
+        itemDecor.setDrawable(
+            ContextCompat.getDrawable(
+                context!!,
+                R.drawable.shape_divider_chart
+            )!!
+        )
         chartsBinding.chartsList.addItemDecoration(itemDecor)
 
         itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
-        itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
+        itemDecor.setDrawable(
+            ContextCompat.getDrawable(
+                context!!,
+                R.drawable.shape_divider_chart
+            )!!
+        )
         chartsBinding.chartsList.addItemDecoration(itemDecor)
 
         val loadMoreListener = EndlessRecyclerViewScrollListener(glm) {
@@ -146,13 +165,15 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
             is Album -> getString(R.string.top_albums)
             else -> getString(R.string.top_tracks)
         }
-        val checkedChip = periodChipsBinding.chartsPeriod.findViewById<Chip>(periodChipsBinding.chartsPeriod.checkedChipId)
+        val checkedChip =
+            periodChipsBinding.chartsPeriod.findViewById<Chip>(periodChipsBinding.chartsPeriod.checkedChipId)
         val period = when (checkedChip.id) {
             R.id.charts_choose_week -> {
                 viewModel.weeklyChart ?: return
                 getString(
                     R.string.weekly_range,
-                    DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.from.time),
+                    DateFormat.getMediumDateFormat(context)
+                        .format(viewModel.weeklyChart!!.from.time),
                     DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.to.time)
                 )
             }
@@ -178,9 +199,15 @@ open class ChartsBaseFragment: ChartsPeriodFragment() {
         }
 
         var shareText = if (username != null)
-                getString(R.string.charts_share_username, period.lowercase(), topType.lowercase(), list, username)
-            else
-                getString(R.string.charts_share, period.lowercase(), topType.lowercase(), list)
+            getString(
+                R.string.charts_share_username,
+                period.lowercase(),
+                topType.lowercase(),
+                list,
+                username
+            )
+        else
+            getString(R.string.charts_share, period.lowercase(), topType.lowercase(), list)
 
         if ((activity as MainActivity).billingViewModel.proStatus.value != true)
             shareText += "\n\n" + getString(R.string.share_sig)

@@ -8,76 +8,77 @@
     android:paddingTop="16dp"
     android:paddingHorizontal="16dp"
     android:paddingBottom="3dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
 
-            <ImageView
-                android:id="@+id/info_type"
-                android:layout_width="20sp"
-                android:layout_height="20sp"
-                android:layout_marginEnd="10dp"
-                app:tint="?colorPrimary"
-                tools:srcCompat="@drawable/vd_note" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/info_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAppearance="?textAppearanceTitleLarge"
-                android:textColor="?colorPrimary"
-                android:textIsSelectable="true"
-                tools:text="@string/track" />
+        <ImageView
+            android:id="@+id/info_type"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_marginEnd="10dp"
+            app:tint="?colorPrimary"
+            tools:srcCompat="@drawable/vd_note" />
 
-            <ImageButton
-                android:id="@+id/info_heart"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:visibility="gone"
-                tools:srcCompat="@drawable/vd_heart"
-                app:tint="?colorSecondary"
-                tools:visibility="visible" />
+        <TextView
+            android:id="@+id/info_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="?textAppearanceTitleLarge"
+            android:textColor="?colorPrimary"
+            android:textIsSelectable="true"
+            tools:text="@string/track" />
 
-            <ImageButton
-                android:id="@+id/info_play"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:contentDescription="@string/search"
-                android:tooltipText="@string/search"
-                android:visibility="gone"
-                app:srcCompat="@drawable/vd_search_play"
-                app:tint="?colorSecondary"
-                tools:visibility="visible" />
+        <ImageButton
+            android:id="@+id/info_heart"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:visibility="gone"
+            tools:srcCompat="@drawable/vd_heart"
+            app:tint="?colorSecondary"
+            tools:visibility="visible" />
 
-            <ImageButton
-                android:id="@+id/info_user_tags"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:contentDescription="@string/my_tags"
-                android:tooltipText="@string/my_tags"
-                android:visibility="gone"
-                app:srcCompat="@drawable/vd_user_tag"
-                app:tint="?colorSecondary"
-                tools:visibility="visible" />
+        <ImageButton
+            android:id="@+id/info_play"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:contentDescription="@string/search"
+            android:tooltipText="@string/search"
+            android:visibility="gone"
+            app:srcCompat="@drawable/vd_search_play"
+            app:tint="?colorSecondary"
+            tools:visibility="visible" />
 
-            <ImageButton
-                android:id="@+id/info_link"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:contentDescription="@string/more_info"
-                android:tooltipText="@string/more_info"
-                android:visibility="gone"
-                app:srcCompat="@drawable/vd_open_in_new"
-                app:tint="?colorSecondary"
-                tools:visibility="visible" />
-        </LinearLayout>
+        <ImageButton
+            android:id="@+id/info_user_tags"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:contentDescription="@string/my_tags"
+            android:tooltipText="@string/my_tags"
+            android:visibility="gone"
+            app:srcCompat="@drawable/vd_user_tag"
+            app:tint="?colorSecondary"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/info_link"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:contentDescription="@string/more_info"
+            android:tooltipText="@string/more_info"
+            android:visibility="gone"
+            app:srcCompat="@drawable/vd_open_in_new"
+            app:tint="?colorSecondary"
+            tools:visibility="visible" />
+    </LinearLayout>
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/info_progress"
@@ -86,107 +87,107 @@
         android:visibility="invisible"
         style="@style/Widget.Material3.CircularProgressIndicator.Small"
         app:hideAnimationBehavior="none"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center" />
 
     <LinearLayout
-            android:id="@+id/info_content"
+        android:id="@+id/info_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layoutAnimation="@anim/layout_animation_slide_up"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/info_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layoutAnimation="@anim/layout_animation_slide_up"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/info_tags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:paddingTop="8dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/info_user_scrobbles_container"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false"
-                android:paddingTop="8dp">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="@dimen/list_item_padding"
+                android:clickable="false">
 
-                <LinearLayout
-                    android:id="@+id/info_user_scrobbles_container"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/info_user_scrobbles"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="@dimen/list_item_padding"
-                    android:clickable="false">
+                    android:textAppearance="?textAppearanceBodyLarge"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="1" />
 
-                    <TextView
-                        android:id="@+id/info_user_scrobbles"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?textAppearanceBodyLarge"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        tools:text="1" />
-
-                    <TextView
-                        android:id="@+id/info_user_scrobbles_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:text="@string/my_scrobbles"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/info_user_scrobbles_label"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="@dimen/list_item_padding"
-                    android:gravity="center">
+                    android:textAlignment="center"
+                    android:text="@string/my_scrobbles"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/info_listeners"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?textAppearanceBodyLarge"
-                        android:textSize="18sp"
-                        tools:text="1" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/listeners"
-                        android:textAlignment="center"
-                        />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="@dimen/list_item_padding"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/info_scrobbles"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?textAppearanceBodyLarge"
-                        android:textSize="18sp"
-                        tools:text="1" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/scrobbles"
-                        android:textAlignment="center" />
-
-                </LinearLayout>
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="@dimen/list_item_padding"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/info_listeners"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?textAppearanceBodyLarge"
+                    android:textSize="18sp"
+                    tools:text="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/listeners"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="@dimen/list_item_padding"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/info_scrobbles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?textAppearanceBodyLarge"
+                    android:textSize="18sp"
+                    tools:text="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/scrobbles"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/info_wiki_container"
             android:layout_width="match_parent"
@@ -199,7 +200,7 @@
             tools:visibility="visible"
             android:orientation="horizontal">
 
-<!-- justify doesnt work if text contains formatting -->
+            <!-- justify doesnt work if text contains formatting -->
             <TextView
                 android:id="@+id/info_wiki"
                 android:layout_width="0dp"
@@ -209,7 +210,7 @@
                 android:ellipsize="end"
                 android:layout_marginStart="5dp"
                 android:maxLines="2"
-                android:scrollbars="none"/>
+                android:scrollbars="none" />
 
             <ImageView
                 android:id="@+id/info_wiki_expand"
@@ -236,7 +237,7 @@
             android:textAppearance="?textAppearanceTitleMedium"
             android:textColor="?colorSecondary"
             android:textDirection="firstStrong"
-            tools:text="n tracks"/>
+            tools:text="n tracks" />
 
     </LinearLayout>
 </LinearLayout>

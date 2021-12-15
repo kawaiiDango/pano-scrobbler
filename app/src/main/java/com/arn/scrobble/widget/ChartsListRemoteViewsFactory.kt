@@ -11,7 +11,6 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.WidgetPrefs
 import java.text.NumberFormat
-import java.util.ArrayList
 
 class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent) :
     RemoteViewsService.RemoteViewsFactory {
@@ -72,7 +71,10 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
 
         val item = widgetItems[idx]
         val rv = RemoteViews(context.packageName, R.layout.appwidget_charts_item)
-        rv.setTextViewText(R.id.appwidget_charts_serial, NumberFormat.getInstance().format(idx + 1) + ".")
+        rv.setTextViewText(
+            R.id.appwidget_charts_serial,
+            NumberFormat.getInstance().format(idx + 1) + "."
+        )
         rv.setTextViewText(R.id.appwidget_charts_title, item.title)
 
         if (item.subtitle != "") {
@@ -83,7 +85,8 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
 
         rv.setTextViewText(
             R.id.appwidget_charts_plays,
-            NumberFormat.getInstance().format(item.number))
+            NumberFormat.getInstance().format(item.number)
+        )
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
         val fillInIntent = Intent().apply {

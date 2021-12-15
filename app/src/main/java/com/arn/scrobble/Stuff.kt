@@ -2,8 +2,6 @@ package com.arn.scrobble
 
 import android.animation.ValueAnimator
 import android.app.*
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.DialogFragment
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -35,7 +33,9 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -345,7 +345,8 @@ object Stuff {
     }
 
     fun BottomSheetDialogFragment.expandIfNeeded() {
-        val bottomSheetView = dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        val bottomSheetView =
+            dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         if (view?.isInTouchMode == false || context!!.hasMouse)
             BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
     }

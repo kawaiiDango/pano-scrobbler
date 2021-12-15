@@ -1,7 +1,7 @@
 package com.arn.scrobble.widget
 
-import java.io.*
 import android.util.Base64
+import java.io.*
 
 internal object ObjectSerializeHelper {
     fun convertToString(s: Serializable): String? {

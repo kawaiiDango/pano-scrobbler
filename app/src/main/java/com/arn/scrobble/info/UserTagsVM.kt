@@ -9,7 +9,7 @@ import com.arn.scrobble.pref.HistoryPref
 import de.umass.lastfm.MusicEntry
 
 
-class UserTagsVM(app: Application): AndroidViewModel(app) {
+class UserTagsVM(app: Application) : AndroidViewModel(app) {
     lateinit var entry: MusicEntry
     lateinit var historyPref: HistoryPref
     val tags = MutableLiveData<MutableSet<String>>()
@@ -24,7 +24,7 @@ class UserTagsVM(app: Application): AndroidViewModel(app) {
     }
 
     fun addTag(newTags: String) {
-        tags.value = tags.value?.apply { this += splitTags(newTags)}
+        tags.value = tags.value?.apply { this += splitTags(newTags) }
         LFMRequester(getApplication(), viewModelScope).addUserTagsForEntry(entry, newTags)
     }
 

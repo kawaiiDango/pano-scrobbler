@@ -6,11 +6,12 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
-@Entity(tableName = "blockedMetadata",
+@Entity(
+    tableName = "blockedMetadata",
     indices = [Index(value = ["track", "album", "artist", "albumArtist"], unique = true)]
-    )
+)
 @Parcelize
-data class BlockedMetadata (
+data class BlockedMetadata(
     @PrimaryKey(autoGenerate = true)
     var _id: Int = 0,
 

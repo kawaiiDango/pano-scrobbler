@@ -4,19 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/friends_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <include android:id="@+id/friends_header"
+
+        <include
+            android:id="@+id/friends_header"
             android:visibility="gone"
-            layout="@layout/header_default"/>
+            layout="@layout/header_default" />
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/friends_swipe_refresh"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/friends_grid"
                 android:layout_width="match_parent"
@@ -25,8 +30,7 @@
                 android:paddingStart="8dp"
                 android:paddingTop="8dp"
                 android:clipToPadding="false"
-                tools:listitem="@layout/grid_item_friend"
-                />
+                tools:listitem="@layout/grid_item_friend" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 

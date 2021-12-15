@@ -11,7 +11,8 @@ import com.arn.scrobble.ui.ItemClickListener
 /**
  * Created by arn on 21/09/2017.
  */
-class PendingScrAdapter(private val itemClickListener: ItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PendingScrAdapter(private val itemClickListener: ItemClickListener) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val psList = mutableListOf<PendingScrobble>()
     private val plList = mutableListOf<PendingLove>()
     var isShowingAlbums = false
@@ -30,12 +31,16 @@ class PendingScrAdapter(private val itemClickListener: ItemClickListener) : Recy
                     itemClickListener
                 )
             TYPE_PENDING_LOVE ->
-                VHPendingLove(ListItemRecentsBinding.inflate(inflater, parent, false), isShowingAlbums, itemClickListener)
+                VHPendingLove(
+                    ListItemRecentsBinding.inflate(inflater, parent, false),
+                    isShowingAlbums,
+                    itemClickListener
+                )
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }
 
-    override fun onBindViewHolder(holder:RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is VHPendingScrobble -> holder.setItemData(psList[position - plList.size])
             is VHPendingLove -> holder.setItemData(plList[position])

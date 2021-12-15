@@ -8,7 +8,7 @@ import java.util.*
 class RegexItemTouchHelper(
     adapter: RegexEditsAdapter,
     viewModel: RegexEditsVM,
-): ItemTouchHelper(object: SimpleCallback(0, UP or DOWN) {
+) : ItemTouchHelper(object : SimpleCallback(0, UP or DOWN) {
 
     override fun onMove(
         recyclerView: RecyclerView,
@@ -38,8 +38,10 @@ class RegexItemTouchHelper(
         return true
     }
 
-    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?,
-                                   actionState: Int) {
+    override fun onSelectedChanged(
+        viewHolder: RecyclerView.ViewHolder?,
+        actionState: Int
+    ) {
         super.onSelectedChanged(viewHolder, actionState)
 
         if (actionState == ACTION_STATE_DRAG) {

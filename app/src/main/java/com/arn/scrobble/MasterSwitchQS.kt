@@ -7,7 +7,7 @@ import androidx.annotation.RequiresApi
 import com.arn.scrobble.pref.MainPrefs
 
 @RequiresApi(Build.VERSION_CODES.N)
-class MasterSwitchQS: TileService() {
+class MasterSwitchQS : TileService() {
 
     override fun onClick() {
         qsTile ?: return
@@ -22,8 +22,8 @@ class MasterSwitchQS: TileService() {
         setActive(isActive)
     }
 
-    private fun setActive(isActive: Boolean){
-        if (isActive){
+    private fun setActive(isActive: Boolean) {
+        if (isActive) {
             qsTile.state = Tile.STATE_ACTIVE
             qsTile.label = getString(R.string.scrobbler_on)
         } else {

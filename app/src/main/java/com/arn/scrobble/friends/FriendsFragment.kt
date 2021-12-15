@@ -59,7 +59,11 @@ class FriendsFragment : Fragment(), ItemClickListener {
         get() = _binding!!
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentFriendsBinding.inflate(inflater, container, false)
         binding.root.isNestedScrollingEnabled = false
         return binding.root
@@ -70,7 +74,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         super.onDestroyView()
     }
 
-    private fun loadFriends(page: Int):Boolean {
+    private fun loadFriends(page: Int): Boolean {
         _binding ?: return false
         binding.friendsGrid.layoutManager ?: return false
 
@@ -111,7 +115,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
         if (binding.friendsGrid.adapter == null)
             postInit()
         else if (System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
-                (viewModel.page == 1 || viewModel.sorted))
+            (viewModel.page == 1 || viewModel.sorted)
+        )
             runnable.run()
         Stuff.setTitle(activity!!, 0)
     }
@@ -140,11 +145,21 @@ class FriendsFragment : Fragment(), ItemClickListener {
         binding.friendsGrid.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
 
         var itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
-        itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
+        itemDecor.setDrawable(
+            ContextCompat.getDrawable(
+                context!!,
+                R.drawable.shape_divider_chart
+            )!!
+        )
         binding.friendsGrid.addItemDecoration(itemDecor)
 
         itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
-        itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
+        itemDecor.setDrawable(
+            ContextCompat.getDrawable(
+                context!!,
+                R.drawable.shape_divider_chart
+            )!!
+        )
         binding.friendsGrid.addItemDecoration(itemDecor)
 
 
@@ -229,7 +244,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL * 2)
     }
 
-    override fun onItemClick (view: View, position: Int) {
+    override fun onItemClick(view: View, position: Int) {
         val user = adapter.getItem(position)
         if (user != null) {
             val gridItem = adapter.getViewBindingForPopup(context!!, position)
@@ -239,18 +254,20 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
     private fun showPopupWindow(contentBinding: GridItemFriendBinding, anchor: View, user: User) {
         val userLink = user.url ?: return
-        val popup = PopupWindow(contentBinding.root, anchor.measuredWidth, anchor.measuredHeight, true)
-            .apply {
-                elevation = 16.dp.toFloat()
-                isTouchable = true
-                isOutsideTouchable = true
-                setBackgroundDrawable(ColorDrawable())
-                popupWr = WeakReference(this)
-            }
+        val popup =
+            PopupWindow(contentBinding.root, anchor.measuredWidth, anchor.measuredHeight, true)
+                .apply {
+                    elevation = 16.dp.toFloat()
+                    isTouchable = true
+                    isOutsideTouchable = true
+                    setBackgroundDrawable(ColorDrawable())
+                    popupWr = WeakReference(this)
+                }
 
         fun postTransition() {
 //            TransitionManager.beginDelayedTransition(contentBinding.root, ChangeBounds().setDuration(150))
-            val actionsBinding = ActionFriendsBinding.inflate(layoutInflater, contentBinding.root, false)
+            val actionsBinding =
+                ActionFriendsBinding.inflate(layoutInflater, contentBinding.root, false)
             contentBinding.root.addView(actionsBinding.root, 4)
 
             contentBinding.friendsPic.layoutParams.width = 120.dp
@@ -262,8 +279,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     DateFormat.getMediumDateFormat(context).format(user.registeredDate.time)
                 contentBinding.friendsScrobblesSince.text = getString(
                     R.string.num_scrobbles_since,
-                        NumberFormat.getInstance().format(user.playcount),
-                        since)
+                    NumberFormat.getInstance().format(user.playcount),
+                    since
+                )
                 contentBinding.friendsScrobblesSince.visibility = View.VISIBLE
             }
             if (user.country != null && user.country != "None") {
@@ -282,10 +300,10 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
                 }
                 activity!!.supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
-                        .addToBackStack(null)
-                        .commit()
+                    .beginTransaction()
+                    .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
+                    .addToBackStack(null)
+                    .commit()
             }
             actionsBinding.friendsCharts.setOnClickListener {
                 (activity as MainActivity).enableGestures()
@@ -296,10 +314,10 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     putInt(Stuff.ARG_TYPE, 3)
                 }
                 activity!!.supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
-                        .addToBackStack(null)
-                        .commit()
+                    .beginTransaction()
+                    .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
+                    .addToBackStack(null)
+                    .commit()
             }
             actionsBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
             contentBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
@@ -313,7 +331,12 @@ class FriendsFragment : Fragment(), ItemClickListener {
             val fragmentH = binding.root.measuredHeight
             val w = min((0.8 * fragmentW).toInt(), 400.dp)
             val h = contentBinding.root.measuredHeight
-            popup.update((fragmentW - w )/2 + screenX, ((fragmentH - h )/1.2).toInt() + screenY, w,h)
+            popup.update(
+                (fragmentW - w) / 2 + screenX,
+                ((fragmentH - h) / 1.2).toInt() + screenY,
+                w,
+                h
+            )
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -324,7 +347,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 duration = 300
             }
         }
-        contentBinding.root.postDelayed( { postTransition() }, 10)
+        contentBinding.root.postDelayed({ postTransition() }, 10)
 
         val coords = IntArray(2)
         anchor.getLocationInWindow(coords)

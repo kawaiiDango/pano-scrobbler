@@ -26,13 +26,14 @@ class VHPendingLove(
             itemClickListener.call(it, bindingAdapterPosition)
         }
         if (isShowingAlbums) {
-            val albumHeight = itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
+            val albumHeight =
+                itemView.context.resources.getDimension(R.dimen.album_text_height).toInt()
             binding.recentsAlbum.visibility = View.GONE
             binding.recentsTrackLl.setPaddingRelative(
                 0,
-                albumHeight/2,
+                albumHeight / 2,
                 0,
-                albumHeight/2
+                albumHeight / 2
             )
         }
     }
@@ -41,13 +42,17 @@ class VHPendingLove(
         binding.recentsTitle.text = pl.track
         binding.recentsSubtitle.text = pl.artist
         if (pl.shouldLove) {
-            binding.recentsImgOverlay.background = ContextCompat.getDrawable(itemView.context, R.drawable.vd_heart_stroked)
+            binding.recentsImgOverlay.background =
+                ContextCompat.getDrawable(itemView.context, R.drawable.vd_heart_stroked)
             binding.recentsDate.text = itemView.context.getString(R.string.loved)
-            binding.recentsImgOverlay.contentDescription = itemView.context.getString(R.string.loved)
+            binding.recentsImgOverlay.contentDescription =
+                itemView.context.getString(R.string.loved)
         } else {
-            binding.recentsImgOverlay.background = ContextCompat.getDrawable(itemView.context, R.drawable.vd_heart_break_stroked)
+            binding.recentsImgOverlay.background =
+                ContextCompat.getDrawable(itemView.context, R.drawable.vd_heart_break_stroked)
             binding.recentsDate.text = itemView.context.getString(R.string.unloved)
-            binding.recentsImgOverlay.contentDescription = itemView.context.getString(R.string.unloved)
+            binding.recentsImgOverlay.contentDescription =
+                itemView.context.getString(R.string.unloved)
         }
     }
 

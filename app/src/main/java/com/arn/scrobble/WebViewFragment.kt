@@ -74,7 +74,8 @@ class WebViewFragment : Fragment() {
             if (url.startsWith("pscrobble://auth/lastfm?")) {
                 if (saveCookies) {
                     val httpUrl = "https://www.last.fm/".toHttpUrl()
-                    val cookieString = CookieManager.getInstance().getCookie(httpUrl.toString()) ?: ""
+                    val cookieString =
+                        CookieManager.getInstance().getCookie(httpUrl.toString()) ?: ""
                     // intercept lastfm cookies for edit and delete to work
                     val cookies = mutableListOf<Cookie>()
 

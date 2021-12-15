@@ -7,9 +7,10 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 
 
-class ChartsPagerFragment: PagerBaseFragment() {
+class ChartsPagerFragment : PagerBaseFragment() {
 
-    private val typeToTab = mapOf(Stuff.TYPE_ARTISTS to 0, Stuff.TYPE_ALBUMS to 1, Stuff.TYPE_TRACKS to 2)
+    private val typeToTab =
+        mapOf(Stuff.TYPE_ARTISTS to 0, Stuff.TYPE_ALBUMS to 1, Stuff.TYPE_TRACKS to 2)
     private var backStackChecked = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

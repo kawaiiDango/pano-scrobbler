@@ -27,12 +27,7 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Tokens
 import timber.log.Timber
 import java.io.IOException
-import java.security.InvalidKeyException
-import java.security.KeyFactory
-import java.security.NoSuchAlgorithmException
-import java.security.PublicKey
-import java.security.Signature
-import java.security.SignatureException
+import java.security.*
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
 
@@ -56,7 +51,10 @@ object Security {
      */
     @Throws(IOException::class)
     fun verifyPurchase(context: Context, purchase: Purchase): Boolean {
-        if (purchase.originalJson.isEmpty() || Tokens.BASE_64_ENCODED_PUBLIC_KEY.isEmpty() || purchase.signature.isEmpty() || !checkSignature(context)) {
+        if (purchase.originalJson.isEmpty() || Tokens.BASE_64_ENCODED_PUBLIC_KEY.isEmpty() || purchase.signature.isEmpty() || !checkSignature(
+                context
+            )
+        ) {
             Timber.tag(TAG).w("Purchase verification failed: missing data.")
             return false
         }
@@ -126,12 +124,14 @@ object Security {
 
     private fun checkSignature(context: Context): Boolean {
         try {
-            val signatures = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNATURES).signatures
+            val signatures = context.packageManager.getPackageInfo(
+                context.packageName,
+                PackageManager.GET_SIGNATURES
+            ).signatures
             val signature = signatures[0].toCharsString()
             if (signature == Tokens.SIGNATURE)
                 return true
-        }
-        catch (ex: Exception) {
+        } catch (ex: Exception) {
         }
         android.os.Process.killProcess(android.os.Process.myPid())
         return false

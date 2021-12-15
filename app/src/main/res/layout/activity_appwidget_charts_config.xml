@@ -10,7 +10,7 @@
         android:layout_width="300dp"
         android:layout_gravity="center_horizontal"
         android:padding="16dp"
-        android:layout_height="270dp"/>
+        android:layout_height="270dp" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
@@ -76,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/dynamic"
-                    app:checkedIconEnabled="false"/>
+                    app:checkedIconEnabled="false" />
             </com.google.android.material.chip.ChipGroup>
 
             <TextView
@@ -95,8 +95,7 @@
                 android:valueTo="100"
                 android:value="50"
                 android:stepSize="1"
-                app:labelBehavior="floating"
-                />
+                app:labelBehavior="floating" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -113,16 +112,17 @@
                 android:layout_height="wrap_content"
                 android:checked="true"
                 app:checkedIconTint="?colorSecondary"
-                android:text="@string/appwidget_show"/>
-            
+                android:text="@string/appwidget_show" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginTop="16dp"
-                android:text="@string/appwidget_refresh_every"/>
+                android:text="@string/appwidget_refresh_every" />
         </LinearLayout>
     </ScrollView>
+
     <LinearLayout
         android:background="?android:colorBackground"
         android:layout_width="match_parent"
@@ -136,14 +136,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Widget.Material3.Button.TextButton.Dialog"
-            android:text="@android:string/cancel"/>
+            android:text="@android:string/cancel" />
 
         <Button
             android:id="@+id/ok_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Widget.Material3.Button.TextButton.Dialog"
-            android:text="@android:string/ok"/>
+            android:text="@android:string/ok" />
 
     </LinearLayout>
 </LinearLayout>

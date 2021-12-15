@@ -13,8 +13,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.*
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
@@ -24,7 +27,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-open class ChartsOverviewFragment: ChartsPeriodFragment() {
+open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
     private lateinit var artistsFragment: FakeArtistFragment
     private lateinit var albumsFragment: FakeAlbumFragment
@@ -37,7 +40,11 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
     override val periodChipsBinding
         get() = _periodChipsBinding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = ContentChartsOverviewBinding.inflate(inflater, container, false)
         _periodChipsBinding = binding.chipsChartsPeriod
         return binding.root
@@ -91,31 +98,58 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
 
     override fun postInit() {
         if (MainActivity.isTV)
-            for (i in 0 .. periodChipsBinding.chartsPeriod.childCount)
-                periodChipsBinding.chartsPeriod.getChildAt(i)?.nextFocusDownId = R.id.charts_overview_scrollview
+            for (i in 0..periodChipsBinding.chartsPeriod.childCount)
+                periodChipsBinding.chartsPeriod.getChildAt(i)?.nextFocusDownId =
+                    R.id.charts_overview_scrollview
 
-        artistsFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_ARTISTS.toString()) as? FakeArtistFragment ?: FakeArtistFragment()
-        albumsFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_ALBUMS.toString()) as? FakeAlbumFragment ?: FakeAlbumFragment()
-        tracksFragment = childFragmentManager.findFragmentByTag(Stuff.TYPE_TRACKS.toString()) as? FakeTrackFragment ?: FakeTrackFragment()
+        artistsFragment =
+            childFragmentManager.findFragmentByTag(Stuff.TYPE_ARTISTS.toString()) as? FakeArtistFragment
+                ?: FakeArtistFragment()
+        albumsFragment =
+            childFragmentManager.findFragmentByTag(Stuff.TYPE_ALBUMS.toString()) as? FakeAlbumFragment
+                ?: FakeAlbumFragment()
+        tracksFragment =
+            childFragmentManager.findFragmentByTag(Stuff.TYPE_TRACKS.toString()) as? FakeTrackFragment
+                ?: FakeTrackFragment()
         initFragment(artistsFragment, Stuff.TYPE_ARTISTS)
         initFragment(albumsFragment, Stuff.TYPE_ALBUMS)
         initFragment(tracksFragment, Stuff.TYPE_TRACKS)
 
         binding.chartsArtistsHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_ARTISTS) }
         setHeader(Stuff.TYPE_ARTISTS)
-        binding.chartsArtistsHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_mic, 0, 0, 0)
+        binding.chartsArtistsHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            R.drawable.vd_mic,
+            0,
+            0,
+            0
+        )
 
         binding.chartsAlbumsHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_ALBUMS) }
         setHeader(Stuff.TYPE_ALBUMS)
-        binding.chartsAlbumsHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_album, 0, 0, 0)
+        binding.chartsAlbumsHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            R.drawable.vd_album,
+            0,
+            0,
+            0
+        )
 
         binding.chartsTracksHeader.headerAction.setOnClickListener { launchChartsPager(Stuff.TYPE_TRACKS) }
         setHeader(Stuff.TYPE_TRACKS)
-        binding.chartsTracksHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_note, 0, 0, 0)
+        binding.chartsTracksHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            R.drawable.vd_note,
+            0,
+            0,
+            0
+        )
 
         setHeader(Stuff.TYPE_SC)
         binding.chartsSparklineHeader.headerAction.visibility = View.GONE
-        binding.chartsSparklineHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.vd_line_chart, 0, 0, 0)
+        binding.chartsSparklineHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            R.drawable.vd_line_chart,
+            0,
+            0,
+            0
+        )
 
         binding.chartsSparklineLabels.justifyLastLine = true
         binding.chartsSparkline.adapter = SparkLineAdapter().apply { baseline = true }
@@ -127,7 +161,11 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             intVal as Int
             binding.chartsSparklineScrubInfo.visibility = View.VISIBLE
             binding.chartsSparklineScrubInfo.text =
-                    resources.getQuantityString(R.plurals.num_scrobbles_noti, intVal, NumberFormat.getInstance().format(intVal))
+                resources.getQuantityString(
+                    R.plurals.num_scrobbles_noti,
+                    intVal,
+                    NumberFormat.getInstance().format(intVal)
+                )
             if (binding.chartsScrubMessage.visibility == View.VISIBLE) {
                 prefs.scrubLearnt = true
                 binding.chartsScrubMessage.visibility = View.GONE
@@ -161,7 +199,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
     }
 
     private fun initFragment(fragment: ShittyArchitectureFragment, type: Int) {
-        val rootView = when(type) {
+        val rootView = when (type) {
             Stuff.TYPE_ARTISTS -> binding.chartsArtistsFrame
             Stuff.TYPE_ALBUMS -> binding.chartsAlbumsFrame
             else -> binding.chartsTracksFrame
@@ -179,10 +217,16 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         fragment.adapter = adapter
 
         val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
-        itemDecor.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.shape_divider_chart)!!)
+        itemDecor.setDrawable(
+            ContextCompat.getDrawable(
+                context!!,
+                R.drawable.shape_divider_chart
+            )!!
+        )
         rootView.chartsList.addItemDecoration(itemDecor)
 
-        rootView.chartsList.layoutManager = LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+        rootView.chartsList.layoutManager =
+            LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
         (rootView.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
         rootView.chartsList.adapter = adapter
 
@@ -240,7 +284,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             }
             Stuff.TYPE_SC -> {
                 binding.chartsSparklineHeader.headerText.text = viewModel.periodCountHeader
-                        ?: getString(R.string.charts)
+                    ?: getString(R.string.charts)
                 return
             }
         }
@@ -271,10 +315,10 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
         }
         (activity as MainActivity).enableGestures()
         activity!!.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.frame, pf, Stuff.TAG_CHART_PAGER)
-                .addToBackStack(null)
-                .commit()
+            .beginTransaction()
+            .replace(R.id.frame, pf, Stuff.TAG_CHART_PAGER)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun calcSparklineDurations() {
@@ -291,7 +335,7 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
             cal.add(Calendar.DAY_OF_YEAR, -1)
         }
 
-        when(periodChipIds[viewModel.periodIdx]) {
+        when (periodChipIds[viewModel.periodIdx]) {
             R.id.charts_7day,
             R.id.charts_choose_week -> {
                 viewModel.periodCountHeader = getString(R.string.graph_daily)
@@ -350,7 +394,8 @@ open class ChartsOverviewFragment: ChartsPeriodFragment() {
                     if (i != 0) {
                         cal.add(Calendar.MONTH, -1)
                     }
-                    var monthLetter = SimpleDateFormat("MMM", Locale.ENGLISH).format(cal.timeInMillis)
+                    var monthLetter =
+                        SimpleDateFormat("MMM", Locale.ENGLISH).format(cal.timeInMillis)
                     if (periodChipIds[viewModel.periodIdx] == R.id.charts_12month)
                         monthLetter = monthLetter[0].toString()
                     sc.label = monthLetter.toString()

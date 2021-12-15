@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         app:shapeAppearance="@style/roundedCorners"
-        tools:srcCompat="@drawable/vd_charts"/>
+        tools:srcCompat="@drawable/vd_charts" />
 
     <LinearLayout
         android:id="@+id/chart_info_container"
@@ -35,7 +35,7 @@
             android:maxLines="1"
             android:paddingHorizontal="8dp"
             android:textAppearance="?textAppearanceTitleSmall"
-            tools:text="Title title"/>
+            tools:text="Title title" />
 
         <TextView
             android:id="@+id/chart_info_subtitle"
@@ -47,7 +47,7 @@
             android:paddingHorizontal="8dp"
             android:textAppearance="?textAppearanceBodyLarge"
             android:textSize="13sp"
-            tools:text="subtit subtit"/>
+            tools:text="subtit subtit" />
 
         <TextView
             android:id="@+id/chart_info_scrobbles"
@@ -68,7 +68,7 @@
             android:scaleY="0.1"
             android:paddingHorizontal="8dp"
             tools:progress="50"
-            android:progressDrawable="@drawable/shape_chart_bar"/>
+            android:progressDrawable="@drawable/shape_chart_bar" />
 
     </LinearLayout>
 </com.arn.scrobble.ui.SquareFrameLayout>

@@ -32,26 +32,35 @@ object ColorPatchUtils {
             secondaryStyle = secondaryDefault
         } else if (isRandom) {
             val primaryIdx = (0 until ColorPatchMap.primaryStyles.size).random()
-            val secondaryIndex = (0 until  ColorPatchMap.secondaryStyles.size).random()
+            val secondaryIndex = (0 until ColorPatchMap.secondaryStyles.size).random()
             primaryStyle = ColorPatchMap.primaryStyles.keys.elementAt(primaryIdx)
             secondaryStyle = ColorPatchMap.secondaryStyles.keys.elementAt(secondaryIndex)
 
             prefs.themePrimary = primaryStyle
             prefs.themeSecondary = secondaryStyle
-            context.sendBroadcast(Intent(NLService.iTHEME_CHANGED_S), NLService.BROADCAST_PERMISSION)
+            context.sendBroadcast(
+                Intent(NLService.iTHEME_CHANGED_S),
+                NLService.BROADCAST_PERMISSION
+            )
         } else {
             primaryStyle = prefs.themePrimary
             secondaryStyle = prefs.themeSecondary
         }
 
-        context.theme.applyStyle(ColorPatchMap.primaryStyles
-            .getOrDefaultKey(primaryStyle, primaryDefault), true)
-        context.theme.applyStyle(ColorPatchMap.secondaryStyles
-            .getOrDefaultKey(secondaryStyle, secondaryDefault), true)
+        context.theme.applyStyle(
+            ColorPatchMap.primaryStyles
+                .getOrDefaultKey(primaryStyle, primaryDefault), true
+        )
+        context.theme.applyStyle(
+            ColorPatchMap.secondaryStyles
+                .getOrDefaultKey(secondaryStyle, secondaryDefault), true
+        )
 
         if (prefs.themeTintBackground || !proStatus)
-            context.theme.applyStyle(ColorPatchMap.backgroundStyles
-                .getOrDefaultKey(primaryStyle, primaryDefault), true)
+            context.theme.applyStyle(
+                ColorPatchMap.backgroundStyles
+                    .getOrDefaultKey(primaryStyle, primaryDefault), true
+            )
         else
             context.theme.applyStyle(ColorPatchMap.backgroundStyles[backgroundBlack]!!, true)
     }
@@ -66,8 +75,10 @@ object ColorPatchUtils {
             prefs.themePrimary
         else
             primaryDefault
-        return context.getStyledColor(ColorPatchMap.primaryStyles
-            .getOrDefaultKey(primaryStyle, primaryDefault), R.attr.colorPrimary)
+        return context.getStyledColor(
+            ColorPatchMap.primaryStyles
+                .getOrDefaultKey(primaryStyle, primaryDefault), R.attr.colorPrimary
+        )
     }
 
     fun Context.getStyledColor(@StyleRes style: Int, @AttrRes attr: Int): Int {

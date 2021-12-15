@@ -40,7 +40,10 @@ import java.lang.ref.WeakReference
  * Created by arn on 10/07/2017.
  */
 
-class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private val viewModel: FriendsVM) : RecyclerView.Adapter<FriendsAdapter.VHUser>(), LoadMoreGetter {
+class FriendsAdapter(
+    private val fragmentBinding: ContentFriendsBinding,
+    private val viewModel: FriendsVM
+) : RecyclerView.Adapter<FriendsAdapter.VHUser>(), LoadMoreGetter {
 
     lateinit var itemClickListener: ItemClickListener
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
@@ -53,6 +56,7 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
         )
             .build()
     }
+
     init {
         setHasStableIds(true)
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -98,7 +102,7 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
     fun populateFriendsRecent(res: PaginatedResult<Track>, username: String) {
         if (!res.isEmpty && viewModel.friends.isNotEmpty()) {
             for (pos in 0..viewModel.friends.size) {
-                if (pos < viewModel.friends.size && viewModel.friends[pos].name == username){
+                if (pos < viewModel.friends.size && viewModel.friends[pos].name == username) {
                     val oldRecent = viewModel.friends[pos].recentTrack
                     val newRecent = res.pageResults.first()
                     if (oldRecent?.playedWhen != newRecent?.playedWhen || oldRecent?.name != newRecent?.name) {
@@ -111,7 +115,8 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
             }
         }
         if (!MainActivity.isTV && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.friends.size > 1 &&
-                !viewModel.friends.any { it.recentTrack == null }) {
+            !viewModel.friends.any { it.recentTrack == null }
+        ) {
             val sortButton = fragmentBinding.friendsSort
             sortButton.show()
             sortButton.setOnClickListener {
@@ -129,10 +134,11 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
         }
     }
 
-    fun loadFriendsRecents(pos:Int) {
+    fun loadFriendsRecents(pos: Int) {
         val glm = fragmentBinding.friendsGrid.layoutManager as GridLayoutManager? ?: return
         if (pos < viewModel.friends.size && (pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
-                (pos - glm.spanCount) <= glm.findLastVisibleItemPosition())
+            (pos - glm.spanCount) <= glm.findLastVisibleItemPosition()
+        )
             viewModel.loadFriendsRecents(viewModel.friends[pos].name)
     }
 
@@ -147,7 +153,10 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
         return viewModel.friends[position].name.hashCode().toLong()
     }
 
-    inner class VHUser(private val binding: GridItemFriendBinding, private val clickable: Boolean = true) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+    inner class VHUser(
+        private val binding: GridItemFriendBinding,
+        private val clickable: Boolean = true
+    ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         init {
             if (clickable) {
                 itemView.setOnClickListener(this)
@@ -163,7 +172,7 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
 
         fun setItemData(user: User) {
             binding.friendsName.text = if (user.realname == null || user.realname == "")
-                    user.name
+                user.name
             else
                 user.realname
 
@@ -176,12 +185,14 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
 
                 if (track.isNowPlaying) {
                     if (binding.friendsMusicIcon.drawable == null ||
-                            binding.friendsMusicIcon.drawable is VectorDrawable || binding.friendsMusicIcon.drawable is VectorDrawableCompat) {
+                        binding.friendsMusicIcon.drawable is VectorDrawable || binding.friendsMusicIcon.drawable is VectorDrawableCompat
+                    ) {
                         Stuff.nowPlayingAnim(binding.friendsMusicIcon, true)
                     }
                 } else {
                     if (binding.friendsMusicIcon.drawable == null ||
-                            binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat)
+                        binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat
+                    )
                         binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
                 }
 
@@ -193,7 +204,8 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
                 binding.friendsTrackFrame.setOnClickListener(null)
 
                 if (binding.friendsMusicIcon.drawable == null ||
-                        binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat)
+                    binding.friendsMusicIcon.drawable is AnimatedVectorDrawable || binding.friendsMusicIcon.drawable is AnimatedVectorDrawableCompat
+                )
                     binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
 
                 if (!handler.hasMessages(user.name.hashCode()) && bindingAdapterPosition > -1) {
@@ -251,7 +263,8 @@ class FriendsAdapter(private val fragmentBinding: ContentFriendsBinding, private
         }
     }
 
-    class DelayHandler(private val friendsAdapterWr: WeakReference<FriendsAdapter>) : Handler(Looper.getMainLooper()) {
+    class DelayHandler(private val friendsAdapterWr: WeakReference<FriendsAdapter>) :
+        Handler(Looper.getMainLooper()) {
         override fun handleMessage(m: Message) {
             val pos = m.arg1
             friendsAdapterWr.get()?.loadFriendsRecents(pos)

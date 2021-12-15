@@ -22,7 +22,10 @@ class BlockedMetadataAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHBlockedTag {
         val inflater = LayoutInflater.from(parent.context)
-        return VHBlockedTag(ListItemSimpleEditBinding.inflate(inflater, parent, false), itemClickListener)
+        return VHBlockedTag(
+            ListItemSimpleEditBinding.inflate(inflater, parent, false),
+            itemClickListener
+        )
     }
 
     override fun onBindViewHolder(holder: VHBlockedTag, position: Int) {
@@ -35,7 +38,10 @@ class BlockedMetadataAdapter(
 
     override fun getItemId(position: Int) = viewModel.blockedMetadata[position]._id.toLong()
 
-    class VHBlockedTag(private val binding: ListItemSimpleEditBinding, private val itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(binding.root) {
+    class VHBlockedTag(
+        private val binding: ListItemSimpleEditBinding,
+        private val itemClickListener: ItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
             binding.editsImg.setImageResource(R.drawable.vd_ban)
@@ -43,7 +49,8 @@ class BlockedMetadataAdapter(
 
         fun setItemData(blockedMetadata: BlockedMetadata) {
             binding.editsTrack.text = blockedMetadata.track
-            binding.editsArtist.text = blockedMetadata.artist.ifEmpty { blockedMetadata.albumArtist }
+            binding.editsArtist.text =
+                blockedMetadata.artist.ifEmpty { blockedMetadata.albumArtist }
 
             if (blockedMetadata.album.isNotEmpty()) {
                 binding.editsAlbum.visibility = View.VISIBLE

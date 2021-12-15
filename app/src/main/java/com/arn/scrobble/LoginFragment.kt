@@ -12,17 +12,17 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentLoginBinding
-import kotlinx.coroutines.*
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.google.android.material.transition.MaterialSharedAxis
+import kotlinx.coroutines.*
 import org.json.JSONObject
 
 
 /**
  * Created by arn on 06/09/2017.
  */
-open class LoginFragment: DialogFragment() {
+open class LoginFragment : DialogFragment() {
     protected val prefs by lazy { MainPrefs(context!!) }
     open val checksLogin = true
     protected var isStandalone = false
@@ -36,7 +36,11 @@ open class LoginFragment: DialogFragment() {
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         showsDialog = false
         _binding = ContentLoginBinding.inflate(inflater, container, false)
         val args = arguments
@@ -59,7 +63,8 @@ open class LoginFragment: DialogFragment() {
             binding.loginTextfieldLast.hint = it
             binding.loginTextfieldLast.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
-                        (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)) {
+                    (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)
+                ) {
                     binding.loginSubmit.callOnClick()
                     true
                 } else
@@ -165,7 +170,7 @@ open class LoginFragment: DialogFragment() {
                             t1
                         val username = (ListenBrainz().setToken(tlast)
                             ?.setApiRoot(url) as? ListenBrainz)
-                                ?.username()
+                            ?.username()
 
                         if (username != null) {
                             prefs.customListenbrainzRoot = url
@@ -180,7 +185,7 @@ open class LoginFragment: DialogFragment() {
                 }
             }
             getString(R.string.add_acr_key) -> {
-                if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()){
+                if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()) {
                     val i = IdentifyProtocolV1()
                     try {
                         var url = t1

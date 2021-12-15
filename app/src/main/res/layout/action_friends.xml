@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/friends_links"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -12,18 +11,18 @@
         android:id="@+id/friends_profile"
         style="@style/friendsLinks"
         android:drawableTop="@drawable/vd_open_in_new"
-        android:text="@string/profile"/>
+        android:text="@string/profile" />
 
     <Button
         android:id="@+id/friends_scrobbles"
         style="@style/friendsLinks"
         android:drawableTop="@drawable/vd_note"
-        android:text="@string/scrobbles"/>
+        android:text="@string/scrobbles" />
 
     <Button
         android:id="@+id/friends_charts"
         style="@style/friendsLinks"
         android:drawableTop="@drawable/vd_charts"
-        android:text="@string/charts"/>
+        android:text="@string/charts" />
 
 </LinearLayout>

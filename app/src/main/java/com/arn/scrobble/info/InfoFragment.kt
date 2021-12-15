@@ -21,11 +21,15 @@ import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
 
 
-class InfoFragment: BottomSheetDialogFragment() {
+class InfoFragment : BottomSheetDialogFragment() {
 
     private val viewModel by lazy { VMFactory.getVM(this, InfoVM::class.java) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val binding = ContentInfoBinding.inflate(inflater, container, false)
 
         val artist = arguments!!.getString(NLService.B_ARTIST)!!
@@ -44,7 +48,8 @@ class InfoFragment: BottomSheetDialogFragment() {
         // this puts divider after the last item
 
         val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
-        val colorDrawable = ColorDrawable(MaterialColors.getColor(context!!, R.attr.colorOutline, null))
+        val colorDrawable =
+            ColorDrawable(MaterialColors.getColor(context!!, R.attr.colorOutline, null))
         val inset = resources.getDimensionPixelSize(R.dimen.divider_inset)
         val insetDrawable = InsetDrawable(colorDrawable, inset, 0, inset, 0)
         itemDecor.setDrawable(insetDrawable)

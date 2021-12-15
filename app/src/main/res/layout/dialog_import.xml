@@ -50,7 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:dividerInsetEnd="24dp"
-        app:dividerInsetStart="24dp"/>
+        app:dividerInsetStart="24dp" />
 
     <CheckBox
         android:id="@+id/import_settings"

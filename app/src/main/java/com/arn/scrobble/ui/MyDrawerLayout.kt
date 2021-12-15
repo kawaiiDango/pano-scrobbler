@@ -6,8 +6,8 @@ import android.view.MotionEvent
 import androidx.drawerlayout.widget.DrawerLayout
 
 class MyDrawerLayout : DrawerLayout {
-    constructor(context: Context): super(context)
-    constructor(context: Context, attrs: AttributeSet): super(context, attrs)
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     private var m_disallowIntercept = false
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean { // as the drawer intercepts all touches when it is opened

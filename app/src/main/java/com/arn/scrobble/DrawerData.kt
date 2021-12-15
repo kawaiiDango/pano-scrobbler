@@ -3,7 +3,7 @@ package com.arn.scrobble
 import android.content.Context
 import com.arn.scrobble.pref.MainPrefs
 
-class DrawerData (
+class DrawerData(
     val scrobblesToday: Int,
     val scrobblesTotal: Int,
     val registeredDate: Long,

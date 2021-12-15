@@ -22,7 +22,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 
 
-class PendingScrService: Service() {
+class PendingScrService : Service() {
 
     private lateinit var nb: NotificationCompat.Builder
     private lateinit var nm: NotificationManager
@@ -40,14 +40,16 @@ class PendingScrService: Service() {
             js.cancel(PendingScrJob.JOB_ID)
             doTask()
         } else
-            Handler(Looper.getMainLooper()).postDelayed( { stop() }, 200)
+            Handler(Looper.getMainLooper()).postDelayed({ stop() }, 200)
         return START_NOT_STICKY
     }
 
     private fun showNotification() {
         val intent = Intent(applicationContext, MainActivity::class.java)
-        val launchIntent = PendingIntent.getActivity(applicationContext, 8, intent,
-            Stuff.updateCurrentOrImmutable)
+        val launchIntent = PendingIntent.getActivity(
+            applicationContext, 8, intent,
+            Stuff.updateCurrentOrImmutable
+        )
         nb = NotificationCompat.Builder(applicationContext, MainPrefs.CHANNEL_NOTI_PENDING)
             .setSmallIcon(R.drawable.vd_noti)
             .setPriority(Notification.PRIORITY_MIN)

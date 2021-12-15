@@ -12,21 +12,23 @@ import androidx.media.app.NotificationCompat
 /**
  * Created by arn on 29/09/2017.
  */
-class MediaStyleMod: NotificationCompat.MediaStyle() {
+class MediaStyleMod : NotificationCompat.MediaStyle() {
     @SuppressLint("RestrictedApi")
     override fun makeContentView(builder: NotificationBuilderWithBuilderAccessor?): RemoteViews? {
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             //Accessing @hide methods is forbidden only for P+
 
-            val generateContentView = NotificationCompat.MediaStyle::class.java.getDeclaredMethod("generateContentView")
+            val generateContentView =
+                NotificationCompat.MediaStyle::class.java.getDeclaredMethod("generateContentView")
             generateContentView.isAccessible = true
             val rv = generateContentView.invoke(this) as RemoteViews
 //            val rv = generateContentView()
             val res = Resources.getSystem()
             val attrs = arrayOf(android.R.attr.textColor).toIntArray()
 
-            var sysStyle = res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
+            var sysStyle =
+                res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
             var ta = mBuilder.mContext.obtainStyledAttributes(sysStyle, attrs)
             val titleColorHack = ta.getColor(0, Color.GRAY)
             ta.recycle()

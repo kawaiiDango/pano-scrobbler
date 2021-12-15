@@ -28,7 +28,7 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
     override fun setExpanded(expanded: Boolean, animate: Boolean) {
         //don't call if state is gonna change anyways
         val behaviour = (layoutParams as CoordinatorLayout.LayoutParams)
-                .behavior as DisableableAppBarLayoutBehavior
+            .behavior as DisableableAppBarLayoutBehavior
         behaviour.isEnabled = expanded
         if ((!expanded && isCollapsed) || (expanded && isExpanded))
             onStateChangeListener?.invoke(state)

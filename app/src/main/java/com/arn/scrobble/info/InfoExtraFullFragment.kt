@@ -2,7 +2,9 @@ package com.arn.scrobble.info
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -20,8 +22,10 @@ import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.EntryItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.transition.MaterialSharedAxis
-import de.umass.lastfm.*
+import de.umass.lastfm.Album
+import de.umass.lastfm.Artist
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.Track
 import kotlin.math.roundToInt
 
 

@@ -14,7 +14,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 
 class BillingTroubleshootFragment : Fragment() {
 
-    private var _binding : ContentBillingToubleshootBinding? = null
+    private var _binding: ContentBillingToubleshootBinding? = null
     private val binding
         get() = _binding!!
 
@@ -26,9 +26,9 @@ class BillingTroubleshootFragment : Fragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = ContentBillingToubleshootBinding.inflate(inflater, container, false)
         return binding.root
@@ -39,6 +39,7 @@ class BillingTroubleshootFragment : Fragment() {
         Stuff.setTitle(activity!!, getString(R.string.billing_troubleshoot_title))
 
     }
+
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()

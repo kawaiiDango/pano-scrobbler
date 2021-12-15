@@ -4,8 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include android:id="@+id/chips_charts_period" layout="@layout/chips_charts_period" />
-    <include android:id="@+id/frame_charts_list" layout="@layout/frame_charts_list"
+    <include
+        android:id="@+id/chips_charts_period"
+        layout="@layout/chips_charts_period" />
+
+    <include
+        android:id="@+id/frame_charts_list"
+        layout="@layout/frame_charts_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

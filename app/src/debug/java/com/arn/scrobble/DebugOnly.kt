@@ -9,22 +9,26 @@ object DebugOnly {
 
     fun strictMode() {
 //        if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
 //                     .detectDiskReads()
 //                    .detectDiskWrites()
-                    .detectNetwork()   // or .detectAll() for all detectable problems
-                    .detectCustomSlowCalls()
-                    .penaltyLog()
-                    .penaltyFlashScreen()
-                    .build())
-            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
-                    .detectActivityLeaks()
-                    .detectFileUriExposure()
-                     .detectLeakedClosableObjects()
-                    .detectLeakedRegistrationObjects()
-                    .detectLeakedSqlLiteObjects()
-                    .penaltyLog()
-                    .build())
+                .detectNetwork()   // or .detectAll() for all detectable problems
+                .detectCustomSlowCalls()
+                .penaltyLog()
+                .penaltyFlashScreen()
+                .build()
+        )
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectActivityLeaks()
+                .detectFileUriExposure()
+                .detectLeakedClosableObjects()
+                .detectLeakedRegistrationObjects()
+                .detectLeakedSqlLiteObjects()
+                .penaltyLog()
+                .build()
+        )
 //        }
     }
 }

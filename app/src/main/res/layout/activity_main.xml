@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.arn.scrobble.ui.MyDrawerLayout
-    android:id="@+id/drawer_layout"
+<com.arn.scrobble.ui.MyDrawerLayout android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,7 +14,7 @@
         android:id="@+id/coordinator_main"
         layout="@layout/coordinator_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -26,6 +25,6 @@
         android:maxWidth="280dp"
         app:itemIconTint="?colorPrimary"
         app:itemTextColor="@drawable/selector_nav_text"
-        app:menu="@menu/nav_menu"/>
+        app:menu="@menu/nav_menu" />
 
 </com.arn.scrobble.ui.MyDrawerLayout>

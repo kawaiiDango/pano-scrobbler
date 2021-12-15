@@ -176,7 +176,7 @@ public class ShadowDrawerArrowDrawable extends DrawerArrowDrawable {
 
         //paint the fg
         mPaint.setColor(color);
-        mPath.offset(shadowOffset,shadowOffset);
+        mPath.offset(shadowOffset, shadowOffset);
         canvas.drawPath(mPath, mPaint);
 
 
@@ -207,7 +207,7 @@ public class ShadowDrawerArrowDrawable extends DrawerArrowDrawable {
 
     public void setColors(int fg, int bg) {
         int shadowColor = bg & 0x00ffffff | 0xDC000000;
-        if (shadowColor != this.shadowColor || mPaint.getColor() != fg){
+        if (shadowColor != this.shadowColor || mPaint.getColor() != fg) {
             this.shadowColor = shadowColor;
             mPaint.setColor(fg);
             invalidateSelf();

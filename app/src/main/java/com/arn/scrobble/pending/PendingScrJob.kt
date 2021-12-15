@@ -7,13 +7,15 @@ import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
 import androidx.annotation.StringRes
-import com.arn.scrobble.*
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.Scrobblable
-import de.umass.lastfm.*
+import de.umass.lastfm.Result
+import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import kotlinx.coroutines.*
@@ -47,9 +49,9 @@ class PendingScrJob : JobService() {
     class OfflineScrobbleTask(
         private val context: Context,
         scope: CoroutineScope,
-        private val progressCb: ((str: String)->Unit)? = null,
-        private val doneCb: ((done: Boolean)->Unit)? = null,
-        ) {
+        private val progressCb: ((str: String) -> Unit)? = null,
+        private val doneCb: ((done: Boolean) -> Unit)? = null,
+    ) {
         private val dao by lazy { PanoDb.getDb(context).getScrobblesDao() }
         private val lovesDao by lazy { PanoDb.getDb(context).getLovesDao() }
         private val prefs by lazy { MainPrefs(context) }
@@ -70,7 +72,7 @@ class PendingScrJob : JobService() {
                 scrobbles = scrobbles.filter { it.album == "" }
             scrobbles.forEach {
                 try {
-                progressCb?.invoke(context.getString(R.string.pending_n_remaining, count--))
+                    progressCb?.invoke(context.getString(R.string.pending_n_remaining, count--))
                     val track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
                     if (track != null) {
                         if (it.album == "" && !track.album.isNullOrEmpty()) {
@@ -78,9 +80,10 @@ class PendingScrJob : JobService() {
                             if (!track.albumArtist.isNullOrEmpty())
                                 it.albumArtist = track.albumArtist
                         } else if (!track.albumArtist.isNullOrEmpty() &&
-                                prefs.fetchAlbumArtist &&
-                                it.album.equals(track.album, ignoreCase = true) &&
-                                (it.albumArtist == "" || it.artist == it.albumArtist))
+                            prefs.fetchAlbumArtist &&
+                            it.album.equals(track.album, ignoreCase = true) &&
+                            (it.albumArtist == "" || it.artist == it.albumArtist)
+                        )
                             it.albumArtist = track.albumArtist
                         it.autoCorrected = 1
                         dao.update(it)
@@ -114,7 +117,7 @@ class PendingScrJob : JobService() {
                 scrobbleData.track = it.track
                 scrobbleData.albumArtist = it.albumArtist
                 scrobbleData.timestamp = (it.timestamp / 1000).toInt() // in secs
-                if(it.duration > 10*1000)
+                if (it.duration > 10 * 1000)
                     scrobbleData.duration = (it.duration / 1000).toInt() // in secs
                 scrobbleDataToEntry[scrobbleData] = it
             }
@@ -137,8 +140,9 @@ class PendingScrJob : JobService() {
                         Stuff.SERVICE_BIT_POS.forEach { (id, pos) ->
                             val enabled = state and (1 shl pos) != 0
                             if (enabled && (!scrobbleResults.containsKey(id) /* logged out */ ||
-                                            scrobbleResults[id]!!.errorCode == 7 ||
-                                            scrobbleResults[id]!!.isSuccessful))
+                                        scrobbleResults[id]!!.errorCode == 7 ||
+                                        scrobbleResults[id]!!.isSuccessful)
+                            )
                                 state = state and (1 shl pos).inv()
                         }
 
@@ -155,8 +159,10 @@ class PendingScrJob : JobService() {
 
                     scrobbleResults.forEach { (id, result) ->
                         if (!result.isSuccessful) {
-                            Stuff.log("OfflineScrobble: err for " + context.getString(id) +
-                                    ": " + result)
+                            Stuff.log(
+                                "OfflineScrobble: err for " + context.getString(id) +
+                                        ": " + result
+                            )
                             done = false
                         }
                     }
@@ -192,7 +198,10 @@ class PendingScrJob : JobService() {
                     scrobblablesMap.forEach { (stringId, scrobblable) ->
                         val shouldSubmit by lazy { filterOneForService(stringId, entry) }
                         if (scrobblable != null && shouldSubmit) {
-                            results[stringId] = scrobblable.loveOrUnlove(Track(entry.track, null, entry.artist), entry.shouldLove)
+                            results[stringId] = scrobblable.loveOrUnlove(
+                                Track(entry.track, null, entry.artist),
+                                entry.shouldLove
+                            )
                         }
                     }
 
@@ -200,11 +209,11 @@ class PendingScrJob : JobService() {
                     Stuff.SERVICE_BIT_POS.forEach { (id, pos) ->
                         val enabled = state and (1 shl pos) != 0
                         if (enabled && (!results.containsKey(id) /* logged out or is lbz */ ||
-                                        results[id]!!.errorCode == 6 ||
-                                        results[id]!!.errorCode == 7 ||
-                                        results[id]!!.isSuccessful).also {
-                                            Stuff.log("love err: " + results[id])
-                                        }
+                                    results[id]!!.errorCode == 6 ||
+                                    results[id]!!.errorCode == 7 ||
+                                    results[id]!!.isSuccessful).also {
+                                Stuff.log("love err: " + results[id])
+                            }
                         )
                             state = state and (1 shl pos).inv()
                     }
@@ -228,7 +237,10 @@ class PendingScrJob : JobService() {
             return (pl.state and (1 shl Stuff.SERVICE_BIT_POS[id]!!)) != 0
         }
 
-        private fun filterForService(@StringRes id: Int, scrobbleDataToEntry: MutableMap<ScrobbleData, PendingScrobble>): MutableList<ScrobbleData> {
+        private fun filterForService(
+            @StringRes id: Int,
+            scrobbleDataToEntry: MutableMap<ScrobbleData, PendingScrobble>
+        ): MutableList<ScrobbleData> {
             val filtered = mutableListOf<ScrobbleData>()
             scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->
                 if (pendingScrobble.state and (1 shl Stuff.SERVICE_BIT_POS[id]!!) != 0)
@@ -260,10 +272,10 @@ class PendingScrJob : JobService() {
             }
 
             val job = JobInfo.Builder(JOB_ID, ComponentName(context, PendingScrJob::class.java))
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setMinimumLatency(Stuff.OFFLINE_SCROBBLE_JOB_DELAY)
-                    .setPersisted(true)
-                    .build()
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setMinimumLatency(Stuff.OFFLINE_SCROBBLE_JOB_DELAY)
+                .setPersisted(true)
+                .build()
             js.schedule(job)
             Stuff.log("scheduling PendingScrJob")
         }

@@ -170,7 +170,10 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
                 binding.chartInfoScrobbles.visibility = View.VISIBLE
             }
 
-            val errorDrawable = itemView.context.getTintedDrwable(R.drawable.vd_wave_simple_filled, entry.name.hashCode())
+            val errorDrawable = itemView.context.getTintedDrwable(
+                R.drawable.vd_wave_simple_filled,
+                entry.name.hashCode()
+            )
 
             if (entry is Album && !requestAlbumInfo) {
                 binding.chartImg.load(imgUrl ?: "") {

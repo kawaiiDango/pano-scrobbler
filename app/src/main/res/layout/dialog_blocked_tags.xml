@@ -5,14 +5,23 @@
     android:layout_height="match_parent"
     android:paddingTop="24dp"
     android:paddingHorizontal="8dp">
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <include layout="@layout/text_input_edit" android:id="@+id/block_track" />
-        <include layout="@layout/text_input_edit" android:id="@+id/block_album" />
-        <include layout="@layout/text_input_edit" android:id="@+id/block_artist" />
+        <include
+            layout="@layout/text_input_edit"
+            android:id="@+id/block_track" />
+
+        <include
+            layout="@layout/text_input_edit"
+            android:id="@+id/block_album" />
+
+        <include
+            layout="@layout/text_input_edit"
+            android:id="@+id/block_artist" />
 
         <CheckBox
             android:id="@+id/use_channel"
@@ -23,7 +32,9 @@
             android:layout_marginHorizontal="16dp"
             tools:visibility="visible" />
 
-        <include layout="@layout/text_input_edit" android:id="@+id/block_album_artist" />
+        <include
+            layout="@layout/text_input_edit"
+            android:id="@+id/block_album_artist" />
 
         <TextView
             android:layout_width="match_parent"

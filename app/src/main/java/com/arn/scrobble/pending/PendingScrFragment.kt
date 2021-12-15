@@ -10,20 +10,24 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.recents.TracksVM
 import com.arn.scrobble.VMFactory
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.PopupMenuUtils
+import com.arn.scrobble.recents.TracksVM
 import com.arn.scrobble.ui.ItemClickListener
 
 /**
  * Created by arn on 21/09/2017.
  */
-class PendingScrFragment: Fragment(), ItemClickListener {
+class PendingScrFragment : Fragment(), ItemClickListener {
     private lateinit var adapter: PendingScrAdapter
     private lateinit var vm: TracksVM
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val view = inflater.inflate(R.layout.content_simple_list, container, false) as RecyclerView
 
         view.layoutManager = LinearLayoutManager(context!!)
@@ -34,11 +38,11 @@ class PendingScrFragment: Fragment(), ItemClickListener {
 
         vm = VMFactory.getVM(this, TracksVM::class.java)
         vm.loadPending(1000, false)
-                .observe(viewLifecycleOwner) {
-                    it ?: return@observe
-                    adapter.clear()
-                    adapter.addAll(it)
-                }
+            .observe(viewLifecycleOwner) {
+                it ?: return@observe
+                adapter.clear()
+                adapter.addAll(it)
+            }
         return view
     }
 
@@ -53,12 +57,12 @@ class PendingScrFragment: Fragment(), ItemClickListener {
             PopupMenuUtils.openPendingPopupMenu((view.parent as ViewGroup).findViewById(R.id.date_frame),
                 viewLifecycleOwner.lifecycleScope,
                 p,
-                    {
+                {
                     adapter.remove(position)
-                    },
-                    {
-                        vm.loadPending(1000, false)
-                    }
+                },
+                {
+                    vm.loadPending(1000, false)
+                }
             )
     }
 }

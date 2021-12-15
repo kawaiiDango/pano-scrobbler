@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
  */
 
 @Entity(tableName = "PendingScrobbles")
-data class PendingScrobble (
+data class PendingScrobble(
     @PrimaryKey(autoGenerate = true)
     var _id: Int = 0,
 

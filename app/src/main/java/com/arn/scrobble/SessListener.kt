@@ -11,21 +11,22 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
 import com.arn.scrobble.pref.MainPrefs
-import java.util.Locale
+import java.util.*
 
 /**
  * Created by arn on 04/07/2017.
  */
 
-class SessListener (
+class SessListener(
     private val prefs: MainPrefs,
     private val handler: NLService.ScrobbleHandler,
     private val audioManager: AudioManager,
 ) : OnActiveSessionsChangedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val controllersMap = mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
-    private var controllers : List<MediaController>? = null
+    private val controllersMap =
+        mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
+    private var controllers: List<MediaController>? = null
 
     private val blockedPackages = mutableSetOf<String>()
     private val allowedPackages = mutableSetOf<String>()
@@ -62,13 +63,15 @@ class SessListener (
                                 hasOtherTokensForPackage = true
                         }
                     }
-                    val hasMultipleSessions = numControllersForPackage > 1 || hasOtherTokensForPackage
+                    val hasMultipleSessions =
+                        numControllersForPackage > 1 || hasOtherTokensForPackage
                     var hashesAndTimes = packageMap[controller.packageName]
                     if (hashesAndTimes == null || hasMultipleSessions) {
                         hashesAndTimes = HashesAndTimes()
                         packageMap[controller.packageName] = hashesAndTimes
                     }
-                    val cb = MyCallback(controller.packageName, hashesAndTimes, controller.sessionToken)
+                    val cb =
+                        MyCallback(controller.packageName, hashesAndTimes, controller.sessionToken)
                     controller.registerCallback(cb)
                     //Medoly needs this
                     controller.playbackState.let { cb.onPlaybackStateChanged(it) }
@@ -81,8 +84,12 @@ class SessListener (
         // Now remove old sessions that are not longer active.
 //        removeSessions(tokens)
     }
+
     @Synchronized
-    fun removeSessions(tokensToKeep: Set<MediaSession.Token>, packageNamesToKeep: Set<String>? = null) {
+    fun removeSessions(
+        tokensToKeep: Set<MediaSession.Token>,
+        packageNamesToKeep: Set<String>? = null
+    ) {
         val it = controllersMap.iterator()
         while (it.hasNext()) {
             val (token, pair) = it.next()
@@ -102,9 +109,11 @@ class SessListener (
         prefs.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    inner class MyCallback(private val packageName: String,
-                     private val hashesAndTimes: HashesAndTimes,
-                     private val token: MediaSession.Token) : Callback() {
+    inner class MyCallback(
+        private val packageName: String,
+        private val hashesAndTimes: HashesAndTimes,
+        private val token: MediaSession.Token
+    ) : Callback() {
 
         private var lastState = -1
         private var currHash = 0
@@ -126,15 +135,15 @@ class SessListener (
             handler.removeMessages(hashesAndTimes.lastScrobbleHash)
 
             handler.nowPlaying(
-                    artist,
-                    album,
-                    title,
-                    albumArtist,
-                    hashesAndTimes.timePlayed,
-                    duration,
-                    currHash,
-                    packageName
-                )
+                artist,
+                album,
+                title,
+                albumArtist,
+                hashesAndTimes.timePlayed,
+                duration,
+                currHash,
+                packageName
+            )
 
             hashesAndTimes.lastScrobbleHash = currHash
             hashesAndTimes.lastScrobbledHash = 0
@@ -158,9 +167,10 @@ class SessListener (
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             metadata ?: return
 
-            var albumArtist = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
-            var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim() ?:
-                    albumArtist // do not scrobble empty artists, ads will get scrobbled
+            var albumArtist =
+                metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
+            var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim()
+                ?: albumArtist // do not scrobble empty artists, ads will get scrobbled
             var album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
             var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
 //            val genre = metadata?.getString(MediaMetadata.METADATA_KEY_GENRE)?.trim() ?: ""
@@ -184,7 +194,7 @@ class SessListener (
                 }
                 Stuff.PACKAGE_SONOS,
                 Stuff.PACKAGE_SONOS2 -> {
-                    metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)?.let{
+                    metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)?.let {
                         artist = it
                         albumArtist = ""
                     }
@@ -222,8 +232,10 @@ class SessListener (
                     && albumArtist == this.albumArtist
             val onlyDurationUpdated = sameAsOld && duration != this.duration
 
-            Stuff.log("onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
-                    "duration=$duration lastState=$lastState, package=$packageName cb=${this.hashCode()} sl=${this@SessListener.hashCode()}")
+            Stuff.log(
+                "onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
+                        "duration=$duration lastState=$lastState, package=$packageName cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
+            )
             if (!sameAsOld || onlyDurationUpdated) {
                 this.artist = artist
                 this.album = album
@@ -243,11 +255,12 @@ class SessListener (
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
                 if (artist != "" && title != "" &&
-                        (!handler.hasMessages(currHash) || !onlyDurationUpdated) &&
-                        lastState == PlaybackState.STATE_PLAYING) {
-                            hashesAndTimes.timePlayed = 0
-                            scrobble()
-                        }
+                    (!handler.hasMessages(currHash) || !onlyDurationUpdated) &&
+                    lastState == PlaybackState.STATE_PLAYING
+                ) {
+                    hashesAndTimes.timePlayed = 0
+                    scrobble()
+                }
             }
         }
 
@@ -264,10 +277,10 @@ class SessListener (
 
             if (lastState == state /* bandcamp does this */ &&
                 playbackState.errorMessage != "synthetic" &&
-                    !(state == PlaybackState.STATE_PLAYING &&
+                !(state == PlaybackState.STATE_PLAYING &&
                         isPossiblyAtStart &&
                         packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)
-                    )
+                        )
             )
                 return
 
@@ -283,17 +296,19 @@ class SessListener (
                     if (title != "" && artist != "") {
                         // ignore state=playing, pos=lowValue spam
                         if (lastState == state && hashesAndTimes.lastScrobbleHash == currHash &&
-                            System.currentTimeMillis() - hashesAndTimes.lastScrobbleTime < Stuff.START_POS_LIMIT * 2)
-                                return
+                            System.currentTimeMillis() - hashesAndTimes.lastScrobbleTime < Stuff.START_POS_LIMIT * 2
+                        )
+                            return
 
                         if (currHash != hashesAndTimes.lastScrobbleHash || (pos >= 0L && isPossiblyAtStart))
                             hashesAndTimes.timePlayed = 0
 
                         if (!handler.hasMessages(currHash) &&
                             ((pos >= 0L && isPossiblyAtStart) ||
-                            currHash != hashesAndTimes.lastScrobbledHash)) {
-                                if (playbackState.errorMessage == "synthetic")
-                                    Stuff.log("synthetic")
+                                    currHash != hashesAndTimes.lastScrobbledHash)
+                        ) {
+                            if (playbackState.errorMessage == "synthetic")
+                                Stuff.log("synthetic")
                             scrobble()
                         }
                     }
@@ -347,11 +362,11 @@ class SessListener (
 
         return prefs.scrobblerEnabled && loggedIn &&
                 (packageName in allowedPackages ||
-                (prefs.autoDetectApps && packageName !in blockedPackages))
+                        (prefs.autoDetectApps && packageName !in blockedPackages))
     }
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {
-        when (key){
+        when (key) {
             MainPrefs.PREF_ALLOWED_PACKAGES -> synchronized(allowedPackages) {
                 allowedPackages.clear()
                 allowedPackages.addAll(pref.getStringSet(key, setOf())!!)
@@ -362,9 +377,10 @@ class SessListener (
             }
         }
         if (key == MainPrefs.PREF_ALLOWED_PACKAGES ||
-                key == MainPrefs.PREF_BLOCKED_PACKAGES ||
-                key == MainPrefs.PREF_AUTO_DETECT ||
-                key == MainPrefs.PREF_MASTER) {
+            key == MainPrefs.PREF_BLOCKED_PACKAGES ||
+            key == MainPrefs.PREF_AUTO_DETECT ||
+            key == MainPrefs.PREF_MASTER
+        ) {
 
             onActiveSessionsChanged(controllers)
             val pkgsToKeep = controllersMap.values

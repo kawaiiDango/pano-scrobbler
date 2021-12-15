@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:paddingTop="8dp"
-              android:focusable="false">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    android:focusable="false">
 
     <TextView
         android:id="@+id/friends_name"
@@ -26,7 +26,8 @@
         android:textAppearance="?textAppearanceBodySmall"
         android:visibility="gone"
         tools:visibility="visible"
-        tools:text="cunt ry"/>
+        tools:text="cunt ry" />
+
     <TextView
         android:id="@+id/friends_scrobbles_since"
         android:layout_width="wrap_content"
@@ -36,7 +37,7 @@
         android:textAppearance="?textAppearanceBodySmall"
         android:visibility="gone"
         tools:visibility="visible"
-        tools:text="10 scrobbles since 2010"/>
+        tools:text="10 scrobbles since 2010" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/friends_pic"
@@ -48,7 +49,7 @@
         android:contentDescription="@string/profile_pic"
         android:elevation="20dp"
         app:shapeAppearanceOverlay="@style/circleImageView"
-        tools:src="@drawable/vd_placeholder_user"/>
+        tools:src="@drawable/vd_placeholder_user" />
 
     <FrameLayout
         android:focusable="true"
@@ -90,7 +91,7 @@
                 android:paddingEnd="4dp"
                 android:textAppearance="?textAppearanceBodyMedium"
                 android:textSize="12sp"
-                tools:text="subtit"/>
+                tools:text="subtit" />
 
             <TextView
                 android:id="@+id/friends_date"
@@ -101,7 +102,7 @@
                 android:gravity="bottom"
                 android:singleLine="true"
                 android:textAppearance="?textAppearanceBodySmall"
-                tools:text="date"/>
+                tools:text="date" />
         </LinearLayout>
 
         <ImageView
@@ -111,7 +112,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:contentDescription="@string/search"
-            tools:srcCompat="@drawable/vd_music_circle"/>
+            tools:srcCompat="@drawable/vd_music_circle" />
 
     </FrameLayout>
 </LinearLayout>

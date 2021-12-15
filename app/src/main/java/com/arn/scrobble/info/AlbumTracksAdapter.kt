@@ -10,7 +10,8 @@ import de.umass.lastfm.Track
 import java.text.NumberFormat
 
 
-class AlbumTracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<AlbumTracksAdapter.VHAlbumTrack>() {
+class AlbumTracksAdapter(private val tracks: List<Track>) :
+    RecyclerView.Adapter<AlbumTracksAdapter.VHAlbumTrack>() {
 
     lateinit var itemClickListener: ItemClickListener
 
@@ -18,7 +19,7 @@ class AlbumTracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHAlbumTrack{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHAlbumTrack {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ListItemAlbumTracksBinding.inflate(inflater, parent, false)
         return VHAlbumTrack(binding, itemClickListener)
@@ -30,9 +31,12 @@ class AlbumTracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter
         holder.setItemData(position, tracks[position])
     }
 
-    class VHAlbumTrack(private val binding: ListItemAlbumTracksBinding, itemClickListener: ItemClickListener): RecyclerView.ViewHolder(binding.root){
+    class VHAlbumTrack(
+        private val binding: ListItemAlbumTracksBinding,
+        itemClickListener: ItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            itemView.setOnClickListener { itemClickListener.call(it,  bindingAdapterPosition) }
+            itemView.setOnClickListener { itemClickListener.call(it, bindingAdapterPosition) }
         }
 
         fun setItemData(pos: Int, track: Track) {

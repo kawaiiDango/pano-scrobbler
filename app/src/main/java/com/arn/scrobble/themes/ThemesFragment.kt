@@ -120,8 +120,9 @@ class ThemesFragment : Fragment() {
         }
 
         binding.themeTintBg.setOnCheckedChangeListener { compoundButton, checked ->
-            val name = binding.themePrimarySwatches.findViewById<Chip>(binding.themePrimarySwatches.checkedChipId)?.contentDescription
-                ?: return@setOnCheckedChangeListener
+            val name =
+                binding.themePrimarySwatches.findViewById<Chip>(binding.themePrimarySwatches.checkedChipId)?.contentDescription
+                    ?: return@setOnCheckedChangeListener
             previewPrimary(name.toString())
         }
     }
@@ -183,7 +184,8 @@ class ThemesFragment : Fragment() {
         val styleId = ColorPatchMap.primaryStyles[name]!!
         val colorPrimary = context!!.getStyledColor(styleId, R.attr.colorPrimary)
         val colorPrimaryContainer = context!!.getStyledColor(styleId, R.attr.colorPrimaryContainer)
-        val colorOnPrimaryContainer = context!!.getStyledColor(styleId, R.attr.colorOnPrimaryContainer)
+        val colorOnPrimaryContainer =
+            context!!.getStyledColor(styleId, R.attr.colorOnPrimaryContainer)
         binding.themeDone.backgroundTintList = ColorStateList.valueOf(colorPrimaryContainer)
         binding.themeDone.supportImageTintList = ColorStateList.valueOf(colorOnPrimaryContainer)
         val act = activity as MainActivity

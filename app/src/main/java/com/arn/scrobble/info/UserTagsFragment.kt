@@ -27,14 +27,22 @@ import de.umass.lastfm.Artist
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 
-class UserTagsFragment: DialogFragment(), DialogInterface.OnShowListener {
+class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val viewModel by lazy { VMFactory.getVM(this, UserTagsVM::class.java) }
-    private val historyPref by lazy { HistoryPref(
+    private val historyPref by lazy {
+        HistoryPref(
             MainPrefs(context!!).sharedPreferences,
             MainPrefs.PREF_ACTIVITY_TAG_HISTORY,
             20
-    ) }
-    private val historyAdapter by lazy { ArrayAdapter(context!!, R.layout.list_item_history, historyPref.history) }
+        )
+    }
+    private val historyAdapter by lazy {
+        ArrayAdapter(
+            context!!,
+            R.layout.list_item_history,
+            historyPref.history
+        )
+    }
     private var _binding: DialogUserTagsBinding? = null
     private val binding
         get() = _binding!!
@@ -65,7 +73,8 @@ class UserTagsFragment: DialogFragment(), DialogInterface.OnShowListener {
 
         binding.userTagsInputEdittext.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
-                (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)) {
+                (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)
+            ) {
                 addButton.callOnClick()
                 true
             } else
@@ -74,7 +83,7 @@ class UserTagsFragment: DialogFragment(), DialogInterface.OnShowListener {
         addButton.setOnClickListener {
             val tags = binding.userTagsInputEdittext.text.toString().trim()
             if (tags.isNotEmpty()) {
-                viewModel.splitTags(tags).forEach{
+                viewModel.splitTags(tags).forEach {
                     if (viewModel.tags.value?.contains(it) == false)
                         addChip(it.trim())
                     historyPref.add(it.trim())

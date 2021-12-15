@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator"
@@ -43,7 +42,7 @@
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5"
-                app:srcCompat="@drawable/vd_wave"/>
+                app:srcCompat="@drawable/vd_wave" />
 
             <View
                 android:id="@+id/hero_dark_overlay"
@@ -52,7 +51,7 @@
                 android:layout_gravity="bottom"
                 android:background="@drawable/gradient_dark_overlay_hero"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.5"/>
+                app:layout_collapseParallaxMultiplier="0.5" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,62 +65,62 @@
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.8">
                 <!-- layout_height="match_parent" in this makes it go out of screen on a device -->
-                    <FrameLayout
-                        android:id="@+id/sparkline_frame"
-                        android:layout_weight="2"
-                        android:layout_width="0dp"
-                        android:layout_height="70dp"
+                <FrameLayout
+                    android:id="@+id/sparkline_frame"
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginEnd="@dimen/graph_margin_end"
+                    android:layout_marginStart="10dp"
+                    android:alpha="0.85"
+                    android:animateLayoutChanges="true"
+                    android:contentDescription="@string/graph"
+                    android:gravity="center_vertical"
+                    android:visibility="invisible"
+                    app:layout_collapseMode="parallax"
+                    app:layout_collapseParallaxMultiplier="0.6"
+                    tools:visibility="visible">
+
+                    <com.robinhood.spark.SparkView
+                        android:id="@+id/sparkline"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5sp"
+                        android:importantForAccessibility="no"
+                        android:alpha="0.9"
+                        app:spark_lineColor="?colorOutline"
+                        app:spark_animateChanges="true"
+                        app:spark_lineWidth="6dp" />
+
+                    <TextView
+                        android:id="@+id/sparkline_tick_top"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|start"
+                        style="?textAppearanceBodySmall"
+                        tools:text="10000" />
+
+                    <TextView
+                        android:id="@+id/sparkline_tick_bottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="bottom|start"
-                        android:layout_marginBottom="6dp"
-                        android:layout_marginEnd="@dimen/graph_margin_end"
-                        android:layout_marginStart="10dp"
-                        android:alpha="0.85"
-                        android:animateLayoutChanges="true"
-                        android:contentDescription="@string/graph"
-                        android:gravity="center_vertical"
-                        android:visibility="invisible"
-                        app:layout_collapseMode="parallax"
-                        app:layout_collapseParallaxMultiplier="0.6"
-                        tools:visibility="visible">
+                        android:layout_marginBottom="12sp"
+                        style="?textAppearanceBodySmall"
+                        tools:text="000" />
 
-                        <com.robinhood.spark.SparkView
-                            android:id="@+id/sparkline"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginBottom="5sp"
-                            android:importantForAccessibility="no"
-                            android:alpha="0.9"
-                            app:spark_lineColor="?colorOutline"
-                            app:spark_animateChanges="true"
-                            app:spark_lineWidth="6dp" />
+                    <TextView
+                        android:id="@+id/sparkline_horizontal_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginStart="20dp"
+                        android:text="@string/graph_info"
+                        style="?textAppearanceBodySmall" />
 
-                        <TextView
-                            android:id="@+id/sparkline_tick_top"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="top|start"
-                            style="?textAppearanceBodySmall"
-                            tools:text="10000"/>
-
-                        <TextView
-                            android:id="@+id/sparkline_tick_bottom"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|start"
-                            android:layout_marginBottom="12sp"
-                            style="?textAppearanceBodySmall"
-                            tools:text="000"/>
-
-                        <TextView
-                            android:id="@+id/sparkline_horizontal_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|center_horizontal"
-                            android:layout_marginStart="20dp"
-                            android:text="@string/graph_info"
-                            style="?textAppearanceBodySmall"/>
-
-                    </FrameLayout>
+                </FrameLayout>
 
                 <ImageButton
                     android:id="@+id/hero_calendar"
@@ -205,8 +204,7 @@
                     android:background="@android:color/transparent"
                     app:tabGravity="fill"
                     app:tabIconTint="?colorPrimary"
-                    app:tabMinWidth="100dp"
-                    />
+                    app:tabMinWidth="100dp" />
             </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -216,5 +214,5 @@
         android:id="@+id/frame"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

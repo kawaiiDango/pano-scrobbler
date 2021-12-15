@@ -19,9 +19,17 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import de.umass.lastfm.*
 import java.util.*
 
-abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
+abstract class ChartsPeriodFragment : Fragment(), EntryItemClickListener {
     protected val viewModel by lazy { VMFactory.getVM(this, ChartsVM::class.java) }
-    protected val periodChipIds = arrayOf(R.id.charts_choose_week, R.id.charts_7day, R.id.charts_1month, R.id.charts_3month, R.id.charts_6month, R.id.charts_12month, R.id.charts_overall)
+    protected val periodChipIds = arrayOf(
+        R.id.charts_choose_week,
+        R.id.charts_7day,
+        R.id.charts_1month,
+        R.id.charts_3month,
+        R.id.charts_6month,
+        R.id.charts_12month,
+        R.id.charts_overall
+    )
     open val type = 0
     open val username: String?
         get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
@@ -40,10 +48,14 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         context ?: return
 
         periodChipsBinding.charts7day.text = resources.getQuantityString(R.plurals.num_weeks, 1, 1)
-        periodChipsBinding.charts1month.text = resources.getQuantityString(R.plurals.num_months, 1, 1)
-        periodChipsBinding.charts3month.text = resources.getQuantityString(R.plurals.num_months, 3, 3)
-        periodChipsBinding.charts6month.text = resources.getQuantityString(R.plurals.num_months, 6, 6)
-        periodChipsBinding.charts12month.text = resources.getQuantityString(R.plurals.num_years, 1, 1)
+        periodChipsBinding.charts1month.text =
+            resources.getQuantityString(R.plurals.num_months, 1, 1)
+        periodChipsBinding.charts3month.text =
+            resources.getQuantityString(R.plurals.num_months, 3, 3)
+        periodChipsBinding.charts6month.text =
+            resources.getQuantityString(R.plurals.num_months, 6, 6)
+        periodChipsBinding.charts12month.text =
+            resources.getQuantityString(R.plurals.num_years, 1, 1)
         periodChipsBinding.chartsOverall.text = getString(R.string.charts_overall)
 
         val periodIdx = prefs.lastChartsPeriod
@@ -96,7 +108,10 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
         }
 
         periodChipsBinding.chartsPeriod.setOnCheckedChangeListener(ccl)
-        ccl.onCheckedChanged(periodChipsBinding.chartsPeriod, periodChipsBinding.chartsPeriod.checkedChipId)
+        ccl.onCheckedChanged(
+            periodChipsBinding.chartsPeriod,
+            periodChipsBinding.chartsPeriod.checkedChipId
+        )
         periodChipsBinding.chartsChooseWeek.setOnClickListener {
             if (MainActivity.isOnline)
                 periodChipsBinding.chartsPeriod.alpha = Stuff.LOADING_ALPHA
@@ -106,7 +121,8 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
 
         periodChipsBinding.chartsWeekNext.setOnClickListener {
             if (viewModel.weeklyListReceiver.value != null && viewModel.weeklyChartIdx > 0) {
-                viewModel.weeklyChart = viewModel.weeklyListReceiver.value!![--viewModel.weeklyChartIdx]
+                viewModel.weeklyChart =
+                    viewModel.weeklyListReceiver.value!![--viewModel.weeklyChartIdx]
                 loadWeeklyCharts()
                 setWeeklyChipName(true)
             }
@@ -114,8 +130,10 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
 
         periodChipsBinding.chartsWeekPrev.setOnClickListener {
             if (viewModel.weeklyListReceiver.value != null &&
-                    viewModel.weeklyChartIdx != -1 && viewModel.weeklyChartIdx < viewModel.weeklyListReceiver.value!!.size - 1) {
-                viewModel.weeklyChart = viewModel.weeklyListReceiver.value!![++viewModel.weeklyChartIdx]
+                viewModel.weeklyChartIdx != -1 && viewModel.weeklyChartIdx < viewModel.weeklyListReceiver.value!!.size - 1
+            ) {
+                viewModel.weeklyChart =
+                    viewModel.weeklyListReceiver.value!![++viewModel.weeklyChartIdx]
                 loadWeeklyCharts()
                 setWeeklyChipName(true)
             }
@@ -235,9 +253,9 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
     private fun setWeeklyChipName(set: Boolean) {
         if (set) {
             periodChipsBinding.chartsChooseWeek.text = getString(
-                    R.string.a_to_b,
-                    DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.from.time),
-                    DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.to.time)
+                R.string.a_to_b,
+                DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.from.time),
+                DateFormat.getMediumDateFormat(context).format(viewModel.weeklyChart!!.to.time)
             )
             showArrows(true)
             prefs.apply {
@@ -257,9 +275,12 @@ abstract class ChartsPeriodFragment: Fragment(), EntryItemClickListener {
             View.VISIBLE
         else
             View.GONE
-        periodChipsBinding.chartsWeekPrev.visibility = if (show && viewModel.weeklyChartIdx < (viewModel.weeklyListReceiver.value?.size ?: 0) - 1)
-            View.VISIBLE
-        else
-            View.GONE
+        periodChipsBinding.chartsWeekPrev.visibility =
+            if (show && viewModel.weeklyChartIdx < (viewModel.weeklyListReceiver.value?.size
+                    ?: 0) - 1
+            )
+                View.VISIBLE
+            else
+                View.GONE
     }
 }

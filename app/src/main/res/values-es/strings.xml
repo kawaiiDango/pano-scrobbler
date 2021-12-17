@@ -20,6 +20,34 @@
         <item quantity="one">%1$d año</item>
         <item quantity="other">%1$d años</item>
     </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$d artista</item>
+        <item quantity="other">%1$d artistas</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$d álbum</item>
+        <item quantity="other">%1$d álbumes</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d canción</item>
+        <item quantity="other">%1$d canciones</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d coincidencia</item>
+        <item quantity="other">%1$d coincidencias</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$d edición</item>
+        <item quantity="other">%1$d ediciones</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$d patrón de edición</item>
+        <item quantity="other">%1$d patrones de edición</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$d metadato bloqueado</item>
+        <item quantity="other">%1$d metadatos bloqueados</item>
+    </plurals>
     <string name="yes">Si</string>
     <string name="no">No</string>
     <string name="settings">Configuración</string>

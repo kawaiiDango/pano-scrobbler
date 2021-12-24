@@ -188,7 +188,7 @@
     <string name="my_scrobbles">Мои скробблы</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Скробблы %1$s</string>
     <string name="listeners">Слушатели</string>
-    <string name="scrobbles">Прослушиваниий</string>
+    <string name="scrobbles">Недавние</string>
     <string name="collapse" comment="(view only a few items)">Свернуть</string>
     <string name="expand" comment="(view all items)">Расскрыть</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s понравилось это</string>

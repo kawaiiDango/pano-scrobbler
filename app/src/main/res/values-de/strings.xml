@@ -20,6 +20,10 @@
         <item quantity="one">%1$d Jahr</item>
         <item quantity="other">%1$d Jahre</item>
     </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$d Künstler</item>
+        <item quantity="other">%1$d Künstler</item>
+    </plurals>
     <string name="settings">Einstellungen</string>
     <string name="bug_report">Fehler melden</string>
     <string name="album_art">Album-Cover</string>

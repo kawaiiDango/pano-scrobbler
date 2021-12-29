@@ -24,6 +24,22 @@
         <item quantity="one">%1$d Künstler</item>
         <item quantity="other">%1$d Künstler</item>
     </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$d Album</item>
+        <item quantity="other">%1$d Alben</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d Titel</item>
+        <item quantity="other">%1$d Titel</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d Übereinstimmung</item>
+        <item quantity="other">%1$d Übereinstimmungen</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$d Bearbeitung</item>
+        <item quantity="other">%1$d Bearbeitungen</item>
+    </plurals>
     <string name="settings">Einstellungen</string>
     <string name="bug_report">Fehler melden</string>
     <string name="album_art">Album-Cover</string>

@@ -21,6 +21,7 @@
         <item name="android:windowContentTransitions">true</item>
         <item name="android:textDirection">locale</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
+        <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <!--        <item name="android:windowTranslucentStatus">true</item>-->
         <!-- bug https://stackoverflow.com/a/48328471/1067596-->

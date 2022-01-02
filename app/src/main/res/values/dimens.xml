@@ -23,4 +23,5 @@
     <dimen name="album_text_height">20sp</dimen>
     <dimen name="divider_inset">32dp</dimen>
     <dimen name="text_input_margin">3dp</dimen>
+    <integer name="splash_screen_duration">600</integer>
 </resources>

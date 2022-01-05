@@ -82,5 +82,26 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Najczęściej słuchane utwory</string>
     <string name="similar_tracks">Podobne utwory</string>
     <string name="similar" comment="Similar tracks but in short">Podobne</string>
+    <string name="state_unrecognised_artist">Nierozpoznany wykonawca</string>
+    <string name="tap_to_edit">(Kliknij, aby edytować)</string>
+    <string name="recents" comment="Short for recently scrobbled">Ostatnie</string>
+    <string name="auto" comment="automatic or default setting">Auto</string>
+    <string name="graph_info">… ostatnie 5 miesięcy</string>
+    <string name="enabled_apps">Włączone aplikacje</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Prawie gotowe…</string>
+    <string name="music_players">Odtwarzacze muzyki</string>
+    <string name="video_players">Aplikacje streamingu wideo</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Inne aplikacje</string>
+    <string name="unavailable_offline">Niedostępne w trybie offline</string>
+    <string name="allow_background">Pozwól na scrobbling w tle</string>
+    <string name="grant_notification_access">Zezwól na dostęp do powiadomień</string>
+    <string name="grant_notification_access_desc">Potrzebne do pobierania metadanych muzyki. Nie czytamy żadnych powiadomień</string>
+    <string name="authenticate_with_lastfm" comment="Login with last.fm">Uwierzytelnij przez last.FM</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM i Listenbrainz mogą być uwierzytelniane później, w ustawieniach</string>
+    <string name="swap" comment="(Swap title and artist)">Zamień</string>
+    <string name="rate_msg">Podoba Ci się ta aplikacja?</string>
+    <string name="rate_action">Oceń</string>
+    <string name="time_just_now">teraz</string>
+    <string name="force_remembered">Wymuś scrobble (zapamiętaj)</string>
     <!--  pro  -->
 </resources>

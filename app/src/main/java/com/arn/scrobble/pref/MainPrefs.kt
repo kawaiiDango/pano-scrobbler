@@ -87,6 +87,8 @@ class MainPrefs(context: Context) : Krate {
     var dontAskForRating by booleanPref(PREF_DONT_ASK_FOR_RATING).withDefault(false)
     var prefVersion by intPref(PREF_VERSION).withDefault(0)
 
+    var songSearchUrl by stringPref(PREF_ACTIVITY_SONG_SEARCH_URL).withDefault("https://www.youtube.com/results?search_query=\$artist+\$title")
+
     companion object {
         const val NAME = "main"
         const val PREF_MASTER = "master"
@@ -162,6 +164,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_ACTIVITY_LONG_PRESS_LEARNT = "long_press_learnt"
         const val PREF_ACTIVITY_REGEX_EDITS_LEARNT = "regex_edits_learnt"
         const val PREF_ACTIVITY_USER_TAG_HISTORY_FETCHED = "user_tag_history_fetched"
+        const val PREF_ACTIVITY_SONG_SEARCH_URL = "song_search_url"
 
         const val PREF_SCROBBLE_COUNT = "scrobble_count"
         const val PREF_FIRST_LAUNCHED = "date_firstlaunch"

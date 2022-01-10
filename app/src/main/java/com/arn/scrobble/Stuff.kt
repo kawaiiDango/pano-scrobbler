@@ -556,6 +556,15 @@ object Stuff {
 
     fun launchSearchIntent(context: Context, track: Track, pkgName: String?) {
         val prefs = MainPrefs(context)
+
+        if (BuildConfig.DEBUG && Build.BOARD == "windows") { // open song urls in windows browser for me
+            val searchUrl = prefs.songSearchUrl
+                .replace("\$artist", track.artist)
+                .replace("\$title", track.name)
+            openInBrowser(context, searchUrl)
+            return
+        }
+
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
             putExtra(MediaStore.EXTRA_MEDIA_ARTIST, track.artist)
             putExtra(MediaStore.EXTRA_MEDIA_TITLE, track.name)

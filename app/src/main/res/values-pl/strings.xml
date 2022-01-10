@@ -1,4 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s scrobble</item>
+        <item quantity="few">%1$s scrobbli</item>
+        <item quantity="many">%1$s scrobbli</item>
+        <item quantity="other">%1$s scrobble</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s słuchacz</item>
+        <item quantity="few">%1$s słuchaczów</item>
+        <item quantity="many">%1$s słuchaczów</item>
+        <item quantity="other">%1$s słuchacze</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$d tydzień</item>
+        <item quantity="few">%1$d tygodni</item>
+        <item quantity="many">%1$d tygodni</item>
+        <item quantity="other">%1$d tyg</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$d miesiąc</item>
+        <item quantity="few">%1$d miesięcy</item>
+        <item quantity="many">%1$d miesięcy</item>
+        <item quantity="other">%1$d miesięcy</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$d rok</item>
+        <item quantity="few">%1$d lat</item>
+        <item quantity="many">%1$d lat</item>
+        <item quantity="other">%1$d lat</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$d artysta</item>
+        <item quantity="few">%1$d artystów</item>
+        <item quantity="many">%1$d artystów</item>
+        <item quantity="other">%1$d artyści</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$d album</item>
+        <item quantity="few">%1$d albumów</item>
+        <item quantity="many">%1$d albumów</item>
+        <item quantity="other">%1$d Albumy</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d utwór</item>
+        <item quantity="few">%1$d utworów</item>
+        <item quantity="many">%1$d utwórów</item>
+        <item quantity="other">%1$d utwory</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d dopasowanie</item>
+        <item quantity="few">%1$d dopasowań</item>
+        <item quantity="many">%1$d dopasowań</item>
+        <item quantity="other">%1$d dopasowania</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$d edycja</item>
+        <item quantity="few">%1$d edycji</item>
+        <item quantity="many">%1$d edycji</item>
+        <item quantity="other">%1$d edycje</item>
+    </plurals>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+    <string name="reset">Reset</string>
+    <string name="settings">Konfiguruj</string>
+    <string name="network_error">Błąd sieci</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">zignorowano ten scrobble</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Nie wszystkie wymagane pola zostały wypełnione</string>
+    <string name="artist">Wykonawca</string>
+    <string name="artists">Wykonawcy</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Najczęściej odtwarzani wykonawcy</string>
+    <string name="album_artist">Wykonawca albumu</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Wykonawca / kanał</string>
+    <string name="similar_artists">Podobni wykonawcy</string>
+    <string name="album_optional">Album (opcjonalnie)</string>
+    <string name="album">Album</string>
+    <string name="albums">Albumy</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Najczęściej odtwarzane albumy</string>
+    <string name="track">Utwór</string>
+    <string name="tracks">Utwory</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Najczęściej słuchane utwory</string>
+    <string name="similar_tracks">Podobne utwory</string>
+    <string name="similar" comment="Similar tracks but in short">Podobne</string>
+    <string name="state_unrecognised_artist">Nierozpoznany wykonawca</string>
+    <string name="tap_to_edit">(Kliknij, aby edytować)</string>
+    <string name="recents" comment="Short for recently scrobbled">Ostatnie</string>
+    <string name="auto" comment="automatic or default setting">Auto</string>
+    <string name="graph_info">… ostatnie 5 miesięcy</string>
+    <string name="enabled_apps">Włączone aplikacje</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Prawie gotowe…</string>
+    <string name="music_players">Odtwarzacze muzyki</string>
+    <string name="video_players">Aplikacje streamingu wideo</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Inne aplikacje</string>
+    <string name="unavailable_offline">Niedostępne w trybie offline</string>
+    <string name="allow_background">Pozwól na scrobbling w tle</string>
+    <string name="grant_notification_access">Zezwól na dostęp do powiadomień</string>
+    <string name="grant_notification_access_desc">Potrzebne do pobierania metadanych muzyki. Nie czytamy żadnych powiadomień</string>
+    <string name="authenticate_with_lastfm" comment="Login with last.fm">Uwierzytelnij przez last.FM</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM i Listenbrainz mogą być uwierzytelniane później, w ustawieniach</string>
+    <string name="swap" comment="(Swap title and artist)">Zamień</string>
+    <string name="rate_msg">Podoba Ci się ta aplikacja?</string>
+    <string name="rate_action">Oceń</string>
+    <string name="time_just_now">teraz</string>
+    <string name="force_remembered">Wymuś scrobble (zapamiętaj)</string>
     <!--  pro  -->
 </resources>

@@ -20,8 +20,37 @@
         <item quantity="one">%1$d yıl</item>
         <item quantity="other">%1$d yıl</item>
     </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$d sanatçı</item>
+        <item quantity="other">%1$d sanatçı</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$d albüm</item>
+        <item quantity="other">%1$d albüm</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d parça</item>
+        <item quantity="other">%1$d parça</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d eşleşme</item>
+        <item quantity="other">%1$d eşleşme</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$d düzenleme</item>
+        <item quantity="other">%1$d düzenleme</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$d kalıp düzenlemesi</item>
+        <item quantity="other">%1$d kalıp düzenlemesi</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$d engellenmiş metaveri</item>
+        <item quantity="other">%1$d engellenmiş metaveri</item>
+    </plurals>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
+    <string name="reset">Sıfırla</string>
     <string name="settings">Ayarlar</string>
     <string name="bug_report">Hata raporu</string>
     <string name="album_art">Albüm kapağı</string>
@@ -100,6 +129,7 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s skrop • Bugün: %2$s</string>
     <string name="friends">Arkadaşlar</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s itibariyle %1$s skrop</string>
+    <string name="allow_background">Arkaplanda skroplamaya izin ver</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Skroplayıcının başlaması için %1$s cihazlarda gerekli</string>
     <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
     <string name="grant_notification_access_desc">Müzik metaverisi almak için gerekli. Müzik harici veriler okunmaz</string>
@@ -116,6 +146,7 @@
     <string name="force_remembered">Zorlu skropla (hatırlanacak)</string>
     <string name="grant_rec_perm">Lütfen mikrofonu kullanmak için izin verin</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listeler</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Etiket bulutu</string>
     <string name="scrobble_from_mic">Mikrofonla skropla</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Mikle</string>
     <string name="add_to_hs">Ana ekrana ekle</string>
@@ -148,6 +179,7 @@
     <string name="charts_choose_week">Bir hafta seçin</string>
     <string name="charts_overall">Genel</string>
     <string name="charts_no_data">Bu dönem için veri yok</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Yetersiz veri</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">Geriye dönük haftalık listeler henüz mevcut değil</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Haydi rastgele</string>
@@ -171,6 +203,7 @@
     <string name="close">Kapat</string>
     <string name="user_tags_hint">Yeni etiket</string>
     <string name="user_tags_empty">Henüz bir etiket eklemediniz</string>
+    <string name="info_long_press_hint">Açmak için bir parçaya uzunca bas</string>
     <string name="appwidget_loading">Yükleniyor…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Süre</string>
     <string name="appwidget_theme">Tema</string>
@@ -178,10 +211,12 @@
     <string name="appwidget_show">Göster</string>
     <string name="light">Açık</string>
     <string name="dark">Koyu</string>
+    <string name="dynamic" comment="Material You wallpaper based theming">Dinamik (Material You)</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
     <string name="appwidget_refresh_every">Widget her 15 dakikada bir yenilenir</string>
     <string name="primary_color">Ana renk</string>
     <string name="secondary_color">İkincil renk</string>
+    <string name="tint_background">Renkli arkaplan</string>
     <string name="random_theme">Her açılışta rastgele seç</string>
     <string name="palette_bg">Arkaplan için albüm kapağı rengini kullan</string>
     <string name="edit_name" comment="name for regex pattern">İsim (isteğe bağlı)</string>
@@ -203,7 +238,13 @@
     <string name="text" comment="text to test regex rules with">Metin</string>
     <string name="edit_regex_warning">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
     <string name="blocked_metadata_info">ℹ️ Bu alanların birinden fazlasının doldurulması, aralarında bir AND operatörü uygulamasına yol açacaktır</string>
+    <string name="blocked_metadata_noti">Bu parçanın skroplanmasını engellemek istiyorsan dokun</string>
+    <string name="block">Engelle</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Kanal ismini kullan</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">\"%1$s\" kalıp düzenlemesini etkinleştirmek istiyor musunuz?</string>
+    <string name="show_persistent_noti">Kalıcı bildirim göster</string>
+    <string name="fix_it_desc">Bu düzeltmeler, bazı cihazlarda skroplayıcının arkaplanda çalışmasını sağlayabilir</string>
+    <string name="persistent_noti_desc">Saklamak için uzun bas</string>
     <string name="scrobbler_off">Skroplayıcı devre dışı</string>
     <string name="scrobbler_on">Skroplayıcı aktif</string>
     <string name="pref_master">Müzik skropla</string>
@@ -220,10 +261,13 @@
     <string name="pref_auto_detect_summary">…yine de bu uygulamayı onaylamak/dikkate almamak için size soracağız</string>
     <string name="pref_auto_detect">Yeni müzik uygulamalarını algıla</string>
     <string name="pref_delay">Skrop gecikmesi (hangisi daha önceyse)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Dakika</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Yüzde</string>
     <string name="pref_logout">Oturumu kapat</string>
     <string name="pref_confirm_logout">EMİN MİSİNİZ? Yeniden dokunun</string>
     <string name="pref_login">Oturum aç</string>
     <string name="pref_about" comment="Info about this app">Hakkında</string>
+    <string name="pref_privacy_policy">Gizlilik politikası</string>
     <string name="pref_search_title">Şarkı arama uygulaması</string>
     <string name="pref_scrobble_only">(Sadece skrop)</string>
     <string name="pref_scrobble_love_only">(Sadece skrop &amp; beğeni)</string>
@@ -248,6 +292,11 @@
     <string name="pref_themes_desc">Karıştır ve eşle\nAyrıca bildirim rengini de değiştirir</string>
     <string name="pref_widget_charts">Ana ekran widget\'ı - Listeler</string>
     <string name="pref_show_albums">Albüm isimlerini göster</string>
+    <string name="pref_show_albums_desc">(skroplar için)</string>
+    <string name="pref_show_scrobble_sources">Skroplanan uygulamanın simgesini göster</string>
+    <string name="pref_show_scrobble_sources_desc">Bu veri kimseyle paylaşılmaz</string>
+    <string name="pref_search_in_source">Skropladığın uygulamada ara &amp; oynat</string>
+    <string name="pref_search_in_source_desc">Desteklenen uygulamalar içindir</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listeler</string>
     <string name="pref_regex_edits">Kalıp düzenlemeleri</string>
     <string name="pref_blocked_metadata">Engellenmiş metaveri</string>
@@ -308,12 +357,14 @@ Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="graph">Grafik</string>
     <string name="cleared_disabled_apps">Devre dışı uygulamalar temizlendi</string>
     <string name="fix_it_title">Muhtemel düzeltmeler</string>
+    <string name="fix_it_startup_title">Pil tasarufu ve başlangıç yöneticileri</string>
     <string name="fix_it_battery_title">Pil optimizasyonlarını devre dışı bırak</string>
     <string name="fix_it_action" comment="(To open an app)">Aç</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="help">Yardım</string>
     <string name="pro_support">Bu, sizin gibi harika kullanıcılarımızın, bu uygulamanın sağladığı hizmetlerin hatırına desteklerini göstermeleri için hızlı ve basit bir yoldur.</string>
+    <string name="pro_also_get">Ayrıca aşağıdaki özelliklere sahip olacaksın:</string>
     <string name="thank_you">Teşekkürler!</string>
     <string name="purchase_pending">Satın alma işleminiz henüz ödeme sağlayıcınız tarafından onaylanmadı. Lütfen birkaç dakika sonra tekrar kontrol edin.</string>
     <string name="billing_troubleshoot_title">Satın almayı geri yükle</string>

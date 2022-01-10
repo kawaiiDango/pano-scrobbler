@@ -20,8 +20,37 @@
         <item quantity="one">%1$d año</item>
         <item quantity="other">%1$d años</item>
     </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$d artista</item>
+        <item quantity="other">%1$d artistas</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$d álbum</item>
+        <item quantity="other">%1$d álbumes</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d canción</item>
+        <item quantity="other">%1$d canciones</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d coincidencia</item>
+        <item quantity="other">%1$d coincidencias</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$d edición</item>
+        <item quantity="other">%1$d ediciones</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$d patrón de edición</item>
+        <item quantity="other">%1$d patrones de edición</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$d metadato bloqueado</item>
+        <item quantity="other">%1$d metadatos bloqueados</item>
+    </plurals>
     <string name="yes">Si</string>
     <string name="no">No</string>
+    <string name="reset">Reiniciar</string>
     <string name="settings">Configuración</string>
     <string name="bug_report">Reportar error</string>
     <string name="album_art">Imagen del álbum</string>
@@ -100,6 +129,7 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s hoy</string>
     <string name="friends">Amigos</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
+    <string name="allow_background">Permitir scrobbling en segundo plano</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Necesario en %1$s dispositivos, para iniciar el scrobbler</string>
     <string name="grant_notification_access">Permitir acceso a notificaciones</string>
     <string name="grant_notification_access_desc">Necesario para recuperar metadatos de música. No se leen notificaciones que no sean de música</string>
@@ -116,6 +146,7 @@
     <string name="force_remembered">Forzar scrobble (será recordado)</string>
     <string name="grant_rec_perm">Por favor, concede permiso para usar el micrófono</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listas</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nube de etiquetas</string>
     <string name="scrobble_from_mic">Scrobble desde el micrófono</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Desde el micrófono</string>
     <string name="add_to_hs">Añadir a la pantalla de inicio</string>
@@ -148,6 +179,7 @@
     <string name="charts_choose_week">Elige una semana</string>
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">No hay datos para este período</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Datos insuficientes</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">Las listas semanales aún no están disponibles</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Me siento con suerte</string>
@@ -171,6 +203,7 @@
     <string name="close">Cerrar</string>
     <string name="user_tags_hint">Nueva etiqueta</string>
     <string name="user_tags_empty">No has añadido ninguna etiqueta</string>
+    <string name="info_long_press_hint">Pulsación larga en una canción para abrir esto</string>
     <string name="appwidget_loading">Cargando…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Período</string>
     <string name="appwidget_theme">Tema</string>
@@ -178,10 +211,12 @@
     <string name="appwidget_show">Mostrar</string>
     <string name="light">Claro</string>
     <string name="dark">Oscuro</string>
+    <string name="dynamic" comment="Material You wallpaper based theming">Dinámico (Material You)</string>
     <string name="appwidget_alpha">Opacidad de fondo</string>
     <string name="appwidget_refresh_every">El Widget se actualizará cada 15 minutos</string>
     <string name="primary_color">Color principal</string>
     <string name="secondary_color">Color secundario</string>
+    <string name="tint_background">Tinte de fondo</string>
     <string name="random_theme">Aleatorizar cada lanzamiento</string>
     <string name="palette_bg">Usar el color de la imagen del álbum para algunos fondos</string>
     <string name="edit_name" comment="name for regex pattern">Nombre amigable (opcional)</string>
@@ -203,7 +238,13 @@
     <string name="text" comment="text to test regex rules with">Texto</string>
     <string name="edit_regex_warning">⚠ Asegúrate de entender <a href="https://www.google.com/search?q=regex+tutorial">regex java</a> antes de usar esto, o usa uno de los <b>presets</b> proporcionados. Partidas regex intentadas desde arriba hacia abajo</string>
     <string name="blocked_metadata_info">ℹ️ Completa más de uno de estos campos aplicará un operador AND entre ellos</string>
+    <string name="blocked_metadata_noti">Toca para bloquear este tema de scrobbling</string>
+    <string name="block">Bloquear</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Usar nombre del canal</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">¿Quieres activar la regla de edición de patrones: %1$s?</string>
+    <string name="show_persistent_noti">Mostrar una notificación persistente</string>
+    <string name="fix_it_desc">Esto puede ayudar a mantener el scrobbler funcionando en segundo plano en algunos dispositivos</string>
+    <string name="persistent_noti_desc">Pulsación larga para ocultar esto</string>
     <string name="scrobbler_off">Scrobbler desactivado</string>
     <string name="scrobbler_on">Scrobbler activado</string>
     <string name="pref_master">Scrobble de música</string>
@@ -220,10 +261,13 @@
     <string name="pref_auto_detect_summary">…todavía te pediremos que confirmes o ignores esa aplicación</string>
     <string name="pref_auto_detect">Detectar automáticamente nuevas aplicaciones tipo música</string>
     <string name="pref_delay">Demora del scrobble (lo que ocurra primero)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutos</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Porcentaje</string>
     <string name="pref_logout">Cerrar sesión</string>
     <string name="pref_confirm_logout">¿Estás seguro de querer cerrar sesión? Toca de nuevo para hacerlo</string>
     <string name="pref_login">Iniciar sesión</string>
     <string name="pref_about" comment="Info about this app">Acerca de</string>
+    <string name="pref_privacy_policy">Política de privacidad</string>
     <string name="pref_search_title">Aplicación para buscar canciones</string>
     <string name="pref_scrobble_only">(Solo scrobbles)</string>
     <string name="pref_scrobble_love_only">(Scrobbles &amp; solo favoritos)</string>
@@ -248,6 +292,11 @@
     <string name="pref_themes_desc">Mezclar y combinar\nTambién cambia el color de las notificaciones</string>
     <string name="pref_widget_charts">Widget en la pantalla de inicio - Listas</string>
     <string name="pref_show_albums">Mostrar nombres del álbumes</string>
+    <string name="pref_show_albums_desc">…para scrobbles</string>
+    <string name="pref_show_scrobble_sources">Mostrar los iconos de las aplicaciones desde las que se ha hecho el scrobbling</string>
+    <string name="pref_show_scrobble_sources_desc">…al lado de cada scrobble. Estos datos permanecen en tu dispositivo</string>
+    <string name="pref_search_in_source">Buscar reproducir &amp; en la aplicación desde la que se hizo el scrobble</string>
+    <string name="pref_search_in_source_desc">Para aplicaciones compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="pref_regex_edits">Edición de patrones</string>
     <string name="pref_blocked_metadata">Metadatos bloqueados</string>
@@ -308,12 +357,14 @@ Pueden utilizarse con aplicaciones como Tasker, Macrodroid, etc."</string>
     <string name="graph">Gráfico de líneas</string>
     <string name="cleared_disabled_apps">Limpiar aplicaciones desactivadas</string>
     <string name="fix_it_title">Posibles soluciones</string>
+    <string name="fix_it_startup_title">Ahorradores de energía / gestores de arranque</string>
     <string name="fix_it_battery_title">Desactivar las optimizaciones de batería</string>
     <string name="fix_it_action" comment="(To open an app)">Abrir</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="help">Ayuda</string>
     <string name="pro_support">Esta es una forma sencilla y rápida para que usuarios asombrosos como tú hagan una demostración de apoyo reconociendo el valor que proporciona esta aplicación.</string>
+    <string name="pro_also_get">También recibirás las siguientes características:</string>
     <string name="thank_you">¡Gracias!</string>
     <string name="purchase_pending">Su compra aún no ha sido confirmada por su proveedor de pagos. Por favor, vuelva a intentarlo después de unos minutos.</string>
     <string name="billing_troubleshoot_title">Restaurar compra</string>

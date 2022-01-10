@@ -20,4 +20,9 @@
     <string name="preset_remastered" translatable="false">Remastered</string>
     <string name="preset_explicit" translatable="false">Explicit</string>
     <string name="preset_album_version" translatable="false">Album version</string>
+
+<!-- strings for features not finalized  -->
+
+    <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
+
 </resources>

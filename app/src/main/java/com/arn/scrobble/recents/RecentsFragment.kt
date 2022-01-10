@@ -23,6 +23,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -81,7 +82,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
     private val refreshHandler by lazy { Handler(Looper.getMainLooper()) }
     private val username: String?
         get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
-    private lateinit var viewModel: TracksVM
+    private val viewModel by viewModels<TracksVM>()
     private var animSet: AnimatorSet? = null
     private var smoothScroller: LinearSmoothScroller? = null
     open val isShowingLoves = false
@@ -169,7 +170,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         }
         binding.recentsList.layoutManager = llm
 
-        viewModel = VMFactory.getVM(this, TracksVM::class.java)
         viewModel.username = username
         adapter = RecentsAdapter(binding)
         adapter.viewModel = viewModel
@@ -676,10 +676,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                         }
                     })
                 listener(
-                    onError = { imageRequest, throwable ->
+                    onError = { imageRequest, errorResult ->
                         if (!fullSize)
                             onSetHero(position, track, true)
-                        Stuff.log("Coil err for ${imageRequest.data} : $throwable")
+                        Stuff.log("Coil err for ${imageRequest.data} : ${errorResult.throwable.message}")
                     }
                 )
             }

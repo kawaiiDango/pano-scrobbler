@@ -27,12 +27,10 @@ android {
         throw new GradleException("Could not read version.txt!")
     }
 
-//    compileSdkVersion 31
     compileSdkVersion 32
     defaultConfig {
         applicationId "com.arn.scrobble"
         minSdkVersion 21
-//        targetSdkVersion 31
         targetSdkVersion 32
         versionCode verCode
         versionName ((int) (versionCode / 100) + "." + (versionCode % 100) + " - " + new Date().format('dd.MMM.YY'))
@@ -80,7 +78,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.appcompat:appcompat:1.4.0"
     implementation "androidx.core:core-ktx:1.7.0"
-    implementation "androidx.preference:preference-ktx:1.2.0-beta01"
+    implementation "androidx.preference:preference-ktx:1.2.0-rc01"
     implementation "androidx.media:media:1.5.0-beta01"
     implementation "androidx.palette:palette-ktx:1.0.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
@@ -90,8 +88,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0"
     implementation "androidx.constraintlayout:constraintlayout:2.1.2"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    kapt "androidx.room:room-compiler:2.4.0-rc01"
-    implementation "androidx.room:room-runtime:2.4.0-rc01"
+    kapt "androidx.room:room-compiler:2.4.0"
+    implementation "androidx.room:room-runtime:2.4.0"
     implementation "com.android.billingclient:billing:4.0.0"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"

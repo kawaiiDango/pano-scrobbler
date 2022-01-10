@@ -207,6 +207,7 @@ class InfoAdapter(
                         binding.infoUserScrobblesContainer.isFocusable = true
 
                         binding.infoUserScrobblesContainer.setOnClickListener {
+                            (fragment.activity as? MainActivity)?.enableGestures()
                             fragment.parentFragmentManager
                                 .beginTransaction()
                                 .replace(R.id.frame,

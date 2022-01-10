@@ -95,6 +95,11 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
         FIVE_MINUTES_METHODS.add("user.gettopalbums");
         FIVE_MINUTES_METHODS.add("user.gettopartists");
         FIVE_MINUTES_METHODS.add("user.gettoptracks");
+
+        FIVE_MINUTES_METHODS.add("user.getWeeklyAlbumChart");
+        FIVE_MINUTES_METHODS.add("user.getWeeklyArtistChart");
+        FIVE_MINUTES_METHODS.add("user.getWeeklyTrackChart");
+        FIVE_MINUTES_METHODS.add("user.getWeeklyChartList");
 	}
 
 	/**
@@ -112,12 +117,12 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 
 	public long getExpirationTime(String method, Map<String, String> params) {
 		method = method.toLowerCase();
-		if (method.contains("weekly")) {
-			if (!method.contains("list"))
-				return params.containsKey("to") && params.containsKey("from") ? Long.MAX_VALUE : cacheRecentWeeklyCharts;
-			else
-				return cacheRecentWeeklyCharts;
-		}
+//		if (method.contains("weekly")) {
+//			if (!method.contains("list"))
+//				return params.containsKey("to") && params.containsKey("from") ? Long.MAX_VALUE : cacheRecentWeeklyCharts;
+//			else
+//				return cacheRecentWeeklyCharts;
+//		}
 		if (method.equals("track.getinfo") || method.equals("album.getinfo"))
 			return !params.containsKey("username") ? ONE_WEEK : -1;
 

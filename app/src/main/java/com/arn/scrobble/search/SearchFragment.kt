@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +19,6 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.Stuff.showKeyboard
-import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.HistoryPref
@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 
 
 class SearchFragment : Fragment() {
-    private val viewModel by lazy { VMFactory.getVM(this, SearchVM::class.java) }
+    private val viewModel by viewModels<SearchVM>()
     private val historyPref by lazy {
         HistoryPref(
             MainPrefs(context!!).sharedPreferences,

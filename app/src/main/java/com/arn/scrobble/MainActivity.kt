@@ -23,6 +23,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageButton
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -77,8 +78,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var binding: ActivityMainBinding
     private lateinit var navHeaderbinding: HeaderNavBinding
     private lateinit var connectivityCb: ConnectivityManager.NetworkCallback
-    val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
-    val mainNotifierViewModel by lazy { VMFactory.getVM(this, MainNotifierViewModel::class.java) }
+    val billingViewModel by viewModels<BillingViewModel>()
+    val mainNotifierViewModel by viewModels<MainNotifierViewModel>()
     private val npReceiver by lazy { NPReceiver(mainNotifierViewModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

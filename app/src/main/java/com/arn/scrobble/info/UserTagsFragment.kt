@@ -12,11 +12,11 @@ import android.widget.ArrayAdapter
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
@@ -28,7 +28,7 @@ import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 
 class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
-    private val viewModel by lazy { VMFactory.getVM(this, UserTagsVM::class.java) }
+    private val viewModel by viewModels<UserTagsVM>()
     private val historyPref by lazy {
         HistoryPref(
             MainPrefs(context!!).sharedPreferences,

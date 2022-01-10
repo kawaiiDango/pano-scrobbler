@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +18,6 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.setMidnight
-import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
@@ -207,7 +207,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         if (!fragment.isAdded)
             childFragmentManager.beginTransaction().add(fragment, type.toString()).commitNow()
 
-        fragment.viewModel = VMFactory.getVM(fragment, ChartsVM::class.java)
+        fragment.viewModel = viewModels<ChartsVM>({ fragment }).value
         fragment.viewModel.username = username
         fragment.viewModel.type = type
 

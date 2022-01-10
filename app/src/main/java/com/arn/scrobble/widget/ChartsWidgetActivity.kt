@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import com.arn.scrobble.*
@@ -44,7 +45,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
         R.id.charts_overall
     )
     private var widgetExists = false
-    private val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
+    private val billingViewModel by viewModels<BillingViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

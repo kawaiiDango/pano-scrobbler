@@ -2,6 +2,7 @@ package com.arn.scrobble
 
 import android.content.Context
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
 import com.arn.scrobble.billing.BillingViewModel
@@ -11,7 +12,7 @@ import com.arn.scrobble.edits.EditDialogFragment
 import com.arn.scrobble.themes.ColorPatchUtils
 
 class MainDialogActivity : AppCompatActivity() {
-    private val billingViewModel by lazy { VMFactory.getVM(this, BillingViewModel::class.java) }
+    private val billingViewModel by viewModels<BillingViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)

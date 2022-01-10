@@ -10,6 +10,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import coil.load
@@ -27,16 +28,13 @@ import de.umass.lastfm.Track
  */
 class RandomFragment : Fragment() {
 
-    private val viewModel by lazy { VMFactory.getVM(this, RandomVM::class.java) }
+    private val viewModel by viewModels<RandomVM>()
     private val prefs by lazy { MainPrefs(context!!) }
     private var isLoading = false
     private var _binding: ContentRandomBinding? = null
-    private val binding
-        get() = _binding!!
-    private val username: String?
-        get() = arguments?.getString(Stuff.ARG_USERNAME)
-    private val type: Int?
-        get() = arguments?.getInt(Stuff.ARG_TYPE)
+    private val binding get() = _binding!!
+    private val username get() = arguments?.getString(Stuff.ARG_USERNAME)
+    private val type get() = arguments?.getInt(Stuff.ARG_TYPE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -190,10 +188,10 @@ class RandomFragment : Fragment() {
                 info.show(parentFragmentManager, null)
             }
         }
-        var imgUrl = track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600")
-        if (imgUrl == null)
-            imgUrl = ""
+        val imgUrl =
+            track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600") ?: ""
         binding.randomBigImg.load(imgUrl) {
+            allowHardware(false) // because crash on oreo
             placeholder(R.drawable.vd_wave_simple_filled)
             error(R.drawable.vd_wave_simple_filled)
         }

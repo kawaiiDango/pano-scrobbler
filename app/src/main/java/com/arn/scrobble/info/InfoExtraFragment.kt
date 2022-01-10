@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -159,7 +160,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), EntryItemClickListener {
         fragment: ShittyArchitectureFragment,
         rootViewBinding: FrameChartsListBinding
     ) {
-        fragment.viewModel = VMFactory.getVM(fragment, ChartsVM::class.java)
+        fragment.viewModel = viewModels<ChartsVM>({ fragment }).value
 
         val adapter = ChartsOverviewAdapter(rootViewBinding)
         adapter.viewModel = fragment.viewModel
@@ -231,6 +232,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), EntryItemClickListener {
     }
 
     private fun showFullFragment(fullFragment: Fragment, type: Int) {
+        (activity as? MainActivity)?.enableGestures()
         Stuff.dismissAllDialogFragments(parentFragmentManager)
         fullFragment.arguments = arguments?.clone() as? Bundle
         fullFragment.arguments?.putInt(Stuff.ARG_TYPE, type)

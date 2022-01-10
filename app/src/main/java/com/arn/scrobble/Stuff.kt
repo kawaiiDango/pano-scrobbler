@@ -165,6 +165,9 @@ object Stuff {
         "com.google.android.ogyoutube",
         "com.google.android.apps.youtube.mango",
         "com.google.android.youtube.tv",
+        "com.google.android.youtube.tvkids",
+        "com.liskovsoft.smarttubetv.beta",
+        "com.liskovsoft.smarttubetv",
         "org.schabi.newpipe",
         "com.kapp.youtube.final",
         "jp.nicovideo.nicobox",
@@ -200,6 +203,7 @@ object Stuff {
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
     const val PACKAGE_YOUTUBE_MUSIC = "com.google.android.apps.youtube.music"
     const val PACKAGE_SPOTIFY = "com.spotify.music"
+    const val PACKAGE_YOUTUBE_TV = "com.google.android.youtube.tv"
 
     val needSyntheticStates = arrayOf(
         PACKAGE_BLACKPLAYER,
@@ -555,7 +559,7 @@ object Stuff {
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
             putExtra(MediaStore.EXTRA_MEDIA_ARTIST, track.artist)
             putExtra(MediaStore.EXTRA_MEDIA_TITLE, track.name)
-            putExtra(SearchManager.QUERY, "${track.artist} - ${track.name}")
+            putExtra(SearchManager.QUERY, "${track.artist} ${track.name}")
             if (pkgName != null && prefs.proStatus && prefs.showScrobbleSources && prefs.searchInSource)
                 `package` = pkgName
         }

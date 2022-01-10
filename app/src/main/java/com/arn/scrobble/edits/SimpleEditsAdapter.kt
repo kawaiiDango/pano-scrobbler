@@ -60,10 +60,10 @@ class SimpleEditsAdapter(
             binding.editsDelete.setOnClickListener {
                 itemClickListener.call(it, bindingAdapterPosition)
             }
-            if (e.legacyHash != null)
-                binding.editsImg.visibility = View.INVISIBLE
+            binding.editsImg.visibility = if (e.legacyHash != null)
+                View.INVISIBLE
             else
-                binding.editsImg.visibility = View.VISIBLE
+                View.VISIBLE
         }
     }
 }

@@ -13,6 +13,7 @@ import androidx.appcompat.view.SupportMenuInflater
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.*
@@ -37,7 +38,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         get() = arguments?.getString(Stuff.ARG_USERNAME)
     private val scrobbleCount: Int
         get() = arguments!!.getInt(Stuff.ARG_COUNT)
-    private val viewModel by lazy { VMFactory.getVM(this, TracksVM::class.java) }
+    private val viewModel by viewModels<TracksVM>()
     private lateinit var adapter: TrackHistoryAdapter
     private val argToTrack by lazy {
         Track(

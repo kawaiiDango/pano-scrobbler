@@ -6,13 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.expandIfNeeded
-import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentInfoBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
@@ -23,7 +23,7 @@ import de.umass.lastfm.Track
 
 class InfoFragment : BottomSheetDialogFragment() {
 
-    private val viewModel by lazy { VMFactory.getVM(this, InfoVM::class.java) }
+    private val viewModel by viewModels<InfoVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

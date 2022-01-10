@@ -23,7 +23,7 @@ class FakeChartsAdapter(
             ChartsWidgetListItem("Identity.", "syrufit", 36),
             ChartsWidgetListItem("Lucky 7", "Halozy", 33),
             ChartsWidgetListItem("Frozen Traveler", "DiGiTAL WiNG", 30),
-            ChartsWidgetListItem("Millennium Mother", "Mli", 30),
+            ChartsWidgetListItem("Millennium Mother", "Mili", 30),
         )
     }
 

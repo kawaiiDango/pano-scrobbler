@@ -7,13 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.Stuff.hideKeyboard
-import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.ui.ItemClickListener
@@ -27,7 +27,7 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
     private var _binding: ContentBlockedMetadataBinding? = null
     private val binding
         get() = _binding!!
-    private val viewModel by lazy { VMFactory.getVM(this, BlockedMetadataVM::class.java) }
+    private val viewModel by viewModels<BlockedMetadataVM>()
     private val mutex = Mutex()
     private lateinit var adapter: BlockedMetadataAdapter
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
@@ -33,7 +34,7 @@ open class InfoExtraFullFragment : Fragment(), EntryItemClickListener {
 
     open val type = 0
     lateinit var adapter: ChartsAdapter
-    private val viewModel by lazy { VMFactory.getVM(this, ChartsVM::class.java) }
+    private val viewModel by viewModels<ChartsVM>()
     private val artist by lazy {
         arguments?.getString(NLService.B_ARTIST)
             ?: parentFragment!!.arguments!!.getString(NLService.B_ARTIST)!!

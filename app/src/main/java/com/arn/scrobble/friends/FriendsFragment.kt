@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -52,7 +53,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private var popupWr: WeakReference<PopupWindow>? = null
     private val username: String?
         get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
-    private val viewModel by lazy { VMFactory.getVM(this, FriendsVM::class.java) }
+    private val viewModel by viewModels<FriendsVM>()
     private var lastRefreshTime = System.currentTimeMillis()
     private var _binding: ContentFriendsBinding? = null
     private val binding

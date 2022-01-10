@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.*
@@ -34,8 +35,8 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
         get() = _binding!!
 
     private val mutex = Mutex()
-    private lateinit var adapter: SimpleEditsAdapter
-    private val viewModel by lazy { VMFactory.getVM(this, SimpleEditsVM::class.java) }
+    private val adapter by lazy { SimpleEditsAdapter(viewModel, this) }
+    private val viewModel by viewModels<SimpleEditsVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +55,6 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = SimpleEditsAdapter(viewModel, this)
         binding.editsList.layoutManager = LinearLayoutManager(context!!)
         binding.editsList.adapter = adapter
         binding.editsList.setOnTouchListener { v, motionEvent ->

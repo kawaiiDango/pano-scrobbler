@@ -90,11 +90,15 @@ interface RegexEditsDao {
             return text
         }
 
-        scrobbleData.artist = replaceField(scrobbleData.artist, NLService.B_ARTIST)
-        scrobbleData.album = replaceField(scrobbleData.album, NLService.B_ALBUM)
-        scrobbleData.albumArtist = replaceField(scrobbleData.albumArtist, NLService.B_ALBUM_ARTIST)
-        scrobbleData.track = replaceField(scrobbleData.track, NLService.B_TRACK)
-
+        try {
+            scrobbleData.artist = replaceField(scrobbleData.artist, NLService.B_ARTIST)
+            scrobbleData.album = replaceField(scrobbleData.album, NLService.B_ALBUM)
+            scrobbleData.albumArtist =
+                replaceField(scrobbleData.albumArtist, NLService.B_ALBUM_ARTIST)
+            scrobbleData.track = replaceField(scrobbleData.track, NLService.B_TRACK)
+        } catch (e: IllegalArgumentException) {
+            Stuff.log("regex error: ${e.message}")
+        }
         return numMatches
     }
 }

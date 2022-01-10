@@ -5,12 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.VMFactory
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.recents.TracksVM
@@ -20,8 +20,8 @@ import com.arn.scrobble.ui.ItemClickListener
  * Created by arn on 21/09/2017.
  */
 class PendingScrFragment : Fragment(), ItemClickListener {
-    private lateinit var adapter: PendingScrAdapter
-    private lateinit var vm: TracksVM
+    private val adapter by lazy { PendingScrAdapter(this) }
+    private val viewModel by viewModels<TracksVM>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,12 +32,10 @@ class PendingScrFragment : Fragment(), ItemClickListener {
 
         view.layoutManager = LinearLayoutManager(context!!)
         view.isNestedScrollingEnabled = false
-        adapter = PendingScrAdapter(this)
         adapter.isShowingAlbums = MainPrefs(context!!).showAlbumInRecents
         view.adapter = adapter
 
-        vm = VMFactory.getVM(this, TracksVM::class.java)
-        vm.loadPending(1000, false)
+        viewModel.loadPending(1000, false)
             .observe(viewLifecycleOwner) {
                 it ?: return@observe
                 adapter.clear()
@@ -61,7 +59,7 @@ class PendingScrFragment : Fragment(), ItemClickListener {
                     adapter.remove(position)
                 },
                 {
-                    vm.loadPending(1000, false)
+                    viewModel.loadPending(1000, false)
                 }
             )
     }

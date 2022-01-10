@@ -7,6 +7,7 @@ import android.text.format.DateFormat
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.arn.scrobble.*
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.info.InfoFragment
@@ -20,7 +21,7 @@ import de.umass.lastfm.*
 import java.util.*
 
 abstract class ChartsPeriodFragment : Fragment(), EntryItemClickListener {
-    protected val viewModel by lazy { VMFactory.getVM(this, ChartsVM::class.java) }
+    protected val viewModel by viewModels<ChartsVM>()
     protected val periodChipIds = arrayOf(
         R.id.charts_choose_week,
         R.id.charts_7day,
@@ -96,14 +97,15 @@ abstract class ChartsPeriodFragment : Fragment(), EntryItemClickListener {
             firstLoad = false
 
             val chip = group.findViewById<Chip>(checkedId)
+            val scrollView = periodChipsBinding.chartsPeriodScrollview
             group.post {
                 val scrollBounds = Rect()
-                periodChipsBinding.chartsPeriodScrollview.getDrawingRect(scrollBounds)
+                scrollView.getDrawingRect(scrollBounds)
                 val left = chip.x
                 val right = left + chip.width
                 val isChipVisible = scrollBounds.left < left && scrollBounds.right > right
                 if (!isChipVisible)
-                    periodChipsBinding.chartsPeriodScrollview.smoothScrollTo(chip.left, chip.top)
+                    scrollView.smoothScrollTo(chip.left, chip.top)
             }
         }
 

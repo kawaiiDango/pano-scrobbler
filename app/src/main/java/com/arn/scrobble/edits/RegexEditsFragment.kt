@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
@@ -18,7 +19,6 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.Stuff.hideKeyboard
-import com.arn.scrobble.VMFactory
 import com.arn.scrobble.databinding.ContentRegexEditBinding
 import com.arn.scrobble.databinding.DialogRegexEditBinding
 import com.arn.scrobble.databinding.DialogRegexTestBinding
@@ -38,7 +38,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
     private var _binding: ContentRegexEditBinding? = null
     private val binding
         get() = _binding!!
-    private val viewModel by lazy { VMFactory.getVM(this, RegexEditsVM::class.java) }
+    private val viewModel by viewModels<RegexEditsVM>()
     lateinit var adapter: RegexEditsAdapter
 
     private val localizedFieldsMap by lazy {
@@ -172,19 +172,19 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
 
         fun validate(): Boolean {
             if (binding.editPattern.text.isNullOrBlank()) {
-                binding.editPattern.error = "❗"
+                binding.editPattern.error = getString(R.string.required_fields_empty)
                 return false
             }
 
             try {
                 Pattern.compile(binding.editPattern.text.toString())
             } catch (e: Exception) {
-                binding.editPattern.error = "❗"
+                binding.editPattern.error = e.message
                 return false
             }
 
             if (binding.editField.text.isNullOrBlank()) {
-                binding.editField.error = "❗"
+                binding.editField.error = getString(R.string.required_fields_empty)
                 return false
             }
 

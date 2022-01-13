@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.widget.RemoteViews
+import androidx.annotation.Keep
 import androidx.core.R
 import androidx.core.app.NotificationBuilderWithBuilderAccessor
 import androidx.media.app.NotificationCompat
@@ -12,7 +13,9 @@ import androidx.media.app.NotificationCompat
 /**
  * Created by arn on 29/09/2017.
  */
+@Keep
 class MediaStyleMod : NotificationCompat.MediaStyle() {
+
     @SuppressLint("RestrictedApi")
     override fun makeContentView(builder: NotificationBuilderWithBuilderAccessor?): RemoteViews? {
 
@@ -25,7 +28,7 @@ class MediaStyleMod : NotificationCompat.MediaStyle() {
             val rv = generateContentView.invoke(this) as RemoteViews
 //            val rv = generateContentView()
             val res = Resources.getSystem()
-            val attrs = arrayOf(android.R.attr.textColor).toIntArray()
+            val attrs = intArrayOf(android.R.attr.textColor)
 
             var sysStyle =
                 res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")

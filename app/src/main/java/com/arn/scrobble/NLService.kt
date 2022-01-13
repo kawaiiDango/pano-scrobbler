@@ -6,7 +6,6 @@ import android.content.*
 import android.content.Intent.ACTION_PACKAGE_ADDED
 import android.content.Intent.ACTION_TIME_CHANGED
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.AudioManager
 import android.media.session.MediaSessionManager
@@ -17,8 +16,10 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.text.Html
 import androidx.annotation.StringRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.media.app.MediaStyleMod
 import com.arn.scrobble.Stuff.copy
 import com.arn.scrobble.Stuff.isUrlOrDomain
@@ -1118,13 +1119,15 @@ class NLService : NotificationListenerService() {
         @SuppressLint("RestrictedApi")
         private fun NotificationCompat.Builder.buildMediaStyleMod(): Notification {
             val modNeeded =
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && mActions != null && mActions.isNotEmpty()
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && !mActions.isNullOrEmpty()
             if (modNeeded) {
                 if (notiIconBitmap == null || notiIconBitmap?.isRecycled == true) {
-                    notiIconBitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_launcher)
+                    notiIconBitmap =
+                        AppCompatResources.getDrawable(applicationContext, R.drawable.ic_launcher)
+                            ?.toBitmap()
                 }
 //                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
-                this.setLargeIcon(notiIconBitmap)
+                setLargeIcon(notiIconBitmap)
             }
             val n = build()
             if (modNeeded)

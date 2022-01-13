@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobble</item>
-        <item quantity="other">%1$s scrobbles</item>
+        <item quantity="one">%1$s scrobbles</item>
+        <item quantity="other">%1$ss scrobbles</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s Zuhörer</item>
@@ -292,6 +292,7 @@
     <string name="pref_themes_desc">Mix-and-match\nÄndert auch die Benachrichtigungsfarbe</string>
     <string name="pref_widget_charts">Startbildschirm Widget - Diagramme</string>
     <string name="pref_show_albums">Albumnamen anzeigen</string>
+    <string name="pref_show_albums_desc">…für Scrobbles</string>
     <string name="pref_show_scrobble_sources">Symbole von Apps anzeigen, von denen du gescrobbelt hast</string>
     <string name="pref_show_scrobble_sources_desc">…neben jedem Scrobble. Diese Daten bleiben auf Ihrem Gerät</string>
     <string name="pref_search_in_source">Suche &amp; Wiedergabe auf der App, von der du gescrobbelt hast</string>

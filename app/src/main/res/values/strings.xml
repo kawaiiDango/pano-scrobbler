@@ -269,6 +269,15 @@
     <string name="charts_choose_week">Choose a week</string>
     <string name="charts_overall">Overall</string>
     <string name="charts_no_data">No data for this period</string>
+    <string name="charts_custom"
+        comment="Custom date range, but in short"
+        >Custom</string>
+    <string name="charts_continuous"
+        comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc"
+        >Continuous</string>
+    <string name="based_on" formatted="true"
+        comment="%1= the word 'artists', 'albums' or 'tracks'"
+        >Based on %1$s</string>
     <string name="not_enough_data"
         comment="(not enough data to draw a chart etc)"
         >Not enough data</string>

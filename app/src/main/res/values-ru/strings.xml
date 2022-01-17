@@ -285,7 +285,7 @@
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Скробблинг из</string>
     <string name="pref_enabled_apps_summary">ℹ️ Поддерживает приложения, отображающие музыкальные метаданные. Чтобы избежать двойного скробблинга из Spotify, включайте его только в одном месте.</string>
     <string name="pref_enabled_apps_title">Выберите приложения</string>
-    <string name="pref_auto_detect_summary">…мы все равно будем просить вас подтвердить/игнорировать это приложение</string>
+    <string name="pref_auto_detect_summary">мы все равно будем просить вас подтвердить/игнорировать это приложение</string>
     <string name="pref_auto_detect">Автоматическое определение новых музыкальных приложений</string>
     <string name="pref_delay">Задержка скробблирования (в зависимости от того, что наступит раньше)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Минуты</string>
@@ -319,9 +319,9 @@
     <string name="pref_themes_desc">Смешивайте и комбинируйте,\nа также меняйте цвет уведомлений</string>
     <string name="pref_widget_charts">Виджет на главном экране</string>
     <string name="pref_show_albums">Показать названия альбомов</string>
-    <string name="pref_show_albums_desc">… для скробблов</string>
+    <string name="pref_show_albums_desc">для скробблов</string>
     <string name="pref_show_scrobble_sources">Показывать значки приложений, из которых вы скробблили</string>
-    <string name="pref_show_scrobble_sources_desc">…рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
+    <string name="pref_show_scrobble_sources_desc">рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
     <string name="pref_search_in_source">Поиск &amp; играть в приложении, из которого вы скробблили</string>
     <string name="pref_search_in_source_desc">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>

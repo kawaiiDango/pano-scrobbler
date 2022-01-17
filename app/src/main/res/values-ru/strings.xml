@@ -322,7 +322,7 @@
     <string name="pref_show_albums_desc">для скробблов</string>
     <string name="pref_show_scrobble_sources">Показывать значки приложений, из которых вы скробблили</string>
     <string name="pref_show_scrobble_sources_desc">рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
-    <string name="pref_search_in_source">Поиск &amp; играть в приложении, из которого вы скробблили</string>
+    <string name="pref_search_in_source">Поиск воспроизведение в приложении, из которого вы скробблили</string>
     <string name="pref_search_in_source_desc">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Редактирование шаблонов</string>

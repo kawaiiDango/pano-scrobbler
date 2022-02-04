@@ -203,6 +203,9 @@
     <string name="charts_choose_week">Выберите неделю</string>
     <string name="charts_overall">За все время</string>
     <string name="charts_no_data">Нет данных за этот период</string>
+    <string name="charts_custom" comment="Custom date range, but in short">Пользовательский</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Непрерывный</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Основано на %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Недостаточно данных</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">Исторические недельные графики пока недоступны</string>
@@ -282,7 +285,7 @@
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Скробблинг из</string>
     <string name="pref_enabled_apps_summary">ℹ️ Поддерживает приложения, отображающие музыкальные метаданные. Чтобы избежать двойного скробблинга из Spotify, включайте его только в одном месте.</string>
     <string name="pref_enabled_apps_title">Выберите приложения</string>
-    <string name="pref_auto_detect_summary">…мы все равно будем просить вас подтвердить/игнорировать это приложение</string>
+    <string name="pref_auto_detect_summary">мы все равно будем просить вас подтвердить/игнорировать это приложение</string>
     <string name="pref_auto_detect">Автоматическое определение новых музыкальных приложений</string>
     <string name="pref_delay">Задержка скробблирования (в зависимости от того, что наступит раньше)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Минуты</string>
@@ -316,10 +319,10 @@
     <string name="pref_themes_desc">Смешивайте и комбинируйте,\nа также меняйте цвет уведомлений</string>
     <string name="pref_widget_charts">Виджет на главном экране</string>
     <string name="pref_show_albums">Показать названия альбомов</string>
-    <string name="pref_show_albums_desc">… для скробблов</string>
+    <string name="pref_show_albums_desc">для скробблов</string>
     <string name="pref_show_scrobble_sources">Показывать значки приложений, из которых вы скробблили</string>
-    <string name="pref_show_scrobble_sources_desc">…рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
-    <string name="pref_search_in_source">Поиск &amp; играть в приложении, из которого вы скробблили</string>
+    <string name="pref_show_scrobble_sources_desc">рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
+    <string name="pref_search_in_source">Поиск воспроизведение в приложении, из которого вы скробблили</string>
     <string name="pref_search_in_source_desc">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Редактирование шаблонов</string>

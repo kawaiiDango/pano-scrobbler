@@ -38,6 +38,7 @@
     </plurals>
     <string name="yes">确定</string>
     <string name="no">取消</string>
+    <string name="reset">重置</string>
     <string name="settings">设置</string>
     <string name="bug_report">Bug 报告</string>
     <string name="album_art">专辑封面</string>
@@ -116,6 +117,7 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">总记录：%1$s • 今日记录：%2$s</string>
     <string name="friends">好友</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s 项记录，始于 %2$s</string>
+    <string name="allow_background">允许后台抓取记录</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">在 %1$s 设备上需要借助该选项来启用音乐记录</string>
     <string name="grant_notification_access">授予通知访问权限</string>
     <string name="grant_notification_access_desc">借此获取音乐元数据信息，不会读取非音乐类通知</string>
@@ -126,12 +128,13 @@
     <string name="rate_action">去打分</string>
     <string name="time_just_now">刚刚</string>
     <string name="no_mail_apps">未安装电子邮件客户端</string>
-    <string name="loved">喜爱的</string>
+    <string name="loved">已点赞</string>
     <string name="unloved">不再喜爱的</string>
     <string name="simple_edits">编辑</string>
     <string name="force_remembered">强制记录（并记住该选择）</string>
     <string name="grant_rec_perm">请授予使用麦克风的权限</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">图表</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">标签云</string>
     <string name="scrobble_from_mic">从麦克风记录</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">来自麦克风</string>
     <string name="add_to_hs">添加到主屏幕</string>
@@ -149,7 +152,7 @@
     <string name="my_scrobbles">我的收听记录</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s 的音乐记录</string>
     <string name="listeners">听众</string>
-    <string name="scrobbles">总计收听记录</string>
+    <string name="scrobbles">收听记录</string>
     <string name="collapse" comment="(view only a few items)">折叠</string>
     <string name="expand" comment="(view all items)">展开</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s 喜欢这个</string>
@@ -164,6 +167,10 @@
     <string name="charts_choose_week">选择一周</string>
     <string name="charts_overall">总览</string>
     <string name="charts_no_data">此期间没有数据</string>
+    <string name="charts_custom" comment="Custom date range, but in short">自定义</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">连续</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">基于 %1$s</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">数据不足</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">历史周榜尚不可用</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">手气不错</string>
@@ -187,6 +194,7 @@
     <string name="close">关闭</string>
     <string name="user_tags_hint">新标记</string>
     <string name="user_tags_empty">您还没有添加任何标记</string>
+    <string name="info_long_press_hint">在曲目上长按以打开此操作</string>
     <string name="appwidget_loading">正在加载…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">时间段</string>
     <string name="appwidget_theme">主题</string>
@@ -194,10 +202,12 @@
     <string name="appwidget_show">显示</string>
     <string name="light">浅色</string>
     <string name="dark">深色</string>
+    <string name="dynamic" comment="Material You wallpaper based theming">动态（Material You）</string>
     <string name="appwidget_alpha">背景不透明度</string>
     <string name="appwidget_refresh_every">小部件每 15 分钟刷新一次</string>
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>
+    <string name="tint_background">背景色调</string>
     <string name="random_theme">每次启动时随机显示</string>
     <string name="palette_bg">在某些背景中使用专辑封面颜色</string>
     <string name="edit_name" comment="name for regex pattern">友善的昵称 (可选)</string>
@@ -219,7 +229,13 @@
     <string name="text" comment="text to test regex rules with">文本</string>
     <string name="edit_regex_warning">⚠ 请确保您在使用前了解 <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> 或直接从提供的 <b>预设</b> 中选择一个。正则表达式将从上往下逐一尝试匹配</string>
     <string name="blocked_metadata_info">ℹ️ 填写多个字段时将自动插入 AND 运算符</string>
+    <string name="blocked_metadata_noti">点击以屏蔽记录该信息</string>
+    <string name="block">屏蔽</string>
+    <string name="use_channel" comment="(Use youtube channel name)">使用频道名</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">您想启用 %1$s 这条编辑模板规则吗？</string>
+    <string name="show_persistent_noti">显示一条常驻通知</string>
+    <string name="fix_it_desc">用于保证记录器在某些设备上维持后台运行</string>
+    <string name="persistent_noti_desc">长按以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
     <string name="pref_master">记录音乐</string>
@@ -236,10 +252,13 @@
     <string name="pref_auto_detect_summary">…我们仍将要求您确认是否选择该应用</string>
     <string name="pref_auto_detect">自动检测音乐类应用</string>
     <string name="pref_delay">记录延迟（以较早者为准）</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分钟</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">百分比</string>
     <string name="pref_logout">退出登录</string>
     <string name="pref_confirm_logout">确认退出？再次点击以确认</string>
     <string name="pref_login">登录</string>
     <string name="pref_about" comment="Info about this app">关于</string>
+    <string name="pref_privacy_policy">隐私策略</string>
     <string name="pref_search_title">歌曲搜索应用</string>
     <string name="pref_scrobble_only">(仅限记录)</string>
     <string name="pref_scrobble_love_only">（仅限记录 &amp; 标记喜爱）</string>
@@ -264,6 +283,11 @@
     <string name="pref_themes_desc">自由混搭\n同时更改通知配色</string>
     <string name="pref_widget_charts">主屏幕微件 - 图表</string>
     <string name="pref_show_albums">显示专辑名称</string>
+    <string name="pref_show_albums_desc">…在抓取记录上展示</string>
+    <string name="pref_show_scrobble_sources">显示抓取记录来源应用的图标</string>
+    <string name="pref_show_scrobble_sources_desc">…除了抓取记录外，此数据仅在您的设备上保留</string>
+    <string name="pref_search_in_source">在抓取记录的来源应用中搜索 &amp; 播放</string>
+    <string name="pref_search_in_source_desc">在支持的应用中</string>
     <string name="pref_lists" comment="Such as edits list and block lists">列表</string>
     <string name="pref_regex_edits">模板编辑</string>
     <string name="pref_blocked_metadata">已屏蔽的元数据条目</string>
@@ -324,12 +348,14 @@
     <string name="graph">折线图</string>
     <string name="cleared_disabled_apps">已清除禁用应用</string>
     <string name="fix_it_title">可能的解决方案</string>
+    <string name="fix_it_startup_title">省电程序/启动管理器</string>
     <string name="fix_it_battery_title">禁用电池优化</string>
     <string name="fix_it_action" comment="(To open an app)">打开</string>
     <!--  pro  -->
     <string name="get_pro">支持本应用</string>
     <string name="help">帮助</string>
     <string name="pro_support">下面向您这样的宝贵用户提供一种简单、直接的方式，如果您觉得这款应用有价值，不妨以此对其表示支持。</string>
+    <string name="pro_also_get">您同时也将解锁以下功能：</string>
     <string name="thank_you">感谢！</string>
     <string name="purchase_pending">您的购买尚未被付款提供商确认。请稍等几分钟后重试。</string>
     <string name="billing_troubleshoot_title">恢复购买</string>

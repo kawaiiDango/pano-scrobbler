@@ -46,7 +46,7 @@ class FixItFragment : BottomSheetDialogFragment() {
             Stuff.openInBrowser(context!!, "https://dontkillmyapp.com")
         }
         val prefs = MainPrefs(context!!)
-        if (!prefs.notiPersistent && false) { // todo: enable in the future if needed
+        if (!prefs.notiPersistent) {
             binding.fixItPersistentNotiLayout.visibility = View.VISIBLE
             binding.fixItPersistentNotiAction.setOnClickListener { button ->
                 prefs.notiPersistent = true

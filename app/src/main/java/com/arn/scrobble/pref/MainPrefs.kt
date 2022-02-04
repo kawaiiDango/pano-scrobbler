@@ -61,7 +61,7 @@ class MainPrefs(context: Context) : Krate {
     var notiMonthlyDigests by booleanPref(CHANNEL_NOTI_DIGEST_MONTHLY).withDefault(true)
     var notiPendingScrobbles by booleanPref(CHANNEL_NOTI_PENDING).withDefault(true)
     var notiNewApp by booleanPref(CHANNEL_NOTI_NEW_APP).withDefault(true)
-    var notiPersistent by booleanPref(CHANNEL_NOTI_PERSISTENT).withDefault(false)
+    var notiPersistent by booleanPref(CHANNEL_NOTI_PERSISTENT).withDefault(Stuff.forcePersistentNoti)
 
     var lastfmUsername by stringPref(PREF_LASTFM_USERNAME)
     var lastfmSessKey by stringPref(PREF_LASTFM_SESS_KEY)

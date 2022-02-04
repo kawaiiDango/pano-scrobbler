@@ -183,6 +183,7 @@ object Stuff {
     )
 
     const val MANUFACTURER_HUAWEI = "huawei"
+    const val MANUFACTURER_XIAOMI = "xiaomi"
     const val MANUFACTURER_SAMSUNG = "samsung"
     const val MANUFACTURER_GOOGLE = "google"
 
@@ -230,7 +231,7 @@ object Stuff {
     private var _hasMouse: Boolean? = null
 
     val forcePersistentNoti by lazy {
-        Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(MANUFACTURER_HUAWEI /*, MANUFACTURER_SAMSUNG*/)
+        Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(MANUFACTURER_HUAWEI, MANUFACTURER_XIAOMI /*, MANUFACTURER_SAMSUNG*/)
     }
 
     val updateCurrentOrImmutable: Int

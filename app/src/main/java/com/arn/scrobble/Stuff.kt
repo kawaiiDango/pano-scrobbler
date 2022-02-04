@@ -231,6 +231,7 @@ object Stuff {
     private var _hasMouse: Boolean? = null
 
     val forcePersistentNoti by lazy {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
         Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(MANUFACTURER_HUAWEI, MANUFACTURER_XIAOMI /*, MANUFACTURER_SAMSUNG*/)
     }
 

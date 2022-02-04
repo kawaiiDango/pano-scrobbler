@@ -38,8 +38,14 @@ class PersistentNotificationService : Service() {
         val nb = NotificationCompat.Builder(applicationContext, MainPrefs.CHANNEL_NOTI_PERSISTENT)
             .setSmallIcon(R.drawable.vd_noti_persistent)
             .setPriority(Notification.PRIORITY_MIN)
-            .setContentTitle(getString(R.string.persistent_noti_desc))
-            .setContentText(getString(R.string.scrobbler_on))
+            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nb.setContentTitle(getString(R.string.persistent_noti_desc))
+                .setContentText(getString(R.string.scrobbler_on))
+        } else {
+            nb.setContentTitle(getString(R.string.scrobbler_on))
+        }
 
         startForeground(ID, nb.build())
     }

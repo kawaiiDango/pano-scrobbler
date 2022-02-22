@@ -110,6 +110,11 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Mi sento fortunato</string>
     <string name="random_not_found">Nessun brano trovato</string>
     <string name="randomize">Casuale</string>
+    <string name="graph_daily">Numero di scrobbling giornalieri</string>
+    <string name="graph_weekly">Numero di scrobbling settimanali</string>
+    <string name="graph_monthly">Numero di scrobbling mensili</string>
+    <string name="graph_yearly">Numero di scrobbling annuali</string>
+    <string name="graph_scrub_msg">Orari relativi al tuo fuso orario\nTieni premuto il grafico e scorri per vedere i numeri esatti</string>
     <string name="original" comment="Original metadata before editing">Originale</string>
     <string name="corrected" comment="Corrected metadata after editing">Corretto</string>
     <string name="close">Chiudi</string>
@@ -136,11 +141,33 @@
     <string name="pref_delay">Ritardo dello scrobbling (quello che viene prima)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuti</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentuale</string>
+    <string name="pref_logout">Esci</string>
+    <string name="pref_confirm_logout">VUOI DAVVERO CHIUDERE LA SESSIONE? Tocca di nuovo</string>
     <string name="pref_login">Accedi</string>
     <string name="pref_privacy_policy">Informativa sulla privacy</string>
     <string name="pref_search_title">App per la ricerca brani</string>
     <string name="pref_scrobble_only">(Solo scrobbling)</string>
     <string name="pref_scrobble_love_only">(Solo scrobbling &amp; preferiti)</string>
     <string name="pref_user_label" comment="(Like username)">Utente</string>
+    <string name="pref_now_playing">Invia scrobbling in corso</string>
+    <string name="pref_pixel_np">Scrobbling del Now Playing per Pixel</string>
+    <string name="pref_pixel_np_nope">Disponibile solo sui dispositivi Pixel</string>
+    <string name="pref_change_locale">Cambia lingua</string>
+    <string name="locale_only_ui">Si applica solo all’interfaccia principale</string>
+    <string name="pref_misc">Varie</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizzazione</string>
+    <string name="pref_themes">Temi</string>
+    <string name="pref_themes_desc">Personalizza gli abbinamenti\nCambia anche il colore delle notifiche</string>
+    <string name="pref_widget_charts">Widget nella schermata home - Classifiche</string>
+    <string name="pref_show_albums">Mostra nomi degli album</string>
+    <string name="pref_show_albums_desc">…per gli scrobbling</string>
+    <string name="pref_translate">Traduci questa app</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Autorizzazioni speciali app &gt; Accesso alle notifiche &gt; %1$s</string>
+    <string name="artist_extra">Brani, album &amp; simili</string>
+    <string name="no_browser">Nessun browser installato</string>
+    <string name="no_player">Nessun lettore musicale installato</string>
+    <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
+    <string name="not_running_fix_action">Risolvi</string>
     <!--  pro  -->
 </resources>

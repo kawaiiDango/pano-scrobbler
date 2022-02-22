@@ -63,5 +63,37 @@
     <string name="show_all">Mostra tutto</string>
     <string name="edit">Modifica</string>
     <string name="delete">Elimina</string>
+    <string name="pending_scrobbles">Scrobbling in attesa</string>
+    <string name="pending_scrobble">Scrobbling in attesa</string>
+    <string name="pending_scrobbles_noti">Elaborando gli scrobbling in attesa</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbling • %2$s odierni</string>
+    <string name="friends">Amici</string>
+    <string name="allow_background">Consenti lo scrobbling in background</string>
+    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Richiesto sui dispositivi %1$s, perché lo scrobbler funzioni</string>
+    <string name="grant_notification_access">Concedi accesso alle notifiche</string>
+    <string name="grant_notification_access_desc">Necessario per individuare i metadati della musica. Non sarà letta alcuna notifica non-musicale</string>
+    <string name="authenticate_with_lastfm" comment="Login with last.fm">Accedi con last.FM</string>
+    <string name="authenticate_with_lastfm_desc">Potrai accedere a LibreFM, GNUFM e Listenbrainz in seguito dalle impostazioni</string>
+    <string name="swap" comment="(Swap title and artist)">Scambia</string>
+    <string name="time_just_now">adesso</string>
+    <string name="simple_edits">Modifiche</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Classifiche</string>
+    <string name="collapse" comment="(view only a few items)">Riduci</string>
+    <string name="expand" comment="(view all items)">Espandi</string>
+    <string name="not_found" comment="Shown in search">Nessun risultato</string>
+    <string name="share_this_chart">Condividi questa classifica</string>
+    <string name="charts_no_data">Nessun dato per questo periodo</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Dati insufficienti</string>
+    <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Mi sento fortunato</string>
+    <string name="random_not_found">Nessun brano trovato</string>
+    <string name="randomize">Casuale</string>
+    <string name="original" comment="Original metadata before editing">Originale</string>
+    <string name="corrected" comment="Corrected metadata after editing">Corretto</string>
+    <string name="close">Chiudi</string>
+    <string name="user_tags_hint">Nuova tag</string>
+    <string name="user_tags_empty">Non hai aggiunto alcuna tag</string>
+    <string name="info_long_press_hint">Tieni premuto su un brano per aprire</string>
+    <string name="appwidget_loading">Caricamento…</string>
     <!--  pro  -->
 </resources>

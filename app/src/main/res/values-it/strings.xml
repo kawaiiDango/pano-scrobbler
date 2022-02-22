@@ -1,4 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="yes">Sì</string>
+    <string name="no">No</string>
+    <string name="reset">Ripristina</string>
+    <string name="settings">Configurazioni</string>
+    <string name="bug_report">Segnalazione Bug</string>
+    <string name="album_art">Copertina album</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Impossibile individuare il titolo</string>
+    <string name="network_error">Errore di rete</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">scrobbling ignorato</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobbling è troppo antico. Vorresti invece salvare questa modifica per gli scrobbling futuri?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Dei campi obbligatori sono vuoti</string>
+    <string name="artist">Artista</string>
+    <string name="artists">Artisti</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Artisti più ascoltati</string>
+    <string name="album_artist">Artista dell’album</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Artista / Canale</string>
+    <string name="similar_artists">Artisti simili</string>
+    <string name="album_optional">Album (facoltativo)</string>
+    <string name="album">Album</string>
+    <string name="albums">Album</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album più ascoltati</string>
+    <string name="track">Brano</string>
+    <string name="tracks">Brani</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Brani più ascoltati</string>
+    <string name="similar_tracks">Brani simili</string>
+    <string name="similar" comment="Similar tracks but in short">Simili</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
+    <string name="state_scrobbling">Scrobbling in corso…</string>
+    <string name="state_scrobbled">Scrobbling effettuato</string>
+    <string name="unscrobble">Annulla scrobbling</string>
+    <string name="state_unscrobbled">Scrobbling annullato</string>
+    <string name="state_unrecognised_artist">Artista non riconosciuto</string>
+    <string name="tap_to_edit">(Tocca per modificare)</string>
+    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Tocca per modificare o forzare)</string>
+    <string name="recently_scrobbled">Scrobbling recenti</string>
+    <string name="recently_loved">♥ Preferiti recenti</string>
+    <string name="recents" comment="Short for recently scrobbled">Recenti</string>
+    <string name="auto" comment="automatic or default setting">Automatico</string>
+    <string name="graph_info">... negli ultimi 5 mesi</string>
+    <string name="enabled_apps">App abilitate</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ci siamo quasi…</string>
+    <string name="music_players">Lettori musicali</string>
+    <string name="video_players">App di streaming video</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altre app</string>
+    <string name="offline">Offline. I dati mostrati non sono aggiornati</string>
+    <string name="unavailable_offline">Non disponibile offline</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servizi</string>
+    <string name="share_this_song">Condividi questa canzone</string>
+    <string name="share">Condividi</string>
+    <string name="more_info">Altre info</string>
+    <string name="search">Cerca</string>
+    <string name="profile">Profilo</string>
+    <string name="profile_pic">Immagine del profilo</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s rilevata</string>
+    <string name="new_player_prompt">Vuoi continuare lo scrobbling su questa app?</string>
+    <string name="no_track_url">Questa canzone non ha una pagina su lastFM</string>
+    <string name="channel_err">Errori di scrobbling</string>
+    <string name="new_app">Nuova app</string>
+    <string name="no_apps_enabled">Nessuna app abilitata</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">Altri %1$d</string>
+    <string name="show_all">Mostra tutto</string>
+    <string name="edit">Modifica</string>
+    <string name="delete">Elimina</string>
     <!--  pro  -->
 </resources>

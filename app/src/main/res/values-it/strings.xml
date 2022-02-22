@@ -10,7 +10,7 @@
     <string name="network_error">Errore di rete</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">scrobbling ignorato</string>
     <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobbling è troppo antico. Vorresti invece salvare questa modifica per gli scrobbling futuri?</string>
-    <string name="required_fields_empty" comment="Shown on filling a form">Dei campi obbligatori sono vuoti</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Alcuni campi obbligatori sono vuoti</string>
     <string name="artist">Artista</string>
     <string name="artists">Artisti</string>
     <string name="top_artists" comment="Top artists the user has listened to">Artisti più ascoltati</string>
@@ -38,7 +38,7 @@
     <string name="recently_loved">♥ Preferiti recenti</string>
     <string name="recents" comment="Short for recently scrobbled">Recenti</string>
     <string name="auto" comment="automatic or default setting">Automatico</string>
-    <string name="graph_info">... negli ultimi 5 mesi</string>
+    <string name="graph_info">… negli ultimi 5 mesi</string>
     <string name="enabled_apps">App abilitate</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ci siamo quasi…</string>
     <string name="music_players">Lettori musicali</string>
@@ -60,7 +60,7 @@
     <string name="new_app">Nuova app</string>
     <string name="no_apps_enabled">Nessuna app abilitata</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">Altri %1$d</string>
-    <string name="show_all">Mostra tutto</string>
+    <string name="show_all">Mostra tutti</string>
     <string name="edit">Modifica</string>
     <string name="delete">Elimina</string>
     <string name="pending_scrobbles">Scrobbling in attesa</string>
@@ -70,10 +70,10 @@
     <string name="friends">Amici</string>
     <string name="allow_background">Consenti lo scrobbling in background</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Richiesto sui dispositivi %1$s, perché lo scrobbler funzioni</string>
-    <string name="grant_notification_access">Concedi accesso alle notifiche</string>
+    <string name="grant_notification_access">Consenti accesso alle notifiche</string>
     <string name="grant_notification_access_desc">Necessario per individuare i metadati della musica. Non sarà letta alcuna notifica non-musicale</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Accedi con last.FM</string>
-    <string name="authenticate_with_lastfm_desc">Potrai accedere a LibreFM, GNUFM e Listenbrainz in seguito dalle impostazioni</string>
+    <string name="authenticate_with_lastfm_desc">Potrai accedere a LibreFM, GNUFM e Listenbrainz in seguito, dalle impostazioni</string>
     <string name="swap" comment="(Swap title and artist)">Scambia</string>
     <string name="time_just_now">adesso</string>
     <string name="simple_edits">Modifiche</string>
@@ -95,5 +95,30 @@
     <string name="user_tags_empty">Non hai aggiunto alcuna tag</string>
     <string name="info_long_press_hint">Tieni premuto su un brano per aprire</string>
     <string name="appwidget_loading">Caricamento…</string>
+    <string name="show_persistent_noti">Mostra una notifica permanente</string>
+    <string name="fix_it_desc">Queste potrebbero essere utili nel tenere lo scrobbler attivo in background in alcuni dispositivi</string>
+    <string name="persistent_noti_desc">Tieni premuto per nascondere</string>
+    <string name="scrobbler_off">Scrobbler disattivato</string>
+    <string name="scrobbler_on">Scrobbler attivato</string>
+    <string name="pref_master">Scrobbling di musica</string>
+    <string name="pref_master_qs_hint">Può essere attivato anche dalla barra di stato</string>
+    <string name="pref_noti">Notifiche</string>
+    <string name="pref_noti_categories">Categorie di notifiche</string>
+    <string name="pref_scrobble_noti">Notifiche di scrobbling</string>
+    <string name="pref_lockscreen_noti">Notifiche nella schermata di blocco</string>
+    <string name="pref_offline_info">ℹ️ Gli scrobbling &amp; preferiti effettuati offline saranno salvati e inviati in seguito.</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Supporta le app che mostrano metadati musicali. Per evitare gli scrobbling duplicati da Spotify, attiva lo scrobbling in un solo posto.</string>
+    <string name="pref_enabled_apps_title">Scegli app</string>
+    <string name="pref_auto_detect_summary">…ti chiederemo comunque di confermare/ignorare ogni app</string>
+    <string name="pref_auto_detect">Rileva automaticamente nuove app musicali</string>
+    <string name="pref_delay">Ritardo dello scrobbling (quello che viene prima)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuti</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentuale</string>
+    <string name="pref_login">Accedi</string>
+    <string name="pref_privacy_policy">Informativa sulla privacy</string>
+    <string name="pref_search_title">App per la ricerca brani</string>
+    <string name="pref_scrobble_only">(Solo scrobbling)</string>
+    <string name="pref_scrobble_love_only">(Solo scrobbling &amp; preferiti)</string>
+    <string name="pref_user_label" comment="(Like username)">Utente</string>
     <!--  pro  -->
 </resources>

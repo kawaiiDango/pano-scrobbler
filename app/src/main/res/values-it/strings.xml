@@ -169,5 +169,8 @@
     <string name="no_player">Nessun lettore musicale installato</string>
     <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
     <string name="not_running_fix_action">Risolvi</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d rimasti</string>
+    <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
+    <string name="webview_error">Impossibile caricare la pagina (hai controllato la tua connessione?)</string>
     <!--  pro  -->
 </resources>

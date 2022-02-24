@@ -188,6 +188,7 @@
     <string name="pref_misc">Varie</string>
     <string name="pref_imexport">Importazione &amp; esportazione</string>
     <string name="pref_export">Esporta</string>
+    <string name="pref_export_desc">Esegue il backup delle impostazioni, modifiche e metadati bloccati. Non salva i dati d’accesso per ragioni di sicurezza. Utile per cambiare dispositivo o condividere con amici.</string>
     <string name="pref_import">Importa</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizzazione</string>
     <string name="pref_themes">Temi</string>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s scrobbling</item>
+        <item quantity="other">%1$s scrobbling</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s ascoltatore</item>
         <item quantity="other">%1$s ascoltatori</item>
@@ -129,6 +133,7 @@
     <string name="listeners">Ascoltatori</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
     <string name="expand" comment="(view all items)">Espandi</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s l\'ha aggiunto ai preferiti</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbling fino al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
     <string name="a_to_b" formatted="true" comment="%1= date %2= date">dal %1$s al %2$s</string>
@@ -139,6 +144,7 @@
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Mi sento fortunato</string>
     <string name="random_not_found">Nessun brano trovato</string>
+    <string name="loved_track">Brano preferito</string>
     <string name="randomize">Casuale</string>
     <string name="graph_daily">Numero di scrobbling giornalieri</string>
     <string name="graph_weekly">Numero di scrobbling settimanali</string>
@@ -152,6 +158,11 @@
     <string name="user_tags_empty">Non hai aggiunto alcuna tag</string>
     <string name="info_long_press_hint">Tieni premuto su un brano per aprire</string>
     <string name="appwidget_loading">Caricamento…</string>
+    <string name="primary_color">Colore principale</string>
+    <string name="secondary_color">Colore secondario</string>
+    <string name="tint_background">Colore sfondo</string>
+    <string name="random_theme">Casuale a ogni avvio</string>
+    <string name="palette_bg">Usa il colore della copertina degli album per certi sfondi</string>
     <string name="show_persistent_noti">Mostra una notifica permanente</string>
     <string name="fix_it_desc">Queste potrebbero essere utili nel tenere lo scrobbler attivo in background in alcuni dispositivi</string>
     <string name="persistent_noti_desc">Tieni premuto per nascondere</string>

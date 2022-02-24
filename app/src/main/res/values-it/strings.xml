@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s ascoltatore</item>
+        <item quantity="other">%1$s ascoltatori</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$d artista</item>
+        <item quantity="other">%1$d artisti</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$d album</item>
+        <item quantity="other">%1$d album</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d brano</item>
+        <item quantity="other">%1$d brani</item>
+    </plurals>
     <string name="yes">Sì</string>
     <string name="no">No</string>
     <string name="reset">Ripristina</string>

@@ -174,6 +174,7 @@
     <string name="pref_logout">Esci</string>
     <string name="pref_confirm_logout">VUOI DAVVERO CHIUDERE LA SESSIONE? Tocca di nuovo</string>
     <string name="pref_login">Accedi</string>
+    <string name="pref_about" comment="Info about this app">Informazioni</string>
     <string name="pref_privacy_policy">Informativa sulla privacy</string>
     <string name="pref_search_title">App per la ricerca brani</string>
     <string name="pref_scrobble_only">(Solo scrobbling)</string>
@@ -185,6 +186,9 @@
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="locale_only_ui">Si applica solo all’interfaccia principale</string>
     <string name="pref_misc">Varie</string>
+    <string name="pref_imexport">Importazione &amp; esportazione</string>
+    <string name="pref_export">Esporta</string>
+    <string name="pref_import">Importa</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizzazione</string>
     <string name="pref_themes">Temi</string>
     <string name="pref_themes_desc">Personalizza gli abbinamenti\nCambia anche il colore delle notifiche</string>

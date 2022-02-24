@@ -16,6 +16,10 @@
         <item quantity="one">%1$d brano</item>
         <item quantity="other">%1$d brani</item>
     </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$d modifica</item>
+        <item quantity="other">%1$d modifiche</item>
+    </plurals>
     <string name="yes">Sì</string>
     <string name="no">No</string>
     <string name="reset">Ripristina</string>
@@ -89,6 +93,7 @@
     <string name="pending_scrobbles_noti">Elaborando gli scrobbling in attesa</string>
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbling • %2$s odierni</string>
     <string name="friends">Amici</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbling eseguiti, dal %2$s</string>
     <string name="allow_background">Consenti lo scrobbling in background</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Richiesto sui dispositivi %1$s, perché lo scrobbler funzioni</string>
     <string name="grant_notification_access">Consenti accesso alle notifiche</string>
@@ -104,9 +109,16 @@
     <string name="unloved">Rimosso dai preferiti</string>
     <string name="simple_edits">Modifiche</string>
     <string name="force_remembered">Forza scrobbling (sarà memorizzato)</string>
+    <string name="grant_rec_perm">Ti chiediamo di dare l\'autorizzazione per usare il microfono</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Classifiche</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuvola di tag</string>
+    <string name="scrobble_from_mic">Scrobbling dal microfono</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Microfono</string>
     <string name="add_to_hs">Aggiungi alla schermata home</string>
+    <string name="listening">Sto ascoltando musica nei dintorni…</string>
+    <string name="uploading">Sto inviando…</string>
+    <string name="recording_failed">Impossibile registrare. Il microfono potrebbe essere occupato o non disponibile in questo dispositivo</string>
+    <string name="press_back">Al termine, premere indietro</string>
     <string name="powered_acr">Fornito da <i><b>ACR</b>Cloud</i></string>
     <string name="details">Dettagli</string>
     <string name="saved_as_pending">Salvato come scrobbling in attesa</string>
@@ -117,7 +129,9 @@
     <string name="listeners">Ascoltatori</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
     <string name="expand" comment="(view all items)">Espandi</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbling fino al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
+    <string name="a_to_b" formatted="true" comment="%1= date %2= date">dal %1$s al %2$s</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
     <string name="share_this_chart">Condividi questa classifica</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>

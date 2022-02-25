@@ -36,6 +36,10 @@
         <item quantity="one">%1$d modifica</item>
         <item quantity="other">%1$d modifiche</item>
     </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$d metadato bloccato</item>
+        <item quantity="other">%1$d metadati bloccati</item>
+    </plurals>
     <string name="yes">Sì</string>
     <string name="no">No</string>
     <string name="reset">Ripristina</string>
@@ -149,12 +153,14 @@
     <string name="my_scrobbles">I miei scrobbling</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Gli scrobbling di %1$s</string>
     <string name="listeners">Ascoltatori</string>
+    <string name="scrobbles">Scrobbling</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
     <string name="expand" comment="(view all items)">Espandi</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s l\'ha aggiunto ai preferiti</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbling fino al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
     <string name="a_to_b" formatted="true" comment="%1= date %2= date">dal %1$s al %2$s</string>
+    <string name="weekly_range" formatted="true" comment="%1= date %2= date">settimanali (dal %1$s al %2$s)</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
     <string name="share_this_chart">Condividi questa classifica</string>
     <string name="weekly">Settimanali</string>
@@ -189,6 +195,7 @@
     <string name="tint_background">Colore sfondo</string>
     <string name="random_theme">Casuale a ogni avvio</string>
     <string name="palette_bg">Usa il colore della copertina degli album per certi sfondi</string>
+    <string name="edit_field" comment="Field like artist/album/track etc">Campo</string>
     <string name="show_persistent_noti">Mostra una notifica permanente</string>
     <string name="fix_it_desc">Queste potrebbero essere utili nel tenere lo scrobbler attivo in background in alcuni dispositivi</string>
     <string name="persistent_noti_desc">Tieni premuto per nascondere</string>
@@ -201,6 +208,7 @@
     <string name="pref_scrobble_noti">Notifiche di scrobbling</string>
     <string name="pref_lockscreen_noti">Notifiche nella schermata di blocco</string>
     <string name="pref_offline_info">ℹ️ Gli scrobbling &amp; preferiti effettuati offline saranno salvati e inviati in seguito.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">App per lo scrobbling</string>
     <string name="pref_enabled_apps_summary">ℹ️ Supporta le app che mostrano metadati musicali. Per evitare gli scrobbling duplicati da Spotify, attiva lo scrobbling in un solo posto.</string>
     <string name="pref_enabled_apps_title">Scegli app</string>
     <string name="pref_auto_detect_summary">…ti chiederemo comunque di confermare/ignorare ogni app</string>
@@ -235,7 +243,13 @@
     <string name="pref_widget_charts">Widget nella schermata home - Classifiche</string>
     <string name="pref_show_albums">Mostra nomi degli album</string>
     <string name="pref_show_albums_desc">…per gli scrobbling</string>
+    <string name="pref_show_scrobble_sources">Mostra icone delle app di provenienza degli scrobbling</string>
+    <string name="pref_show_scrobble_sources_desc">…vicino a ogni scrobbling. Questi dati rimarranno sul tuo dispositivo</string>
+    <string name="pref_search_in_source">Cerca &amp; riproduci sull’app di provenienza dei tuoi scrobbling</string>
+    <string name="pref_search_in_source_desc">Per app supportate</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Liste</string>
+    <string name="pref_lastfm_disable">Non inviare scrobbling a lastFM</string>
+    <string name="pref_lastfm_disable_desc">È comunque necessario accedere a lastFM perché il resto dell’interfaccia funzioni</string>
     <string name="pref_translate">Traduci questa app</string>
     <string name="import_hey_wtf">Quello probabilmente non è un file esportato da Pano Scrobbler</string>
     <string name="export_failed">Esportazione fallita</string>

@@ -227,4 +227,22 @@
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
     <string name="webview_error">Impossibile caricare la pagina (hai controllato la tua connessione?)</string>
     <!--  pro  -->
+    <string name="get_pro">Sostieni questa app</string>
+    <string name="help">Aiuto</string>
+    <string name="pro_support">Questo è un modo semplice e veloce con cui un utente fantastico come te può dimostrare di apprezzare e riconoscere il valore di questa app.</string>
+    <string name="pro_also_get">Avrai anche accesso alle seguenti funzioni:</string>
+    <string name="thank_you">Grazie mille!</string>
+    <string name="purchase_pending">Il tuo acquisto non è stato ancora confermato dal tuo servizio di pagamento. Ti chiediamo gentilmente di ricontrollare tra qualche minuto.</string>
+    <string name="billing_troubleshoot_title">Ripristina acquisto</string>
+    <string name="billing_troubleshoot">"Hai già effettuato l’acquisto?
+
+I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google Play che ha effettuato l’acquisto. Quando installi l’app in un nuovo dispositivo con molti account, Google Play potrebbe associarlo con quello errato. La soluzione migliore per selezionare esplicitamente l’account che ha effettuato l’acquisto è installare l’app da un computer attraverso il sito di Google Play:
+
+• Disinstalla questa app.
+• Apri il sito di Google Play dal tuo computer.
+• Accedi con l’account che ha effettuato l’acquisto.
+• Installa questa app direttamente dal sito di Google Play.
+"</string>
+    <string name="billing_block">Blocca lo scrobbling di certi metadati</string>
+    <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>
 </resources>

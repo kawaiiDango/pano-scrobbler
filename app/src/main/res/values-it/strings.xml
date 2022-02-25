@@ -8,6 +8,18 @@
         <item quantity="one">%1$s ascoltatore</item>
         <item quantity="other">%1$s ascoltatori</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$d settimana</item>
+        <item quantity="other">%1$d settimane</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$d mese</item>
+        <item quantity="other">%1$d mesi</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$d anno</item>
+        <item quantity="other">%1$d anni</item>
+    </plurals>
     <plurals name="num_artists">
         <item quantity="one">%1$d artista</item>
         <item quantity="other">%1$d artisti</item>
@@ -72,6 +84,11 @@
     <string name="offline">Offline. I dati mostrati non sono aggiornati</string>
     <string name="unavailable_offline">Non disponibile offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servizi</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Stavo ascoltando\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s stava ascoltando\n%1$s %2$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">I miei %2$s (%1$s):\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%2$s di %4$s (%1$s):\n%3$s</string>
+    <string name="share_sig">(tramite Pano Scrobbler)</string>
     <string name="share_this_song">Condividi questa canzone</string>
     <string name="share">Condividi</string>
     <string name="more_info">Altre info</string>
@@ -140,9 +157,14 @@
     <string name="a_to_b" formatted="true" comment="%1= date %2= date">dal %1$s al %2$s</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
     <string name="share_this_chart">Condividi questa classifica</string>
+    <string name="weekly">Settimanali</string>
+    <string name="monthly">Mensili</string>
+    <string name="charts_choose_week">Scegli una settimana</string>
+    <string name="charts_overall">Generale</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Dati insufficienti</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <string name="charts_no_weekly_charts">Le classifiche settimanali storiche non sono ancora disponibili</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Mi sento fortunato</string>
     <string name="random_not_found">Nessun brano trovato</string>
     <string name="loved_track">Brano preferito</string>

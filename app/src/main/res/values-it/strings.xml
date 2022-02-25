@@ -192,6 +192,8 @@
     <string name="pref_scrobble_love_only">(Solo scrobbling &amp; preferiti)</string>
     <string name="pref_user_label" comment="(Like username)">Utente</string>
     <string name="pref_now_playing">Invia scrobbling in corso</string>
+    <string name="pref_fetch_aa">Importa gli artisti dell\'album da lastFM</string>
+    <string name="pref_fetch_aa_desc">Utile per lettori che non forniscono questo dato. I dati importati potrebbero essere diversi dalle tue tag. lastFM potrebbe non avere i dati per alcune canzoni.</string>
     <string name="pref_pixel_np">Scrobbling del Now Playing per Pixel</string>
     <string name="pref_pixel_np_nope">Disponibile solo sui dispositivi Pixel</string>
     <string name="pref_change_locale">Cambia lingua</string>
@@ -207,7 +209,13 @@
     <string name="pref_widget_charts">Widget nella schermata home - Classifiche</string>
     <string name="pref_show_albums">Mostra nomi degli album</string>
     <string name="pref_show_albums_desc">…per gli scrobbling</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Liste</string>
     <string name="pref_translate">Traduci questa app</string>
+    <string name="import_hey_wtf">Quello probabilmente non è un file esportato da Pano Scrobbler</string>
+    <string name="export_failed">Esportazione fallita</string>
+    <string name="imported">Importato</string>
+    <string name="import_options">Opzioni d’importazione</string>
+    <string name="import_settings">Importa le configurazioni</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Autorizzazioni speciali app &gt; Accesso alle notifiche &gt; %1$s</string>
     <string name="artist_extra">Brani, album &amp; simili</string>

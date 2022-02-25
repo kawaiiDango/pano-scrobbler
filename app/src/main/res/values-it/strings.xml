@@ -77,6 +77,7 @@
     <string name="recently_scrobbled">Scrobbling recenti</string>
     <string name="recently_loved">♥ Preferiti recenti</string>
     <string name="recents" comment="Short for recently scrobbled">Recenti</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobbling effettuato per la prima volta il %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatico</string>
     <string name="graph_info">… negli ultimi 5 mesi</string>
     <string name="enabled_apps">App abilitate</string>
@@ -182,20 +183,34 @@
     <string name="graph_scrub_msg">Orari relativi al tuo fuso orario\nTieni premuto il grafico e scorri per vedere i numeri esatti</string>
     <string name="original" comment="Original metadata before editing">Originale</string>
     <string name="corrected" comment="Corrected metadata after editing">Corretto</string>
+    <string name="tag" comment="last.fm tag">Tag</string>
+    <string name="taggers" comment="(number of) people who have tagged">Utilizzatori</string>
+    <string name="taggings" comment="(total count of) a particular tag">Utilizzi</string>
     <string name="digest_weekly">I miei più ascoltati della scorsa settimana</string>
     <string name="digest_monthly">I miei più ascoltati dello scorso mese</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Più ascoltati %1$s</string>
+    <string name="my_tags">Le mie tag</string>
     <string name="close">Chiudi</string>
     <string name="user_tags_hint">Nuova tag</string>
     <string name="user_tags_empty">Non hai aggiunto alcuna tag</string>
     <string name="info_long_press_hint">Tieni premuto su un brano per aprire</string>
     <string name="appwidget_loading">Caricamento…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Periodo</string>
+    <string name="appwidget_theme">Tema</string>
+    <string name="appwidget_shadow">Ombra</string>
+    <string name="appwidget_show">Mostra</string>
+    <string name="light">Chiaro</string>
+    <string name="dark">Scuro</string>
+    <string name="dynamic" comment="Material You wallpaper based theming">Dinamico (Material You)</string>
+    <string name="appwidget_alpha">Opacità sfondo</string>
+    <string name="appwidget_refresh_every">Il widget si aggiornerà ogni 15 minuti</string>
     <string name="primary_color">Colore principale</string>
     <string name="secondary_color">Colore secondario</string>
     <string name="tint_background">Colore sfondo</string>
     <string name="random_theme">Casuale a ogni avvio</string>
     <string name="palette_bg">Usa il colore della copertina degli album per certi sfondi</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">Campo</string>
+    <string name="blocked_metadata_info">ℹ️ Compilando più di uno di questi campi si applicherà tra loro un operatore AND</string>
+    <string name="block">Blocca</string>
     <string name="show_persistent_noti">Mostra una notifica permanente</string>
     <string name="fix_it_desc">Queste potrebbero essere utili nel tenere lo scrobbler attivo in background in alcuni dispositivi</string>
     <string name="persistent_noti_desc">Tieni premuto per nascondere</string>
@@ -203,6 +218,7 @@
     <string name="scrobbler_on">Scrobbler attivato</string>
     <string name="pref_master">Scrobbling di musica</string>
     <string name="pref_master_qs_hint">Può essere attivato anche dalla barra di stato</string>
+    <string name="pref_noti_q">Puoi dare priorità alla notifica in caso l\'icona non si vedesse</string>
     <string name="pref_noti">Notifiche</string>
     <string name="pref_noti_categories">Categorie di notifiche</string>
     <string name="pref_scrobble_noti">Notifiche di scrobbling</string>
@@ -225,6 +241,8 @@
     <string name="pref_scrobble_only">(Solo scrobbling)</string>
     <string name="pref_scrobble_love_only">(Solo scrobbling &amp; preferiti)</string>
     <string name="pref_user_label" comment="(Like username)">Utente</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Token di autenticazione</string>
+    <string name="api_url" comment="For Listenbrainz">URL dell\'API</string>
     <string name="pref_now_playing">Invia scrobbling in corso</string>
     <string name="pref_fetch_aa">Importa gli artisti dell\'album da lastFM</string>
     <string name="pref_fetch_aa_desc">Utile per lettori che non forniscono questo dato. I dati importati potrebbero essere diversi dalle tue tag. lastFM potrebbe non avere i dati per alcune canzoni.</string>
@@ -233,6 +251,7 @@
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="locale_only_ui">Si applica solo all’interfaccia principale</string>
     <string name="pref_misc">Varie</string>
+    <string name="pref_gnufm_title">URL della nixtape GNU FM</string>
     <string name="pref_imexport">Importazione &amp; esportazione</string>
     <string name="pref_export">Esporta</string>
     <string name="pref_export_desc">Esegue il backup delle impostazioni, modifiche e metadati bloccati. Non salva i dati d’accesso per ragioni di sicurezza. Utile per cambiare dispositivo o condividere con amici.</string>
@@ -248,6 +267,7 @@
     <string name="pref_search_in_source">Cerca &amp; riproduci sull’app di provenienza dei tuoi scrobbling</string>
     <string name="pref_search_in_source_desc">Per app supportate</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Liste</string>
+    <string name="pref_blocked_metadata">Metadati bloccati</string>
     <string name="pref_lastfm_disable">Non inviare scrobbling a lastFM</string>
     <string name="pref_lastfm_disable_desc">È comunque necessario accedere a lastFM perché il resto dell’interfaccia funzioni</string>
     <string name="pref_translate">Traduci questa app</string>
@@ -256,6 +276,7 @@
     <string name="imported">Importato</string>
     <string name="import_options">Opzioni d’importazione</string>
     <string name="import_settings">Importa le configurazioni</string>
+    <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Autorizzazioni speciali app &gt; Accesso alle notifiche &gt; %1$s</string>
     <string name="artist_extra">Brani, album &amp; simili</string>
@@ -263,9 +284,15 @@
     <string name="no_player">Nessun lettore musicale installato</string>
     <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
     <string name="not_running_fix_action">Risolvi</string>
+    <string name="login_submit">Verifica</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d rimasti</string>
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
+    <string name="pending_batch" comment="For pending scrobbles">Inviando un insieme</string>
     <string name="webview_error">Impossibile caricare la pagina (hai controllato la tua connessione?)</string>
+    <string name="fix_it_title">Possibili soluzioni</string>
+    <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
+    <string name="fix_it_battery_title">Disattiva l\'ottimizzazione della batteria</string>
+    <string name="fix_it_action" comment="(To open an app)">Apri</string>
     <!--  pro  -->
     <string name="get_pro">Sostieni questa app</string>
     <string name="help">Aiuto</string>

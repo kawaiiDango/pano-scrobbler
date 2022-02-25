@@ -209,7 +209,9 @@
     <string name="tint_background">Colore sfondo</string>
     <string name="random_theme">Casuale a ogni avvio</string>
     <string name="palette_bg">Usa il colore della copertina degli album per certi sfondi</string>
+    <string name="edit_regex_warning">⚠ Assicurati di conoscere le <a href="https://www.google.com/search?q=regex+java+tutorial+italiano">espressioni regolari in java</a> prima di fare uso di questa funzione, o usa uno dei <b>preset</b> forniti. Le corrispondenze delle regex sono cercate in ordine dall\'alto al basso</string>
     <string name="blocked_metadata_info">ℹ️ Compilando più di uno di questi campi si applicherà tra loro un operatore AND</string>
+    <string name="blocked_metadata_noti">Tocca per bloccare questi metadati</string>
     <string name="block">Blocca</string>
     <string name="show_persistent_noti">Mostra una notifica permanente</string>
     <string name="fix_it_desc">Queste potrebbero essere utili nel tenere lo scrobbler attivo in background in alcuni dispositivi</string>
@@ -275,8 +277,14 @@
     <string name="export_failed">Esportazione fallita</string>
     <string name="imported">Importato</string>
     <string name="import_options">Opzioni d’importazione</string>
+    <string name="import_lists_nope">Non importare modifiche e lista bloccati</string>
+    <string name="import_lists_replace_all">Sostituisci tutte le modifiche e lista bloccati</string>
+    <string name="import_lists_replace_existing">Unisci sostituendo modifiche e lista bloccati esistenti</string>
+    <string name="import_lists_keep">Unisci tenendo modifiche e lista bloccati esistenti</string>
     <string name="import_settings">Importa le configurazioni</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
+    <string name="custom_listenbrainz">Server personale di Listenbrainz</string>
+    <string name="failed_encode_url">Codificazione dell\'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Autorizzazioni speciali app &gt; Accesso alle notifiche &gt; %1$s</string>
     <string name="artist_extra">Brani, album &amp; simili</string>
@@ -285,10 +293,12 @@
     <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
     <string name="not_running_fix_action">Risolvi</string>
     <string name="login_submit">Verifica</string>
+    <string name="shazam_scrobbling">Per effettuare scrobbling di continuo, apri invece <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> e attiva l\'opzione Auto Shazam. Assicurati anche che Shazam sia abilitata per lo scrobbling.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d rimasti</string>
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
     <string name="pending_batch" comment="For pending scrobbles">Inviando un insieme</string>
     <string name="webview_error">Impossibile caricare la pagina (hai controllato la tua connessione?)</string>
+    <string name="graph">Grafico</string>
     <string name="fix_it_title">Possibili soluzioni</string>
     <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
     <string name="fix_it_battery_title">Disattiva l\'ottimizzazione della batteria</string>

@@ -68,6 +68,7 @@
     <string name="music_players">Lettori musicali</string>
     <string name="video_players">App di streaming video</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altre app</string>
+    <string name="choose_apps">Scegli app per lo scrobbling</string>
     <string name="offline">Offline. I dati mostrati non sono aggiornati</string>
     <string name="unavailable_offline">Non disponibile offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servizi</string>
@@ -153,6 +154,9 @@
     <string name="graph_scrub_msg">Orari relativi al tuo fuso orario\nTieni premuto il grafico e scorri per vedere i numeri esatti</string>
     <string name="original" comment="Original metadata before editing">Originale</string>
     <string name="corrected" comment="Corrected metadata after editing">Corretto</string>
+    <string name="digest_weekly">I miei più ascoltati della scorsa settimana</string>
+    <string name="digest_monthly">I miei più ascoltati dello scorso mese</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Più ascoltati %1$s</string>
     <string name="close">Chiudi</string>
     <string name="user_tags_hint">Nuova tag</string>
     <string name="user_tags_empty">Non hai aggiunto alcuna tag</string>

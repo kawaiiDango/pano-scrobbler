@@ -20,6 +20,14 @@
         <item quantity="one">%1$d ano</item>
         <item quantity="other">%1$d anos</item>
     </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%d álbum</item>
+        <item quantity="other">%1$d álbuns</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d faixa</item>
+        <item quantity="other">%1$d faixas</item>
+    </plurals>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="settings">Configurações</string>

@@ -305,7 +305,7 @@
     <string name="pref_blocked_metadata">Blockierte Metadaten</string>
     <string name="pref_lastfm_disable">Nicht zu lastFM scrobbeln</string>
     <string name="pref_lastfm_disable_desc">Sie benötigen eine lastFM-Anmeldung, damit der Rest funktioniert</string>
-    <string name="pref_translate">Diese App Übersetzen</string>
+    <string name="pref_translate">Diese App übersetzen</string>
     <string name="import_hey_wtf">Es handelt sich hierbei wahrscheinlich nicht um eine Pano Scrobbler Exportdatei</string>
     <string name="export_failed">Export fehlgeschlagen</string>
     <string name="imported">Importiert</string>

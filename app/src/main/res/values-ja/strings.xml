@@ -38,6 +38,7 @@
     </plurals>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
+    <string name="reset">リセット</string>
     <string name="settings">設定</string>
     <string name="bug_report">バグ報告</string>
     <string name="album_art">アルバムアート</string>
@@ -116,6 +117,7 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s Scrobble • 本日%2$s件</string>
     <string name="friends">フレンド</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobble %1$s件 — %2$sより</string>
+    <string name="allow_background">バックグラウンドでもScrobbleする</string>
     <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Scrobblerを起動するには、%1$sのデバイスが必要です</string>
     <string name="grant_notification_access">通知へのアクセスの許可</string>
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
@@ -132,6 +134,7 @@
     <string name="force_remembered">強制的にScrobble (次回以降も同様)</string>
     <string name="grant_rec_perm">マイクへのアクセス権限を許可してください</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">チャート</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">タグクラウド</string>
     <string name="scrobble_from_mic">マイクからScrobble</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">マイクから</string>
     <string name="add_to_hs">ホーム画面に追加</string>
@@ -164,6 +167,7 @@
     <string name="charts_choose_week">週を選択</string>
     <string name="charts_overall">全期間</string>
     <string name="charts_no_data">この期間のデータはありません</string>
+    <string name="charts_custom" comment="Custom date range, but in short">カスタム</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">過去1週間のチャートはまだありません</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">幸運の一時</string>
@@ -187,6 +191,7 @@
     <string name="close">閉じる</string>
     <string name="user_tags_hint">新規タグ</string>
     <string name="user_tags_empty">まだタグを追加していません</string>
+    <string name="info_long_press_hint">トラックを長押しで開く</string>
     <string name="appwidget_loading">読み込み中…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">期間</string>
     <string name="appwidget_theme">テーマ</string>
@@ -194,6 +199,7 @@
     <string name="appwidget_show">表示</string>
     <string name="light">ライト</string>
     <string name="dark">ダーク</string>
+    <string name="dynamic" comment="Material You wallpaper based theming">動的に変化させる (Material You)</string>
     <string name="appwidget_alpha">背景の透明度</string>
     <string name="appwidget_refresh_every">ウィジェットは15分ごとに更新されます</string>
     <string name="primary_color">メインカラー</string>
@@ -219,7 +225,13 @@
     <string name="text" comment="text to test regex rules with">テキスト</string>
     <string name="edit_regex_warning">⚠ これを使用する前に、<a href="https://www.google.com/search?q=%E6%AD%A3%E8%A6%8F%E8%A1%A8%E7%8F%BE+%E4%BD%BF%E3%81%84%E6%96%B9">Javaの正規表現</a>を理解しておくか、用意された<b>プリセット</b>から1つ選ぶようにしてください。正規表現の一致判定は上から順に実行されます</string>
     <string name="blocked_metadata_info">ℹ️ 複数の項目を入力すると、各合間にAND演算子が適用されます</string>
+    <string name="blocked_metadata_noti">タップでScrobbleから除外</string>
+    <string name="block">ブロック</string>
+    <string name="use_channel" comment="(Use youtube channel name)">チャンネル名を使用する</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">パターン訂正ルール: %1$sを有効化しますか？</string>
+    <string name="show_persistent_noti">通知を永続的に表示する</string>
+    <string name="fix_it_desc">これらは、一部デバイスにおいてバックグラウンドでScrobbleサービスを実行するのに役立ちます</string>
+    <string name="persistent_noti_desc">長押しで非表示</string>
     <string name="scrobbler_off">Scrobblerを無効化しました</string>
     <string name="scrobbler_on">Scrobblerを有効化しました</string>
     <string name="pref_master">音楽をScrobbleする</string>
@@ -236,11 +248,13 @@
     <string name="pref_auto_detect_summary">…そのアプリの取捨選択をお願いすることになります</string>
     <string name="pref_auto_detect">音楽系アプリのインストールを自動検出</string>
     <string name="pref_delay">Scrobbleの遅延 (いずれかの早い方優先)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">パーセント</string>
     <string name="pref_logout">ログアウト</string>
     <string name="pref_confirm_logout">ログイアウトしてもよろしいですか？再度タップで実行します</string>
     <string name="pref_login">ログイン</string>
     <string name="pref_about" comment="Info about this app">アプリ情報</string>
+    <string name="pref_privacy_policy">プライバシーポリシー</string>
     <string name="pref_search_title">曲検索アプリ</string>
     <string name="pref_scrobble_only">(Scrobbleのみ)</string>
     <string name="pref_scrobble_love_only">(Scrobble &amp; Loveのみ)</string>
@@ -265,6 +279,11 @@
     <string name="pref_themes_desc">Mix &amp; Match\n通知の色も変化します</string>
     <string name="pref_widget_charts">ホーム画面ウィジェット - チャート</string>
     <string name="pref_show_albums">アルバム名を表示する</string>
+    <string name="pref_show_albums_desc">…Scrobbleの情報の一つとして</string>
+    <string name="pref_show_scrobble_sources">Scrobble元のアプリのアイコンを表示する</string>
+    <string name="pref_show_scrobble_sources_desc">…各Scrobbleの隣に表示されます。このデータは、デバイス内に保存されます</string>
+    <string name="pref_search_in_source">Scrobbleしたアプリで検索および再生する</string>
+    <string name="pref_search_in_source_desc">対応アプリのみ</string>
     <string name="pref_lists" comment="Such as edits list and block lists">リスト</string>
     <string name="pref_regex_edits">パターン訂正</string>
     <string name="pref_blocked_metadata">ブロックされたメタデータ</string>
@@ -331,6 +350,7 @@ TaskerやMacrodroidなどのマクロアプリで使用できます。"</string>
     <string name="get_pro">このアプリを支援</string>
     <string name="help">ヘルプ</string>
     <string name="pro_support">支援は、このアプリの価値を認識していることを示す方法の一つです。あなたのような素晴らしいユーザー様なら、きっと容易いことでしょう。</string>
+    <string name="pro_also_get">以下の機能も得ることができます。</string>
     <string name="thank_you">ありがとうございます！</string>
     <string name="purchase_pending">お支払いの確認が取れませんでした。後ほどお試しください。</string>
     <string name="billing_troubleshoot_title">購入の復元</string>

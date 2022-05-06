@@ -151,6 +151,7 @@
     <string name="saved_as_pending">Salvato come scrobbling in attesa</string>
     <string name="sort">Ordina</string>
     <string name="past_scrobbles">Cronologia scrobbling</string>
+    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">Di %1$s</string>
     <string name="my_scrobbles">I miei scrobbling</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Gli scrobbling di %1$s</string>
     <string name="listeners">Ascoltatori</string>
@@ -169,6 +170,9 @@
     <string name="charts_choose_week">Scegli una settimana</string>
     <string name="charts_overall">Generale</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>
+    <string name="charts_custom" comment="Custom date range, but in short">Personalizzato</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continuo</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Basato su %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Dati insufficienti</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="charts_no_weekly_charts">Le classifiche settimanali storiche non sono ancora disponibili</string>
@@ -209,10 +213,29 @@
     <string name="tint_background">Colore sfondo</string>
     <string name="random_theme">Casuale a ogni avvio</string>
     <string name="palette_bg">Usa il colore della copertina degli album per certi sfondi</string>
+    <string name="edit_name" comment="name for regex pattern">Secondo nome (facoltativo)</string>
+    <string name="edit_regex">Modello dell\'Espressione Regolare (regex)</string>
+    <string name="edit_regex_replacement">Sostituzione del regex</string>
+    <string name="edit_field" comment="Field like artist/album/track etc">Campo</string>
+    <string name="edit_replace">Sostituisci</string>
+    <string name="edit_first" comment="First occurrence of a pattern">Primo</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Tutte</string>
+    <string name="edit_continue">Se trovato, continua ad abbinare altri regex</string>
+    <string name="edit_case_sensitive">Differenzia maiuscole/minuscole</string>
+    <string name="edit_regex_test">Prova</string>
+    <string name="edit_presets">Preset</string>
+    <string name="edit_presets_available">Preset disponibili</string>
+    <string name="edit_no_presets_available">Tutti i preset sono in uso</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Preset: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite pattern raggiunto (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Maniglia di trascinamento</string>
+    <string name="text" comment="text to test regex rules with">Testo</string>
     <string name="edit_regex_warning">⚠ Assicurati di conoscere le <a href="https://www.google.com/search?q=regex+java+tutorial+italiano">espressioni regolari in java</a> prima di fare uso di questa funzione, o usa uno dei <b>preset</b> forniti. Le corrispondenze delle regex sono cercate in ordine dall\'alto al basso</string>
     <string name="blocked_metadata_info">ℹ️ Compilando più di uno di questi campi si applicherà tra loro un operatore AND</string>
     <string name="blocked_metadata_noti">Tocca per bloccare questi metadati</string>
     <string name="block">Blocca</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Usa il nome del canale YouTube</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Vuoi abilitare la regola di modifica del pattern: %1$s?</string>
     <string name="show_persistent_noti">Mostra una notifica permanente</string>
     <string name="fix_it_desc">Queste potrebbero essere utili nel tenere lo scrobbler attivo in background in alcuni dispositivi</string>
     <string name="persistent_noti_desc">Tieni premuto per nascondere</string>
@@ -269,6 +292,7 @@
     <string name="pref_search_in_source">Cerca &amp; riproduci sull’app di provenienza dei tuoi scrobbling</string>
     <string name="pref_search_in_source_desc">Per app supportate</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Liste</string>
+    <string name="pref_regex_edits">Modifiche del pattern</string>
     <string name="pref_blocked_metadata">Metadati bloccati</string>
     <string name="pref_lastfm_disable">Non inviare scrobbling a lastFM</string>
     <string name="pref_lastfm_disable_desc">È comunque necessario accedere a lastFM perché il resto dell’interfaccia funzioni</string>
@@ -282,6 +306,19 @@
     <string name="import_lists_replace_existing">Unisci sostituendo modifiche e lista bloccati esistenti</string>
     <string name="import_lists_keep">Unisci tenendo modifiche e lista bloccati esistenti</string>
     <string name="import_settings">Importa le configurazioni</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Intenti di broadcast</string>
+    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Per la canzone corrente:
+%1$s
+%2$s
+%3$s
+
+Per lo scrobbler:
+%4$s
+%5$s
+
+Possono essere utilizzati con applicazioni come Tasker, Macrodroide ecc."</string>
+    <string name="pref_intents">Intenti per Tasker ecc.</string>
+    <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
     <string name="custom_listenbrainz">Server personale di Listenbrainz</string>
     <string name="failed_encode_url">Codificazione dell\'URL fallita</string>
@@ -293,12 +330,26 @@
     <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
     <string name="not_running_fix_action">Risolvi</string>
     <string name="login_submit">Verifica</string>
+    <string name="scrobble">Scrobble</string>
+    <string name="acr_host" comment="Web hostname">Host</string>
+    <string name="acr_key">Chiave d\'accesso</string>
+    <string name="acr_secret">Chiave segreta</string>
+    <string name="add_acr_key">Aggiungi Chiave ACRCloud</string>
+    <string name="remove_acr_key">Rimuovi Chiave ACRCloud</string>
+    <string name="add_acr_consider">Per evitare di raggiungere i rate limit, considera di aggiungere la tua chiave ACRCloud</string>
+    <string name="add">Aggiungi</string>
+    <string name="add_acr_key_info">"• Registrati su https://console.acrcloud.com
+• Vai su Projects &gt; Audio &amp; video recognition
+• Crea un nuovo progetto, seleziona Recorded Audio e ACRCloud Music bucket"</string>
     <string name="shazam_scrobbling">Per effettuare scrobbling di continuo, apri invece <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> e attiva l\'opzione Auto Shazam. Assicurati anche che Shazam sia abilitata per lo scrobbling.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d rimasti</string>
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
     <string name="pending_batch" comment="For pending scrobbles">Inviando un insieme</string>
     <string name="webview_error">Impossibile caricare la pagina (hai controllato la tua connessione?)</string>
+    <string name="navigation_drawer_open">Apri il menù di navigazione o torna indietro</string>
+    <string name="navigation_drawer_close">Chiudi menù di navigazione</string>
     <string name="graph">Grafico</string>
+    <string name="cleared_disabled_apps">App disabilitate cancellate</string>
     <string name="fix_it_title">Possibili soluzioni</string>
     <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
     <string name="fix_it_battery_title">Disattiva l\'ottimizzazione della batteria</string>

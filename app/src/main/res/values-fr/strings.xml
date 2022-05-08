@@ -4,18 +4,6 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
-    <plurals name="num_weeks">
-        <item quantity="one">%1$d semaine</item>
-        <item quantity="other">%1$d semaines</item>
-    </plurals>
-    <plurals name="num_months">
-        <item quantity="one">%1$d mois</item>
-        <item quantity="other">%1$d mois</item>
-    </plurals>
-    <plurals name="num_years">
-        <item quantity="one">%1$d année</item>
-        <item quantity="other">%1$d années</item>
-    </plurals>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="settings">Configurer</string>
@@ -23,7 +11,6 @@
     <string name="album_art">Pochette d\'album</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossible d\'analyser le titre</string>
     <string name="network_error">Erreur de réseau</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">le scrobble a été ignoré</string>
     <string name="scrobble_ignored_save_edit">Lastfm a ignoré l\'édition probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cet édition pour les scrobbles futurs à la place ?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Les champs nécessaires sont vides</string>
     <string name="artist">Artiste</string>
@@ -48,7 +35,6 @@
     <string name="state_unscrobbled">Unscrobbled</string>
     <string name="state_unrecognised_artist">Artiste non reconnu</string>
     <string name="tap_to_edit">(Appuyez pour modifier)</string>
-    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Appuyer pour modifier ou forcer)</string>
     <string name="recently_scrobbled">Récemment Scrobbled</string>
     <string name="recently_loved">♥ Récemment aimé</string>
     <string name="recents" comment="Short for recently scrobbled">Récents</string>
@@ -93,7 +79,6 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s aujourd\'hui</string>
     <string name="friends">Amis</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
-    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Nécessaires sur les appareils %1$s pour le lancement du scrobbler</string>
     <string name="grant_notification_access">Autoriser l\'accès aux notifications</string>
     <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n\'est lue</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">S\'authentifier avec last.FM</string>
@@ -130,7 +115,6 @@
     <string name="share_this_chart">Partager ce graphique</string>
     <string name="weekly">Hebdomadaire</string>
     <string name="monthly">Mensuel</string>
-    <string name="charts_choose_week">Sélectionner une semaine</string>
     <string name="charts_overall">Global</string>
     <string name="charts_no_data">Aucune donnée pour cette période</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Je me sens chanceux</string>
@@ -156,15 +140,12 @@
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="appwidget_alpha">Opacité de l\'arrière-plan</string>
-    <string name="appwidget_refresh_every">Le widget sera actualisé toutes les 15 minutes</string>
     <string name="primary_color">Couleur principale</string>
     <string name="secondary_color">Couleur secondaire</string>
     <string name="random_theme">Aléatoire à chaque lancement</string>
-    <string name="palette_bg">Utiliser la couleur des pochettes d\'album pour certains arrière-plans</string>
     <string name="edit_name" comment="name for regex pattern">Nom simple (facultatif)</string>
     <string name="edit_regex">Patterne regex</string>
     <string name="edit_regex_replacement">Remplacement regex</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">Champ</string>
     <string name="edit_replace">Remplacer</string>
     <string name="edit_first" comment="First occurrence of a pattern">Premier</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tous</string>
@@ -256,6 +237,5 @@
     <string name="thank_you">Merci !</string>
     <string name="purchase_pending">Votre achat n\'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>
     <string name="billing_troubleshoot_title">Restaurer l\'achat</string>
-    <string name="billing_block">Bloquer les métadonnées du scrobbling</string>
     <string name="billing_sharing">Supprimer le nom de l\'application lors du partage</string>
 </resources>

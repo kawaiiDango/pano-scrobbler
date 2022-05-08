@@ -194,9 +194,10 @@ githubRelease {
     body(changelog)
     tagName(android.defaultConfig.versionCode.toString())
     releaseName(android.defaultConfig.versionName)
+    targetCommitish("master")
     releaseAssets(
         listOf(
-            "app/build/outputs/apk/release/pScrobbler-release.apk",
+            "build/outputs/apk/release/pScrobbler-release.apk",
         )
     )
     draft(false) // by default this is true

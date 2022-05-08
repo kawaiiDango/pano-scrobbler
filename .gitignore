@@ -16,6 +16,7 @@
 /app/release-public
 /app/src/main/res/**/strings-sz.xml
 /app/src/main/res/**/strings-np.xml
+/buildSrc/build/tmp
 /misc/profilerDumps
 stylegen/Tonal Palettes.svg
 .privado

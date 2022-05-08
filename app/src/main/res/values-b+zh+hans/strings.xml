@@ -6,8 +6,35 @@
     <plurals name="num_listeners">
         <item quantity="other">%1$s 位听众</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="other">%1$s 周</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="other">%1$s 月</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="other">%1$s 年</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="other">%1$s 位艺术家</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="other">%1$s 张专辑</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="other">%1$s 首曲目</item>
+    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="other">%1$d 项匹配</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="other">%1$s 项编辑记录</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="other">%1$s 项编辑模板</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="other">%1$s 则已屏蔽的元数据条目</item>
     </plurals>
     <string name="yes">确定</string>
     <string name="no">取消</string>
@@ -169,6 +196,7 @@
     <string name="light">浅色</string>
     <string name="dark">深色</string>
     <string name="appwidget_alpha">背景不透明度</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">小部件每 %1$d 分钟刷新一次</string>
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>
     <string name="tint_background">背景色调</string>

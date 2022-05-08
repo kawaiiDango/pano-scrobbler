@@ -13,40 +13,40 @@
         <item quantity="other">%1$s слушателя</item>
     </plurals>
     <plurals name="num_weeks">
-        <item quantity="one">%1$d неделя</item>
-        <item quantity="few">%1$d недели</item>
-        <item quantity="many">%1$d недель</item>
-        <item quantity="other">%1$d недели</item>
+        <item quantity="one">%1$s неделя</item>
+        <item quantity="few">%1$s недели</item>
+        <item quantity="many">%1$s недель</item>
+        <item quantity="other">%1$s недели</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$d месяц</item>
-        <item quantity="few">%1$d месяца</item>
-        <item quantity="many">%1$d месяцев</item>
-        <item quantity="other">%1$d месяца</item>
+        <item quantity="one">%1$s месяц</item>
+        <item quantity="few">%1$s месяца</item>
+        <item quantity="many">%1$s месяцев</item>
+        <item quantity="other">%1$s месяца</item>
     </plurals>
     <plurals name="num_years">
-        <item quantity="one">%1$d год</item>
-        <item quantity="few">%1$d года</item>
-        <item quantity="many">%1$d лет</item>
-        <item quantity="other">%1$d года</item>
+        <item quantity="one">%1$s год</item>
+        <item quantity="few">%1$s года</item>
+        <item quantity="many">%1$s лет</item>
+        <item quantity="other">%1$s лет</item>
     </plurals>
     <plurals name="num_artists">
-        <item quantity="one">%1$d артист</item>
-        <item quantity="few">%1$d артиста</item>
-        <item quantity="many">%1$d артистов</item>
-        <item quantity="other">%1$d артиста</item>
+        <item quantity="one">%1$s артист</item>
+        <item quantity="few">Исполнителей: %1$s</item>
+        <item quantity="many">Исполнителей: %1$s</item>
+        <item quantity="other">Исполнителей: %1$s</item>
     </plurals>
     <plurals name="num_albums">
-        <item quantity="one">%1$d альбом</item>
-        <item quantity="few">%1$d альбома</item>
-        <item quantity="many">%1$d альбомов</item>
-        <item quantity="other">%1$d альбома</item>
+        <item quantity="one">%1$s альбом</item>
+        <item quantity="few">%1$s альбомов</item>
+        <item quantity="many">%1$s альбомов</item>
+        <item quantity="other">%1$s альбома</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="one">%1$d трек</item>
-        <item quantity="few">%1$d трека</item>
-        <item quantity="many">%1$d треков</item>
-        <item quantity="other">%1$d трека</item>
+        <item quantity="one">%1$s трек</item>
+        <item quantity="few">%1$s треков</item>
+        <item quantity="many">%1$s треков</item>
+        <item quantity="other">%1$s трека</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d совпадение</item>
@@ -55,22 +55,22 @@
         <item quantity="other">%1$d совпадения</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$d редактирование</item>
-        <item quantity="few">%1$d редактирования</item>
-        <item quantity="many">%1$d редактирований</item>
-        <item quantity="other">%1$d редактирования</item>
+        <item quantity="one">%1$s редактирование</item>
+        <item quantity="few">%1$s редактирований</item>
+        <item quantity="many">%1$s редактирований</item>
+        <item quantity="other">%1$s редактирования</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$d редактирование шаблона</item>
-        <item quantity="few">%1$d редактирования шаблона</item>
-        <item quantity="many">%1$d редактирований шаблона</item>
-        <item quantity="other">%1$d редактирования шаблона</item>
+        <item quantity="one">%1$s редактирование шаблона</item>
+        <item quantity="few">%1$s редактирований шаблона</item>
+        <item quantity="many">%1$s редактирований шаблона</item>
+        <item quantity="other">%1$s редактирования шаблона</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$d блокировка метаданных</item>
-        <item quantity="few">%1$d блокировки метаданных</item>
-        <item quantity="many">%1$d блокировок метаданных</item>
-        <item quantity="other">%1$d блокировки метаданных</item>
+        <item quantity="one">%1$s блокировка метаданных</item>
+        <item quantity="few">%1$s блокировок метаданных</item>
+        <item quantity="many">%1$s блокировок метаданных</item>
+        <item quantity="other">%1$s блокировки метаданных</item>
     </plurals>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -80,7 +80,6 @@
     <string name="album_art">Обложка альбома</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось обнаружить заголовок</string>
     <string name="network_error">Ошибка сети</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">скроббл игнорирован</string>
     <string name="scrobble_ignored_save_edit">Lastfm проигнорировал правку, вероятно, потому, что скроббл слишком старый. Хотели бы вы вместо этого сохранить это изменение для будущих скробблов?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Обязательные поля не заполнены</string>
     <string name="artist">Исполнитель</string>
@@ -233,6 +232,7 @@
     <string name="light">Светлая</string>
     <string name="dark">Темная</string>
     <string name="appwidget_alpha">Прозрачность фона</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Виджет обновляется каждые %1$d минут</string>
     <string name="primary_color">Основной цвет</string>
     <string name="secondary_color">Вторичный цвет</string>
     <string name="tint_background">Оттеночный фон</string>
@@ -240,7 +240,6 @@
     <string name="edit_name" comment="name for regex pattern">Дружественное имя (необязательно)</string>
     <string name="edit_regex">Шаблон регулярного выражения</string>
     <string name="edit_regex_replacement">Замена регулярного выражения</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">Поле</string>
     <string name="edit_replace">Замена</string>
     <string name="edit_first" comment="First occurrence of a pattern">Первый</string>
     <string name="edit_all" comment="All occurrences of a pattern">Все</string>
@@ -256,7 +255,6 @@
     <string name="text" comment="text to test regex rules with">Текст</string>
     <string name="edit_regex_warning">ℹ️ Перед использованием убедитесь, что вы понимаете <a href="https://www.google.com/search?q=regex+tutorial">Java Regex</a> или используйте одну из <b>предустановок</b>. Поиск совпадений с регулярным выражением осуществляется сверху вниз</string>
     <string name="blocked_metadata_info">ℹ️ При заполнении более чем одного из этих полей между ними будет применяться оператор И</string>
-    <string name="blocked_metadata_noti">Нажмите, чтобы заблокировать скробблинг</string>
     <string name="block">Блокировать</string>
     <string name="use_channel" comment="(Use youtube channel name)">Использовать название канала</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Хотите включить правило редактирования шаблона: %1$s?</string>
@@ -385,6 +383,5 @@
 • Войдите в систему с учетной записью, которой принадлежит покупка.
 • Установите это приложение прямо с веб-страницы Google Play.
 "</string>
-    <string name="billing_block">Блокировать метаданные от скробблинга</string>
     <string name="billing_sharing">Удалить имя приложения при шеринге</string>
 </resources>

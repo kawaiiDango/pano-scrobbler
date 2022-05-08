@@ -5,16 +5,16 @@
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
     <plurals name="num_weeks">
-        <item quantity="one">%1$d semaine</item>
-        <item quantity="other">%1$d semaines</item>
+        <item quantity="one">%1$s semaine</item>
+        <item quantity="other">%1$s semaines</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$d mois</item>
-        <item quantity="other">%1$d mois</item>
+        <item quantity="one">%1$s mois</item>
+        <item quantity="other">%1$s mois</item>
     </plurals>
     <plurals name="num_years">
-        <item quantity="one">%1$d année</item>
-        <item quantity="other">%1$d années</item>
+        <item quantity="one">%1$s année</item>
+        <item quantity="other">%1$s années</item>
     </plurals>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
@@ -23,7 +23,6 @@
     <string name="album_art">Pochette d\'album</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossible d\'analyser le titre</string>
     <string name="network_error">Erreur de réseau</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">le scrobble a été ignoré</string>
     <string name="scrobble_ignored_save_edit">Lastfm a ignoré l\'édition probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cet édition pour les scrobbles futurs à la place ?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Les champs nécessaires sont vides</string>
     <string name="artist">Artiste</string>
@@ -153,13 +152,13 @@
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="appwidget_alpha">Opacité de l\'arrière-plan</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Le widget sera actualisé toutes les %1$d minutes</string>
     <string name="primary_color">Couleur principale</string>
     <string name="secondary_color">Couleur secondaire</string>
     <string name="random_theme">Aléatoire à chaque lancement</string>
     <string name="edit_name" comment="name for regex pattern">Nom simple (facultatif)</string>
     <string name="edit_regex">Patterne regex</string>
     <string name="edit_regex_replacement">Remplacement regex</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">Champ</string>
     <string name="edit_replace">Remplacer</string>
     <string name="edit_first" comment="First occurrence of a pattern">Premier</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tous</string>
@@ -251,6 +250,5 @@
     <string name="thank_you">Merci !</string>
     <string name="purchase_pending">Votre achat n\'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>
     <string name="billing_troubleshoot_title">Restaurer l\'achat</string>
-    <string name="billing_block">Bloquer les métadonnées du scrobbling</string>
     <string name="billing_sharing">Supprimer le nom de l\'application lors du partage</string>
 </resources>

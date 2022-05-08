@@ -9,44 +9,44 @@
         <item quantity="other">%1$s oyentes</item>
     </plurals>
     <plurals name="num_weeks">
-        <item quantity="one">%1$d semana</item>
-        <item quantity="other">%1$d semanas</item>
+        <item quantity="one">%1$s semana</item>
+        <item quantity="other">%1$s semanas</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$d mes</item>
-        <item quantity="other">%1$d meses</item>
+        <item quantity="one">%1$s mes</item>
+        <item quantity="other">%1$s meses</item>
     </plurals>
     <plurals name="num_years">
-        <item quantity="one">%1$d año</item>
-        <item quantity="other">%1$d años</item>
+        <item quantity="one">%1$s año</item>
+        <item quantity="other">%1$s años</item>
     </plurals>
     <plurals name="num_artists">
-        <item quantity="one">%1$d artista</item>
-        <item quantity="other">%1$d artistas</item>
+        <item quantity="one">%1$s artista</item>
+        <item quantity="other">%1$s artistas</item>
     </plurals>
     <plurals name="num_albums">
-        <item quantity="one">%1$d álbum</item>
-        <item quantity="other">%1$d álbumes</item>
+        <item quantity="one">%1$s álbum</item>
+        <item quantity="other">%1$s álbumes</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="one">%1$d canción</item>
-        <item quantity="other">%1$d canciones</item>
+        <item quantity="one">%1$s canción</item>
+        <item quantity="other">%1$s canciones</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d coincidencia</item>
         <item quantity="other">%1$d coincidencias</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$d edición</item>
-        <item quantity="other">%1$d ediciones</item>
+        <item quantity="one">%1$s edición</item>
+        <item quantity="other">%1$s ediciones</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$d patrón de edición</item>
-        <item quantity="other">%1$d patrones de edición</item>
+        <item quantity="one">%1$s patrón de edición</item>
+        <item quantity="other">%1$s patrones de edición</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$d metadato bloqueado</item>
-        <item quantity="other">%1$d metadatos bloqueados</item>
+        <item quantity="one">%1$s metadato bloqueado</item>
+        <item quantity="other">%1$s metadatos bloqueados</item>
     </plurals>
     <string name="yes">Si</string>
     <string name="no">No</string>
@@ -56,7 +56,6 @@
     <string name="album_art">Imagen del álbum</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">No se ha podido analizar el título</string>
     <string name="network_error">Error de red</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">ignoró este scrobble</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignoró la edición probablemente porque el scrobble es demasiado antiguo. ¿Le gustaría guardar esta edición para futuros scrobbles?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Los campos obligatorios están vacíos</string>
     <string name="artist">Artista</string>
@@ -209,6 +208,7 @@
     <string name="light">Claro</string>
     <string name="dark">Oscuro</string>
     <string name="appwidget_alpha">Opacidad de fondo</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">El Widget se actualizará cada %1$d minutos</string>
     <string name="primary_color">Color principal</string>
     <string name="secondary_color">Color secundario</string>
     <string name="tint_background">Tinte de fondo</string>
@@ -216,7 +216,6 @@
     <string name="edit_name" comment="name for regex pattern">Nombre amigable (opcional)</string>
     <string name="edit_regex">Patrón regex</string>
     <string name="edit_regex_replacement">Reemplazo de Regex</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">Campo</string>
     <string name="edit_replace">Reemplazar</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primero</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
@@ -232,7 +231,6 @@
     <string name="text" comment="text to test regex rules with">Texto</string>
     <string name="edit_regex_warning">⚠ Asegúrate de entender <a href="https://www.google.com/search?q=regex+tutorial">regex java</a> antes de usar esto, o usa uno de los <b>presets</b> proporcionados. Partidas regex intentadas desde arriba hacia abajo</string>
     <string name="blocked_metadata_info">ℹ️ Completa más de uno de estos campos aplicará un operador AND entre ellos</string>
-    <string name="blocked_metadata_noti">Toca para bloquear este tema de scrobbling</string>
     <string name="block">Bloquear</string>
     <string name="use_channel" comment="(Use youtube channel name)">Usar nombre del canal</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">¿Quieres activar la regla de edición de patrones: %1$s?</string>
@@ -361,6 +359,5 @@ Google Play administra tus compras. Están enlazadas con una cuenta de Google Pl
 • Iniciar sesión con la cuenta propietaria de la compra.
 • Instalar esta aplicación directamente desde la página web de Google Play.
 "</string>
-    <string name="billing_block">Bloquear metadatos de scrobbling</string>
     <string name="billing_sharing">Eliminar el nombre de la aplicación al compartir</string>
 </resources>

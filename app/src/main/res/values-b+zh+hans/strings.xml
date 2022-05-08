@@ -7,34 +7,34 @@
         <item quantity="other">%1$s 位听众</item>
     </plurals>
     <plurals name="num_weeks">
-        <item quantity="other">%1$d 周</item>
+        <item quantity="other">%1$s 周</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="other">%1$d 月</item>
+        <item quantity="other">%1$s 月</item>
     </plurals>
     <plurals name="num_years">
-        <item quantity="other">%1$d 年</item>
+        <item quantity="other">%1$s 年</item>
     </plurals>
     <plurals name="num_artists">
-        <item quantity="other">%1$d 位艺术家</item>
+        <item quantity="other">%1$s 位艺术家</item>
     </plurals>
     <plurals name="num_albums">
-        <item quantity="other">%1$d 张专辑</item>
+        <item quantity="other">%1$s 张专辑</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="other">%1$d 首曲目</item>
+        <item quantity="other">%1$s 首曲目</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="other">%1$d 项匹配</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="other">%1$d 项编辑记录</item>
+        <item quantity="other">%1$s 项编辑记录</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="other">%1$d 项编辑模板</item>
+        <item quantity="other">%1$s 项编辑模板</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="other">%1$d 则已屏蔽的元数据条目</item>
+        <item quantity="other">%1$s 则已屏蔽的元数据条目</item>
     </plurals>
     <string name="yes">确定</string>
     <string name="no">取消</string>
@@ -44,7 +44,6 @@
     <string name="album_art">专辑封面</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">无法解析标题</string>
     <string name="network_error">网络异常</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">忽略该记录</string>
     <string name="scrobble_ignored_save_edit">可能由于本次记录太过陈旧，Last.fm忽略了此次编辑。你想保存此次编辑，以便可以为未来的歌曲记录所用吗？</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必填字段不能为空</string>
     <string name="artist">艺术家</string>
@@ -197,6 +196,7 @@
     <string name="light">浅色</string>
     <string name="dark">深色</string>
     <string name="appwidget_alpha">背景不透明度</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">小部件每 %1$d 分钟刷新一次</string>
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>
     <string name="tint_background">背景色调</string>
@@ -204,7 +204,6 @@
     <string name="edit_name" comment="name for regex pattern">友善的昵称 (可选)</string>
     <string name="edit_regex">正则表达式模板</string>
     <string name="edit_regex_replacement">正则表达式替换</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">字段</string>
     <string name="edit_replace">替换</string>
     <string name="edit_first" comment="First occurrence of a pattern">第一项</string>
     <string name="edit_all" comment="All occurrences of a pattern">全部</string>
@@ -220,7 +219,6 @@
     <string name="text" comment="text to test regex rules with">文本</string>
     <string name="edit_regex_warning">⚠ 请确保您在使用前了解 <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> 或直接从提供的 <b>预设</b> 中选择一个。正则表达式将从上往下逐一尝试匹配</string>
     <string name="blocked_metadata_info">ℹ️ 填写多个字段时将自动插入 AND 运算符</string>
-    <string name="blocked_metadata_noti">点击以屏蔽记录该信息</string>
     <string name="block">屏蔽</string>
     <string name="use_channel" comment="(Use youtube channel name)">使用频道名</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">您想启用 %1$s 这条编辑模板规则吗？</string>
@@ -349,6 +347,5 @@
 • 登录关联了购买记录的账户
 • 通过 Google Play 网页端直接安装应用
 "</string>
-    <string name="billing_block">阻止记录元数据</string>
     <string name="billing_sharing">分享时移除应用名称</string>
 </resources>

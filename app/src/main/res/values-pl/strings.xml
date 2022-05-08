@@ -12,60 +12,17 @@
         <item quantity="many">%1$s słuchaczów</item>
         <item quantity="other">%1$s słuchacze</item>
     </plurals>
-    <plurals name="num_weeks">
-        <item quantity="one">%1$d tydzień</item>
-        <item quantity="few">%1$d tygodni</item>
-        <item quantity="many">%1$d tygodni</item>
-        <item quantity="other">%1$d tyg</item>
-    </plurals>
-    <plurals name="num_months">
-        <item quantity="one">%1$d miesiąc</item>
-        <item quantity="few">%1$d miesięcy</item>
-        <item quantity="many">%1$d miesięcy</item>
-        <item quantity="other">%1$d miesięcy</item>
-    </plurals>
-    <plurals name="num_years">
-        <item quantity="one">%1$d rok</item>
-        <item quantity="few">%1$d lat</item>
-        <item quantity="many">%1$d lat</item>
-        <item quantity="other">%1$d lat</item>
-    </plurals>
-    <plurals name="num_artists">
-        <item quantity="one">%1$d artysta</item>
-        <item quantity="few">%1$d artystów</item>
-        <item quantity="many">%1$d artystów</item>
-        <item quantity="other">%1$d artyści</item>
-    </plurals>
-    <plurals name="num_albums">
-        <item quantity="one">%1$d album</item>
-        <item quantity="few">%1$d albumów</item>
-        <item quantity="many">%1$d albumów</item>
-        <item quantity="other">%1$d Albumy</item>
-    </plurals>
-    <plurals name="num_tracks">
-        <item quantity="one">%1$d utwór</item>
-        <item quantity="few">%1$d utworów</item>
-        <item quantity="many">%1$d utwórów</item>
-        <item quantity="other">%1$d utwory</item>
-    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d dopasowanie</item>
         <item quantity="few">%1$d dopasowań</item>
         <item quantity="many">%1$d dopasowań</item>
         <item quantity="other">%1$d dopasowania</item>
     </plurals>
-    <plurals name="num_simple_edits">
-        <item quantity="one">%1$d edycja</item>
-        <item quantity="few">%1$d edycji</item>
-        <item quantity="many">%1$d edycji</item>
-        <item quantity="other">%1$d edycje</item>
-    </plurals>
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
     <string name="reset">Reset</string>
     <string name="settings">Konfiguruj</string>
     <string name="network_error">Błąd sieci</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">zignorowano ten scrobble</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Nie wszystkie wymagane pola zostały wypełnione</string>
     <string name="artist">Wykonawca</string>
     <string name="artists">Wykonawcy</string>

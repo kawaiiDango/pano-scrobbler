@@ -9,44 +9,44 @@
         <item quantity="other">%1$s dinleyici</item>
     </plurals>
     <plurals name="num_weeks">
-        <item quantity="one">%1$d hafta</item>
-        <item quantity="other">%1$d hafta</item>
+        <item quantity="one">%1$s hafta</item>
+        <item quantity="other">%1$s hafta</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$d ay</item>
-        <item quantity="other">%1$d ay</item>
+        <item quantity="one">%1$s ay</item>
+        <item quantity="other">%1$s ay</item>
     </plurals>
     <plurals name="num_years">
-        <item quantity="one">%1$d yıl</item>
-        <item quantity="other">%1$d yıl</item>
+        <item quantity="one">%1$s yıl</item>
+        <item quantity="other">%1$s yıl</item>
     </plurals>
     <plurals name="num_artists">
-        <item quantity="one">%1$d sanatçı</item>
-        <item quantity="other">%1$d sanatçı</item>
+        <item quantity="one">%1$s sanatçı</item>
+        <item quantity="other">%1$s sanatçı</item>
     </plurals>
     <plurals name="num_albums">
-        <item quantity="one">%1$d albüm</item>
-        <item quantity="other">%1$d albüm</item>
+        <item quantity="one">%1$s albüm</item>
+        <item quantity="other">%1$s albüm</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="one">%1$d parça</item>
-        <item quantity="other">%1$d parça</item>
+        <item quantity="one">%1$s parça</item>
+        <item quantity="other">%1$s parça</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d eşleşme</item>
         <item quantity="other">%1$d eşleşme</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$d düzenleme</item>
-        <item quantity="other">%1$d düzenleme</item>
+        <item quantity="one">%1$s düzenleme</item>
+        <item quantity="other">%1$s düzenleme</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$d kalıp düzenlemesi</item>
-        <item quantity="other">%1$d kalıp düzenlemesi</item>
+        <item quantity="one">%1$s kalıp düzenlemesi</item>
+        <item quantity="other">%1$s kalıp düzenlemesi</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$d engellenmiş metaveri</item>
-        <item quantity="other">%1$d engellenmiş metaveri</item>
+        <item quantity="one">%1$s engellenmiş metaveri</item>
+        <item quantity="other">%1$s engellenmiş metaveri</item>
     </plurals>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
@@ -56,7 +56,6 @@
     <string name="album_art">Albüm kapağı</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Başlık ayrıştırılamadı</string>
     <string name="network_error">Bağlantı hatası</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">bu skrop dikkate alınmadı</string>
     <string name="scrobble_ignored_save_edit">Lastfm düzenlemeyi muhtemelen skrop çok eski olduğu için dikkate almadı. Bu düzenlemeyi gelecek skroplar için saklamak ister misiniz?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Gerekli alanlar boş</string>
     <string name="artist">Sanatçı</string>
@@ -209,6 +208,7 @@
     <string name="light">Açık</string>
     <string name="dark">Koyu</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget her %1$d dakikada bir yenilenir</string>
     <string name="primary_color">Ana renk</string>
     <string name="secondary_color">İkincil renk</string>
     <string name="tint_background">Renkli arkaplan</string>
@@ -216,7 +216,6 @@
     <string name="edit_name" comment="name for regex pattern">İsim (isteğe bağlı)</string>
     <string name="edit_regex">Düzenli ifade kalıbı</string>
     <string name="edit_regex_replacement">Düzenli ifade değiştirme</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">Alan</string>
     <string name="edit_replace">Değiştir</string>
     <string name="edit_first" comment="First occurrence of a pattern">İlkini</string>
     <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
@@ -232,7 +231,6 @@
     <string name="text" comment="text to test regex rules with">Metin</string>
     <string name="edit_regex_warning">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
     <string name="blocked_metadata_info">ℹ️ Bu alanların birinden fazlasının doldurulması, aralarında bir AND operatörü uygulamasına yol açacaktır</string>
-    <string name="blocked_metadata_noti">Bu parçanın skroplanmasını engellemek istiyorsan dokun</string>
     <string name="block">Engelle</string>
     <string name="use_channel" comment="(Use youtube channel name)">Kanal ismini kullan</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">\"%1$s\" kalıp düzenlemesini etkinleştirmek istiyor musunuz?</string>
@@ -361,6 +359,5 @@ Satın alma işlemleriniz Google Play tarafından yönetilir ve satın almayı g
 • Satın alma işlemi gerçekleştirilen hesapla oturum açın.
 • Uygulamayı direkt Google Play web sayfasından kurun.
 "</string>
-    <string name="billing_block">Metadatanın skroplanmasını engelle</string>
     <string name="billing_sharing">Paylaşımlarda uygulama ismini kaldır</string>
 </resources>

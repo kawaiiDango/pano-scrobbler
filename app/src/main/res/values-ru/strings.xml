@@ -12,11 +12,65 @@
         <item quantity="many">%1$s слушателей</item>
         <item quantity="other">%1$s слушателя</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s неделя</item>
+        <item quantity="few">%1$s недели</item>
+        <item quantity="many">%1$s недель</item>
+        <item quantity="other">%1$s недели</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s месяц</item>
+        <item quantity="few">%1$s месяца</item>
+        <item quantity="many">%1$s месяцев</item>
+        <item quantity="other">%1$s месяца</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s год</item>
+        <item quantity="few">%1$s года</item>
+        <item quantity="many">%1$s лет</item>
+        <item quantity="other">%1$s лет</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s артист</item>
+        <item quantity="few">Исполнителей: %1$s</item>
+        <item quantity="many">Исполнителей: %1$s</item>
+        <item quantity="other">Исполнителей: %1$s</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s альбом</item>
+        <item quantity="few">%1$s альбомов</item>
+        <item quantity="many">%1$s альбомов</item>
+        <item quantity="other">%1$s альбома</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s трек</item>
+        <item quantity="few">%1$s треков</item>
+        <item quantity="many">%1$s треков</item>
+        <item quantity="other">%1$s трека</item>
+    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d совпадение</item>
         <item quantity="few">%1$d совпадения</item>
         <item quantity="many">%1$d совпадений</item>
         <item quantity="other">%1$d совпадения</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s редактирование</item>
+        <item quantity="few">%1$s редактирований</item>
+        <item quantity="many">%1$s редактирований</item>
+        <item quantity="other">%1$s редактирования</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s редактирование шаблона</item>
+        <item quantity="few">%1$s редактирований шаблона</item>
+        <item quantity="many">%1$s редактирований шаблона</item>
+        <item quantity="other">%1$s редактирования шаблона</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s блокировка метаданных</item>
+        <item quantity="few">%1$s блокировок метаданных</item>
+        <item quantity="many">%1$s блокировок метаданных</item>
+        <item quantity="other">%1$s блокировки метаданных</item>
     </plurals>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -178,6 +232,7 @@
     <string name="light">Светлая</string>
     <string name="dark">Темная</string>
     <string name="appwidget_alpha">Прозрачность фона</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Виджет обновляется каждые %1$d минут</string>
     <string name="primary_color">Основной цвет</string>
     <string name="secondary_color">Вторичный цвет</string>
     <string name="tint_background">Оттеночный фон</string>

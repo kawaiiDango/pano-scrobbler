@@ -6,35 +6,8 @@
     <plurals name="num_listeners">
         <item quantity="other">%1$s人のリスナー</item>
     </plurals>
-    <plurals name="num_weeks">
-        <item quantity="other">%1$d週間</item>
-    </plurals>
-    <plurals name="num_months">
-        <item quantity="other">%1$dヶ月</item>
-    </plurals>
-    <plurals name="num_years">
-        <item quantity="other">%1$d年</item>
-    </plurals>
-    <plurals name="num_artists">
-        <item quantity="other">%1$d組のアーティスト</item>
-    </plurals>
-    <plurals name="num_albums">
-        <item quantity="other">%1$d件のアルバム</item>
-    </plurals>
-    <plurals name="num_tracks">
-        <item quantity="other">%1$d件のトラック</item>
-    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="other">%1$d件の一致</item>
-    </plurals>
-    <plurals name="num_simple_edits">
-        <item quantity="other">%1$d件の訂正</item>
-    </plurals>
-    <plurals name="num_regex_edits">
-        <item quantity="other">%1$d件のパターン訂正</item>
-    </plurals>
-    <plurals name="num_blocked_metadata">
-        <item quantity="other">%1$d件のブロックされたメタデータ</item>
     </plurals>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
@@ -44,7 +17,6 @@
     <string name="album_art">アルバムアート</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
     <string name="network_error">ネットワークエラー</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">このScrobbleを無視しました</string>
     <string name="scrobble_ignored_save_edit">LastFMは、このScrobbleが古すぎるためか、行った訂正を無視しました。今後扱える可能性もあるため、この訂正を保存しておきますか？</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必須項目が空欄です</string>
     <string name="artist">アーティスト</string>
@@ -69,7 +41,6 @@
     <string name="state_unscrobbled">Scrobble取り消し済み</string>
     <string name="state_unrecognised_artist">認識できないアーティスト</string>
     <string name="tap_to_edit">(タップで編集)</string>
-    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(タップで編集または強制)</string>
     <string name="recently_scrobbled">最近のScrobble</string>
     <string name="recently_loved">♥ 最近のLoveトラック</string>
     <string name="recents" comment="Short for recently scrobbled">履歴</string>
@@ -118,7 +89,6 @@
     <string name="friends">フレンド</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobble %1$s件 — %2$sより</string>
     <string name="allow_background">バックグラウンドでもScrobbleする</string>
-    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Scrobblerを起動するには、%1$sのデバイスが必要です</string>
     <string name="grant_notification_access">通知へのアクセスの許可</string>
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Last.FMの認証</string>
@@ -158,18 +128,14 @@
     <string name="user_loved" formatted="true" comment="%1= username">%1$sのLoveトラックです</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">%1$sまでのScrobble</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
-    <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s — %2$s</string>
-    <string name="weekly_range" formatted="true" comment="%1= date %2= date">1週間 (%1$s — %2$s)</string>
     <string name="not_found" comment="Shown in search">見つかりませんでした</string>
     <string name="share_this_chart">このチャートを共有</string>
     <string name="weekly">1週間</string>
     <string name="monthly">1ヶ月</string>
-    <string name="charts_choose_week">週を選択</string>
     <string name="charts_overall">全期間</string>
     <string name="charts_no_data">この期間のデータはありません</string>
     <string name="charts_custom" comment="Custom date range, but in short">カスタム</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
-    <string name="charts_no_weekly_charts">過去1週間のチャートはまだありません</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">幸運の一時</string>
     <string name="random_not_found">トラックが見つかりませんでした</string>
     <string name="loved_track">Loveトラック</string>
@@ -199,17 +165,13 @@
     <string name="appwidget_show">表示</string>
     <string name="light">ライト</string>
     <string name="dark">ダーク</string>
-    <string name="dynamic" comment="Material You wallpaper based theming">動的に変化させる (Material You)</string>
     <string name="appwidget_alpha">背景の透明度</string>
-    <string name="appwidget_refresh_every">ウィジェットは15分ごとに更新されます</string>
     <string name="primary_color">メインカラー</string>
     <string name="secondary_color">サブカラー</string>
     <string name="random_theme">起動するたびにランダム化する</string>
-    <string name="palette_bg">一部の背景にアルバムアートの色を使用する</string>
     <string name="edit_name" comment="name for regex pattern">名前 (任意)</string>
     <string name="edit_regex">正規表現パターン</string>
     <string name="edit_regex_replacement">正規表現の置換</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">対象項目</string>
     <string name="edit_replace">置換対象:</string>
     <string name="edit_first" comment="First occurrence of a pattern">初回一致分のみ</string>
     <string name="edit_all" comment="All occurrences of a pattern">すべて</string>
@@ -225,7 +187,6 @@
     <string name="text" comment="text to test regex rules with">テキスト</string>
     <string name="edit_regex_warning">⚠ これを使用する前に、<a href="https://www.google.com/search?q=%E6%AD%A3%E8%A6%8F%E8%A1%A8%E7%8F%BE+%E4%BD%BF%E3%81%84%E6%96%B9">Javaの正規表現</a>を理解しておくか、用意された<b>プリセット</b>から1つ選ぶようにしてください。正規表現の一致判定は上から順に実行されます</string>
     <string name="blocked_metadata_info">ℹ️ 複数の項目を入力すると、各合間にAND演算子が適用されます</string>
-    <string name="blocked_metadata_noti">タップでScrobbleから除外</string>
     <string name="block">ブロック</string>
     <string name="use_channel" comment="(Use youtube channel name)">チャンネル名を使用する</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">パターン訂正ルール: %1$sを有効化しますか？</string>
@@ -300,16 +261,6 @@
     <string name="import_lists_keep">既存と融合させ、重複する訂正内容とブロックリストは維持する</string>
     <string name="import_settings">設定をインポートする</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">ブロードキャストされるインテント</string>
-    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"再生中の曲:
-%1$s
-%2$s
-%3$s
-
-Scrobbler関連:
-%4$s
-%5$s
-
-TaskerやMacrodroidなどのマクロアプリで使用できます。"</string>
     <string name="pref_intents">Tasker等用のインテント</string>
     <string name="copied">コピーしました</string>
     <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>
@@ -362,6 +313,5 @@ TaskerやMacrodroidなどのマクロアプリで使用できます。"</string>
 • PCでGoogle Playのストアページを開く
 • お支払いを行ったアカウントでログイン
 • このアプリをストアページ上から直接インストール"</string>
-    <string name="billing_block">Scrobble時にメタデータをブロックする</string>
     <string name="billing_sharing">共有時にアプリ名を含まない</string>
 </resources>

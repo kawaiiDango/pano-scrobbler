@@ -6,8 +6,35 @@
     <plurals name="num_listeners">
         <item quantity="other">%1$s人のリスナー</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="other">%1$s週間</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="other">%1$sヶ月</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="other">%1$s年</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="other">%1$s組のアーティスト</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="other">%1$s件のアルバム</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="other">%1$s件のトラック</item>
+    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="other">%1$d件の一致</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="other">%1$s件の訂正</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="other">%1$s件のパターン訂正</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="other">%1$s件のブロックされたメタデータ</item>
     </plurals>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
@@ -166,6 +193,7 @@
     <string name="light">ライト</string>
     <string name="dark">ダーク</string>
     <string name="appwidget_alpha">背景の透明度</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">ウィジェットは%1$d分ごとに更新されます</string>
     <string name="primary_color">メインカラー</string>
     <string name="secondary_color">サブカラー</string>
     <string name="random_theme">起動するたびにランダム化する</string>

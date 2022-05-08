@@ -8,9 +8,45 @@
         <item quantity="one">%1$s oyente</item>
         <item quantity="other">%1$s oyentes</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s semana</item>
+        <item quantity="other">%1$s semanas</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s mes</item>
+        <item quantity="other">%1$s meses</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s año</item>
+        <item quantity="other">%1$s años</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s artista</item>
+        <item quantity="other">%1$s artistas</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s álbum</item>
+        <item quantity="other">%1$s álbumes</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s canción</item>
+        <item quantity="other">%1$s canciones</item>
+    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d coincidencia</item>
         <item quantity="other">%1$d coincidencias</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s edición</item>
+        <item quantity="other">%1$s ediciones</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s patrón de edición</item>
+        <item quantity="other">%1$s patrones de edición</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s metadato bloqueado</item>
+        <item quantity="other">%1$s metadatos bloqueados</item>
     </plurals>
     <string name="yes">Si</string>
     <string name="no">No</string>
@@ -172,6 +208,7 @@
     <string name="light">Claro</string>
     <string name="dark">Oscuro</string>
     <string name="appwidget_alpha">Opacidad de fondo</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">El Widget se actualizará cada %1$d minutos</string>
     <string name="primary_color">Color principal</string>
     <string name="secondary_color">Color secundario</string>
     <string name="tint_background">Tinte de fondo</string>

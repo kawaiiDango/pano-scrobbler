@@ -8,9 +8,45 @@
         <item quantity="one">%1$s dinleyici</item>
         <item quantity="other">%1$s dinleyici</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s hafta</item>
+        <item quantity="other">%1$s hafta</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s ay</item>
+        <item quantity="other">%1$s ay</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s yıl</item>
+        <item quantity="other">%1$s yıl</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s sanatçı</item>
+        <item quantity="other">%1$s sanatçı</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s albüm</item>
+        <item quantity="other">%1$s albüm</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s parça</item>
+        <item quantity="other">%1$s parça</item>
+    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d eşleşme</item>
         <item quantity="other">%1$d eşleşme</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s düzenleme</item>
+        <item quantity="other">%1$s düzenleme</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s kalıp düzenlemesi</item>
+        <item quantity="other">%1$s kalıp düzenlemesi</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s engellenmiş metaveri</item>
+        <item quantity="other">%1$s engellenmiş metaveri</item>
     </plurals>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
@@ -172,6 +208,7 @@
     <string name="light">Açık</string>
     <string name="dark">Koyu</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget her %1$d dakikada bir yenilenir</string>
     <string name="primary_color">Ana renk</string>
     <string name="secondary_color">İkincil renk</string>
     <string name="tint_background">Renkli arkaplan</string>

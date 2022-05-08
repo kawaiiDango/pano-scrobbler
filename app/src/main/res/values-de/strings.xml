@@ -8,9 +8,45 @@
         <item quantity="one">%1$s Zuhörer</item>
         <item quantity="other">%1$s Zuhörer</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s Woche</item>
+        <item quantity="other">%1$s Wochen</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s Monat</item>
+        <item quantity="other">%1$s Monate</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s Jahr</item>
+        <item quantity="other">%1$s Jahre</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s Künstler</item>
+        <item quantity="other">%1$s Künstler</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s Album</item>
+        <item quantity="other">%1$s Alben</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s Titel</item>
+        <item quantity="other">%1$s Titel</item>
+    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d Übereinstimmung</item>
         <item quantity="other">%1$d Übereinstimmungen</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s Bearbeitung</item>
+        <item quantity="other">%1$s Bearbeitungen</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s Musterbearbeitung</item>
+        <item quantity="other">%1$s Musterbearbeitung</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s blockierte Metadaten</item>
+        <item quantity="other">%1$s blockierte Metadaten</item>
     </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
@@ -172,6 +208,7 @@
     <string name="light">Hell</string>
     <string name="dark">Dunkel</string>
     <string name="appwidget_alpha">Hintergrundtransparenz</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget wird alle %1$d Minuten aktualisiert</string>
     <string name="primary_color">Hauptfarbe</string>
     <string name="secondary_color">Sekundärfarbe</string>
     <string name="tint_background">Hintergrund einfärben</string>

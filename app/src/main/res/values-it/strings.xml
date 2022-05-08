@@ -8,38 +8,6 @@
         <item quantity="one">%1$s ascoltatore</item>
         <item quantity="other">%1$s ascoltatori</item>
     </plurals>
-    <plurals name="num_weeks">
-        <item quantity="one">%1$d settimana</item>
-        <item quantity="other">%1$d settimane</item>
-    </plurals>
-    <plurals name="num_months">
-        <item quantity="one">%1$d mese</item>
-        <item quantity="other">%1$d mesi</item>
-    </plurals>
-    <plurals name="num_years">
-        <item quantity="one">%1$d anno</item>
-        <item quantity="other">%1$d anni</item>
-    </plurals>
-    <plurals name="num_artists">
-        <item quantity="one">%1$d artista</item>
-        <item quantity="other">%1$d artisti</item>
-    </plurals>
-    <plurals name="num_albums">
-        <item quantity="one">%1$d album</item>
-        <item quantity="other">%1$d album</item>
-    </plurals>
-    <plurals name="num_tracks">
-        <item quantity="one">%1$d brano</item>
-        <item quantity="other">%1$d brani</item>
-    </plurals>
-    <plurals name="num_simple_edits">
-        <item quantity="one">%1$d modifica</item>
-        <item quantity="other">%1$d modifiche</item>
-    </plurals>
-    <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$d metadato bloccato</item>
-        <item quantity="other">%1$d metadati bloccati</item>
-    </plurals>
     <string name="yes">Sì</string>
     <string name="no">No</string>
     <string name="reset">Ripristina</string>
@@ -48,7 +16,6 @@
     <string name="album_art">Copertina album</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossibile individuare il titolo</string>
     <string name="network_error">Errore di rete</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)">scrobbling ignorato</string>
     <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobbling è troppo antico. Vorresti invece salvare questa modifica per gli scrobbling futuri?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Alcuni campi obbligatori sono vuoti</string>
     <string name="artist">Artista</string>
@@ -73,7 +40,6 @@
     <string name="state_unscrobbled">Scrobbling annullato</string>
     <string name="state_unrecognised_artist">Artista non riconosciuto</string>
     <string name="tap_to_edit">(Tocca per modificare)</string>
-    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Tocca per modificare o forzare)</string>
     <string name="recently_scrobbled">Scrobbling recenti</string>
     <string name="recently_loved">♥ Preferiti recenti</string>
     <string name="recents" comment="Short for recently scrobbled">Recenti</string>
@@ -122,7 +88,6 @@
     <string name="friends">Amici</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbling eseguiti, dal %2$s</string>
     <string name="allow_background">Consenti lo scrobbling in background</string>
-    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Richiesto sui dispositivi %1$s, perché lo scrobbler funzioni</string>
     <string name="grant_notification_access">Consenti accesso alle notifiche</string>
     <string name="grant_notification_access_desc">Necessario per individuare i metadati della musica. Non sarà letta alcuna notifica non-musicale</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Accedi con last.FM</string>
@@ -162,13 +127,10 @@
     <string name="user_loved" formatted="true" comment="%1= username">%1$s l\'ha aggiunto ai preferiti</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbling fino al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
-    <string name="a_to_b" formatted="true" comment="%1= date %2= date">dal %1$s al %2$s</string>
-    <string name="weekly_range" formatted="true" comment="%1= date %2= date">settimanali (dal %1$s al %2$s)</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
     <string name="share_this_chart">Condividi questa classifica</string>
     <string name="weekly">Settimanali</string>
     <string name="monthly">Mensili</string>
-    <string name="charts_choose_week">Scegli una settimana</string>
     <string name="charts_overall">Generale</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>
     <string name="charts_custom" comment="Custom date range, but in short">Personalizzato</string>
@@ -176,7 +138,6 @@
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Basato su %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Dati insufficienti</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
-    <string name="charts_no_weekly_charts">Le classifiche settimanali storiche non sono ancora disponibili</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Mi sento fortunato</string>
     <string name="random_not_found">Nessun brano trovato</string>
     <string name="loved_track">Brano preferito</string>
@@ -206,18 +167,14 @@
     <string name="appwidget_show">Mostra</string>
     <string name="light">Chiaro</string>
     <string name="dark">Scuro</string>
-    <string name="dynamic" comment="Material You wallpaper based theming">Dinamico (Material You)</string>
     <string name="appwidget_alpha">Opacità sfondo</string>
-    <string name="appwidget_refresh_every">Il widget si aggiornerà ogni 15 minuti</string>
     <string name="primary_color">Colore principale</string>
     <string name="secondary_color">Colore secondario</string>
     <string name="tint_background">Colore sfondo</string>
     <string name="random_theme">Casuale a ogni avvio</string>
-    <string name="palette_bg">Usa il colore della copertina degli album per certi sfondi</string>
     <string name="edit_name" comment="name for regex pattern">Secondo nome (facoltativo)</string>
     <string name="edit_regex">Modello dell\'Espressione Regolare (regex)</string>
     <string name="edit_regex_replacement">Sostituzione del regex</string>
-    <string name="edit_field" comment="Field like artist/album/track etc">Campo</string>
     <string name="edit_replace">Sostituisci</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primo</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tutte</string>
@@ -233,7 +190,6 @@
     <string name="text" comment="text to test regex rules with">Testo</string>
     <string name="edit_regex_warning">⚠ Assicurati di conoscere le <a href="https://www.google.com/search?q=regex+java+tutorial+italiano">espressioni regolari in java</a> prima di fare uso di questa funzione, o usa uno dei <b>preset</b> forniti. Le corrispondenze delle regex sono cercate in ordine dall\'alto al basso</string>
     <string name="blocked_metadata_info">ℹ️ Compilando più di uno di questi campi si applicherà tra loro un operatore AND</string>
-    <string name="blocked_metadata_noti">Tocca per bloccare questi metadati</string>
     <string name="block">Blocca</string>
     <string name="use_channel" comment="(Use youtube channel name)">Usa il nome del canale YouTube</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Vuoi abilitare la regola di modifica del pattern: %1$s?</string>
@@ -308,16 +264,6 @@
     <string name="import_lists_keep">Unisci tenendo modifiche e lista bloccati esistenti</string>
     <string name="import_settings">Importa le configurazioni</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Intenti di broadcast</string>
-    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Per la canzone corrente:
-%1$s
-%2$s
-%3$s
-
-Per lo scrobbler:
-%4$s
-%5$s
-
-Possono essere utilizzati con applicazioni come Tasker, Macrodroide ecc."</string>
     <string name="pref_intents">Intenti per Tasker ecc.</string>
     <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
@@ -372,6 +318,5 @@ I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google
 • Accedi con l’account che ha effettuato l’acquisto.
 • Installa questa app direttamente dal sito di Google Play.
 "</string>
-    <string name="billing_block">Blocca lo scrobbling di certi metadati</string>
     <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>
 </resources>

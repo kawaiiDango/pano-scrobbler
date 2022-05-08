@@ -13,19 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.dismissAllDialogFragments
 import com.arn.scrobble.Stuff.expandIfNeeded
+import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.*
 import com.arn.scrobble.databinding.ContentInfoExtraBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
-import com.arn.scrobble.ui.EntryItemClickListener
+import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
 import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.Track
 
 
-class InfoExtraFragment : BottomSheetDialogFragment(), EntryItemClickListener {
+class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListener {
     private lateinit var artistsFragment: FakeArtistFragment
     private lateinit var albumsFragment: FakeAlbumFragment
     private lateinit var tracksFragment: FakeTrackFragment
@@ -72,7 +71,6 @@ class InfoExtraFragment : BottomSheetDialogFragment(), EntryItemClickListener {
             initFragment(tracksFragment, binding.infoExtraFrame1)
 
             albumsFragment.adapter.showArtists = false
-            albumsFragment.adapter.requestAlbumInfo = false
             tracksFragment.adapter.showArtists = false
 
             binding.infoExtraHeader3.headerText.text = getString(R.string.similar_artists)
@@ -107,6 +105,12 @@ class InfoExtraFragment : BottomSheetDialogFragment(), EntryItemClickListener {
             )
 
             binding.infoExtraTitle.text = artist
+
+            binding.infoExtraFrame1.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
+            binding.infoExtraFrame2.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
+            binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
+            binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoScrobbles.visibility = View.GONE
+            binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoBar.visibility = View.GONE
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
                 LFMRequester(
@@ -194,7 +198,6 @@ class InfoExtraFragment : BottomSheetDialogFragment(), EntryItemClickListener {
                 fragment.viewModel.chartsData.addAll(it)
             }
             adapter.populate()
-            fragment.viewModel.listReceiver.value = null
         }
 
         if (fragment.viewModel.chartsData.isNotEmpty())
@@ -208,32 +211,15 @@ class InfoExtraFragment : BottomSheetDialogFragment(), EntryItemClickListener {
 
     override fun onItemClick(view: View, entry: MusicEntry) {
         val info = InfoFragment()
-        val b = Bundle()
-//        b.putString(Stuff.ARG_USERNAME, username)
-
-        when (entry) {
-            is Artist -> {
-                b.putString(NLService.B_ARTIST, entry.name)
-            }
-            is Album -> {
-                b.putString(NLService.B_ARTIST, entry.artist)
-                b.putString(NLService.B_ALBUM, entry.name)
-            }
-            is Track -> {
-                b.putString(NLService.B_ARTIST, entry.artist)
-                b.putString(NLService.B_ALBUM, entry.album)
-                b.putString(NLService.B_TRACK, entry.name)
-            }
-            else -> return
+        info.arguments = entry.toBundle().apply {
+            putString(Stuff.ARG_USERNAME, username)
         }
-
-        info.arguments = b
         info.show(parentFragmentManager, null)
     }
 
     private fun showFullFragment(fullFragment: Fragment, type: Int) {
         (activity as? MainActivity)?.enableGestures()
-        Stuff.dismissAllDialogFragments(parentFragmentManager)
+        parentFragmentManager.dismissAllDialogFragments()
         fullFragment.arguments = arguments?.clone() as? Bundle
         fullFragment.arguments?.putInt(Stuff.ARG_TYPE, type)
 

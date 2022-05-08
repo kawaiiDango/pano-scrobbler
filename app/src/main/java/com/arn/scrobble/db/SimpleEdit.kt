@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
  */
 
 @Entity(
-    tableName = "simpleEdits",
+    tableName = SimpleEditsDao.tableName,
     indices = [
         Index(value = ["legacyHash"]),
         Index(value = ["origArtist", "origAlbum", "origTrack"], unique = true),

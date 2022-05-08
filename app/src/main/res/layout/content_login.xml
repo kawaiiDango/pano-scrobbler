@@ -37,7 +37,7 @@
                 android:layout_marginVertical="@dimen/text_input_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="User"
+                tools:hint="User"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -101,10 +101,9 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
-                android:id="@+id/login_force"
+                android:id="@+id/login_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/force_remembered"
                 android:visibility="gone"
                 tools:text="@string/force_remembered" />
         </LinearLayout>

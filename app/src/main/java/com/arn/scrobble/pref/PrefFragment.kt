@@ -8,37 +8,37 @@ import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.webkit.URLUtil
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.*
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
-import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.DialogImportBinding
-import com.arn.scrobble.databinding.TextInputEditBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.edits.BlockedMetadataFragment
 import com.arn.scrobble.edits.RegexEditsFragment
 import com.arn.scrobble.edits.SimpleEditsFragment
 import com.arn.scrobble.themes.ThemesFragment
-import com.arn.scrobble.ui.MyClickableSpan
 import com.arn.scrobble.widget.ChartsWidgetActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
@@ -48,6 +48,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.NumberFormat
 import java.util.*
 
 
@@ -89,8 +90,6 @@ class PrefFragment : PreferenceFragmentCompat() {
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-//        preferenceManager.preferenceDataStore = MainPrefsDataStore(context!!)
-
         val field = preferenceManager::class.java.getDeclaredField("mSharedPreferences")
         field.isAccessible = true
         field.set(preferenceManager, prefs.sharedPreferences)
@@ -112,7 +111,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             notiCategories.summary = getString(R.string.pref_noti_q)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !Stuff.isWindows11) {
             arrayOf(
                 MainPrefs.CHANNEL_NOTI_SCROBBLING,
                 MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY,
@@ -152,16 +151,18 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val entries = arrayOf(getString(R.string.auto)) + _entries
         val entryValues = arrayOf("auto") + _entryValues
+        val currentLocale = prefs.locale ?: "auto"
+        val checkedIndex = entryValues.indexOf(currentLocale)
 
         changeLocalePref.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 MaterialAlertDialogBuilder(context!!)
                     .setTitle(R.string.pref_change_locale)
-                    .setItems(entries) { _, idx ->
-                        val oldval = prefs.locale ?: "auto"
-                        val newVal = entryValues[idx]
-                        if (oldval != newVal) {
-                            prefs.locale = newVal
+                    .setSingleChoiceItems(entries, checkedIndex) { dialogInterface, idx ->
+                        dialogInterface.dismiss()
+                        val newLocale = entryValues[idx]
+                        if (currentLocale != newLocale) {
+                            prefs.locale = newLocale
                             activity!!.recreate()
                         }
                     }
@@ -173,8 +174,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         val appList = findPreference<Preference>(MainPrefs.PREF_ALLOWED_PACKAGES)!!
         appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
-                .remove(this)
-                .add(R.id.frame, AppListFragment())
+                .replace(R.id.frame, AppListFragment())
                 .addToBackStack(null)
                 .commit()
             true
@@ -221,8 +221,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("themes")!!
             .setOnPreferenceClickListener {
                 parentFragmentManager.beginTransaction()
-                    .remove(this)
-                    .add(R.id.frame, ThemesFragment())
+                    .replace(R.id.frame, ThemesFragment())
                     .addToBackStack(null)
                     .commit()
                 true
@@ -255,7 +254,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                     putExtra(
                         Intent.EXTRA_TITLE, getString(
                             R.string.export_file_name,
-                            "scrobble_sources_" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
+                            "private_" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
                         )
                     )
                 }
@@ -301,8 +300,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                 putBoolean(Stuff.ARG_SAVE_COOKIES, true)
             }
             parentFragmentManager.beginTransaction()
-                .remove(this)
-                .add(R.id.frame, wf)
+                .replace(R.id.frame, wf)
                 .addToBackStack(null)
                 .commit()
         },
@@ -317,8 +315,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                     putString(Stuff.ARG_URL, Stuff.LIBREFM_AUTH_CB_URL)
                 }
                 parentFragmentManager.beginTransaction()
-                    .remove(this)
-                    .add(R.id.frame, wf)
+                    .replace(R.id.frame, wf)
                     .addToBackStack(null)
                     .commit()
             },
@@ -327,44 +324,18 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         initAuthConfirmation(
             "gnufm", {
-                val nixtapeUrl =
-                    preferenceManager.sharedPreferences?.getString(
-                        MainPrefs.PREF_GNUFM_ROOT,
-                        "https://"
-                    )!!
-                val binding = TextInputEditBinding.inflate(layoutInflater)
-                binding.root.isHintEnabled = false
-                binding.edittext.setText(nixtapeUrl)
-                val padding = 16.dp
+                val b = Bundle().apply {
+                    putString(LoginFragment.HEADING, getString(R.string.gnufm))
+                    putString(LoginFragment.TEXTFL, getString(R.string.api_url))
+                    putString(LoginFragment.TEXT_CHECKBOX, getString(R.string.disable_tls_verify))
+                }
 
-                val dialog = MaterialAlertDialogBuilder(context!!)
-                    .setTitle(R.string.pref_gnufm_title)
-                    .setPositiveButton(android.R.string.ok) { dialog, id ->
-                        var newUrl = binding.edittext.text.toString()
-                        if (URLUtil.isValidUrl(newUrl)) {
-                            if (!newUrl.endsWith('/'))
-                                newUrl += '/'
-                            preferenceManager.sharedPreferences!!.edit()
-                                .putString(MainPrefs.PREF_GNUFM_ROOT, newUrl).apply()
-                            val wf = WebViewFragment()
-                            wf.arguments = Bundle().apply {
-                                putString(
-                                    Stuff.ARG_URL,
-                                    newUrl + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=pscrobble://auth/gnufm"
-                                )
-                            }
-                            parentFragmentManager.beginTransaction()
-                                .remove(this)
-                                .add(R.id.frame, wf)
-                                .addToBackStack(null)
-                                .commit()
-                        } else
-                            Stuff.toast(activity!!, getString(R.string.failed_encode_url))
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create()
-                dialog.setView(binding.root, padding, padding / 3, padding, 0)
-                dialog.show()
+                val loginFragment = LoginFragment()
+                loginFragment.arguments = b
+                activity!!.supportFragmentManager.beginTransaction()
+                    .replace(R.id.frame, loginFragment)
+                    .addToBackStack(null)
+                    .commit()
             },
             MainPrefs.PREF_GNUFM_USERNAME, MainPrefs.PREF_GNUFM_SESS_KEY, MainPrefs.PREF_GNUFM_ROOT
         )
@@ -394,6 +365,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                     putString(LoginFragment.HEADING, getString(R.string.custom_listenbrainz))
                     putString(LoginFragment.TEXTF1, getString(R.string.api_url))
                     putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
+                    putString(LoginFragment.TEXT_CHECKBOX, getString(R.string.disable_tls_verify))
                 }
 
                 val loginFragment = LoginFragment()
@@ -410,50 +382,33 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>(MainPrefs.PREF_INTENTS)!!
             .onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            val ss = SpannableString(
-                getString(
-                    R.string.pref_intents_dialog_desc,
-                    NLService.iLOVE,
-                    NLService.iUNLOVE,
-                    NLService.iCANCEL,
 
-                    NLService.iSCROBBLER_ON,
-                    NLService.iSCROBBLER_OFF,
-                )
+            val itemsRaw = listOf(
+                NLService.iSCROBBLER_ON,
+                NLService.iSCROBBLER_OFF,
+                null,
+                NLService.iLOVE,
+                NLService.iUNLOVE,
+                NLService.iCANCEL,
             )
-            val newlinePosList = mutableListOf(-1)
-            ss.forEachIndexed { index, c ->
-                if (c == '\n')
-                    newlinePosList += index
-            }
-            newlinePosList.forEachIndexed { index, i ->
-                if (index == 0)
-                    return@forEachIndexed
 
-                val start = newlinePosList[index - 1] + 1
-                val end = newlinePosList[index]
-                if (ss.indexOf("com.", startIndex = start) == start)
-                    ss.setSpan(
-                        MyClickableSpan(start, end) { text ->
-                            val clipboard =
-                                context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clip = ClipData.newPlainText("intent", text)
-                            clipboard.setPrimaryClip(clip)
-                            Stuff.toast(context, getString(R.string.copied))
-                        },
-                        start,
-                        end,
-                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE
-                    )
-            }
+            val itemsDisplay = itemsRaw.map {
+                if (it == null)
+                    getString(R.string.current_track)
+                else
+                    "\t\t$it"
+            }.toTypedArray()
 
-            MaterialAlertDialogBuilder(context!!)
+            val dialog = MaterialAlertDialogBuilder(context!!)
                 .setTitle(R.string.pref_intents_dialog_title)
-                .setMessage(ss)
-                .setPositiveButton(android.R.string.ok) { _, _ -> }
+                .setItems(itemsDisplay, null)
+                .setPositiveButton(android.R.string.ok, null)
                 .show()
-                .findViewById<TextView>(android.R.id.message)?.movementMethod =
-                LinkMovementMethod.getInstance()
+
+            dialog.listView.setOnItemClickListener { _, _, selectedIdx, _ ->
+                val item = itemsRaw[selectedIdx]
+                context!!.copyToClipboard(item ?: return@setOnItemClickListener)
+            }
 
             true
         }
@@ -461,6 +416,12 @@ class PrefFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("translate")!!
             .onPreferenceClickListener = Preference.OnPreferenceClickListener {
             Stuff.openInBrowser(context!!, getString(R.string.crowdin_link))
+            true
+        }
+
+        findPreference<Preference>("translate_credits")!!
+            .onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            Stuff.openInBrowser(context!!, getString(R.string.crowdin_link) + "/members")
             true
         }
 
@@ -479,6 +440,19 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
+        }
+
+        if (BuildConfig.DEBUG)
+            findPreference<Preference>("song_search_url")!!.isVisible = true
+
+        val libraries = findPreference<Preference>("libraries")!!
+        libraries.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.frame, LicensesFragment())
+                .addToBackStack(null)
+                .commit()
+            true
         }
 
         if (MainActivity.isTV)
@@ -563,8 +537,8 @@ class PrefFragment : PreferenceFragmentCompat() {
                         it.extras.putInt("state", STATE_CONFIRM)
                     }
                     STATE_CONFIRM -> {
-                        keysToClear.forEach {
-                            preferenceManager.sharedPreferences!!.edit().putString(it, null).apply()
+                        preferenceManager.sharedPreferences!!.edit {
+                            keysToClear.forEach { remove(it) }
                         }
                         logout?.invoke()
                         setAuthLabel(it)
@@ -657,8 +631,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         val simpleEdits = findPreference<Preference>("simple_edits")!!
         simpleEdits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
-                .remove(this)
-                .add(R.id.frame, SimpleEditsFragment())
+                .replace(R.id.frame, SimpleEditsFragment())
                 .addToBackStack(null)
                 .commit()
             true
@@ -670,15 +643,18 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
             withContext(Dispatchers.Main) {
                 simpleEdits.title =
-                    resources.getQuantityString(R.plurals.num_simple_edits, numEdits, numEdits)
+                    resources.getQuantityString(
+                        R.plurals.num_simple_edits,
+                        numEdits,
+                        NumberFormat.getInstance().format(numEdits)
+                    )
             }
         }
 
         val regexEdits = findPreference<Preference>("regex_edits")!!
         regexEdits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
-                .remove(this)
-                .add(R.id.frame, RegexEditsFragment())
+                .replace(R.id.frame, RegexEditsFragment())
                 .addToBackStack(null)
                 .commit()
             true
@@ -690,15 +666,18 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
             withContext(Dispatchers.Main) {
                 regexEdits.title =
-                    resources.getQuantityString(R.plurals.num_regex_edits, numEdits, numEdits)
+                    resources.getQuantityString(
+                        R.plurals.num_regex_edits,
+                        numEdits,
+                        NumberFormat.getInstance().format(numEdits)
+                    )
             }
         }
 
         val blockedMetadata = findPreference<Preference>("blocked_metadata")!!
         blockedMetadata.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
-                .remove(this)
-                .add(R.id.frame, BlockedMetadataFragment())
+                .replace(R.id.frame, BlockedMetadataFragment())
                 .addToBackStack(null)
                 .commit()
             true
@@ -710,7 +689,11 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
             withContext(Dispatchers.Main) {
                 blockedMetadata.title =
-                    resources.getQuantityString(R.plurals.num_blocked_metadata, numEdits, numEdits)
+                    resources.getQuantityString(
+                        R.plurals.num_blocked_metadata,
+                        numEdits,
+                        NumberFormat.getInstance().format(numEdits)
+                    )
             }
         }
 
@@ -724,8 +707,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             fakeShowScrobbleSources.isChecked = false
             fakeShowScrobbleSources.setOnPreferenceClickListener {
                 parentFragmentManager.beginTransaction()
-                    .remove(this)
-                    .add(R.id.frame, BillingFragment())
+                    .replace(R.id.frame, BillingFragment())
                     .addToBackStack(null)
                     .commit()
                 true

@@ -3,17 +3,26 @@ package com.arn.scrobble.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff.dp
+import kotlin.math.min
+
 
 // from https://stackoverflow.com/a/16018517/1067596
 
-class SquareFrameLayout : FrameLayout {
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
-    constructor(context: Context, attributeSet: AttributeSet, defStyle: Int) : super(
-        context,
-        attributeSet,
-        defStyle
-    )
+class SquareFrameLayout(context: Context, attributeSet: AttributeSet?, defStyle: Int) :
+    FrameLayout(context, attributeSet, defStyle) {
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attributeSet: AttributeSet?) : this(context, attributeSet, 0)
+
+    private var maxSize = 720.dp
+
+    init {
+        val a =
+            context.obtainStyledAttributes(attributeSet, R.styleable.SquareFrameLayout, defStyle, 0)
+        maxSize = a.getDimensionPixelSize(R.styleable.SquareFrameLayout_maxSize, maxSize)
+        a.recycle()
+    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
@@ -31,7 +40,7 @@ class SquareFrameLayout : FrameLayout {
             heightSize
         }
 
-        val finalMeasureSpec = MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY)
+        val finalMeasureSpec = MeasureSpec.makeMeasureSpec(min(size, maxSize), MeasureSpec.EXACTLY)
         super.onMeasure(finalMeasureSpec, finalMeasureSpec)
     }
 }

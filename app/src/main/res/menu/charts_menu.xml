@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_share"
         android:icon="@drawable/vd_share"
         android:title="@string/share_this_chart"
-        app:iconTint="?colorPrimary"
-        app:showAsAction="always" />
+        app:iconTint="?android:colorForeground"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_legend"
+        android:icon="@drawable/vd_legend"
+        android:title="@string/legend"
+        app:iconTint="?android:colorForeground"
+        app:showAsAction="never" />
+
 </menu>

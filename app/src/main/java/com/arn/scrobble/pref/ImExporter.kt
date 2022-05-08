@@ -42,7 +42,7 @@ class ImExporter : Closeable {
         MainPrefs.PREF_THEME_SECONDARY,
         MainPrefs.PREF_THEME_BACKGROUND,
         MainPrefs.PREF_THEME_RANDOM,
-        MainPrefs.PREF_THEME_PALETTE_BG,
+        MainPrefs.PREF_THEME_DAY_NIGHT,
         MainPrefs.PREF_THEME_TINT_BG,
         MainPrefs.PREF_THEME_DYNAMIC,
         MainPrefs.PREF_SEARCH_IN_SOURCE,

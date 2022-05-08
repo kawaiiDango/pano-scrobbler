@@ -48,14 +48,17 @@ public class Artist extends MusicEntry {
 
 	static final ItemFactory<Artist> FACTORY = new ArtistFactory();
 
-	private Collection<Artist> similar = new ArrayList<Artist>();
+
+    private Collection<Artist> similar = new ArrayList<Artist>();
 
 	public Artist(String name, String url) {
 		super(name, url);
 	}
 
-	protected Artist(String name, String url, String mbid, int playcount, int listeners, boolean streamable) {
+	public Artist(int id, String name, String url, String mbid, int playcount, int userPlaycount, int listeners, boolean streamable) {
 		super(name, url, mbid, playcount, listeners, streamable);
+        this.id = Integer.toString(id);
+        this.userPlaycount = userPlaycount;
 	}
 
 	/**
@@ -470,7 +473,7 @@ public class Artist extends MusicEntry {
 		return ResponseBuilder.buildPaginatedResult(result, Shout.class);
 	}
 
-	private static class ArtistFactory implements ItemFactory<Artist> {
+    private static class ArtistFactory implements ItemFactory<Artist> {
 		public Artist createItemFromElement(DomElement element) {
 			Artist artist = new Artist(null, null);
 			MusicEntry.loadStandardInfo(artist, element);

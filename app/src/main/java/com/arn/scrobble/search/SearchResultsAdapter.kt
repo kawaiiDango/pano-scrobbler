@@ -10,7 +10,7 @@ import coil.load
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getTintedDrwable
+import com.arn.scrobble.Stuff.getTintedDrawable
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
@@ -147,7 +147,7 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding) :
                 else -> binding.recentsSubtitle.text = ""
             }
 
-            val errorDrawable = itemView.context.getTintedDrwable(
+            val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
                 entry.name.hashCode()
             )

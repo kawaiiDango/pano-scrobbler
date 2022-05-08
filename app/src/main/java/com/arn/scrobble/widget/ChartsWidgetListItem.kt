@@ -1,9 +1,11 @@
 package com.arn.scrobble.widget
 
-import java.io.Serializable
 
-class ChartsWidgetListItem(
+@kotlinx.serialization.Serializable
+data class ChartsWidgetListItem(
     val title: String,
     val subtitle: String,
-    val number: Int
-) : Serializable
+    val number: Int,
+    val imageUrl: String = "",
+    val stonksDelta: Int? = null,
+)

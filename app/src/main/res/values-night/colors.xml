@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="img_border">#B3FFFFFF</color>
+    <color name="overlay_center">#8C000000</color>
+    <color name="overlay_end">#CC000000</color>
+    <color name="overlay_hero_center">#99000000</color>
+    <color name="overlay_hero_end">#D9000000</color>
+    <color name="background_pure">#000</color>
+    <color name="foreground_pure">#FFF</color>
+    <color name="background_gray">#212121</color>
+    <color name="splash_fg">@color/pinkLight</color>
+    <color name="boring_ripple">#1AFFFFFF</color>
+    <color name="stonks_up">@color/mdcolor_green_200</color>
+    <color name="stonks_down">@color/mdcolor_red_200</color>
+    <color name="stonks_new">@color/mdcolor_blue_200</color>
+    <color name="stonks_neutral">#e0e0e0</color>
+
+</resources>

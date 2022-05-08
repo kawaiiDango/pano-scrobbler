@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.button.MaterialButtonToggleGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/friends_links"
+    android:layout_gravity="center_horizontal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:orientation="horizontal"
-    android:paddingTop="@dimen/nav_header_vertical_spacing">
+    android:paddingTop="@dimen/nav_header_vertical_spacing"
+    app:singleSelection="true">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/friends_profile"
         style="@style/friendsLinks"
-        android:drawableTop="@drawable/vd_open_in_new"
-        android:text="@string/profile" />
+        android:text="@string/profile"
+        app:icon="@drawable/vd_open_in_new" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/friends_scrobbles"
         style="@style/friendsLinks"
-        android:drawableTop="@drawable/vd_note"
-        android:text="@string/scrobbles" />
+        android:text="@string/scrobbles"
+        app:icon="@drawable/vd_note" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/friends_charts"
         style="@style/friendsLinks"
-        android:drawableTop="@drawable/vd_charts"
-        android:text="@string/charts" />
+        android:text="@string/charts"
+        app:icon="@drawable/vd_charts" />
 
-</LinearLayout>
+</com.google.android.material.button.MaterialButtonToggleGroup>

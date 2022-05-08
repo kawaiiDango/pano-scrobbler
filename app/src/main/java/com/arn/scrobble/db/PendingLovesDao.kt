@@ -1,17 +1,20 @@
 package com.arn.scrobble.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 
 /**
  * Created by arn on 11/09/2017.
  */
-private const val tableName = "pendingLoves"
 
 @Dao
 interface PendingLovesDao {
     @Query("SELECT * FROM $tableName ORDER BY _id DESC LIMIT :limit")
     fun all(limit: Int): List<PendingLove>
+
+    @Query("SELECT * FROM $tableName ORDER BY _id DESC LIMIT :limit")
+    fun allLd(limit: Int): LiveData<List<PendingLove>>
 
     @Query("SELECT * FROM $tableName WHERE artist =:artist AND track=:track")
     fun find(artist: String, track: String): PendingLove?
@@ -27,4 +30,8 @@ interface PendingLovesDao {
 
     @Delete
     fun delete(pl: PendingLove)
+
+    companion object {
+        const val tableName = "PendingLoves"
+    }
 }

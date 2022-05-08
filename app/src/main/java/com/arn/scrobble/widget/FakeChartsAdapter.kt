@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.AppwidgetChartsItemBinding
 import java.text.NumberFormat
 
@@ -17,13 +18,13 @@ class FakeChartsAdapter(
 
     init {
         addAll(
-            ChartsWidgetListItem("Nachtansicht", "Alstroemeria Records", 98),
-            ChartsWidgetListItem("BLOSSOM", "Studio \"Syrup Comfiture\"", 79),
-            ChartsWidgetListItem("swimming classroom.", "Macaroom", 57),
-            ChartsWidgetListItem("Identity.", "syrufit", 36),
-            ChartsWidgetListItem("Lucky 7", "Halozy", 33),
-            ChartsWidgetListItem("Frozen Traveler", "DiGiTAL WiNG", 30),
-            ChartsWidgetListItem("Millennium Mother", "Mili", 30),
+            ChartsWidgetListItem("Nachtansicht", "Alstroemeria Records", 98, stonksDelta = -1),
+            ChartsWidgetListItem("BLOSSOM", "Studio \"Syrup Comfiture\"", 79, stonksDelta = 10),
+            ChartsWidgetListItem("swimming classroom.", "Macaroom", 57, stonksDelta = 0),
+            ChartsWidgetListItem("Identity.", "syrufit", 36, stonksDelta = Integer.MAX_VALUE),
+            ChartsWidgetListItem("Lucky 7", "Halozy", 33, stonksDelta = 0),
+            ChartsWidgetListItem("Frozen Traveler", "DiGiTAL WiNG", 30, stonksDelta = 1),
+            ChartsWidgetListItem("Millennium Mother", "Mili", 30, stonksDelta = -11),
         )
     }
 
@@ -35,6 +36,8 @@ class FakeChartsAdapter(
         binding.appwidgetChartsTitle.text = item.title
         binding.appwidgetChartsSubtitle.text = item.subtitle
         binding.appwidgetChartsPlays.text = NumberFormat.getInstance().format(item.number)
+        binding.appwidgetChartsStonksIcon.setImageResource(Stuff.stonksIconForDelta(item.stonksDelta))
+        binding.appwidgetChartsStonksIconShadow.setImageResource(Stuff.stonksIconForDelta(item.stonksDelta))
 
         return view
     }

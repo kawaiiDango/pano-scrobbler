@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -15,13 +16,29 @@ object ColorPatchUtils {
 
     const val primaryDefault = "Sakurapink"
     const val secondaryDefault = "Deeporange"
-    const val backgroundBlack = "Black"
 
     fun setTheme(context: Context, proStatus: Boolean) {
         val prefs = MainPrefs(context)
 
-        if (prefs.themeDynamic && DynamicColors.isDynamicColorAvailable())
+        var dayNightConstant = prefs.themeDayNight
+        if (dayNightConstant !in arrayOf(
+                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+                AppCompatDelegate.MODE_NIGHT_YES,
+                AppCompatDelegate.MODE_NIGHT_NO
+            ) || !proStatus
+        ) {
+            dayNightConstant = AppCompatDelegate.MODE_NIGHT_YES
+        }
+        AppCompatDelegate.setDefaultNightMode(dayNightConstant)
+
+        if (prefs.themeDynamic && DynamicColors.isDynamicColorAvailable() && proStatus) {
+            if (prefs.themeTintBackground)
+                context.theme.applyStyle(R.style.ColorPatchManual_DarkerLightBackground, true)
+            else
+                context.theme.applyStyle(R.style.ColorPatchManual_Pure_Background, true)
+
             return
+        }
 
         val isRandom = prefs.themeRandom
         val primaryStyle: String
@@ -62,7 +79,7 @@ object ColorPatchUtils {
                     .getOrDefaultKey(primaryStyle, primaryDefault), true
             )
         else
-            context.theme.applyStyle(ColorPatchMap.backgroundStyles[backgroundBlack]!!, true)
+            context.theme.applyStyle(R.style.ColorPatchManual_Pure_Background, true)
     }
 
     fun getNotiColor(context: Context): Int {

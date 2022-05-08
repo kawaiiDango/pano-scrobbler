@@ -144,14 +144,15 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     private fun addChip(tag: String) {
-        val chip = Chip(context!!)
-        chip.text = tag
-        chip.isCloseIconVisible = true
-        chip.setOnCloseIconClickListener {
-            viewModel.deleteTag(tag)
-            binding.userTagsChipGroup.removeView(it)
-            if (binding.userTagsChipGroup.childCount == 0)
-                binding.userTagsStatus.visibility = View.VISIBLE
+        val chip = Chip(context!!).apply {
+            text = tag
+            isCloseIconVisible = true
+            setOnCloseIconClickListener {
+                viewModel.deleteTag(tag)
+                binding.userTagsChipGroup.removeView(it)
+                if (binding.userTagsChipGroup.childCount == 0)
+                    binding.userTagsStatus.visibility = View.VISIBLE
+            }
         }
         binding.userTagsChipGroup.addView(chip)
         binding.userTagsStatus.visibility = View.GONE

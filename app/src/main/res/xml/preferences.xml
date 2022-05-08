@@ -69,7 +69,7 @@
             app:showSeekBarValue="true"
             android:key="delay_secs"
             android:title="@string/pref_delay_mins"
-            android:defaultValue="240"
+            android:defaultValue="180"
             android:max="360"
             app:min="30"
             app:seekBarIncrement="10"
@@ -117,10 +117,13 @@
             android:dependency="show_scrobble_sources"
             android:persistent="true"/>
 
-        <Preference
-            android:key="locale"
-            android:title="@string/pref_change_locale"
-            android:summary="@string/locale_only_ui"/>
+
+        <EditTextPreference
+            android:key="song_search_url"
+            android:defaultValue="https://www.youtube.com/results?search_query=$artist+$title"
+            android:title="@string/song_search_url"
+            app:isPreferenceVisible="false"
+            android:persistent="true"/>
 
     </PreferenceCategory>
 
@@ -139,6 +142,25 @@
         <Preference
             android:title="@string/pref_blocked_metadata"
             android:key="blocked_metadata"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:icon="@drawable/vd_translate"
+        android:title="@string/pref_locale">
+
+        <Preference
+            android:key="locale"
+            android:title="@string/pref_change_locale"
+            android:summary="@string/locale_only_ui"/>
+
+        <Preference
+            android:title="@string/pref_translate"
+            android:key="translate" />
+
+        <Preference
+            android:title="@string/pref_translate_credits"
+            android:key="translate_credits" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -184,7 +206,7 @@
             android:persistent="true"
             android:title="@string/pref_fetch_aa"
             android:summary="@string/pref_fetch_aa_desc"/>
-        
+
         <Preference
             android:title="@string/pref_intents"
             android:key="intents" />
@@ -204,7 +226,7 @@
             />
     </PreferenceCategory>
     <PreferenceCategory
-        app:icon="@drawable/ic_web"
+        app:icon="@drawable/vd_web"
         android:title="@string/scrobble_services">
         <Preference
             android:title="@string/lastfm"
@@ -237,8 +259,8 @@
         app:icon="@drawable/vd_info"
         android:title="@string/pref_about">
         <Preference
-            android:title="@string/pref_translate"
-            android:key="translate" />
+            android:title="@string/pref_oss_credits"
+            android:key="libraries" />
         <Preference
             android:title="@string/pref_privacy_policy"
             android:key="privacy" />

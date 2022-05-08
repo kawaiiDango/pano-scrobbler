@@ -19,6 +19,7 @@ class FixItFragment : BottomSheetDialogFragment() {
 
     private var _binding: DialogFixItBinding? = null
     private val binding get() = _binding!!
+    private val exitReason get() = arguments?.getString(Stuff.ARG_DATA)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,6 +70,10 @@ class FixItFragment : BottomSheetDialogFragment() {
                     startActivity(batteryIntent)
                 }
             }
+        }
+
+        exitReason?.let {
+            binding.fixItExitReason.text = getString(R.string.kill_reason, it)
         }
     }
 }

@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
@@ -18,6 +17,7 @@ import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class IdentifyProtocolV1 {
@@ -57,7 +57,7 @@ public class IdentifyProtocolV1 {
                 "Content-Type: application/octet-stream\r\n\r\n";
 
         URL url = null;
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
         OutputStream out = null;
         BufferedReader reader = null;
         ByteArrayOutputStream postBufferStream = new ByteArrayOutputStream();
@@ -102,7 +102,7 @@ public class IdentifyProtocolV1 {
             byte[] postByteArray = postBufferStream.toByteArray();
 
             url = new URL(posturl);
-            conn = (HttpURLConnection) url.openConnection();
+            conn = (HttpsURLConnection) url.openConnection();
             conn.setConnectTimeout(timeOut);
             conn.setReadTimeout(timeOut);
             conn.setRequestMethod("POST");
@@ -117,7 +117,7 @@ public class IdentifyProtocolV1 {
             out.write(postByteArray);
             out.flush();
             int response = conn.getResponseCode();
-            if (response == HttpURLConnection.HTTP_OK) {
+            if (response == HttpsURLConnection.HTTP_OK) {
                 reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
                 String tmpRes = "";
                 while ((tmpRes = reader.readLine()) != null) {

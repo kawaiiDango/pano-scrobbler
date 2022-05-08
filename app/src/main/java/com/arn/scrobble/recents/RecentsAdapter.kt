@@ -19,7 +19,7 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getTintedDrwable
+import com.arn.scrobble.Stuff.getTintedDrawable
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.HeaderDefaultBinding
 import com.arn.scrobble.databinding.HeaderPendingBinding
@@ -230,7 +230,7 @@ class RecentsAdapter(
             ""
         val header = if (isShowingLoves)
             username + fragmentBinding.root.context.getString(R.string.recently_loved)
-        else if (viewModel.toTime > 0)
+        else if (viewModel.toTime != null)
             username + fragmentBinding.root.context.getString(
                 R.string.scrobbles_till,
                 DateFormat.getMediumDateFormat(fragmentBinding.root.context)
@@ -288,7 +288,7 @@ class RecentsAdapter(
             false
         )
         diff.dispatchUpdatesTo(myUpdateCallback)
-        if (!viewModel.loadedNw || fragmentBinding.recentsSwipeRefresh.isRefreshing) {
+        if (oldTracks.isEmpty() && viewModel.tracks.isNotEmpty() || fragmentBinding.recentsSwipeRefresh.isRefreshing) {
             fragmentBinding.recentsList.scheduleLayoutAnimation()
             if (isShowingLoves)
                 notifyItemChanged(0, 0) //animation gets delayed otherwise
@@ -493,7 +493,7 @@ class RecentsAdapter(
             }
 
             val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
-            val errorDrawable = itemView.context.getTintedDrwable(
+            val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
                 Stuff.genHashCode(track.artist, track.name)
             )

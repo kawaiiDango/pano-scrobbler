@@ -14,23 +14,9 @@ class RegexEditsVM(app: Application) : AndroidViewModel(app) {
     val regexesReceiver = dao.allLd
     val countReceiver = dao.countLd
 
-    fun upsert(e: RegexEdit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.insert(e)
-        }
-    }
-
     fun upsertAll(el: List<RegexEdit>) {
         viewModelScope.launch(Dispatchers.IO) {
             dao.insert(el)
         }
     }
-
-    fun delete(index: Int) {
-        val regexEdit = regexes[index]
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.delete(regexEdit)
-        }
-    }
-
 }

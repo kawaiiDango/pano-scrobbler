@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.arn.scrobble.*
 import com.arn.scrobble.billing.BillingFragment
-import com.arn.scrobble.databinding.DialogBlockedTagsBinding
+import com.arn.scrobble.databinding.DialogBlockedMetadataBinding
 import com.arn.scrobble.databinding.TextInputEditBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
@@ -22,11 +22,12 @@ import kotlinx.coroutines.launch
 class BlockedMetadataAddDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val binding = DialogBlockedTagsBinding.inflate(layoutInflater)
+        val binding = DialogBlockedMetadataBinding.inflate(layoutInflater)
         val prefs = MainPrefs(context!!)
 
         val blockedMetadata =
-            arguments?.getParcelable<BlockedMetadata>(Stuff.ARG_DATA)?.copy() ?: BlockedMetadata()
+            arguments?.getParcelable<BlockedMetadata>(Stuff.ARG_DATA)?.copy()
+                ?: BlockedMetadata(skip = true)
 
         val ignoredArtist = arguments?.getString(NLService.B_IGNORED_ARTIST)
 
@@ -48,6 +49,8 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
             blockAlbumArtist.edittext.setText(blockedMetadata.albumArtist)
             blockAlbum.edittext.setText(blockedMetadata.album)
             blockTrack.edittext.setText(blockedMetadata.track)
+            skip.isChecked = blockedMetadata.skip
+            mute.isChecked = blockedMetadata.mute
 
             arrayOf(blockArtist, blockAlbumArtist, blockAlbum, blockTrack).forEach {
                 it.root.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
@@ -66,46 +69,56 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                 }
             }
         }
-        dialog.show()
 
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+        dialog.setOnShowListener {
 
-            if (!prefs.proStatus) {
-                dialog.dismiss()
-                if (activity is MainDialogActivity) {
-                    val intent = Intent(context, MainActivity::class.java).apply {
-                        putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_PRO)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+
+                if (!prefs.proStatus) {
+                    dialog.dismiss()
+                    if (activity is MainDialogActivity) {
+                        val intent = Intent(context, MainActivity::class.java).apply {
+                            putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_PRO)
+                        }
+                        context!!.startActivity(intent)
+                    } else if (parentFragment is BlockedMetadataFragment) {
+                        parentFragment!!.parentFragmentManager
+                            .beginTransaction()
+                            .replace(R.id.frame, BillingFragment())
+                            .addToBackStack(null)
+                            .commit()
                     }
-                    context!!.startActivity(intent)
-                } else if (parentFragment is BlockedMetadataFragment) {
-                    parentFragment!!.parentFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.frame, BillingFragment())
-                        .addToBackStack(null)
-                        .commit()
-                }
-                return@setOnClickListener
-            }
-
-            val prevBlockedTag = blockedMetadata.copy()
-            blockedMetadata.apply {
-                artist = trimmedText(binding.blockArtist)
-                albumArtist = trimmedText(binding.blockAlbumArtist)
-                album = trimmedText(binding.blockAlbum)
-                track = trimmedText(binding.blockTrack)
-
-                if (listOf(artist, albumArtist, album, track)
-                        .all { it == "" }
-                )
                     return@setOnClickListener
-            }
-            if (prevBlockedTag != blockedMetadata || activity is MainDialogActivity)
-                GlobalScope.launch(Dispatchers.IO) {
-                    PanoDb.getDb(activity!!.application).getBlockedMetadataDao()
-                        .insertLowerCase(listOf(blockedMetadata), ignore = false)
                 }
 
-            dialog.dismiss()
+                val prevBlockedTag = blockedMetadata.copy()
+                blockedMetadata.apply {
+                    artist = trimmedText(binding.blockArtist)
+                    albumArtist = trimmedText(binding.blockAlbumArtist)
+                    album = trimmedText(binding.blockAlbum)
+                    track = trimmedText(binding.blockTrack)
+                    skip = binding.skip.isChecked
+                    mute = binding.mute.isChecked
+
+                    if (listOf(artist, albumArtist, album, track)
+                            .all { it == "" }
+                    )
+                        return@setOnClickListener
+                }
+                if (prevBlockedTag != blockedMetadata || activity is MainDialogActivity)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        PanoDb.getDb(activity!!.application).getBlockedMetadataDao()
+                            .insertLowerCase(listOf(blockedMetadata), ignore = false)
+                    }
+                if (activity is MainDialogActivity && blockedMetadata.skip) {
+                    val i = Intent(NLService.iBLOCK_ACTION_S).apply {
+                        putExtra(Stuff.ARG_DATA, blockedMetadata)
+                        putExtra(NLService.B_HASH, arguments!!.getInt(NLService.B_HASH))
+                    }
+                    context!!.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+                }
+                dialog.dismiss()
+            }
         }
         return dialog
     }

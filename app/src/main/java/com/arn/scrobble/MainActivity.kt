@@ -1,13 +1,12 @@
 package com.arn.scrobble
 
 import android.animation.ValueAnimator
-import android.app.*
+import android.app.ActivityManager
 import android.app.Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES
+import android.app.UiModeManager
 import android.content.*
 import android.content.pm.LabeledIntent
-import android.content.pm.PackageManager
-import android.content.res.Resources
-import android.graphics.Color
+import android.content.res.Configuration
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.Network
@@ -15,9 +14,6 @@ import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -27,21 +23,23 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.media.app.MediaStyleMod
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
-import coil.*
+import coil.Coil
+import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import coil.imageLoader
+import coil.load
 import coil.size.Precision
 import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
+import com.arn.scrobble.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.Stuff.memoryCacheKey
+import com.arn.scrobble.Stuff.popBackStackTill
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityMainBinding
@@ -49,11 +47,13 @@ import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pending.PendingScrService
-import com.arn.scrobble.pref.*
+import com.arn.scrobble.pref.AppListFragment
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.pref.PrefFragment
+import com.arn.scrobble.search.SearchExperimentFragment
 import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.*
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     FragmentManager.OnBackStackChangedListener {
 
     private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var prefs: MainPrefs
+    private val prefs by lazy { MainPrefs(this) }
     private var lastDrawerOpenTime = 0L
     private var backArrowShown = false
     var coordinatorPadding = 0
@@ -91,15 +91,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityMainBinding.inflate(layoutInflater)
         navHeaderbinding = HeaderNavBinding.inflate(layoutInflater, binding.navView, false)
         binding.navView.addHeaderView(navHeaderbinding.root)
+
+//        if (resources.getDimension(R.dimen.coordinator_padding) > 0)
+        binding.navView.inflateMenu(R.menu.homepager_menu)
+
+        binding.navView.inflateMenu(R.menu.nav_menu)
         binding.drawerLayout.drawerElevation = 0f
         setContentView(binding.root)
         Stuff.timeIt("onCreate setContentView")
         setSupportActionBar(binding.coordinatorMain.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        prefs = MainPrefs(this)
         coordinatorPadding = binding.coordinatorMain.coordinator.paddingStart
-        isTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+
+        val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
+        isTV = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
 
         val imageLoader = ImageLoader.Builder(applicationContext)
             .components {
@@ -112,6 +118,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 } else {
                     add(GifDecoder.Factory())
                 }
+
+                if (Stuff.DEMO_MODE)
+                    add(DemoInterceptor())
             }
             .crossfade(Stuff.CROSSFADE_DURATION)
             .precision(Precision.INEXACT)
@@ -210,13 +219,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED) //for some devices
                         showHomePager()
 
-                        if (intent.getStringExtra(NLService.B_ARTIST) != null)
-                            showInfoFragment(intent)
-                        else {
-                            if (!Stuff.isScrobblerRunning(this))
-                                showNotRunning()
-                            else if (!isTV && billingViewModel.proStatus.value != true)
-                                AppRater(this, prefs).appLaunched()
+                        if (!handleDeepLink(intent)) {
+                            if (intent.getStringExtra(NLService.B_ARTIST) != null)
+                                showInfoFragment(intent)
+                            else {
+                                var wasKilled = false
+                                var exitReasonString: String? = null
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BuildConfig.DEBUG) {
+                                    val lastExitReason = getScrobblerExitReasons(
+                                        prefs.lastKillCheckTime,
+                                        false
+                                    ).firstOrNull()
+
+                                    if (lastExitReason != null) {
+                                        exitReasonString = lastExitReason.description
+                                        wasKilled = true
+                                    }
+                                } else {
+                                    wasKilled = !Stuff.isScrobblerRunning(this)
+                                }
+
+                                prefs.lastKillCheckTime = System.currentTimeMillis()
+
+                                if (wasKilled) {
+                                    showNotRunning(exitReasonString)
+                                } else if (!isTV && billingViewModel.proStatus.value != true) {
+                                    AppRater(this, prefs).appLaunched()
+                                    Updater(this, prefs).withSnackbar()
+                                }
+                            }
                         }
                     }
                 }
@@ -238,29 +270,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         billingViewModel.queryPurchases()
-        mainNotifierViewModel.drawerData.observe(this) {
-            it?.let { drawerData ->
+        mainNotifierViewModel.drawerData.observe(this) { drawerData ->
+            drawerData ?: return@observe
+            val nf = NumberFormat.getInstance()
+            navHeaderbinding.navNumScrobbles.text = getString(
+                R.string.num_scrobbles_nav,
+                nf.format(drawerData.scrobblesTotal), nf.format(drawerData.scrobblesToday)
+            )
 
-                val nf = NumberFormat.getInstance()
-                navHeaderbinding.navNumScrobbles.text = getString(
-                    R.string.num_scrobbles_nav,
-                    nf.format(drawerData.scrobblesTotal), nf.format(drawerData.scrobblesToday)
-                )
-
-                if (navHeaderbinding.navProfilePic.tag != drawerData.profilePicUrl) // prevent flash
-                    navHeaderbinding.navProfilePic.load(drawerData.profilePicUrl) {
-                        placeholderMemoryCacheKey(navHeaderbinding.navProfilePic.memoryCacheKey)
-                        error(R.drawable.vd_wave)
-                        listener(
-                            onSuccess = { _, _ ->
-                                navHeaderbinding.navProfilePic.tag = drawerData.profilePicUrl
-                            },
-                            onError = { _, _ ->
-                                navHeaderbinding.navProfilePic.tag = drawerData.profilePicUrl
-                            }
+            if (navHeaderbinding.navProfilePic.tag != drawerData.profilePicUrl) // prevent flash
+                navHeaderbinding.navProfilePic.load(drawerData.profilePicUrl) {
+                    placeholderMemoryCacheKey(navHeaderbinding.navProfilePic.memoryCacheKey)
+                    error(
+                        InitialsDrawable(
+                            this@MainActivity,
+                            prefs.lastfmUsername ?: "nobody",
+                            colorFromHash = false
                         )
-                    }
-            }
+                    )
+                    listener(
+                        onSuccess = { _, _ ->
+                            navHeaderbinding.navProfilePic.tag = drawerData.profilePicUrl
+                        },
+                        onError = { _, _ ->
+                            navHeaderbinding.navProfilePic.tag = drawerData.profilePicUrl
+                        }
+                    )
+                }
         }
 
         if (prefs.proStatus && prefs.showScrobbleSources) {
@@ -274,7 +310,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             )
         }
 //        showNotRunning()
-//        testNoti()
     }
 
     fun showHomePager() {
@@ -335,15 +370,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ).getDrawerInfo()
 
         val username = prefs.lastfmUsername ?: "nobody"
-        val displayUsername = if (BuildConfig.DEBUG) "nobody" else username
+        val displayUsername = if (Stuff.DEMO_MODE) "nobody" else username
         if (navHeaderbinding.navName.tag == null)
             navHeaderbinding.navName.text = displayUsername
 
-        navHeaderbinding.navProfileLink.setOnClickListener {
+        navHeaderbinding.navProfileLinks.setOnClickListener {
             val servicesToUrls = mutableMapOf</*@StringRes */Int, String>()
 
             prefs.lastfmUsername?.let {
                 servicesToUrls[R.string.lastfm] = "https://www.last.fm/user/$it"
+                servicesToUrls[R.string.lastfm_reports] =
+                    "https://www.last.fm/user/$it/listening-report/week"
             }
             prefs.librefmUsername?.let {
                 servicesToUrls[R.string.librefm] = "https://www.libre.fm/user/$it"
@@ -364,10 +401,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else {
                 val popup = PopupMenu(this, it)
                 servicesToUrls.forEach { (strRes, url) ->
-                    popup.menu.add(0, strRes, 0, strRes)
+                    val title = if (strRes == R.string.lastfm_reports)
+                        getString(strRes)
+                    else
+                        getString(strRes) + " " + getString(R.string.profile)
+
+                    popup.menu.add(0, strRes, 0, title)
                 }
 
-                popup.setOnMenuItemClickListener { menuItem: MenuItem ->
+                popup.setOnMenuItemClickListener { menuItem ->
                     Stuff.openInBrowser(this, servicesToUrls[menuItem.itemId]!!)
                     true
                 }
@@ -404,13 +446,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             binding.drawerLayout.closeDrawer(GravityCompat.START)
 
         when (item.itemId) {
-            R.id.nav_last_week -> {
-                val username = prefs.lastfmUsername ?: "nobody"
-                Stuff.openInBrowser(
-                    this,
-                    "https://www.last.fm/user/$username/listening-report/week"
-                )
-            }
             R.id.nav_recents -> {
                 binding.coordinatorMain.tabBar.getTabAt(0)?.select()
             }
@@ -440,7 +475,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_search -> {
                 enableGestures()
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.frame, SearchFragment())
+                    .replace(
+                        R.id.frame,
+                        if (BuildConfig.DEBUG)
+                            SearchExperimentFragment()
+                        else
+                            SearchFragment()
+                    )
                     .addToBackStack(null)
                     .commit()
             }
@@ -504,11 +545,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onBackPressed()
     }
 
-    private fun showNotRunning() {
+    private fun showNotRunning(exitReasonString: String?) {
         Snackbar
             .make(binding.coordinatorMain.frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
             .setAction(R.string.not_running_fix_action) {
-                FixItFragment().show(supportFragmentManager, null)
+                FixItFragment()
+                    .apply {
+                        arguments = Bundle().apply {
+                            putString(Stuff.ARG_DATA, exitReasonString)
+                        }
+                        show(supportFragmentManager, null)
+                    }
             }
             .addCallback(object : Snackbar.Callback() {
                 override fun onShown(sb: Snackbar?) {
@@ -521,7 +568,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             })
             .show()
-        Timber.tag(Stuff.TAG).w(Exception("bgScrobbler not running"))
+        Timber.tag(Stuff.TAG).w(Exception("${Stuff.SCROBBLER_PROCESS_NAME} not running"))
     }
 
     private fun mailLogs() {
@@ -535,7 +582,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var bgRam = -1
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         for (proc in manager.runningAppProcesses) {
-            if (proc?.processName?.contains("bgScrobbler") == true) {
+            if (proc?.processName?.contains(Stuff.SCROBBLER_PROCESS_NAME) == true) {
                 // https://stackoverflow.com/questions/2298208/how-do-i-discover-memory-usage-of-my-application-in-android
                 val memInfo = manager.getProcessMemoryInfo(intArrayOf(proc.pid)).first()
                 bgRam = memInfo.totalPss / 1024
@@ -543,6 +590,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
+        var lastExitInfo: String? = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            lastExitInfo = getScrobblerExitReasons(printAll = true).firstOrNull()?.toString()
+        }
 
         var text = ""
         text += getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME + "\n"
@@ -562,6 +613,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (!Stuff.isScrobblerRunning(this))
             text += "Background service isn't running\n"
+        if (lastExitInfo != null)
+            text += "Last exit reason: $lastExitInfo\n"
         text += "Active Sessions: $activeSessions\n"
 
         text += if (billingViewModel.proStatus.value == true)
@@ -630,38 +683,70 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if (intent?.data?.isHierarchical == true) {
-            val uri = intent.data!!
-            val path = uri.path
-            val token = uri.getQueryParameter("token")
-            if (token != null) {
-                Stuff.log("onNewIntent got token for $path")
-                when (path) {
-                    "/lastfm" ->
-                        LFMRequester(applicationContext, lifecycleScope).doAuth(
-                            R.string.lastfm,
-                            token
-                        )
-                    "/librefm" ->
-                        LFMRequester(applicationContext, lifecycleScope).doAuth(
-                            R.string.librefm,
-                            token
-                        )
-                    "/gnufm" ->
-                        LFMRequester(applicationContext, lifecycleScope).doAuth(
-                            R.string.gnufm,
-                            token
-                        )
-                    "/testFirstThings" -> {
-                        prefs.lastfmSessKey = null
-                        for (i in 0..supportFragmentManager.backStackEntryCount)
-                            supportFragmentManager.popBackStackImmediate()
-                        showFirstThings(true)
-                    }
+        if (handleDeepLink(intent))
+            return
+        else if (intent?.getStringExtra(NLService.B_ARTIST) != null)
+            showInfoFragment(intent)
+    }
+
+    private fun handleDeepLink(intent: Intent?): Boolean {
+        if (intent?.data?.isHierarchical != true) {
+            return false
+        }
+        val uri = intent.data!!
+        val scheme = uri.scheme!!
+        val path = uri.path ?: return false
+        if (scheme == "pscrobble") {
+            val token = uri.getQueryParameter("token") ?: return false
+            when (path) {
+                "/lastfm" ->
+                    LFMRequester(applicationContext, lifecycleScope).doAuth(
+                        R.string.lastfm,
+                        token
+                    )
+                "/librefm" ->
+                    LFMRequester(applicationContext, lifecycleScope).doAuth(
+                        R.string.librefm,
+                        token
+                    )
+                "/gnufm" ->
+                    LFMRequester(applicationContext, lifecycleScope).doAuth(
+                        R.string.gnufm,
+                        token
+                    )
+                "/testFirstThings" -> {
+                    prefs.lastfmSessKey = null
+                    for (i in 0..supportFragmentManager.backStackEntryCount)
+                        supportFragmentManager.popBackStackImmediate()
+                    showFirstThings(true)
+                }
+                else -> {
+                    Stuff.log("handleDeepLink unknown path $path")
+                    return false
                 }
             }
-        } else if (intent?.getStringExtra(NLService.B_ARTIST) != null)
-            showInfoFragment(intent)
+        } else if (scheme == "https" && path.startsWith("/user/")) {
+            val username = path.split("/").getOrNull(2) ?: return false
+            if (username.isBlank()) return false
+
+            supportFragmentManager.popBackStackTill(0)
+            supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.frame,
+                    HomePagerFragment().apply {
+                        arguments = Bundle().apply {
+                            putString(Stuff.ARG_USERNAME, username)
+                        }
+                    },
+                    Stuff.TAG_HOME_PAGER
+                )
+                .addToBackStack(null)
+                .commit()
+        } else {
+            Stuff.log("handleDeepLink unknown scheme $scheme")
+            return false
+        }
+        return true
     }
 
     private fun showBackArrow(show: Boolean) {
@@ -776,109 +861,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         imageLoader.shutdown()
         super.onDestroy()
-    }
-
-
-    fun testNoti() {
-        AppRater(this, prefs).showRateSnackbar()
-        val res = Resources.getSystem()
-        val attrs = arrayOf(android.R.attr.textColor).toIntArray()
-
-        var sysStyle =
-            res.getIdentifier("TextAppearance.Material.Notification.Title", "style", "android")
-        val titleTextColor = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
-
-        sysStyle = res.getIdentifier("TextAppearance.Material.Notification", "style", "android")
-        val secondaryTextColor = obtainStyledAttributes(sysStyle, attrs).getColor(0, Color.BLACK)
-
-        Stuff.log("clr: $titleTextColor $secondaryTextColor")
-
-        val longDescription = SpannableStringBuilder()
-        longDescription.append("def ")
-
-        var start = longDescription.length
-        longDescription.append("c1 ")
-        longDescription.setSpan(
-            ForegroundColorSpan(
-                ContextCompat.getColor(
-                    applicationContext,
-                    android.R.color.secondary_text_light
-                )
-            ), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        start = longDescription.length
-        longDescription.append("c2 ")
-        longDescription.setSpan(
-            ForegroundColorSpan(titleTextColor),
-            start,
-            longDescription.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        start = longDescription.length
-        longDescription.append("c3 ")
-        longDescription.setSpan(
-            ForegroundColorSpan(secondaryTextColor),
-            start,
-            longDescription.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-//        longDescription.setSpan(StyleSpan(android.graphics.Typeface.BOLD), start, longDescription.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        longDescription.append(" rest")
-
-        val launchIntent = PendingIntent.getActivity(
-            applicationContext, 0, Intent(applicationContext, MainActivity::class.java)
-                .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST),
-            Stuff.updateCurrentOrImmutable
-        )
-
-        val style = MediaStyleMod()//android.support.v4.media.app.NotificationCompat.MediaStyle()
-        style.setShowActionsInCompactView(0, 1)
-        val icon = ContextCompat.getDrawable(this, R.drawable.ic_launcher)
-//        icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
-
-        val nb = NotificationCompat.Builder(applicationContext, MainPrefs.CHANNEL_NOTI_SCROBBLING)
-            .setSmallIcon(R.drawable.vd_noti)
-//                .setLargeIcon(Stuff.drawableToBitmap(icon))
-            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-            .setAutoCancel(true)
-            .setShowWhen(false)
-            .setUsesChronometer(true)
-            .setPriority(Notification.PRIORITY_HIGH)
-            .addAction(R.drawable.vd_undo, getString(R.string.unscrobble), launchIntent)
-            .addAction(R.drawable.vd_check, getString(R.string.unscrobble), launchIntent)
-            .setContentTitle("setContentTitle")
-            .setContentText("longDescription")
-            .setSubText("setSubText")
-            .setColor(MaterialColors.getColor(this, R.attr.colorPrimary, null))
-            .setStyle(style)
-//                .setCustomBigContentView(null)
-//                .setCustomContentView(null)
-
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val n = nb.build()
-        n.bigContentView = null
-        val rv = n.contentView
-/*
-        var resId = res.getIdentifier("title", "id", "android")
-        rv.setTextColor(resId, Color.BLACK)
-        resId = res.getIdentifier("text", "id", "android")
-        rv.setTextColor(resId, Color.BLACK)
-        resId = res.getIdentifier("text2", "id", "android")
-        rv.setTextColor(resId, Color.BLACK)
-        resId = res.getIdentifier("status_bar_latest_event_content", "id", "android")
-        Stuff.log("resId $resId")
-        rv.setInt(resId, "setBackgroundColor", R.drawable.notification_bg)
-
-        resId = res.getIdentifier("action0", "id", "android")
-        val c = Class.forName("android.widget.RemoteViews")
-        val m = c.getMethod("setDrawableParameters", Int::class.javaPrimitiveType, Boolean::class.javaPrimitiveType, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, PorterDuff.Mode::class.java, Int::class.javaPrimitiveType)
-        m.invoke(rv, resId, false, -1, ContextCompat.getColor(applicationContext, R.color.colorPrimary), android.graphics.PorterDuff.Mode.SRC_ATOP, -1)
-        rv.setImageViewResource(resId, R.drawable.vd_ban)
-*/
-        nm.notify(9, n)
-
     }
 
     class NPReceiver(private val mainNotifierViewModel: MainNotifierViewModel) :

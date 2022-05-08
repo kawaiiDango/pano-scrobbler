@@ -1,0 +1,11 @@
+{
+    "uniqueId": "de.u-mass:lastfm-java",
+    "artifactVersion": "[imported]",
+    "scm": {
+        "url": "https://github.com/jkovacs/lastfm-java"
+    },
+    "name": "Last.fm API Bindings for Java",
+    "licenses": [
+        "BSD-2-Clause"
+    ]
+}

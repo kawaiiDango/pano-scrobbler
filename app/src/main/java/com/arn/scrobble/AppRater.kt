@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.View
+import com.arn.scrobble.Stuff.focusOnTv
 import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
@@ -14,7 +15,6 @@ class AppRater(
     private val context: Context,
     private val prefs: MainPrefs,
 ) {
-    private val marketURL = "market://details?id=" + BuildConfig.APPLICATION_ID
 
     fun appLaunched(): Boolean {
         if (prefs.dontAskForRating) {
@@ -36,7 +36,7 @@ class AppRater(
 
     private fun rateNow() {
         try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(marketURL)))
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(Stuff.MARKET_URL)))
         } catch (activityNotFoundException1: ActivityNotFoundException) {
             Timber.tag("AppRater").e("Market Intent not found")
         }
@@ -56,11 +56,7 @@ class AppRater(
                     prefs.firstLaunchTime = System.currentTimeMillis()
                     prefs.scrobbleCount = 0
 
-                    if (sb != null && MainActivity.isTV)
-                        sb.view.postDelayed({
-                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                                .requestFocus()
-                        }, 200)
+                    sb?.focusOnTv()
                 }
             })
             .show()

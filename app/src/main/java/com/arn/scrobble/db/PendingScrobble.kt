@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
  * Created by arn on 11/09/2017.
  */
 
-@Entity(tableName = "PendingScrobbles")
+@Entity(tableName = PendingScrobblesDao.tableName)
 data class PendingScrobble(
     @PrimaryKey(autoGenerate = true)
     var _id: Int = 0,

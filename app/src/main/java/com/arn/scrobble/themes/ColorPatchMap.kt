@@ -1,10 +1,11 @@
-package com.arn.scrobble.themes
 
-import com.arn.scrobble.R
+    package com.arn.scrobble.themes
 
-object ColorPatchMap {
-    val primaryStyles = mapOf(
-        "Blue" to R.style.ColorPatch_Blue_Main,
+    import com.arn.scrobble.R
+
+    object ColorPatchMap {
+        val primaryStyles = mapOf(
+            "Blue" to R.style.ColorPatch_Blue_Main,
         "Lightblue" to R.style.ColorPatch_Lightblue_Main,
         "Cyan" to R.style.ColorPatch_Cyan_Main,
         "Indigo" to R.style.ColorPatch_Indigo_Main,
@@ -23,8 +24,8 @@ object ColorPatchMap {
         "Red" to R.style.ColorPatch_Red_Main,
 
         )
-    val secondaryStyles = mapOf(
-        "Blue" to R.style.ColorPatch_Blue_Secondary,
+        val secondaryStyles = mapOf(
+            "Blue" to R.style.ColorPatch_Blue_Secondary,
         "Lightblue" to R.style.ColorPatch_Lightblue_Secondary,
         "Cyan" to R.style.ColorPatch_Cyan_Secondary,
         "Indigo" to R.style.ColorPatch_Indigo_Secondary,
@@ -43,8 +44,8 @@ object ColorPatchMap {
         "Red" to R.style.ColorPatch_Red_Secondary,
 
         )
-    val backgroundStyles = mapOf(
-        "Blue" to R.style.ColorPatch_Blue_Background,
+        val backgroundStyles = mapOf(
+            "Blue" to R.style.ColorPatch_Blue_Background,
         "Lightblue" to R.style.ColorPatch_Lightblue_Background,
         "Cyan" to R.style.ColorPatch_Cyan_Background,
         "Indigo" to R.style.ColorPatch_Indigo_Background,
@@ -61,7 +62,7 @@ object ColorPatchMap {
         "Pink" to R.style.ColorPatch_Pink_Background,
         "Sakurapink" to R.style.ColorPatch_Sakurapink_Background,
         "Red" to R.style.ColorPatch_Red_Background,
-        "Black" to R.style.ColorPatch_Black_Background,
 
         )
-}
+    }
+    

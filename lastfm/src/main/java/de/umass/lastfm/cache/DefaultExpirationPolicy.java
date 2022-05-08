@@ -48,7 +48,6 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 	 * One week in milliseconds
 	 */
 	protected static final long ONE_WEEK = ONE_DAY * 7;
-    public static final long NETWORK_AND_CACHE_CONST = ONE_WEEK + 1;
     public static final long FIVE_MINUTES = 1000 * 60 * 5;
     public static final long ONE_MONTH = ONE_DAY * 30;
 
@@ -96,10 +95,10 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
         FIVE_MINUTES_METHODS.add("user.gettopartists");
         FIVE_MINUTES_METHODS.add("user.gettoptracks");
 
-        FIVE_MINUTES_METHODS.add("user.getWeeklyAlbumChart");
-        FIVE_MINUTES_METHODS.add("user.getWeeklyArtistChart");
-        FIVE_MINUTES_METHODS.add("user.getWeeklyTrackChart");
-        FIVE_MINUTES_METHODS.add("user.getWeeklyChartList");
+        FIVE_MINUTES_METHODS.add("user.getweeklyalbumchart");
+        FIVE_MINUTES_METHODS.add("user.getweeklyartistchart");
+        FIVE_MINUTES_METHODS.add("user.getweeklytrackchart");
+        FIVE_MINUTES_METHODS.add("user.getweeklychartlist");
 	}
 
 	/**

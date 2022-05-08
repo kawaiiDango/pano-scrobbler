@@ -1,21 +1,27 @@
 package com.arn.scrobble
 
-import android.app.ActivityManager
 import android.app.Application
+import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.LocaleList
+import android.os.StrictMode
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.WidgetPrefs
 import com.frybits.harmony.getHarmonySharedPreferences
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Caller
 import de.umass.lastfm.cache.FileSystemCache
+import de.umass.lastfm.cache.FileSystemCacheNio
 import timber.log.Timber
+import java.io.File
 import java.util.*
 import java.util.logging.Level
 
@@ -23,7 +29,9 @@ import java.util.logging.Level
 class App : Application() {
 
     override fun onCreate() {
-        DebugOnly.strictMode()
+        if (BuildConfig.DEBUG) {
+            enableStrictMode()
+        }
         super.onCreate()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
@@ -32,28 +40,14 @@ class App : Application() {
 
         initCaller()
 
-        if (!BuildConfig.DEBUG) {
-            FirebaseApp.initializeApp(applicationContext)
-            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
-            FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
-            Timber.plant(CrashlyticsTree())
-        }
+//        if (!BuildConfig.DEBUG) {
+        FirebaseApp.initializeApp(applicationContext)
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+        FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
+        Timber.plant(CrashlyticsTree())
+//        }
 
         Timber.plant(Timber.DebugTree())
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 5)
-                exitReasons.forEachIndexed { index, applicationExitInfo ->
-                    Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
-                }
-            } catch (e: Exception) {
-            }
-            // Caused by java.lang.IllegalArgumentException at getHistoricalProcessExitReasons
-            // Comparison method violates its general contract!
-            // probably a samsung bug
-        }
 
         // migrate prefs
         val mainPrefs = MainPrefs(this)
@@ -77,17 +71,31 @@ class App : Application() {
 
             mainPrefs.prefVersion = 1
         }
-        DynamicColors.applyToActivitiesIfAvailable(this) { _, _ ->
-            mainPrefs.themeDynamic && mainPrefs.proStatus
+
+        if (BuildConfig.DEBUG && !mainPrefs.lastfmLinksEnabled) {
+            enableOpeningLastfmLinks()
+            mainPrefs.lastfmLinksEnabled = true
         }
+
+        val colorsOptions = DynamicColorsOptions.Builder()
+            .setThemeOverlay(R.style.AppTheme_Dynamic_Overlay)
+            .setPrecondition { _, _ ->
+                mainPrefs.themeDynamic && mainPrefs.proStatus
+            }
+            .build()
+        DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
     }
 
     private fun initCaller() {
         Caller.getInstance().apply {
             userAgent = Stuff.USER_AGENT
             logger.level = Level.WARNING
-            cache = FileSystemCache(cacheDir)
-            cache.expirationPolicy = LFMCachePolicy(true)
+            cache =
+//                if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+//                    FileSystemCacheNio(cacheDir.absolutePath + File.separator + "lastfm-java")
+//                else
+                    FileSystemCache(File(cacheDir, "lastfm-java"))
+            cache.expirationPolicy = LFMCachePolicy()
             setErrorNotifier(29) { e ->
                 Timber.tag(Stuff.TAG).w(e)
             }
@@ -95,7 +103,7 @@ class App : Application() {
     }
 
     private fun migratePrefs(prefFrom: SharedPreferences, prefTo: SharedPreferences) {
-        prefTo.edit().apply {
+        prefTo.edit {
             prefFrom.all.forEach { (key, value) ->
                 when (value) {
                     is Boolean -> putBoolean(key, value)
@@ -106,8 +114,41 @@ class App : Application() {
                     is Set<*> -> putStringSet(key, value as Set<String>)
                 }
             }
-            commit()
         }
         // two processes may be doing this at the same time
+    }
+
+    private fun enableStrictMode() {
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+//                     .detectDiskReads()
+//                    .detectDiskWrites()
+                .detectNetwork()   // or .detectAll() for all detectable problems
+                .detectCustomSlowCalls()
+                .penaltyLog()
+                .penaltyFlashScreen()
+                .build()
+        )
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectActivityLeaks()
+                .detectFileUriExposure()
+                .detectLeakedClosableObjects()
+                .detectLeakedRegistrationObjects()
+                .detectLeakedSqlLiteObjects()
+                .penaltyLog()
+                .build()
+        )
+    }
+
+    // This is broken af. Don't enable in production
+    private fun enableOpeningLastfmLinks() {
+        val pm = applicationContext.packageManager
+        val componentName = ComponentName(packageName, "$packageName.LastfmLinksActivity")
+        pm.setComponentEnabledSetting(
+            componentName,
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+            PackageManager.DONT_KILL_APP
+        )
     }
 }

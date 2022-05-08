@@ -1,70 +1,83 @@
 package com.arn.scrobble.charts
 
 import android.app.Application
+import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import de.umass.lastfm.Chart
+import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
+import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
+import com.hadilq.liveevent.LiveEvent
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Period
+import io.michaelrocks.bimap.BiMap
+import java.util.*
 
 
 class ChartsVM(application: Application) : AndroidViewModel(application) {
     val chartsData by lazy { mutableListOf<MusicEntry>() }
-    val chartsReceiver by lazy { MutableLiveData<PaginatedResult<MusicEntry>>() }
-    val listReceiver by lazy { MutableLiveData<List<MusicEntry>>() }
-    val periodCountReceiver by lazy { MutableLiveData<List<ChartsOverviewFragment.ScrobbleCount>>() }
+    val chartsReceiver by lazy { LiveEvent<PaginatedResult<MusicEntry>>() }
+    val listReceiver by lazy { LiveEvent<List<MusicEntry>>() }
+    val periodCountReceiver by lazy { MutableLiveData<Map<TimePeriod, Int>>() }
+    val tagCloudReceiver by lazy { MutableLiveData<Map<String, Float>>() }
+    val tagCloudError by lazy { LiveEvent<Throwable>() }
+    val tagCloudRefresh by lazy { LiveEvent<Unit>() }
     var periodCountRequested = false
-    var periodCountHeader: String? = null
-    val weeklyListReceiver by lazy { MutableLiveData<List<Chart<MusicEntry>>>() }
-    private var lastChartsTasks = mutableMapOf<Int, LFMRequester>()
-    var weeklyChart: Chart<MusicEntry>? = null
-    var weeklyChartIdx: Int = -1
+    var tagCloudRequested = false
+    val tagCloudProgressLd by lazy { MutableLiveData<Double>() }
+    val scrobbleCountHeader = MutableLiveData(application.getString(R.string.charts))
+    private val lastChartsTasks = mutableMapOf<Int, LFMRequester>()
+    val periodType = MutableLiveData<TimePeriodType>()
+    val timePeriods = MutableLiveData<BiMap<Int, TimePeriod>>()
+    val selectedPeriod = MutableLiveData<TimePeriod>()
+    var tagCloudBitmap: Pair<Int, Bitmap?>? = null
     var username: String? = null
-    var periodIdx = 1
     var page = 1
     var totalCount = 0
     var reachedEnd = false
-    var type = 1
-//    private var loadedCached = false
+    var chartsType = 1
 
-    fun loadCharts(page: Int) {
-        if (periodIdx == 0)
-            return
+    fun loadCharts(page: Int = 1, networkOnly: Boolean = false) {
+        val selectedPeriodValue = selectedPeriod.value ?: return
+        var prevPeriod: TimePeriod? = null
         this.page = page
-        lastChartsTasks[type]?.cancel()
-//        val command = if (loadedCached) Stuff.GET_RECENTS else Stuff.GET_RECENTS_CACHED
-        lastChartsTasks[type] =
-            LFMRequester(getApplication(), viewModelScope, chartsReceiver).apply {
-                getCharts(type, Period.values()[periodIdx - 1], page, username)
+
+        if (periodType.value != TimePeriodType.CONTINUOUS) {
+            this.page = 1
+            reachedEnd = true
+            timePeriods.value?.inverse?.get(selectedPeriodValue)?.let { idx ->
+                prevPeriod = timePeriods.value?.get(idx + 1)
             }
-//        loadedCached = true
-    }
-
-    fun loadWeeklyChartsList(scrobblingSince: Long) {
-        LFMRequester(getApplication(), viewModelScope, weeklyListReceiver)
-            .getWeeklyChartsList(username, scrobblingSince)
-    }
-
-    fun loadWeeklyCharts() {
-        page = 1
-        reachedEnd = true
-        lastChartsTasks[type]?.cancel()
-        lastChartsTasks[type] =
+        } else {
+            if (selectedPeriodValue.period != null && selectedPeriodValue.period != Period.OVERALL) {
+                val cal = Calendar.getInstance()
+                cal.setMidnight()
+                val duration = selectedPeriodValue.period.toDuration(endTime = cal.timeInMillis)
+                prevPeriod =
+                    selectedPeriodValue.period.toTimePeriod(endTime = cal.timeInMillis - duration)
+            }
+        }
+        lastChartsTasks[chartsType]?.cancel()
+        lastChartsTasks[chartsType] =
             LFMRequester(getApplication(), viewModelScope, chartsReceiver).apply {
-                getWeeklyCharts(
-                    type,
-                    weeklyChart!!.from.time / 1000,
-                    weeklyChart!!.to.time / 1000,
-                    username
+                getChartsWithStonks(
+                    type = chartsType,
+                    timePeriod = selectedPeriodValue,
+                    prevTimePeriod = prevPeriod,
+                    page = page,
+                    usernamep = username,
+                    networkOnly = networkOnly
                 )
             }
     }
 
-    fun loadScrobbleCounts(periods: List<ChartsOverviewFragment.ScrobbleCount>) {
+    fun loadScrobbleCounts(periods: List<TimePeriod>) {
         lastChartsTasks[Stuff.TYPE_SC]?.cancel()
         lastChartsTasks[Stuff.TYPE_SC] =
             LFMRequester(getApplication(), viewModelScope, periodCountReceiver).apply {
@@ -72,7 +85,26 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
             }
     }
 
+    fun loadTagCloud(musicEntries: List<MusicEntry>) {
+        if (!BuildConfig.DEBUG)
+            return
+        tagCloudRequested = true
+        lastChartsTasks[Stuff.TYPE_TAG_CLOUD]?.cancel()
+        lastChartsTasks[Stuff.TYPE_TAG_CLOUD] =
+            LFMRequester(
+                getApplication(), viewModelScope, liveData = tagCloudReceiver,
+                errorLiveData = tagCloudError
+            ).apply {
+                getTagCloud(musicEntries, tagCloudProgressLd)
+            }
+    }
+
+    fun hasLoaded(type: Int) = lastChartsTasks[type]?.isCompleted == true
+
     fun resetRequestedState() {
         periodCountRequested = false
+        tagCloudRequested = false
+        lastChartsTasks[Stuff.TYPE_TAG_CLOUD]?.cancel()
+        lastChartsTasks[Stuff.TYPE_SC]?.cancel()
     }
 }

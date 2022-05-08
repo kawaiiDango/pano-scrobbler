@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/shape_rounded_border_gentle" />
-    <item android:drawable="?selectableItemBackground" />
+    <item android:drawable="@drawable/selector_boring_ripple" />
 </layer-list>

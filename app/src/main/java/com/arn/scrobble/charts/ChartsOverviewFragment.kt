@@ -1,30 +1,45 @@
 package com.arn.scrobble.charts
 
-import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.Stuff.setProgressCircleColors
+import com.arn.scrobble.Stuff.sp
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.recents.SparkLineAdapter
+import com.google.android.material.color.MaterialColors
+import com.kennycason.kumo.CollisionMode
+import com.kennycason.kumo.WordCloud
+import com.kennycason.kumo.WordFrequency
+import com.kennycason.kumo.bg.CircleBackground
+import com.kennycason.kumo.font.KumoFont
+import com.kennycason.kumo.font.scale.LinearFontScalar
+import com.kennycason.kumo.image.AngleGenerator
+import com.kennycason.kumo.palette.LinearGradientColorPalette
+import kotlinx.coroutines.*
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 open class ChartsOverviewFragment : ChartsPeriodFragment() {
@@ -39,6 +54,13 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
     override val periodChipsBinding
         get() = _periodChipsBinding!!
+
+    private val scrobbleCountPeriodTypeMap = mapOf(
+        TimePeriodType.WEEK to R.string.graph_weekly,
+        TimePeriodType.DAY to R.string.graph_daily,
+        TimePeriodType.MONTH to R.string.graph_monthly,
+        TimePeriodType.YEAR to R.string.graph_yearly,
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,16 +85,22 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         Stuff.setTitle(activity!!, 0)
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        binding.chartsSparklineLabels.invalidate = true
-    }
-
-    override fun loadFirstPage() {
-        val periodIdx = viewModel.periodIdx
-        artistsFragment.viewModel.periodIdx = periodIdx
-        albumsFragment.viewModel.periodIdx = periodIdx
-        tracksFragment.viewModel.periodIdx = periodIdx
+    override fun loadFirstPage(networkOnly: Boolean) {
+        viewModel.periodType.value.let {
+            artistsFragment.viewModel.periodType.value = it
+            albumsFragment.viewModel.periodType.value = it
+            tracksFragment.viewModel.periodType.value = it
+        }
+        viewModel.selectedPeriod.value.let {
+            artistsFragment.viewModel.selectedPeriod.value = it
+            albumsFragment.viewModel.selectedPeriod.value = it
+            tracksFragment.viewModel.selectedPeriod.value = it
+        }
+        viewModel.timePeriods.value.let {
+            artistsFragment.viewModel.timePeriods.value = it
+            albumsFragment.viewModel.timePeriods.value = it
+            tracksFragment.viewModel.timePeriods.value = it
+        }
         artistsFragment.viewModel.loadCharts(1)
         albumsFragment.viewModel.loadCharts(1)
         tracksFragment.viewModel.loadCharts(1)
@@ -80,28 +108,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         loadMoreSectionsIfNeeded()
     }
 
-    override fun loadWeeklyCharts() {
-        val periodIdx = viewModel.periodIdx
-        artistsFragment.viewModel.periodIdx = periodIdx
-        albumsFragment.viewModel.periodIdx = periodIdx
-        tracksFragment.viewModel.periodIdx = periodIdx
-        val wChart = viewModel.weeklyChart
-        artistsFragment.viewModel.weeklyChart = wChart
-        albumsFragment.viewModel.weeklyChart = wChart
-        tracksFragment.viewModel.weeklyChart = wChart
-        artistsFragment.viewModel.loadWeeklyCharts()
-        albumsFragment.viewModel.loadWeeklyCharts()
-        tracksFragment.viewModel.loadWeeklyCharts()
-        viewModel.resetRequestedState()
-        loadMoreSectionsIfNeeded()
-    }
-
     override fun postInit() {
-        if (MainActivity.isTV)
-            for (i in 0..periodChipsBinding.chartsPeriod.childCount)
-                periodChipsBinding.chartsPeriod.getChildAt(i)?.nextFocusDownId =
-                    R.id.charts_overview_scrollview
-
         artistsFragment =
             childFragmentManager.findFragmentByTag(Stuff.TYPE_ARTISTS.toString()) as? FakeArtistFragment
                 ?: FakeArtistFragment()
@@ -142,7 +149,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             0
         )
 
-        setHeader(Stuff.TYPE_SC)
         binding.chartsSparklineHeader.headerAction.visibility = View.GONE
         binding.chartsSparklineHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
             R.drawable.vd_line_chart,
@@ -153,7 +159,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
         binding.chartsSparklineLabels.justifyLastLine = true
         binding.chartsSparkline.adapter = SparkLineAdapter().apply { baseline = true }
-        binding.chartsSparkline.setScrubListener { intVal ->
+        binding.chartsSparkline.setScrubListener { intVal, x ->
             if (intVal == null) {
                 binding.chartsSparklineScrubInfo.visibility = View.GONE
                 return@setScrubListener
@@ -161,29 +167,73 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             intVal as Int
             binding.chartsSparklineScrubInfo.visibility = View.VISIBLE
             binding.chartsSparklineScrubInfo.text =
-                resources.getQuantityString(
-                    R.plurals.num_scrobbles_noti,
-                    intVal,
-                    NumberFormat.getInstance().format(intVal)
-                )
+                NumberFormat.getInstance().format(intVal)
+
+            if (x != -1f) {
+                val infoWidth = binding.chartsSparklineScrubInfo.width
+                val infoX = x.toInt()
+                    .coerceIn(0, binding.chartsSparkline.width - infoWidth / 2)
+
+                binding.chartsSparklineScrubInfo.x = infoX.toFloat()
+            }
+
             if (binding.chartsScrubMessage.visibility == View.VISIBLE) {
                 prefs.scrubLearnt = true
                 binding.chartsScrubMessage.visibility = View.GONE
             }
         }
+
+        binding.chartsTagCloudHeader.headerText.text = getString(R.string.tag_cloud)
+        binding.chartsTagCloudHeader.headerAction.text = ""
+        binding.chartsTagCloudHeader.headerAction.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            0,
+            0,
+            R.drawable.vd_more_horiz,
+            0
+        )
+        binding.chartsTagCloudHeader.headerAction.setOnClickListener {
+            val popup = PopupMenu(requireContext(), binding.chartsTagCloudHeader.headerAction)
+            popup.inflate(R.menu.tag_cloud_menu)
+            popup.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_hidden_tags -> {
+                        HiddenTagsFragment().show(
+                            childFragmentManager,
+                            null
+                        )
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
+        }
+        binding.chartsTagCloudHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            R.drawable.vd_tag,
+            0,
+            0,
+            0
+        )
+
         binding.chartsOverviewScrollview.viewTreeObserver.addOnScrollChangedListener {
             loadMoreSectionsIfNeeded()
         }
 
         if (!MainActivity.isTV && !prefs.scrubLearnt)
             binding.chartsScrubMessage.visibility = View.VISIBLE
+
+        binding.chartsSwipeRefresh.setProgressCircleColors()
+        binding.chartsSwipeRefresh.setOnRefreshListener {
+            loadFirstPage(true)
+        }
+
         viewModel.periodCountReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
             val labels = StringBuilder()
             val intList = mutableListOf<Int>()
-            it.reversed().forEach {
-                labels.append(it.label).append(" ")
-                intList += it.count
+            it.forEach { (timePeriod, count) ->
+                labels.append(timePeriod.name).append(" ")
+                intList += count
             }
 
             val sAdapter = binding.chartsSparkline.adapter as SparkLineAdapter
@@ -191,25 +241,112 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
             binding.chartsSparklineProgress.hide()
             binding.chartsSparklineLabels.text = labels.trimEnd()
-            binding.chartsSparkline.adapter.notifyDataSetChanged()
+            sAdapter.notifyDataSetChanged()
             binding.chartsSparklineTickTop.text = NumberFormat.getInstance().format(sAdapter.max())
             binding.chartsSparklineTickBottom.text = NumberFormat.getInstance().format(0)
+
+        }
+
+        viewModel.scrobbleCountHeader.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            binding.chartsSparklineHeader.headerText.text = it
+        }
+
+        var lastTagCloudJob: Job? = null
+
+        viewModel.tagCloudProgressLd.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            binding.chartsTagCloudProgress.progress =
+                (it * binding.chartsTagCloudProgress.max * 0.5).toInt()
+        }
+
+        viewModel.tagCloudReceiver.observe(viewLifecycleOwner) { tagWeights ->
+            tagWeights ?: return@observe
+            lastTagCloudJob?.cancel()
+
+            if (tagWeights.isEmpty()) {
+                binding.chartsTagCloudStatus.visibility = View.VISIBLE
+                return@observe
+            } else {
+                binding.chartsTagCloudStatus.visibility = View.GONE
+            }
+
+            // this fixes java.lang.IllegalArgumentException: width and height must be > 0
+            //            at android.graphics.Bitmap.createBitmap(Bitmap.java:1120)
+            binding.chartsTagCloud.post {
+
+                lastTagCloudJob = viewLifecycleOwner.lifecycleScope.launch {
+                    val bitmap = if (viewModel.tagCloudBitmap?.first == tagWeights.hashCode()) {
+                        viewModel.tagCloudBitmap!!.second
+                    } else {
+                        withContext(Dispatchers.IO) {
+                            generateTagCloud(tagWeights, binding.chartsTagCloud.width)
+                        }
+                    }
+
+                    viewModel.tagCloudBitmap = tagWeights.hashCode() to bitmap
+
+                    binding.chartsTagCloudProgress.hide()
+
+                    binding.chartsTagCloud.setImageBitmap(bitmap)
+
+                    val center = binding.chartsTagCloud.width / 2
+
+                    delay(10) // gets cancelled if fragment detached
+
+                    val crAnimator = ViewAnimationUtils.createCircularReveal(
+                        binding.chartsTagCloud,
+                        center,
+                        center,
+                        0f,
+                        center.toFloat()
+                    )
+                    delay(200)
+
+                    binding.chartsTagCloud.visibility = View.VISIBLE
+                    crAnimator.start()
+                }
+            }
+        }
+
+        viewModel.tagCloudError.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            if (it is IllegalStateException) {
+                binding.chartsTagCloudProgress.hide()
+                binding.chartsTagCloudStatus.visibility = View.VISIBLE
+            }
+        }
+
+        viewModel.tagCloudRefresh.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            viewModel.tagCloudRequested = false
+            loadMoreSectionsIfNeeded()
+        }
+
+        if (BuildConfig.DEBUG) {
+            binding.chartsTagCloudHeader.root.visibility = View.VISIBLE
+            binding.chartsTagCloudFrame.visibility = View.VISIBLE
         }
         super.postInit()
     }
 
     private fun initFragment(fragment: ShittyArchitectureFragment, type: Int) {
         val rootView = when (type) {
-            Stuff.TYPE_ARTISTS -> binding.chartsArtistsFrame
+            Stuff.TYPE_ARTISTS -> {
+                binding.chartsArtistsFrame.gridItemToReserveSpace.chartInfoSubtitle.visibility =
+                    View.GONE
+                binding.chartsArtistsFrame
+            }
             Stuff.TYPE_ALBUMS -> binding.chartsAlbumsFrame
-            else -> binding.chartsTracksFrame
+            Stuff.TYPE_TRACKS -> binding.chartsTracksFrame
+            else -> throw IllegalArgumentException("Unknown type $type")
         }
         if (!fragment.isAdded)
             childFragmentManager.beginTransaction().add(fragment, type.toString()).commitNow()
 
         fragment.viewModel = viewModels<ChartsVM>({ fragment }).value
         fragment.viewModel.username = username
-        fragment.viewModel.type = type
+        fragment.viewModel.chartsType = type
 
         val adapter = ChartsOverviewAdapter(rootView)
         adapter.viewModel = fragment.viewModel
@@ -233,6 +370,9 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         fragment.viewModel.chartsReceiver.observe(viewLifecycleOwner) {
             if (it == null && !MainActivity.isOnline && fragment.viewModel.chartsData.size == 0)
                 adapter.populate()
+
+            binding.chartsSwipeRefresh.isRefreshing = false
+
             it ?: return@observe
             fragment.viewModel.totalCount = it.total
             if (it.total > 0)
@@ -247,7 +387,9 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             adapter.populate()
             if (it.page == 1)
                 rootView.chartsList.smoothScrollToPosition(0)
-            fragment.viewModel.chartsReceiver.value = null
+
+            if (type == Stuff.TYPE_ARTISTS)
+                loadMoreSectionsIfNeeded() // load tag cloud
         }
 
         if (fragment.viewModel.chartsData.isNotEmpty())
@@ -256,14 +398,21 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
     private fun setHeader(type: Int) {
         var count = 0
-        var text = ""
-        lateinit var header: HeaderWithActionBinding
+        val text: String
+        val header: HeaderWithActionBinding
 
         fun getQString(@StringRes zeroStrRes: Int, @PluralsRes pluralRes: Int): String {
+            val plus =
+                if (count == 1000 && viewModel.periodType.value != TimePeriodType.CONTINUOUS) "+" else ""
+
             return if (count <= 0)
                 getString(zeroStrRes)
             else
-                resources.getQuantityString(pluralRes, count, count)
+                resources.getQuantityString(
+                    pluralRes,
+                    count,
+                    NumberFormat.getInstance().format(count) + plus
+                )
         }
 
         when (type) {
@@ -282,11 +431,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                 text = getQString(R.string.tracks, R.plurals.num_tracks)
                 header = binding.chartsTracksHeader
             }
-            Stuff.TYPE_SC -> {
-                binding.chartsSparklineHeader.headerText.text = viewModel.periodCountHeader
-                    ?: getString(R.string.charts)
-                return
-            }
+            else -> throw IllegalArgumentException("Unknown type: $type")
         }
         header.headerText.text = text
         header.headerAction.visibility = if (count != 0)
@@ -302,7 +447,15 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         if (!viewModel.periodCountRequested) {
             val partiallyVisible = binding.chartsSparklineFrame.getLocalVisibleRect(scrollBounds)
             if (partiallyVisible)
-                calcSparklineDurations()
+                genSparklineDurations()
+        }
+
+        if (!viewModel.tagCloudRequested && artistsFragment.viewModel.hasLoaded(Stuff.TYPE_ARTISTS)) {
+            val partiallyVisible = binding.chartsTagCloudFrame.getLocalVisibleRect(scrollBounds)
+            if (partiallyVisible) {
+                showTagCloudProgress()
+                viewModel.loadTagCloud(artistsFragment.viewModel.chartsData)
+            }
         }
     }
 
@@ -321,114 +474,62 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             .commit()
     }
 
-    private fun calcSparklineDurations() {
+    private fun genSparklineDurations() {
+        val (timePeriods, periodType) = TimePeriodsGenerator.getSparklinePeriods(
+            viewModel.selectedPeriod.value ?: return,
+            registeredTime
+        )
         viewModel.periodCountRequested = true
-        val scList = mutableListOf<ScrobbleCount>()
-        val cal = Calendar.getInstance()
-        if (periodChipIds[viewModel.periodIdx] == R.id.charts_choose_week)
-            cal.timeInMillis = viewModel.weeklyChart!!.to.time
-        var lastTime = cal.timeInMillis
-        cal.setMidnight()
-        if (periodChipIds[viewModel.periodIdx] == R.id.charts_choose_week) {
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-            lastTime = cal.timeInMillis
-            cal.add(Calendar.DAY_OF_YEAR, -1)
-        }
 
-        when (periodChipIds[viewModel.periodIdx]) {
-            R.id.charts_7day,
-            R.id.charts_choose_week -> {
-                viewModel.periodCountHeader = getString(R.string.graph_daily)
-                val rangeEnd = if (periodChipIds[viewModel.periodIdx] == R.id.charts_choose_week)
-                    7
-                else
-                    6
-                val nf = NumberFormat.getInstance()
-                for (i in 0..rangeEnd) {
-                    val sc = ScrobbleCount()
-                    sc.to = lastTime
-                    if (i != 0)
-                        cal.add(Calendar.DAY_OF_YEAR, -1)
-                    lastTime = cal.timeInMillis
-                    sc.from = lastTime
-                    sc.label = nf.format(cal[Calendar.DAY_OF_MONTH])
-                    scList += sc
-                }
-            }
-            R.id.charts_1month -> {
-                viewModel.periodCountHeader = getString(R.string.graph_weekly)
-                var toDate = cal[Calendar.DAY_OF_MONTH]
-                var fromDate = 0
-                cal.add(Calendar.DAY_OF_WEEK, -(cal.get(Calendar.DAY_OF_WEEK) - 1))
-                for (i in 0..3) {
-                    val sc = ScrobbleCount()
-                    sc.to = lastTime
-
-                    if (i != 0) {
-                        cal.add(Calendar.SECOND, -1)
-                        toDate = cal[Calendar.DAY_OF_MONTH]
-                        cal.add(Calendar.SECOND, 1)
-                        cal.add(Calendar.WEEK_OF_YEAR, -1)
-                    }
-                    fromDate = cal[Calendar.DAY_OF_MONTH]
-                    sc.label = "$fromDate-$toDate"
-                    lastTime = cal.timeInMillis
-                    sc.from = lastTime
-                    scList += sc
-                }
-            }
-            R.id.charts_3month,
-            R.id.charts_6month,
-            R.id.charts_12month -> {
-                viewModel.periodCountHeader = getString(R.string.graph_monthly)
-                cal.set(Calendar.DAY_OF_MONTH, 1)
-                val rangeEnd = when (periodChipIds[viewModel.periodIdx]) {
-                    R.id.charts_3month -> 2
-                    R.id.charts_6month -> 5
-                    R.id.charts_12month -> 11
-                    else -> throw RuntimeException("this will never happen")
-                }
-                for (i in 0..rangeEnd) {
-                    val sc = ScrobbleCount()
-                    sc.to = lastTime
-                    if (i != 0) {
-                        cal.add(Calendar.MONTH, -1)
-                    }
-                    var monthLetter =
-                        SimpleDateFormat("MMM", Locale.ENGLISH).format(cal.timeInMillis)
-                    if (periodChipIds[viewModel.periodIdx] == R.id.charts_12month)
-                        monthLetter = monthLetter[0].toString()
-                    sc.label = monthLetter.toString()
-                    lastTime = cal.timeInMillis
-                    sc.from = lastTime
-                    scList += sc
-                }
-            }
-            R.id.charts_overall -> {
-                viewModel.periodCountHeader = getString(R.string.graph_yearly)
-                cal.set(Calendar.DAY_OF_YEAR, 1)
-                for (i in 0..6) {
-                    val sc = ScrobbleCount()
-                    sc.to = lastTime
-
-                    if (i != 0)
-                        cal.add(Calendar.YEAR, -1)
-
-                    sc.label = "'" + (cal[Calendar.YEAR] % 100).toString()
-                    lastTime = cal.timeInMillis
-                    sc.from = lastTime
-                    scList += sc
-                }
-            }
-        }
-        viewModel.loadScrobbleCounts(scList)
-        setHeader(Stuff.TYPE_SC)
+        viewModel.loadScrobbleCounts(timePeriods)
+        viewModel.scrobbleCountHeader.value = getString(scrobbleCountPeriodTypeMap[periodType]!!)
     }
 
-    class ScrobbleCount {
-        var from = 0L
-        var to = System.currentTimeMillis()
-        var count = 0
-        var label = ""
+    private fun showTagCloudProgress() {
+        binding.chartsTagCloud.visibility = View.INVISIBLE
+        binding.chartsTagCloudProgress.progress = 0
+        binding.chartsTagCloudProgress.show()
     }
+
+    private suspend fun generateTagCloud(weights: Map<String, Float>, dimensionPx: Int): Bitmap? {
+        val t1 = System.currentTimeMillis()
+        val wordFrequenciesFetched = weights.map { (tag, size) ->
+            WordFrequency(tag, size.toInt())
+        }
+
+        val dimension = Rect(0, 0, dimensionPx, dimensionPx)
+        val tintColor = MaterialColors.getColor(context!!, R.attr.colorSecondary, null)
+
+        val palette = LinearGradientColorPalette(
+            tintColor,
+            ContextCompat.getColor(context!!, R.color.foreground_pure),
+            7
+        )
+        val bmp = WordCloud(dimension, CollisionMode.PIXEL_PERFECT).apply {
+            setBackgroundColor(Color.TRANSPARENT)
+            setKumoFont(KumoFont(Typeface.DEFAULT))
+            setColorPalette(palette)
+            setAngleGenerator(AngleGenerator(0.0, 90.0, 2))
+            setBackground(CircleBackground(dimensionPx / 2))
+            setPadding(4.sp)
+            setFontScalar(LinearFontScalar(12.sp, 48.sp))
+            setProgressCallback { currentItem, placed, total ->
+                _binding ?: return@setProgressCallback
+
+                binding.chartsTagCloudProgress.progress =
+                    (currentItem * binding.chartsTagCloudProgress.max / total) + (binding.chartsTagCloudProgress.max * 0.5).toInt()
+
+                if (BuildConfig.DEBUG)
+                    Stuff.log("Tag cloud progress: $currentItem/$total ${wordFrequenciesFetched[currentItem].word} ${if (placed) "" else "skipped"}")
+            }
+            build(wordFrequenciesFetched)
+        }.bitmap
+        val t2 = System.currentTimeMillis()
+        if (BuildConfig.DEBUG)
+            withContext(Dispatchers.Main) {
+                Stuff.toast(context!!, "Generated in ${t2 - t1}ms")
+            }
+        return bmp
+    }
+
 }

@@ -68,6 +68,15 @@ public class User extends ImageHolder {
 		this.url = url;
 	}
 
+    public User(String name, String url, String realname, String country, long registeredTime, Map<ImageSize, String> imageUrls) {
+        this.name = name;
+        this.url = url;
+        this.realname = realname;
+        this.country = country;
+        this.registeredDate = new Date(registeredTime);
+        this.imageUrls = imageUrls;
+    }
+
 	public String getName() {
 		return name;
 	}
@@ -110,6 +119,10 @@ public class User extends ImageHolder {
 
 	public boolean isSubscriber() {
 		return subscriber;
+	}
+
+	public Map<ImageSize, String> getImageUrls() {
+		return imageUrls;
 	}
 
 	public String getImageURL() {
@@ -172,16 +185,16 @@ public class User extends ImageHolder {
 	}
 
 	public static PaginatedResult<User> getFriends(String user, Session session) {
-		return getFriends(user, 1, 50, false, session);
+		return getFriends(user, 1, 50, session);
 	}
 
-	public static PaginatedResult<User> getFriends(String user, int page, int limit, boolean cacheFirst, Session session) {
+	public static PaginatedResult<User> getFriends(String user, int page, int limit, Session session) {
         Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
         params.put("page", String.valueOf(page));
         params.put("limit", String.valueOf(limit));
         Result result = Caller.getInstance().call(null, "user.getFriends",
-                null, params, session, cacheFirst);
+                null, params, session);
 		return ResponseBuilder.buildPaginatedResult(result, User.class);
 	}
 
@@ -199,16 +212,16 @@ public class User extends ImageHolder {
 	}
 
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, Session session) {
-        return getRecentTracks(user, page, limit, false, 0, 0, false, session);
+        return getRecentTracks(user, page, limit, false, 0, 0, session);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, boolean extended, Session session) {
-        return getRecentTracks(user, page, limit, extended, 0, 0, false, session);
+        return getRecentTracks(user, page, limit, extended, 0, 0, session);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit, long fromTime, long toTime, Session session) {
-        return getRecentTracks(user, page, limit, false, fromTime, toTime, false, session);
+        return getRecentTracks(user, page, limit, false, fromTime, toTime, session);
     }
 	public static PaginatedResult<Track> getRecentTracks(String user, int page, int limit,
-                boolean extended, long fromTime, long toTime, boolean forceCached, Session session) {
+                boolean extended, long fromTime, long toTime, Session session) {
 		Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
 		params.put("limit", String.valueOf(limit));
@@ -221,7 +234,7 @@ public class User extends ImageHolder {
 		    params.put("to", String.valueOf(toTime));
         Result result;
             result = Caller.getInstance().call(null, "user.getRecentTracks",
-                null, params, session, forceCached);
+                null, params, session);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
@@ -420,7 +433,7 @@ public class User extends ImageHolder {
 	 * @return the loved tracks
 	 */
 	public static PaginatedResult<Track> getLovedTracks(String user, Session session) {
-		return getLovedTracks(user, 1, 50, session);
+		return getLovedTracks(user, 50, 1, session);
 	}
 
 	/**
@@ -431,17 +444,14 @@ public class User extends ImageHolder {
 	 * @param session A Last.fm session.
 	 * @return the loved tracks
 	 */
-	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, Session session) {
-        return getLovedTracks(user, page, limit, false, session);
-    }
 
-	public static PaginatedResult<Track> getLovedTracks(String user, int page, int limit, boolean forceCached, Session session) {
+	public static PaginatedResult<Track> getLovedTracks(String user, int limit, int page, Session session) {
         Map<String, String> params = new HashMap<String, String>();
         MapUtilities.nullSafePut(params, "user", user);
         params.put("page", String.valueOf(page));
         params.put("limit", String.valueOf(limit));
         Result result = Caller.getInstance().call(null, "user.getLovedTracks",
-                null, params, session, forceCached);
+                null, params, session);
 		return ResponseBuilder.buildPaginatedResult(result, Track.class);
 	}
 
@@ -650,7 +660,7 @@ public class User extends ImageHolder {
 
 		Result result = Caller.getInstance().call("user.getPersonalTags", session, params);
 		if (!result.isSuccessful())
-			return new PaginatedResult<T>(0, 0, 0, Collections.<T>emptyList(), null);
+			return new PaginatedResult<T>(0, 0, 0, Collections.<T>emptyList());
 
 		String childElementName = params.get(taggingTypeParam) + "s";
 		DomElement contentElement = result.getContentElement();
@@ -680,7 +690,7 @@ public class User extends ImageHolder {
             params.put("to", String.valueOf(toTime));
         Result result;
         result = Caller.getInstance().call(null, "user.getTrackScrobbles",
-                null, params, session, false);
+                null, params, session);
         return ResponseBuilder.buildPaginatedResult(result, Track.class);
     }
 

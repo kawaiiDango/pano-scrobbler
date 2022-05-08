@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_header"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/nav_profile_pic"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:contentDescription="@string/profile_pic"
-        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/roundedCorners"
         tools:srcCompat="@drawable/vd_wave" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="45dp"
-        android:background="@drawable/gradient_dark_overlay_nav" />
+    <!--    <View-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:background="@drawable/selector_border_gentle_bottom_rounded"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/nav_profile_pic" />-->
 
     <TextView
         android:id="@+id/nav_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/nav_num_scrobbles"
-        android:layout_toStartOf="@+id/nav_profile_link"
-        android:gravity="end"
         android:textStyle="bold"
         tools:text="nav_name" />
 
@@ -36,26 +37,45 @@
         android:id="@+id/nav_num_scrobbles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/nav_header_vertical_spacing"
-        android:layout_toStartOf="@+id/nav_profile_link"
-        android:gravity="end"
         android:textDirection="firstStrong"
         tools:text="nav_num_scrobbles" />
 
-    <ImageButton
-        android:id="@+id/nav_profile_link"
+    <androidx.constraintlayout.helper.widget.Flow
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:paddingBottom="16dp"
+        app:constraint_referenced_ids="nav_name, nav_num_scrobbles"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nav_profile_pic" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nav_profile_links"
+        style="@style/Widget.App.Button.OutlinedButton.IconOnly"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:alpha="0.8"
-        android:background="?attr/selectableItemBackground"
+        android:layout_marginEnd="16dp"
         android:contentDescription="@string/profile"
         android:nextFocusRight="@id/pager"
-        android:padding="16dp"
         android:tooltipText="@string/profile"
-        app:srcCompat="@drawable/vd_open_in_new" />
+        app:backgroundTint="?android:colorBackground"
+        app:icon="@drawable/vd_open_in_new"
+        app:iconSize="24dp"
+        app:layout_constraintBaseline_toBottomOf="@id/nav_profile_pic"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="382dp" />
     <!--sometimes focus doesn't work on borderless-->
 
-</RelativeLayout>
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:dividerInsetEnd="@dimen/divider_inset"
+        app:dividerInsetStart="@dimen/divider_inset"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

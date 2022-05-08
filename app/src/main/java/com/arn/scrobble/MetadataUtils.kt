@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import de.umass.lastfm.scrobble.ScrobbleData
 import java.util.*
 
 
@@ -17,16 +18,22 @@ object MetadataUtils {
         arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")
 
     // in lower case
-    private val albumSpam = arrayOf("downloaded", ".com", ".co.", "www.")
     private val metaUnknown = arrayOf(
         "unknown",
         "[unknown]",
+        "<unknown>",
         "unknown album",
         "[unknown album]",
+        "<unknown album>",
         "unknown artist",
-        "[unknown artist]"
+        "[unknown artist]",
+        "<unknown artist>",
     )
     private val artistSpam = arrayOf("va")
+
+    // in lowercase
+    val tagSpam = setOf("geohash", "all", "seen live", "i have seen live", "")
+
 
     fun parseArtistTitle(titleContentOriginal: String): Array<String> {
         //New detection of trackinformation
@@ -113,7 +120,7 @@ object MetadataUtils {
 
     fun sanitizeAlbum(albumOrig: String): String {
         val albumLower = albumOrig.lowercase(Locale.ENGLISH)
-        if (albumSpam.any { albumLower.contains(it) } || metaUnknown.any { albumLower == it })
+        if (metaUnknown.any { albumLower == it })
             return ""
 
         return albumOrig
@@ -146,7 +153,7 @@ object MetadataUtils {
             val m = regex.toRegex().find(titleStr)!!
             val g = m.groupValues
             if (g.size != 3)
-                throw Exception("group size != 3")
+                throw IllegalArgumentException("group size != 3")
             if (tpos > apos)
                 g[1] to g[2]
             else

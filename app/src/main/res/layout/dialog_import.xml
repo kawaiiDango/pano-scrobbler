@@ -4,8 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="24dp"
-    android:paddingHorizontal="24dp">
+    android:paddingTop="@dimen/dialog_padding"
+    android:paddingHorizontal="@dimen/dialog_padding">
 
     <RadioGroup
         android:id="@+id/import_radio_group"
@@ -49,8 +49,8 @@
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:dividerInsetEnd="24dp"
-        app:dividerInsetStart="24dp" />
+        app:dividerInsetEnd="@dimen/dialog_padding"
+        app:dividerInsetStart="@dimen/dialog_padding" />
 
     <CheckBox
         android:id="@+id/import_settings"

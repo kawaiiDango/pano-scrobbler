@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
@@ -45,6 +46,7 @@ class FirstThingsFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         prefs = MainPrefs(context!!)
@@ -117,6 +119,7 @@ class FirstThingsFragment : Fragment() {
 //            Stuff.openInBrowser(Stuff.LASTFM_AUTH_CB_URL, activity)
         }
         binding.firstThings3.setOnClickListener {
+            markAsDone(binding.firstThings3)
             parentFragmentManager.beginTransaction()
                 .hide(this)
                 .add(R.id.frame, AppListFragment())
@@ -140,7 +143,7 @@ class FirstThingsFragment : Fragment() {
                 }
 
                 override fun afterTextChanged(editable: Editable) {
-                    val splits = editable.split('_')
+                    val splits = editable.split(',')
                     if (splits.size == 3) {
                         prefs.lastfmUsername = splits[0]
                         prefs.lastfmSessKey = splits[1]
@@ -186,7 +189,7 @@ class FirstThingsFragment : Fragment() {
         }
         if (checkAuthTokenExists(prefs))
             markAsDone(binding.firstThings2)
-        if (!prefs.firstRun)
+        if (prefs.appListWasRun)
             markAsDone(binding.firstThings3)
 
         if (stepsNeeded == 0 || skipChecks) {

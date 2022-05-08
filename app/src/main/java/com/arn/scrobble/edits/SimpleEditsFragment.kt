@@ -1,5 +1,6 @@
 package com.arn.scrobble.edits
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,13 +13,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.*
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentSimpleEditsBinding
 import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.db.SimpleEdit
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +55,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
         super.onDestroyView()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.editsList.layoutManager = LinearLayoutManager(context!!)
         binding.editsList.adapter = adapter
@@ -79,6 +81,10 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
             }
 
         })
+
+        binding.editAdd.setOnClickListener {
+            showEditDialog(-1)
+        }
 
         binding.searchTerm.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -147,7 +153,12 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
     }
 
     private fun showEditDialog(position: Int) {
-        val edit = viewModel.edits[position]
+        val isNew = position == -1
+
+        val edit = if (isNew)
+            SimpleEdit()
+        else
+            viewModel.edits[position]
 
         val dialogBinding = DialogEditEditsBinding.inflate(layoutInflater).apply {
             editTrackOrig.root.hint = getString(R.string.track)
@@ -192,39 +203,15 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
                 return@setOnClickListener
             }
             if (edit != newEdit) {
-                val checkArtist = newEdit.artist.isNotEmpty() &&
-                        edit.artist.lowercase() != newEdit.artist.lowercase()
-                adapter.tempUpdate(position, newEdit)
+                if (position > 0)
+                    adapter.tempUpdate(position, newEdit)
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    if (checkArtist) {
-                        val allowedSet =
-                            MainPrefs(context!!).allowedArtists
-                        val artist =
-                            LFMRequester.getValidArtist(newEdit.artist, allowedSet)
-                        if (artist == null) {
-                            withContext(Dispatchers.Main) {
-                                if (MainActivity.isOnline)
-                                    Stuff.toast(
-                                        activity!!,
-                                        getString(R.string.state_unrecognised_artist)
-                                    )
-                                else
-                                    Stuff.toast(
-                                        activity!!,
-                                        getString(R.string.unavailable_offline)
-                                    )
-                                adapter.tempUpdate(position, edit)
-                            }
-                            return@launch
-                        }
-                    }
                     viewModel.upsert(newEdit)
                 }
             }
             dialog.dismiss()
         }
     }
-
 
     override fun onItemClick(view: View, position: Int) {
         if (view.id == R.id.edits_delete) {

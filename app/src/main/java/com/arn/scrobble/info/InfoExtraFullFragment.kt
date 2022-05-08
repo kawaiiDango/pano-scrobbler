@@ -1,39 +1,35 @@
 package com.arn.scrobble.info
 
-import android.content.res.Configuration
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.Stuff.showIcons
+import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.ChartsAdapter
 import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.databinding.ContentInfoExtraFullBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.EntryItemClickListener
+import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.google.android.material.appbar.AppBarLayout
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
 import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.Track
-import kotlin.math.roundToInt
 
 
-open class InfoExtraFullFragment : Fragment(), EntryItemClickListener {
+open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
 
-    open val type = 0
-    lateinit var adapter: ChartsAdapter
+    protected open val type = 0
+    private lateinit var adapter: ChartsAdapter
+    private lateinit var scalableGrid: ScalableGrid
     private val viewModel by viewModels<ChartsVM>()
     private val artist by lazy {
         arguments?.getString(NLService.B_ARTIST)
@@ -81,22 +77,15 @@ open class InfoExtraFullFragment : Fragment(), EntryItemClickListener {
             postInit()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        val glm = chartsBinding.chartsList.layoutManager as GridLayoutManager?
-        glm?.spanCount = getNumColumns()
-    }
-
     private fun postInit() {
         adapter = ChartsAdapter(chartsBinding)
         adapter.emptyTextRes = R.string.not_found
 
-        val glm = GridLayoutManager(context!!, getNumColumns())
-        chartsBinding.chartsList.layoutManager = glm
+        scalableGrid = ScalableGrid(chartsBinding.chartsList)
         (chartsBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations =
             false
         chartsBinding.chartsList.adapter = adapter
-        chartsBinding.chartsList.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
+        chartsBinding.chartsList.addItemDecoration(SimpleHeaderDecoration())
 
         var itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(
@@ -116,13 +105,18 @@ open class InfoExtraFullFragment : Fragment(), EntryItemClickListener {
         )
         chartsBinding.chartsList.addItemDecoration(itemDecor)
 
-        val loadMoreListener = EndlessRecyclerViewScrollListener(glm) {
-            loadCharts()
-        }
+        val loadMoreListener =
+            EndlessRecyclerViewScrollListener(chartsBinding.chartsList.layoutManager!!) {
+                loadCharts()
+            }
         loadMoreListener.currentPage = viewModel.page
         adapter.loadMoreListener = loadMoreListener
         adapter.clickListener = this
         adapter.viewModel = viewModel
+
+        if (type == Stuff.TYPE_ALBUMS || type == Stuff.TYPE_TRACKS) {
+            adapter.showArtists = false
+        }
 
         viewModel.listReceiver.observe(viewLifecycleOwner) {
             if (it == null && !MainActivity.isOnline && viewModel.chartsData.size == 0)
@@ -133,7 +127,6 @@ open class InfoExtraFullFragment : Fragment(), EntryItemClickListener {
                 viewModel.chartsData.addAll(it)
             }
             adapter.populate()
-            viewModel.listReceiver.value = null
         }
 
         if (viewModel.chartsData.isNotEmpty())
@@ -180,6 +173,21 @@ open class InfoExtraFullFragment : Fragment(), EntryItemClickListener {
         }
     }
 
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.grid_size_menu, menu)
+        (menu as? MenuBuilder)?.showIcons()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_grid_size -> {
+                scalableGrid.resize(increase = true)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onStart() {
         super.onStart()
         if (track != null)
@@ -187,36 +195,8 @@ open class InfoExtraFullFragment : Fragment(), EntryItemClickListener {
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {
-        when (entry) {
-            is Artist -> {
-                val info = InfoFragment()
-                info.arguments = Bundle().apply {
-                    putString(NLService.B_ARTIST, entry.name)
-                }
-                info.show(activity!!.supportFragmentManager, null)
-            }
-            is Album -> {
-                val info = InfoFragment()
-                info.arguments = Bundle().apply {
-                    putString(NLService.B_ARTIST, entry.artist)
-                    putString(NLService.B_ALBUM, entry.name)
-                }
-                info.show(activity!!.supportFragmentManager, null)
-            }
-            is Track -> {
-                val info = InfoFragment()
-                info.arguments = Bundle().apply {
-                    putString(NLService.B_ARTIST, entry.artist)
-                    putString(NLService.B_ALBUM, entry.album)
-                    putString(NLService.B_TRACK, entry.name)
-                }
-                info.show(activity!!.supportFragmentManager, null)
-            }
-        }
-    }
-
-    private fun getNumColumns(): Int {
-        return resources.displayMetrics.widthPixels /
-                resources.getDimension(R.dimen.big_grid_size).roundToInt()
+        val info = InfoFragment()
+        info.arguments = entry.toBundle()
+        info.show(activity!!.supportFragmentManager, null)
     }
 }

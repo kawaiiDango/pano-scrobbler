@@ -1,23 +1,27 @@
 package com.arn.scrobble.charts
 
+import android.transition.Fade
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.updateLayoutParams
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Fade
-import androidx.transition.TransitionManager
 import coil.load
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.dp
-import com.arn.scrobble.Stuff.getTintedDrwable
+import com.arn.scrobble.Stuff.getTintedDrawable
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.GridItemChartBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.EntryItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
+import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.google.android.material.shape.ShapeAppearanceModel
 import de.umass.lastfm.*
 import java.text.NumberFormat
 
@@ -25,18 +29,17 @@ import java.text.NumberFormat
 open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
     RecyclerView.Adapter<ChartsAdapter.VHChart>(), LoadMoreGetter {
 
-    lateinit var clickListener: EntryItemClickListener
+    lateinit var clickListener: MusicEntryItemClickListener
     lateinit var viewModel: ChartsVM
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
-    open val itemSizeDp = 185.dp
-    open val forceDimensions = false
+    protected open val isHorizontalList = false
     private var maxCount = -2
     var checkAllForMax = false
 
     @StringRes
     var emptyTextRes = R.string.charts_no_data
     var showArtists = true
-    var requestAlbumInfo = true
+    var showDuration = false
 
     private val getMaxCount = {
         if (checkAllForMax) {
@@ -45,6 +48,10 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
             maxCount
         } else
             viewModel.chartsData[0].playcount
+    }
+
+    private val getSpan = {
+        (binding.chartsList.layoutManager as? GridLayoutManager)?.spanCount
     }
 
     init {
@@ -56,17 +63,13 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHChart {
         val inflater = LayoutInflater.from(parent.context)
         val holderBinding = GridItemChartBinding.inflate(inflater, parent, false)
-        if (forceDimensions) {
-            val lp = holderBinding.root.layoutParams
-            lp.width = itemSizeDp
-            lp.height = itemSizeDp
+        if (isHorizontalList) {
+            holderBinding.root.updateLayoutParams<RecyclerView.LayoutParams> {
+                width =
+                    parent.context.resources.getDimensionPixelSize(R.dimen.charts_horizontal_list_width)
+            }
         }
-        return VHChart(
-            holderBinding,
-            itemSizeDp,
-            clickListener,
-            getMaxCount
-        )
+        return VHChart(holderBinding, clickListener, getMaxCount, getSpan)
     }
 
     override fun getItemCount() = viewModel.chartsData.size
@@ -82,7 +85,7 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
 
     override fun onBindViewHolder(holder: VHChart, position: Int) {
         val item = viewModel.chartsData[position]
-        holder.setItemData(position, item, showArtists, requestAlbumInfo)
+        holder.setItemData(position, item, showArtists, showDuration)
     }
 
     open fun populate() {
@@ -113,17 +116,17 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
 
     class VHChart(
         private val binding: GridItemChartBinding,
-        itemSizeDp: Int,
-        private val clickListener: EntryItemClickListener,
-        private val getMaxCount: () -> Int
+        private val clickListener: MusicEntryItemClickListener,
+        private val getMaxCount: () -> Int,
+        private val getSpan: () -> Int?,
     ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
         private var entryData: MusicEntry? = null
+        private var isOneColumn = false
 
         init {
+            Stuff.log(itemView.toString())
             itemView.setOnClickListener(this)
-            itemView.minimumWidth = itemSizeDp
-            itemView.minimumHeight = itemSizeDp
         }
 
         override fun onClick(view: View) {
@@ -136,8 +139,36 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
             pos: Int,
             entry: MusicEntry,
             showArtists: Boolean,
-            requestAlbumInfo: Boolean
+            showDuration: Boolean,
         ) {
+            val numCols = getSpan()
+
+            if (numCols == 1 && !isOneColumn) {
+                ConstraintSet().apply {
+                    clone(itemView.context, R.layout.list_item_chart)
+                    applyTo(binding.root)
+                }
+                binding.chartImg.shapeAppearanceModel = ShapeAppearanceModel.builder(
+                    itemView.context,
+                    R.style.roundedCorners,
+                    R.style.roundedCorners
+                )
+                    .build()
+                isOneColumn = true
+            } else if (numCols != null && numCols > 1 && isOneColumn) {
+                ConstraintSet().apply {
+                    clone(itemView.context, R.layout.grid_item_chart)
+                    applyTo(binding.root)
+                }
+                binding.chartImg.shapeAppearanceModel = ShapeAppearanceModel.builder(
+                    itemView.context,
+                    R.style.topRoundedCorners,
+                    R.style.topRoundedCorners
+                )
+                    .build()
+                isOneColumn = false
+            }
+
             entryData = entry
             var imgUrl: String? = null
             when (entry) {
@@ -153,16 +184,33 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
 
             binding.chartInfoTitle.text =
                 itemView.context.getString(R.string.charts_num_text, (pos + 1), entry.name)
-            binding.chartInfoScrobbles.text = itemView.context.resources.getQuantityString(
+
+            binding.chartInfoTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                Stuff.stonksIconForDelta(entry.stonksDelta),
+                0,
+                0,
+                0
+            )
+
+            var numScrobblesString = itemView.context.resources.getQuantityString(
                 R.plurals.num_scrobbles_noti, entry.playcount,
                 NumberFormat.getInstance().format(entry.playcount)
             )
+
+            if (showDuration && entry is Track && entry.duration > 0) {
+                numScrobblesString += " • " + Stuff.humanReadableDuration(entry.duration * entry.playcount)
+            }
+
+            if (BuildConfig.DEBUG && entry.stonksDelta != Int.MAX_VALUE && entry.stonksDelta != null)
+                numScrobblesString += " • ${entry.stonksDelta}"
+
+            binding.chartInfoScrobbles.text = numScrobblesString
             if (!showArtists)
                 binding.chartInfoSubtitle.visibility = View.GONE
 
             val maxCount = getMaxCount()
             if (maxCount <= 0) {
-                binding.chartInfoBar.visibility = View.INVISIBLE //so that it acts as a padding
+                binding.chartInfoBar.visibility = View.GONE
                 binding.chartInfoScrobbles.visibility = View.GONE
             } else {
                 binding.chartInfoBar.progress = entry.playcount * 100 / maxCount
@@ -170,22 +218,14 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
                 binding.chartInfoScrobbles.visibility = View.VISIBLE
             }
 
-            val errorDrawable = itemView.context.getTintedDrwable(
+            val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
                 entry.name.hashCode()
             )
 
-            if (entry is Album && !requestAlbumInfo) {
-                binding.chartImg.load(imgUrl ?: "") {
-                    placeholder(R.drawable.vd_wave_simple_filled)
-                    error(errorDrawable)
-                }
-            } else if (entry !is Album || requestAlbumInfo) {
-                binding.chartImg.load(entry) {
-                    placeholder(R.drawable.vd_wave_simple_filled)
-                    error(errorDrawable)
-//                    transitionFactory { _, _ -> NoCrossfadeOnErrorTransition() }
-                }
+            binding.chartImg.load(imgUrl ?: entry) {
+                placeholder(R.drawable.vd_wave_simple_filled)
+                error(errorDrawable)
             }
         }
     }

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp"
         android:background="@android:color/transparent"
+        app:elevation="0dp"
         app:liftOnScroll="false">
 
         <TextView
@@ -17,68 +17,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/edit_regex_warning" />
+            android:text="@string/edit_regex_warning"
+            app:layout_scrollFlags="enterAlways|scroll|snap" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAppearance="?textAppearanceHeadlineSmall"
+        android:visibility="gone"
+        tools:text="0 regex edits"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/edits_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layoutAnimation="@anim/layout_animation_slide_up"
+        android:scrollbars="vertical"
+        android:visibility="invisible"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/edit_bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:fabAlignmentMode="end"
+        app:hideOnScroll="true"
+        app:menu="@menu/regex_edits_menu" />
 
-            <TextView
-                android:id="@+id/empty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textAppearance="?textAppearanceHeadlineSmall"
-                android:visibility="gone"
-                tools:text="0 regex edits"
-                tools:visibility="visible" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/edits_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                android:visibility="invisible"
-                android:layoutAnimation="@anim/layout_animation_slide_up" />
-
-        </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/edit_test"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/edit_regex_test" />
-
-            <Button
-                android:id="@+id/edit_presets"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/edit_presets" />
-
-            <Button
-                android:id="@+id/edit_add"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/add" />
-        </LinearLayout>
-    </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/edit_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/add"
+        app:layout_anchor="@id/edit_bottom_app_bar"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
+        app:srcCompat="@drawable/vd_add_borderless" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

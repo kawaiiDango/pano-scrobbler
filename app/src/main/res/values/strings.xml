@@ -9,29 +9,33 @@
         <item quantity="one">%1$s listener</item>
         <item quantity="other">%1$s listeners</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s day</item>
+        <item quantity="other">%1$s days</item>
+    </plurals>
     <plurals name="num_weeks">
-        <item quantity="one">%1$d week</item>
-        <item quantity="other">%1$d weeks</item>
+        <item quantity="one">%1$s week</item>
+        <item quantity="other">%1$s weeks</item>
     </plurals>
     <plurals name="num_months">
-        <item quantity="one">%1$d month</item>
-        <item quantity="other">%1$d months</item>
+        <item quantity="one">%1$s month</item>
+        <item quantity="other">%1$s months</item>
     </plurals>
     <plurals name="num_years">
-        <item quantity="one">%1$d year</item>
-        <item quantity="other">%1$d years</item>
+        <item quantity="one">%1$s year</item>
+        <item quantity="other">%1$s years</item>
     </plurals>
     <plurals name="num_artists">
-        <item quantity="one">%1$d artist</item>
-        <item quantity="other">%1$d artists</item>
+        <item quantity="one">%1$s artist</item>
+        <item quantity="other">%1$s artists</item>
     </plurals>
     <plurals name="num_albums">
-        <item quantity="one">%1$d album</item>
-        <item quantity="other">%1$d albums</item>
+        <item quantity="one">%1$s album</item>
+        <item quantity="other">%1$s albums</item>
     </plurals>
     <plurals name="num_tracks">
-        <item quantity="one">%1$d track</item>
-        <item quantity="other">%1$d tracks</item>
+        <item quantity="one">%1$s track</item>
+        <item quantity="other">%1$s tracks</item>
     </plurals>
     <plurals name="num_matches"
         comment="regex pattern matches"
@@ -40,15 +44,15 @@
         <item quantity="other">%1$d matches</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$d edit</item>
-        <item quantity="other">%1$d edits</item>
+        <item quantity="one">%1$s edit</item>
+        <item quantity="other">%1$s edits</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$d pattern edit</item>
-        <item quantity="other">%1$d pattern edits</item>
+        <item quantity="one">%1$s pattern edit</item>
+        <item quantity="other">%1$s pattern edits</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="other">%1$d blocked metadata</item>
+        <item quantity="other">%1$s blocked metadata</item>
     </plurals>
 
     <string name="yes">Yes</string>
@@ -57,13 +61,15 @@
     <string name="settings">Configure</string>
     <string name="bug_report">Bug report</string>
     <string name="album_art">Album art</string>
+    <string name="artist_image">Artist image</string>
     <string name="parse_error"
         comment="Title parsing error for Youtube etc"
         >Couldn\'t parse title</string>
     <string name="network_error">Network error</string>
+    <string name="disable_tls_verify">Ignore TLS errors</string>
     <string name="scrobble_ignored"
-        comment="Will be prefixed by Lastfm: (e.g. Lastfm: ignored this scrobble)"
-        >ignored this scrobble</string>
+        comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)"
+        >Scrobble ignored</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignored the edit probably because the scrobble is too old. Would you like to save this edit for future scrobbles instead?</string>
     <string name="required_fields_empty"
         comment="Shown on filling a form"
@@ -103,9 +109,6 @@
     <string name="state_unscrobbled">Unscrobbled</string>
     <string name="state_unrecognised_artist">Unrecognised artist</string>
     <string name="tap_to_edit">(Tap to edit)</string>
-    <string name="tap_to_edit_force"
-        comment="Edit the scrobble or force submit the scrobble"
-        >(Tap to edit or force)</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
     <string name="recently_loved">♥ Recently Loved</string>
     <string name="recents"
@@ -148,8 +151,34 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Share this song</string>
     <string name="share">Share</string>
+    <string name="legend"
+        comment="Chart legend - descriptions of the symbols used"
+        >Legend</string>
+    <string name="grid_size">Change grid size</string>
+    <string name="pinch_to_zoom">Pinch to zoom</string>
     <string name="more_info">More info</string>
+    <string name="rank_change"
+        comment="%1= delta change"
+        >Rank change: %s</string>
+    <string name="rank_change_no_change">No change</string>
+    <string name="rank_change_new">Not scrobbled within the previous period</string>
     <string name="search">Search</string>
+    <string name="library"
+        comment="search within the library"
+        >Library</string>
+    <string name="global"
+        comment="search globally across lastfm"
+        >Global</string>
+    <string name="reindex">Quick index</string>
+    <string name="full_index">Full index</string>
+    <string name="take_long_time">This can take a long time</string>
+    <string name="full_index_desc">Use this only if you have edited or deleted scrobbles from the website.</string>
+    <string name="searched_n_items" formatted="true"
+        comment="%1= number of tracks/albums/artists, always greater than 1000"
+        >Searched the top %1$s items in each category.</string>
+    <string name="last_indexed" formatted="true"
+        comment="%1= date"
+        >Last indexed on %1$s.</string>
     <string name="profile">Profile</string>
     <string name="profile_pic">Profile picture</string>
     <string name="item_options"
@@ -185,11 +214,17 @@
         comment="%1= number, %2= date of joining lastfm"
         >%1$s scrobbles, since %2$s</string>
     <string name="allow_background">Allow scrobbling in background</string>
-    <string name="grant_autostart_desc" formatted="true"
-        comment="%1= Brand name"
-        >Needed on %1$s devices, for the scrobbler to start</string>
     <string name="grant_notification_access">Grant notification access</string>
     <string name="grant_notification_access_desc">Needed to retrieve music metadata. No non-music notifications are read</string>
+    <string name="send_notifications">Allow notifications</string>
+    <string name="send_notifications_desc"
+        comment="Shown before asking for notification permission on Android 13+"
+        >"""- Check scrobble status and counts
+- Love or block directly from the notification
+- Get notified about scrobble errors and actions you can take
+- Get your top scrobbles every week
+- And more
+- The notifications do not make a sound"""</string>
     <string name="authenticate_with_lastfm"
         comment="Login with last.fm"
         >Authenticate with last.FM</string>
@@ -229,6 +264,9 @@
     <string name="saved_as_pending">Saved as a pending scrobble</string>
     <string name="sort">Sort</string>
     <string name="past_scrobbles">Past scrobbles</string>
+    <string name="time_jump"
+        comment="Button shows scrobbles from a specific time"
+        >Time jump</string>
     <string name="possession" formatted="true"
         comment="%1= name (e.g. Reimu's)"
         >%1$s\'s</string>
@@ -254,19 +292,16 @@
     <string name="from" formatted="true"
         comment="%1= country (displayed in friends popup)"
         >From %1$s</string>
-    <string name="a_to_b" formatted="true"
-        comment="%1= date %2= date"
-        >%1$s to %2$s</string>
-    <string name="weekly_range" formatted="true"
-        comment="%1= date %2= date"
-        >weekly (%1$s to %2$s)</string>
     <string name="not_found"
         comment="Shown in search"
         >Not found</string>
     <string name="share_this_chart">Share this chart</string>
+    <string name="lastfm_reports">LastFM reports</string>
     <string name="weekly">Weekly</string>
+    <string name="weeks">Weeks</string>
     <string name="monthly">Monthly</string>
-    <string name="charts_choose_week">Choose a week</string>
+    <string name="months">Months</string>
+    <string name="years">Years</string>
     <string name="charts_overall">Overall</string>
     <string name="charts_no_data">No data for this period</string>
     <string name="charts_custom"
@@ -284,13 +319,13 @@
     <string name="charts_num_text" formatted="true"
         comment="%1= number, %2= List text (e.g. 1. Text)"
         >%1$d. %2$s</string>
-    <string name="charts_no_weekly_charts">Historical weekly charts are not available yet</string>
     <string name="random"
         comment="Displays a random scrobble or a loved track of the user"
         >I\'m feeling lucky</string>
     <string name="random_not_found">No track found</string>
     <string name="loved_track">Loved track</string>
     <string name="randomize">Randomize</string>
+    <string name="random_text">Random</string>
     <string name="graph_daily">Daily scrobble counts</string>
     <string name="graph_weekly">Weekly scrobble counts</string>
     <string name="graph_monthly">Monthly scrobble counts</string>
@@ -331,17 +366,16 @@
     <string name="appwidget_show">Show</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
-    <string name="dynamic"
-        comment="Material You wallpaper based theming"
-        >Dynamic (Material You)</string>
+    <string name="system_colors">System colors</string>
     <string name="appwidget_alpha">Background Opacity</string>
-    <string name="appwidget_refresh_every">Widget will refresh every 15 minutes</string>
+    <string name="appwidget_refresh_every" formatted="true"
+        comment="%1= minutes, always more than 20"
+        >Widget will refresh every %1$d minutes</string>
 
     <string name="primary_color">Primary color</string>
     <string name="secondary_color">Secondary color</string>
     <string name="tint_background">Tint background</string>
     <string name="random_theme">Randomize on every launch</string>
-    <string name="palette_bg">Use album art color for some backgrounds</string>
 
     <string name="edit_name"
         comment="name for regex pattern"
@@ -349,8 +383,8 @@
     <string name="edit_regex">Regex pattern</string>
     <string name="edit_regex_replacement">Regex replacement</string>
     <string name="edit_field"
-        comment="Field like artist/album/track etc"
-        >Field</string>
+        comment="Fields like artist/album/track etc"
+        >Fields</string>
     <string name="edit_replace">Replace</string>
     <string name="edit_first"
         comment="First occurrence of a pattern"
@@ -378,8 +412,20 @@
         >Text</string>
     <string name="edit_regex_warning">⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
     <string name="blocked_metadata_info">ℹ️ Filling in more than one of these fields will apply an AND operator between them</string>
-    <string name="blocked_metadata_noti">Tap to block this from scrobbling</string>
+    <string name="blocked_metadata_noti">Tap to block and skip</string>
+    <string name="player_actions"
+        comment="music player actions such as skip/mute"
+        >Player actions</string>
+    <string name="skip"
+        comment="skip to next track"
+        >Skip</string>
+    <string name="mute">Mute</string>
     <string name="block">Block</string>
+    <string name="hidden_tags">Hidden tags</string>
+    <string name="pin">Pin</string>
+    <string name="unpin">Unpin</string>
+    <string name="pin_limit_reached" formatted="true">Pin limit reached (%1$d)</string>
+    <string name="pin_help">Long press pinned items to reorder them</string>
     <string name="use_channel"
         comment="(Use youtube channel name)"
         >Use channel name</string>
@@ -440,6 +486,7 @@
     <string name="pref_fetch_aa_desc">For players that do not provide this data. The fetched data may differ from your tags. lastFM may not have the data for some songs.</string>
     <string name="pref_pixel_np">Scrobble Pixel\'s Now Playing</string>
     <string name="pref_pixel_np_nope">Available only on Pixel devices</string>
+    <string name="pref_locale">Languages</string>
     <string name="pref_change_locale">Change language</string>
     <string name="locale_only_ui">Only applies to the main UI</string>
     <string name="pref_misc">Misc.</string>
@@ -468,6 +515,14 @@
     <string name="pref_lastfm_disable">Don\'t scrobble to lastFM</string>
     <string name="pref_lastfm_disable_desc">You still need a lastFM login for the rest of the UI to work</string>
     <string name="pref_translate">Translate this app</string>
+    <string name="pref_translate_credits">Translation credits</string>
+    <string name="pref_oss_credits">Open source credits</string>
+    <string name="pref_check_updates">Update notifications</string>
+    <string name="update_available" formatted="true"
+        comment="%1= the version number"
+        >Update available: %1$s</string>
+    <string name="download">Download</string>
+    <string name="changelog">Changelog</string>
 
     <string name="import_hey_wtf">That\'s probably not a Pano Scrobbler export file</string>
     <string name="export_failed">Export failed</string>
@@ -481,18 +536,7 @@
     <string name="pref_intents_dialog_title"
         comment="Android broadcast intents for apps like Tasker"
         >Broadcast intents</string>
-    <string name="pref_intents_dialog_desc" formatted="true"
-        comment="%= different intent strings"
-        >"For the current song:
-%1$s
-%2$s
-%3$s
-
-For the scrobbler:
-%4$s
-%5$s
-
-They can be used with apps like Tasker, Macrodroid etc."</string>
+    <string name="current_track">Current track:</string>
     <string name="pref_intents">Intents for Tasker etc</string>
 
     <string name="copied">Copied!</string>
@@ -509,6 +553,9 @@ They can be used with apps like Tasker, Macrodroid etc."</string>
     <string name="no_browser">No browser is installed</string>
     <string name="no_player">No music player is installed</string>
     <string name="not_running">⚠ The scrobbler was killed by your system</string>
+    <string name="kill_reason"
+        comment="%1= reason for the app kill"
+        formatted="true">Kill reason given by the system: %s</string>
     <string name="not_running_fix_action">Fix it</string>
     <string name="login_submit">Verify</string>
     <string name="scrobble">Scrobble</string>
@@ -562,7 +609,10 @@ Your purchases are managed by Google Play. They are linked with a Google Play ac
 • Login with an account owning the purchase.
 • Install this app directly from the Google Play web page.
 "</string>
-    <string name="billing_block">Block metadata from scrobbling</string>
+    <string name="billing_block">Block artists/tracks and auto skip or mute</string>
+    <string name="billing_pin_friends" formatted="true"
+        comment="%1= number of pins, always 10 or more"
+        >Pin up to %1$d friends and reorder them</string>
     <string name="billing_sharing">Remove app name when sharing</string>
 
 </resources>

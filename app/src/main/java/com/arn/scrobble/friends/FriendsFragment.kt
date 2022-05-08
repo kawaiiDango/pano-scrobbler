@@ -1,8 +1,6 @@
 package com.arn.scrobble.friends
 
 import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.PopupWindow
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,14 +21,15 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.Stuff.setProgressCircleColors
+import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ActionFriendsBinding
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.google.android.material.transition.platform.MaterialElevationScale
-import de.umass.lastfm.User
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
 import kotlin.math.min
@@ -55,6 +55,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
     private val viewModel by viewModels<FriendsVM>()
     private var lastRefreshTime = System.currentTimeMillis()
+    private val prefs by lazy { MainPrefs(context!!) }
     private var _binding: ContentFriendsBinding? = null
     private val binding
         get() = _binding!!
@@ -66,7 +67,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentFriendsBinding.inflate(inflater, container, false)
-        binding.root.isNestedScrollingEnabled = false
         return binding.root
     }
 
@@ -105,12 +105,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
         super.onStop()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        val glm = binding.friendsGrid.layoutManager as GridLayoutManager?
-        glm?.spanCount = getNumColumns()
-    }
-
     override fun onResume() {
         super.onResume()
         if (binding.friendsGrid.adapter == null)
@@ -130,6 +124,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private fun postInit() {
         Stuff.setTitle(activity!!, 0)
 
+        viewModel.username = username
+
         binding.friendsSwipeRefresh.setProgressCircleColors()
         binding.friendsSwipeRefresh.setOnRefreshListener {
             viewModel.sorted = false
@@ -140,10 +136,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
         val glm = GridLayoutManager(context!!, getNumColumns())
         binding.friendsGrid.layoutManager = glm
         (binding.friendsGrid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
-        viewModel.username = username
         adapter = FriendsAdapter(binding, viewModel)
         binding.friendsGrid.adapter = adapter
-        binding.friendsGrid.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
+        binding.friendsGrid.addItemDecoration(SimpleHeaderDecoration())
 
         var itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(
@@ -171,61 +166,78 @@ class FriendsFragment : Fragment(), ItemClickListener {
         loadMoreListener.currentPage = viewModel.page
         adapter.loadMoreListener = loadMoreListener
 
-        if (!viewModel.receiver.hasActiveObservers()) {
-            viewModel.receiver.observe(viewLifecycleOwner) {
-                it ?: return@observe
-                viewModel.totalPages = it.totalPages
-                /*
-                val sortedRes = res.pageResults.sortedByDescending {
-                    if (it?.playcount == null || it.playcount == 0) //put users with 0 plays at the end
-                        0L
-                    else
-                        it.recentTrack?.playedWhen?.time ?: System.currentTimeMillis()
-                }
-                */
-                val newFriendsMap = mutableMapOf<String, User>()
-                it.pageResults.forEach {
-                    if (it.name != null)
-                        newFriendsMap[it.name] = it
-                }
-                //get old now playing data to prevent flicker
-                val firstVisible = glm.findFirstVisibleItemPosition()
-                val lastVisible = glm.findLastVisibleItemPosition()
-                for (i in 0 until adapter.itemCount) {
-                    val friend = newFriendsMap[viewModel.friends[i].name]
-                    if (friend != null &&
-                        friend.recentTrack == null && viewModel.friends[i].recentTrack != null &&
-                        (i in firstVisible..lastVisible)
-                    ) {
-                        friend.recentTrack = viewModel.friends[i].recentTrack
-                        friend.playcount = viewModel.friends[i].playcount
-                    }
-                }
-                refreshFriendsRecents()
-                if (it.page == 1)
-                    viewModel.friends.clear()
-                viewModel.friends.addAll(it.pageResults)
-                adapter.populate()
-                viewModel.receiver.value = null
-                loadMoreListener.currentPage = it.page
-                if (it.page == 1) {
-                    adapter.handler.removeCallbacks(runnable)
-                    adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL * 2)
-                }
+        binding.friendsSort.setOnClickListener {
+            viewModel.friendsFiltered.sortByDescending {
+                if (viewModel.lastPlayedTracksMap[it.name] == null) //put users with no tracks at the end
+                    0L
+                else
+                    viewModel.lastPlayedTracksMap[it.name]!!.playedWhen?.time
+                        ?: System.currentTimeMillis()
             }
-            viewModel.track.observe(viewLifecycleOwner) {
-                it ?: return@observe
-                adapter.populateFriendsRecent(it.second, it.first)
+            viewModel.sorted = true
+            adapter.notifyDataSetChanged()
+            binding.friendsSort.hide()
+            binding.friendsGrid.smoothScrollToPosition(0)
+        }
+
+        viewModel.friendsReceiver.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            viewModel.totalPages = it.totalPages
+            viewModel.hasLoaded = true
+
+            viewModel.putFriends(it.pageResults, replace = it.page == 1)
+
+            loadMoreListener.currentPage = it.page
+
+            if (it.page == 1) {
+                adapter.handler.removeCallbacks(runnable)
+                adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL * 2)
+            }
+
+            if (binding.friendsSwipeRefresh.isRefreshing) {
+                binding.friendsGrid.scheduleLayoutAnimation()
+                binding.friendsSwipeRefresh.isRefreshing = false
+            }
+            loadMoreListener.loading = false
+            val header = binding.friendsHeader.headerText
+            if (viewModel.sectionedList.isEmpty()) {
+                header.visibility = View.VISIBLE
+                header.text = header.context.getString(R.string.no_friends)
+            } else
+                header.visibility = View.GONE
+
+            adapter.notifyDataSetChanged()
+        }
+
+        viewModel.tracksReceiver.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            val (username, tracksPr) = it
+            viewModel.lastPlayedTracksMap[username] = tracksPr.pageResults.firstOrNull()
+            viewModel.playCountsMap[username] = tracksPr.totalPages
+
+            val idxChanged = viewModel.sectionedList.indexOfFirst {
+                it as UserSerializable
+                it.name == username
+            }
+
+            if (idxChanged != -1) {
+                adapter.notifyItemChanged(idxChanged, 0)
+            }
+
+            if (!MainActivity.isTV && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.sectionedList.size > 1 &&
+                viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size
+            ) {
+                binding.friendsSort.show()
             }
         }
-        adapter.itemClickListener = this
-
-        if (viewModel.friends.isEmpty())
-            loadFriends(1)
-        else
-            adapter.populate()
 
         binding.friendsGrid.addOnScrollListener(loadMoreListener)
+        adapter.itemClickListener = this
+
+        if (!viewModel.hasLoaded) {
+            loadFriends(1)
+            viewModel.refreshPins()
+        }
     }
 
     private fun refreshFriendsRecents() {
@@ -235,8 +247,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
         for (i in firstVisible..lastVisible) {
             if (i < 0)
                 break
-            if (!adapter.handler.hasMessages(viewModel.friends[i].name.hashCode())) {
-                val msg = adapter.handler.obtainMessage(viewModel.friends[i].name.hashCode())
+            val userSerializable = viewModel.sectionedList[i] as UserSerializable
+            if (!adapter.handler.hasMessages(userSerializable.name.hashCode())) {
+                val msg = adapter.handler.obtainMessage(userSerializable.name.hashCode())
                 msg.arg1 = i
                 adapter.handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
             }
@@ -246,15 +259,17 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     override fun onItemClick(view: View, position: Int) {
-        val user = adapter.getItem(position)
-        if (user != null) {
-            val gridItem = adapter.getViewBindingForPopup(context!!, position)
-            showPopupWindow(gridItem, view, user)
-        }
+        val user = viewModel.sectionedList[position] as UserSerializable
+        val gridItem = adapter.getViewBindingForPopup(context!!, position)
+        showPopupWindow(gridItem, view, user)
     }
 
-    private fun showPopupWindow(contentBinding: GridItemFriendBinding, anchor: View, user: User) {
-        val userLink = user.url ?: return
+    private fun showPopupWindow(
+        contentBinding: GridItemFriendBinding,
+        anchor: View,
+        userSerializable: UserSerializable
+    ) {
+        val userLink = userSerializable.url ?: return
         val popup =
             PopupWindow(contentBinding.root, anchor.measuredWidth, anchor.measuredHeight, true)
                 .apply {
@@ -271,23 +286,92 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 ActionFriendsBinding.inflate(layoutInflater, contentBinding.root, false)
             contentBinding.root.addView(actionsBinding.root, 4)
 
-            contentBinding.friendsPic.layoutParams.width = 120.dp
-            contentBinding.friendsPic.layoutParams.height = 120.dp
-            if (user.playcount > 0) {
-                val since = if (user.registeredDate == null || user.registeredDate.time == 0L)
+            contentBinding.friendsPic.layoutParams.width = 130.dp
+            contentBinding.friendsPic.layoutParams.height = 130.dp
+            val playCount = viewModel.playCountsMap[userSerializable.name] ?: 0
+            if (playCount > 0) {
+                val since = if (userSerializable.registeredTime == 0L)
                     ""
                 else
-                    DateFormat.getMediumDateFormat(context).format(user.registeredDate.time)
+                    DateFormat.getMediumDateFormat(context).format(userSerializable.registeredTime)
                 contentBinding.friendsScrobblesSince.text = getString(
                     R.string.num_scrobbles_since,
-                    NumberFormat.getInstance().format(user.playcount),
+                    NumberFormat.getInstance().format(playCount),
                     since
                 )
                 contentBinding.friendsScrobblesSince.visibility = View.VISIBLE
             }
-            if (user.country != null && user.country != "None") {
-                contentBinding.friendsCountry.text = getString(R.string.from, user.country)
+            if (userSerializable.country.isNotEmpty() && userSerializable.country != "None") {
+                contentBinding.friendsCountry.text =
+                    getString(
+                        R.string.from,
+                        userSerializable.country + " " + Stuff.getCountryFlag(userSerializable.country)
+                    )
+                if (Stuff.DEMO_MODE)
+                    contentBinding.friendsCountry.text = getString(R.string.from, "Gensokyo")
                 contentBinding.friendsCountry.visibility = View.VISIBLE
+            }
+
+            fun updatePinIndicator(isPinned: Boolean) {
+                if (username != null)
+                    return
+                if (BuildConfig.DEBUG)
+                    contentBinding.friendsPin.visibility = View.VISIBLE
+                contentBinding.friendsPin.setImageResource(
+                    if (isPinned)
+                        R.drawable.vd_pin_off
+                    else
+                        R.drawable.vd_pin
+                )
+                val text = getString(
+                    if (isPinned)
+                        R.string.unpin
+                    else
+                        R.string.pin
+                )
+                contentBinding.friendsPin.contentDescription = text
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    contentBinding.friendsPin.tooltipText = text
+                }
+            }
+
+            updatePinIndicator(viewModel.isPinned(userSerializable.name))
+
+            contentBinding.friendsPin.setOnClickListener {
+                val wasPinned = viewModel.isPinned(userSerializable.name)
+                val succ = if (wasPinned) {
+                    viewModel.removePin(userSerializable)
+                    true
+                } else {
+                    viewModel.addPin(userSerializable)
+                }
+                if (succ) {
+                    updatePinIndicator(!wasPinned)
+                    popup.setOnDismissListener {
+                        adapter.notifyDataSetChanged()
+                    }
+
+                    if (viewModel.pinnedFriends.size > 1 && !prefs.reorderFriendsLearnt && !wasPinned) {
+                        Stuff.toast(
+                            context,
+                            getString(R.string.pin_help),
+                            Toast.LENGTH_LONG
+                        )
+                        prefs.reorderFriendsLearnt = true
+                    }
+                } else {
+                    if (!prefs.proStatus) {
+                        activity!!.supportFragmentManager.beginTransaction()
+                            .replace(R.id.frame, BillingFragment())
+                            .addToBackStack(null)
+                            .commit()
+                    } else {
+                        Stuff.toast(
+                            context!!,
+                            getString(R.string.pin_limit_reached, Stuff.MAX_PINNED_FRIENDS)
+                        )
+                    }
+                }
             }
 
             actionsBinding.friendsProfile.setOnClickListener {
@@ -297,8 +381,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
                 f.arguments = Bundle().apply {
-                    putString(Stuff.ARG_USERNAME, user.name)
-                    putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
+                    putString(Stuff.ARG_USERNAME, userSerializable.name)
+                    putLong(Stuff.ARG_REGISTERED_TIME, userSerializable.registeredTime)
                 }
                 activity!!.supportFragmentManager
                     .beginTransaction()
@@ -310,8 +394,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
                 f.arguments = Bundle().apply {
-                    putString(Stuff.ARG_USERNAME, user.name)
-                    putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
+                    putString(Stuff.ARG_USERNAME, userSerializable.name)
+                    putLong(Stuff.ARG_REGISTERED_TIME, userSerializable.registeredTime)
                     putInt(Stuff.ARG_TYPE, 3)
                 }
                 activity!!.supportFragmentManager
@@ -323,8 +407,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
             actionsBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
             contentBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
-            val point = Point()
-            activity!!.windowManager.defaultDisplay.getSize(point)
             val screenPoint = intArrayOf(0, 0)
             binding.root.getLocationInWindow(screenPoint)
             val (screenX, screenY) = screenPoint

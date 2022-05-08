@@ -26,6 +26,7 @@
 
 package de.umass.lastfm;
 
+import androidx.annotation.Nullable;
 import de.umass.xml.DomElement;
 
 import java.text.DateFormat;
@@ -69,6 +70,8 @@ public abstract class MusicEntry extends ImageHolder {
 	private String wikiText;
 
 	private float similarityMatch;
+    private Integer stonksDelta;
+    private int rank = -1;
 
 	protected MusicEntry(String name, String url) {
 		this(name, url, null, -1, -1, false);
@@ -105,6 +108,10 @@ public abstract class MusicEntry extends ImageHolder {
 
 	public int getUserPlaycount() {
 		return userPlaycount;
+	}
+
+	public void setUserPlaycount(int userPlaycount) {
+		this.userPlaycount = userPlaycount;
 	}
 
 	public boolean isStreamable() {
@@ -157,6 +164,19 @@ public abstract class MusicEntry extends ImageHolder {
 	public float getSimilarityMatch() {
 		return similarityMatch;
 	}
+
+    @Nullable
+    public Integer getStonksDelta() {
+        return stonksDelta;
+    }
+
+    public void setStonksDelta(Integer stonksDelta) {
+        this.stonksDelta = stonksDelta;
+    }
+
+    public int getRank() {
+        return rank;
+    }
 
 	@Override
 	public String toString() {
@@ -219,6 +239,9 @@ public abstract class MusicEntry extends ImageHolder {
 				.parseInt(userPlaycountString);
 		int listeners = listenersString == null || listenersString.length() == 0 ? -1 : Integer
 				.parseInt(listenersString);
+
+        Integer rank = maybeParseInt(element.getAttribute("rank"));
+
 		// streamable
 		String s = element.getChildText("streamable");
 		boolean streamable = s != null && s.length() != 0 && Integer.valueOf(1).equals(maybeParseInt(s));
@@ -226,6 +249,8 @@ public abstract class MusicEntry extends ImageHolder {
 		entry.name = element.getChildText("name");
 		entry.url = element.getChildText("url");
 		entry.mbid = element.getChildText("mbid");
+        if (rank != null)
+		    entry.rank = rank;
 		entry.playcount = playcount;
 		entry.userPlaycount = userPlaycount;
 		entry.listeners = listeners;

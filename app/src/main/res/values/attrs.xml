@@ -24,6 +24,15 @@
 
     </declare-styleable>
 
+    <declare-styleable name="SquareFrameLayout">
+        <attr name="maxSize" format="dimension" />
+    </declare-styleable>
+
 <!--    <attr name="colorNoti" format="reference|color" />-->
     <attr name="fakeShadowAlpha" format="reference|float" />
+
+    <declare-styleable name="ScalableDrawableTextView">
+        <attr name="compoundDrawableWidth" format="dimension"/>
+        <attr name="compoundDrawableHeight" format="dimension"/>
+    </declare-styleable>
 </resources>

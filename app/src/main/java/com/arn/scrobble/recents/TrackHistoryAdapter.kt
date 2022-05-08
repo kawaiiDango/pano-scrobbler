@@ -11,7 +11,7 @@ import coil.load
 import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getTintedDrwable
+import com.arn.scrobble.Stuff.getTintedDrawable
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.ScrobbleSourcesDao
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
@@ -144,7 +144,7 @@ class TrackHistoryAdapter(
 
             val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
 
-            val errorDrawable = itemView.context.getTintedDrwable(
+            val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
                 Stuff.genHashCode(track.artist, track.name)
             )

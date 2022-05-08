@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -13,6 +12,7 @@
         android:layout_weight="1">
 
         <LinearLayout
+            android:id="@+id/billing_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -39,16 +39,8 @@
                 android:layout_height="wrap_content"
                 android:justificationMode="inter_word"
                 android:text="@string/pro_also_get"
-                android:textAppearance="?textAppearanceBodyLarge" />
-
-            <TextView
-                android:id="@+id/pro_benefits"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:justificationMode="inter_word"
                 android:textAppearance="?textAppearanceBodyLarge"
-                android:layout_marginBottom="16dp"
-                tools:text="@string/pro_also_get" />
+                android:layout_marginBottom="16dp"/>
         </LinearLayout>
     </ScrollView>
 

@@ -1,40 +1,59 @@
 package com.arn.scrobble
 
-import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import androidx.fragment.app.Fragment
+import androidx.annotation.StringRes
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
-import androidx.transition.Fade
-import androidx.transition.TransitionManager
 import coil.load
 import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.charts.ChartsPeriodFragment
+import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.info.InfoFragment
-import com.arn.scrobble.pref.MainPrefs
-import com.google.android.material.transition.MaterialSharedAxis
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.Track
+import com.arn.scrobble.ui.MusicEntryImageReq
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.transition.platform.MaterialSharedAxis
+import de.umass.lastfm.*
+import io.michaelrocks.bimap.HashBiMap
+import java.text.NumberFormat
 
 
 /**
  * Created by arn on 06/09/2017.
  */
-class RandomFragment : Fragment() {
+class RandomFragment : ChartsPeriodFragment() {
 
-    private val viewModel by viewModels<RandomVM>()
-    private val prefs by lazy { MainPrefs(context!!) }
-    private var isLoading = false
+    private val randomViewModel by viewModels<RandomVM>()
     private var _binding: ContentRandomBinding? = null
     private val binding get() = _binding!!
-    private val username get() = arguments?.getString(Stuff.ARG_USERNAME)
-    private val type get() = arguments?.getInt(Stuff.ARG_TYPE)
+
+    override val periodChipsBinding: ChipsChartsPeriodBinding
+        get() = _periodChipsBinding!!
+    private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
+
+    override val username: String?
+        get() = arguments?.getString(Stuff.ARG_USERNAME)
+    override val registeredTime: Long
+        get() = arguments?.getLong(
+            Stuff.ARG_REGISTERED_TIME,
+            prefs.scrobblingSince
+        ) ?: prefs.scrobblingSince
+
+    private val buttonToTypeBimap by lazy {
+        HashBiMap.create(
+            hashMapOf(
+                R.id.get_track to Stuff.TYPE_TRACKS,
+                R.id.get_loved to Stuff.TYPE_LOVES,
+                R.id.get_album to Stuff.TYPE_ALBUMS,
+                R.id.get_artist to Stuff.TYPE_ARTISTS
+            )
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,11 +69,13 @@ class RandomFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentRandomBinding.inflate(inflater, container, false)
+        _periodChipsBinding = binding.chipsChartsPeriod
         return binding.root
     }
 
     override fun onDestroyView() {
         _binding = null
+        _periodChipsBinding = null
         super.onDestroyView()
     }
 
@@ -63,148 +84,234 @@ class RandomFragment : Fragment() {
         Stuff.setTitle(activity!!, R.string.random)
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        setContainerWidth()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        postInit()
+
         viewModel.username = username
-        binding.username.text = username
+        randomViewModel.username = username
 
-        binding.randomGetLoved.setOnClickListener {
-            if (!isLoading) {
-                viewModel.loadRandomLove()
-                setLoading(true)
-            }
-        }
-        binding.randomGetScrobble.setOnClickListener {
-            if (!isLoading) {
-                viewModel.loadRandomScrobble()
-                setLoading(true)
-            }
-        }
-        binding.randomTrack.recentsMenu.visibility = View.INVISIBLE
-        binding.randomTrack.recentsMenuText.visibility = View.GONE
-        binding.randomTrack.recentsPlaying.visibility = View.INVISIBLE
-        (binding.randomTrack.recentsImg.parent as FrameLayout).visibility = View.GONE
-        binding.randomTrack.recentsDate.setTextColor(Color.WHITE)
-        binding.randomTrack.root.setBackgroundResource(R.drawable.layer_random_track)
-        binding.randomTrack.root.setPaddingRelative(
-            16.dp,
-            resources.getDimension(R.dimen.gradient_container_top_padding).toInt(),
-            16.dp,
-            16.dp
-        )
-
-        viewModel.track.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            if (it.type == Stuff.TYPE_TRACKS) {
-                viewModel.totalScrobbles = it.total
-            } else if (it.type == Stuff.TYPE_LOVES) {
-                viewModel.totalLoves = it.total
-                it.track?.isLoved = true
-            }
-            if (it.track != null)
-                prefs.lastRandomType = it.type
-            setTrack(it.track)
-        }
-        if (viewModel.track.value == null) {
-            val type = type ?: prefs.lastRandomType
-            if (type == Stuff.TYPE_TRACKS)
-                viewModel.loadRandomScrobble()
-            else
-                viewModel.loadRandomLove()
-            setLoading(true)
-        }
-        binding.randomTrackContainer.post { setContainerWidth() }
-    }
-
-    private fun setLoading(loading: Boolean) {
-        isLoading = loading
-        if (loading) {
-            if (!MainActivity.isOnline) {
-                binding.randomStatus.text = getString(R.string.unavailable_offline)
-                binding.randomStatus.visibility = View.VISIBLE
-                binding.randomProgress.hide()
-                isLoading = false
-            } else {
-                binding.randomStatus.visibility = View.GONE
-                binding.randomProgress.show()
-            }
-            TransitionManager.beginDelayedTransition(
-                binding.root,
-                Fade().setInterpolator(DecelerateInterpolator())
-            )
-            binding.randomTrackContainer.visibility = View.INVISIBLE
-            binding.randomTrackButtons.visibility = View.INVISIBLE
+        binding.randomizeText.text = if (username != null) {
+            getString(R.string.possession, username) + " " + getString(R.string.random_text)
         } else {
-            binding.randomProgress.hide()
+            getString(R.string.random_text)
+        }
+
+        if (!BuildConfig.DEBUG)
+            periodChipsBinding.root.visibility = View.GONE
+
+        binding.randomScrobbleTypeGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+
+            TransitionManager.beginDelayedTransition(group)
+
+            val btn = group.findViewById<MaterialButton>(checkedId)
+            if (isChecked) {
+                btn.iconPadding = 4.dp
+                btn.text = btn.contentDescription
+            } else {
+                btn.iconPadding = 0
+                btn.text = ""
+            }
+
+            if (BuildConfig.DEBUG) {
+                periodChipsBinding.root.visibility = (isChecked && checkedId == R.id.get_loved)
+                    .let { if (it) View.INVISIBLE else View.VISIBLE }
+            }
+        }
+
+        binding.randomScrobbleTypeGroup.children.forEach {
+            it.setOnClickListener {
+                val type = buttonToTypeBimap[it.id]!!
+                load(type)
+            }
+        }
+
+        randomViewModel.data.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            randomViewModel.error.value = null
+            randomViewModel.setTotal(it.type, it.total)
+            viewModel.totalCount = it.total
+
+            if (it.entry != null) {
+                prefs.lastRandomType = it.type
+                setData(it.entry)
+            } else {
+                doneLoading(R.string.charts_no_data)
+            }
+        }
+
+        randomViewModel.error.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            doneLoading(R.string.network_error)
+        }
+
+        val type = arguments?.getInt(Stuff.ARG_TYPE) ?: prefs.lastRandomType
+
+        buttonToTypeBimap.inverse[type]?.let { id ->
+            binding.randomScrobbleTypeGroup.check(id)
         }
     }
 
-    private fun setTrack(track: Track?) {
-        setLoading(false)
-        if (track == null) {
-            binding.randomStatus.text = getString(R.string.random_not_found)
-            binding.randomStatus.visibility = View.VISIBLE
+    override fun loadFirstPage(networkOnly: Boolean) {
+        _binding ?: return
+
+        val type = buttonToTypeBimap[binding.randomScrobbleTypeGroup.checkedButtonId]!!
+        if (BuildConfig.DEBUG)
+            viewModel.selectedPeriod.value?.let { randomViewModel.timePeriod = it }
+        load(type)
+    }
+
+    private fun load(type: Int) {
+        if (randomViewModel.isLoading)
             return
+        randomViewModel.loadRandom(type)
+        randomViewModel.isLoading = true
+        if (!MainActivity.isOnline) {
+            binding.randomStatus.text = getString(R.string.unavailable_offline)
+            binding.randomStatus.visibility = View.VISIBLE
+            binding.randomProgress.hide()
+            randomViewModel.isLoading = false
+        } else {
+            binding.randomStatus.visibility = View.GONE
+            binding.randomProgress.show()
         }
-        binding.randomStatus.visibility = View.GONE
+
         TransitionManager.beginDelayedTransition(
             binding.root,
-            Fade().setInterpolator(DecelerateInterpolator())
+            MaterialSharedAxis(MaterialSharedAxis.Z, false)
         )
-        binding.randomTrackContainer.visibility = View.VISIBLE
-        binding.randomTrackButtons.visibility = View.VISIBLE
-
-        var name = track.name
-        if (track.isLoved)
-            name = "❤ $name"
-
-        binding.randomTrack.recentsTitle.text = name
-        binding.randomTrack.recentsSubtitle.text = track.artist
-        binding.randomTrack.recentsDate.text =
-            Stuff.myRelativeTime(context!!, track.playedWhen?.time ?: 0)
-
-        binding.randomPlay.setOnClickListener {
-            Stuff.launchSearchIntent(context!!, track, null)
+        binding.randomContentGroup.visibility = View.INVISIBLE
+        binding.randomScrobbleTypeGroup.children.forEach {
+            it.isClickable = false
         }
-        binding.randomTrack.root.setOnClickListener {
-            Stuff.launchSearchIntent(context!!, track, null)
+    }
+
+    private fun doneLoading(@StringRes errorMessageRes: Int? = null) {
+        randomViewModel.isLoading = false
+        binding.randomProgress.hide()
+
+        TransitionManager.beginDelayedTransition(
+            binding.root,
+            MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        )
+
+        binding.randomScrobbleTypeGroup.children.forEach {
+            it.isClickable = true
         }
-        binding.randomInfo.setOnClickListener {
-            if (track.url != null) {
+
+        if (errorMessageRes == null) {
+            binding.randomContentGroup.visibility = View.VISIBLE
+            binding.randomStatus.visibility = View.GONE
+        } else {
+            binding.randomStatus.text = getString(errorMessageRes)
+            binding.randomContentGroup.visibility = View.INVISIBLE
+            binding.randomStatus.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setData(musicEntry: MusicEntry) {
+        doneLoading(null)
+
+        val iconRes = when (musicEntry) {
+            is Track -> {
+                if (musicEntry.isLoved)
+                    R.drawable.vd_heart
+                else
+                    R.drawable.vd_note
+            }
+            is Album -> R.drawable.vd_album
+            is Artist -> R.drawable.vd_mic
+            else -> throw IllegalArgumentException("Unknown music entry type")
+        }
+
+        binding.itemName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            iconRes,
+            0,
+            0,
+            0
+        )
+
+        binding.itemName.text = musicEntry.name
+        var searchQueryFirst = ""
+        var searchQuerySecond = ""
+
+        when (musicEntry) {
+            is Track -> {
+                binding.itemArtist.visibility = View.VISIBLE
+                binding.itemArtist.text = musicEntry.artist
+
+                binding.trackDate.visibility = View.VISIBLE
+                binding.trackDate.text =
+                    Stuff.myRelativeTime(context!!, musicEntry.playedWhen?.time ?: 0)
+
+                searchQueryFirst = musicEntry.artist
+                searchQuerySecond = musicEntry.name
+            }
+            is Album -> {
+                binding.itemArtist.visibility = View.VISIBLE
+                binding.itemArtist.text = musicEntry.artist
+
+                binding.trackDate.visibility = View.GONE
+
+                searchQueryFirst = musicEntry.artist
+                searchQuerySecond = musicEntry.name
+            }
+            is Artist -> {
+                binding.itemArtist.visibility = View.GONE
+                binding.trackDate.visibility = View.GONE
+
+                searchQueryFirst = musicEntry.name
+            }
+        }
+
+        binding.randomItem.setOnClickListener {
+            if (musicEntry.url != null) {
                 val info = InfoFragment()
-                info.arguments = Bundle().apply {
-                    putString(NLService.B_ARTIST, track.artist)
-                    if (!track.album.isNullOrEmpty())
-                        putString(NLService.B_ALBUM, track.album)
-                    putString(NLService.B_TRACK, track.name)
+                info.arguments = musicEntry.toBundle().apply {
                     putString(Stuff.ARG_USERNAME, username)
                 }
                 info.show(parentFragmentManager, null)
             }
         }
+
+        val count = if (musicEntry.userPlaycount > 0)
+            musicEntry.userPlaycount
+        else if (musicEntry.playcount > 0)
+            musicEntry.playcount
+        else
+            -1
+
+        if (count > 0) {
+            binding.trackCount.visibility = View.VISIBLE
+            binding.trackCount.text = resources.getQuantityString(
+                R.plurals.num_scrobbles_noti,
+                count,
+                NumberFormat.getInstance().format(count)
+            )
+        } else {
+            binding.trackCount.visibility = View.GONE
+        }
+
+        arrayOf(binding.randomPlay, binding.randomPlayFiller)
+            .forEach {
+                it.setOnClickListener {
+                    Stuff.launchSearchIntent(context!!, searchQueryFirst, searchQuerySecond, null)
+                }
+            }
         val imgUrl =
-            track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600") ?: ""
-        binding.randomBigImg.load(imgUrl) {
+            musicEntry.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600") ?: ""
+
+        val imgLoadData: Any = if (randomViewModel.data.value!!.type == Stuff.TYPE_ARTISTS) {
+            MusicEntryImageReq(musicEntry, ImageSize.EXTRALARGE, true)
+        } else {
+            imgUrl
+        }
+
+        binding.randomBigImg.load(imgLoadData) {
             allowHardware(false) // because crash on oreo
             placeholder(R.drawable.vd_wave_simple_filled)
             error(R.drawable.vd_wave_simple_filled)
         }
-    }
-
-    private fun setContainerWidth() {
-        val lp = binding.randomTrackContainer.layoutParams as LinearLayout.LayoutParams
-        val maxWidth = resources.getDimension(R.dimen.random_container_max_width)
-        if (resources.displayMetrics.widthPixels > maxWidth)
-            lp.width = maxWidth.toInt()
-        else
-            lp.width = LinearLayout.LayoutParams.MATCH_PARENT
-
-        binding.randomTrackContainer.layoutParams = lp
     }
 }

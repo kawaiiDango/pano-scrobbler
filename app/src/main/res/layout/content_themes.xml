@@ -71,11 +71,54 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/widget_period"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:selectionRequired="true"
+                app:singleLine="false"
+                app:singleSelection="true"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/theme_day_night"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:id="@+id/chip_dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dark"
+                    android:tag="dark"
+                    app:checkedIconEnabled="false" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:id="@+id/chip_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/light"
+                    android:tag="light"
+                    app:checkedIconEnabled="false" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:id="@+id/chip_auto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/auto"
+                    android:tag="system"
+                    app:checkedIconEnabled="false" />
+            </com.google.android.material.chip.ChipGroup>
+
             <CheckBox
                 android:id="@+id/theme_dynamic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dynamic"
+                android:text="@string/system_colors"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
@@ -84,16 +127,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="64dp"
-                android:visibility="gone"
-                tools:visibility="visible"
                 android:text="@string/tint_background" />
-
-            <CheckBox
-                android:id="@+id/theme_palette_bg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="64dp"
-                android:text="@string/palette_bg" />
 
             <CheckBox
                 android:id="@+id/theme_random"

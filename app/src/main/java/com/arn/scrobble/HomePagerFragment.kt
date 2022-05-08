@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.viewpager.widget.ViewPager
 import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.tabs.TabLayout
@@ -13,6 +14,7 @@ class HomePagerFragment : PagerBaseFragment(), ViewPager.OnPageChangeListener {
 
     private var backStackChecked = false
     private val prefs by lazy { MainPrefs(context!!) }
+    private val viewModel by viewModels<HomePagerVM>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tabMeta = arrayOf(
@@ -22,8 +24,19 @@ class HomePagerFragment : PagerBaseFragment(), ViewPager.OnPageChangeListener {
             R.string.charts to R.drawable.vd_charts
         )
         adapter = HomePagerAdapter(childFragmentManager)
+
+        viewModel.userInfo.observe(viewLifecycleOwner) { user ->
+            user ?: return@observe
+            arguments!!.putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
+        }
+
         if (arguments?.getString(Stuff.ARG_USERNAME) == null)
             setGestureExclusions(true)
+        else {
+            // opened VIEW link
+            if (arguments!!.getLong(Stuff.ARG_REGISTERED_TIME) == 0L)
+                viewModel.fetchUserInfo(arguments!!.getString(Stuff.ARG_USERNAME)!!)
+        }
         if (savedInstanceState == null)
             backStackChecked = false
         (view as ViewPager).addOnPageChangeListener(this)

@@ -1,17 +1,13 @@
 package com.arn.scrobble.recents
 
-import android.annotation.SuppressLint
 import android.icu.text.DateFormat
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.view.SupportMenuInflater
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -20,6 +16,7 @@ import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.Stuff.equalsExt
+import com.arn.scrobble.Stuff.showWithIcons
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
@@ -95,7 +92,6 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
             }
             val oldList = viewModel.tracks.toList()
             viewModel.tracks.addAll(it.pageResults)
-            viewModel.tracksReceiver.value = null
             populate(oldList)
         }
 
@@ -121,7 +117,6 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         (activity as MainActivity).mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
             it?.let {
                 adapter.editTrack(it)
-                (activity as? MainActivity)?.mainNotifierViewModel?.editData?.value = null
             }
         }
 
@@ -148,7 +143,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         adapter.loadMoreListener = loadMoreListener
 
         binding.tracksList.addOnScrollListener(loadMoreListener)
-        binding.tracksList.addItemDecoration(SimpleHeaderDecoration(0, 25.dp))
+        binding.tracksList.addItemDecoration(SimpleHeaderDecoration())
 
         binding.progress.show()
 
@@ -188,46 +183,37 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         }
     }
 
-    @SuppressLint("RestrictedApi")
     private fun openTrackPopupMenu(anchor: View, position: Int) {
         val track = adapter.getItem(position)
 
-        val menuBuilder = MenuBuilder(context)
-        val inflater = SupportMenuInflater(context)
-        inflater.inflate(R.menu.recents_item_menu, menuBuilder)
+        val popup = PopupMenu(context!!, anchor)
+        popup.menuInflater.inflate(R.menu.recents_item_menu, popup.menu)
 
-        menuBuilder.removeItem(R.id.menu_love)
+        popup.menu.removeItem(R.id.menu_love)
 
-        menuBuilder.setCallback(object : MenuBuilder.Callback {
-            override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
-                when (item.itemId) {
-                    R.id.menu_edit -> PopupMenuUtils.editScrobble(activity!!, track)
-                    R.id.menu_delete -> PopupMenuUtils.deleteScrobble(activity!!, track) { succ ->
-                        if (succ) {
-                            val oldList = viewModel.tracks.toList()
-                            val wasInList = viewModel.tracks.remove(track)
-                            if (wasInList) {
-                                adapter.autoNotify(oldList, viewModel.tracks) { o, n ->
-                                    o.equalsExt(n)
-                                }
-                                arguments!!.putInt(
-                                    Stuff.ARG_COUNT,
-                                    scrobbleCount - 1
-                                )
-                                setTitle()
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> PopupMenuUtils.editScrobble(activity!!, track)
+                R.id.menu_delete -> PopupMenuUtils.deleteScrobble(activity!!, track) { succ ->
+                    if (succ) {
+                        val oldList = viewModel.tracks.toList()
+                        val wasInList = viewModel.tracks.remove(track)
+                        if (wasInList) {
+                            adapter.autoNotify(oldList, viewModel.tracks) { o, n ->
+                                o.equalsExt(n)
                             }
+                            arguments!!.putInt(
+                                Stuff.ARG_COUNT,
+                                scrobbleCount - 1
+                            )
+                            setTitle()
                         }
                     }
-                    else -> return false
                 }
-                return true
             }
+            true
+        }
 
-            override fun onMenuModeChange(menu: MenuBuilder) {}
-        })
-
-        val popupMenu = MenuPopupHelper(context!!, menuBuilder, anchor)
-        popupMenu.setForceShowIcon(true)
-        popupMenu.show()
+        popup.showWithIcons()
     }
 }

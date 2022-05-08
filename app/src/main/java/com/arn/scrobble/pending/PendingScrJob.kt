@@ -186,7 +186,7 @@ class PendingScrJob : JobService() {
         }
 
         private suspend fun submitLoves(): Boolean {
-            val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs, shouldSupportLove = true)
+            val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs, supportsLove = true)
 
             try {
                 val entries = lovesDao.all(100)
@@ -277,7 +277,7 @@ class PendingScrJob : JobService() {
                 .setPersisted(true)
                 .build()
             js.schedule(job)
-            Stuff.log("scheduling PendingScrJob")
+            Stuff.log("scheduling ${PendingScrJob::class.java.simpleName}")
         }
 
     }

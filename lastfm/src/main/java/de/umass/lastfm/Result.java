@@ -46,6 +46,7 @@ public class Result {
 	protected String errorMessage = null;
 	protected int errorCode = -1;
 	protected int httpErrorCode = -1;
+    protected boolean fromCache = false;
 
 	protected Document resultDocument;
 
@@ -104,11 +105,28 @@ public class Result {
 		return errorMessage;
 	}
 
-	public DomElement getContentElement() {
+    public boolean isFromCache() {
+        return fromCache;
+    }
+
+    public void setFromCache(boolean fromCache) {
+        this.fromCache = fromCache;
+    }
+
+    public DomElement getContentElement() {
 		if (!isSuccessful())
 			return null;
 		return new DomElement(resultDocument.getDocumentElement()).getChild("*");
 	}
+
+    public Result copyWithoutDocument() {
+        Result r = new Result(errorMessage);
+        r.status = status;
+        r.errorCode = errorCode;
+        r.httpErrorCode = httpErrorCode;
+        r.fromCache = fromCache;
+        return r;
+    }
 
 	@Override
 	public String toString() {

@@ -99,4 +99,12 @@
 
     </LinearLayout>
 
+
+    <TextView
+        android:id="@+id/fix_it_exit_reason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="4dp"
+        tools:text="exit reason" />
+
 </LinearLayout>

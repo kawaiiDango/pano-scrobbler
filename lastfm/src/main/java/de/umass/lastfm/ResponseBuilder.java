@@ -78,7 +78,7 @@ public final class ResponseBuilder {
 
 	public static <T> PaginatedResult<T> buildPaginatedResult(Result result, ItemFactory<T> factory) {
 		if (!result.isSuccessful()) {
-			return new PaginatedResult<T>(0, 0, 0, Collections.<T>emptyList(), null);
+			return new PaginatedResult<T>(0, 0, 0, Collections.<T>emptyList());
 		}
 
 		DomElement contentElement = result.getContentElement();
@@ -104,7 +104,7 @@ public final class ResponseBuilder {
 		int totalPages = Integer.parseInt(totalPagesAttribute);
 		String username = contentElement.getAttribute("user");
 
-		return new PaginatedResult<T>(page, totalPages, total, items, username);
+		return new PaginatedResult<T>(page, totalPages, total, items);
 	}
 
 	public static <T> T buildItem(Result result, Class<T> itemClass) {

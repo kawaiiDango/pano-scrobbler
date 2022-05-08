@@ -105,7 +105,6 @@
     <string name="state_unscrobbled">Скроббл удален</string>
     <string name="state_unrecognised_artist">Неизвестный исполнитель</string>
     <string name="tap_to_edit">(Нажмите чтобы редактировать)</string>
-    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Нажмите, чтобы редактировать принудительно)</string>
     <string name="recently_scrobbled">Недавно заскроббленные</string>
     <string name="recently_loved">♥ Недавно понравившиеся</string>
     <string name="recents" comment="Short for recently scrobbled">Недавние</string>
@@ -154,7 +153,6 @@
     <string name="friends">Друзья</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скробблов с %2$s</string>
     <string name="allow_background">Разрешить скробблинг в фоновом режиме</string>
-    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Требуется на устройствах %1$s для запуска скробблера</string>
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Авторизируйтесь в last.FM</string>
@@ -194,13 +192,10 @@
     <string name="user_loved" formatted="true" comment="%1= username">%1$s понравилось это</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Скробблы к %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Из %1$s</string>
-    <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s - %2$s</string>
-    <string name="weekly_range" formatted="true" comment="%1= date %2= date">еженедельно (%1$s to %2$s)</string>
     <string name="not_found" comment="Shown in search">Не найдено</string>
     <string name="share_this_chart">Поеделиться этим чартом</string>
     <string name="weekly">Еженедельно</string>
     <string name="monthly">Ежемесячно</string>
-    <string name="charts_choose_week">Выберите неделю</string>
     <string name="charts_overall">За все время</string>
     <string name="charts_no_data">Нет данных за этот период</string>
     <string name="charts_custom" comment="Custom date range, but in short">Пользовательский</string>
@@ -208,7 +203,6 @@
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Основано на %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Недостаточно данных</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
-    <string name="charts_no_weekly_charts">Исторические недельные графики пока недоступны</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Мне повезет</string>
     <string name="random_not_found">Трек не найден</string>
     <string name="loved_track">Любимый трек</string>
@@ -238,14 +232,11 @@
     <string name="appwidget_show">Показать</string>
     <string name="light">Светлая</string>
     <string name="dark">Темная</string>
-    <string name="dynamic" comment="Material You wallpaper based theming">Динамичный (Material You)</string>
     <string name="appwidget_alpha">Прозрачность фона</string>
-    <string name="appwidget_refresh_every">Виджет обновляется каждые 15 минут</string>
     <string name="primary_color">Основной цвет</string>
     <string name="secondary_color">Вторичный цвет</string>
     <string name="tint_background">Оттеночный фон</string>
     <string name="random_theme">Выбирать случайным образом при каждом запуске</string>
-    <string name="palette_bg">Использовать цвет обложки альбома для некоторых фонов</string>
     <string name="edit_name" comment="name for regex pattern">Дружественное имя (необязательно)</string>
     <string name="edit_regex">Шаблон регулярного выражения</string>
     <string name="edit_regex_replacement">Замена регулярного выражения</string>
@@ -340,16 +331,6 @@
     <string name="import_lists_keep">Объединить, сохранить существующие правки и черный список</string>
     <string name="import_settings">Настройки импорта</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Трансляция интентов</string>
-    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Для текущей песни:
-%1$s
-%2$s
-%3$s
-
-Для скробблинга:
-%4$s
-%5$s
-
-Их можно использовать с приложениями, такими как Tasker, Macrodroid и т. д."</string>
     <string name="pref_intents">Интенты для Tasker и других приложений</string>
     <string name="copied">Скопировано!</string>
     <string name="lastfm_reauth">Вам необходимо повторно пройти аутентификацию, чтобы редактировать или удалять скробблы</string>

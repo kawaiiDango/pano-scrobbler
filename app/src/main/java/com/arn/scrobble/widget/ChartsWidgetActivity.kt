@@ -9,14 +9,21 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMarginsRelative
 import androidx.viewbinding.ViewBinding
-import com.arn.scrobble.*
 import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
+import com.arn.scrobble.NLService
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.*
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetTheme
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.DynamicColors
 
 class ChartsWidgetActivity : AppCompatActivity() {
@@ -36,16 +43,10 @@ class ChartsWidgetActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAppwidgetChartsConfigBinding
     private lateinit var previewBinding: AppwidgetChartsContentBinding
     private val prefs by lazy { WidgetPrefs(this)[appWidgetId] }
-    private val periodChipIds = arrayOf(
-        R.id.charts_7day,
-        R.id.charts_1month,
-        R.id.charts_3month,
-        R.id.charts_6month,
-        R.id.charts_12month,
-        R.id.charts_overall
-    )
+
     private var widgetExists = false
     private val billingViewModel by viewModels<BillingViewModel>()
+    private val widgetTimePeriods by lazy { WidgetTimePeriods(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -57,30 +58,40 @@ class ChartsWidgetActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setResult(false)
-        binding.widgetPeriod.chartsChooseWeek.visibility = View.GONE
-        binding.widgetPeriod.charts7day.text =
-            resources.getQuantityString(R.plurals.num_weeks, 1, 1)
-        binding.widgetPeriod.charts1month.text =
-            resources.getQuantityString(R.plurals.num_months, 1, 1)
-        binding.widgetPeriod.charts3month.text =
-            resources.getQuantityString(R.plurals.num_months, 3, 3)
-        binding.widgetPeriod.charts6month.text =
-            resources.getQuantityString(R.plurals.num_months, 6, 6)
-        binding.widgetPeriod.charts12month.text =
-            resources.getQuantityString(R.plurals.num_years, 1, 1)
-        binding.widgetPeriod.chartsOverall.text = getString(R.string.charts_overall)
 
-        if (!BuildConfig.DEBUG || !DynamicColors.isDynamicColorAvailable())
+        if (!DynamicColors.isDynamicColorAvailable())
             binding.chipDynamic.visibility = View.GONE
 
-        binding.widgetPeriod.chartsPeriod.setOnCheckedChangeListener { group, checkedId ->
-            val idx = periodChipIds.indexOf(checkedId)
-            if (idx != -1)
-                prefs.period = idx
+        widgetTimePeriods.periodsMap.forEach { (key, timePeriod) ->
+            ListItemChipPeriodBinding.inflate(
+                layoutInflater,
+                binding.widgetPeriod,
+                false
+            ).root.apply {
+                text = timePeriod.name
+                tag = key
+                id = View.generateViewId()
+                updateLayoutParams<ChipGroup.LayoutParams> {
+                    updateMarginsRelative(0, 0, 0, 0)
+                }
+                binding.widgetPeriod.addView(this)
+            }
         }
 
-        binding.widgetTheme.setOnCheckedChangeListener { group, checkedId ->
-            val theme = themeFromChip(checkedId)
+        binding.widgetPeriod.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+
+            val key = group.findViewById<Chip>(checkedIds[0])?.tag as? String
+            if (key != null) {
+                prefs.period = key
+                prefs.periodName = widgetTimePeriods.periodsMap[key]?.name
+            }
+        }
+
+        binding.widgetTheme.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+
+            val theme = themeFromChip(checkedIds[0])
             prefs.theme = theme.ordinal
             initPreview(theme, binding.widgetShadow.isChecked)
             previewAlpha(binding.widgetBgAlpha.value / 100)
@@ -99,9 +110,12 @@ class ChartsWidgetActivity : AppCompatActivity() {
 
         binding.okButton.setOnClickListener {
             setResult(true)
-            val idx = periodChipIds.indexOf(binding.widgetPeriod.chartsPeriod.checkedChipId)
-            if (idx != -1)
-                prefs.period = idx
+            val key =
+                binding.widgetPeriod.findViewById<Chip>(binding.widgetPeriod.checkedChipId)?.tag as? String
+            if (key != null) {
+                prefs.period = key
+                prefs.periodName = widgetTimePeriods.periodsMap[key]?.name
+            }
             updateWidget()
 
             if (widgetExists)
@@ -115,6 +129,11 @@ class ChartsWidgetActivity : AppCompatActivity() {
 
         if (isPinned)
             binding.cancelButton.visibility = View.GONE
+
+        binding.appwidgetRefreshEveryText.text = getString(
+            R.string.appwidget_refresh_every,
+            Stuff.CHARTS_WIDGET_REFRESH_INTERVAL / (1000 * 60)
+        )
 
         initFromPrefs()
 
@@ -137,7 +156,9 @@ class ChartsWidgetActivity : AppCompatActivity() {
         val theme = WidgetTheme.values()[prefs.theme]
         val hasShadow = prefs.shadow
 
-        binding.widgetPeriod.chartsPeriod.check(periodChipIds[prefs.period ?: 0])
+        val checkedChip = binding.widgetPeriod.children.firstOrNull { it.tag == prefs.period }
+            ?: binding.widgetPeriod.children.first()
+        (checkedChip as Chip).isChecked = true
 
         initPreview(theme, hasShadow)
 

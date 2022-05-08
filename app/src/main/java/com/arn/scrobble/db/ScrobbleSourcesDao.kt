@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
-private const val tableName = "scrobbleSources"
 private const val THRESHOLD = 1000 // ms
 
 @Dao
@@ -27,4 +26,8 @@ interface ScrobbleSourcesDao {
 
     @Query("DELETE FROM $tableName")
     fun nuke()
+
+    companion object {
+        const val tableName = "scrobbleSources"
+    }
 }

@@ -48,7 +48,6 @@
     <string name="state_unscrobbled">Unscrobbled</string>
     <string name="state_unrecognised_artist">Artiste non reconnu</string>
     <string name="tap_to_edit">(Appuyez pour modifier)</string>
-    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Appuyer pour modifier ou forcer)</string>
     <string name="recently_scrobbled">Récemment Scrobbled</string>
     <string name="recently_loved">♥ Récemment aimé</string>
     <string name="recents" comment="Short for recently scrobbled">Récents</string>
@@ -93,7 +92,6 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s aujourd\'hui</string>
     <string name="friends">Amis</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
-    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Nécessaires sur les appareils %1$s pour le lancement du scrobbler</string>
     <string name="grant_notification_access">Autoriser l\'accès aux notifications</string>
     <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n\'est lue</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">S\'authentifier avec last.FM</string>
@@ -130,7 +128,6 @@
     <string name="share_this_chart">Partager ce graphique</string>
     <string name="weekly">Hebdomadaire</string>
     <string name="monthly">Mensuel</string>
-    <string name="charts_choose_week">Sélectionner une semaine</string>
     <string name="charts_overall">Global</string>
     <string name="charts_no_data">Aucune donnée pour cette période</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Je me sens chanceux</string>
@@ -156,11 +153,9 @@
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="appwidget_alpha">Opacité de l\'arrière-plan</string>
-    <string name="appwidget_refresh_every">Le widget sera actualisé toutes les 15 minutes</string>
     <string name="primary_color">Couleur principale</string>
     <string name="secondary_color">Couleur secondaire</string>
     <string name="random_theme">Aléatoire à chaque lancement</string>
-    <string name="palette_bg">Utiliser la couleur des pochettes d\'album pour certains arrière-plans</string>
     <string name="edit_name" comment="name for regex pattern">Nom simple (facultatif)</string>
     <string name="edit_regex">Patterne regex</string>
     <string name="edit_regex_replacement">Remplacement regex</string>

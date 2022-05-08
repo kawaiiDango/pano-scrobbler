@@ -13,15 +13,7 @@ object RegexPresets {
                         RegexEdit(
                             pattern = " [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]| ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?",
                             replacement = "",
-                            field = NLService.B_TRACK,
-                        )
-                ),
-        "remastered_album" to (
-                R.string.preset_remastered to
-                        RegexEdit(
-                            pattern = " [(\\[][^()\\[\\]]*?remastere?d?[^()\\[\\]]*[)\\]]| ([/-] )?([(\\[]?\\d+[)\\]]?)? ?remastere?d? ?(version)?([(\\[]?\\d+[)\\]]?)?",
-                            replacement = "",
-                            field = NLService.B_ALBUM,
+                            fields = setOf(NLService.B_TRACK, NLService.B_ALBUM),
                         )
                 ),
         "explicit_track" to (
@@ -29,15 +21,7 @@ object RegexPresets {
                         RegexEdit(
                             pattern = " ([/-] )? ?explicit ?(.*?version)?| [(\\[][^()\\[\\]]*?explicit[^()\\[\\]]*[)\\]]",
                             replacement = "",
-                            field = NLService.B_TRACK,
-                        )
-                ),
-        "explicit_album" to (
-                R.string.preset_explicit to
-                        RegexEdit(
-                            pattern = " ([/-] )? ?explicit ?(.*?version)?| [(\\[][^()\\[\\]]*?explicit[^()\\[\\]]*[)\\]]",
-                            replacement = "",
-                            field = NLService.B_ALBUM,
+                            fields = setOf(NLService.B_TRACK, NLService.B_ALBUM),
                         )
                 ),
         "album_ver_track" to (
@@ -45,7 +29,7 @@ object RegexPresets {
                         RegexEdit(
                             pattern = " ([/-] .*)? ?album version.*| [(\\[][^()\\[\\]]*?album version[^()\\[\\]]*[)\\]]",
                             replacement = "",
-                            field = NLService.B_TRACK,
+                            fields = setOf(NLService.B_TRACK),
                         )
                 )
     )
@@ -53,18 +37,7 @@ object RegexPresets {
     val presetKeys = presets.keys
 
     fun getString(context: Context, key: String): String {
-        @StringRes
-        val fieldRes = when (presets[key]?.second?.field) {
-            NLService.B_ARTIST -> R.string.artist
-            NLService.B_ALBUM -> R.string.album
-            NLService.B_TRACK -> R.string.track
-            NLService.B_ALBUM_ARTIST -> R.string.album_artist
-
-            else -> return "invalid field"
-        }
-
-        return context.getString(presets[key]?.first ?: R.string.edit_presets) +
-                " (${context.getString(fieldRes).lowercase()})"
+        return context.getString(presets[key]?.first ?: R.string.not_found)
     }
 
     fun getPossiblePreset(regexEdit: RegexEdit) = presets[regexEdit.preset]?.second

@@ -1,8 +1,8 @@
 package com.arn.scrobble.charts
 
+import android.transition.Fade
+import android.transition.TransitionManager
 import android.view.View
-import androidx.transition.Fade
-import androidx.transition.TransitionManager
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.FrameChartsListBinding
@@ -11,7 +11,7 @@ import com.arn.scrobble.databinding.FrameChartsListBinding
 class ChartsOverviewAdapter(rootViewBinding: FrameChartsListBinding) :
     ChartsAdapter(rootViewBinding) {
 
-    override val forceDimensions = true
+    override val isHorizontalList = true
 
     override fun populate() {
         if (viewModel.chartsData.isEmpty()) {

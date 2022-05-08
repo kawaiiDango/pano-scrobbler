@@ -80,7 +80,6 @@
     <string name="state_unscrobbled">Scrobble eliminado</string>
     <string name="state_unrecognised_artist">Artista não-reconhecido</string>
     <string name="tap_to_edit">(Toque para editar)</string>
-    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Toque para editar ou forçar)</string>
     <string name="recently_scrobbled">Scrobbles recentes</string>
     <string name="recently_loved">♥ Favoritas recentes</string>
     <string name="recents" comment="Short for recently scrobbled">Recentes</string>
@@ -129,7 +128,6 @@
     <string name="friends">Amigos</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
     <string name="allow_background">Permitir scrobbles em segundo plano</string>
-    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Necessário em dispositivos %1$s, para o scrobbler começar</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para obter metadados da música. Nenhum outro tipo notificação é lida</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Iniciar sessão com last.FM</string>
@@ -169,18 +167,14 @@
     <string name="user_loved" formatted="true" comment="%1= username">%1$s adorou isto</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles até %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
-    <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s a %2$s</string>
-    <string name="weekly_range" formatted="true" comment="%1= date %2= date">semanal (%1$s a %2$s)</string>
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="share_this_chart">Partilhar esta tabela</string>
     <string name="weekly">Semanal</string>
     <string name="monthly">Mensal</string>
-    <string name="charts_choose_week">Escolher uma semana</string>
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Sem dados suficientes</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
-    <string name="charts_no_weekly_charts">Histórico das tabelas semanais indisponível ainda</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">A sentir-me com sorte</string>
     <string name="random_not_found">Nenhuma faixa encontrada</string>
     <string name="loved_track">Faixa favorita</string>
@@ -210,13 +204,10 @@
     <string name="appwidget_show">Exibir</string>
     <string name="light">Claro</string>
     <string name="dark">Escuro</string>
-    <string name="dynamic" comment="Material You wallpaper based theming">Dinâmico (Material You)</string>
     <string name="appwidget_alpha">Opacidade do fundo</string>
-    <string name="appwidget_refresh_every">O widget será atualizado a cada 15 minutos</string>
     <string name="primary_color">Cor principal</string>
     <string name="secondary_color">Cor secundária</string>
     <string name="random_theme">Aleatório a cada inicialização</string>
-    <string name="palette_bg">Usar cor da capa do álbum para alguns fundos</string>
     <string name="edit_name" comment="name for regex pattern">Nome amigável (opcional)</string>
     <string name="edit_regex">Padrão Regex</string>
     <string name="edit_regex_replacement">Regex de substituição</string>
@@ -309,16 +300,6 @@
     <string name="import_lists_keep">Fundir, mantendo edições existentes e lista de bloqueio</string>
     <string name="import_settings">Importar definições</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Propostas de difusão</string>
-    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Para a música atual:
-%1$s
-%2$s
-%3$s
-
-Para o scrobbler:
-%4$s
-%5$s
-
-Podem ser usadas com aplicações como Tasker, Macrodroid, etc."</string>
     <string name="pref_intents">Intenções para Tasker, etc</string>
     <string name="copied">Copiado!</string>
     <string name="lastfm_reauth">Precisa de reiniciar sessão para editar ou apagar scrobbles</string>

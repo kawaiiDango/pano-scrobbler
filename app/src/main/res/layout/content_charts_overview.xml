@@ -1,124 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/chips_charts_period"
         layout="@layout/chips_charts_period" />
 
-    <ScrollView
-        android:id="@+id/charts_overview_scrollview"
+    <com.arn.scrobble.ui.OnlyVerticalSwipeRefreshLayout
+        android:id="@+id/charts_swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/charts_overview_scrollview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <include
-                android:id="@+id/charts_artists_header"
-                layout="@layout/header_with_action" />
-
-            <include
-                android:id="@+id/charts_artists_frame"
-                layout="@layout/frame_charts_list" />
-
-            <include
-                android:id="@+id/charts_albums_header"
-                layout="@layout/header_with_action" />
-
-            <include
-                android:id="@+id/charts_albums_frame"
-                layout="@layout/frame_charts_list" />
-
-            <include
-                android:id="@+id/charts_tracks_header"
-                layout="@layout/header_with_action" />
-
-            <include
-                android:id="@+id/charts_tracks_frame"
-                layout="@layout/frame_charts_list" />
-
-            <include
-                android:id="@+id/charts_sparkline_header"
-                layout="@layout/header_with_action" />
-
-            <FrameLayout
-                android:id="@+id/charts_sparkline_frame"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp">
+                android:orientation="vertical"
+                android:paddingBottom="24dp">
 
-                <com.robinhood.spark.SparkView
-                    android:id="@+id/charts_sparkline"
+                <include
+                    android:id="@+id/charts_artists_header"
+                    layout="@layout/header_with_action" />
+
+                <include
+                    android:id="@+id/charts_artists_frame"
+                    layout="@layout/frame_charts_list" />
+
+                <include
+                    android:id="@+id/charts_albums_header"
+                    layout="@layout/header_with_action" />
+
+                <include
+                    android:id="@+id/charts_albums_frame"
+                    layout="@layout/frame_charts_list" />
+
+                <include
+                    android:id="@+id/charts_tracks_header"
+                    layout="@layout/header_with_action" />
+
+                <include
+                    android:id="@+id/charts_tracks_frame"
+                    layout="@layout/frame_charts_list" />
+
+                <include
+                    android:id="@+id/charts_sparkline_header"
+                    layout="@layout/header_with_action" />
+
+                <FrameLayout
+                    android:id="@+id/charts_sparkline_frame"
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
-                    android:layout_marginStart="40dp"
-                    android:contentDescription="@string/graph"
-                    app:spark_lineColor="?colorSecondary"
-                    app:spark_animateChanges="true"
-                    app:spark_scrubEnabled="true"
-                    app:spark_lineWidth="6dp" />
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="20dp">
+
+                    <com.robinhood.spark.SparkView
+                        android:id="@+id/charts_sparkline"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:paddingStart="40dp"
+                        android:contentDescription="@string/graph"
+                        app:spark_animateChanges="true"
+                        app:spark_lineColor="?colorSecondary"
+                        app:spark_lineWidth="6dp"
+                        app:spark_scrubEnabled="true" />
+
+                    <TextView
+                        android:id="@+id/charts_sparkline_tick_top"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|start"
+                        tools:text="10000" />
+
+                    <TextView
+                        android:id="@+id/charts_sparkline_tick_bottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|start"
+                        tools:text="000" />
+
+                    <TextView
+                        android:id="@+id/charts_sparkline_scrub_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:alpha="0.80"
+                        android:background="@drawable/shape_scrub_rounded_bg"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textColor="?colorOnPrimaryContainer"
+                        android:visibility="gone"
+                        tools:text="000 scrobbles" />
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/charts_sparkline_progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        app:showAnimationBehavior="none" />
+
+                </FrameLayout>
+
+                <com.uncopt.android.widget.text.justify.JustifiedTextView
+                    android:id="@+id/charts_sparkline_labels"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="60dp"
+                    android:layout_marginEnd="20dp" />
 
                 <TextView
-                    android:id="@+id/charts_sparkline_tick_top"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/charts_scrub_message"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top|start"
-                    tools:text="10000" />
+                    android:layout_marginStart="60dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/graph_scrub_msg"
+                    android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/charts_sparkline_tick_bottom"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|start"
-                    tools:text="000" />
 
-                <TextView
-                    android:id="@+id/charts_sparkline_scrub_info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|top"
-                    android:paddingVertical="4dp"
-                    android:paddingHorizontal="10dp"
-                    android:background="@drawable/shape_scrub_rounded_bg"
-                    android:textColor="?colorOnPrimaryContainer"
-                    android:alpha="0.80"
-                    android:textAppearance="?textAppearanceTitleSmall"
-                    android:visibility="gone"
-                    tools:text="000 scrobbles" />
+                <include
+                    android:id="@+id/charts_tag_cloud_header"
+                    layout="@layout/header_with_action"
+                    android:visibility="gone" />
 
-                <com.google.android.material.progressindicator.CircularProgressIndicator
-                    android:id="@+id/charts_sparkline_progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <com.arn.scrobble.ui.SquareFrameLayout
+                    android:id="@+id/charts_tag_cloud_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="350dp"
                     android:layout_gravity="center"
-                    app:showAnimationBehavior="none" />
+                    android:layout_marginHorizontal="4dp"
+                    android:visibility="gone"
+                    app:maxSize="370dp">
 
-            </FrameLayout>
+                    <ImageView
+                        android:id="@+id/charts_tag_cloud"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/tag_cloud"
+                        android:visibility="invisible" />
 
-            <com.uncopt.android.widget.text.justify.JustifiedTextView
-                android:id="@+id/charts_sparkline_labels"
-                android:layout_marginStart="60dp"
-                android:layout_marginEnd="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/charts_tag_cloud_progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:indeterminate="false"
+                        android:max="1000"
+                        app:showAnimationBehavior="none" />
 
-            <TextView
-                android:id="@+id/charts_scrub_message"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/graph_scrub_msg" />
-        </LinearLayout>
-    </ScrollView>
+                    <TextView
+                        android:id="@+id/charts_tag_cloud_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/not_enough_data"
+                        android:textAppearance="?textAppearanceHeadlineSmall"
+                        android:visibility="gone" />
+
+                </com.arn.scrobble.ui.SquareFrameLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+    </com.arn.scrobble.ui.OnlyVerticalSwipeRefreshLayout>
 </LinearLayout>

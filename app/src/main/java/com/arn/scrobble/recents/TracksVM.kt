@@ -12,9 +12,11 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pending.PendingListData
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.PendingScrService
+import com.hadilq.liveevent.LiveEvent
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -22,39 +24,45 @@ import java.util.*
 
 
 class TracksVM(application: Application) : AndroidViewModel(application) {
-    val tracksReceiver by lazy { MutableLiveData<PaginatedResult<Track>>() }
+    val tracksReceiver by lazy { LiveEvent<PaginatedResult<Track>>() }
     val firstScrobbledDate by lazy { MutableLiveData<Date>() }
     val tracks by lazy { mutableListOf<Track>() }
     val deletedTracksStringSet by lazy { mutableSetOf<String>() }
-    val listenerTrend by lazy { MutableLiveData<MutableList<Int>>() }
-    private var lastHeroInfoAsyncTask: LFMRequester? = null
+    val listenerTrendReceiver by lazy { LiveEvent<List<Int>>() }
+    private var lastHeroInfoTask: Job? = null
     val pkgMap = mutableMapOf<Long, String>()
-    val paletteColors by lazy { MutableLiveData(PaletteColors()) }
+    private val urlToListenerTrendMap = mutableMapOf<String, List<Int>?>()
+    val paletteColors by lazy { MutableLiveData<PaletteColors>() }
 
     private val pendingTracks by lazy { MutableLiveData<PendingListData>() }
     private val mutex = Mutex()
 
-    //for room's built in livedata to work, data must be inserted, deleted from the same dao object
     var username: String? = null
     var page = 1
     var totalPages = 1
-    var loadedCached = false
-    var loadedNw = false
+    private var loadedCached = false
     var selectedPos = 1
-    var toTime = 0L
+    var toTime: Long? = null
 
 
     fun loadRecents(page: Int) {
         this.page = page
         LFMRequester(getApplication(), viewModelScope, tracksReceiver)
-            .getRecents(page, toTime, !loadedCached, username)
+            .getRecents(
+                page,
+                username,
+                cached = !loadedCached,
+                to = toTime ?: -1L,
+                includeNowPlaying = toTime == null,
+                doDeltaIndex = page == 1 && toTime == null && username == null // todo: && theres no unsubmitted pending scrobbles
+            )
         loadedCached = true
     }
 
     fun loadLoves(page: Int) {
         this.page = page
         LFMRequester(getApplication(), viewModelScope, tracksReceiver)
-            .getLoves(page, !loadedCached, username)
+            .getLoves(page, username, cached = !loadedCached)
         loadedCached = true
     }
 
@@ -68,16 +76,28 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadFirstScrobbleDate(pr: PaginatedResult<Track>) {
-        LFMRequester(getApplication(), viewModelScope, firstScrobbledDate).getTrackFirstScrobble(pr)
+        LFMRequester(getApplication(), viewModelScope, firstScrobbledDate).getTrackFirstScrobble(
+            pr,
+            username
+        )
     }
 
     fun loadListenerTrend(url: String?) {
-        lastHeroInfoAsyncTask?.cancel()
+        lastHeroInfoTask?.cancel()
         if (url != null) {
-            lastHeroInfoAsyncTask =
-                LFMRequester(getApplication(), viewModelScope, listenerTrend).apply {
-                    getListenerTrend(url)
-                }
+            if (url in urlToListenerTrendMap) {
+                listenerTrendReceiver.value = urlToListenerTrendMap[url]
+                return
+            }
+
+            lastHeroInfoTask = viewModelScope.launch(Dispatchers.IO) {
+                val trend = LFMRequester(getApplication(), viewModelScope)
+                    .execHere<List<Int>> {
+                        getListenerTrend(url)
+                    }
+                urlToListenerTrendMap[url] = trend
+                listenerTrendReceiver.postValue(trend)
+            }
         }
     }
 

@@ -12,7 +12,9 @@
 
 <img src="https://i.imgur.com/XGmtOP5.jpg" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/m1lbrU6l.jpg" alt="friends" width="200"/> <img src="https://i.imgur.com/7kETocF.jpg" alt="charts" width="200"/>
 
-<a href="https://www.dropbox.com/sh/8saq9h4m2744x55/AABwpqEKbpTLWoZ8-vXvA5vda?dl=0">Download latest apk</a> (Do not use this if the play store link works for you)
+### PC app?
+Pano Scrobbler works on Windows 11 with WSA. It scrobbles from other Android apps.
+Buttons in notifications don't work as expected. This is a WSA bug.
 
 #### Features:
 - No ADs ever
@@ -25,7 +27,6 @@
 - Work with scrobbles (love a track, cancel a scrobble)
 - Edit recent scrobbles for free
 - Delete existing scrobbles
-- Offline cacheing and scrobbling
 - Check what your friends are listening to and view their profiles
 - Scrobble a song from mic or the S app (Android 8+)
 - Supports TVs (Oreo and lower needs adb commands)
@@ -41,7 +42,7 @@
 - Add/remove personal tags
 - Customizable homescreen widget
 - Mix and match themes
-- Block metadata from scrobbling
+- Block artists/tracks and auto skip or mute
 - Pattern edits (upto 30)
 - Show icons and search in apps you scrobbled from
 

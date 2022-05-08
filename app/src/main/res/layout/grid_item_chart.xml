@@ -1,74 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.arn.scrobble.ui.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:foreground="?selectableItemBackground"
+    android:layout_height="wrap_content"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?selectableItemBackground">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/chart_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        app:shapeAppearance="@style/roundedCorners"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/topRoundedCorners"
         tools:srcCompat="@drawable/vd_charts" />
 
-    <LinearLayout
-        android:id="@+id/chart_info_container"
-        android:layout_width="match_parent"
+    <View
+        android:id="@+id/chart_info_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_rounded_border_gentle_bottom_rounded"
+        app:layout_constraintBottom_toBottomOf="@id/chart_info_flow"
+        app:layout_constraintEnd_toEndOf="@id/chart_info_flow"
+        app:layout_constraintStart_toStartOf="@id/chart_info_flow"
+        app:layout_constraintTop_toTopOf="@+id/chart_info_flow" />
+
+    <com.arn.scrobble.ui.ScalableDrawableTextView
+        android:id="@+id/chart_info_title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@drawable/gradient_dark_overlay_nav_rounded"
-        android:paddingTop="@dimen/gradient_container_top_padding"
-        android:orientation="vertical">
+        android:ellipsize="end"
+        android:gravity="bottom"
+        android:maxLines="1"
+        android:textAppearance="?textAppearanceTitleSmall"
+        app:compoundDrawableHeight="@dimen/stonks_icon_size"
+        app:compoundDrawableWidth="@dimen/stonks_icon_size"
+        tools:text="Title title" />
 
-        <TextView
-            android:id="@+id/chart_info_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:ellipsize="end"
-            android:gravity="bottom"
-            android:maxLines="1"
-            android:paddingHorizontal="8dp"
-            android:textAppearance="?textAppearanceTitleSmall"
-            tools:text="Title title" />
+    <TextView
+        android:id="@+id/chart_info_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-1dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?textAppearanceBodyLarge"
+        android:textSize="13sp"
+        tools:text="subtit subtit" />
 
-        <TextView
-            android:id="@+id/chart_info_subtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-1dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:paddingHorizontal="8dp"
-            android:textAppearance="?textAppearanceBodyLarge"
-            android:textSize="13sp"
-            tools:text="subtit subtit" />
+    <TextView
+        android:id="@+id/chart_info_scrobbles"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-1dp"
+        android:singleLine="true"
+        android:textAppearance="?textAppearanceBodySmall"
+        tools:text="39 scrobbles" />
 
-        <TextView
-            android:id="@+id/chart_info_scrobbles"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-1dp"
-            android:maxLines="1"
-            android:paddingHorizontal="8dp"
-            android:textAppearance="?textAppearanceBodySmall"
-            tools:text="39 scrobbles" />
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/chart_info_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:alpha="0.68"
+        app:trackCornerRadius="@dimen/corner_radius"
+        app:trackColor="@android:color/transparent"
+        app:indicatorColor="?colorOnBackground"
+        android:scaleY="0.45"
+        tools:progress="50" />
 
-        <ProgressBar
-            android:id="@+id/chart_info_bar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-3dp"
-            android:scaleY="0.1"
-            android:paddingHorizontal="8dp"
-            tools:progress="50"
-            android:progressDrawable="@drawable/shape_chart_bar" />
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/chart_info_flow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:constraint_referenced_ids="chart_info_title, chart_info_subtitle, chart_info_scrobbles, chart_info_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chart_img" />
 
-    </LinearLayout>
-</com.arn.scrobble.ui.SquareFrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

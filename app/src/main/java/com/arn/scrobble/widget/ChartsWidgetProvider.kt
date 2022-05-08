@@ -111,10 +111,13 @@ internal fun updateAppWidget(
     rv.setEmptyView(R.id.appwidget_list, R.id.appwidget_status)
 
 
-    if (period == null || WidgetPrefs(context).chartsData(tab, period).data == null)
+    if (period == null || WidgetPrefs(context).chartsData(tab, period).dataJson == null)
         rv.setInt(R.id.appwidget_status, "setText", R.string.appwidget_loading)
-    else
-        rv.setInt(R.id.appwidget_status, "setText", R.string.charts_no_data)
+    else {
+        val text = context.getString(R.string.charts_no_data) + "\n\n" +
+                prefs.periodName
+        rv.setTextViewText(R.id.appwidget_status, text)
+    }
 
 
     // Here we setup the a pending intent template. Individuals items of a collection

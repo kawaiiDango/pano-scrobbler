@@ -144,7 +144,7 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
     }
 
     override fun onItemClick(view: View, position: Int) {
-        if (view.id == R.id.edits_delete)
+        if (view.id == R.id.delete)
             viewModel.delete(position)
         else {
             showAddEditDialog(viewModel.blockedMetadata[position])

@@ -23,6 +23,8 @@ import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import com.google.android.material.textview.MaterialTextView;
+
 import org.jetbrains.annotations.NotNull;
 
 
@@ -31,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
  * The TextView has a ScrollingMovementMethod by default. You can change the MovementMethod,
  * but you should not set it to null.
  */
-public class JustifiedTextView extends androidx.appcompat.widget.AppCompatTextView implements Justify.Justified {
+public class JustifiedTextView extends MaterialTextView implements Justify.Justified {
 
     @SuppressWarnings("unused")
     public JustifiedTextView(final @NotNull Context context) {

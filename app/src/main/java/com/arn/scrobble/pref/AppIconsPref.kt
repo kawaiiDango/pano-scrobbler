@@ -63,8 +63,11 @@ class AppIconsPref(context: Context, attrs: AttributeSet?, defAttrs: Int, defSty
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
-            val totalWidth = context.resources.displayMetrics.widthPixels -
-                    binding.root.paddingLeft - binding.root.paddingRight - binding.appListAdd.measuredWidth
+            var totalWidth = context.resources.displayMetrics.widthPixels -
+                    binding.root.paddingLeft - binding.root.paddingRight -
+                    binding.appListAdd.measuredWidth
+            if (isIconSpaceReserved)
+                totalWidth -= 32.dp
 
             val nIcons = (totalWidth / wPx) - 1
             for (i in 0 until minOf(nIcons, packageNames.size)) {

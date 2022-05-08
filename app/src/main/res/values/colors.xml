@@ -5,10 +5,10 @@
     <color name="pinkExtraDark">#66002E</color>
     <color name="chipBgOnBlack">#1a1a1a</color>
     <color name="statusBarScrim">#32000000</color>
-    <color name="darkGrey">#212121</color>
     <color name="gradient_launcher_fg">#fff</color>
     <color name="shortcut_launcher_fg">#fff</color>
     <color name="gradient_shortcut_fg">#fff</color>
+    <color name="splash_fg">@color/pinkDark</color>
 
 <!--    <color name="pinkNoti">#ec407a</color>-->
 <!--    <color name="purpleOutline">#66c79bcf</color>-->
@@ -27,4 +27,19 @@
     <color name="pinkPrimaryContainer">#8B0E45</color>
     <color name="pinkPrimary_t">#45FFB1C7</color>
     <color name="pinkSurfaceVariant">#45EBC4CF</color>
+
+    <color name="img_border">#B3000000</color>
+    <color name="overlay_center">#A6FFFFFF</color>
+    <color name="overlay_end">#CCFFFFFF</color>
+    <color name="overlay_hero_center">#B3FFFFFF</color>
+    <color name="overlay_hero_end">#D9FFFFFF</color>
+    <color name="background_pure">#FFF</color>
+    <color name="foreground_pure">#000</color>
+    <color name="background_gray">#dedede</color>
+    <color name="boring_ripple">#1A000000</color>
+    <color name="stonks_up">@color/mdcolor_green_500</color>
+    <color name="stonks_down">@color/mdcolor_red_500</color>
+    <color name="stonks_new">@color/mdcolor_blue_500</color>
+    <color name="stonks_neutral">#757575</color>
+
 </resources>

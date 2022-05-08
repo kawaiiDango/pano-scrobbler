@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/vd_launcher_fg">
+    android:drawable="@drawable/vd_launcher_fg_splash">
     <target
         android:animation="@animator/splash_group_animator"
         android:name="group"/>

@@ -33,6 +33,7 @@
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/edits_delete"
         android:layout_toEndOf="@+id/edits_img"
+        android:textStyle="bold"
         android:ellipsize="end"
         android:gravity="start"
         android:maxLines="1"

@@ -12,16 +12,16 @@ import de.umass.lastfm.scrobble.ScrobbleResult
 open class Lastfm : Scrobblable() {
     override var apiRoot = Stuff.LASTFM_API_ROOT
 
-    protected open val apiKey = Tokens.LAST_KEY
-    protected open val secret = Tokens.LAST_SECRET
+    protected open val apiKey = Stuff.LAST_KEY
+    protected open val secret = Stuff.LAST_SECRET
 
-    val session by lazy {
+    val session: Session by lazy {
         Session.createCustomRootSession(
             apiRoot,
             apiKey,
             secret,
             token
-        )
+        ).also { it.isTlsNoVerify = tlsNoVerify }
     }
 
     override fun updateNowPlaying(scrobbleData: ScrobbleData): ScrobbleResult {

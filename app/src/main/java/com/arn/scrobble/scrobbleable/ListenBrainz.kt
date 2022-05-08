@@ -18,6 +18,9 @@ import java.net.URL
 class ListenBrainz : Scrobblable() {
     override var apiRoot = Stuff.LISTENBRAINZ_API_ROOT
 
+    private val client
+        get() = if (tlsNoVerify) LFMRequester.okHttpClientTlsNoVerify else LFMRequester.okHttpClient
+
     private fun submitListens(
         scrobbleDatas: List<ScrobbleData>,
         listenType: String
@@ -50,7 +53,7 @@ class ListenBrainz : Scrobblable() {
                 )
                 .build()
 
-            return LFMRequester.okHttpClient.newCall(request).execute()
+            return client.newCall(request).execute()
                 .use { response ->
                     var errMsg = ""
                     val bodyJson = JSONObject(response.body!!.string())
@@ -102,7 +105,7 @@ class ListenBrainz : Scrobblable() {
                 // this works even without the token or an incorrect token
                 .build()
 
-            return LFMRequester.okHttpClient.newCall(request).execute().use { response ->
+            return client.newCall(request).execute().use { response ->
                 if (response.isSuccessful)
                     JSONObject(response.body!!.string())
                 else
@@ -118,21 +121,16 @@ class ListenBrainz : Scrobblable() {
         val url = URL("${apiRoot}1/validate-token")
 
         var username: String? = null
-        try {
-            val request = Request.Builder()
-                .url(url)
-                .header("Authorization", "token $token")
-                .build()
-            LFMRequester.okHttpClient.newCall(request).execute().use { response ->
-                if (response.isSuccessful) {
-                    val respJson = JSONObject(response.body!!.string())
-                    if (respJson.getBoolean("valid"))
-                        username = respJson.getString("user_name")
-                }
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", "token $token")
+            .build()
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful) {
+                val respJson = JSONObject(response.body!!.string())
+                if (respJson.getBoolean("valid"))
+                    username = respJson.getString("user_name")
             }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
 
         return username

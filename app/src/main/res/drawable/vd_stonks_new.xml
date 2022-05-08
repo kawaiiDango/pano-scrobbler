@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/stonks_new">
+    <group
+        android:pivotX="12"
+        android:pivotY="12"
+        android:scaleY="0.7"
+        android:scaleX="0.7">
+    <path
+        android:fillColor="#000"
+        android:pathData="M12,1L9,9L1,12L9,15L12,23L15,15L23,12L15,9L12,1Z" />
+    </group>
+</vector>

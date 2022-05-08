@@ -33,6 +33,7 @@ class SessListener(
     private val loggedIn
         get() = prefs.lastfmSessKey != null
     val packageMap = mutableMapOf<String, HashesAndTimes>()
+    private var mutedHash: Int? = null
 
     init {
         prefs.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -85,6 +86,43 @@ class SessListener(
 //        removeSessions(tokens)
     }
 
+    fun findControllersByPackage(packageName: String) =
+        controllersMap.values.filter { it.first.packageName == packageName }.map { it.first }
+
+    private fun findCallbackByHash(hash: Int) =
+        controllersMap.values.firstOrNull { it.second.hashesAndTimes.lastScrobbleHash == hash }?.second
+
+    fun findControllersByHash(hash: Int) =
+        controllersMap.values.filter { it.second.hashesAndTimes.lastScrobbleHash == hash }.map { it.first }
+
+    fun mute(hash: Int) {
+        // if pano didnt mute this, dont unmute later
+        // lollipop requires reflection, and i dont want to use that
+        if (mutedHash == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && audioManager.isStreamMute(
+                AudioManager.STREAM_MUSIC
+            )
+        )
+            return
+
+        val callback = findCallbackByHash(hash)
+        if (callback != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                audioManager.adjustStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.ADJUST_MUTE,
+                    0
+                )
+                Stuff.log("mute: done")
+
+            } else {
+                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true)
+            }
+
+            mutedHash = hash
+            callback.isMuted = true
+        }
+    }
+
     @Synchronized
     fun removeSessions(
         tokensToKeep: Set<MediaSession.Token>,
@@ -111,7 +149,7 @@ class SessListener(
 
     inner class MyCallback(
         private val packageName: String,
-        private val hashesAndTimes: HashesAndTimes,
+        val hashesAndTimes: HashesAndTimes,
         private val token: MediaSession.Token
     ) : Callback() {
 
@@ -123,6 +161,7 @@ class SessListener(
         private var title = ""
         private var albumArtist = ""
         private var duration = -1L
+        var isMuted = false
 
         private val syntheticStateHandler = Handler(handler.looper)
 
@@ -147,6 +186,10 @@ class SessListener(
 
             hashesAndTimes.lastScrobbleHash = currHash
             hashesAndTimes.lastScrobbledHash = 0
+
+            // if another player tried to scrobble, unmute whatever was muted
+            // if self was muted, clear the muted hash too
+            unmute(clearMutedHash = isMuted)
         }
 
         private fun scheduleSyntheticStateIfNeeded() {
@@ -223,6 +266,10 @@ class SessListener(
                     // Kroger () [] ~ Advertisement
                     if (albumArtist.isEmpty() && album.isEmpty() && title.isNotEmpty()) {
                         resetMeta()
+                        if (BuildConfig.DEBUG) { // this probably also mutes podcasts but thats fine for me
+                            mutedHash = currHash
+                            mute(currHash)
+                        }
                         return
                     }
                 }
@@ -243,6 +290,9 @@ class SessListener(
                 this.albumArtist = albumArtist
                 this.duration = duration
                 currHash = Stuff.genHashCode(artist, album, title, packageName)
+
+                if (mutedHash != null && currHash != mutedHash && lastState == PlaybackState.STATE_PLAYING)
+                    unmute(clearMutedHash = isMuted)
 
                 // scrobbled when ad was playing
                 if (onlyDurationUpdated && packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)) {
@@ -293,7 +343,13 @@ class SessListener(
                     Stuff.log("paused timePlayed=${hashesAndTimes.timePlayed}")
                 }
                 PlaybackState.STATE_PLAYING -> {
+                    if (mutedHash != null && currHash != mutedHash)
+                        unmute(clearMutedHash = isMuted)
+
                     if (title != "" && artist != "") {
+
+                        if (!isMuted && currHash == mutedHash)
+                            mute(currHash)
                         // ignore state=playing, pos=lowValue spam
                         if (lastState == state && hashesAndTimes.lastScrobbleHash == currHash &&
                             System.currentTimeMillis() - hashesAndTimes.lastScrobbleTime < Stuff.START_POS_LIMIT * 2
@@ -342,11 +398,31 @@ class SessListener(
             if (packageName in Stuff.needSyntheticStates)
                 syntheticStateHandler.removeCallbacksAndMessages(null)
             handler.remove(hashesAndTimes.lastScrobbleHash)
+            if (isMuted)
+                unmute(clearMutedHash = false)
         }
 
         fun stop() {
             pause()
             syntheticStateHandler.removeCallbacksAndMessages(null)
+        }
+
+        private fun unmute(clearMutedHash: Boolean) {
+            if (mutedHash != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    audioManager.adjustStreamVolume(
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_UNMUTE,
+                        0
+                    )
+                    Stuff.log("unmute: done")
+                } else {
+                    audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false)
+                }
+                if (clearMutedHash)
+                    mutedHash = null
+                isMuted = false
+            }
         }
 
         private fun resetMeta() {

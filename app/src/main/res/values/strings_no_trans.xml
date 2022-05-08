@@ -7,7 +7,6 @@
     <string name="github_link" translatable="false">https://github.com/kawaiiDango/pScrobbler</string>
     <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
     <string name="privacy_policy_link" translatable="false">https://telegra.ph/Pano-Scrobbler-Privacy-Policy-08-17</string>
-    <string name="last_week" translatable="false">Last.week</string>
     <string name="lastfm" translatable="false">LastFM</string>
     <string name="librefm" translatable="false">LibreFM</string>
     <string name="gnufm" translatable="false">GNU FM</string>
@@ -22,7 +21,6 @@
     <string name="preset_album_version" translatable="false">Album version</string>
 
 <!-- strings for features not finalized  -->
-
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
 
 </resources>

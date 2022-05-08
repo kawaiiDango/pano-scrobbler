@@ -8,71 +8,65 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp"
         android:background="@android:color/transparent"
-        app:liftOnScroll="false"
-        android:touchscreenBlocksFocus="false">
+        android:touchscreenBlocksFocus="false"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/search_term"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="?textInputOutlinedDenseStyle"
-            app:hintEnabled="false"
             android:layout_marginHorizontal="10dp"
-            app:layout_scrollFlags="enterAlways|scroll|snap"
             android:visibility="gone"
-            tools:visibility="visible"
-            app:endIconMode="clear_text"
             app:endIconDrawable="@drawable/vd_cancel"
-            app:startIconDrawable="@drawable/vd_search">
+            app:endIconMode="clear_text"
+            app:hintEnabled="false"
+            app:layout_scrollFlags="enterAlways|scroll|snap"
+            app:startIconDrawable="@drawable/vd_search"
+            tools:visibility="visible">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/search_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/search"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:imeOptions="actionSearch"
-                android:contentDescription="@string/search"
                 android:singleLine="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAppearance="?textAppearanceHeadlineSmall"
+        android:visibility="gone"
+        tools:text="0 saved edits"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/block_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <TextView
-            android:id="@+id/empty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textAppearance="?textAppearanceHeadlineMedium"
-            android:visibility="gone"
-            tools:text="0 saved edits"
-            tools:visibility="visible" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/block_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:visibility="invisible"
-            android:layoutAnimation="@anim/layout_animation_slide_up" />
-
-    </FrameLayout>
+        android:layoutAnimation="@anim/layout_animation_slide_up"
+        android:scrollbars="vertical"
+        android:visibility="invisible"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/block_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/vd_add_borderless"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:contentDescription="@string/add" />
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:contentDescription="@string/add"
+        android:src="@drawable/vd_add_borderless"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -33,18 +33,18 @@
                 android:layout_weight="1"
                 android:textAppearance="?textAppearanceTitleLarge"
                 android:textColor="?colorPrimary"
-                android:textIsSelectable="true"
                 tools:text="title" />
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/tag_info_link"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:contentDescription="@string/more_info"
                 android:tooltipText="@string/more_info"
-                app:srcCompat="@drawable/vd_open_in_new"
-                app:tint="?colorSecondary" />
+                app:icon="@drawable/vd_open_in_new"
+                app:strokeWidth="0dp"
+                app:iconTint="?colorSecondary" />
         </LinearLayout>
 
         <FrameLayout

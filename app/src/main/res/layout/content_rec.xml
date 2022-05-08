@@ -5,12 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.arn.scrobble.ui.CircleProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/rec_progress"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
@@ -19,24 +17,29 @@
         android:contentDescription="@string/scrobble_from_mic"
         android:focusable="true"
         android:foreground="@drawable/ripple_circle"
+        android:indeterminate="false"
+        android:max="1000"
+        app:hideAnimationBehavior="none"
+        app:indicatorSize="200dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:progressBarThickness="4dp"
-        app:progressbarColor="?colorSecondary" />
+        app:showAnimationBehavior="none"
+        app:showDelay="0"
+        app:trackColor="@color/csl_highlight" />
 
     <TextView
         android:id="@+id/rec_status"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="10dp"
         android:textAlignment="center"
         android:textSize="16sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rec_progress"
         tools:text="status" />
 
@@ -61,8 +64,8 @@
         android:importantForAccessibility="no"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/vd_wave_simple"
         app:tint="?colorSecondary" />
@@ -74,7 +77,6 @@
         android:layout_marginTop="16dp"
         android:padding="8dp"
         android:text="@string/shazam_scrobbling"
-        android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

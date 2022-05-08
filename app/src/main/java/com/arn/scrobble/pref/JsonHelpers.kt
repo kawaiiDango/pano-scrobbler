@@ -3,10 +3,7 @@ package com.arn.scrobble.pref
 import android.util.JsonReader
 import android.util.JsonToken
 import android.util.JsonWriter
-import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.db.ScrobbleSource
-import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.db.*
 
 
 object JsonHelpers {
@@ -71,7 +68,7 @@ object JsonHelpers {
             edit.name?.let { name(RegexEdit::name.name).value(it) }
             edit.pattern?.let { name(RegexEdit::pattern.name).value(it) }
             name(RegexEdit::replacement.name).value(edit.replacement)
-            edit.field?.let { name(RegexEdit::field.name).value(it) }
+            edit.fields?.let { name("field").value(Converters.toCommaSeperatedString(it)) }
 
             name(RegexEdit::replaceAll.name).value(edit.replaceAll)
             name(RegexEdit::caseSensitive.name).value(edit.caseSensitive)
@@ -95,7 +92,7 @@ object JsonHelpers {
                         RegexEdit::name.name -> edit.name = nextString()
                         RegexEdit::pattern.name -> edit.pattern = nextString()
                         RegexEdit::replacement.name -> edit.replacement = nextString()
-                        RegexEdit::field.name -> edit.field = nextString()
+                        "field" -> edit.fields = Converters.fromCommaSeperatedString(nextString())
                         RegexEdit::replaceAll.name -> edit.replaceAll = nextBoolean()
                         RegexEdit::caseSensitive.name -> edit.caseSensitive = nextBoolean()
                         RegexEdit::continueMatching.name -> edit.continueMatching = nextBoolean()
@@ -115,6 +112,8 @@ object JsonHelpers {
             name(BlockedMetadata::album.name).value(blockedMetadata.album)
             name(BlockedMetadata::albumArtist.name).value(blockedMetadata.albumArtist)
             name(BlockedMetadata::artist.name).value(blockedMetadata.artist)
+            name(BlockedMetadata::skip.name).value(blockedMetadata.skip)
+            name(BlockedMetadata::mute.name).value(blockedMetadata.mute)
             endObject()
         }
     }
@@ -134,6 +133,8 @@ object JsonHelpers {
                         BlockedMetadata::albumArtist.name -> blockedMetadata.albumArtist =
                             nextString()
                         BlockedMetadata::artist.name -> blockedMetadata.artist = nextString()
+                        BlockedMetadata::skip.name -> blockedMetadata.skip = nextBoolean()
+                        BlockedMetadata::mute.name -> blockedMetadata.mute = nextBoolean()
                     }
                 }
             }

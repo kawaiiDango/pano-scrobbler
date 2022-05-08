@@ -43,6 +43,9 @@ public class Session {
 	private String key;
 	private String apiRootUrl = Caller.DEFAULT_API_ROOT;
 	private boolean subscriber;
+    private Caller.CacheStrategy cacheStrategy = Caller.CacheStrategy.CACHE_FIRST;
+    private Result result;
+    private boolean tlsNoVerify = false;
 
 	private Session() {
 	}
@@ -108,6 +111,31 @@ public class Session {
 
     public String getApiRootUrl() {
         return apiRootUrl;
+    }
+
+    public Caller.CacheStrategy getCacheStrategy() {
+        return cacheStrategy;
+    }
+
+    public void setCacheStrategy(Caller.CacheStrategy cacheStrategy) {
+        this.cacheStrategy = cacheStrategy;
+    }
+
+    public Result getResult() {
+        return result;
+    }
+
+    public void setResult(Result result) {
+        if (result != null)
+            this.result = result.copyWithoutDocument();
+    }
+
+    public boolean isTlsNoVerify() {
+        return tlsNoVerify;
+    }
+
+    public void setTlsNoVerify(boolean tlsNoVerify) {
+        this.tlsNoVerify = tlsNoVerify;
     }
 
 	@Override

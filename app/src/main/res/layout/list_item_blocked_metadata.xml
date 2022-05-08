@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/blocked_metadata_list_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="40dp"
+    android:background="?selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:nextFocusRight="@id/delete"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingVertical="8dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/track"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="1"
+            android:paddingHorizontal="2dp"
+            android:textAppearance="?textAppearanceBody1"
+            android:textColor="?colorTertiary"
+            android:textStyle="bold"
+            tools:drawableStartCompat="@drawable/vd_note"
+            tools:text="Title title" />
+
+        <TextView
+            android:id="@+id/artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="1"
+            android:paddingHorizontal="2dp"
+            android:textAppearance="?textAppearanceBody1"
+            tools:drawableStartCompat="@drawable/vd_mic"
+            tools:text="Title title" />
+
+        <TextView
+            android:id="@+id/album"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="1"
+            android:paddingHorizontal="2dp"
+            android:textAppearance="?textAppearanceBody1"
+            tools:drawableStartCompat="@drawable/vd_album"
+            tools:text="Title title" />
+
+        <TextView
+            android:id="@+id/album_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="1"
+            android:paddingHorizontal="2dp"
+            android:textAppearance="?textAppearanceBody1"
+            tools:drawableStartCompat="@drawable/vd_album_artist"
+            tools:text="Title title" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/action"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:tint="?colorSecondary"
+        tools:srcCompat="@drawable/vd_skip" />
+
+    <ImageButton
+        android:id="@+id/delete"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="8dp"
+        android:contentDescription="@string/delete"
+        android:focusable="true"
+        android:gravity="top|end"
+        android:nextFocusLeft="@id/blocked_metadata_list_item"
+        android:nextFocusRight="@id/blocked_metadata_list_item"
+        android:scaleX="1.3"
+        android:scaleY="1.3"
+        app:srcCompat="@drawable/vd_delete" />
+
+</LinearLayout>
+
+

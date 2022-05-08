@@ -9,13 +9,12 @@
     <dimen name="list_item_padding">8dp</dimen>
     <dimen name="nav_header_height">196dp</dimen>
     <dimen name="hero_overlay_height">130dp</dimen>
-    <dimen name="graph_margin_end">2dp</dimen>
-    <dimen name="graph_margin_details">15sp</dimen>
+    <dimen name="graph_margin_details">20sp</dimen>
     <dimen name="coordinator_padding">0dp</dimen>
-    <dimen name="grid_size">180dp</dimen>
-    <dimen name="big_grid_size">180dp</dimen>
+    <dimen name="grid_size">200dp</dimen>
+    <dimen name="max_grid_size">350dp</dimen>
+    <dimen name="min_grid_size">100dp</dimen>
     <dimen name="gradient_container_top_padding">40dp</dimen>
-    <dimen name="random_container_max_width">400dp</dimen>
     <dimen name="first_things_margin">10dp</dimen>
     <dimen name="recents_overlay_rotate">10</dimen>
     <dimen name="corner_radius">10dp</dimen>
@@ -23,5 +22,10 @@
     <dimen name="album_text_height">20sp</dimen>
     <dimen name="divider_inset">32dp</dimen>
     <dimen name="text_input_margin">3dp</dimen>
+    <dimen name="popup_menu_icon_padding">16dp</dimen>
+    <dimen name="dialog_padding">24dp</dimen>
+    <dimen name="random_image_max_width">500dp</dimen>
+    <dimen name="stonks_icon_size">16dp</dimen>
+    <dimen name="charts_horizontal_list_width">150dp</dimen>
     <integer name="splash_screen_duration">600</integer>
 </resources>

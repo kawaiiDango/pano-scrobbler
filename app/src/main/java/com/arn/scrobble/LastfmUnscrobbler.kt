@@ -6,9 +6,12 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.frybits.harmony.getHarmonySharedPreferences
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.*
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
+import org.json.JSONObject
 
 
 class LastfmUnscrobbler(context: Context?) {
@@ -153,44 +156,47 @@ class LastfmUnscrobbler(context: Context?) {
         return null
     }
 
-    fun unscrobble(artist: String, track: String, timeMillis: Long): Boolean {
+    suspend fun unscrobble(artist: String, track: String, timeMillis: Long): Boolean =
+        lock.withLock { // does this fix the csrf invalidation problem?
+            var success = false
+            val body = FormBody.Builder()
+                .add(
+                    FIELD_CSRFTOKEN,
+                    csrfToken ?: throw RuntimeException("You've been logged out...")
+                )
+                .add(FIELD_ARTIST, artist)
+                .add(FIELD_TRACK, track)
+                .add(FIELD_TIMESTAMP, (timeMillis / 1000).toInt().toString())
+                .add("ajax", "1")
+                .build()
 
-        val body = FormBody.Builder()
-            .add(
-                FIELD_CSRFTOKEN, csrfToken ?: throw RuntimeException("You've been logged out...")
-            )
-            .add(FIELD_ARTIST, artist)
-            .add(FIELD_TRACK, track)
-            .add(FIELD_TIMESTAMP, (timeMillis / 1000).toInt().toString())
-            .add("ajax", "1")
-            .build()
+            val url = "$URL_USER$username/library/delete"
+            val request = Request.Builder()
+                .url(url)
+                .header("Referer", URL_USER + username)
+                .post(body)
+                .build()
 
-        val url = "$URL_USER$username/library/delete"
-        val request = Request.Builder()
-            .url(url)
-            .header("Referer", URL_USER + username)
-            .post(body)
-            .build()
+            try {
+                val resp = client.newCall(request).execute()
+                val respStr = resp.body?.string()
+                if (resp.code == 200) {
+                    success = JSONObject(respStr!!).getBoolean("result")
 
-        try {
-            val resp = client.newCall(request).execute()
-            val respStr = resp.body?.string()
-            return if (resp.code == 200 && respStr?.contains("{\"result\": true}") == true) {
-                Stuff.log("LastfmUnscrobbler unscrobbled: $track")
-                true
-            } else if (resp.code == 403) { //invalid csrf (session was probably invalidated)
-                clearCookies()
-                throw RuntimeException("You've been logged out.")
-            } else {
-                Stuff.log("err: LastfmUnscrobbler unscrobble status: " + resp.code)
-                Stuff.log("err: $respStr ")
-                false
+                    if (success)
+                        Stuff.log("LastfmUnscrobbler unscrobbled: $track")
+                } else if (resp.code == 403) {
+                    clearCookies()
+                    throw RuntimeException("csrf token invalidated")
+                } else {
+                    Stuff.log("LastfmUnscrobbler: error unscrobbling: " + resp.code + " response: " + respStr)
+                }
+
+            } catch (e: Exception) {
+                Stuff.log("err: LastfmUnscrobbler unscrobble err: " + e.message)
             }
-        } catch (e: Exception) {
-            Stuff.log("err: LastfmUnscrobbler unscrobble err: " + e.message)
-            return false
+            success
         }
-    }
 
     companion object {
         const val COOKIE_CSRFTOKEN = "csrftoken"
@@ -207,6 +213,8 @@ class LastfmUnscrobbler(context: Context?) {
         private const val FIELD_ARTIST = "artist_name"
         private const val FIELD_TRACK = "track_name"
         private const val FIELD_TIMESTAMP = "timestamp"
+
+        private val lock by lazy { Mutex() }
     }
 }
 

@@ -5,7 +5,7 @@
     app:ensureMinTouchTargetSize="false"
     app:chipStrokeColor="@color/csl_swatch_stroke"
     app:chipStrokeWidth="2dp"
-    app:checkedIconTint="@android:color/white"
+    app:checkedIconTint="@color/background_pure"
     app:iconStartPadding="4dp"
     app:chipCornerRadius="15dp"
     android:layout_width="40dp"

@@ -1,38 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:nestedScrollingEnabled="false"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/friends_linear_layout"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:touchscreenBlocksFocus="false"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
         <include
             android:id="@+id/friends_header"
+            layout="@layout/header_default"
             android:visibility="gone"
-            layout="@layout/header_default" />
+            app:layout_scrollFlags="enterAlways|scroll|snap"
+            tools:visibility="visible" />
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/friends_swipe_refresh"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/friends_swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/friends_grid"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/friends_grid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layoutAnimation="@anim/layout_animation_slide_up"
-                android:paddingStart="8dp"
-                android:paddingTop="8dp"
-                android:clipToPadding="false"
-                tools:listitem="@layout/grid_item_friend" />
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:layoutAnimation="@anim/layout_animation_slide_up"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            tools:listitem="@layout/grid_item_friend" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/friends_sort"
@@ -43,6 +49,6 @@
         android:layout_marginBottom="@dimen/fab_margin"
         android:contentDescription="@string/sort"
         android:visibility="gone"
-        tools:visibility="visible"
-        app:srcCompat="@drawable/vd_sort_clock" />
-</FrameLayout>
+        app:srcCompat="@drawable/vd_sort_clock"
+        tools:visibility="visible" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

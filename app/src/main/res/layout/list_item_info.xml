@@ -5,21 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="16dp"
     android:paddingHorizontal="16dp"
+    android:paddingTop="8dp"
     android:paddingBottom="3dp">
 
     <LinearLayout
+        android:id="@+id/info_title_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/info_pic"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="8dp"
+            android:foreground="?selectableItemBackgroundBorderless"
+            android:visibility="gone"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.SmallComponent"
+            tools:srcCompat="@tools:sample/avatars"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/info_type"
             android:layout_width="20sp"
             android:layout_height="20sp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="8dp"
             app:tint="?colorPrimary"
             tools:srcCompat="@drawable/vd_note" />
 
@@ -30,71 +42,47 @@
             android:layout_weight="1"
             android:textAppearance="?textAppearanceTitleLarge"
             android:textColor="?colorPrimary"
-            android:textIsSelectable="true"
             tools:text="@string/track" />
+        <!-- Selectable text causes issues with animation -->
 
-        <ImageButton
-            android:id="@+id/info_heart"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:visibility="gone"
-            tools:srcCompat="@drawable/vd_heart"
-            app:tint="?colorSecondary"
-            tools:visibility="visible" />
-
-        <ImageButton
-            android:id="@+id/info_play"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:contentDescription="@string/search"
-            android:tooltipText="@string/search"
-            android:visibility="gone"
-            app:srcCompat="@drawable/vd_search_play"
-            app:tint="?colorSecondary"
-            tools:visibility="visible" />
-
-        <ImageButton
-            android:id="@+id/info_user_tags"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:contentDescription="@string/my_tags"
-            android:tooltipText="@string/my_tags"
-            android:visibility="gone"
-            app:srcCompat="@drawable/vd_user_tag"
-            app:tint="?colorSecondary"
-            tools:visibility="visible" />
-
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/info_link"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
+            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/more_info"
             android:tooltipText="@string/more_info"
             android:visibility="gone"
-            app:srcCompat="@drawable/vd_open_in_new"
-            app:tint="?colorSecondary"
+            app:icon="@drawable/vd_open_in_new"
+            app:iconTint="?colorSecondary"
+            app:strokeWidth="0dp"
             tools:visibility="visible" />
     </LinearLayout>
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/info_progress"
+    <com.arn.scrobble.ui.SquareFrameLayout
+        android:id="@+id/info_pic_expanded_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        style="@style/Widget.Material3.CircularProgressIndicator.Small"
-        app:hideAnimationBehavior="none"
-        android:layout_gravity="center" />
+        android:layout_height="300dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:maxSize="300dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/info_pic_expanded"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.MediumComponent"
+            tools:srcCompat="@tools:sample/avatars" />
+    </com.arn.scrobble.ui.SquareFrameLayout>
 
     <LinearLayout
         android:id="@+id/info_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layoutAnimation="@anim/layout_animation_slide_up"
+        android:orientation="vertical"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -106,8 +94,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:baselineAligned="false"
+            android:orientation="horizontal"
             android:paddingTop="8dp">
 
             <LinearLayout
@@ -115,10 +103,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
+                android:clickable="false"
                 android:gravity="center"
-                android:padding="@dimen/list_item_padding"
-                android:clickable="false">
+                android:orientation="vertical"
+                android:padding="@dimen/list_item_padding">
 
                 <TextView
                     android:id="@+id/info_user_scrobbles"
@@ -133,8 +121,8 @@
                     android:id="@+id/info_user_scrobbles_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
                     android:text="@string/my_scrobbles"
+                    android:textAlignment="center"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -143,9 +131,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/list_item_padding"
-                android:gravity="center">
+                android:padding="@dimen/list_item_padding">
 
                 <TextView
                     android:id="@+id/info_listeners"
@@ -167,9 +155,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/list_item_padding"
-                android:gravity="center">
+                android:padding="@dimen/list_item_padding">
 
                 <TextView
                     android:id="@+id/info_scrobbles"
@@ -193,22 +181,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@drawable/selector_border_gentle"
             android:addStatesFromChildren="true"
+            android:background="@drawable/selector_border_gentle"
+            android:orientation="horizontal"
             android:padding="@dimen/list_item_padding"
             android:visibility="gone"
-            tools:visibility="visible"
-            android:orientation="horizontal">
+            tools:visibility="visible">
 
             <!-- justify doesnt work if text contains formatting -->
             <TextView
                 android:id="@+id/info_wiki"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:autoLink="web"
                 android:ellipsize="end"
-                android:layout_marginStart="5dp"
                 android:maxLines="2"
                 android:scrollbars="none" />
 
@@ -216,28 +204,74 @@
                 android:id="@+id/info_wiki_expand"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
-                android:visibility="invisible"
                 android:contentDescription="@string/expand"
                 android:scaleType="center"
+                android:visibility="invisible"
                 app:srcCompat="@drawable/vd_arrow_down"
                 tools:visibility="visible" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/info_extra"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_gravity="end"
-            app:drawableTint="?colorSecondary"
-            app:drawableEndCompat="@drawable/vd_arrow_right"
-            android:background="?selectableItemBackground"
-            android:padding="6dp"
-            android:textAppearance="?textAppearanceTitleMedium"
-            android:textColor="?colorSecondary"
-            android:textDirection="firstStrong"
-            tools:text="n tracks" />
+            android:paddingVertical="6dp">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/info_user_tags"
+                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/my_tags"
+                android:tooltipText="@string/my_tags"
+                android:visibility="gone"
+                app:icon="@drawable/vd_user_tag"
+                app:iconTint="?colorSecondary"
+                app:strokeWidth="0dp"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/info_play"
+                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/search"
+                android:tooltipText="@string/search"
+                android:visibility="gone"
+                app:icon="@drawable/vd_search_play"
+                app:iconTint="?colorSecondary"
+                app:strokeWidth="0dp"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/info_heart"
+                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:iconTint="?colorSecondary"
+                app:strokeWidth="0dp"
+                tools:srcCompat="@drawable/vd_heart"
+                tools:visibility="visible" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/info_extra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp"
+                android:textAppearance="?textAppearanceTitleMedium"
+                android:textColor="?colorSecondary"
+                android:textDirection="firstStrong"
+                app:drawableEndCompat="@drawable/vd_arrow_right"
+                app:drawableTint="?colorSecondary"
+                tools:text="n tracks" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

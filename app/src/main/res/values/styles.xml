@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/pinkPrimary</item>
         <item name="colorPrimaryVariant">@color/pinkNoti</item>
         <item name="colorPrimaryContainer">@color/pinkPrimaryContainer</item>
@@ -23,9 +23,15 @@
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
         <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!--   For android tv     -->
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+
         <!--        <item name="android:windowTranslucentStatus">true</item>-->
         <!-- bug https://stackoverflow.com/a/48328471/1067596-->
 
+        <item name="popupMenuBackground">@drawable/popup_menu_background</item>
         <item name="snackbarStyle">@style/snackbarStyle</item>
         <item name="snackbarTextViewStyle">@style/snackbarText</item>
         <item name="snackbarButtonStyle">@style/snackbarButton</item>
@@ -36,6 +42,11 @@
         <item name="textInputOutlinedStyle">@style/Widget.App.TextInputLayout.OutlinedBox</item>
         <item name="textInputOutlinedExposedDropdownMenuStyle">@style/Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
     </style>
+
+    <style name="WebViewTheme" parent="Theme.MaterialComponents.Light">
+        <item name="android:forceDarkAllowed">true</item>
+    </style>
+
 
     <style name="PreferenceThemeOverlay.v14.Material.M3">
         <item name="switchPreferenceStyle">@style/Preference.SwitchPreference.Material.M3</item>
@@ -77,9 +88,21 @@
         <item name="showAnimationBehavior">outward</item>
         <item name="showDelay">100</item>
         <item name="android:indeterminate">true</item>
+        <item name="trackCornerRadius">2dp</item>
+        <!--   Default track width is 4dp     -->
     </style>
 
-    <style name="AppThemeDialog" parent="Theme.Material3.Dark.Dialog.Alert">
+    <style name="Widget.App.Button.OutlinedButton.IconOnly" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="AppThemeDialog" parent="Theme.Material3.DayNight.Dialog.Alert">
         <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -134,12 +157,13 @@
         <item name="android:translationZ">@dimen/tz_hero_btn</item>
     </style>
 
-    <style name="friendsLinks" parent="Widget.Material3.Button.TextButton">
-        <item name="android:textAppearance">?textAppearanceTitleSmall</item>
-        <item name="drawableTint">?colorSecondary</item>
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    <style name="friendsLinks" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="iconTint">?colorSecondary</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="iconGravity">top</item>
+        <item name="android:checkable">false</item>
+        <item name="iconSize">24dp</item>
     </style>
 
     <style name="ProFeaturesText">
@@ -167,6 +191,12 @@
     <style name="roundedCorners">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/corner_radius</item>
+    </style>
+
+    <style name="topRoundedCorners">
+        <item name="cornerSizeTopLeft">@dimen/corner_radius</item>
+        <item name="cornerSizeTopRight">@dimen/corner_radius</item>
+        <item name="cornerFamily">rounded</item>
     </style>
 
 </resources>

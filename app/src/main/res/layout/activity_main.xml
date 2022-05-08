@@ -24,7 +24,6 @@
         android:fitsSystemWindows="true"
         android:maxWidth="280dp"
         app:itemIconTint="?colorPrimary"
-        app:itemTextColor="@drawable/selector_nav_text"
-        app:menu="@menu/nav_menu" />
+        app:itemTextColor="@drawable/selector_nav_text"/>
 
 </com.arn.scrobble.ui.MyDrawerLayout>

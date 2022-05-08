@@ -7,7 +7,10 @@ import android.content.pm.PackageManager
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.media.MediaRecorder
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.method.LinkMovementMethod
 import android.view.*
 import android.view.animation.AccelerateInterpolator
@@ -18,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.acrcloud.rec.*
+import com.arn.scrobble.Stuff.setTextAndAnimate
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.snackbar.Snackbar
@@ -72,6 +76,9 @@ class RecFragment : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (Stuff.DEMO_MODE)
+            binding.recShazam.text = binding.recShazam.text.toString().replace("Shazam", "S app")
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || MainActivity.isTV)
             binding.recShazam.visibility = View.GONE
@@ -199,14 +206,14 @@ class RecFragment : Fragment(),
         }
 
         if (!MainActivity.isOnline) {
-            binding.recStatus.setText(R.string.unavailable_offline)
+            binding.recStatus.setTextAndAnimate(R.string.unavailable_offline)
             return
         }
         if (!started) {
 
             if (!startRecording() || _binding == null)
                 return
-            binding.recStatus.setText(R.string.listening)
+            binding.recStatus.setTextAndAnimate(R.string.listening)
             binding.recImg.setImageResource(R.drawable.vd_wave_simple)
             if (fadeAnimator?.isRunning == true)
                 fadeAnimator?.cancel()
@@ -219,12 +226,13 @@ class RecFragment : Fragment(),
 
             if (progressAnimator?.isRunning == true)
                 progressAnimator?.cancel()
-            progressAnimator = ObjectAnimator.ofFloat(binding.recProgress, "progress", 0f, 100f)
-                .apply {
-                    duration = DURATION
-                    interpolator = LinearInterpolator()
-                    start()
-                }
+            progressAnimator =
+                ObjectAnimator.ofInt(binding.recProgress, "progress", 0, binding.recProgress.max)
+                    .apply {
+                        duration = DURATION
+                        interpolator = LinearInterpolator()
+                        start()
+                    }
 
             handler.postDelayed({
                 finishRecording()
@@ -236,7 +244,7 @@ class RecFragment : Fragment(),
                 client = null
             } catch (e: Exception) {
             }
-            binding.recStatus.text = ""
+            binding.recStatus.setTextAndAnimate("")
 
             if (fadeAnimator?.isRunning == true)
                 fadeAnimator?.cancel()
@@ -250,7 +258,7 @@ class RecFragment : Fragment(),
             if (progressAnimator?.isRunning == true)
                 progressAnimator?.cancel()
 
-            progressAnimator = ObjectAnimator.ofFloat(binding.recProgress, "progress", 0f)
+            progressAnimator = ObjectAnimator.ofInt(binding.recProgress, "progress", 0)
                 .apply {
                     duration = 300
                     interpolator = AccelerateInterpolator()
@@ -328,8 +336,10 @@ class RecFragment : Fragment(),
         when (statusCode) {
             0 -> {
                 binding.recImg.setImageResource(R.drawable.vd_check_simple)
-                binding.recStatus.text = getString(R.string.state_scrobbled) + "\n" +
-                        getString(R.string.artist_title, artist, title)
+                binding.recStatus.setTextAndAnimate(
+                    getString(R.string.state_scrobbled) + "\n" +
+                            getString(R.string.artist_title, artist, title)
+                )
                 val scrobbleData = ScrobbleData()
                 scrobbleData.artist = artist
                 scrobbleData.album = album
@@ -343,19 +353,19 @@ class RecFragment : Fragment(),
                         BuildConfig.APPLICATION_ID
                     )
             }
-            1001 -> binding.recStatus.text = getString(R.string.not_found)
+            1001 -> binding.recStatus.setTextAndAnimate(R.string.not_found)
             2000 -> {
                 if (acrConfig.recorderConfig.source != MediaRecorder.AudioSource.VOICE_RECOGNITION) {
                     acrConfig.recorderConfig.source = MediaRecorder.AudioSource.VOICE_RECOGNITION
                     startOrCancel()
                 } else
-                    binding.recStatus.setText(R.string.recording_failed)
+                    binding.recStatus.setTextAndAnimate(R.string.recording_failed)
             }
-            2001 -> binding.recStatus.setText(R.string.recording_failed)
+            2001 -> binding.recStatus.setTextAndAnimate(R.string.recording_failed)
             3003, 3015 -> showSnackbar()
             else -> {
                 Stuff.log("rec error: $statusCode - $statusMsg")
-                binding.recStatus.text = getString(R.string.network_error)
+                binding.recStatus.setTextAndAnimate(R.string.network_error)
             }
         }
     }

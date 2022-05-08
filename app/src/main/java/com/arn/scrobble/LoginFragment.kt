@@ -24,7 +24,7 @@ import org.json.JSONObject
  */
 open class LoginFragment : DialogFragment() {
     protected val prefs by lazy { MainPrefs(context!!) }
-    open val checksLogin = true
+    protected open val checksLogin = true
     protected var isStandalone = false
     private var _binding: ContentLoginBinding? = null
     protected val binding
@@ -71,6 +71,10 @@ open class LoginFragment : DialogFragment() {
                     false
             }
         }
+        args?.getString(TEXT_CHECKBOX)?.let {
+            binding.loginCheckbox.text = it
+            binding.loginCheckbox.visibility = View.VISIBLE
+        }
 
         binding.loginSubmit.setOnClickListener {
             it.visibility = View.GONE
@@ -87,7 +91,7 @@ open class LoginFragment : DialogFragment() {
     }
 
     protected open fun success() {
-        if (context == null || isStateSaved)
+        if (context == null || isStateSaved || _binding == null)
             return
         binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_check)
@@ -129,8 +133,15 @@ open class LoginFragment : DialogFragment() {
 
     private fun validate() {
         GlobalScope.launch {
-            val errMsg = withContext(Dispatchers.IO) {
-                validateAsync()
+            val errMsg = try {
+                withContext(Dispatchers.IO) {
+                    if (validateAsync())
+                        null
+                    else
+                        ""
+                }
+            } catch (e: Exception) {
+                e.message
             }
             withContext(Dispatchers.Main) {
                 if (errMsg == null)
@@ -142,11 +153,12 @@ open class LoginFragment : DialogFragment() {
         hideKeyboard()
     }
 
-    open suspend fun validateAsync(): String? {
+    protected open suspend fun validateAsync(): Boolean {
         val title = arguments?.getString(HEADING)
         val t1 = binding.loginTextfield1.editText!!.text.toString()
         val t2 = binding.loginTextfield2.editText!!.text.toString()
         val tlast = binding.loginTextfieldLast.editText!!.text.toString()
+        val tlsNoVerify = binding.loginCheckbox.isChecked
 
         var success = false
 
@@ -169,6 +181,7 @@ open class LoginFragment : DialogFragment() {
                         else
                             t1
                         val username = (ListenBrainz().setToken(tlast)
+                            ?.setTlsNoVerify(tlsNoVerify)
                             ?.setApiRoot(url) as? ListenBrainz)
                             ?.username()
 
@@ -176,40 +189,65 @@ open class LoginFragment : DialogFragment() {
                             prefs.customListenbrainzRoot = url
                             prefs.customListenbrainzUsername = username
                             prefs.customListenbrainzToken = tlast
+                            prefs.customListenbrainzTlsNoVerify = tlsNoVerify
                             success = true
                         }
-                    } else
-                        withContext(Dispatchers.Main) {
-                            Stuff.toast(activity!!, getString(R.string.failed_encode_url))
+                    } else {
+                        throw IllegalArgumentException(getString(R.string.failed_encode_url))
+                    }
+                }
+            }
+            getString(R.string.gnufm) -> {
+                var url = tlast
+                if (url.isNotBlank()) {
+                    if (URLUtil.isValidUrl(url)) {
+                        if (!url.endsWith('/'))
+                            url += '/'
+                        prefs.gnufmRoot = url
+                        prefs.gnufmTlsNoVerify = tlsNoVerify
+                        val wf = WebViewFragment()
+                        wf.arguments = Bundle().apply {
+                            putString(
+                                Stuff.ARG_URL,
+                                url + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=pscrobble://auth/gnufm"
+                            )
+                            putBoolean(Stuff.ARG_TLS_NO_VERIFY, tlsNoVerify)
                         }
+                        withContext(Dispatchers.Main) {
+                            parentFragmentManager.popBackStackImmediate()
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.frame, wf)
+                                .addToBackStack(null)
+                                .commit()
+                        }
+                        return true
+                    } else {
+                        throw IllegalArgumentException(getString(R.string.failed_encode_url))
+                    }
                 }
             }
             getString(R.string.add_acr_key) -> {
                 if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()) {
                     val i = IdentifyProtocolV1()
-                    try {
-                        var url = t1
-                        if (!url.startsWith("http"))
-                            url = "https://$url"
-                        if (!URLUtil.isValidUrl(url)) {
-                            withContext(Dispatchers.Main) {
-                                Stuff.toast(activity!!, getString(R.string.failed_encode_url))
-                            }
-                            throw Exception(getString(R.string.failed_encode_url))
+                    var url = t1
+                    if (!url.startsWith("http"))
+                        url = "https://$url"
+                    if (!URLUtil.isValidUrl(url)) {
+                        withContext(Dispatchers.Main) {
+                            Stuff.toast(activity!!, getString(R.string.failed_encode_url))
                         }
-                        val res = i.recognize(t1, t2, tlast, null, "audio", 10000)
-                        val j = JSONObject(res)
-                        val statusCode = j.getJSONObject("status").getInt("code")
+                        throw IllegalArgumentException(getString(R.string.failed_encode_url))
+                    }
+                    val res = i.recognize(t1, t2, tlast, null, "audio", 10000)
+                    val j = JSONObject(res)
+                    val statusCode = j.getJSONObject("status").getInt("code")
 
-                        if (statusCode == 2004) {
-                            // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
-                            prefs.acrcloudHost = t1
-                            prefs.acrcloudKey = t2
-                            prefs.acrcloudSecret = tlast
-                            success = true
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    if (statusCode == 2004) {
+                        // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
+                        prefs.acrcloudHost = t1
+                        prefs.acrcloudKey = t2
+                        prefs.acrcloudSecret = tlast
+                        success = true
                     }
                 }
             }
@@ -217,10 +255,7 @@ open class LoginFragment : DialogFragment() {
                 Stuff.toast(activity!!, "service not implemented")
             }
         }
-        return if (success)
-            null
-        else
-            ""
+        return success
     }
 
     override fun onStart() {
@@ -238,6 +273,7 @@ open class LoginFragment : DialogFragment() {
         const val TEXTF1 = "t1"
         const val TEXTF2 = "t2"
         const val TEXTFL = "tl"
+        const val TEXT_CHECKBOX = "cb"
     }
 
 }

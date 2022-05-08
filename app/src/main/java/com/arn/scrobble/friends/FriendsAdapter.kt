@@ -17,22 +17,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.load
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.recents.PaletteColors
-import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
-import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.LoadMoreGetter
-import com.arn.scrobble.ui.PaletteTransition
+import com.arn.scrobble.ui.*
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import de.umass.lastfm.ImageSize
-import de.umass.lastfm.PaginatedResult
-import de.umass.lastfm.Track
-import de.umass.lastfm.User
 import java.lang.ref.WeakReference
 
 
@@ -60,6 +53,8 @@ class FriendsAdapter(
     init {
         setHasStableIds(true)
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        FriendsItemTouchHelper(this, viewModel)
+            .attachToRecyclerView(fragmentBinding.friendsGrid)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VHUser {
@@ -71,92 +66,40 @@ class FriendsAdapter(
         val inflater = LayoutInflater.from(context)
         val binding = GridItemFriendBinding.inflate(inflater, fragmentBinding.root, false)
 
+        val user = viewModel.sectionedList[position] as UserSerializable
         val holder = VHUser(binding, false)
-        holder.setItemData(viewModel.friends[position])
+        holder.setItemData(user)
+        if (!Stuff.DEMO_MODE)
+            binding.friendsName.text = (user.realname.ifEmpty { user.name })
         return binding
     }
 
     override fun onBindViewHolder(holder: VHUser, position: Int) {
-        holder.setItemData(viewModel.friends[position])
+        holder.setItemData(viewModel.sectionedList[position] as UserSerializable)
     }
 
     // total number of cells
-    override fun getItemCount() = viewModel.friends.size
-
-    fun populate() {
-        if (fragmentBinding.friendsSwipeRefresh.isRefreshing) {
-            fragmentBinding.friendsGrid.scheduleLayoutAnimation()
-            fragmentBinding.friendsSwipeRefresh.isRefreshing = false
-        }
-        loadMoreListener.loading = false
-        val header = fragmentBinding.friendsHeader.headerText
-        if (viewModel.friends.isEmpty()) {
-            header.visibility = View.VISIBLE
-            header.text = header.context.getString(R.string.no_friends)
-        } else
-            header.visibility = View.GONE
-
-        notifyDataSetChanged()
-    }
-
-    fun populateFriendsRecent(res: PaginatedResult<Track>, username: String) {
-        if (!res.isEmpty && viewModel.friends.isNotEmpty()) {
-            for (pos in 0..viewModel.friends.size) {
-                if (pos < viewModel.friends.size && viewModel.friends[pos].name == username) {
-                    val oldRecent = viewModel.friends[pos].recentTrack
-                    val newRecent = res.pageResults.first()
-                    if (oldRecent?.playedWhen != newRecent?.playedWhen || oldRecent?.name != newRecent?.name) {
-                        viewModel.friends[pos].recentTrack = newRecent
-                        viewModel.friends[pos].playcount = res.totalPages
-                        notifyItemChanged(pos, 0)
-                    }
-                    break
-                }
-            }
-        }
-        if (!MainActivity.isTV && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.friends.size > 1 &&
-            !viewModel.friends.any { it.recentTrack == null }
-        ) {
-            val sortButton = fragmentBinding.friendsSort
-            sortButton.show()
-            sortButton.setOnClickListener {
-                viewModel.friends.sortByDescending {
-                    if (it.playcount == 0) //put users with 0 plays at the end
-                        0L
-                    else
-                        it.recentTrack?.playedWhen?.time ?: System.currentTimeMillis()
-                }
-                viewModel.sorted = true
-                notifyDataSetChanged()
-                sortButton.hide()
-                fragmentBinding.friendsGrid.smoothScrollToPosition(0)
-            }
-        }
-    }
+    override fun getItemCount() = viewModel.sectionedList.size
 
     fun loadFriendsRecents(pos: Int) {
         val glm = fragmentBinding.friendsGrid.layoutManager as GridLayoutManager? ?: return
-        if (pos < viewModel.friends.size && (pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
+        if (pos < viewModel.sectionedList.size && (pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
             (pos - glm.spanCount) <= glm.findLastVisibleItemPosition()
         )
-            viewModel.loadFriendsRecents(viewModel.friends[pos].name)
-    }
-
-    fun getItem(id: Int): User? {
-        return if (id >= 0 && id < viewModel.friends.size)
-            viewModel.friends[id]
-        else
-            null
+            viewModel.loadFriendsRecents((viewModel.sectionedList[pos] as UserSerializable).name)
     }
 
     override fun getItemId(position: Int): Long {
-        return viewModel.friends[position].name.hashCode().toLong()
+        return (viewModel.sectionedList[position] as UserSerializable).name.hashCode().toLong()
     }
 
     inner class VHUser(
         private val binding: GridItemFriendBinding,
         private val clickable: Boolean = true
     ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+
+        var isPinned = false
+
         init {
             if (clickable) {
                 itemView.setOnClickListener(this)
@@ -170,13 +113,17 @@ class FriendsAdapter(
                 itemClickListener.call(itemView, bindingAdapterPosition)
         }
 
-        fun setItemData(user: User) {
-            binding.friendsName.text = if (user.realname == null || user.realname == "")
-                user.name
-            else
-                user.realname
+        fun setItemData(userSerializable: UserSerializable) {
+            isPinned = viewModel.isPinned(userSerializable.name)
 
-            val track = user.recentTrack
+            binding.friendsName.text =
+                (if (userSerializable.realname.isNullOrEmpty()) userSerializable.name else userSerializable.realname) +
+                        (if (isPinned) " 📍" else "")
+
+            if (Stuff.DEMO_MODE)
+                binding.friendsName.text = "User ${bindingAdapterPosition + 1}"
+
+            val track = viewModel.lastPlayedTracksMap[userSerializable.name]
             if (track != null && track.name != null && track.name != "") {
                 binding.friendsTrackLl.visibility = View.VISIBLE
                 binding.friendsTitle.text = track.name
@@ -208,22 +155,25 @@ class FriendsAdapter(
                 )
                     binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
 
-                if (!handler.hasMessages(user.name.hashCode()) && bindingAdapterPosition > -1) {
-                    val msg = handler.obtainMessage(user.name.hashCode())
+                if (!handler.hasMessages(userSerializable.name.hashCode()) && bindingAdapterPosition > -1) {
+                    val msg = handler.obtainMessage(userSerializable.name.hashCode())
                     msg.arg1 = bindingAdapterPosition
                     handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
                 }
             }
 
-            val userImg = user.getWebpImageURL(ImageSize.EXTRALARGE)
-            if (userImg != binding.friendsPic.tag) {
-                binding.friendsPic.tag = userImg
-                val bgDark = ContextCompat.getColor(itemView.context, R.color.darkGrey)
-                val wasCached = viewModel.paletteColorsCache[userImg] != null
-                val color = if (wasCached)
-                    viewModel.paletteColorsCache[userImg]!!
-                else
-                    bgDark
+            val userImgUrl = userSerializable.getWebpImageURL(ImageSize.EXTRALARGE)
+            if (userImgUrl != binding.friendsPic.tag) {
+                binding.friendsPic.tag = userImgUrl
+                val bgGray = ContextCompat.getColor(itemView.context, R.color.background_gray)
+                val wasCached = viewModel.urlToPaletteMap[userImgUrl] != null
+                val color = if (wasCached) {
+                    viewModel.urlToPaletteMap[userImgUrl]!!.apply {
+                        setDarkModeFrom(itemView.context)
+                    }.background
+                } else {
+                    bgGray
+                }
                 val bg = itemView.background
                 if (bg == null)
                     itemView.background = MaterialShapeDrawable(shapeAppearanceModel).apply {
@@ -233,32 +183,32 @@ class FriendsAdapter(
                     bg.setTint(color)
                 }
 
-                if (userImg != null) {
-                    binding.friendsPic
-                        .load(userImg) {
-                            placeholder(R.drawable.vd_placeholder_user)
-                            error(R.drawable.vd_placeholder_user)
-                            allowHardware(false)
-                            if (!wasCached)
-                                transitionFactory(PaletteTransition.Factory { palette ->
-                                    val paletteColors = PaletteColors(itemView.context, palette)
-                                    val anim = ValueAnimator.ofArgb(bgDark, paletteColors.mutedBg)
-                                    anim.addUpdateListener {
-                                        val bg = itemView.background
-                                        if (bg is MaterialShapeDrawable) {
-                                            bg.setTint(it.animatedValue as Int)
-                                        }
+//                if (userImg != null) {
+                binding.friendsPic
+                    .load(userImgUrl ?: "") {
+                        placeholder(R.drawable.vd_placeholder_user)
+                        error(InitialsDrawable(itemView.context, userSerializable))
+                        allowHardware(false)
+                        if (!wasCached)
+                            transitionFactory(PaletteTransition.Factory { palette ->
+                                val paletteColors = PaletteColors(itemView.context, palette)
+                                val anim = ValueAnimator.ofArgb(bgGray, paletteColors.background)
+                                anim.addUpdateListener {
+                                    val bg = itemView.background
+                                    if (bg is MaterialShapeDrawable) {
+                                        bg.setTint(it.animatedValue as Int)
                                     }
+                                }
 
-                                    anim.duration = 350
-                                    anim.interpolator = AccelerateInterpolator()
-                                    anim.start()
-                                    viewModel.paletteColorsCache[userImg] = paletteColors.mutedBg
-                                })
-                        }
-                } else {
-                    binding.friendsPic.load(R.drawable.vd_placeholder_user)
-                }
+                                anim.duration = 350
+                                anim.interpolator = AccelerateInterpolator()
+                                anim.start()
+                                viewModel.urlToPaletteMap[userImgUrl] = paletteColors
+                            })
+                    }
+//                } else {
+//                    binding.friendsPic.load(InitialsDrawable(itemView.context, user))
+//                }
             }
         }
     }
@@ -269,5 +219,10 @@ class FriendsAdapter(
             val pos = m.arg1
             friendsAdapterWr.get()?.loadFriendsRecents(pos)
         }
+    }
+
+    enum class FriendType {
+        FRIEND,
+        PINNED
     }
 }

@@ -81,7 +81,6 @@
     <string name="state_unscrobbled">Skroplama geri alındı</string>
     <string name="state_unrecognised_artist">Bilinmeyen sanatçı</string>
     <string name="tap_to_edit">(Düzenlemek için dokunun)</string>
-    <string name="tap_to_edit_force" comment="Edit the scrobble or force submit the scrobble">(Düzenlemek veya zorlamak için dokunun)</string>
     <string name="recently_scrobbled">En Son Skroplananlar</string>
     <string name="recently_loved">♥ En Son Beğenilenler</string>
     <string name="recents" comment="Short for recently scrobbled">Son dinlemeler</string>
@@ -130,7 +129,6 @@
     <string name="friends">Arkadaşlar</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%2$s itibariyle %1$s skrop</string>
     <string name="allow_background">Arkaplanda skroplamaya izin ver</string>
-    <string name="grant_autostart_desc" formatted="true" comment="%1= Brand name">Skroplayıcının başlaması için %1$s cihazlarda gerekli</string>
     <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
     <string name="grant_notification_access_desc">Müzik metaverisi almak için gerekli. Müzik harici veriler okunmaz</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">LastFM ile kimlik doğrulaması yapın</string>
@@ -170,13 +168,10 @@
     <string name="user_loved" formatted="true" comment="%1= username">%1$s bunu beğendi</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">%1$s tarihine kadar skroplar</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
-    <string name="a_to_b" formatted="true" comment="%1= date %2= date">%1$s → %2$s</string>
-    <string name="weekly_range" formatted="true" comment="%1= date %2= date">haftalık (%1$s → %2$s)</string>
     <string name="not_found" comment="Shown in search">Bulunamadı</string>
     <string name="share_this_chart">Bu listeyi paylaş</string>
     <string name="weekly">Haftalık</string>
     <string name="monthly">Aylık</string>
-    <string name="charts_choose_week">Bir hafta seçin</string>
     <string name="charts_overall">Genel</string>
     <string name="charts_no_data">Bu dönem için veri yok</string>
     <string name="charts_custom" comment="Custom date range, but in short">Özel</string>
@@ -184,7 +179,6 @@
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Kategori: %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Yetersiz veri</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
-    <string name="charts_no_weekly_charts">Geriye dönük haftalık listeler henüz mevcut değil</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Haydi rastgele</string>
     <string name="random_not_found">Parça bulunamadı</string>
     <string name="loved_track">Beğenilenler</string>
@@ -214,14 +208,11 @@
     <string name="appwidget_show">Göster</string>
     <string name="light">Açık</string>
     <string name="dark">Koyu</string>
-    <string name="dynamic" comment="Material You wallpaper based theming">Dinamik (Material You)</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
-    <string name="appwidget_refresh_every">Widget her 15 dakikada bir yenilenir</string>
     <string name="primary_color">Ana renk</string>
     <string name="secondary_color">İkincil renk</string>
     <string name="tint_background">Renkli arkaplan</string>
     <string name="random_theme">Her açılışta rastgele seç</string>
-    <string name="palette_bg">Arkaplan için albüm kapağı rengini kullan</string>
     <string name="edit_name" comment="name for regex pattern">İsim (isteğe bağlı)</string>
     <string name="edit_regex">Düzenli ifade kalıbı</string>
     <string name="edit_regex_replacement">Düzenli ifade değiştirme</string>
@@ -316,16 +307,6 @@
     <string name="import_lists_keep">Birleştir, mevcut düzenlemeleri ve engel listesini koru</string>
     <string name="import_settings">Ayarları içe aktar</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Yayın intentleri</string>
-    <string name="pref_intents_dialog_desc" formatted="true" comment="%= different intent strings">"Şimdiki şarkı için:
-%1$s
-%2$s
-%3$s
-
-Skroplayıcı için:
-%4$s
-%5$s
-
-Tasker ve Macrodroid gibi uygulamalarla kullanılabilir."</string>
     <string name="pref_intents">Tasker vb. için intentler</string>
     <string name="copied">Kopyalandı!</string>
     <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>

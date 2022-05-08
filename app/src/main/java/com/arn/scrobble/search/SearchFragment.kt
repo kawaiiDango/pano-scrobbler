@@ -212,6 +212,6 @@ class SearchFragment : Fragment() {
     private fun loadSearches(term: String) {
         binding.searchResultsList.visibility = View.GONE
         binding.searchProgress.show()
-        viewModel.loadSearches(term)
+        viewModel.loadSearches(term, SearchResultsExperimentAdapter.SearchType.GLOBAL)
     }
 }

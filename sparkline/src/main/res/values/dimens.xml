@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="spark_line_width">2dp</dimen>
+    <dimen name="spark_corner_radius">3dp</dimen>
+    <dimen name="spark_base_line_width">1dp</dimen>
+    <dimen name="spark_scrub_line_width">2dp</dimen>
+</resources>

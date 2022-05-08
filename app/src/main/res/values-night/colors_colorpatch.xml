@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <color name="Blue_Background">#121518</color>
+  <color name="Lightblue_Background">#121618</color>
+  <color name="Cyan_Background">#121718</color>
+  <color name="Indigo_Background">#121318</color>
+  <color name="Deeppurple_Background">#151218</color>
+  <color name="Purple_Background">#171218</color>
+  <color name="Teal_Background">#121817</color>
+  <color name="Green_Background">#121814</color>
+  <color name="Lightgreen_Background">#151812</color>
+  <color name="Lime_Background">#171812</color>
+  <color name="Yellow_Background">#181712</color>
+  <color name="Amber_Background">#181612</color>
+  <color name="Orange_Background">#181512</color>
+  <color name="Deeporange_Background">#181312</color>
+  <color name="Pink_Background">#181214</color>
+  <color name="Sakurapink_Background">#181215</color>
+  <color name="Red_Background">#181213</color>
+</resources>

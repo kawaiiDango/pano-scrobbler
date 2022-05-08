@@ -3,13 +3,13 @@ package com.arn.scrobble.charts
 import com.arn.scrobble.Stuff
 
 class ArtistChartsFragment : ChartsBaseFragment() {
-    override val type = Stuff.TYPE_ARTISTS
+    override val chartsType = Stuff.TYPE_ARTISTS
 }
 
 class AlbumChartsFragment : ChartsBaseFragment() {
-    override val type = Stuff.TYPE_ALBUMS
+    override val chartsType = Stuff.TYPE_ALBUMS
 }
 
 class TrackChartsFragment : ChartsBaseFragment() {
-    override val type = Stuff.TYPE_TRACKS
+    override val chartsType = Stuff.TYPE_TRACKS
 }

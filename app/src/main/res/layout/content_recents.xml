@@ -5,7 +5,7 @@
     android:id="@+id/recents_swipe_refresh"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:layout_width="match_parent"
-    android:background="@android:color/black"
+    android:background="@color/background_pure"
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView

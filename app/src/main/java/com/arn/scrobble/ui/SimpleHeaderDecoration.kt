@@ -1,5 +1,6 @@
 package com.arn.scrobble.ui
 
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
@@ -7,34 +8,43 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.dp
+import com.google.android.material.color.MaterialColors
 
 
 /**
  * https://gist.github.com/uhfath/368804ce8fe08274e019bcaeab501783
  * An empty header (or footer) decoration for RecyclerView, since RecyclerView can't clipToPadding
  */
-class SimpleHeaderDecoration(private val headerHeight: Int, private val footerHeight: Int) :
-    RecyclerView.ItemDecoration() {
+class SimpleHeaderDecoration(
+    private val headerHeight: Int = 0,
+    private val footerHeight: Int = 25.dp
+) : RecyclerView.ItemDecoration() {
 
+    private val step = 20.dp
     private val paint = Paint()
     private val path = Path()
+    private var paintInited = false
 
-    init {
-        paint.setARGB(255, 255, 255, 255)
+    private fun initPaint(context: Context) {
+        paint.color = MaterialColors.getColor(context, R.attr.colorOnBackground, null)
         paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 4f
-//        paint.pathEffect = DashPathEffect(floatArrayOf(20f, 40f), 0f)
+        paint.strokeWidth = 3.dp.toFloat()
+
+        paintInited = true
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        if (!paintInited)
+            initPaint(parent.context)
+
         val lm = (parent.adapter as LoadMoreGetter).loadMoreListener
         if (lm.loading && !lm.isAllPagesLoaded) {
             for (i in (parent.childCount - 1) downTo 0) {
                 val view = parent.getChildAt(i) ?: break
                 if (parent.getChildAdapterPosition(view) + 1 == parent.adapter?.itemCount) {
                     val center = parent.width / 2f
-                    val step = 20.dp
                     val y = (view.bottom + footerHeight / 2).toFloat()
 
                     path.reset()

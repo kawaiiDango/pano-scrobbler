@@ -5,16 +5,14 @@ package com.arn.scrobble.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.Keep
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
 
-
-class DisableableAppBarLayoutBehavior : AppBarLayout.Behavior {
+@Keep
+class DisableableAppBarLayoutBehavior(context: Context, attrs: AttributeSet? = null) :
+    AppBarLayout.Behavior(context, attrs) {
     var isEnabled: Boolean = false
-
-    constructor() : super()
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     override fun onStartNestedScroll(
         parent: CoordinatorLayout,

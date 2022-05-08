@@ -10,6 +10,7 @@ import de.umass.lastfm.scrobble.ScrobbleResult
 abstract class Scrobblable {
     protected abstract var apiRoot: String
     protected var token = ""
+    protected var tlsNoVerify = false
 
     fun setToken(token: String?): Scrobblable? {
         token ?: return null
@@ -20,6 +21,11 @@ abstract class Scrobblable {
     fun setApiRoot(apiRoot: String?): Scrobblable? {
         apiRoot ?: return null
         this.apiRoot = apiRoot
+        return this
+    }
+
+    fun setTlsNoVerify(tlsNoVerify: Boolean): Scrobblable {
+        this.tlsNoVerify = tlsNoVerify
         return this
     }
 
@@ -35,20 +41,23 @@ abstract class Scrobblable {
 
         fun getScrobblablesMap(
             prefs: MainPrefs,
-            shouldSupportLove: Boolean = false
+            supportsLove: Boolean = false
         ): Map<Int, Scrobblable?> {
             val map = mutableMapOf<Int, Scrobblable?>()
             if (!prefs.lastfmDisabled)
                 map[R.string.lastfm] = Lastfm().setToken(prefs.lastfmSessKey)
             map[R.string.librefm] = Librefm().setToken(prefs.librefmSessKey)
             map[R.string.gnufm] =
-                Librefm().setToken(prefs.gnufmSessKey)?.setApiRoot(prefs.gnufmRoot + "2.0/")
+                Librefm().setToken(prefs.gnufmSessKey)
+                    ?.setApiRoot(prefs.gnufmRoot + "2.0/")
+                    ?.setTlsNoVerify(prefs.gnufmTlsNoVerify)
 
-            if (!shouldSupportLove) {
+            if (!supportsLove) {
                 map[R.string.listenbrainz] = ListenBrainz().setToken(prefs.listenbrainzToken)
                 map[R.string.custom_listenbrainz] =
                     ListenBrainz().setToken(prefs.customListenbrainzToken)
                         ?.setApiRoot(prefs.customListenbrainzRoot)
+                        ?.setTlsNoVerify(prefs.customListenbrainzTlsNoVerify)
             }
             return map
         }

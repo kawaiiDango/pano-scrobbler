@@ -108,10 +108,7 @@ class PersistedSliderPref(context: Context, attrs: AttributeSet?, defAttrs: Int,
     override fun onSetInitialValue(defaultValue: Any?) {
         // conform value to avoid a crash
         var tmpValue = getPersistedInt((defaultValue as? Int) ?: mMin)
-        if (tmpValue > mMax)
-            tmpValue = mMax
-        if (tmpValue < mMin)
-            tmpValue = mMin
+            .coerceIn(mMin, mMax)
 
         if (mSeekBarIncrement > 0) {
             tmpValue = (tmpValue / mSeekBarIncrement) * mSeekBarIncrement
@@ -131,7 +128,10 @@ class PersistedSliderPref(context: Context, attrs: AttributeSet?, defAttrs: Int,
 
     override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
         this.value = slider.value.toInt()
-        ((slider.parent as ViewGroup).getChildAt(1) as TextView).text = getFormattedValue(value)
+        ((slider.parent as ViewGroup).getChildAt(1) as TextView).apply {
+            if (visibility == View.VISIBLE)
+                text = getFormattedValue(value)
+        }
         persistInt(this.value)
     }
 

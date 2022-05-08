@@ -1,19 +1,22 @@
 package com.arn.scrobble.billing
 
 
+import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.ImageSpan
+import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.core.view.updatePaddingRelative
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.ContentBillingBinding
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import com.google.android.material.transition.MaterialSharedAxis
 
 
@@ -45,7 +48,6 @@ class BillingFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         Stuff.setTitle(activity!!, "")
-
     }
 
     override fun onDestroyView() {
@@ -57,32 +59,43 @@ class BillingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val bulletStrings = arrayOf(
-            R.drawable.vd_palette to R.string.pref_themes,
-            R.drawable.vd_apps to R.string.pref_show_scrobble_sources,
-            R.drawable.vd_ban to R.string.billing_block,
-            R.drawable.vd_share to R.string.billing_sharing
+            R.drawable.vd_palette to getString(R.string.pref_themes),
+            R.drawable.vd_apps to getString(R.string.pref_show_scrobble_sources),
+            R.drawable.vd_ban to getString(R.string.billing_block),
+//            R.drawable.vd_pin to getString(R.string.billing_pin_friends, 10),
+            R.drawable.vd_share to getString(R.string.billing_sharing),
         )
 
-        val spannableStringBuilder = SpannableStringBuilder()
+        bulletStrings.forEach { (iconRes, string) ->
+            val textView = MaterialTextView(context!!).apply {
+                text = string
+                TextViewCompat.setCompoundDrawableTintList(
+                    this,
+                    ColorStateList.valueOf(
+                        MaterialColors.getColor(
+                            context!!,
+                            R.attr.colorSecondary,
+                            null
+                        )
+                    )
+                )
 
-        bulletStrings.forEach { (iconRes, stringRes) ->
-            val l = spannableStringBuilder.length
-            spannableStringBuilder.append("\timg " + getString(stringRes) + "\n")
-            val icon = ContextCompat.getDrawable(context!!, iconRes)!!.apply {
-                setTint(MaterialColors.getColor(context!!, R.attr.colorSecondary, null))
-                setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+                setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    iconRes,
+                    0,
+                    0,
+                    0
+                )
+
+                compoundDrawablePadding = 16.dp
+                textSize = 16f
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    justificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD
+                }
+                updatePaddingRelative(bottom = 4.dp)
             }
-            val iconSpan = ImageSpan(icon, ImageSpan.ALIGN_BOTTOM)
-
-            spannableStringBuilder.setSpan(
-                iconSpan,
-                l + 1,
-                l + 4,
-                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-            )
+            binding.billingLl.addView(textView)
         }
-
-        binding.proBenefits.text = spannableStringBuilder.trimEnd()
 
         binding.startBilling.setOnClickListener {
             val skuDetails = billingViewModel.proSkuDetails.value

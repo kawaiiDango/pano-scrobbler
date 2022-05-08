@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_weeks"
+        android:icon="@drawable/vd_week"
+        android:title="!set"
+        app:iconTint="?android:colorForeground" />
+
+    <item
+        android:id="@+id/menu_months"
+        android:icon="@drawable/vd_month"
+        android:title="!set"
+        app:iconTint="?android:colorForeground" />
+
+    <item
+        android:id="@+id/menu_years"
+        android:icon="@drawable/vd_calendar"
+        android:title="!set"
+        app:iconTint="?android:colorForeground" />
+
+    <item
+        android:id="@+id/menu_continuous"
+        android:icon="@drawable/vd_circle"
+        android:title="!set"
+        app:iconTint="?android:colorForeground" />
+
+    <item
+        android:id="@+id/menu_custom"
+        android:icon="@drawable/vd_calendar_range"
+        android:title="!set"
+        app:iconTint="?android:colorForeground" />
+
+</menu>

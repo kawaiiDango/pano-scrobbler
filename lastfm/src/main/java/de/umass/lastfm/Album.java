@@ -49,18 +49,25 @@ public class Album extends MusicEntry {
 			Locale.ENGLISH); /* only used in User.getNewReleases() */
 	
 	private String artist;
+    private String artistMbid;
+    private String artistUrl;
+
 	private Date releaseDate;
 	private Collection<Track> tracks;
 
-	public Album(String name, String url, String artist) {
+    public Album(String name, String url, String artist) {
 		super(name, url);
 		this.artist = artist;
 	}
 
-	private Album(String name, String url, String mbid, int playcount, int listeners, boolean streamable,
-					String artist) {
+	public Album(int id, String name, String url, String mbid, int playcount, int userPlaycount, int listeners,
+                 String artist, String artistUrl, String artistMbid, boolean streamable) {
 		super(name, url, mbid, playcount, listeners, streamable);
+        this.id = Integer.toString(id);
 		this.artist = artist;
+        this.artistUrl = artistUrl;
+        this.artistMbid = artistMbid;
+        this.userPlaycount = userPlaycount;
 	}
 
 	public String getArtist() {
@@ -71,7 +78,15 @@ public class Album extends MusicEntry {
 		return releaseDate;
 	}
 
-	/**
+    public String getArtistMbid() {
+        return artistMbid;
+    }
+
+    public String getArtistUrl() {
+        return artistUrl;
+    }
+
+    /**
 	 * Returns the list of {@link Track}s on this album. This information is only available in
 	 * {@link Album#getInfo(String, String, String)} responses.
 	 * 

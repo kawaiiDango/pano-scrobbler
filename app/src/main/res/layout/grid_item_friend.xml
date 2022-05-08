@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:focusable="false"
     android:orientation="vertical"
-    android:paddingTop="8dp"
-    android:focusable="false">
+    android:paddingTop="8dp">
 
     <TextView
         android:id="@+id/friends_name"
@@ -25,8 +25,8 @@
         android:maxLines="1"
         android:textAppearance="?textAppearanceBodySmall"
         android:visibility="gone"
-        tools:visibility="visible"
-        tools:text="cunt ry" />
+        tools:text="cunt ry"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/friends_scrobbles_since"
@@ -36,36 +36,55 @@
         android:maxLines="1"
         android:textAppearance="?textAppearanceBodySmall"
         android:visibility="gone"
-        tools:visibility="visible"
-        tools:text="10 scrobbles since 2010" />
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/friends_pic"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="4dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:contentDescription="@string/profile_pic"
-        android:elevation="20dp"
-        app:shapeAppearanceOverlay="@style/circleImageView"
-        tools:src="@drawable/vd_placeholder_user" />
+        tools:text="10 scrobbles since 2010"
+        tools:visibility="visible" />
 
     <FrameLayout
-        android:focusable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_gravity="center_horizontal">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/friends_pic"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="16dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/profile_pic"
+            app:shapeAppearanceOverlay="@style/circleImageView"
+            tools:src="@drawable/vd_placeholder_user" />
+
+        <ImageButton
+            android:id="@+id/friends_pin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:paddingHorizontal="8dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone"
+            android:layout_gravity="end|top"
+            tools:srcCompat="@drawable/vd_pin"
+            app:tint="?colorSecondary"
+            tools:visibility="visible" />
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/friends_track_frame"
-        android:animateLayoutChanges="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="@drawable/selector_track_container">
+        android:animateLayoutChanges="true"
+        android:background="?selectableItemBackground"
+        android:layout_marginVertical="4dp"
+        android:focusable="true"
+        android:padding="8dp">
 
         <LinearLayout
             android:id="@+id/friends_track_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="4dp"
             android:paddingStart="28sp">
 
             <TextView
@@ -78,8 +97,8 @@
                 android:maxLines="1"
                 android:textAppearance="?textAppearanceBodyMedium"
                 android:textColor="?colorTertiary"
-                tools:text="tit"
-                app:drawableEndCompat="@drawable/vd_rounded_corner" />
+                app:drawableEndCompat="@drawable/vd_rounded_corner"
+                tools:text="tit" />
 
             <TextView
                 android:id="@+id/friends_subtitle"

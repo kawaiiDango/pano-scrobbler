@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/selector_list_rounded"
+    android:paddingHorizontal="4dp"
     android:orientation="horizontal">
 
     <CheckBox
@@ -23,7 +24,6 @@
         android:id="@+id/app_list_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:adjustViewBounds="true"
         android:padding="5dp"
         android:scaleType="centerInside"
         tools:srcCompat="@android:drawable/btn_star" />
@@ -36,6 +36,5 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         tools:text="app" />
-
 
 </LinearLayout>

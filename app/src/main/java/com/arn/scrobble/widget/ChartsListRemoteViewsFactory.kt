@@ -10,6 +10,9 @@ import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.WidgetPrefs
+import de.umass.lastfm.Period
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.text.NumberFormat
 
 class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent) :
@@ -19,17 +22,11 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         AppWidgetManager.EXTRA_APPWIDGET_ID,
         AppWidgetManager.INVALID_APPWIDGET_ID
     )
-    private val periodStrings = arrayOf(
-        context.resources.getQuantityString(R.plurals.num_weeks, 1, 1),
-        context.resources.getQuantityString(R.plurals.num_months, 1, 1),
-        context.resources.getQuantityString(R.plurals.num_months, 3, 3),
-        context.resources.getQuantityString(R.plurals.num_months, 6, 6),
-        context.resources.getQuantityString(R.plurals.num_years, 1, 1),
-        context.getString(R.string.charts_overall)
-    )
+
+    private val prefs = WidgetPrefs(context)[appWidgetId]
 
     private var tab = Stuff.TYPE_ARTISTS
-    private var period = 0
+    private var period = Period.WEEK.string
 
     override fun onCreate() {
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
@@ -51,7 +48,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         widgetItems.clear()
     }
 
-    override fun getCount() = widgetItems.size + 1
+    override fun getCount() = if (widgetItems.isEmpty()) 0 else widgetItems.size + 1
 
     override fun getViewAt(position: Int): RemoteViews {
         // position will always range from 0 to getCount() - 1.
@@ -60,8 +57,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
 
         if (position == 0) {
             val headerView = RemoteViews(context.packageName, R.layout.appwidget_list_header)
-            if (period in periodStrings.indices)
-                headerView.setTextViewText(R.id.appwidget_period, periodStrings[period])
+            headerView.setTextViewText(R.id.appwidget_period, prefs.periodName)
 //            val fillInIntent = Intent().putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_CHARTS)
 //            headerView.setOnClickFillInIntent(R.id.appwidget_period, fillInIntent)
             return headerView
@@ -76,6 +72,9 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
             NumberFormat.getInstance().format(idx + 1) + "."
         )
         rv.setTextViewText(R.id.appwidget_charts_title, item.title)
+        rv.setImageViewResource(R.id.appwidget_charts_stonks_icon, Stuff.stonksIconForDelta(item.stonksDelta))
+        rv.setImageViewResource(R.id.appwidget_charts_stonks_icon_shadow, Stuff.stonksIconForDelta(item.stonksDelta))
+        rv.setContentDescription(R.id.appwidget_charts_stonks_icon, item.stonksDelta.toString())
 
         if (item.subtitle != "") {
             rv.setTextViewText(R.id.appwidget_charts_subtitle, item.subtitle)
@@ -116,7 +115,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
     override fun getLoadingView(): RemoteViews? {
         // You can create a custom loading view (for instance when getViewAt() is slow.) If you
         // return null here, you will get the default loading view.
-        return null
+        return RemoteViews(context.packageName, R.layout.appwidget_list_loading)
     }
 
     override fun getViewTypeCount() = 2
@@ -137,15 +136,15 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
     }
 
     private fun readData() {
-        widgetItems.clear()
-        val prefs = WidgetPrefs(context)[appWidgetId]
-
         tab = prefs.tab ?: Stuff.TYPE_ARTISTS
         period = prefs.period ?: return
 
-        val list = ObjectSerializeHelper.convertFrom<ArrayList<ChartsWidgetListItem>>(
-            prefs.sharedPreferences.getString("${tab}_$period", null)
-        ) ?: arrayListOf()
+        val list = kotlin.runCatching {
+            Json.decodeFromString<ArrayList<ChartsWidgetListItem>>(
+                prefs.sharedPreferences.getString("${tab}_$period", null)!!
+            )
+        }.getOrDefault(arrayListOf())
+        widgetItems.clear()
         widgetItems.addAll(list)
     }
 }

@@ -1,14 +1,14 @@
 package com.arn.scrobble
 
 import android.os.Bundle
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.transition.AutoTransition
-import androidx.transition.TransitionManager
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.databinding.NavTabBinding
 import com.google.android.material.tabs.TabLayout
@@ -87,7 +87,9 @@ open class PagerBaseFragment : Fragment(), TabLayout.OnTabSelectedListener {
     override fun onTabUnselected(tab: TabLayout.Tab) {
         TransitionManager.beginDelayedTransition(
             tab.customView as ViewGroup,
-            AutoTransition().setDuration(200)
+            AutoTransition()
+                .setDuration(200)
+                .setOrdering(AutoTransition.ORDERING_TOGETHER)
         )
         tab.customView!!.findViewById<TextView>(R.id.tab_label)?.visibility = View.GONE
     }
@@ -95,7 +97,9 @@ open class PagerBaseFragment : Fragment(), TabLayout.OnTabSelectedListener {
     override fun onTabSelected(tab: TabLayout.Tab) {
         TransitionManager.beginDelayedTransition(
             tab.customView as ViewGroup,
-            AutoTransition().setDuration(200)
+            AutoTransition()
+                .setDuration(200)
+                .setOrdering(AutoTransition.ORDERING_TOGETHER)
         )
         tab.customView!!.findViewById<TextView>(R.id.tab_label)?.visibility = View.VISIBLE
     }

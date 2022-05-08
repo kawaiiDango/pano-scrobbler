@@ -151,12 +151,14 @@ public abstract class Cache {
 	 * @param params The request parameters
 	 * @return a cache entry name
 	 */
-	public static String createCacheEntryName(String method, Map<String, String> params) {
+	public static String createCacheEntryName(String apiRootUrl, String method, Map<String, String> params) {
 		if (!(params instanceof SortedMap)) {
 			params = new TreeMap<String, String>(params);
 		}
-		StringBuilder b = new StringBuilder(100);
-		b.append(method.toLowerCase());
+		StringBuilder b = new StringBuilder(1000);
+		b.append(apiRootUrl.toLowerCase());
+        b.append('.');
+        b.append(method.toLowerCase());
 		b.append('.');
 		for (Map.Entry<String, String> e : params.entrySet()) {
 			b.append(e.getKey());

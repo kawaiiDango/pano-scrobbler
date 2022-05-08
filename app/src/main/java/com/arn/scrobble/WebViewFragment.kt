@@ -2,13 +2,13 @@ package com.arn.scrobble
 
 import android.content.Intent
 import android.net.Uri
+import android.net.http.SslError
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.CookieManager
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.databinding.ContentWebviewBinding
 import okhttp3.Cookie
@@ -19,10 +19,16 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  * Created by arn on 06/09/2017.
  */
 class WebViewFragment : Fragment() {
-    private var saveCookies = false
     private var _binding: ContentWebviewBinding? = null
     private val binding
         get() = _binding!!
+    private val url
+        get() = arguments?.getString(Stuff.ARG_URL) ?: "https://example.com"
+    private val saveCookies
+        get() = arguments?.getBoolean(Stuff.ARG_SAVE_COOKIES) ?: false
+    private val isTlsNoVerify
+        get() = arguments?.getBoolean(Stuff.ARG_TLS_NO_VERIFY) ?: false
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,15 +40,15 @@ class WebViewFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.webview.webViewClient = WebViewClient()
+        binding.webview.webViewClient = MyWebViewClient()
         binding.webview.settings.saveFormData = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && resources.getBoolean(R.bool.is_dark)) {
+            binding.webview.settings.forceDark = WebSettings.FORCE_DARK_ON
+        }
         // In Android O and afterwards, this function does not have any effect, the form data will be saved to platform's autofill service if applicable.
 //        webview.settings.javaScriptEnabled =true
 
-        val url = arguments?.getString(Stuff.ARG_URL) ?: "https://example.com"
-        saveCookies = arguments?.getBoolean(Stuff.ARG_SAVE_COOKIES) ?: false
         binding.webview.loadUrl(url)
-        binding.webview.webViewClient = MyWebViewClient()
         if (!binding.webview.isInTouchMode)
             binding.webview.requestFocus()
         super.onViewCreated(view, savedInstanceState)
@@ -127,19 +133,35 @@ class WebViewFragment : Fragment() {
             failingUrl: String?
         ) {
             //deprecated but required for lollipop
-            if (_binding != null) {
-                val htmlData =
-                    "<html><body><div align=\"center\" >" + getString(R.string.webview_error) + "<br>" +
-                            description + "</div></body></html>"
-                binding.webview.loadUrl("about:blank")
-                binding.webview.loadDataWithBaseURL(null, htmlData, "text/html", "UTF-8", null)
-                binding.webview.invalidate()
+            showErrorMessage(description ?: "null")
+        }
 
+        override fun onReceivedSslError(
+            view: WebView?,
+            handler: SslErrorHandler?,
+            error: SslError?
+        ) {
+            if (isTlsNoVerify)
+                handler?.proceed()
+            else {
+                showErrorMessage(error.toString())
+                super.onReceivedSslError(view, handler, error)
             }
         }
 
         override fun onPageFinished(view: WebView, url: String?) {
             (activity as? MainActivity)?.binding?.coordinatorMain?.toolbar?.title = view.title
+        }
+
+        private fun showErrorMessage(text: String) {
+            _binding ?: return
+
+            val htmlData =
+                "<html><body><div align=\"center\" >" + getString(R.string.webview_error) + "<br>" +
+                        text + "</div></body></html>"
+            binding.webview.loadUrl("about:blank")
+            binding.webview.loadDataWithBaseURL(null, htmlData, "text/html", "UTF-8", null)
+
         }
     }
 }

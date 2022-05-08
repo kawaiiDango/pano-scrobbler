@@ -1,13 +1,19 @@
 package com.arn.scrobble
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.*
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.drawable.*
+import android.graphics.drawable.Animatable2
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.InsetDrawable
 import android.hardware.input.InputManager
 import android.net.Uri
 import android.os.Build
@@ -18,25 +24,39 @@ import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.Html
 import android.text.Spanned
 import android.text.format.DateUtils
+import android.transition.AutoTransition
+import android.transition.TransitionManager
+import android.transition.TransitionSet
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.InputDevice
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowInsets
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -48,23 +68,26 @@ import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
-import de.umass.lastfm.Track
+import com.google.android.material.snackbar.Snackbar
+import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
+import io.michaelrocks.bimap.BiMap
+import io.michaelrocks.bimap.HashBiMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.IOException
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.ln
-import kotlin.math.min
-import kotlin.math.pow
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
+import kotlin.math.*
 
 
 /**
@@ -72,6 +95,7 @@ import kotlin.math.pow
  */
 
 object Stuff {
+    const val SCROBBLER_PROCESS_NAME = "bgScrobbler"
     const val TAG_HOME_PAGER = "home_pager"
     const val TAG_CHART_PAGER = "chart_pager"
     const val TAG_FIRST_THINGS = "first_things"
@@ -87,12 +111,15 @@ object Stuff {
     const val ARG_COUNT = "count"
     const val ARG_DATA = "data"
     const val ARG_PKG = "pkg"
-    const val ARG_SHOW_ALBUM_TRACKS = "show_album_tracks"
+    const val ARG_ACTION = "action"
+    const val ARG_TLS_NO_VERIFY = "tls_no_verify"
+    const val ARG_ALLOWED_PACKAGES = MainPrefs.PREF_ALLOWED_PACKAGES
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
     const val TYPE_TRACKS = 3
     const val TYPE_LOVES = 4
     const val TYPE_SC = 5
+    const val TYPE_TAG_CLOUD = 6
     const val NP_ID = -5
     const val LIBREFM_KEY = "panoScrobbler"
     const val LAST_KEY = Tokens.LAST_KEY
@@ -109,9 +136,15 @@ object Stuff {
     const val FRIENDS_RECENTS_DELAY = 800L
     const val CROSSFADE_DURATION = 200
     const val MAX_PATTERNS = 30
+    const val MAX_PINNED_FRIENDS = 10
+    const val MAX_INDEXED_ITEMS = 4000
+    const val MAX_CHARTS_NUM_COLUMNS = 6
+    const val MIN_CHARTS_NUM_COLUMNS = 1
+    const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
 
     const val EXTRA_PINNED = "pinned"
+    val DEMO_MODE = BuildConfig.DEBUG && false
 
     val SERVICE_BIT_POS = mapOf(
         R.string.lastfm to 0,
@@ -131,6 +164,7 @@ object Stuff {
     const val OFFLINE_SCROBBLE_JOB_DELAY = 20 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val CRASH_REPORT_INTERVAL = 120 * 60 * 1000L
+    const val CHARTS_WIDGET_REFRESH_INTERVAL = 30 * 60 * 1000L
     const val TRACK_INFO_VALIDITY = 5 * 1000L
     const val TRACK_INFO_WINDOW = 60 * 1000L
     const val TRACK_INFO_REQUESTS = 2
@@ -142,8 +176,6 @@ object Stuff {
     const val EDITS_REPLACE_ALL = 1
     const val EDITS_REPLACE_EXISTING = 2
     const val EDITS_KEEP_EXISTING = 3
-
-    const val LOADING_ALPHA = 0.7f
 
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
@@ -158,29 +190,6 @@ object Stuff {
         "https://www.libre.fm/api/auth?api_key=$LIBREFM_KEY&cb=pscrobble://auth/librefm"
 
     private var timeIt = 0L
-
-    val IGNORE_ARTIST_META = setOf(
-        "com.google.android.youtube",
-        "com.vanced.android.youtube",
-        "com.google.android.ogyoutube",
-        "com.google.android.apps.youtube.mango",
-        "com.google.android.youtube.tv",
-        "com.google.android.youtube.tvkids",
-        "com.liskovsoft.smarttubetv.beta",
-        "com.liskovsoft.smarttubetv",
-        "org.schabi.newpipe",
-        "com.kapp.youtube.final",
-        "jp.nicovideo.nicobox",
-        "com.soundcloud.android",
-
-        // radios
-        "tunein.player",
-        "com.thehouseofcode.radio_nowy_swiat",
-    )
-
-    val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
-        "com.soundcloud.android",
-    )
 
     const val MANUFACTURER_HUAWEI = "huawei"
     const val MANUFACTURER_XIAOMI = "xiaomi"
@@ -205,6 +214,33 @@ object Stuff {
     const val PACKAGE_YOUTUBE_MUSIC = "com.google.android.apps.youtube.music"
     const val PACKAGE_SPOTIFY = "com.spotify.music"
     const val PACKAGE_YOUTUBE_TV = "com.google.android.youtube.tv"
+    const val PACKAGE_YMUSIC = "com.kapp.youtube.final"
+    const val PACKAGE_SOUNDCLOUD = "com.soundcloud.android"
+
+    val MARKET_URL = "market://details?id=" + BuildConfig.APPLICATION_ID
+
+    val IGNORE_ARTIST_META = setOf(
+        "com.google.android.youtube",
+        "com.vanced.android.youtube",
+        "com.google.android.ogyoutube",
+        "com.google.android.apps.youtube.mango",
+        PACKAGE_YOUTUBE_TV,
+        "com.google.android.youtube.tvkids",
+        "com.liskovsoft.smarttubetv.beta",
+        "com.liskovsoft.smarttubetv",
+        "org.schabi.newpipe",
+        PACKAGE_YMUSIC,
+        "jp.nicovideo.nicobox",
+        PACKAGE_SOUNDCLOUD,
+
+        // radios
+        "tunein.player",
+        "com.thehouseofcode.radio_nowy_swiat",
+    )
+
+    val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
+        PACKAGE_SOUNDCLOUD,
+    )
 
     val needSyntheticStates = arrayOf(
         PACKAGE_BLACKPLAYER,
@@ -232,7 +268,11 @@ object Stuff {
 
     val forcePersistentNoti by lazy {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-        Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(MANUFACTURER_HUAWEI, MANUFACTURER_XIAOMI /*, MANUFACTURER_SAMSUNG*/)
+                Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(
+            MANUFACTURER_HUAWEI,
+            MANUFACTURER_XIAOMI,
+            MANUFACTURER_SAMSUNG,
+        )
     }
 
     val updateCurrentOrImmutable: Int
@@ -258,6 +298,17 @@ object Stuff {
             Resources.getSystem().displayMetrics
         ).toInt()
 
+    val isWindows11 = Build.BOARD == "windows"
+
+    val countryCodesMap by lazy {
+        val countries = hashMapOf<String, String>()
+        Locale.getISOCountries().forEach { iso ->
+            val l = Locale("en", iso)
+            countries[l.getDisplayCountry(l)] = iso
+        }
+        countries
+    }
+
     fun log(s: String) {
         Timber.tag(TAG).i(s)
     }
@@ -273,6 +324,7 @@ object Stuff {
         try {
             Toast.makeText(c, s, len).show()
         } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -292,6 +344,7 @@ object Stuff {
             val process = Runtime.getRuntime().exec(command)
             resp = process.inputStream.bufferedReader().readText()
         } catch (e: IOException) {
+            e.printStackTrace()
         }
         return resp
     }
@@ -404,20 +457,21 @@ object Stuff {
         return Html.fromHtml("<font color=\"$hex\">$title</font>")
     }
 
-    fun getMatColor(c: Context, hash: Int, typeColor: String = "200"): Int {
-        var returnColor = Color.BLACK
-        val arrayId = c.resources.getIdentifier("mdcolors_$typeColor", "array", c.packageName)
+    fun getMatColor(
+        c: Context,
+        seed: Int,
+        colorWeight: String? = if (c.resources.getBoolean(R.bool.is_dark))
+            "200"
+        else
+            "500"
+    ): Int {
+        val colorNamesArray = c.resources.getStringArray(R.array.mdcolor_names)
+        val index = abs(seed) % colorNamesArray.size
+        val colorName = colorNamesArray[index]
 
-        if (arrayId != 0) {
-            val colors = c.resources.obtainTypedArray(arrayId)
-            val index = if (hash == 0)
-                (Math.random() * colors.length()).toInt()
-            else
-                abs(hash) % colors.length()
-            returnColor = colors.getColor(index, Color.BLACK)
-            colors.recycle()
-        }
-        return returnColor
+        val colorId =
+            c.resources.getIdentifier("mdcolor_${colorName}_$colorWeight", "color", c.packageName)
+        return ContextCompat.getColor(c, colorId)
     }
 
     fun isDark(color: Int): Boolean {
@@ -557,20 +611,25 @@ object Stuff {
     }
 
     fun launchSearchIntent(context: Context, track: Track, pkgName: String?) {
+        launchSearchIntent(context, track.name, track.artist, pkgName)
+    }
+
+    fun launchSearchIntent(context: Context, artist: String, track: String, pkgName: String?) {
         val prefs = MainPrefs(context)
 
-        if (BuildConfig.DEBUG && Build.BOARD == "windows") { // open song urls in windows browser for me
+        if (BuildConfig.DEBUG && isWindows11 && prefs.songSearchUrl.isNotEmpty()) { // open song urls in windows browser for me
             val searchUrl = prefs.songSearchUrl
-                .replace("\$artist", track.artist)
-                .replace("\$title", track.name)
+                .replace("\$artist", artist)
+                .replace("\$title", track)
             openInBrowser(context, searchUrl)
             return
         }
 
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
-            putExtra(MediaStore.EXTRA_MEDIA_ARTIST, track.artist)
-            putExtra(MediaStore.EXTRA_MEDIA_TITLE, track.name)
-            putExtra(SearchManager.QUERY, "${track.artist} ${track.name}")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
+            putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
+            putExtra(SearchManager.QUERY, "$artist $track")
             if (pkgName != null && prefs.proStatus && prefs.showScrobbleSources && prefs.searchInSource)
                 `package` = pkgName
         }
@@ -592,9 +651,35 @@ object Stuff {
     fun openInBrowser(context: Context, url: String) {
         try {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            // prevent infinite loop
+            if (MainPrefs(context).lastfmLinksEnabled) {
+                browserIntent.`package` = getDefaultBrowserPackage(context.packageManager)
+            }
+
             context.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
             toast(context, context.getString(R.string.no_browser))
+        }
+    }
+
+    private fun getDefaultBrowserPackage(packageManager: PackageManager): String? {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://example.com"))
+        return try {
+            val pkgName = packageManager.resolveActivity(
+                browserIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            )!!
+                .activityInfo.packageName
+
+            // returns "android" if no default browser is set
+            if ("." in pkgName)
+                pkgName
+            else
+                null
+        } catch (e: ActivityNotFoundException) {
+            null
         }
     }
 
@@ -623,23 +708,28 @@ object Stuff {
         return result
     }
 
-    fun dismissAllDialogFragments(manager: FragmentManager) {
-        val fragments = manager.fragments
+    fun FragmentManager.dismissAllDialogFragments() {
         for (fragment in fragments) {
             if (fragment is DialogFragment) {
                 fragment.dismissAllowingStateLoss()
             }
-            dismissAllDialogFragments(fragment.childFragmentManager)
+            fragment.childFragmentManager.dismissAllDialogFragments()
         }
     }
 
-    fun isNotiEnabled(nm: NotificationManager, pref: SharedPreferences, channelId: String) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            nm.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
+    fun FragmentManager.popBackStackTill(n: Int) {
+        while (backStackEntryCount > n) {
+            popBackStackImmediate()
+        }
+    }
+
+    fun NotificationManager.isNotiEnabled(pref: SharedPreferences, channelId: String) =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isWindows11)
+            getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
         else
             pref.getBoolean(channelId, true)
 
-    fun capSatLum(rgb: Int, maxSat: Float, maxLum: Float): Int {
+    fun capMaxSatLum(rgb: Int, maxSat: Float, maxLum: Float): Int {
         val hsl = floatArrayOf(0f, 0f, 0f)
         ColorUtils.RGBToHSL(
             Color.red(rgb),
@@ -652,10 +742,227 @@ object Stuff {
         return ColorUtils.HSLToColor(hsl)
     }
 
-    fun Context.getTintedDrwable(@DrawableRes drawableRes: Int, hash: Int): Drawable {
-        return ContextCompat.getDrawable(this, drawableRes)!!.apply {
-            setTint(getMatColor(this@getTintedDrwable, hash))
+    fun capMinSatLum(rgb: Int, minSat: Float, maxSat: Float, minLum: Float): Int {
+        val hsl = floatArrayOf(0f, 0f, 0f)
+        ColorUtils.RGBToHSL(
+            Color.red(rgb),
+            Color.green(rgb),
+            Color.blue(rgb),
+            hsl
+        )
+        hsl[1] = hsl[1].coerceIn(minSat, maxSat)
+        hsl[2] = max(hsl[2], minLum)
+        return ColorUtils.HSLToColor(hsl)
+    }
+
+    fun timeToUTC(time: Long) = time + TimeZone.getDefault().getOffset(System.currentTimeMillis())
+
+    fun timeToLocal(time: Long) = time - TimeZone.getDefault().getOffset(System.currentTimeMillis())
+
+    fun getCountryFlag(countryName: String): String {
+        val isoCode = countryCodesMap[countryName] ?: return ""
+        val flagEmoji = StringBuilder()
+        isoCode.forEach {
+            val codePoint = 127397 + it.code
+            flagEmoji.appendCodePoint(codePoint)
         }
+        return flagEmoji.toString()
+    }
+
+    fun PopupMenu.showWithIcons(iconTintColor: Int? = null) {
+        (menu as? MenuBuilder)?.showIcons(iconTintColor)
+        show()
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun MenuBuilder.showIcons(iconTintColor: Int? = null) {
+        setOptionalIconsVisible(true)
+        visibleItems.forEach { item ->
+            val iconMarginPx =
+                context.resources.getDimension(R.dimen.popup_menu_icon_padding).toInt()
+            if (item.icon != null) {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                    item.icon = InsetDrawable(item.icon, iconMarginPx, 0, iconMarginPx, 0)
+                } else {
+                    item.icon =
+                        object : InsetDrawable(item.icon, iconMarginPx, 0, iconMarginPx, 0) {
+                            override fun getIntrinsicWidth() =
+                                intrinsicHeight + iconMarginPx + iconMarginPx
+                        }
+                }
+
+                if (iconTintColor != null)
+                    item.icon.setTint(iconTintColor)
+            }
+        }
+    }
+
+    fun MusicEntry.toBundle() = Bundle().also {
+        when (this) {
+            is Track -> {
+                it.putString(NLService.B_ARTIST, artist)
+                if (!album.isNullOrEmpty())
+                    it.putString(NLService.B_ALBUM, album)
+                it.putString(NLService.B_TRACK, name)
+            }
+            is Album -> {
+                it.putString(NLService.B_ARTIST, artist)
+                it.putString(NLService.B_ALBUM, name)
+            }
+            is Artist -> {
+                it.putString(NLService.B_ARTIST, name)
+            }
+        }
+    }
+
+    fun <T : Any> List<T>.toBimap(): BiMap<Int, T> {
+        val map = mapIndexed { i, it -> i to it }.toMap()
+        return HashBiMap.create(map)
+    }
+
+    fun <T : Any> BiMap<Int, T>.firstOrNull() = get(0)
+
+    fun <T : Any> BiMap<Int, T>.lastOrNull() = get(size - 1)
+
+
+    fun RecyclerView.mySmoothScrollToPosition(
+        position: Int,
+        padding: Int = 40.dp,
+        animate: Boolean = true
+    ) {
+
+        val smoothScroller by lazy {
+            object : LinearSmoothScroller(context) {
+                override fun getHorizontalSnapPreference() = SNAP_TO_ANY
+                override fun getVerticalSnapPreference() = SNAP_TO_ANY
+
+                override fun calculateTimeForScrolling(dx: Int): Int {
+                    return super.calculateTimeForScrolling(dx).coerceAtLeast(100)
+                    // at least 100ms. Looks instant otherwise for some reason
+                }
+
+                override fun calculateDtToFit(
+                    viewStart: Int,
+                    viewEnd: Int,
+                    boxStart: Int,
+                    boxEnd: Int,
+                    snapPreference: Int
+                ): Int {
+
+                    val dtStart = boxStart + padding - viewStart
+                    if (dtStart > 0) {
+                        return dtStart
+                    }
+                    val dtEnd = boxEnd - padding - viewEnd
+                    if (dtEnd < 0) {
+                        return dtEnd
+                    }
+                    return 0
+                }
+            }
+        }
+
+        smoothScroller.targetPosition = position
+
+        if (animate) {
+            layoutManager!!.startSmoothScroll(smoothScroller)
+        } else {
+            // scroll without animation
+            // https://stackoverflow.com/a/51233011/1067596
+
+            doOnNextLayout {
+                scrollToPosition(position)
+            }
+        }
+    }
+
+    fun Context.attrToThemeId(@AttrRes attributeResId: Int): Int {
+        val typedValue = TypedValue()
+        if (theme.resolveAttribute(attributeResId, typedValue, true)) {
+            return typedValue.data
+        }
+        throw IllegalArgumentException(resources.getResourceName(attributeResId))
+    }
+
+    fun Context.getTintedDrawable(@DrawableRes drawableRes: Int, hash: Int) =
+        ContextCompat.getDrawable(this, drawableRes)!!.apply {
+            setTint(getMatColor(this@getTintedDrawable, hash))
+        }
+
+    fun RecyclerView.ViewHolder.setDragAlpha(dragging: Boolean) {
+        itemView.animate().alpha(
+            if (dragging) 0.5f
+            else 1f
+        ).setDuration(150).start()
+    }
+
+    fun BottomSheetDialogFragment.scheduleTransition() {
+        val viewParent = view?.parent as? ViewGroup ?: return
+        val lastRunTime = viewParent.getTag(R.id.time) as? Int ?: 0
+        val now = System.currentTimeMillis()
+        if (now - lastRunTime < 500) {
+            return
+        }
+        viewParent.setTag(R.id.time, now)
+
+        TransitionManager.beginDelayedTransition(
+            viewParent,
+            AutoTransition()
+                .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                .setInterpolator(DecelerateInterpolator())
+        )
+    }
+
+    fun Snackbar.focusOnTv() {
+        if (MainActivity.isTV)
+            view.postDelayed({
+                view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                    .requestFocus()
+            }, 200)
+    }
+
+    fun JobInfo.Builder.scheduleExpeditedCompat(
+        js: JobScheduler,
+        elseFn: (JobInfo.Builder.() -> Unit)? = null
+    ): Int {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            setExpedited(true)
+        } else {
+            elseFn?.invoke(this)
+        }
+        val jobInfo = build()
+        var result = js.schedule(jobInfo)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && jobInfo.isExpedited && result == JobScheduler.RESULT_FAILURE) {
+            setExpedited(false)
+            elseFn?.invoke(this)
+            build()
+            result = js.schedule(jobInfo)
+        }
+        return result
+    }
+
+    fun getAction(
+        icon: Int,
+        emoji: String,
+        text: String,
+        pIntent: PendingIntent
+    ): NotificationCompat.Action {
+        val emojiText = if (isWindows11)
+            "$emoji $text"
+        else
+            text
+        return NotificationCompat.Action(icon, emojiText, pIntent)
+    }
+
+    fun stonksIconForDelta(delta: Int?) = when {
+        delta == null -> 0
+        delta == Int.MAX_VALUE -> R.drawable.vd_stonks_new
+        delta in 1..5 -> R.drawable.vd_stonks_up
+        delta > 5 -> R.drawable.vd_stonks_up_double
+        delta in -1 downTo -5 -> R.drawable.vd_stonks_down
+        delta < -5 -> R.drawable.vd_stonks_down_double
+        delta == 0 -> R.drawable.vd_stonks_no_change
+        else -> 0
     }
 
     fun Calendar.setMidnight() {
@@ -702,69 +1009,6 @@ object Stuff {
                 }
     }
 
-    fun scheduleDigests(context: Context, prefs: MainPrefs) {
-        if (prefs.digestSeconds == null)
-            prefs.digestSeconds = (60..3600).random()
-
-        val secondsToAdd = -(prefs.digestSeconds ?: 60)
-
-        val weeklyIntent = PendingIntent.getBroadcast(
-            context, 20,
-            Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable
-        )
-
-        val monthlyIntent = PendingIntent.getBroadcast(
-            context, 21,
-            Intent(NLService.iDIGEST_MONTHLY), updateCurrentOrImmutable
-        )
-
-        val now = System.currentTimeMillis()
-
-        val cal = Calendar.getInstance()
-        cal.firstDayOfWeek = Calendar.MONDAY
-
-        cal.setMidnight()
-
-        cal[Calendar.DAY_OF_WEEK] = Calendar.MONDAY
-        cal.add(Calendar.WEEK_OF_YEAR, 1)
-        cal.add(Calendar.SECOND, secondsToAdd)
-        if (cal.timeInMillis < now)
-            cal.add(Calendar.WEEK_OF_YEAR, 1)
-        val nextWeek = cal.timeInMillis
-
-        cal.timeInMillis = now
-        cal.setMidnight()
-
-        cal[Calendar.DAY_OF_MONTH] = 1
-        cal.add(Calendar.MONTH, 1)
-        cal.add(Calendar.SECOND, secondsToAdd)
-        if (cal.timeInMillis < now)
-            cal.add(Calendar.MONTH, 1)
-        val nextMonth = cal.timeInMillis
-
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.set(AlarmManager.RTC, nextWeek, weeklyIntent)
-        alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
-
-
-        val dailyTestDigests = false
-        if (BuildConfig.DEBUG && dailyTestDigests) {
-            val dailyIntent = PendingIntent.getBroadcast(
-                context, 22,
-                Intent(NLService.iDIGEST_WEEKLY), updateCurrentOrImmutable
-            )
-
-            cal.timeInMillis = now
-            cal.setMidnight()
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-            cal.add(Calendar.SECOND, secondsToAdd)
-            if (cal.timeInMillis < now)
-                cal.add(Calendar.DAY_OF_YEAR, 1)
-            val nextDay = cal.timeInMillis
-            alarmManager.set(AlarmManager.RTC, nextDay, dailyIntent)
-        }
-    }
-
     fun Fragment.hideKeyboard() {
         val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
@@ -808,7 +1052,7 @@ object Stuff {
                                 service.clientLabel
                             ) + ")"
                 )
-                if (service.process == BuildConfig.APPLICATION_ID + ":bgScrobbler" /*&& service.clientCount > 0 */) {
+                if (service.process == BuildConfig.APPLICATION_ID + ":${Stuff.SCROBBLER_PROCESS_NAME}" /*&& service.clientCount > 0 */) {
                     serviceRunning = true
                     break
                 }
@@ -819,6 +1063,17 @@ object Stuff {
 
         log("${this::isScrobblerRunning.name} : service not running")
         return false
+    }
+
+    fun View.startFadeLoop() {
+        clearAnimation()
+        val anim = AlphaAnimation(0.5f, 0.9f).apply {
+            duration = 500
+            repeatCount = Animation.INFINITE
+            repeatMode = Animation.REVERSE
+            interpolator = DecelerateInterpolator()
+        }
+        startAnimation(anim)
     }
 
     val ImageView.memoryCacheKey
@@ -850,22 +1105,81 @@ object Stuff {
     fun <T> RecyclerView.Adapter<*>.autoNotify(
         oldList: List<T>,
         newList: List<T>,
-        compare: (T, T) -> Boolean
+        detectMoves: Boolean = false,
+        compareContents: (T, T) -> Boolean = { old, new -> old == new },
+        compare: (T, T) -> Boolean,
     ) {
         val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return compare(oldList[oldItemPosition], newList[newItemPosition])
-            }
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                compare(oldList[oldItemPosition], newList[newItemPosition])
 
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldList[oldItemPosition] == newList[newItemPosition]
-            }
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                compareContents(oldList[oldItemPosition], newList[newItemPosition])
 
             override fun getOldListSize() = oldList.size
             override fun getNewListSize() = newList.size
-        })
+        }, detectMoves)
         diff.dispatchUpdatesTo(this)
     }
 
+    fun OkHttpClient.Builder.ignoreSslErrors(): OkHttpClient.Builder {
+        // Create a trust manager that does not validate certificate chains
+        val trustAllCerts = Caller.trustAllCerts
+        // Install the all-trusting trust manager
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+        // Create an ssl socket factory with our all-trusting manager
+        val sslSocketFactory = sslContext.socketFactory
+
+        return sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+            .hostnameVerifier { _, _ -> true }
+    }
+
+    fun TextView.setTextAndAnimate(@StringRes stringRes: Int) =
+        setTextAndAnimate(context.getString(stringRes))
+
+    fun TextView.setTextAndAnimate(text: String) {
+        val oldText = this.text.toString()
+        if (oldText == text) return
+        TransitionManager.beginDelayedTransition(parent as ViewGroup)
+        this.text = text
+    }
+
+    fun Context.copyToClipboard(text: String, toast: Boolean = true) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Pano Scrobbler", text)
+        clipboard.setPrimaryClip(clip)
+        if (toast)
+            toast(this, getString(R.string.copied))
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    fun Context.getScrobblerExitReasons(
+        afterTime: Long = -1,
+        printAll: Boolean = false
+    ): List<ApplicationExitInfo> {
+        return try {
+            val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 5)
+            if (printAll) {
+                exitReasons.forEachIndexed { index, applicationExitInfo ->
+                    Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
+                }
+            }
+            exitReasons.filter {
+                it.processName == "$packageName:$SCROBBLER_PROCESS_NAME"
+                        && it.reason == ApplicationExitInfo.REASON_OTHER
+                        && it.timestamp > afterTime
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+        // Caused by java.lang.IllegalArgumentException at getHistoricalProcessExitReasons
+        // Comparison method violates its general contract!
+        // probably a samsung bug
+    }
+
     fun <K, V> Map<K, V>.getOrDefaultKey(key: K, defaultKey: K) = this[key] ?: this[defaultKey]!!
+
+    fun <T> List<T>.wrappedGet(index: Int) = this[(index + size) % size]
 }

@@ -42,9 +42,8 @@ class PersistentNotificationService : Service() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nb.setContentTitle(getString(R.string.persistent_noti_desc))
-                .setContentText(getString(R.string.scrobbler_on))
         } else {
-            nb.setContentTitle(getString(R.string.scrobbler_on))
+            nb.setContentTitle(getString(R.string.app_name))
         }
 
         startForeground(ID, nb.build())

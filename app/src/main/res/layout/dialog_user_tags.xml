@@ -5,8 +5,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="24dp"
-    android:paddingHorizontal="24dp">
+    android:paddingTop="@dimen/dialog_padding"
+    android:paddingHorizontal="@dimen/dialog_padding">
 
     <FrameLayout
         android:layout_width="match_parent"

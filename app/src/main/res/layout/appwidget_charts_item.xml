@@ -1,42 +1,68 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appwidget_charts_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
-    android:paddingVertical="6dp"
-    android:paddingHorizontal="16dp"
     android:background="?android:selectableItemBackground"
-    android:id="@+id/appwidget_charts_item">
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="6dp">
 
-    <TextView
-        android:id="@+id/appwidget_charts_serial"
+    <FrameLayout
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/appwidget_charts_stonks_icon_shadow"
+            android:layout_width="@dimen/stonks_icon_size"
+            android:layout_height="@dimen/stonks_icon_size"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:alpha="?fakeShadowAlpha"
+            android:tint="?android:colorBackground"
+            tools:src="@drawable/vd_stonks_up_double" />
+
+        <ImageView
+            android:id="@+id/appwidget_charts_stonks_icon"
+            android:layout_width="@dimen/stonks_icon_size"
+            android:layout_height="@dimen/stonks_icon_size"
+            tools:src="@drawable/vd_stonks_up_double" />
+    </FrameLayout>
+
+    <FrameLayout
         android:layout_width="36dp"
         android:layout_height="wrap_content"
-        tools:text="11."
-        android:layout_gravity="center_vertical"
-        android:textSize="16sp" />
+        android:layout_gravity="center_vertical">
+    <TextView
+        android:id="@+id/appwidget_charts_serial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        tools:text="11." />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/appwidget_charts_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="@string/appwidget_loading"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            tools:text="@string/appwidget_loading" />
 
         <TextView
             android:id="@+id/appwidget_charts_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="14dp"
-            tools:text="@string/appwidget_loading"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            tools:text="@string/appwidget_loading" />
     </LinearLayout>
 
     <TextView
@@ -45,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:paddingStart="8dp"
-        tools:text="99999"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        tools:text="99999" />
 
 </LinearLayout>

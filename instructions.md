@@ -1,3 +1,5 @@
+Welcome to my spaghetti
+
 Create /app/src/main/java/com/arn/scrobble/Tokens.kt
 ```
 package com.arn.scrobble
@@ -14,7 +16,6 @@ object Tokens {
     const val BASE_64_ENCODED_PUBLIC_KEY = ""
 }
 ```
-Remove line 4 from app/build.gradle
-Remove line 11 from ./build.gradle
+Remove the lines below `// remove if not needed` in app/build.gradle.kts and /build.gradle.kts
 
-Create app/version.txt and put a number in it
+Create app/version.txt and put a positive integer in it

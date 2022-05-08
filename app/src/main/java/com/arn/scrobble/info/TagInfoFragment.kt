@@ -12,7 +12,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.Stuff.expandIfNeeded
+import com.arn.scrobble.Stuff.scheduleTransition
 import com.arn.scrobble.databinding.ContentTagInfoBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.net.URLEncoder
@@ -45,6 +47,12 @@ class TagInfoFragment : BottomSheetDialogFragment() {
 
         val tag = arguments!!.getString(Stuff.ARG_TAG)!!
         binding.tagInfoTitle.text = tag
+
+        binding.tagInfoTitle.setOnLongClickListener {
+            context!!.copyToClipboard(binding.tagInfoTitle.text.toString())
+            true
+        }
+
         binding.tagInfoLink.setOnClickListener {
             Stuff.openInBrowser(
                 context!!,
@@ -92,6 +100,9 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                         ) {
                             val clickListener = { view: View ->
                                 if (!(view is TextView && (view.selectionStart != -1 || view.selectionEnd != -1))) {
+
+                                    scheduleTransition()
+
                                     if (binding.tagInfoWiki.maxLines == 4) {
                                         binding.tagInfoWiki.maxLines = 1000
                                         binding.tagInfoWikiExpand.rotation = 180f

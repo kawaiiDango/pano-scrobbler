@@ -2,12 +2,12 @@ package com.arn.scrobble.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import de.umass.lastfm.scrobble.ScrobbleData
 
 
 /**
  * Created by arn on 11/09/2017.
  */
-private const val tableName = "simpleEdits"
 
 @Dao
 interface SimpleEditsDao {
@@ -20,12 +20,24 @@ interface SimpleEditsDao {
     @Query("SELECT * FROM $tableName WHERE (origArtist = :artist and origAlbum = :album and origTrack = :track) OR legacyHash = :hash")
     fun findByNamesOrHash(artist: String, album: String, track: String, hash: String): SimpleEdit?
 
-    fun find(artist: String, album: String, track: String): SimpleEdit? {
+    fun performEdit(scrobbleData: ScrobbleData, allowBlankAlbumArtist: Boolean = true): SimpleEdit? {
+        val artist = scrobbleData.artist
+        val album = scrobbleData.album
+        val track = scrobbleData.track
+
         val hash = if (artist == "" && track != "")
             track.hashCode().toString() + album.hashCode().toString() + artist.hashCode().toString()
         else
             artist.hashCode().toString() + album.hashCode().toString() + track.hashCode().toString()
-        return findByNamesOrHash(artist.lowercase(), album.lowercase(), track.lowercase(), hash)
+        val edit = findByNamesOrHash(artist.lowercase(), album.lowercase(), track.lowercase(), hash)
+        if (edit != null) {
+            scrobbleData.artist = edit.artist
+            scrobbleData.album = edit.album
+            scrobbleData.track = edit.track
+            if (edit.albumArtist.isNotBlank() || allowBlankAlbumArtist)
+                scrobbleData.albumArtist = edit.albumArtist
+        }
+        return edit
     }
 
     @get:Query("SELECT count(1) FROM $tableName")
@@ -56,4 +68,8 @@ interface SimpleEditsDao {
 
     @Query("DELETE FROM $tableName")
     fun nuke()
+
+    companion object {
+        const val tableName = "simpleEdits"
+    }
 }

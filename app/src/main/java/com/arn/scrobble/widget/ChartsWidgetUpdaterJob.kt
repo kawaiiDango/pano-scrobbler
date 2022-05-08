@@ -7,57 +7,60 @@ import android.app.job.JobService
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
+import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.Stuff.scheduleExpeditedCompat
+import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.charts.TimePeriodType
+import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
+import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.pref.WidgetPrefs
-import de.umass.lastfm.Period
-import de.umass.lastfm.Session
-import de.umass.lastfm.User
+import de.umass.lastfm.*
 import kotlinx.coroutines.*
+import java.util.*
 
 
 class ChartsWidgetUpdaterJob : JobService() {
 
     private lateinit var job: Job
+    private val widgetPrefs by lazy { WidgetPrefs(applicationContext) }
 
     override fun onStartJob(jp: JobParameters): Boolean {
         job = SupervisorJob()
 
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
-        val widgetPrefs = WidgetPrefs(applicationContext)
-        val mprefs = MainPrefs(applicationContext)
 
-        val username = mprefs.lastfmUsername ?: return false
-        val lastfmSession =
-            Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, mprefs.lastfmSessKey)
+        val widgetTimePeriods = WidgetTimePeriods(this)
 
-        val appWidgetIdToPeriodInt = mutableMapOf<Int, Int>()
+        val appWidgetIdToPeriodStr = mutableMapOf<Int, String>()
         appWidgetManager.getAppWidgetIds(ComponentName(this, ChartsWidgetProvider::class.java))
             .forEach { id ->
+                if (widgetPrefs[id].lastUpdated != null && widgetPrefs[id].period == null) { // set default value for old prefs
+                    widgetPrefs[id].period = Period.ONE_MONTH.string
+                }
                 widgetPrefs[id].period?.let { period ->
-                    appWidgetIdToPeriodInt[id] = period
+                    appWidgetIdToPeriodStr[id] = period
                 }
             }
 
         suspend fun updateData(
-            all: Triple<ArrayList<ChartsWidgetListItem>, ArrayList<ChartsWidgetListItem>, ArrayList<ChartsWidgetListItem>>,
-            periodInt: Int, appWidgetIds: Collection<Int>
+            all: Triple<List<ChartsWidgetListItem>, List<ChartsWidgetListItem>, List<ChartsWidgetListItem>>,
+            periodStr: String, appWidgetIds: Collection<Int>
         ) {
             val (artists, albums, tracks) = all
 
-            widgetPrefs.chartsData(Stuff.TYPE_ARTISTS, periodInt).data =
-                ObjectSerializeHelper.convertToString(artists)
-            widgetPrefs.chartsData(Stuff.TYPE_ALBUMS, periodInt).data =
-                ObjectSerializeHelper.convertToString(albums)
-            widgetPrefs.chartsData(Stuff.TYPE_TRACKS, periodInt).data =
-                ObjectSerializeHelper.convertToString(tracks)
+            widgetPrefs.chartsData(Stuff.TYPE_ARTISTS, periodStr).dataJson = artists
+            widgetPrefs.chartsData(Stuff.TYPE_ALBUMS, periodStr).dataJson = albums
+            widgetPrefs.chartsData(Stuff.TYPE_TRACKS, periodStr).dataJson = tracks
 
             appWidgetIds.forEach { id ->
                 widgetPrefs[id].lastUpdated = System.currentTimeMillis()
+                widgetPrefs[id].periodName = widgetTimePeriods.periodsMap[periodStr]?.name
             }
 
-            delay(200) // wait for apply()
+            delay(1000) // wait for apply()
 
             appWidgetIds.forEach {
                 appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.appwidget_list)
@@ -70,49 +73,75 @@ class ChartsWidgetUpdaterJob : JobService() {
         }
 
         CoroutineScope(Dispatchers.IO + job).launch(exHandler) {
-            for (periodInt in appWidgetIdToPeriodInt.values.toSet()) {
-                if (periodInt == -1)
-                    continue
-                val period = Period.values()[periodInt]
+            for (periodStr in appWidgetIdToPeriodStr.values.toSet()) {
+                val timePeriod = widgetTimePeriods.periodsMap[periodStr]
+                    ?: widgetTimePeriods.periodsMap[Period.ONE_MONTH.string]!! // default to 1 month
 
-                val artists = async {
-                    val pr = User.getTopArtists(username, period, 50, 1, lastfmSession)
-                    pr.username!!
-                    ArrayList(
-                        pr.pageResults!!.map { ChartsWidgetListItem(it.name, "", it.playcount) }
-                    )
-                }
-                val albums = async {
-                    val pr = User.getTopAlbums(username, period, 50, 1, lastfmSession)
-                    pr.username!!
-                    ArrayList(
-                        pr.pageResults!!.map {
-                            ChartsWidgetListItem(
-                                it.name,
-                                it.artist,
-                                it.playcount
-                            )
+                val cal = Calendar.getInstance()
+                cal.setMidnight()
+
+                val prevTimePeriod =
+                    if (timePeriod.period != null && timePeriod.period != Period.OVERALL) {
+                        val duration = timePeriod.period.toDuration(endTime= cal.timeInMillis)
+                        timePeriod.period.toTimePeriod(endTime= cal.timeInMillis - duration)
+
+                    } else {
+                        cal.timeInMillis = timePeriod.start
+
+                        when (periodStr) {
+                            TimePeriodType.WEEK.toString() -> cal.add(Calendar.WEEK_OF_YEAR, -1)
+                            TimePeriodType.MONTH.toString() -> cal.add(Calendar.MONTH, -1)
+                            TimePeriodType.YEAR.toString() -> cal.add(Calendar.YEAR, -1)
+                            else -> null
+                        }?.let {
+                            TimePeriod(cal.timeInMillis, timePeriod.start)
                         }
-                    )
-                }
-                val tracks = async {
-                    val pr = User.getTopTracks(username, period, 50, 1, lastfmSession)
-                    pr.username!!
-                    ArrayList(
-                        pr.pageResults!!.map {
-                            ChartsWidgetListItem(
-                                it.name,
-                                it.artist,
-                                it.playcount
+                    }
+
+                val (artists, albums, tracks) = listOf(
+                    Stuff.TYPE_ARTISTS,
+                    Stuff.TYPE_ALBUMS,
+                    Stuff.TYPE_TRACKS
+                ).map { type ->
+                    var session: Session? = null
+                    val pr = LFMRequester(this@ChartsWidgetUpdaterJob, this)
+                        .execHere<PaginatedResult<out MusicEntry>> {
+                            getChartsWithStonks(
+                                type,
+                                timePeriod,
+                                prevTimePeriod,
+                                1,
+                                null,
+                                limit = 50
                             )
+                            session = lastfmSession
                         }
-                    )
+                    if (session?.result?.isSuccessful != true) {
+                        cancel()
+                    }
+                    pr!!.pageResults!!.map {
+                        val subtitle = when (it) {
+                            is Album -> it.artist
+                            is Track -> it.artist
+                            else -> ""
+                        }
+
+                        val imgUrl = if (it is Album) it.getWebpImageURL(ImageSize.LARGE) else null
+
+                        ChartsWidgetListItem(
+                            it.name,
+                            subtitle,
+                            it.playcount,
+                            imgUrl ?: "",
+                            it.stonksDelta
+                        )
+                    }
                 }
 
                 updateData(
-                    Triple(artists.await(), albums.await(), tracks.await()),
-                    periodInt,
-                    appWidgetIdToPeriodInt.keys
+                    Triple(artists, albums, tracks),
+                    periodStr,
+                    appWidgetIdToPeriodStr.keys
                 )
             }
             jobFinished(jp, false)
@@ -126,10 +155,9 @@ class ChartsWidgetUpdaterJob : JobService() {
     }
 
     companion object {
-        const val JOB_ID = 11
-        const val ONE_SHOT_JOB_ID = 12
+        private const val JOB_ID = 11
+        private const val ONE_SHOT_JOB_ID = 12
         var mightBeRunning = false // this may not be false when the job is force stopped
-        private const val INTERVAL = 15 * 60 * 1000L //15 mins is the minimum
 
         fun checkAndSchedule(context: Context, runImmediately: Boolean) {
             if (mightBeRunning)
@@ -138,15 +166,15 @@ class ChartsWidgetUpdaterJob : JobService() {
             val jobs = js.allPendingJobs
 
             if (runImmediately) {
-                val job = JobInfo.Builder(
+                JobInfo.Builder(
                     ONE_SHOT_JOB_ID,
                     ComponentName(context, ChartsWidgetUpdaterJob::class.java)
                 )
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setMinimumLatency(1)
-                    .setOverrideDeadline(1)
-                    .build()
-                js.schedule(job)
+                    .scheduleExpeditedCompat(js) {
+                        setMinimumLatency(1)
+                        setOverrideDeadline(1)
+                    }
             }
 
             if (jobs.any { it.id == JOB_ID }) {
@@ -157,18 +185,18 @@ class ChartsWidgetUpdaterJob : JobService() {
             val job =
                 JobInfo.Builder(JOB_ID, ComponentName(context, ChartsWidgetUpdaterJob::class.java))
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setPeriodic(INTERVAL)
+                    .setPeriodic(Stuff.CHARTS_WIDGET_REFRESH_INTERVAL)
                     .setPersisted(true)
                     .build()
             js.schedule(job)
-            Stuff.log("scheduling WidgetUpdaterJob")
+            Stuff.log("scheduling ${ChartsWidgetUpdaterJob::class.java.simpleName}")
         }
 
         fun cancel(context: Context) {
             val js = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             val id = js.allPendingJobs.firstOrNull { it.id == JOB_ID }?.id
             id?.let { js.cancel(it) }
-            Stuff.log("cancelled WidgetUpdaterJob")
+            Stuff.log("cancelled ${ChartsWidgetUpdaterJob::class.java.simpleName}")
         }
     }
 }

@@ -15,17 +15,22 @@ import androidx.core.view.doOnNextLayout
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.result
 import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.copyToClipboard
+import com.arn.scrobble.Stuff.dismissAllDialogFragments
 import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.Stuff.scheduleTransition
+import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ListItemInfoBinding
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.TrackHistoryFragment
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
-import de.umass.lastfm.Album
-import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.Track
+import de.umass.lastfm.*
 import java.text.NumberFormat
 import kotlin.math.max
 
@@ -46,10 +51,10 @@ class InfoAdapter(
         return VHInfo(ListItemInfoBinding.inflate(inflater, parent, false))
     }
 
-    override fun getItemCount() = viewModel.info.size
+    override fun getItemCount() = viewModel.infoMap.size
 
     override fun onBindViewHolder(holder: VHInfo, position: Int) {
-        holder.setItemData(viewModel.info[position], username)
+        holder.setItemData(viewModel.infoMap.entries.toList()[position], username)
     }
 
     inner class VHInfo(private val binding: ListItemInfoBinding) :
@@ -59,6 +64,7 @@ class InfoAdapter(
             // workaround for library bug where the bg color depends on when the chip was added
             // the resulting bg color was still very bright #262626 vs #1a1a1a
             // that is offset by setting chip.backgroundDrawable!!.alpha lmao
+            // edit: this doesn't work anymore in material 3
             for (i in 1..8) {
                 val chip = Chip(itemView.context)
                 chip.id = View.generateViewId()
@@ -73,17 +79,26 @@ class InfoAdapter(
                 chip.visibility = View.GONE
                 binding.infoTags.addView(chip)
             }
+
+            binding.infoName.setOnLongClickListener {
+                itemView.context.copyToClipboard(binding.infoName.text.toString())
+                true
+            }
+
+            binding.infoName.setOnClickListener {
+                binding.infoTitleBar.performClick()
+            }
         }
 
         private fun setLoved(track: Track) {
             if (track.isLoved) {
-                binding.infoHeart.setImageResource(R.drawable.vd_heart_filled)
+                binding.infoHeart.setIconResource(R.drawable.vd_heart_filled)
                 binding.infoHeart.contentDescription = itemView.context.getString(R.string.loved)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     binding.infoHeart.tooltipText = itemView.context.getString(R.string.loved)
                 }
             } else {
-                binding.infoHeart.setImageResource(R.drawable.vd_heart)
+                binding.infoHeart.setIconResource(R.drawable.vd_heart)
                 binding.infoHeart.contentDescription = itemView.context.getString(R.string.unloved)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     binding.infoHeart.tooltipText = itemView.context.getString(R.string.unloved)
@@ -92,6 +107,8 @@ class InfoAdapter(
         }
 
         private fun toggleAlbumTracks(album: Album, linearLayout: LinearLayout) {
+//            scheduleTransition()
+
             val viewCount = linearLayout.childCount
             val recyclerView = linearLayout.getChildAt(viewCount - 1) as? RecyclerView
             if (recyclerView == null) {
@@ -134,7 +151,7 @@ class InfoAdapter(
                     R.drawable.vd_arrow_up,
                     0
                 )
-                fragment.arguments?.putBoolean(Stuff.ARG_SHOW_ALBUM_TRACKS, true)
+                viewModel.albumTracksShown = true
             } else {
                 linearLayout.removeView(recyclerView)
                 binding.infoExtra.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -143,14 +160,16 @@ class InfoAdapter(
                     R.drawable.vd_arrow_right,
                     0
                 )
-                fragment.arguments?.putBoolean(Stuff.ARG_SHOW_ALBUM_TRACKS, false)
+                viewModel.albumTracksShown = false
             }
         }
 
-        fun setItemData(pair: Pair<String, MusicEntry?>, username: String?) {
-            val key = pair.first
-            val entry = pair.second
-            val b = Bundle()
+        fun setItemData(pair: Map.Entry<String, MusicEntry>, username: String?) {
+            val (key, entry) = pair
+            val entryBundle = entry.toBundle().apply {
+                putString(Stuff.ARG_USERNAME, username)
+            }
+            var imgData: Any? = null
 
             when (key) {
                 NLService.B_TRACK -> {
@@ -188,42 +207,11 @@ class InfoAdapter(
                         }
                     }
 
-                    b.putString(NLService.B_ARTIST, entry.artist)
-                    b.putString(NLService.B_TRACK, entry.name)
-
                     binding.infoExtra.text = itemView.context.getString(R.string.similar)
                     binding.infoExtra.setOnClickListener {
                         InfoExtraFragment()
-                            .apply { arguments = b }
+                            .apply { arguments = entryBundle }
                             .show(fragment.parentFragmentManager, null)
-                    }
-                    val secondaryColor =
-                        MaterialColors.getColor(itemView.context, R.attr.colorSecondary, null)
-                    if (entry.userPlaycount > 0) {
-                        binding.infoUserScrobbles.setTextColor(secondaryColor)
-                        binding.infoUserScrobblesLabel.setTextColor(secondaryColor)
-
-                        binding.infoUserScrobblesContainer.setBackgroundResource(R.drawable.selector_border_gentle)
-                        binding.infoUserScrobblesContainer.isFocusable = true
-
-                        binding.infoUserScrobblesContainer.setOnClickListener {
-                            (fragment.activity as? MainActivity)?.enableGestures()
-                            fragment.parentFragmentManager
-                                .beginTransaction()
-                                .replace(R.id.frame,
-                                    TrackHistoryFragment().apply {
-                                        arguments = Bundle().apply {
-                                            putString(NLService.B_ARTIST, entry.artist)
-                                            putString(NLService.B_TRACK, entry.name)
-                                            putString(Stuff.ARG_USERNAME, username)
-                                            putInt(Stuff.ARG_COUNT, entry.userPlaycount)
-                                        }
-                                    }
-                                )
-                                .addToBackStack(null)
-                                .commit()
-                            Stuff.dismissAllDialogFragments(fragment.parentFragmentManager)
-                        }
                     }
                 }
                 NLService.B_ALBUM -> {
@@ -232,14 +220,11 @@ class InfoAdapter(
 
                     val tracks = (entry as Album).tracks?.toList()
 
-                    b.putString(NLService.B_ARTIST, entry.artist)
-                    b.putString(NLService.B_ALBUM, entry.name)
-
                     if (!tracks.isNullOrEmpty()) {
                         var totalDuration = 0
                         var plus = ""
-                        tracks.forEachIndexed { i, track ->
-                            val duration = track.duration
+                        tracks.forEach {
+                            val duration = it.duration
                             if (duration > 0) {
                                 totalDuration += duration
                             } else
@@ -250,7 +235,7 @@ class InfoAdapter(
                         binding.infoExtra.text = itemView.context.resources.getQuantityString(
                             R.plurals.num_tracks,
                             tracks.size,
-                            tracks.size
+                            NumberFormat.getInstance().format(tracks.size)
                         ) +
                                 if (totalDuration > 0)
                                     " • " + Stuff.humanReadableDuration(totalDuration) + plus
@@ -261,152 +246,216 @@ class InfoAdapter(
                             toggleAlbumTracks(entry, binding.root)
                         }
 
-                        if (fragment.arguments?.getBoolean(
-                                Stuff.ARG_SHOW_ALBUM_TRACKS,
-                                false
-                            ) == true
-                        ) {
+                        if (viewModel.albumTracksShown) {
                             toggleAlbumTracks(entry, binding.root)
                         }
                     } else
                         binding.infoExtra.visibility = View.GONE
 
-                    binding.infoUserTags.setOnClickListener {
-                        UserTagsFragment()
-                            .apply { arguments = b }
-                            .show(fragment.childFragmentManager, null)
-                    }
-                }
-                NLService.B_ARTIST -> {
-                    binding.infoType.setImageResource(R.drawable.vd_mic)
-                    binding.infoType.contentDescription =
-                        itemView.context.getString(R.string.artist)
+                    imgData = entry.getWebpImageURL(ImageSize.EXTRALARGE)?.ifEmpty { null }
 
-                    b.putString(NLService.B_ARTIST, entry!!.name)
+                    binding.infoPic.contentDescription =
+                        itemView.context.getString(R.string.album_art)
+                    binding.infoPicExpanded.contentDescription =
+                        itemView.context.getString(R.string.album_art)
+
+                }
+                NLService.B_ARTIST, NLService.B_ALBUM_ARTIST -> {
+                    when (key) {
+                        NLService.B_ARTIST -> {
+                            binding.infoType.setImageResource(R.drawable.vd_mic)
+                            binding.infoType.contentDescription =
+                                itemView.context.getString(R.string.artist)
+                        }
+                        NLService.B_ALBUM_ARTIST -> {
+                            binding.infoType.setImageResource(R.drawable.vd_album_artist)
+                            binding.infoType.contentDescription =
+                                itemView.context.getString(R.string.album_artist)
+                        }
+                    }
+
+                    binding.infoPic.contentDescription =
+                        itemView.context.getString(R.string.artist_image)
+                    binding.infoPicExpanded.contentDescription =
+                        itemView.context.getString(R.string.artist_image)
+
+                    imgData = entry
 
                     binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
                     binding.infoExtra.setOnClickListener {
                         InfoExtraFragment()
-                            .apply { arguments = b }
-                            .show(fragment.parentFragmentManager, null)
-                    }
-                }
-                NLService.B_ALBUM_ARTIST -> {
-                    binding.infoType.setImageResource(R.drawable.vd_album_artist)
-                    binding.infoType.contentDescription =
-                        itemView.context.getString(R.string.album_artist)
-
-                    b.putString(NLService.B_ARTIST, entry!!.name)
-
-                    binding.infoExtra.visibility = View.VISIBLE
-                    binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
-                    binding.infoExtra.setOnClickListener {
-                        InfoExtraFragment()
-                            .apply { arguments = b }
+                            .apply { arguments = entryBundle }
                             .show(fragment.parentFragmentManager, null)
                     }
                 }
             }
-            binding.infoName.text = entry?.name
+            binding.infoName.text = entry.name
 
-            if (entry?.url == null && (key in viewModel.loadedTypes || !MainActivity.isOnline)) {
-                binding.infoProgress.visibility = View.GONE
-                return
+            entry.url ?: return
+            binding.infoUserTags.visibility = View.VISIBLE
+            binding.infoUserTags.setOnClickListener {
+                UserTagsFragment()
+                    .apply { arguments = entryBundle }
+                    .show(fragment.childFragmentManager, null)
             }
-            if (entry?.url != null) {
-                binding.infoProgress.visibility = View.GONE
 
-                binding.infoUserTags.visibility = View.VISIBLE
-                binding.infoUserTags.setOnClickListener {
-                    UserTagsFragment()
-                        .apply { arguments = b }
-                        .show(fragment.childFragmentManager, null)
+            binding.infoTitleBar.setOnClickListener {
+                if (binding.infoPicExpandedFrame.visibility == View.VISIBLE) { // collapse
+                    fragment.scheduleTransition()
+                    binding.infoPicExpandedFrame.visibility = View.GONE
+                    binding.infoPic.visibility = View.VISIBLE
+                    viewModel.picExpandedMap[key] = false
+                } else if (binding.infoPic.visibility == View.VISIBLE) { // expand
+                    fragment.scheduleTransition()
+                    binding.infoPicExpandedFrame.visibility = View.VISIBLE
+                    binding.infoPic.visibility = View.GONE
+                    binding.infoPicExpanded.load(binding.infoPic.result?.request?.data)
+                    viewModel.picExpandedMap[key] = true
                 }
+            }
 
-                binding.infoContent.visibility = View.VISIBLE
+            if (imgData != null) {
+                binding.infoPic.load(imgData) {
+                    listener(
+                        onSuccess = { _, _ ->
+                            if (viewModel.picExpandedMap[key] != true) {
+//                                fragment.scheduleTransition()
+                                binding.infoPic.visibility = View.VISIBLE
+                            } else
+                                binding.infoPic.visibility = View.GONE
+                        },
+                        onError = { _, _ ->
+                            binding.infoPic.visibility = View.GONE
+                        }
+                    )
+                }
+            } else {
+                binding.infoPic.visibility = View.GONE
+                binding.infoPicExpanded.visibility = View.GONE
+            }
 
-                if (username != null)
-                    binding.infoUserScrobblesLabel.text =
-                        itemView.context.getString(R.string.user_scrobbles, username)
-                binding.infoUserScrobbles.text =
-                    NumberFormat.getInstance().format(entry.userPlaycount)
-                binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
-                binding.infoScrobbles.text = NumberFormat.getInstance().format(entry.playcount)
+            binding.infoContent.visibility = View.VISIBLE
 
-                var lastI = 0
-                entry.tags.forEachIndexed { i, tag ->
-                    (binding.infoTags.getChildAt(i) as? Chip?)?.apply {
-                        text = tag
-                        visibility = View.VISIBLE
+            if (username != null)
+                binding.infoUserScrobblesLabel.text =
+                    itemView.context.getString(R.string.user_scrobbles, username)
+            binding.infoUserScrobbles.text =
+                NumberFormat.getInstance().format(entry.userPlaycount)
+            binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
+            binding.infoScrobbles.text = NumberFormat.getInstance().format(entry.playcount)
+
+            val secondaryColor =
+                MaterialColors.getColor(itemView.context, R.attr.colorSecondary, null)
+            if (entry.userPlaycount > 0) {
+                binding.infoUserScrobbles.setTextColor(secondaryColor)
+                binding.infoUserScrobblesLabel.setTextColor(secondaryColor)
+
+                binding.infoUserScrobblesContainer.setBackgroundResource(R.drawable.selector_border_gentle)
+                binding.infoUserScrobblesContainer.isFocusable = true
+
+                binding.infoUserScrobblesContainer.setOnClickListener {
+
+                    when (entry) {
+                        is Track -> {
+                            (fragment.activity as? MainActivity)?.enableGestures()
+                            fragment.parentFragmentManager
+                                .beginTransaction()
+                                .replace(R.id.frame,
+                                    TrackHistoryFragment().apply {
+                                        arguments = entryBundle.apply {
+                                            putInt(Stuff.ARG_COUNT, entry.userPlaycount)
+                                        }
+                                    }
+                                )
+                                .addToBackStack(null)
+                                .commit()
+                            fragment.parentFragmentManager.dismissAllDialogFragments()
+                        }
+                        is Album,
+                        is Artist -> {
+                            val _username = username ?: MainPrefs(itemView.context).lastfmUsername
+                            val libraryUrl =
+                                entry.url.replace("/music/", "/user/$_username/library/music/")
+                            Stuff.openInBrowser(itemView.context, libraryUrl)
+                        }
                     }
-                    lastI = i
                 }
+            }
 
-                for (i in (lastI + 1) until binding.infoTags.childCount) {
-                    val chip = binding.infoTags.getChildAt(i) as Chip
-                    chip.visibility = View.GONE
+            var lastI = 0
+            entry.tags.forEachIndexed { i, tag ->
+                (binding.infoTags.getChildAt(i) as? Chip?)?.apply {
+                    text = tag
+                    visibility = View.VISIBLE
                 }
+                lastI = i
+            }
 
-                var wikiText = entry.wikiText ?: entry.wikiSummary
+            for (i in (lastI + 1) until binding.infoTags.childCount) {
+                val chip = binding.infoTags.getChildAt(i) as Chip
+                chip.visibility = View.GONE
+            }
+
+            var wikiText = entry.wikiText ?: entry.wikiSummary
+            if (!wikiText.isNullOrBlank()) {
+                var idx = wikiText.indexOf("<a href=\"http://www.last.fm")
+                if (idx == -1)
+                    idx = wikiText.indexOf("<a href=\"https://www.last.fm")
+                if (idx != -1)
+                    wikiText = wikiText.substring(0, idx).trim()
                 if (!wikiText.isNullOrBlank()) {
-                    var idx = wikiText.indexOf("<a href=\"http://www.last.fm")
-                    if (idx == -1)
-                        idx = wikiText.indexOf("<a href=\"https://www.last.fm")
-                    if (idx != -1)
-                        wikiText = wikiText.substring(0, idx).trim()
-                    if (!wikiText.isNullOrBlank()) {
-                        wikiText = wikiText.replace("\n", "<br>")
+                    wikiText = wikiText.replace("\n", "<br>")
 //                        if (entry.wikiLastChanged != null && entry.wikiLastChanged.time != 0L)
 //                            wikiText += "<br><br><i>" + itemView.context.getString(R.string.last_updated,
 //                                    DateFormat.getLongDateFormat(itemView.context).format(entry.wikiLastChanged)) +
 //                                    "</i>"
 //                        This is the first published date and not the last updated date
-                        binding.infoWikiContainer.visibility = View.VISIBLE
-                        binding.infoWiki.text = Html.fromHtml(wikiText)
+                    binding.infoWikiContainer.visibility = View.VISIBLE
+                    binding.infoWiki.text = Html.fromHtml(wikiText)
 
-                        //text gets cut off to the right if justified and has links
-                        val urls = (binding.infoWiki.text as? Spanned)?.getSpans(
-                            0,
-                            binding.infoWiki.text.length,
-                            URLSpan::class.java
-                        )
-                        if (urls.isNullOrEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                            binding.infoWiki.justificationMode =
-                                Layout.JUSTIFICATION_MODE_INTER_WORD
+                    //text gets cut off to the right if justified and has links
+                    val urls = (binding.infoWiki.text as? Spanned)?.getSpans(
+                        0,
+                        binding.infoWiki.text.length,
+                        URLSpan::class.java
+                    )
+                    if (urls.isNullOrEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                        binding.infoWiki.justificationMode =
+                            Layout.JUSTIFICATION_MODE_INTER_WORD
 
-                        binding.infoWiki.post {
-                            if (binding.infoWiki.layout == null)
-                                return@post
-                            if (binding.infoWiki.lineCount > 2 ||
-                                binding.infoWiki.layout.getEllipsisCount(binding.infoWiki.lineCount - 1) > 0
-                            ) {
-                                val clickListener = { view: View ->
-                                    if (!(view is TextView && (view.selectionStart != -1 || view.selectionEnd != -1))) {
-                                        if (binding.infoWiki.maxLines == 2) {
-                                            binding.infoWiki.maxLines = 1000
-                                            binding.infoWikiExpand.rotation = 180f
-                                        } else {
-                                            binding.infoWiki.maxLines = 2
-                                            binding.infoWikiExpand.rotation = 0f
-                                        }
+                    binding.infoWiki.post {
+                        if (binding.infoWiki.layout == null)
+                            return@post
+                        if (binding.infoWiki.lineCount > 2 ||
+                            binding.infoWiki.layout.getEllipsisCount(binding.infoWiki.lineCount - 1) > 0
+                        ) {
+                            val clickListener = { view: View ->
+
+                                if (!(view is TextView && (view.selectionStart != -1 || view.selectionEnd != -1))) {
+                                    fragment.scheduleTransition()
+
+                                    if (binding.infoWiki.maxLines == 2) {
+                                        binding.infoWiki.maxLines = 1000
+                                        binding.infoWikiExpand.rotation = 180f
+                                    } else {
+                                        binding.infoWiki.maxLines = 2
+                                        binding.infoWikiExpand.rotation = 0f
                                     }
                                 }
-                                binding.infoWiki.setOnClickListener(clickListener)
-                                binding.infoWikiExpand.setOnClickListener(clickListener)
-                                binding.infoWikiExpand.visibility = View.VISIBLE
                             }
+
+                            binding.infoWiki.setOnClickListener(clickListener)
+                            binding.infoWikiExpand.setOnClickListener(clickListener)
+                            binding.infoWikiExpand.visibility = View.VISIBLE
                         }
                     }
                 }
+            }
 
-                binding.infoLink.visibility = View.VISIBLE
-                binding.infoLink.setOnClickListener {
-                    if (entry.url != null)
-                        Stuff.openInBrowser(itemView.context, entry.url)
-                }
-            } else {
-                // show() is not immediate, sometimes it may show after being set as GONE
-                binding.infoProgress.visibility = View.VISIBLE
+            binding.infoLink.visibility = View.VISIBLE
+            binding.infoLink.setOnClickListener {
+                if (entry.url != null)
+                    Stuff.openInBrowser(itemView.context, entry.url)
             }
         }
     }

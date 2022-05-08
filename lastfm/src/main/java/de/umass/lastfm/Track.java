@@ -63,8 +63,9 @@ public class Track extends MusicEntry {
 
 	private String artist;
 	private String artistMbid;
+    private String artistUrl;
 
-	protected String album;		// protected for use in Playlist.playlistFromElement
+    protected String album;		// protected for use in Playlist.playlistFromElement
 	private String albumMbid;
 	private String albumArtist;
 	private int position = -1;
@@ -72,8 +73,6 @@ public class Track extends MusicEntry {
 	private boolean fullTrackAvailable;
 	private boolean nowPlaying;
     private boolean loved = false;
-//    private int userPlayCount = 0;
-    private Artist artistExtended; // using it only for getRecents(extended=1)
 
 	private Date playedWhen;
 	protected int duration;		// protected for use in Playlist.playlistFromElement
@@ -93,13 +92,24 @@ public class Track extends MusicEntry {
 		this.artist = artist;
 	}
 
-	protected Track(String name, String url, String mbid, int playcount, int listeners, boolean streamable,
-					String artist, String artistMbid, boolean fullTrackAvailable, boolean nowPlaying) {
+	public Track(int id, String name, String url, String mbid, int playcount, int userPlaycount, boolean isLoved,
+                 int listeners, int duration, boolean streamable,
+                    String album, String albumMbid,
+					String artist, String artistUrl, String artistMbid, Date playedWhen,
+                 boolean fullTrackAvailable, boolean nowPlaying) {
 		super(name, url, mbid, playcount, listeners, streamable);
+        this.id = Integer.toString(id);
 		this.artist = artist;
 		this.artistMbid = artistMbid;
+        this.artistUrl = artistUrl;
 		this.fullTrackAvailable = fullTrackAvailable;
 		this.nowPlaying = nowPlaying;
+        this.playedWhen = playedWhen;
+        this.duration = duration;
+        this.loved = isLoved;
+        this.userPlaycount = userPlaycount;
+        this.album = album;
+        this.albumMbid = albumMbid;
 	}
 
     public boolean isLoved() {
@@ -110,17 +120,10 @@ public class Track extends MusicEntry {
         this.loved = loved;
     }
 
-    public void setUserPlayCount(int userPlayCount) {
-        super.userPlaycount = userPlayCount;
-    }
-
     public void setNowPlaying(boolean nowPlaying) {
         this.nowPlaying = nowPlaying;
     }
 
-    public Artist getArtistExtended() {
-        return artistExtended;
-    }
 
 	/**
 	 * Returns the duration of the song, if available, in seconds. The duration attribute is only available
@@ -223,7 +226,16 @@ public class Track extends MusicEntry {
 		return position;
 	}
 
-	/**
+
+    public String getArtistUrl() {
+        return artistUrl;
+    }
+
+    public void setArtistUrl(String artistUrl) {
+        this.artistUrl = artistUrl;
+    }
+
+    /**
 	 * Searches for a track with the given name and returns a list of possible matches.
 	 *
 	 * @param track Track name
@@ -491,7 +503,7 @@ public class Track extends MusicEntry {
 		MapUtilities.nullSafePut(params, "username", username);
 
 		Result result = Caller.getInstance().call(null, "track.getInfo",
-                apiKey, params, session, false);
+                apiKey, params, session);
 		if (!result.isSuccessful())
 			return null;
 		DomElement content = result.getContentElement();
@@ -758,7 +770,7 @@ public class Track extends MusicEntry {
 	public String toString() {
 		return "Track[name=" + name + ",artist=" + artist + ", album=" + album + ", albumArtist=" + albumArtist + ", loved=" + loved + ", position=" + position + ", duration=" + duration
 				+ ", location=" + location + ", nowPlaying=" + nowPlaying + ", fullTrackAvailable=" + fullTrackAvailable + ", playedWhen="
-				+ playedWhen + ", artistMbId=" + artistMbid + ", albumMbId" + albumMbid + "]";
+				+ playedWhen + ", artistMbId=" + artistMbid + ", albumMbId=" + albumMbid + "]";
 	}
 
 	static class TrackFactory implements ItemFactory<Track> {
@@ -791,10 +803,7 @@ public class Track extends MusicEntry {
 			if (artist.getChild("name") != null) {
 				track.artist = artist.getChildText("name");
 				track.artistMbid = artist.getChildText("mbid");
-
-				// for extended = 1
-                if (artist.getChild("image") != null)
-                    track.artistExtended = Artist.FACTORY.createItemFromElement(artist);
+                track.artistUrl = artist.getChildText("url");
 			} else {
 				track.artist = artist.getText();
 				track.artistMbid = artist.getAttribute("mbid");

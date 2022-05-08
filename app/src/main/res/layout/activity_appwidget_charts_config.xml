@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <FrameLayout
@@ -32,11 +33,13 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/appwidget_period" />
 
-            <include
+            <com.google.android.material.chip.ChipGroup
                 android:id="@+id/widget_period"
-                layout="@layout/chips_charts_period"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:selectionRequired="true"
+                app:singleLine="false"
+                app:singleSelection="true"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -75,7 +78,7 @@
                     android:id="@+id/chip_dynamic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/dynamic"
+                    android:text="@string/system_colors"
                     app:checkedIconEnabled="false" />
             </com.google.android.material.chip.ChipGroup>
 
@@ -115,11 +118,12 @@
                 android:text="@string/appwidget_show" />
 
             <TextView
+                android:id="@+id/appwidget_refresh_every_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginTop="16dp"
-                android:text="@string/appwidget_refresh_every" />
+                tools:text="@string/appwidget_refresh_every" />
         </LinearLayout>
     </ScrollView>
 

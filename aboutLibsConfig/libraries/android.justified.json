@@ -1,0 +1,11 @@
+{
+    "uniqueId": "com.uncopt:android.justified",
+    "artifactVersion": "[imported]",
+    "scm": {
+        "url": "https://github.com/programingjd/justified"
+    },
+    "name": "Justified TextView and EditText",
+    "licenses": [
+        "Apache-2.0"
+    ]
+}

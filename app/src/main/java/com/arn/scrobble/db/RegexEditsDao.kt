@@ -7,8 +7,6 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.edits.RegexPresets
 import de.umass.lastfm.scrobble.ScrobbleData
 
-private const val tableName = "regexEdits"
-
 @Dao
 interface RegexEditsDao {
     @get:Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
@@ -66,7 +64,7 @@ interface RegexEditsDao {
         fun replaceField(textp: String?, field: String): String? {
             textp ?: return null
             var text: String = textp
-            for (regexEdit in regexEdits.filter { it.field == field }) {
+            for (regexEdit in regexEdits.filter { it.fields != null && field in it.fields!! }) {
                 regexEdit.pattern ?: continue
 
                 val regexOptions = mutableSetOf<RegexOption>()
@@ -100,5 +98,9 @@ interface RegexEditsDao {
             Stuff.log("regex error: ${e.message}")
         }
         return numMatches
+    }
+
+    companion object {
+        const val tableName = "regexEdits"
     }
 }

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+
+    <style name="ColorPatchManual" />
+
+    <style name="ColorPatchManual.Pure_Background">
+        <item name="android:colorBackground">@color/background_pure</item>
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+</resources>

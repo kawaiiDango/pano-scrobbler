@@ -25,6 +25,10 @@ class UserTagsVM(app: Application) : AndroidViewModel(app) {
 
     fun addTag(newTags: String) {
         tags.value = tags.value?.apply { this += splitTags(newTags) }
+
+        // ignore play store test string
+        if (newTags == "text") return
+
         LFMRequester(getApplication(), viewModelScope).addUserTagsForEntry(entry, newTags)
     }
 

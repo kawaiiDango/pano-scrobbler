@@ -1,19 +1,19 @@
 package com.arn.scrobble.pref
 
 import android.content.Context
-import android.content.pm.ApplicationInfo
+import android.content.pm.ResolveInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
 import com.arn.scrobble.R
-import com.arn.scrobble.databinding.HeaderDefaultBinding
+import com.arn.scrobble.Stuff.autoNotify
+import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemAppBinding
-import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.PackageName
-import com.arn.scrobble.ui.VHHeader
+import com.arn.scrobble.ui.*
 import com.google.android.material.color.MaterialColors
 
 
@@ -22,112 +22,123 @@ import com.google.android.material.color.MaterialColors
  */
 class AppListAdapter(
     context: Context,
-    private val prefsSet: Set<String>,
+    private val viewModel: AppListVM
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemClickListener {
 
-    private val sectionHeaders = mutableMapOf<Int, String>()
     private val packageManager = context.packageManager
-    private val appList = mutableListOf<ApplicationInfo?>()
-    private var itemClickListener: ItemClickListener = this
-    private val selectedItems = mutableSetOf<Int>()
+    private val itemClickListener: ItemClickListener = this
+    private var oldData = SectionedVirtualList()
+    private var data = SectionedVirtualList()
+
+    init {
+        stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TYPE_ITEM -> VHItem(ListItemAppBinding.inflate(inflater, parent, false))
-            TYPE_HEADER -> VHHeader(HeaderDefaultBinding.inflate(inflater, parent, false))
+            SectionedVirtualList.TYPE_ITEM_DEFAULT -> VHItem(
+                ListItemAppBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
+            SectionedVirtualList.TYPE_HEADER_DEFAULT -> VHHeader(
+                HeaderWithActionBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (sectionHeaders.containsKey(position))
-            TYPE_HEADER
-        else
-            TYPE_ITEM
-    }
+    override fun getItemViewType(position: Int) = data.getItemType(position)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is VHItem -> appList[position]?.let {
-                holder.setItemData(it)
-            }
-            is VHHeader -> {
-                holder.setHeaderText(sectionHeaders[position] ?: "...")
-                holder.setHeaderTextColor(
-                    MaterialColors.getColor(
-                        holder.itemView,
-                        R.attr.colorSecondary
-                    )
-                )
-            }
+            is VHItem -> holder.setData(data[position] as ResolveInfo)
+
+            is VHHeader -> holder.setData(data[position] as ExpandableHeader)
+
             else -> throw RuntimeException("Invalid view type $holder")
         }
     }
 
-    fun addSectionHeader(text: String) {
-        sectionHeaders[itemCount] = text
-        add(null)
-    }
-
-    fun add(app: ApplicationInfo?, selected: Boolean = false) {
-        if (selected || app?.packageName in prefsSet)
-            selectedItems.add(itemCount)
-        appList.add(app)
-    }
-
     override fun onItemClick(view: View, position: Int) {
-        if (getItemViewType(position) == TYPE_ITEM) {
-            if (position in selectedItems)
-                selectedItems.remove(position)
+        if (getItemViewType(position) == SectionedVirtualList.TYPE_ITEM_DEFAULT) {
+            val packageName =
+                (data[position] as ResolveInfo).activityInfo.packageName
+            if (packageName in viewModel.selectedPackages)
+                viewModel.selectedPackages -= packageName
             else
-                selectedItems.add(position)
-            notifyItemChanged(position, PAYLOAD_CLICKED)
+                viewModel.selectedPackages += packageName
+            notifyItemChanged(position, 0)
         }
     }
 
-    fun getSelectedPackages(): List<String> {
-        val list = mutableListOf<String>()
-        selectedItems.forEach {
-            if (it < itemCount)
-                appList[it]?.let { list.add(it.packageName) }
-        }
-        return list
-    }
+    override fun getItemCount() = data.size
 
-    override fun getItemCount() = appList.size
+    fun populate(newData: SectionedVirtualList) {
+        data = newData.copy()
+        autoNotify(oldData, data) { o, n ->
+            o is ExpandableHeader && n is ExpandableHeader || o === n
+        }
+        oldData = data
+    }
 
     inner class VHItem(private val binding: ListItemAppBinding) :
         RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+
         init {
             binding.root.setOnClickListener(this)
-            binding.appListCheckbox.setOnCheckedChangeListener(null)
         }
 
         override fun onClick(view: View) {
             itemClickListener.call(itemView, bindingAdapterPosition)
         }
 
-        fun setItemData(app: ApplicationInfo) {
-            binding.appListName.text = app.loadLabel(packageManager)
-            binding.appListIcon.load(PackageName(app.packageName)) {
+        fun setData(resolveInfo: ResolveInfo) {
+            val packageName = resolveInfo.activityInfo.packageName
+            binding.appListName.text = resolveInfo.loadLabel(packageManager)
+            binding.appListIcon.load(PackageName(packageName)) {
                 scale(Scale.FIT)
             }
-            setChecked(true)
-        }
-
-        private fun setChecked(animate: Boolean) {
-            val isSelected = bindingAdapterPosition in selectedItems
-            if (!animate) {
-                binding.appListCheckbox.setOnCheckedChangeListener(null)
-            }
-            itemView.isActivated = isSelected
-            binding.appListCheckbox.isChecked = isSelected
-
+            val isChecked = packageName in viewModel.selectedPackages
+            itemView.isActivated = isChecked
+            binding.appListCheckbox.isChecked = isChecked
         }
     }
-}
 
-private const val TYPE_ITEM = 0
-private const val TYPE_HEADER = 1
-private const val PAYLOAD_CLICKED = 6
+    class VHHeader(private val binding: HeaderWithActionBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.headerText.setTextColor(
+                MaterialColors.getColor(
+                    itemView,
+                    R.attr.colorSecondary
+                )
+            )
+            binding.headerAction.visibility = View.GONE
+        }
+
+        fun setData(headerData: ExpandableHeader) {
+            binding.headerText.text = headerData.title
+            binding.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                ContextCompat.getDrawable(
+                    itemView.context,
+                    headerData.iconRes
+                ), null, null, null
+            )
+        }
+    }
+
+    enum class AppListSection {
+        MUSIC_PLAYERS,
+        VIDEO_PLAYERS,
+        OTHERS
+    }
+}

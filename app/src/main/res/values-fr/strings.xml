@@ -4,6 +4,18 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s semaine</item>
+        <item quantity="other">%1$s semaines</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s mois</item>
+        <item quantity="other">%1$s mois</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s année</item>
+        <item quantity="other">%1$s années</item>
+    </plurals>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="settings">Configurer</string>
@@ -140,6 +152,7 @@
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="appwidget_alpha">Opacité de l\'arrière-plan</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Le widget sera actualisé toutes les %1$d minutes</string>
     <string name="primary_color">Couleur principale</string>
     <string name="secondary_color">Couleur secondaire</string>
     <string name="random_theme">Aléatoire à chaque lancement</string>

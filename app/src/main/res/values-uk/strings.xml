@@ -89,6 +89,51 @@
     <string name="auto" comment="automatic or default setting">Автоматично</string>
     <string name="graph_info">… Останні 5 місяців</string>
     <string name="enabled_apps">Увімкнені додатки</string>
+    <string name="music_players">Музичні програвачі</string>
+    <string name="video_players">Відео стрімінгові додатки</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Інші додатки</string>
+    <string name="choose_apps">Виберіть додатки для скроблювання</string>
+    <string name="offline">Офлайн. Дані не оновлюються</string>
+    <string name="unavailable_offline">Недоступно в офлайн режимі</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервіси</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слухав \n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слухав \n%1$s %2$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Мій %1$s %2$s:\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s\'s %1$s %2$s:\n%3$s</string>
+    <string name="share_sig">(через Pano Scrobbler)</string>
+    <string name="share_this_song">Поширити цю пісню</string>
+    <string name="share">Поширити</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Умовні позначення</string>
+    <string name="grid_size">Змінити розмір сітки</string>
+    <string name="pinch_to_zoom">Щипніть для збільшення</string>
+    <string name="more_info">Детальніше</string>
+    <string name="rank_change" comment="%1= delta change">Зміна рангу: %s</string>
+    <string name="rank_change_no_change">Без змін</string>
+    <string name="rank_change_new">Не скроблено за попередній період</string>
+    <string name="search">Пошук</string>
+    <string name="library" comment="search within the library">Бібліотека</string>
+    <string name="global" comment="search globally across lastfm">Глобальний</string>
+    <string name="reindex">Швидкий покажчик</string>
+    <string name="full_index">Повний індекс</string>
+    <string name="take_long_time">Це може зайняти багато часу</string>
+    <string name="full_index_desc">Використовуйте це лише при редагуванні чи видаленні скроблів з веб-сайту.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Остання синхронізація %1$s.</string>
+    <string name="profile">Профіль</string>
+    <string name="profile_pic">Зображення профілю</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">Налаштування для цього елемента</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s виявлено</string>
+    <string name="new_player_prompt">Чи скроблювати з цього додатку?</string>
+    <string name="no_track_url">Ця пісня не має сторінки в lastFM</string>
+    <string name="no_scrobbles">Тут ще немає пісень…</string>
+    <string name="no_friends">Друзів з lastFM ще не має…</string>
+    <string name="channel_err">Помилки скроблінгу</string>
+    <string name="new_app">Новий додаток</string>
+    <string name="no_apps_enabled">Жодних програм не встановлено</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">і ще %1$d</string>
+    <string name="show_all">Переглянути всі</string>
+    <string name="edit">Редагувати</string>
+    <string name="delete">Видалити</string>
+    <string name="love">Вподобати</string>
     <string name="unlove">Скасувати вподобання</string>
     <string name="pending_scrobbles">Очікуючі Скробли</string>
     <string name="pending_scrobble">Очікуючі Скробли</string>
@@ -134,6 +179,7 @@
     <string name="sort">Сортувати</string>
     <string name="past_scrobbles">Останні скробли</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Стрибок у часі</string>
+    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s\'s</string>
     <string name="my_scrobbles">Мої скробли</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s\'s скробли</string>
     <string name="listeners">Слухачі</string>
@@ -143,6 +189,7 @@
     <string name="user_loved" formatted="true" comment="%1= username">%1$s вподобав це</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Скроблів по %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Від %1$s</string>
+    <string name="not_found" comment="Shown in search">Не знайдено</string>
     <string name="secondary_color">Додатковий колір</string>
     <string name="tint_background">Відтінок фону</string>
     <string name="random_theme">Перемішати при кожному запуску</string>

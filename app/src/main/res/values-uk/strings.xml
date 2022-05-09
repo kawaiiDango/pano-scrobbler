@@ -36,6 +36,12 @@
         <item quantity="many">%1$s пісні</item>
         <item quantity="other">%1$s пісні</item>
     </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s Редагувати</item>
+        <item quantity="few">%1$s Редагувати</item>
+        <item quantity="many">%1$s змін</item>
+        <item quantity="other">%1$s зміни</item>
+    </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s заблокованих метаданих</item>
         <item quantity="few">%1$s заблокованих метаданних</item>
@@ -92,5 +98,152 @@
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скроблів, з %2$s</string>
     <string name="allow_background">Дозволити скробблінг у фоновому режимі</string>
     <string name="grant_notification_access">Надайте доступ до сповіщень</string>
+    <string name="grant_notification_access_desc">Потрібний для отримання метаданих. Немузичні сповіщення не зчитуються</string>
+    <string name="send_notifications">Дозволити сповіщення</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Перевірте статус скроблінгу і підрахунки
+- Уподобайка чи блок безпосередньо від сповіщення
+- Отримуйте сповіщення про помилки скроблінгу та дії, які ви можете зробити
+- Отримайте топ скробли кожної неделі
+-Та більше
+- Сповіщення беззвучні\"\""</string>
+    <string name="authenticate_with_lastfm" comment="Login with last.fm">Авторизуватись з last.FM</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM і Listenbrainz можна автентифікувати після цього через налаштування</string>
+    <string name="swap" comment="(Swap title and artist)">Замінити</string>
+    <string name="rate_msg">Подобається цей додаток?</string>
+    <string name="rate_action">Оцінити програму</string>
+    <string name="time_just_now">щойно</string>
+    <string name="no_mail_apps">Не встановлено жодного клієнта електронної пошти</string>
+    <string name="loved">Уподобання</string>
+    <string name="unloved">Скасувати вподобання</string>
+    <string name="simple_edits">Зміни</string>
+    <string name="force_remembered">Примусовий скроблінг(запам\'ятається)</string>
+    <string name="grant_rec_perm">Дозвольте доступ до мікрофону</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Чарти</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Хмара тегів</string>
+    <string name="scrobble_from_mic">Скроблінг з мікрофону</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">З мікрофону</string>
+    <string name="add_to_hs">Додати на головний екран</string>
+    <string name="listening">Слухаю музику, яка грає навколо вас…</string>
+    <string name="uploading">Завантаження…</string>
+    <string name="recording_failed">Не вдалося почати запис. Мікрофон може бути зайнятий або недоступний на цьому пристрої</string>
+    <string name="press_back">Після завершення натисніть назад</string>
+    <string name="powered_acr">Працює за допомогою <i><b>ACR</b>Cloud</i></string>
+    <string name="details">Деталі</string>
+    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">Чи %1$s до %2$s</string>
+    <string name="saved_as_pending">Збережено як відкладений скробл</string>
+    <string name="sort">Сортувати</string>
+    <string name="past_scrobbles">Останні скробли</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Стрибок у часі</string>
+    <string name="my_scrobbles">Мої скробли</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s\'s скробли</string>
+    <string name="listeners">Слухачі</string>
+    <string name="scrobbles">Скробли</string>
+    <string name="collapse" comment="(view only a few items)">Згорнути</string>
+    <string name="expand" comment="(view all items)">Розгорнути</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s вподобав це</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">Скроблів по %1$s</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Від %1$s</string>
+    <string name="secondary_color">Додатковий колір</string>
+    <string name="tint_background">Відтінок фону</string>
+    <string name="random_theme">Перемішати при кожному запуску</string>
+    <string name="edit_name" comment="name for regex pattern">Ім\'я друга (необов\'язково)</string>
+    <string name="edit_regex">Шаблон регулярного виразу</string>
+    <string name="edit_regex_replacement">Заміна регулярного виразу</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Поля</string>
+    <string name="edit_replace">Заміна</string>
+    <string name="edit_first" comment="First occurrence of a pattern">Перший</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Усі</string>
+    <string name="edit_continue">Якщо знайдено, продовжуйте співпадати з іншими регулярними виразами</string>
+    <string name="edit_case_sensitive">З урахуванням регістру</string>
+    <string name="edit_regex_test">Перевірка</string>
+    <string name="edit_presets">Шаблони</string>
+    <string name="edit_presets_available">Доступні пресети</string>
+    <string name="edit_no_presets_available">Всі пресети використовуються</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Пресет %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Досягнуто ліміту шаблону (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Перетягніть маркер</string>
+    <string name="text" comment="text to test regex rules with">Текст</string>
+    <string name="edit_regex_warning">⚠ Переконайтеся, що ви зрозуміли <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> перед використанням цього, або використайте один з <b>наданих шаблонів</b>. Збіги регулярних виразів намагаються звернути</string>
+    <string name="blocked_metadata_info">При заповненні більше ніж одного поля між ними буде використовуватися оператор</string>
+    <string name="blocked_metadata_noti">Торкніться для блокування та пропуску</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Дії плеєра</string>
+    <string name="skip" comment="skip to next track">Пропустити</string>
+    <string name="mute">Вимкнути звук</string>
+    <string name="block">Заблокувати</string>
+    <string name="hidden_tags">Приховані теги</string>
+    <string name="pin">Закріпити</string>
+    <string name="unpin">Відкріпити</string>
+    <string name="pin_limit_reached" formatted="true">Досягнуто ліміту закріплень (%1$d)</string>
+    <string name="pin_help">Довге натискання на закріплені елементи, щоб змінити їх порядок</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Використовувати назву каналу</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Бажаєте увімкнути правило редагування шаблонів: %1$s?</string>
+    <string name="show_persistent_noti">Показувати постійне сповіщення</string>
+    <string name="fix_it_desc">Це може допомогти зберігати скробли у фоновому режимі</string>
+    <string name="persistent_noti_desc">Натисніть і утримуйте кнопку щоб сховати</string>
+    <string name="scrobbler_off">Скроблер вимкнено</string>
+    <string name="scrobbler_on">Скроблер увімкнений</string>
+    <string name="pref_master">Скроблінг пісень</string>
+    <string name="pref_master_qs_hint">Можна перемкнути з плитки швидких налаштувань</string>
+    <string name="pref_noti_q">Ви можете підвищити рівень сповіщення, якщо іконка не відображається</string>
+    <string name="pref_noti">Сповіщення</string>
+    <string name="pref_noti_categories">Категорії сповіщення</string>
+    <string name="pref_scrobble_noti">Сповіщення скроблінгу</string>
+    <string name="pref_lockscreen_noti">Сповіщення на екрані блокування</string>
+    <string name="pref_offline_info">ℹ️ Онлайн-скробли &amp;amp та уподобайки, будуть збережені пізніше.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Скроблінг з</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Підтримує додатки, відображаючі музикальні метаданні. Щоб уникнути подвійного скроблінгу з Spotify, увімкніть його тільки в одному місті.</string>
+    <string name="pref_enabled_apps_title">Виберіть додатки</string>
+    <string name="download">Завантажити</string>
+    <string name="changelog">Журнал змін</string>
+    <string name="import_hey_wtf">Напевно, це не експорт файлу Pano Scrobbler</string>
+    <string name="export_failed">Помилка експорту</string>
+    <string name="imported">Імпортовано</string>
+    <string name="import_options">Налаштування імпорту</string>
+    <string name="import_lists_nope">Не імпортувати зміни і блокуючий список</string>
+    <string name="import_lists_replace_all">Замінити всі зміни і блокування</string>
+    <string name="import_lists_replace_existing">Злиття, заміна існуючих редагувань і блокованих списків</string>
+    <string name="import_lists_keep">Об\'єднання, збереження існуючих змін і блокованих списків</string>
+    <string name="import_settings">Імпортувати налаштування</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Інтенсивність трансляції</string>
+    <string name="current_track">Поточний трек:</string>
+    <string name="pref_intents">Інтенти для Tasker та інших додатків</string>
+    <string name="copied">Скопійовано!</string>
+    <string name="lastfm_reauth">Вам потрібно перезапустити автентифікацію для редагування або видалення скробблів</string>
+    <string name="custom_listenbrainz">Власний сервер Listenbrainz</string>
+    <string name="failed_encode_url">Не вдалося застосувати URL</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Перевірити %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Спеціальний доступ до програми &gt; Повідомлень &gt; %1$s</string>
+    <string name="artist_extra">Популярні пісні, альбоми &amp; і схожі виконавці</string>
+    <string name="no_browser">Браузер не встановлено</string>
+    <string name="no_player">Не встановлено жодного музичного плеєра</string>
+    <string name="not_running">⚠ Скроблер був вбитий вашою системою</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Причина вбивства, надана системою: %s</string>
+    <string name="not_running_fix_action">Виправити</string>
+    <string name="login_submit">Підтвердити</string>
+    <string name="scrobble">Скробблінг</string>
+    <string name="acr_host" comment="Web hostname">Хост</string>
+    <string name="acr_key">Ключ доступу</string>
+    <string name="acr_secret">Секрет</string>
+    <string name="add_acr_key">Додати ключ ACRCloud</string>
+    <string name="remove_acr_key">Видалити ключ ACRCloud</string>
+    <string name="add_acr_consider">Щоб запобігти досягненню тарифів, спробуйте додати власний ACRCloud ключ</string>
+    <string name="add">Додати</string>
+    <string name="add_acr_key_info">"• Зареєструватися на https://console.acrcloud. om
+• Перейти до проектів &gt; Аудіо &amp; розпізнавання відео
+• Створити новий проект, виберіть записане аудіо та ACRCloud Music bucket"</string>
+    <string name="shazam_scrobbling">Щоб постійно скробляти - відкрийте <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> замість нього та запустіть Auto Shazam. Також переконайтеся, що Шазам увімкнено для скроблінгу.</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">залишилось %1$d</string>
+    <string name="submitting_loves" formatted="true">Відправка вподобайок, %1$d залишилось</string>
+    <string name="pending_batch" comment="For pending scrobbles">Відправка пакета</string>
+    <string name="webview_error">Не вдалося завантажити сторінку (ваш інтернет працює?)</string>
+    <string name="navigation_drawer_open">Відкрити панель навігації або повернутися назад</string>
+    <string name="navigation_drawer_close">Закрити меню навігації</string>
+    <string name="graph">Лінійний графік</string>
+    <string name="cleared_disabled_apps">Видалені вимкнені програми</string>
+    <string name="fix_it_title">Можливі виправлення</string>
+    <string name="fix_it_startup_title">Економія енергії, менеджер запусків</string>
+    <string name="fix_it_battery_title">Вимкнути оптимізацію використання батареї</string>
+    <string name="fix_it_action" comment="(To open an app)">Відкрити</string>
     <!--  pro  -->
+    <string name="get_pro">Підтримати проєкт</string>
 </resources>

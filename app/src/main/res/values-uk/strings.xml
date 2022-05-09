@@ -1,4 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_days">
+        <item quantity="one">%1$s день</item>
+        <item quantity="few">%1$s днів</item>
+        <item quantity="many">%1$s днів</item>
+        <item quantity="other">%1$s днів</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s тиждень</item>
+        <item quantity="few">%1$s тижнів</item>
+        <item quantity="many">%1$s тижнів</item>
+        <item quantity="other">%1$s тижнів</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s рік</item>
+        <item quantity="few">%1$s років</item>
+        <item quantity="many">%1$s роки</item>
+        <item quantity="other">%1$s років</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s виконавець</item>
+        <item quantity="few">%1$s виконавці</item>
+        <item quantity="many">%1$s виконавців</item>
+        <item quantity="other">%1$s виконавці</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s альбом</item>
+        <item quantity="few">%1$s альбома</item>
+        <item quantity="many">%1$s альбоми</item>
+        <item quantity="other">%1$s альбоми</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s пісня</item>
+        <item quantity="few">%1$s пісень</item>
+        <item quantity="many">%1$s пісні</item>
+        <item quantity="other">%1$s пісні</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s заблокованих метаданих</item>
+        <item quantity="few">%1$s заблокованих метаданних</item>
+        <item quantity="many">%1$s заблокованих метаданних</item>
+        <item quantity="other">%1$s заблокованих метаданих</item>
+    </plurals>
+    <string name="yes">Так</string>
+    <string name="no">Ні</string>
+    <string name="reset">Скинути</string>
+    <string name="settings">Налаштувати</string>
+    <string name="bug_report">Сповістити про помилку</string>
+    <string name="album_art">Обкладинка альбому</string>
+    <string name="artist_image">Зображення виконавця</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Не вдалося проаналізувати дані</string>
+    <string name="network_error">Помилка мережі</string>
+    <string name="disable_tls_verify">Ігнорувати помилки TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Скробблів ігнорується</string>
+    <string name="scrobble_ignored_save_edit">Lastfm проігнорував редагування ймовірно тому, що скробл занадто старий. Ви хочете зберегти цю зміну для подальшого скроблінгу? </string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Обов\'язкові поля відсутні</string>
+    <string name="artist">Виконавець</string>
+    <string name="artists">Виконавці</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Топ виконавців</string>
+    <string name="album_artist">Виконавець альбому</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Виконавець / канал</string>
+    <string name="similar_artists">Схожі виконавці</string>
+    <string name="album_optional">Альбом (необов\'язково)</string>
+    <string name="album">Альбом</string>
+    <string name="albums">Альбоми</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Топ альбомів</string>
+    <string name="track">Пісня</string>
+    <string name="tracks">Пісні</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Кращі композиції</string>
+    <string name="similar_tracks">Схожі пісні</string>
+    <string name="similar" comment="Similar tracks but in short">Схожі</string>
+    <string name="state_scrobbling">Відбувається скроблінг…</string>
+    <string name="state_scrobbled">Заскроблено</string>
+    <string name="unscrobble">Нескроблено</string>
+    <string name="state_unscrobbled">Нескроблено</string>
+    <string name="state_unrecognised_artist">Нерозпізнаний виконавець</string>
+    <string name="tap_to_edit">(Натисніть для редагування)</string>
+    <string name="recently_scrobbled">Нещодавно Заскроблені</string>
+    <string name="recently_loved">Нещодавно Вподобані</string>
+    <string name="recents" comment="Short for recently scrobbled">Останні</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Вперше заскорблено %1$s</string>
+    <string name="auto" comment="automatic or default setting">Автоматично</string>
+    <string name="graph_info">… Останні 5 місяців</string>
+    <string name="enabled_apps">Увімкнені додатки</string>
+    <string name="unlove">Скасувати вподобання</string>
+    <string name="pending_scrobbles">Очікуючі Скробли</string>
+    <string name="pending_scrobble">Очікуючі Скробли</string>
+    <string name="pending_scrobbles_noti">Обробка очікуючих скроблів</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s скроблів • %2$s сьогодні</string>
+    <string name="friends">Друзі</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скроблів, з %2$s</string>
+    <string name="allow_background">Дозволити скробблінг у фоновому режимі</string>
+    <string name="grant_notification_access">Надайте доступ до сповіщень</string>
     <!--  pro  -->
 </resources>

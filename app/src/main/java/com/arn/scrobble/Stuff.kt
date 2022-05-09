@@ -29,22 +29,13 @@ import android.transition.TransitionManager
 import android.transition.TransitionSet
 import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.InputDevice
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowInsets
+import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.AttrRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.RequiresApi
-import androidx.annotation.StringRes
+import android.widget.*
+import androidx.annotation.*
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
@@ -913,12 +904,61 @@ object Stuff {
         )
     }
 
-    fun Snackbar.focusOnTv() {
-        if (MainActivity.isTV)
-            view.postDelayed({
-                view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                    .requestFocus()
-            }, 200)
+    fun Snackbar.focusOnTv(): Snackbar {
+        if (MainActivity.isTV) {
+            addCallback(object : Snackbar.Callback() {
+                override fun onShown(sb: Snackbar?) {
+                    view.postDelayed({
+                        view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
+                            .requestFocus()
+                    }, 200)
+                }
+            })
+        }
+        return this
+    }
+
+    /**
+     * Adds an extra action button to this snackbar.
+     * [aLayoutId] must be a layout with a Button as root element.
+     * [aLabel] defines new button label string.
+     * [aListener] handles our new button click event.
+     */
+    fun Snackbar.addAction(
+        @LayoutRes aLayoutId: Int,
+        @StringRes aLabel: Int,
+        aListener: View.OnClickListener?
+    ): Snackbar {
+        addAction(aLayoutId, context.getString(aLabel), aListener)
+        return this
+    }
+
+    /**
+     * Adds an extra action button to this snackbar.
+     * [aLayoutId] must be a layout with a Button as root element.
+     * [aLabel] defines new button label string.
+     * [aListener] handles our new button click event.
+     */
+    fun Snackbar.addAction(
+        @LayoutRes aLayoutId: Int,
+        aLabel: String,
+        aListener: View.OnClickListener?
+    ): Snackbar {
+        // Add our button
+        val button = LayoutInflater.from(view.context).inflate(aLayoutId, null) as Button
+        // Using our special knowledge of the snackbar action button id we can hook our extra button next to it
+        view.findViewById<Button>(R.id.snackbar_action).let {
+            // Copy layout
+            button.layoutParams = it.layoutParams
+            // Copy colors
+            (button as? Button)?.setTextColor(it.textColors)
+            (it.parent as? ViewGroup)?.addView(button)
+        }
+        button.text = aLabel
+        /** Ideally we should use [Snackbar.dispatchDismiss] instead of [Snackbar.dismiss] though that should do for now */
+        //extraView.setOnClickListener {this.dispatchDismiss(BaseCallback.DISMISS_EVENT_ACTION); aListener?.onClick(it)}
+        button.setOnClickListener { this.dismiss(); aListener?.onClick(it) }
+        return this
     }
 
     fun JobInfo.Builder.scheduleExpeditedCompat(

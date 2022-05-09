@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/homePagerFragment">
+
+    <fragment
+        android:id="@+id/homePagerFragment"
+        android:name="com.arn.scrobble.HomePagerFragment"
+        android:label="HomePagerFragment" >
+        <action
+            android:id="@+id/action_homePagerFragment_to_prefFragment"
+            app:destination="@id/prefFragment" />
+        <action
+            android:id="@+id/action_homePagerFragment_to_recFragment"
+            app:destination="@id/recFragment" />
+        <action
+            android:id="@+id/action_homePagerFragment_to_searchFragment2"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homePagerFragment_to_searchExperimentFragment"
+            app:destination="@id/searchExperimentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/prefFragment"
+        android:name="com.arn.scrobble.pref.PrefFragment"
+        android:label="PrefFragment">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="com.arn.scrobble://screen/pref" />
+        <action
+            android:id="@+id/action_prefFragment_to_blockedMetadataFragment"
+            app:destination="@id/blockedMetadataFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recFragment"
+        android:name="com.arn.scrobble.RecFragment"
+        android:label="RecFragment">
+        <deepLink
+            android:id="@+id/deepLink3"
+            app:uri="com.arn.scrobble://screen/acr" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.arn.scrobble.search.SearchFragment"
+        android:label="SearchFragment" />
+    <fragment
+        android:id="@+id/searchExperimentFragment"
+        android:name="com.arn.scrobble.search.SearchExperimentFragment"
+        android:label="SearchExperimentFragment">
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="com.arn.scrobble://screen/search" />
+    </fragment>
+    <fragment
+        android:id="@+id/billingFragment"
+        android:name="com.arn.scrobble.billing.BillingFragment"
+        android:label="BillingFragment" >
+        <action
+            android:id="@+id/action_billingFragment_to_billingTroubleshootFragment"
+            app:destination="@id/billingTroubleshootFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/billingTroubleshootFragment"
+        android:name="com.arn.scrobble.billing.BillingTroubleshootFragment"
+        android:label="BillingTroubleshootFragment" />
+    <fragment
+        android:id="@+id/appListFragment"
+        android:name="com.arn.scrobble.pref.AppListFragment"
+        android:label="AppListFragment" />
+    <fragment
+        android:id="@+id/chartsPagerFragment"
+        android:name="com.arn.scrobble.charts.ChartsPagerFragment"
+        android:label="ChartsPagerFragment" />
+    <fragment
+        android:id="@+id/infoPagerFragment"
+        android:name="com.arn.scrobble.info.InfoPagerFragment"
+        android:label="InfoPagerFragment" />
+    <fragment
+        android:id="@+id/blockedMetadataFragment"
+        android:name="com.arn.scrobble.edits.BlockedMetadataFragment"
+        android:label="BlockedMetadataFragment" />
+</navigation>

@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.acrcloud.rec.*
+import com.arn.scrobble.Stuff.focusOnTv
 import com.arn.scrobble.Stuff.setTextAndAnimate
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MainPrefs
@@ -180,16 +181,7 @@ class RecFragment : Fragment(),
             .setAction(R.string.add) {
                 openAddKey()
             }
-            .addCallback(object : Snackbar.Callback() {
-                override fun onShown(sb: Snackbar?) {
-                    super.onShown(sb)
-                    if (sb != null && MainActivity.isTV)
-                        sb.view.postDelayed({
-                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                                .requestFocus()
-                        }, 200)
-                }
-            })
+            .focusOnTv()
             .show()
     }
 

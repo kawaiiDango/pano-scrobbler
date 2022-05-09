@@ -129,7 +129,6 @@ class MainPrefs(context: Context) : Krate {
     var firstLaunchTime by longPref(PREF_FIRST_LAUNCHED)
     var lastUpdateCheckTime by longPref(PREF_LAST_UPDATE_CHECK_TIME)
     var checkForUpdates by booleanPref(PREF_CHECK_FOR_UPDATES)
-    var updateCheckInterval by longPref(PREF_UPDATE_CHECK_INTERVAL).withDefault(TimeUnit.DAYS.toMillis(1))
     var dontAskForRating by booleanPref(PREF_DONT_ASK_FOR_RATING).withDefault(false)
     var prefVersion by intPref(PREF_VERSION).withDefault(0)
     var lastfmLinksEnabled by booleanPref(PREF_ENABLE_LASTFM_LINKS).withDefault(false)
@@ -238,7 +237,6 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_FIRST_LAUNCHED = "date_firstlaunch"
         const val PREF_LAST_UPDATE_CHECK_TIME = "last_update_check_time"
         const val PREF_CHECK_FOR_UPDATES = "check_for_updates"
-        const val PREF_UPDATE_CHECK_INTERVAL = "update_check_interval"
         const val PREF_DONT_ASK_FOR_RATING = "dontshowagain"
         const val PREF_ENABLE_LASTFM_LINKS = "lastfm_links"
         const val PREF_VERSION = "version"

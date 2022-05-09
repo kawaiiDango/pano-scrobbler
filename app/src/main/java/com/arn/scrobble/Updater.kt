@@ -10,9 +10,11 @@ import android.os.Build
 import android.view.View
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
+import com.arn.scrobble.Stuff.addAction
 import com.arn.scrobble.Stuff.focusOnTv
 import com.arn.scrobble.Stuff.isNotiEnabled
 import com.arn.scrobble.pref.MainPrefs
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -33,25 +35,28 @@ class Updater(
     // check if play store exists
     private val hasPlayStore by lazy {
         context
-        .packageManager
-        .getLaunchIntentForPackage("com.android.vending") != null
+            .packageManager
+            .getLaunchIntentForPackage("com.android.vending") != null
     }
 
     private suspend fun checkGithubForUpdates(
         force: Boolean = false,
         onError: ((Exception) -> Unit)? = null,
-        onUpdateAvailable: (String, String) -> Unit
+        onUpdateAvailable: (String, String, String) -> Unit
     ) {
-        if (prefs.checkForUpdates == null) {
-            prefs.checkForUpdates = !hasPlayStore
+        if (hasPlayStore) {
+            prefs.checkForUpdates = null
+
+            if (!BuildConfig.DEBUG)
+                return
+        } else if (prefs.checkForUpdates == null || force) {
+            prefs.checkForUpdates = true
         }
 
-        if (hasPlayStore && !BuildConfig.DEBUG)
-            return
 
         val now = System.currentTimeMillis()
-        if (prefs.checkForUpdates != true ||
-            !((now - (prefs.lastUpdateCheckTime ?: -1)) > prefs.updateCheckInterval || force)
+        if (prefs.checkForUpdates != true
+            || !((now - (prefs.lastUpdateCheckTime ?: -1)) > UPDATE_CHECK_INTERVAL || force)
         )
             return
 
@@ -83,14 +88,12 @@ class Updater(
 
                                 if (firstAsset != null) {
 
-                                    val downloadUrl = if (hasPlayStore)
-                                        firstAsset.browser_download_url
-                                    else
-                                        Stuff.MARKET_URL
+                                    val downloadUrl = firstAsset.browser_download_url
 
                                     withContext(Dispatchers.Main) {
                                         onUpdateAvailable(
-                                            releases.tag_name,
+                                            releases.name,
+                                            releases.body,
                                             downloadUrl
                                         )
                                     }
@@ -121,22 +124,26 @@ class Updater(
                     if (BuildConfig.DEBUG)
                         it.printStackTrace()
                 },
-                onUpdateAvailable = { versionName, downloadUrl ->
+                onUpdateAvailable = { versionName, changelog, downloadUrl ->
                     val coordinatorLayout = mainActivity.findViewById<View>(R.id.frame)
                     Snackbar.make(
                         coordinatorLayout,
                         mainActivity.getString(R.string.update_available, versionName),
-                        Snackbar.LENGTH_LONG
+                        Snackbar.LENGTH_INDEFINITE
                     )
-                        .setAction(mainActivity.getString(R.string.download)) {
+                        .setAction(mainActivity.getString(R.string.changelog)) {
+                            MaterialAlertDialogBuilder(mainActivity)
+                                .setTitle(versionName)
+                                .setMessage(changelog)
+                                .setPositiveButton(R.string.download) { _, _ ->
+                                    Stuff.openInBrowser(mainActivity, downloadUrl)
+                                }
+                                .show()
+                        }
+                        .focusOnTv()
+                        .addAction(R.layout.button_snackbar_extra, R.string.download) {
                             Stuff.openInBrowser(mainActivity, downloadUrl)
                         }
-                        .addCallback(object : Snackbar.Callback() {
-                            override fun onShown(sb: Snackbar?) {
-                                super.onShown(sb)
-                                sb?.focusOnTv()
-                            }
-                        })
                         .show()
                 }
             )
@@ -163,7 +170,7 @@ class Updater(
                     if (BuildConfig.DEBUG)
                         it.printStackTrace()
                 },
-                onUpdateAvailable = { versionName, downloadUrl ->
+                onUpdateAvailable = { versionName, changelog, downloadUrl ->
                     // initialize notification channel
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         NotificationChannel(
@@ -216,3 +223,4 @@ data class GithubReleaseAsset(
 )
 
 const val githubApiUrl = "https://api.github.com/repos/kawaiiDango/pscrobbler/releases/latest"
+const val UPDATE_CHECK_INTERVAL = 60 * 60 * 1000L // 1 hour

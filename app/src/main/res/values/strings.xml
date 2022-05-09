@@ -517,7 +517,7 @@
     <string name="pref_translate">Translate this app</string>
     <string name="pref_translate_credits">Translation credits</string>
     <string name="pref_oss_credits">Open source credits</string>
-    <string name="pref_check_updates">Update notifications</string>
+    <string name="pref_check_updates">Check for updates</string>
     <string name="update_available" formatted="true"
         comment="%1= the version number"
         >Update available: %1$s</string>

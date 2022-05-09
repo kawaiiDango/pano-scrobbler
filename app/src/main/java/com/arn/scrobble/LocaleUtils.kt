@@ -22,6 +22,7 @@ object LocaleUtils {
         "tr",
         "pl",
         "it",
+        "uk",
     ).toSortedSet()
 
     val showScriptSet = setOf(

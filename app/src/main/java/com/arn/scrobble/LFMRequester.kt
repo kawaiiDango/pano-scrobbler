@@ -122,7 +122,7 @@ class LFMRequester(
         to: Long = -1,
         includeNowPlaying: Boolean = false,
         doDeltaIndex: Boolean = false,
-        limit: Int = 800,
+        limit: Int = 600,
     ) {
         toExec = {
             checkSession(usernamep)

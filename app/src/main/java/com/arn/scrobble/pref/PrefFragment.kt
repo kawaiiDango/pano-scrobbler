@@ -243,6 +243,11 @@ class PrefFragment : PreferenceFragmentCompat() {
                 true
             }
 
+        if (prefs.checkForUpdates == null) {
+            findPreference<SwitchPreference>("check_for_updates")!!
+                .isVisible = false
+        }
+
         findPreference<Preference>(MainPrefs.PREF_EXPORT)
             ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             val cal = Calendar.getInstance()

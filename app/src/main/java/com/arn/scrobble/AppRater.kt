@@ -49,16 +49,7 @@ class AppRater(
                 rateNow()
                 prefs.dontAskForRating = true
             }
-            .addCallback(object : Snackbar.Callback() {
-                override fun onShown(sb: Snackbar?) {
-                    super.onShown(sb)
-
-                    prefs.firstLaunchTime = System.currentTimeMillis()
-                    prefs.scrobbleCount = 0
-
-                    sb?.focusOnTv()
-                }
-            })
+            .focusOnTv()
             .show()
     }
 

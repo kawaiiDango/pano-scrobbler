@@ -82,7 +82,7 @@ class PaletteColors {
             )
         )
 
-        bg = Stuff.capMaxSatLum(bg, 0.3f, 0.18f)
+        bg = Stuff.capMaxSatLum(bg, 0.4f, 0.2f)
         mutedBgDark = bg.harmonize()
 
 
@@ -120,7 +120,7 @@ class PaletteColors {
             )
         )
 
-        bg = Stuff.capMinSatLum(bg, 0.45f, 0.7f, 0.92f)
+        bg = Stuff.capMinSatLum(bg, 0.45f, 0.7f, 0.9f)
         mutedBgLight = bg.harmonize()
 
         setDarkModeFrom(context)

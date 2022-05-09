@@ -28,8 +28,8 @@ tasks.register<Delete>("clean").configure {
 tasks.register<GradleBuild>("cleanBuildPublish") {
     tasks = listOf(
         "clean",
+        "publishReleaseBundle",
         "assembleRelease",
-//        "publishReleaseBundle",
-//        "githubRelease"
+        "githubRelease",
     )
 }

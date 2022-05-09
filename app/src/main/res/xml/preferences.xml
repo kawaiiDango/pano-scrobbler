@@ -210,6 +210,12 @@
         <Preference
             android:title="@string/pref_intents"
             android:key="intents" />
+
+        <SwitchPreference
+            android:title="@string/pref_check_updates"
+            android:key="check_for_updates"
+            android:persistent="true"
+            />
     </PreferenceCategory>
     <PreferenceCategory
         app:icon="@drawable/vd_swap"

@@ -46,7 +46,6 @@
         android:id="@+id/chart_info_subtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-1dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="?textAppearanceBodyLarge"
@@ -57,7 +56,6 @@
         android:id="@+id/chart_info_scrobbles"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-1dp"
         android:singleLine="true"
         android:textAppearance="?textAppearanceBodySmall"
         tools:text="39 scrobbles" />
@@ -66,6 +64,7 @@
         android:id="@+id/chart_info_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:paddingTop="4dp"
         android:alpha="0.68"
         app:trackCornerRadius="@dimen/corner_radius"
         app:trackColor="@android:color/transparent"

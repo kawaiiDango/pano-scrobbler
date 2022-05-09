@@ -417,5 +417,5 @@
 "</string>
     <string name="billing_block">Блокувати виконавців/пісні і автоматично пропустити або вимкнути звук</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закріпити до %1$d друзів і змінити їх порядок</string>
-    <string name="billing_sharing">Видаляти ім\'я застосунку при спільному використанні</string>
+    <string name="billing_sharing">Видаляти ім\'я застосунку при поширенні</string>
 </resources>

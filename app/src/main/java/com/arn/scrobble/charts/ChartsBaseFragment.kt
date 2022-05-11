@@ -10,14 +10,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.setProgressCircleColors
-import com.arn.scrobble.Stuff.showIcons
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.HtmlImageResGetter
 import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
+import com.arn.scrobble.ui.UiUtils.showIcons
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
@@ -160,7 +161,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         }
 
         viewModel.chartsReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !MainActivity.isOnline && viewModel.chartsData.size == 0)
+            if (it == null && !Stuff.isOnline && viewModel.chartsData.size == 0)
                 adapter.populate()
 
             chartsBinding.chartsSwipeRefresh.isRefreshing = false

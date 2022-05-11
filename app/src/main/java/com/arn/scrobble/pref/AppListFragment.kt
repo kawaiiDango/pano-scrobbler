@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.databinding.ContentAppListBinding
+import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
 
 
@@ -61,14 +63,14 @@ class AppListFragment : Fragment() {
         if (!binding.appList.isInTouchMode)
             binding.appList.requestFocus()
 
-        if (MainActivity.isTV) {
-            Stuff.toast(context, getString(R.string.press_back))
+        if (context!!.isTv) {
+            context!!.toast(R.string.press_back)
         }
 
         binding.appList.layoutManager = LinearLayoutManager(context)
         val adapter = AppListAdapter(activity!!, viewModel)
         binding.appList.adapter = adapter
-        if (!MainActivity.isTV) {
+        if (!context!!.isTv) {
             binding.appList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
@@ -89,7 +91,7 @@ class AppListFragment : Fragment() {
             if (allowedPackagesArg == null) {
                 binding.appListDone.setOnLongClickListener {
                     prefs.blockedPackages = setOf()
-                    Stuff.toast(activity, getString(R.string.cleared_disabled_apps))
+                    context!!.toast(R.string.cleared_disabled_apps)
                     true
                 }
             }
@@ -105,7 +107,7 @@ class AppListFragment : Fragment() {
             mainNotifierViewModel.backButtonEnabled = !it
 
             if (!it) {
-                if (!MainActivity.isTV) {
+                if (!context!!.isTv) {
                     binding.appListDone.show()
                 }
 
@@ -121,7 +123,7 @@ class AppListFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.enabled_apps)
+        setTitle(R.string.enabled_apps)
     }
 
     override fun onStop() {

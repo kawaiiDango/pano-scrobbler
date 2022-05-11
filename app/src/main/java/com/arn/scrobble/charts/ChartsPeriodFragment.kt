@@ -11,14 +11,14 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.firstOrNull
 import com.arn.scrobble.Stuff.lastOrNull
-import com.arn.scrobble.Stuff.mySmoothScrollToPosition
-import com.arn.scrobble.Stuff.showWithIcons
 import com.arn.scrobble.Stuff.toBimap
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.UiUtils.mySmoothScrollToPosition
+import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import de.umass.lastfm.MusicEntry

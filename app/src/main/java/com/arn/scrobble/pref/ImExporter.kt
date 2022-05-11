@@ -14,6 +14,7 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.*
 import com.arn.scrobble.pref.JsonHelpers.readJson
 import com.arn.scrobble.pref.JsonHelpers.writeJson
+import com.arn.scrobble.ui.UiUtils.isTv
 import java.io.*
 
 class ImExporter : Closeable {
@@ -322,7 +323,7 @@ class ImExporter : Closeable {
                                     }
                                     JsonToken.BOOLEAN -> {
                                         if (
-                                            settingsName == MainPrefs.PREF_AUTO_DETECT && MainActivity.isTV ||
+                                            settingsName == MainPrefs.PREF_AUTO_DETECT && context.isTv ||
                                             settingsName == MainPrefs.PREF_PIXEL_NP && Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE
                                         )
                                             skipValue()

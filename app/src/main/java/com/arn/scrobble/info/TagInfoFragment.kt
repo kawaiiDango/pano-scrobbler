@@ -13,9 +13,11 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.copyToClipboard
-import com.arn.scrobble.Stuff.expandIfNeeded
-import com.arn.scrobble.Stuff.scheduleTransition
 import com.arn.scrobble.databinding.ContentTagInfoBinding
+import com.arn.scrobble.ui.UiUtils.expandIfNeeded
+import com.arn.scrobble.ui.UiUtils.openInBrowser
+import com.arn.scrobble.ui.UiUtils.scheduleTransition
+import com.arn.scrobble.ui.UiUtils.startFadeLoop
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.net.URLEncoder
 import java.text.NumberFormat
@@ -54,19 +56,18 @@ class TagInfoFragment : BottomSheetDialogFragment() {
         }
 
         binding.tagInfoLink.setOnClickListener {
-            Stuff.openInBrowser(
-                context!!,
+            context!!.openInBrowser(
                 "https://www.last.fm/tag/" + URLEncoder.encode(tag, "UTF-8")
             )
         }
-        binding.tagInfoProgress.show()
+        binding.root.startFadeLoop()
 
         viewModel.info.observe(viewLifecycleOwner) {
             it ?: return@observe
             val tagInfo = it.first ?: return@observe
             val similarTags = it.second
 
-            binding.tagInfoProgress.hide()
+            binding.root.clearAnimation()
             binding.tagInfoContent.visibility = View.VISIBLE
 
             binding.tagInfoTaggers.text = NumberFormat.getInstance().format(tagInfo.reach)

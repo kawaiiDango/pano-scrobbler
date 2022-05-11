@@ -10,10 +10,11 @@ import android.os.Build
 import android.view.View
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
-import com.arn.scrobble.Stuff.addAction
-import com.arn.scrobble.Stuff.focusOnTv
 import com.arn.scrobble.Stuff.isNotiEnabled
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.UiUtils.addAction
+import com.arn.scrobble.ui.UiUtils.focusOnTv
+import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -136,13 +137,13 @@ class Updater(
                                 .setTitle(versionName)
                                 .setMessage(changelog)
                                 .setPositiveButton(R.string.download) { _, _ ->
-                                    Stuff.openInBrowser(mainActivity, downloadUrl)
+                                    mainActivity.openInBrowser(downloadUrl)
                                 }
                                 .show()
                         }
                         .focusOnTv()
                         .addAction(R.layout.button_snackbar_extra, R.string.download) {
-                            Stuff.openInBrowser(mainActivity, downloadUrl)
+                            mainActivity.openInBrowser(downloadUrl)
                         }
                         .show()
                 }

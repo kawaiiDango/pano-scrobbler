@@ -11,8 +11,8 @@ import coil.load
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.autoNotify
-import com.arn.scrobble.Stuff.getTintedDrawable
+import com.arn.scrobble.ui.UiUtils.autoNotify
+import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.pref.MainPrefs
@@ -86,7 +86,7 @@ class SearchResultsExperimentAdapter(
                     emptyList(),
                     header = ExpandableHeader(
                         R.drawable.vd_ban,
-                        if (!MainActivity.isOnline)
+                        if (!Stuff.isOnline)
                             context.getString(R.string.unavailable_offline)
                         else
                             context.getString(R.string.not_found),

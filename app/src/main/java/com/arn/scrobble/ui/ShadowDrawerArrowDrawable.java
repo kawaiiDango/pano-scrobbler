@@ -71,7 +71,7 @@ public class ShadowDrawerArrowDrawable extends DrawerArrowDrawable {
      */
     public ShadowDrawerArrowDrawable(Context context) {
         super(context);
-        shadowOffset = Stuff.INSTANCE.getDp(1);
+        shadowOffset = UiUtils.INSTANCE.getDp(1);
         mPaint = getPaint();
         mBarGap = getGapSize();
         mDirection = getDirection();

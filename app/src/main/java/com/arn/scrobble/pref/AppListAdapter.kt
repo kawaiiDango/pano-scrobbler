@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.autoNotify
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemAppBinding
 import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.google.android.material.color.MaterialColors
 
 

@@ -9,13 +9,15 @@ import androidx.annotation.StringRes
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import coil.load
-import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.ChartsPeriodFragment
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.ui.MusicEntryImageReq
+import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.setTitle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import de.umass.lastfm.*
@@ -81,7 +83,7 @@ class RandomFragment : ChartsPeriodFragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.random)
+        setTitle(R.string.random)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -167,7 +169,7 @@ class RandomFragment : ChartsPeriodFragment() {
             return
         randomViewModel.loadRandom(type)
         randomViewModel.isLoading = true
-        if (!MainActivity.isOnline) {
+        if (!Stuff.isOnline) {
             binding.randomStatus.text = getString(R.string.unavailable_offline)
             binding.randomStatus.visibility = View.VISIBLE
             binding.randomProgress.hide()
@@ -296,7 +298,7 @@ class RandomFragment : ChartsPeriodFragment() {
         arrayOf(binding.randomPlay, binding.randomPlayFiller)
             .forEach {
                 it.setOnClickListener {
-                    Stuff.launchSearchIntent(context!!, searchQueryFirst, searchQuerySecond, null)
+                    UiUtils.launchSearchIntent(context!!, searchQueryFirst, searchQuerySecond, null)
                 }
             }
         val imgUrl =

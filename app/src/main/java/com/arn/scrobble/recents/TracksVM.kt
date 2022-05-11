@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainActivity
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pending.PendingListData
 import com.arn.scrobble.pending.PendingScrJob
@@ -125,7 +126,7 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
 
                 pendingTracks.postValue(data)
                 if (submit && (data.plCount > 0 || data.psCount > 0)
-                    && MainActivity.isOnline && !PendingScrService.mightBeRunning && !PendingScrJob.mightBeRunning
+                    && Stuff.isOnline && !PendingScrService.mightBeRunning && !PendingScrJob.mightBeRunning
                 ) {
                     val intent = Intent(
                         getApplication<Application>().applicationContext,

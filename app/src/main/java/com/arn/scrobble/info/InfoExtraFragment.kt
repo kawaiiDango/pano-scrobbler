@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.dismissAllDialogFragments
-import com.arn.scrobble.Stuff.expandIfNeeded
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.*
 import com.arn.scrobble.databinding.ContentInfoExtraBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.UiUtils.dismissAllDialogFragments
+import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import de.umass.lastfm.MusicEntry
 
@@ -190,7 +190,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         rootViewBinding.chartsList.adapter = adapter
 
         fragment.viewModel.listReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !MainActivity.isOnline && fragment.viewModel.chartsData.size == 0)
+            if (it == null && !Stuff.isOnline && fragment.viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
             fragment.viewModel.reachedEnd = true

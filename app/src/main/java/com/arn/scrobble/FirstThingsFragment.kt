@@ -16,10 +16,14 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentFirstThingsBinding
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.UiUtils.openInBrowser
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -55,8 +59,7 @@ class FirstThingsFragment : Fragment() {
         if (isDmkaNeeded) {
             binding.firstThings0.setOnClickListener {
 //                openStartupMgr(startupMgrIntent!!, context!!)
-                Stuff.openInBrowser(
-                    context!!,
+                context!!.openInBrowser(
                     "https://dontkillmyapp.com/" + Build.MANUFACTURER.lowercase()
                 )
                 markAsDone(binding.firstThings0)
@@ -67,7 +70,7 @@ class FirstThingsFragment : Fragment() {
         }
 
         binding.firstThings1.setOnClickListener {
-            val intent = if (MainActivity.isTV && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            val intent = if (context!!.isTv && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 Intent().setComponent(
                     ComponentName(
                         "com.android.tv.settings",
@@ -82,16 +85,10 @@ class FirstThingsFragment : Fragment() {
                 ) != null
             ) {
                 startActivity(intent)
-                if (MainActivity.isTV)
-                    Stuff.toast(
-                        activity,
-                        getString(R.string.check_nls_tv, getString(R.string.app_name))
-                    )
+                if (context!!.isTv)
+                    context!!.toast(getString(R.string.check_nls_tv, getString(R.string.app_name)))
                 else
-                    Stuff.toast(
-                        activity,
-                        getString(R.string.check_nls, getString(R.string.app_name))
-                    )
+                    context!!.toast(getString(R.string.check_nls, getString(R.string.app_name)))
             } else {
                 val wf = WebViewFragment()
                 wf.arguments = Bundle().apply {
@@ -131,7 +128,7 @@ class FirstThingsFragment : Fragment() {
             binding.testingPass.visibility = View.GONE
             binding.firstThings2.visibility = View.GONE
         } else {
-            if (MainActivity.isTV)
+            if (context!!.isTv)
                 binding.testingPass.isFocusable = false
             binding.testingPass.showSoftInputOnFocus = false
             binding.testingPass.addTextChangedListener(object : TextWatcher {
@@ -157,7 +154,7 @@ class FirstThingsFragment : Fragment() {
 
             binding.testingPass.setOnTouchListener { v, event ->
                 if (v != null) {
-                    if (MainActivity.isTV)
+                    if (context!!.isTv)
                         v.isFocusable = true
                     v.onTouchEvent(event)
                     v.alpha = 0.2f
@@ -206,7 +203,7 @@ class FirstThingsFragment : Fragment() {
             addAction(NLService.iNLS_STARTED_S)
         }
         activity!!.registerReceiver(receiver, iF, NLService.BROADCAST_PERMISSION, null)
-        Stuff.setTitle(activity!!, R.string.almost_there)
+        setTitle(R.string.almost_there)
         (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         if (arguments?.getBoolean(Stuff.ARG_NOPASS) != true)
@@ -284,12 +281,12 @@ class FirstThingsFragment : Fragment() {
 
         fun openStartupMgr(startupMgrIntent: Intent?, context: Context) {
             if (startupMgrIntent == null)
-                Stuff.openInBrowser(context, "https://dontkillmyapp.com")
+                context.openInBrowser("https://dontkillmyapp.com")
             else {
                 try {
                     context.startActivity(startupMgrIntent)
                 } catch (e: SecurityException) {
-                    Stuff.openInBrowser(context, "https://dontkillmyapp.com")
+                    context.openInBrowser("https://dontkillmyapp.com")
                 }
             }
         }

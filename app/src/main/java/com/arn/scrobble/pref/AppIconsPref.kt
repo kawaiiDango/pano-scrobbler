@@ -11,9 +11,9 @@ import androidx.preference.PreferenceViewHolder
 import coil.load
 import coil.size.Scale
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.dp
 import com.arn.scrobble.databinding.PrefAppIconsBinding
 import com.arn.scrobble.ui.PackageName
+import com.arn.scrobble.ui.UiUtils.dp
 import com.google.android.material.imageview.ShapeableImageView
 import java.text.NumberFormat
 

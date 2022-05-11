@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemLicenseBinding
+import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.util.withContext
@@ -39,7 +40,7 @@ class LicensesAdapter(context: Context) : RecyclerView.Adapter<LicensesAdapter.L
             binding.root.setOnClickListener {
                 if (url.isNullOrEmpty())
                     return@setOnClickListener
-                Stuff.openInBrowser(binding.root.context, url!!)
+                itemView.context.openInBrowser(url!!)
             }
         }
 

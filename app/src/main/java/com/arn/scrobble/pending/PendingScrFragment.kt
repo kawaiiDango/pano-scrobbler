@@ -15,6 +15,7 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.recents.TracksVM
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.UiUtils.setTitle
 
 /**
  * Created by arn on 21/09/2017.
@@ -46,7 +47,7 @@ class PendingScrFragment : Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.pending_scrobbles)
+        setTitle(R.string.pending_scrobbles)
     }
 
     override fun onItemClick(view: View, position: Int) {

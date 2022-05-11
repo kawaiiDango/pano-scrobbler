@@ -15,11 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.dispose
 import coil.load
 import coil.size.Scale
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getTintedDrawable
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.HeaderDefaultBinding
 import com.arn.scrobble.databinding.HeaderPendingBinding
@@ -32,6 +30,8 @@ import com.arn.scrobble.pending.PendingScrFragment
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.UiUtils.getTintedDrawable
+import com.arn.scrobble.ui.UiUtils.isTv
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
@@ -261,7 +261,7 @@ class RecentsAdapter(
     }
 
     fun populate(oldTracks: MutableList<Track>) {
-        if (MainActivity.isOnline)
+        if (Stuff.isOnline)
             setStatusHeader()
         else
             setStatusHeader(fragmentBinding.root.context.getString(R.string.offline))
@@ -379,7 +379,7 @@ class RecentsAdapter(
                 true
             }
             binding.root.onFocusChangeListener = this
-            if (viewModel.username != null && !MainActivity.isTV) {
+            if (viewModel.username != null && !binding.root.context.isTv) {
                 binding.recentsMenu.visibility = View.INVISIBLE
                 binding.recentsMenuText.visibility = View.GONE
             } else
@@ -469,12 +469,12 @@ class RecentsAdapter(
 
             if (track.isNowPlaying) {
                 binding.recentsDate.visibility = View.GONE
-                Stuff.nowPlayingAnim(binding.recentsPlaying, true)
+                UiUtils.nowPlayingAnim(binding.recentsPlaying, true)
             } else {
                 binding.recentsDate.visibility = View.VISIBLE
                 binding.recentsDate.text =
                     Stuff.myRelativeTime(itemView.context, track.playedWhen?.time ?: 0)
-                Stuff.nowPlayingAnim(binding.recentsPlaying, false)
+                UiUtils.nowPlayingAnim(binding.recentsPlaying, false)
             }
 
             if (track.isLoved) {

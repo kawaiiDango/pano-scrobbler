@@ -12,9 +12,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.UiUtils
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -74,7 +74,7 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
 
 
         return MaterialAlertDialogBuilder(context!!)
-            .setTitle(Stuff.getColoredTitle(context!!, getString(R.string.hidden_tags)))
+            .setTitle(UiUtils.getColoredTitle(context!!, getString(R.string.hidden_tags)))
             .setIcon(R.drawable.vd_tag)
             .setView(binding.root)
             .setPositiveButton(R.string.add, null)

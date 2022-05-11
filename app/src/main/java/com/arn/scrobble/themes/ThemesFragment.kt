@@ -18,13 +18,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.Stuff.firstOrNull
-import com.arn.scrobble.Stuff.setArrowColors
+import com.arn.scrobble.ui.UiUtils.setArrowColors
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ContentThemesBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
+import com.arn.scrobble.ui.UiUtils.setTitle
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.DynamicColors
@@ -178,7 +179,7 @@ class ThemesFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, getString(R.string.pref_themes))
+        setTitle(R.string.pref_themes)
     }
 
     private fun updateThemedContext() {

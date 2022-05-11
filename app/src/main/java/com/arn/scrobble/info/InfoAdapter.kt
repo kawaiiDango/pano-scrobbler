@@ -19,14 +19,17 @@ import coil.load
 import coil.result
 import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.copyToClipboard
-import com.arn.scrobble.Stuff.dismissAllDialogFragments
-import com.arn.scrobble.Stuff.dp
-import com.arn.scrobble.Stuff.scheduleTransition
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ListItemInfoBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.TrackHistoryFragment
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.dismissAllDialogFragments
+import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.openInBrowser
+import com.arn.scrobble.ui.UiUtils.scheduleTransition
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
@@ -176,7 +179,7 @@ class InfoAdapter(
                     entry as Track
                     binding.infoPlay.visibility = View.VISIBLE
                     binding.infoPlay.setOnClickListener {
-                        Stuff.launchSearchIntent(itemView.context, entry, pkgName)
+                        UiUtils.launchSearchIntent(itemView.context, entry, pkgName)
                     }
                     binding.infoType.setImageResource(R.drawable.vd_note)
                     binding.infoType.contentDescription = itemView.context.getString(R.string.track)
@@ -198,8 +201,7 @@ class InfoAdapter(
                                 binding.infoHeart.alpha = 0.5f
                                 binding.infoHeart.visibility = View.VISIBLE
                                 binding.infoHeart.setOnClickListener {
-                                    Stuff.toast(
-                                        itemView.context,
+                                    itemView.context.toast(
                                         itemView.context.getString(R.string.user_loved, username)
                                     )
                                 }
@@ -376,7 +378,7 @@ class InfoAdapter(
                             val _username = username ?: MainPrefs(itemView.context).lastfmUsername
                             val libraryUrl =
                                 entry.url.replace("/music/", "/user/$_username/library/music/")
-                            Stuff.openInBrowser(itemView.context, libraryUrl)
+                            itemView.context.openInBrowser(libraryUrl)
                         }
                     }
                 }
@@ -455,7 +457,7 @@ class InfoAdapter(
             binding.infoLink.visibility = View.VISIBLE
             binding.infoLink.setOnClickListener {
                 if (entry.url != null)
-                    Stuff.openInBrowser(itemView.context, entry.url)
+                    itemView.context.openInBrowser(entry.url)
             }
         }
     }

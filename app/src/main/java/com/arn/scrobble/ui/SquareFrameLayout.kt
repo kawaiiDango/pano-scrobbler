@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.ui.UiUtils.dp
 import kotlin.math.min
 
 

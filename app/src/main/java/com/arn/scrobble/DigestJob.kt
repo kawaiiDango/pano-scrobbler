@@ -139,7 +139,7 @@ class DigestJob : JobService() {
                 .setContentTitle(title)
                 .setContentIntent(launchIntent)
                 .addAction(
-                    Stuff.getAction(
+                    Stuff.getNotificationAction(
                         R.drawable.vd_share,
                         "↗",
                         getString(R.string.share),

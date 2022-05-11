@@ -12,17 +12,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.autoNotify
-import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.NLService
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.equalsExt
-import com.arn.scrobble.Stuff.showWithIcons
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils.autoNotify
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.Track
 import java.text.NumberFormat
@@ -68,16 +71,16 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        setTitle()
+        setTitleWithCount()
     }
 
-    private fun setTitle() {
+    private fun setTitleWithCount() {
         val formattedCount = NumberFormat.getInstance().format(scrobbleCount)
         val title = if (username == null)
             getString(R.string.my_scrobbles) + ": " + formattedCount
         else
             "$username: $formattedCount"
-        Stuff.setTitle(activity!!, title)
+        setTitle(title)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -206,7 +209,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
                                 Stuff.ARG_COUNT,
                                 scrobbleCount - 1
                             )
-                            setTitle()
+                            setTitleWithCount()
                         }
                     }
                 }

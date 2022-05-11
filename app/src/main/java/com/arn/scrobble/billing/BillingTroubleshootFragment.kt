@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentBillingToubleshootBinding
+import com.arn.scrobble.ui.UiUtils.setTitle
 import com.google.android.material.transition.MaterialSharedAxis
 
 
@@ -36,7 +36,7 @@ class BillingTroubleshootFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, getString(R.string.billing_troubleshoot_title))
+        setTitle(R.string.billing_troubleshoot_title)
 
     }
 

@@ -16,15 +16,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.hideKeyboard
-import com.arn.scrobble.Stuff.showKeyboard
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ContentSearchExperimentBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.showKeyboard
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.MusicEntry
@@ -221,7 +221,7 @@ class SearchExperimentFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, getString(R.string.search))
+        setTitle(R.string.search)
     }
 
     override fun onStop() {

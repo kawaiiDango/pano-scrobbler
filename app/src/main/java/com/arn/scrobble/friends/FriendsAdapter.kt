@@ -134,7 +134,7 @@ class FriendsAdapter(
                     if (binding.friendsMusicIcon.drawable == null ||
                         binding.friendsMusicIcon.drawable is VectorDrawable || binding.friendsMusicIcon.drawable is VectorDrawableCompat
                     ) {
-                        Stuff.nowPlayingAnim(binding.friendsMusicIcon, true)
+                        UiUtils.nowPlayingAnim(binding.friendsMusicIcon, true)
                     }
                 } else {
                     if (binding.friendsMusicIcon.drawable == null ||
@@ -144,7 +144,7 @@ class FriendsAdapter(
                 }
 
                 binding.friendsTrackFrame.setOnClickListener {
-                    Stuff.launchSearchIntent(itemView.context, track, null)
+                    UiUtils.launchSearchIntent(itemView.context, track, null)
                 }
             } else {
                 binding.friendsTrackLl.visibility = View.INVISIBLE

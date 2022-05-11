@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentLicensesBinding
+import com.arn.scrobble.ui.UiUtils.setTitle
 
 class LicensesFragment: Fragment() {
     private var _binding: ContentLicensesBinding? = null
@@ -30,7 +31,7 @@ class LicensesFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.pref_oss_credits)
+        setTitle(R.string.pref_oss_credits)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

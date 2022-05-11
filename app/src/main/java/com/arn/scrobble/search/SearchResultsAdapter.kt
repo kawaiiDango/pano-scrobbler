@@ -7,14 +7,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getTintedDrawable
 import com.arn.scrobble.databinding.ContentSearchBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import de.umass.lastfm.Album
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.MusicEntry
@@ -200,7 +199,7 @@ class SearchResultsAdapter(private val fragmentBinding: ContentSearchBinding) :
                 }
                 else -> {
                     drawableRes = R.drawable.vd_ban
-                    text = if (MainActivity.isOnline)
+                    text = if (Stuff.isOnline)
                         itemView.context.getString(R.string.not_found)
                     else
                         itemView.context.getString(R.string.unavailable_offline)

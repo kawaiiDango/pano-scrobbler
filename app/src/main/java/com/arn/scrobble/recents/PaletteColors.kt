@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import androidx.palette.graphics.Palette
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.ui.UiUtils
 import com.google.android.material.color.MaterialColors
 
 class PaletteColors {
@@ -47,7 +47,7 @@ class PaletteColors {
         fun Int.harmonize() = MaterialColors.harmonizeWithPrimary(context, this)
 
         var dom = palette.getDominantColor(Color.WHITE)
-        if (!Stuff.isDark(dom))
+        if (!UiUtils.isDark(dom))
             dom = palette.getDarkVibrantColor(
                 MaterialColors.getColor(
                     context,
@@ -82,12 +82,12 @@ class PaletteColors {
             )
         )
 
-        bg = Stuff.capMaxSatLum(bg, 0.4f, 0.2f)
+        bg = UiUtils.capMaxSatLum(bg, 0.4f, 0.2f)
         mutedBgDark = bg.harmonize()
 
 
         dom = palette.getDominantColor(Color.BLACK)
-        if (Stuff.isDark(dom))
+        if (UiUtils.isDark(dom))
             dom = palette.getLightVibrantColor(
                 MaterialColors.getColor(
                     context,
@@ -120,7 +120,7 @@ class PaletteColors {
             )
         )
 
-        bg = Stuff.capMinSatLum(bg, 0.45f, 0.7f, 0.9f)
+        bg = UiUtils.capMinSatLum(bg, 0.45f, 0.7f, 0.9f)
         mutedBgLight = bg.harmonize()
 
         setDarkModeFrom(context)

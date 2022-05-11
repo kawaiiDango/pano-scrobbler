@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.expandIfNeeded
-import com.arn.scrobble.Stuff.scheduleTransition
-import com.arn.scrobble.Stuff.startFadeLoop
 import com.arn.scrobble.databinding.ContentInfoBinding
+import com.arn.scrobble.ui.UiUtils.expandIfNeeded
+import com.arn.scrobble.ui.UiUtils.scheduleTransition
+import com.arn.scrobble.ui.UiUtils.startFadeLoop
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.divider.MaterialDividerItemDecoration
 

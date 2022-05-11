@@ -3,10 +3,8 @@ package com.arn.scrobble
 import android.animation.ValueAnimator
 import android.app.ActivityManager
 import android.app.Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES
-import android.app.UiModeManager
 import android.content.*
 import android.content.pm.LabeledIntent
-import android.content.res.Configuration
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.Network
@@ -38,8 +36,6 @@ import coil.load
 import coil.size.Precision
 import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
 import com.arn.scrobble.Stuff.getScrobblerExitReasons
-import com.arn.scrobble.Stuff.memoryCacheKey
-import com.arn.scrobble.Stuff.popBackStackTill
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityMainBinding
@@ -54,6 +50,11 @@ import com.arn.scrobble.search.SearchExperimentFragment
 import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.UiUtils.memoryCacheKey
+import com.arn.scrobble.ui.UiUtils.openInBrowser
+import com.arn.scrobble.ui.UiUtils.popBackStackTill
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -104,8 +105,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         coordinatorPadding = binding.coordinatorMain.coordinator.paddingStart
 
-        val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
-        isTV = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
 
         val imageLoader = ImageLoader.Builder(applicationContext)
             .components {
@@ -164,7 +163,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.drawerArrowDrawable =
             ShadowDrawerArrowDrawable(drawerToggleDelegate?.actionBarThemedContext)
 
-        if (isTV) {
+        if (isTv) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 for (i in 0..binding.coordinatorMain.toolbar.childCount) {
                     val child = binding.coordinatorMain.toolbar.getChildAt(i)
@@ -244,7 +243,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                                 if (wasKilled) {
                                     showNotRunning(exitReasonString)
-                                } else if (!isTV && billingViewModel.proStatus.value != true) {
+                                } else if (!isTv && billingViewModel.proStatus.value != true) {
                                     AppRater(this, prefs).appLaunched()
                                     Updater(this, prefs).withSnackbar()
                                 }
@@ -397,7 +396,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             if (servicesToUrls.size == 1)
-                Stuff.openInBrowser(this, servicesToUrls.values.first())
+                openInBrowser(servicesToUrls.values.first())
             else {
                 val popup = PopupMenu(this, it)
                 servicesToUrls.forEach { (strRes, url) ->
@@ -410,7 +409,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
 
                 popup.setOnMenuItemClickListener { menuItem ->
-                    Stuff.openInBrowser(this, servicesToUrls[menuItem.itemId]!!)
+                    openInBrowser(servicesToUrls[menuItem.itemId]!!)
                     true
                 }
                 popup.show()
@@ -560,7 +559,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .addCallback(object : Snackbar.Callback() {
                 override fun onShown(sb: Snackbar?) {
                     super.onShown(sb)
-                    if (sb != null && isTV)
+                    if (sb != null && isTv)
                         sb.view.postDelayed({
                             sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
                                 .requestFocus()
@@ -670,7 +669,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
             startActivity(chooser)
         } else
-            Stuff.toast(this, getString(R.string.no_mail_apps))
+            toast(R.string.no_mail_apps)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -784,22 +783,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val builder = NetworkRequest.Builder()
         connectivityCb = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                isOnline = true
+                Stuff.isOnline = true
             }
 
             override fun onLost(network: Network) {
-                isOnline = cm.activeNetworkInfo?.isConnected == true
+                Stuff.isOnline = cm.activeNetworkInfo?.isConnected == true
             }
 
             override fun onUnavailable() {
-                isOnline = cm.activeNetworkInfo?.isConnected == true
+                Stuff.isOnline = cm.activeNetworkInfo?.isConnected == true
             }
         }
 
         cm.registerNetworkCallback(builder.build(), connectivityCb)
 
         val ni = cm.activeNetworkInfo
-        isOnline = ni?.isConnected == true
+        Stuff.isOnline = ni?.isConnected == true
     }
 
     private fun closeLockDrawer() {
@@ -871,8 +870,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    companion object {
-        var isOnline = true
-        var isTV = false
-    }
 }

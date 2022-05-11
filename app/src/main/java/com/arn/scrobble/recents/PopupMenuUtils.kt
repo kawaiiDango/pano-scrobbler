@@ -7,12 +7,12 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.showWithIcons
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.edits.EditDialogFragment
-import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.UiUtils.showWithIcons
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Track
 import kotlinx.coroutines.CoroutineScope
@@ -46,8 +46,8 @@ object PopupMenuUtils {
     }
 
     fun editScrobble(activity: FragmentActivity, track: Track) {
-        if (!MainActivity.isOnline)
-            Stuff.toast(activity, activity.getString(R.string.unavailable_offline))
+        if (!Stuff.isOnline)
+            activity.toast(R.string.unavailable_offline)
         else if (csrfTokenExists(activity)) {
             val b = Bundle().apply {
                 putString(NLService.B_ARTIST, track.artist)
@@ -71,8 +71,8 @@ object PopupMenuUtils {
         track: Track,
         deleteAction: suspend (Boolean) -> Unit
     ) {
-        if (!MainActivity.isOnline)
-            Stuff.toast(activity, activity.getString(R.string.unavailable_offline))
+        if (!Stuff.isOnline)
+            activity.toast(R.string.unavailable_offline)
         else if (csrfTokenExists(activity)) {
             LFMRequester(activity, activity.lifecycleScope)
                 .delete(track, deleteAction)

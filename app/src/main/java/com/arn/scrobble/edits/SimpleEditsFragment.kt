@@ -15,12 +15,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.autoNotify
-import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentSimpleEditsBinding
 import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.UiUtils.autoNotify
+import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -149,7 +151,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.simple_edits)
+        setTitle(R.string.simple_edits)
     }
 
     private fun showEditDialog(position: Int) {
@@ -199,7 +201,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
                 newEdit.artist.isEmpty() ||
                 newEdit.track.isEmpty()
             ) {
-                Stuff.toast(context, getString(R.string.required_fields_empty))
+                context!!.toast(R.string.required_fields_empty)
                 return@setOnClickListener
             }
             if (edit != newEdit) {

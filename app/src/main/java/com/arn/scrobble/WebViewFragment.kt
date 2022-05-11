@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.webkit.*
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.databinding.ContentWebviewBinding
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import okhttp3.Cookie
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
@@ -65,7 +67,7 @@ class WebViewFragment : Fragment() {
         */
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.loading)
+        setTitle(R.string.loading)
     }
 
     override fun onDestroyView() {
@@ -119,7 +121,7 @@ class WebViewFragment : Fragment() {
                 try {
                     parentFragmentManager.popBackStack()
                 } catch (e: IllegalStateException) {
-                    Stuff.toast(view.context, view.context.getString(R.string.press_back))
+                    view.context!!.toast(R.string.press_back)
                 }
                 return true
             }

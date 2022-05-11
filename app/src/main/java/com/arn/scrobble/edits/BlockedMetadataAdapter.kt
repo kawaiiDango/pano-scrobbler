@@ -1,21 +1,16 @@
 package com.arn.scrobble.edits
 
-import android.graphics.drawable.ScaleDrawable
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff.sp
 import com.arn.scrobble.databinding.ListItemBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.ui.ItemClickListener
-import kotlin.math.max
 
 
 class BlockedMetadataAdapter(

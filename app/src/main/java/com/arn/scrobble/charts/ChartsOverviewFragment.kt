@@ -23,12 +23,15 @@ import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.setProgressCircleColors
-import com.arn.scrobble.Stuff.sp
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.recents.SparkLineAdapter
+import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.sp
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.color.MaterialColors
 import com.kennycason.kumo.CollisionMode
 import com.kennycason.kumo.WordCloud
@@ -82,7 +85,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         super.onResume()
         if (binding.chartsArtistsFrame.chartsList.adapter == null)
             postInit()
-        Stuff.setTitle(activity!!, 0)
+        setTitle(0)
     }
 
     override fun loadFirstPage(networkOnly: Boolean) {
@@ -219,7 +222,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             loadMoreSectionsIfNeeded()
         }
 
-        if (!MainActivity.isTV && !prefs.scrubLearnt)
+        if (!context!!.isTv && !prefs.scrubLearnt)
             binding.chartsScrubMessage.visibility = View.VISIBLE
 
         binding.chartsSwipeRefresh.setProgressCircleColors()
@@ -368,7 +371,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         rootView.chartsList.adapter = adapter
 
         fragment.viewModel.chartsReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !MainActivity.isOnline && fragment.viewModel.chartsData.size == 0)
+            if (it == null && !Stuff.isOnline && fragment.viewModel.chartsData.size == 0)
                 adapter.populate()
 
             binding.chartsSwipeRefresh.isRefreshing = false
@@ -527,7 +530,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         val t2 = System.currentTimeMillis()
         if (BuildConfig.DEBUG)
             withContext(Dispatchers.Main) {
-                Stuff.toast(context!!, "Generated in ${t2 - t1}ms")
+                context!!.toast("Generated in ${t2 - t1}ms")
             }
         return bmp
     }

@@ -26,6 +26,7 @@ import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.Scrobblable
 import com.arn.scrobble.search.SearchResultsExperimentAdapter
 import com.arn.scrobble.search.SearchVM
+import com.arn.scrobble.ui.UiUtils.toast
 import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
@@ -74,7 +75,7 @@ class LFMRequester(
                     Timber.e(throwable)
                     if (contextWr.get() != null && BuildConfig.DEBUG) {
                         scope.launch(Dispatchers.Main) {
-                            Stuff.toast(context, "err: " + throwable.message)
+                            context.toast("err: " + throwable.message)
                         }
                     }
                 }
@@ -127,7 +128,7 @@ class LFMRequester(
         toExec = {
             checkSession(usernamep)
             lastfmSession.cacheStrategy =
-                if (!MainActivity.isOnline && cached)
+                if (!Stuff.isOnline && cached)
                     Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
                 else if (cached)
                     Caller.CacheStrategy.CACHE_FIRST
@@ -176,7 +177,7 @@ class LFMRequester(
         toExec = {
             checkSession(usernamep)
             lastfmSession.cacheStrategy =
-                if (!MainActivity.isOnline && cached)
+                if (!Stuff.isOnline && cached)
                     Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
                 else if (cached)
                     Caller.CacheStrategy.CACHE_FIRST
@@ -259,7 +260,7 @@ class LFMRequester(
     fun getFriendsRecents(username: String) {
         toExec = {
             lastfmSession.cacheStrategy =
-                if (MainActivity.isOnline) Caller.CacheStrategy.NETWORK_ONLY else Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+                if (Stuff.isOnline) Caller.CacheStrategy.NETWORK_ONLY else Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
             Pair(
                 username,
                 User.getRecentTracks(
@@ -304,7 +305,7 @@ class LFMRequester(
             Stuff.log(this::getFriends.name + " " + page)
             checkSession(usernamep)
             lastfmSession.cacheStrategy =
-                if (MainActivity.isOnline) Caller.CacheStrategy.NETWORK_ONLY else Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+                if (Stuff.isOnline) Caller.CacheStrategy.NETWORK_ONLY else Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
 
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             var pr: PaginatedResult<User>
@@ -489,7 +490,7 @@ class LFMRequester(
 
             val cacheStrategy = if (networkOnly)
                 Caller.CacheStrategy.NETWORK_ONLY
-            else if (!MainActivity.isOnline)
+            else if (!Stuff.isOnline)
                 Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
             else
                 Caller.CacheStrategy.CACHE_FIRST
@@ -859,7 +860,12 @@ class LFMRequester(
 
             val list = mutableListOf<MusicEntry>()
 
-            val lastScrobbledTrack = User.getRecentTracks(null, 1, 1, lastfmSession).pageResults.find { it.playedWhen != null }
+            val lastScrobbledTrack = User.getRecentTracks(
+                null,
+                1,
+                1,
+                lastfmSession
+            ).pageResults.find { it.playedWhen != null }
                 ?: throw  IllegalStateException("No scrobbled tracks found")
 
             for (i in 1..numPages) {
@@ -1229,7 +1235,7 @@ class LFMRequester(
     fun getListenerTrend(url: String) {
         toExec = {
             val monthlyPlayCounts = mutableListOf(0, 0, 0, 0, 0)
-            if (MainActivity.isOnline && URLUtil.isHttpsUrl(url)) {
+            if (Stuff.isOnline && URLUtil.isHttpsUrl(url)) {
                 try {
                     val request = Request.Builder()
                         .url(url)
@@ -1398,7 +1404,7 @@ class LFMRequester(
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
 
-                    if (MainActivity.isOnline) {
+                    if (Stuff.isOnline) {
                         val (lastScrobbleData, lastTime) = lastNp
                         lastNp = scrobbleData to System.currentTimeMillis()
                         lastScrobbleData.timestamp = scrobbleData.timestamp
@@ -1490,7 +1496,7 @@ class LFMRequester(
 
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
-                    if (MainActivity.isOnline) {
+                    if (Stuff.isOnline) {
                         if (correctedArtist != null || edit != null) {
                             if (prefs.submitNowPlaying) {
                                 scrobblablesMap.forEach { (stringId, scrobblable) ->
@@ -1532,7 +1538,7 @@ class LFMRequester(
                         .getScrobbleSourcesDao()
                         .insert(scrobbleSource)
 
-                    if (MainActivity.isOnline) {
+                    if (Stuff.isOnline) {
                         scrobblablesMap.forEach { (stringId, scrobblable) ->
                             if (scrobblable != null) {
                                 scrobbleResults[stringId] = scrobblable.scrobble(scrobbleData)

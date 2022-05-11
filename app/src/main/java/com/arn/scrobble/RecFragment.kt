@@ -21,10 +21,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.acrcloud.rec.*
-import com.arn.scrobble.Stuff.focusOnTv
-import com.arn.scrobble.Stuff.setTextAndAnimate
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.UiUtils.focusOnTv
+import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.UiUtils.setTextAndAnimate
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -60,7 +63,7 @@ class RecFragment : Fragment(),
                 if (isGranted)
                     startOrCancel()
                 else
-                    Stuff.toast(context, getString(R.string.grant_rec_perm))
+                    context!!.toast(R.string.grant_rec_perm)
             }
     }
 
@@ -70,7 +73,7 @@ class RecFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentRecBinding.inflate(inflater, container, false)
-        if (!MainActivity.isTV)
+        if (!context!!.isTv)
             setHasOptionsMenu(true)
         return binding.root
     }
@@ -81,7 +84,7 @@ class RecFragment : Fragment(),
         if (Stuff.DEMO_MODE)
             binding.recShazam.text = binding.recShazam.text.toString().replace("Shazam", "S app")
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || MainActivity.isTV)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context!!.isTv)
             binding.recShazam.visibility = View.GONE
         else
             binding.recShazam.movementMethod = LinkMovementMethod.getInstance()
@@ -104,7 +107,7 @@ class RecFragment : Fragment(),
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.scrobble_from_mic)
+        setTitle(R.string.scrobble_from_mic)
 //        showSnackbar()
     }
 
@@ -197,7 +200,7 @@ class RecFragment : Fragment(),
             return
         }
 
-        if (!MainActivity.isOnline) {
+        if (!Stuff.isOnline) {
             binding.recStatus.setTextAndAnimate(R.string.unavailable_offline)
             return
         }

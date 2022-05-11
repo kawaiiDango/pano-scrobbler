@@ -11,9 +11,14 @@ import android.view.ViewGroup
 import androidx.core.view.updatePaddingRelative
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
-import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.dp
+import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentBillingBinding
+import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
@@ -47,7 +52,7 @@ class BillingFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, "")
+        setTitle("")
     }
 
     override fun onDestroyView() {
@@ -143,7 +148,7 @@ class BillingFragment : Fragment() {
         }
         billingViewModel.proStatus.observe(viewLifecycleOwner) {
             if (it == true) {
-                Stuff.toast(context, getString(R.string.thank_you))
+                context!!.toast(R.string.thank_you)
                 if (!BuildConfig.DEBUG)
                     parentFragmentManager.popBackStack()
             }

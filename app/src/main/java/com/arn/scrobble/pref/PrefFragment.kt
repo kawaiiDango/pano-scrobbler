@@ -39,6 +39,10 @@ import com.arn.scrobble.edits.BlockedMetadataFragment
 import com.arn.scrobble.edits.RegexEditsFragment
 import com.arn.scrobble.edits.SimpleEditsFragment
 import com.arn.scrobble.themes.ThemesFragment
+import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.UiUtils.openInBrowser
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.widget.ChartsWidgetActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
 import com.google.android.material.color.MaterialColors
@@ -98,7 +102,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val hideOnTV = mutableListOf<Preference>()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !MainActivity.isTV) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !context!!.isTv) {
             val master = findPreference<SwitchPreference>(MainPrefs.PREF_MASTER)!!
             master.summary = getString(R.string.pref_master_qs_hint)
         }
@@ -107,7 +111,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         hideOnTV += notiCategories
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !MainActivity.isTV) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !context!!.isTv) {
             notiCategories.summary = getString(R.string.pref_noti_q)
         }
 
@@ -420,19 +424,19 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("translate")!!
             .onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            Stuff.openInBrowser(context!!, getString(R.string.crowdin_link))
+            context!!.openInBrowser(getString(R.string.crowdin_link))
             true
         }
 
         findPreference<Preference>("translate_credits")!!
             .onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            Stuff.openInBrowser(context!!, getString(R.string.crowdin_link) + "/members")
+            context!!.openInBrowser(getString(R.string.crowdin_link) + "/members")
             true
         }
 
         findPreference<Preference>("privacy")!!
             .onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            Stuff.openInBrowser(context!!, getString(R.string.privacy_policy_link))
+            context!!.openInBrowser(getString(R.string.privacy_policy_link))
             true
         }
 
@@ -440,7 +444,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         try {
             about.title = "v " + BuildConfig.VERSION_NAME
             about.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                Stuff.openInBrowser(context!!, about.summary.toString())
+                context!!.openInBrowser(about.summary.toString())
                 true
             }
         } catch (e: PackageManager.NameNotFoundException) {
@@ -460,7 +464,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             true
         }
 
-        if (MainActivity.isTV)
+        if (context!!.isTv)
             hideOnTV.forEach {
                 it.isVisible = false
             }
@@ -566,11 +570,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
             if (!exported)
                 withContext(Dispatchers.Main) {
-                    Stuff.toast(
-                        context!!,
-                        getString(R.string.export_failed),
-                        Toast.LENGTH_LONG
-                    )
+                    context!!.toast(R.string.export_failed, Toast.LENGTH_LONG)
                 }
             else
                 Stuff.log("Exported")
@@ -601,16 +601,9 @@ class PrefFragment : PreferenceFragmentCompat() {
                     }
                     withContext(Dispatchers.Main) {
                         if (!imported)
-                            Stuff.toast(
-                                context!!,
-                                getString(R.string.import_hey_wtf),
-                                Toast.LENGTH_LONG
-                            )
+                            context!!.toast(R.string.import_hey_wtf, Toast.LENGTH_LONG)
                         else {
-                            Stuff.toast(
-                                context!!,
-                                getString(R.string.imported)
-                            )
+                            context!!.toast(R.string.imported)
                             parentFragmentManager.popBackStack()
                         }
                     }
@@ -621,7 +614,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.settings)
+        setTitle(R.string.settings)
 
         listView.isNestedScrollingEnabled = false
 

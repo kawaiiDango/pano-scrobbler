@@ -9,6 +9,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.wrappedGet
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.UiUtils.toast
 import kotlin.math.roundToInt
 
 class ScalableGrid(
@@ -108,7 +109,7 @@ class ScalableGrid(
 
 
         if (fromMenu && !prefs.gridPinchLearnt)
-            Stuff.toast(context, context.getString(R.string.pinch_to_zoom))
+            context!!.toast(R.string.pinch_to_zoom)
     }
 
     private fun updateColumnCounts() {

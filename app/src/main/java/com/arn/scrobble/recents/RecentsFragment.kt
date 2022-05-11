@@ -32,11 +32,6 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import coil.dispose
 import coil.load
 import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.getTintedDrawable
-import com.arn.scrobble.Stuff.memoryCacheKey
-import com.arn.scrobble.Stuff.setArrowColors
-import com.arn.scrobble.Stuff.setProgressCircleColors
-import com.arn.scrobble.Stuff.showWithIcons
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentRecentsBinding
@@ -44,6 +39,15 @@ import com.arn.scrobble.databinding.CoordinatorMainBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.UiUtils.adjustHeight
+import com.arn.scrobble.ui.UiUtils.getTintedDrawable
+import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.UiUtils.memoryCacheKey
+import com.arn.scrobble.ui.UiUtils.openInBrowser
+import com.arn.scrobble.ui.UiUtils.setArrowColors
+import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
+import com.arn.scrobble.ui.UiUtils.showWithIcons
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
@@ -165,7 +169,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         activity ?: return
         if (isShowingLoves) {
             coordinatorBinding.heroCalendar.isEnabled = false
-        } else if (!MainActivity.isTV) {
+        } else if (!context!!.isTv) {
             coordinatorBinding.heroCalendar.isEnabled = true
         }
         viewModel.reemitColors()
@@ -179,7 +183,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
     private fun postInit() {
         val activity = activity as MainActivity? ?: return
         coordinatorBinding.toolbar.title = null
-        Stuff.setCtlHeight(activity)
+        coordinatorBinding.ctl.adjustHeight()
         val llm = LinearLayoutManager(context!!)
         binding.recentsList.layoutManager = llm
 
@@ -239,7 +243,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 }
                 adapter.populate(oldList)
             }
-            if (viewModel.page != it.page && MainActivity.isTV)
+            if (viewModel.page != it.page && context!!.isTv)
                 loadRecents(1, true)
             loadMoreListener.currentPage = it.page
 
@@ -305,11 +309,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             if (track is Track) {
                 showTrackInfo(track)
                 if (!prefs.longPressLearnt) {
-                    Stuff.toast(
-                        context,
-                        getString(R.string.info_long_press_hint),
-                        Toast.LENGTH_LONG
-                    )
+                    context!!.toast(R.string.info_long_press_hint, Toast.LENGTH_LONG)
                     prefs.longPressLearnt = true
                 }
             }
@@ -341,8 +341,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             coordinatorBinding.heroPlay.setOnLongClickListener {
                 val track = coordinatorBinding.heroImg.tag
                 if (track is Track) {
-                    Stuff.openInBrowser(
-                        context!!,
+                    context!!.openInBrowser(
                         "https://en.touhouwiki.net/index.php?search=" +
                                 URLEncoder.encode("${track.artist} - ${track.name}", "UTF-8")
                     )
@@ -359,7 +358,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     viewModel.pkgMap[0]
                 else
                     null
-                Stuff.launchSearchIntent(context!!, track, pkgName)
+                UiUtils.launchSearchIntent(context!!, track, pkgName)
             }
         }
 
@@ -434,7 +433,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             synchronized(viewModel.tracks) {
                 adapter.populate(viewModel.tracks)
             }
-        if (!MainActivity.isTV) {
+        if (!context!!.isTv) {
 
             if (username != null) {
                 coordinatorBinding.heroInfo.visibility = View.GONE
@@ -651,7 +650,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             }
         } else {
             coordinatorBinding.heroImg.dispose()
-            val color = Stuff.getMatColor(
+            val color = UiUtils.getMatColor(
                 coordinatorBinding.heroImg.context,
                 Stuff.genHashCode(track.artist, track.name)
             )
@@ -748,7 +747,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     if (succ)
                         adapter.removeTrack(track)
                     else
-                        Stuff.toast(activity, getString(R.string.network_error))
+                        activity!!.toast(R.string.network_error)
                 }
                 R.id.menu_play -> coordinatorBinding.heroPlay.callOnClick()
                 R.id.menu_info -> coordinatorBinding.heroInfo.callOnClick()

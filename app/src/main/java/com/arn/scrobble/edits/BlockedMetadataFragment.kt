@@ -12,11 +12,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.autoNotify
-import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.UiUtils.autoNotify
+import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setTitle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -48,7 +49,7 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.pref_blocked_metadata)
+        setTitle(R.string.pref_blocked_metadata)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

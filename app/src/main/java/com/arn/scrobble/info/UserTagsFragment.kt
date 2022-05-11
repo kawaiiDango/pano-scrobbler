@@ -16,10 +16,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.UiUtils
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
@@ -127,7 +127,7 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         _binding = DialogUserTagsBinding.inflate(layoutInflater)
 
         return MaterialAlertDialogBuilder(context!!)
-            .setTitle(Stuff.getColoredTitle(context!!, entry.name))
+            .setTitle(UiUtils.getColoredTitle(context!!, entry.name))
             .setIcon(icon)
             .setView(binding.root)
             .setPositiveButton(R.string.add, null)

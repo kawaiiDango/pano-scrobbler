@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.databinding.NavTabBinding
+import com.arn.scrobble.ui.UiUtils.setTitle
 import com.google.android.material.tabs.TabLayout
 
 
@@ -50,7 +51,7 @@ open class PagerBaseFragment : Fragment(), TabLayout.OnTabSelectedListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, 0)
+        setTitle(0)
         (activity as MainActivity).binding.coordinatorMain.tabBar.addOnTabSelectedListener(this)
     }
 

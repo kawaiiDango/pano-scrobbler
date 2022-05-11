@@ -31,9 +31,9 @@ import com.arn.scrobble.Stuff.isUrlOrDomain
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
@@ -57,7 +57,7 @@ class NLService : NotificationListenerService() {
 
     override fun onCreate() {
         if (BuildConfig.DEBUG)
-            Stuff.toast(applicationContext, getString(R.string.scrobbler_on))
+            toast(R.string.scrobbler_on)
         super.onCreate()
 //        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
         init()
@@ -447,12 +447,11 @@ class NLService : NotificationListenerService() {
                         ) {
                             artist = currentBundle.getString(B_ARTIST)!!
                             title = currentBundle.getString(B_TRACK)!!
-                            Stuff.toast(
-                                context, (
-                                        if (loved)
-                                            "♥"
-                                        else
-                                            "\uD83D\uDC94"
+                            toast(
+                                (if (loved)
+                                    "♥"
+                                else
+                                    "\uD83D\uDC94"
                                         ) + getString(R.string.artist_title, artist, title)
                             )
                             if (loved == currentBundle.getBoolean(B_USER_LOVED, false))
@@ -503,15 +502,15 @@ class NLService : NotificationListenerService() {
                 }
                 iSCROBBLER_ON -> {
                     prefs.scrobblerEnabled = true
-                    Stuff.toast(context, getString(R.string.scrobbler_on))
+                    toast(R.string.scrobbler_on)
                 }
                 iSCROBBLER_OFF -> {
                     prefs.scrobblerEnabled = false
-                    Stuff.toast(context, getString(R.string.scrobbler_off))
+                    toast(R.string.scrobbler_off)
                 }
                 CONNECTIVITY_ACTION -> {
                     val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                    MainActivity.isOnline = cm.activeNetworkInfo?.isConnected == true
+                    Stuff.isOnline = cm.activeNetworkInfo?.isConnected == true
                 }
                 ACTION_TIME_CHANGED -> {
                     DigestJob.scheduleAlarms(applicationContext)
@@ -570,18 +569,10 @@ class NLService : NotificationListenerService() {
                     if (!controllers.isNullOrEmpty()) {
                         if (blockedMetadata.skip) {
                             controllers.skip()
-                            Stuff.toast(
-                                context,
-                                getString(R.string.skip),
-                                500
-                            )
+                            toast(R.string.skip, 500)
                         } else if (blockedMetadata.mute) {
                             sessListener!!.mute(hash)
-                            Stuff.toast(
-                                context,
-                                getString(R.string.mute),
-                                500
-                            )
+                            toast(R.string.mute, 500)
                         }
                     }
                 }
@@ -781,7 +772,7 @@ class NLService : NotificationListenerService() {
                     applicationContext, 4, i,
                     Stuff.updateCurrentOrImmutable
                 )
-                Stuff.getAction(
+                Stuff.getNotificationAction(
                     R.drawable.vd_heart_break,
                     "\uD83D\uDC94",
                     getString(R.string.unlove),
@@ -793,7 +784,7 @@ class NLService : NotificationListenerService() {
                     applicationContext, 3, i,
                     Stuff.updateCurrentOrImmutable
                 )
-                Stuff.getAction(
+                Stuff.getNotificationAction(
                     R.drawable.vd_heart,
                     "\uD83E\uDD0D",
                     getString(R.string.love),
@@ -850,7 +841,7 @@ class NLService : NotificationListenerService() {
             if (nowPlaying) {
 //                nb.setSubText(getString(R.string.state_scrobbling))
                 nb.addAction(
-                    Stuff.getAction(
+                    Stuff.getNotificationAction(
                         R.drawable.vd_remove,
                         "⛔️",
                         getString(R.string.unscrobble),
@@ -1023,7 +1014,7 @@ class NLService : NotificationListenerService() {
                 .setSmallIcon(R.drawable.vd_appquestion_noti)
                 .setContentIntent(launchIntent)
                 .addAction(
-                    Stuff.getAction(
+                    Stuff.getNotificationAction(
                         R.drawable.vd_ban,
                         "\uD83D\uDEAB",
                         getString(R.string.no),
@@ -1031,7 +1022,7 @@ class NLService : NotificationListenerService() {
                     )
                 )
                 .addAction(
-                    Stuff.getAction(
+                    Stuff.getNotificationAction(
                         R.drawable.vd_check,
                         "✔",
                         getString(R.string.yes),

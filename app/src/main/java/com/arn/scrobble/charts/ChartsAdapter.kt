@@ -12,15 +12,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getTintedDrawable
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.GridItemChartBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import de.umass.lastfm.*
 import java.text.NumberFormat
@@ -92,7 +91,7 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
         binding.chartsList.layoutAnimation = null
         if (viewModel.chartsData.isEmpty()) {
             if (itemCount == 0) {
-                if (!MainActivity.isOnline)
+                if (!Stuff.isOnline)
                     binding.chartsStatus.text =
                         binding.root.context.getString(R.string.unavailable_offline)
                 else

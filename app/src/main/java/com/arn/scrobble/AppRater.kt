@@ -6,8 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.View
-import com.arn.scrobble.Stuff.focusOnTv
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 

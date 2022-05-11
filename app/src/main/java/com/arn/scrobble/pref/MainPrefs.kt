@@ -9,6 +9,7 @@ import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.search.SearchResultsExperimentAdapter
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.ui.UiUtils.isTv
 import com.frybits.harmony.getHarmonySharedPreferences
 import de.umass.lastfm.Period
 import hu.autsoft.krate.*
@@ -21,13 +22,15 @@ class MainPrefs(context: Context) : Krate {
 
     override val sharedPreferences = context.getHarmonySharedPreferences(NAME)
 
+    private val isTv by lazy { context.isTv }
+
     var scrobblerEnabled by booleanPref(PREF_MASTER).withDefault(true)
     var allowedPackages by stringSetPref(PREF_ALLOWED_PACKAGES).withDefault(setOf())
     var blockedPackages by stringSetPref(PREF_BLOCKED_PACKAGES).withDefault(setOf())
 
     private var _autoDetectApps by booleanPref(PREF_AUTO_DETECT).withDefault(true)
     val autoDetectApps
-        get() = if (MainActivity.isTV) false else _autoDetectApps
+        get() = if (isTv) false else _autoDetectApps
 
     private var _delaySecs by intPref(PREF_DELAY_SECS).withDefault(PREF_DELAY_SECS_DEFAULT)
     val delaySecs

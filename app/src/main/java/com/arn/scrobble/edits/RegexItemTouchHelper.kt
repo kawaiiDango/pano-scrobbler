@@ -2,7 +2,7 @@ package com.arn.scrobble.edits
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Stuff.setDragAlpha
+import com.arn.scrobble.ui.UiUtils.setDragAlpha
 import java.util.*
 
 

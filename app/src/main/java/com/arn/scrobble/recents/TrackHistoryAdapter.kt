@@ -11,13 +11,13 @@ import coil.load
 import coil.size.Scale
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.getTintedDrawable
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.ScrobbleSourcesDao
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.LoadMoreGetter
 import com.arn.scrobble.ui.PackageName
+import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers

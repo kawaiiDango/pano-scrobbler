@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.autoNotify
-import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentRegexEditBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.UiUtils.autoNotify
+import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,7 +49,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        Stuff.setTitle(activity!!, R.string.pref_regex_edits)
+        setTitle(R.string.pref_regex_edits)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -147,7 +149,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         }
 
         if (presetsAvailable.isEmpty()) {
-            Stuff.toast(context, getString(R.string.edit_no_presets_available))
+            context!!.toast(R.string.edit_no_presets_available)
             return
         }
 
@@ -173,7 +175,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
     private fun hasReachedLimit(): Boolean {
         viewModel.countReceiver.value?.let {
             if (it >= Stuff.MAX_PATTERNS) {
-                Stuff.toast(context, getString(R.string.edit_max_patterns, Stuff.MAX_PATTERNS))
+                context!!.toast(getString(R.string.edit_max_patterns, Stuff.MAX_PATTERNS))
                 return true
             }
         }

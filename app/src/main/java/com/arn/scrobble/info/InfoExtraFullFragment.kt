@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.showIcons
+import com.arn.scrobble.ui.UiUtils.showIcons
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.ChartsAdapter
 import com.arn.scrobble.charts.ChartsVM
@@ -21,6 +21,7 @@ import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils.setTitle
 import com.google.android.material.appbar.AppBarLayout
 import de.umass.lastfm.MusicEntry
 
@@ -119,7 +120,7 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
         }
 
         viewModel.listReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !MainActivity.isOnline && viewModel.chartsData.size == 0)
+            if (it == null && !Stuff.isOnline && viewModel.chartsData.size == 0)
                 adapter.populate()
             it ?: return@observe
             viewModel.reachedEnd = true
@@ -191,7 +192,7 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
     override fun onStart() {
         super.onStart()
         if (track != null)
-            Stuff.setTitle(activity!!, R.string.similar_tracks)
+            setTitle(R.string.similar_tracks)
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {

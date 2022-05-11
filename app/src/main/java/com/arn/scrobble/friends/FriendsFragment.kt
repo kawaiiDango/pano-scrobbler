@@ -19,8 +19,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
-import com.arn.scrobble.Stuff.dp
-import com.arn.scrobble.Stuff.setProgressCircleColors
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ActionFriendsBinding
 import com.arn.scrobble.databinding.ContentFriendsBinding
@@ -29,6 +27,12 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.UiUtils.openInBrowser
+import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.platform.MaterialElevationScale
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
@@ -79,7 +83,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         _binding ?: return false
         binding.friendsGrid.layoutManager ?: return false
 
-        if (MainActivity.isOnline) {
+        if (Stuff.isOnline) {
             binding.friendsHeader.headerText.visibility = View.GONE
         } else {
             binding.friendsHeader.headerText.text = getString(R.string.offline)
@@ -113,7 +117,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             (viewModel.page == 1 || viewModel.sorted)
         )
             runnable.run()
-        Stuff.setTitle(activity!!, 0)
+        setTitle(0)
     }
 
     override fun onPause() {
@@ -122,7 +126,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun postInit() {
-        Stuff.setTitle(activity!!, 0)
+        setTitle(0)
 
         viewModel.username = username
 
@@ -224,7 +228,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 adapter.notifyItemChanged(idxChanged, 0)
             }
 
-            if (!MainActivity.isTV && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.sectionedList.size > 1 &&
+            if (!context!!.isTv && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.sectionedList.size > 1 &&
                 viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size
             ) {
                 binding.friendsSort.show()
@@ -352,11 +356,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     }
 
                     if (viewModel.pinnedFriends.size > 1 && !prefs.reorderFriendsLearnt && !wasPinned) {
-                        Stuff.toast(
-                            context,
-                            getString(R.string.pin_help),
-                            Toast.LENGTH_LONG
-                        )
+                        context!!.toast(R.string.pin_help, Toast.LENGTH_LONG)
                         prefs.reorderFriendsLearnt = true
                     }
                 } else {
@@ -366,16 +366,18 @@ class FriendsFragment : Fragment(), ItemClickListener {
                             .addToBackStack(null)
                             .commit()
                     } else {
-                        Stuff.toast(
-                            context!!,
-                            getString(R.string.pin_limit_reached, Stuff.MAX_PINNED_FRIENDS)
+                        context!!.toast(
+                            getString(
+                                R.string.pin_limit_reached,
+                                Stuff.MAX_PINNED_FRIENDS
+                            )
                         )
                     }
                 }
             }
 
             actionsBinding.friendsProfile.setOnClickListener {
-                Stuff.openInBrowser(context!!, userLink)
+                context!!.openInBrowser(userLink)
             }
             actionsBinding.friendsScrobbles.setOnClickListener {
                 (activity as MainActivity).enableGestures()

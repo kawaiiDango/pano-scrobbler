@@ -51,15 +51,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/tag_info_progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                style="@style/Widget.Material3.CircularProgressIndicator.Small"
-                app:hideAnimationBehavior="none"
-                android:layout_gravity="center" />
-
             <LinearLayout
                 android:id="@+id/tag_info_content"
                 android:layout_width="match_parent"

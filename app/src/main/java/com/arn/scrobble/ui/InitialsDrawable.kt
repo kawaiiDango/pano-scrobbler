@@ -18,7 +18,7 @@ class InitialsDrawable(context: Context, name: String, colorFromHash: Boolean = 
 //            Color.TRANSPARENT
             MaterialColors.getColor(context, R.attr.colorSurface, null)
         else
-            Stuff.getMatColor(
+            UiUtils.getMatColor(
                 context, name.hashCode(),
                 if (context.resources.getBoolean(R.bool.is_dark))
                     "600"
@@ -31,7 +31,7 @@ class InitialsDrawable(context: Context, name: String, colorFromHash: Boolean = 
         if (!colorFromHash)
             MaterialColors.getColor(context, R.attr.colorPrimary, null)
         else
-            Stuff.getMatColor(
+            UiUtils.getMatColor(
                 context, name.hashCode(),
                 if (context.resources.getBoolean(R.bool.is_dark))
                     "100"

@@ -10,10 +10,12 @@ import android.view.inputmethod.EditorInfo
 import android.webkit.URLUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import com.arn.scrobble.Stuff.hideKeyboard
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.ListenBrainz
+import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -115,7 +117,7 @@ open class LoginFragment : DialogFragment() {
         if (context == null || isStateSaved)
             return
         if (errMsg.isNotEmpty())
-            Stuff.toast(context, errMsg)
+            context!!.toast(errMsg)
         binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_ban)
         binding.loginStatus.visibility = View.VISIBLE
@@ -234,7 +236,7 @@ open class LoginFragment : DialogFragment() {
                         url = "https://$url"
                     if (!URLUtil.isValidUrl(url)) {
                         withContext(Dispatchers.Main) {
-                            Stuff.toast(activity!!, getString(R.string.failed_encode_url))
+                            activity!!.toast(R.string.failed_encode_url)
                         }
                         throw IllegalArgumentException(getString(R.string.failed_encode_url))
                     }
@@ -252,7 +254,7 @@ open class LoginFragment : DialogFragment() {
                 }
             }
             else -> withContext(Dispatchers.Main) {
-                Stuff.toast(activity!!, "service not implemented")
+                activity!!.toast("service not implemented")
             }
         }
         return success
@@ -262,7 +264,7 @@ open class LoginFragment : DialogFragment() {
         super.onStart()
 
         if (checksLogin) {
-            Stuff.setTitle(activity!!, arguments?.getString(HEADING))
+            setTitle(arguments?.getString(HEADING))
         }
 
     }

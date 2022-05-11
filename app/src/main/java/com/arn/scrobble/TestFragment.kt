@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.arn.scrobble.ui.UiUtils.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,7 +38,7 @@ class TestFragment : Fragment(R.layout.content_avd_test) {
                     .compress(Bitmap.CompressFormat.PNG, 100, it)
             }
             withContext(Dispatchers.Main) {
-                Stuff.toast(context, "Saved to ${file.absolutePath}")
+                context!!.toast("Saved to ${file.absolutePath}")
             }
         }
     }

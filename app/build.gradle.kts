@@ -43,7 +43,7 @@ android {
         targetSdk = 32
         versionCode = verCode
         versionName = "${verCode / 100}.${verCode % 100} - ${
-            SimpleDateFormat("yyyy/MM/dd").format(Date())
+            SimpleDateFormat("YYYY, MMM dd").format(Date())
         }"
         setProperty("archivesBaseName", "pScrobbler")
         vectorDrawables.useSupportLibrary = true
@@ -129,8 +129,8 @@ dependencies {
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics")
 
-    implementation("io.coil-kt:coil:2.0.0-rc03")
-    implementation("io.coil-kt:coil-gif:2.0.0-rc03")
+    implementation("io.coil-kt:coil:2.0.0")
+    implementation("io.coil-kt:coil-gif:2.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")
@@ -192,11 +192,12 @@ githubRelease {
     token(localProperties["github.token"] as String)
     owner("kawaiidango")
     repo("pscrobbler")
-    val changelog = file("src/main/play/release-notes/en-US/default.txt").readText()
+    val changelog = file("src/main/play/release-notes/en-US/default.txt").readText() +
+            "\n\n" + "Copied from Play Store what's new, may not be accurate for minor updates."
     body(changelog)
     tagName(android.defaultConfig.versionCode.toString())
     releaseName(android.defaultConfig.versionName)
-    targetCommitish("master")
+    targetCommitish("main")
     releaseAssets(
         listOf(
             "build/outputs/apk/release/pScrobbler-release.apk",

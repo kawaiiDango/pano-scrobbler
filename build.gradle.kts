@@ -11,7 +11,7 @@ buildscript {
 }
 
 plugins {
-    id("com.android.application") version "7.3.0-alpha09" apply false
+    id("com.android.application") version "7.3.0-beta01" apply false
 //    id("com.android.application") version "7.1.3" apply false
     kotlin("android") version "1.6.20" apply false
     id("com.google.firebase.crashlytics") version "2.8.1" apply false
@@ -25,11 +25,17 @@ tasks.register<Delete>("clean").configure {
 // play store and github publishing scripts
 // remove if not needed
 
-tasks.register<GradleBuild>("cleanBuildPublish") {
+tasks.register<GradleBuild>("cleanBuildDraft") {
     tasks = listOf(
         "clean",
         "publishReleaseBundle",
         "assembleRelease",
+    )
+}
+
+tasks.register<GradleBuild>("finalizeDraft") {
+    tasks = listOf(
+        "promoteArtifact",
         "githubRelease",
     )
 }

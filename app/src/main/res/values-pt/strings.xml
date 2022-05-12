@@ -8,6 +8,10 @@
         <item quantity="one">%1$s ouvinte</item>
         <item quantity="other">%1$s ouvintes</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s dia</item>
+        <item quantity="other">%1$s dias</item>
+    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s semana</item>
         <item quantity="other">%1$s semanas</item>
@@ -50,9 +54,11 @@
     </plurals>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
+    <string name="reset">Redefinir</string>
     <string name="settings">Definições</string>
     <string name="bug_report">Relatório de erros</string>
     <string name="album_art">Capa do álbum</string>
+    <string name="artist_image">Imagem do artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar título</string>
     <string name="network_error">Falha de rede</string>
     <string name="scrobble_ignored_save_edit">O Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de guardar esta edição para futuros scrobbles em vez disso?</string>
@@ -101,8 +107,11 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Partilhar esta música</string>
     <string name="share">Partilhar</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="more_info">Mais informação</string>
+    <string name="rank_change_no_change">Sem alteração</string>
     <string name="search">Pesquisar</string>
+    <string name="library" comment="search within the library">Biblioteca</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opções para este item</string>
@@ -129,6 +138,7 @@
     <string name="allow_background">Permitir scrobbles em segundo plano</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para obter metadados da música. Nenhum outro tipo notificação é lida</string>
+    <string name="send_notifications">Permitir notificações</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Iniciar sessão com last.FM</string>
     <string name="authenticate_with_lastfm_desc">Pode depois iniciar sessão no LibreFM, GNUFM e Listenbrainz, a partir das definições</string>
     <string name="swap" comment="(Swap title and artist)">Inverter</string>
@@ -169,15 +179,20 @@
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="share_this_chart">Partilhar esta tabela</string>
     <string name="weekly">Semanal</string>
+    <string name="weeks">Semanas</string>
     <string name="monthly">Mensal</string>
+    <string name="months">Meses</string>
+    <string name="years">Anos</string>
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
+    <string name="charts_custom" comment="Custom date range, but in short">Personalizar</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Sem dados suficientes</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">A sentir-me com sorte</string>
     <string name="random_not_found">Nenhuma faixa encontrada</string>
     <string name="loved_track">Faixa favorita</string>
     <string name="randomize">Aleatorizar</string>
+    <string name="random_text">Aleatório</string>
     <string name="graph_daily">Contagem diária de scrobbles</string>
     <string name="graph_weekly">Contagem semanal de scrobbles</string>
     <string name="graph_monthly">Contagem mensal de scrobbles</string>
@@ -289,6 +304,9 @@
     <string name="pref_lastfm_disable">Não enviar scrobbles para o lastFM</string>
     <string name="pref_lastfm_disable_desc">Continuará a precisar de uma conta no lastFM para que o resto da interface de utilizador funcione</string>
     <string name="pref_translate">Traduzir esta aplicação</string>
+    <string name="pref_translate_credits">Créditos de tradução</string>
+    <string name="pref_oss_credits">Licenças de código aberto</string>
+    <string name="download">Transferir</string>
     <string name="import_hey_wtf">Provavelmente, este não é um ficheiro de exportação do Pano Scrobbler</string>
     <string name="export_failed">Falha ao exportar</string>
     <string name="imported">Importado</string>

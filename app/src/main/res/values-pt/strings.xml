@@ -61,6 +61,7 @@
     <string name="artist_image">Imagem do artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar título</string>
     <string name="network_error">Falha de rede</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorado</string>
     <string name="scrobble_ignored_save_edit">O Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de guardar esta edição para futuros scrobbles em vez disso?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Os campos obrigatórios estão vazios</string>
     <string name="artist">Artista</string>
@@ -109,9 +110,11 @@
     <string name="share">Partilhar</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="more_info">Mais informação</string>
+    <string name="rank_change" comment="%1= delta change">Alteração na classificação: %s</string>
     <string name="rank_change_no_change">Sem alteração</string>
     <string name="search">Pesquisar</string>
     <string name="library" comment="search within the library">Biblioteca</string>
+    <string name="take_long_time">Isto poderá demorar bastante tempo</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opções para este item</string>
@@ -166,6 +169,7 @@
     <string name="saved_as_pending">Guardado como scrobble pendente</string>
     <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Histórico de scrobbles</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto temporal</string>
     <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s -</string>
     <string name="my_scrobbles">Meus scrobbles</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de %1$s</string>
@@ -178,6 +182,7 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="share_this_chart">Partilhar esta tabela</string>
+    <string name="lastfm_reports">Relatórios do LastFM</string>
     <string name="weekly">Semanal</string>
     <string name="weeks">Semanas</string>
     <string name="monthly">Mensal</string>
@@ -186,6 +191,8 @@
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
     <string name="charts_custom" comment="Custom date range, but in short">Personalizar</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Contínuo</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Com base em %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Sem dados suficientes</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">A sentir-me com sorte</string>
@@ -226,6 +233,7 @@
     <string name="edit_name" comment="name for regex pattern">Nome amigável (opcional)</string>
     <string name="edit_regex">Padrão Regex</string>
     <string name="edit_regex_replacement">Regex de substituição</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Campos</string>
     <string name="edit_replace">Substituir</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primeiro</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
@@ -241,6 +249,7 @@
     <string name="text" comment="text to test regex rules with">Texto</string>
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
+    <string name="blocked_metadata_noti">Toque para bloquear e ignorar</string>
     <string name="block">Bloquear</string>
     <string name="use_channel" comment="(Use youtube channel name)">Utilizar nome do canal</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Deseja ativar a regra de edição do padrão: %1$s?</string>

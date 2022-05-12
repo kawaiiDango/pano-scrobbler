@@ -158,7 +158,10 @@
     <string name="not_found" comment="Shown in search">見つかりませんでした</string>
     <string name="share_this_chart">このチャートを共有</string>
     <string name="weekly">1週間</string>
+    <string name="weeks">週</string>
     <string name="monthly">1ヶ月</string>
+    <string name="months">月</string>
+    <string name="years">年</string>
     <string name="charts_overall">全期間</string>
     <string name="charts_no_data">この期間のデータはありません</string>
     <string name="charts_custom" comment="Custom date range, but in short">カスタム</string>
@@ -255,6 +258,7 @@
     <string name="pref_fetch_aa_desc">アルバムアーティストの表示が行われないプレーヤーの場合に行います。取得データがタグ付けされたものと異なっていたり、LastFMには一部曲が存在しない場合があります。</string>
     <string name="pref_pixel_np">Pixelのこの曲なに？</string>
     <string name="pref_pixel_np_nope">Pixel端末でのみ利用可能</string>
+    <string name="pref_locale">言語</string>
     <string name="pref_change_locale">言語を変更</string>
     <string name="locale_only_ui">メインUIにのみ適用されます</string>
     <string name="pref_misc">その他</string>
@@ -279,6 +283,8 @@
     <string name="pref_lastfm_disable">LastFMにScrobbleしない</string>
     <string name="pref_lastfm_disable_desc">一部UIの操作には、LastFMへのログインが必要です</string>
     <string name="pref_translate">このアプリを翻訳</string>
+    <string name="pref_translate_credits">翻訳協力者</string>
+    <string name="pref_oss_credits">オープンソースクレジット</string>
     <string name="import_hey_wtf">選択したファイルは、おそらくPano Scrobblerのエクスポートファイルではありません</string>
     <string name="export_failed">エクスポートに失敗しました</string>
     <string name="imported">インポートされました</string>
@@ -289,6 +295,7 @@
     <string name="import_lists_keep">既存と融合させ、重複する訂正内容とブロックリストは維持する</string>
     <string name="import_settings">設定をインポートする</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">ブロードキャストされるインテント</string>
+    <string name="current_track">現在のトラック:</string>
     <string name="pref_intents">Tasker等用のインテント</string>
     <string name="copied">コピーしました</string>
     <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>

@@ -61,6 +61,7 @@
     <string name="artist_image">Imagem do artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar título</string>
     <string name="network_error">Falha de rede</string>
+    <string name="disable_tls_verify">Ignorar erros de TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorado</string>
     <string name="scrobble_ignored_save_edit">O Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de guardar esta edição para futuros scrobbles em vez disso?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Os campos obrigatórios estão vazios</string>
@@ -114,7 +115,11 @@
     <string name="rank_change_no_change">Sem alteração</string>
     <string name="search">Pesquisar</string>
     <string name="library" comment="search within the library">Biblioteca</string>
+    <string name="reindex">Índice rápido</string>
+    <string name="full_index">Índice completo</string>
     <string name="take_long_time">Isto poderá demorar bastante tempo</string>
+    <string name="full_index_desc">Use apenas se editou ou eliminou scrobbles do sítio.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Última indexação a %1$s.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opções para este item</string>
@@ -225,6 +230,7 @@
     <string name="appwidget_show">Exibir</string>
     <string name="light">Claro</string>
     <string name="dark">Escuro</string>
+    <string name="system_colors">Cores do sistema</string>
     <string name="appwidget_alpha">Opacidade do fundo</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">O widget será atualizado a cada %1$d minutos</string>
     <string name="primary_color">Cor principal</string>
@@ -250,10 +256,18 @@
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
     <string name="blocked_metadata_noti">Toque para bloquear e ignorar</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Ações do reprodutor</string>
+    <string name="skip" comment="skip to next track">Saltar</string>
     <string name="block">Bloquear</string>
+    <string name="hidden_tags">Etiquetas ocultas</string>
+    <string name="pin">Afixar</string>
+    <string name="unpin">Desafixar</string>
+    <string name="pin_limit_reached" formatted="true">Limite de amigos afixados atingido (%1$d)</string>
+    <string name="pin_help">Mantenha pressionado os itens afixados para reordená-los</string>
     <string name="use_channel" comment="(Use youtube channel name)">Utilizar nome do canal</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Deseja ativar a regra de edição do padrão: %1$s?</string>
     <string name="show_persistent_noti">Mostrar uma notificação persistente</string>
+    <string name="fix_it_desc">As sugestões seguintes podem ajudar a manter o scrobbler a funcionar em segundo plano em alguns dispositivos</string>
     <string name="persistent_noti_desc">Pressione e segure para ocultar isto</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
@@ -289,6 +303,7 @@
     <string name="pref_fetch_aa_desc">Para reprodutores que não fornecem esses dados. Os dados obtidos podem ser diferentes dos seus identificadores. O lastFM pode não ter dados para algumas músicas.</string>
     <string name="pref_pixel_np">Scrobble do A Tocar do Pixel</string>
     <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
+    <string name="pref_locale">Idiomas</string>
     <string name="pref_change_locale">Alterar Idioma</string>
     <string name="locale_only_ui">Aplica-se somente à interface principal</string>
     <string name="pref_misc">Diversos.</string>
@@ -315,6 +330,8 @@
     <string name="pref_translate">Traduzir esta aplicação</string>
     <string name="pref_translate_credits">Créditos de tradução</string>
     <string name="pref_oss_credits">Licenças de código aberto</string>
+    <string name="pref_check_updates">Verificar atualizações</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Atualização disponível: %1$s</string>
     <string name="download">Transferir</string>
     <string name="import_hey_wtf">Provavelmente, este não é um ficheiro de exportação do Pano Scrobbler</string>
     <string name="export_failed">Falha ao exportar</string>
@@ -326,6 +343,7 @@
     <string name="import_lists_keep">Fundir, mantendo edições existentes e lista de bloqueio</string>
     <string name="import_settings">Importar definições</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Propostas de difusão</string>
+    <string name="current_track">Faixa atual:</string>
     <string name="pref_intents">Intenções para Tasker, etc</string>
     <string name="copied">Copiado!</string>
     <string name="lastfm_reauth">Precisa de reiniciar sessão para editar ou apagar scrobbles</string>
@@ -337,6 +355,7 @@
     <string name="no_browser">Nenhum navegador instalado</string>
     <string name="no_player">Nenhum reprodutor de música instalado</string>
     <string name="not_running">⚠ Scrobbler terminado abruptamente pelo seu sistema</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo da falha dado pelo sistema: %s</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit">Verificar</string>
     <string name="scrobble">Scrobble</string>
@@ -380,5 +399,7 @@ As suas compras são administradas pelo Google Play. Estas estão vinculadas a u
 • Inicie sessão com a conta que fez a compra.
 • Instale este aplicativo diretamente a partir da página web do Google Play.
 "</string>
+    <string name="billing_block">Bloquear, saltar ou silenciar artistas/faixas automaticamente</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Afixe até %1$d amigos e reordene-os</string>
     <string name="billing_sharing">Remover nome da aplicação ao partilhar</string>
 </resources>

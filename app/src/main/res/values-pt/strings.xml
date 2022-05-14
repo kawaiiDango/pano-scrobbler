@@ -118,10 +118,12 @@
     <string name="rank_change_new">Sem registo de scrobbles no período anterior</string>
     <string name="search">Pesquisar</string>
     <string name="library" comment="search within the library">Biblioteca</string>
+    <string name="global" comment="search globally across lastfm">Global</string>
     <string name="reindex">Índice rápido</string>
     <string name="full_index">Índice completo</string>
     <string name="take_long_time">Isto poderá demorar bastante tempo</string>
     <string name="full_index_desc">Use apenas se editou ou eliminou scrobbles do sítio.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">A pesquisa inclui os principais %1$s itens de cada categoria.</string>
     <string name="last_indexed" formatted="true" comment="%1= date">Última indexação a %1$s.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>

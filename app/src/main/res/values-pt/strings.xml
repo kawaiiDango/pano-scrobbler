@@ -110,9 +110,12 @@
     <string name="share_this_song">Partilhar esta música</string>
     <string name="share">Partilhar</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
+    <string name="grid_size">Alterar tamanho da grade</string>
+    <string name="pinch_to_zoom">Aperte para ampliar</string>
     <string name="more_info">Mais informação</string>
     <string name="rank_change" comment="%1= delta change">Alteração na classificação: %s</string>
     <string name="rank_change_no_change">Sem alteração</string>
+    <string name="rank_change_new">Sem registo de scrobbles no período anterior</string>
     <string name="search">Pesquisar</string>
     <string name="library" comment="search within the library">Biblioteca</string>
     <string name="reindex">Índice rápido</string>
@@ -147,6 +150,12 @@
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para obter metadados da música. Nenhum outro tipo notificação é lida</string>
     <string name="send_notifications">Permitir notificações</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Verifique o estado e a contagem dos scrobbles
+- Favorite ou bloqueie diretamente da notificação
+- Seja notificado sobre erros de scrobble e possíveis soluções para o problema
+- Confira a sua tabela de scrobbles todas as semanas
+- E muito mais
+- As notifcações não reproduzem nenhum som\"\""</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Iniciar sessão com last.FM</string>
     <string name="authenticate_with_lastfm_desc">Pode depois iniciar sessão no LibreFM, GNUFM e Listenbrainz, a partir das definições</string>
     <string name="swap" comment="(Swap title and artist)">Inverter</string>
@@ -235,6 +244,7 @@
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">O widget será atualizado a cada %1$d minutos</string>
     <string name="primary_color">Cor principal</string>
     <string name="secondary_color">Cor secundária</string>
+    <string name="tint_background">Matriz de fundo</string>
     <string name="random_theme">Aleatório a cada inicialização</string>
     <string name="edit_name" comment="name for regex pattern">Nome amigável (opcional)</string>
     <string name="edit_regex">Padrão Regex</string>
@@ -258,6 +268,7 @@
     <string name="blocked_metadata_noti">Toque para bloquear e ignorar</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Ações do reprodutor</string>
     <string name="skip" comment="skip to next track">Saltar</string>
+    <string name="mute">Silenciar</string>
     <string name="block">Bloquear</string>
     <string name="hidden_tags">Etiquetas ocultas</string>
     <string name="pin">Afixar</string>
@@ -333,6 +344,7 @@
     <string name="pref_check_updates">Verificar atualizações</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Atualização disponível: %1$s</string>
     <string name="download">Transferir</string>
+    <string name="changelog">Alterações</string>
     <string name="import_hey_wtf">Provavelmente, este não é um ficheiro de exportação do Pano Scrobbler</string>
     <string name="export_failed">Falha ao exportar</string>
     <string name="imported">Importado</string>

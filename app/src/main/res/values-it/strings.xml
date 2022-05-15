@@ -8,6 +8,10 @@
         <item quantity="one">%1$s ascoltatore</item>
         <item quantity="other">%1$s ascoltatori</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s giorno</item>
+        <item quantity="other">%1$s giorni</item>
+    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s settimana</item>
         <item quantity="other">%1$s settimane</item>
@@ -94,7 +98,11 @@
     <string name="share_sig">(tramite Pano Scrobbler)</string>
     <string name="share_this_song">Condividi questa canzone</string>
     <string name="share">Condividi</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="more_info">Altre info</string>
+    <string name="rank_change" comment="%1= delta change">Spostamento in classifica: %s</string>
+    <string name="rank_change_no_change">Nessuno spostamento</string>
+    <string name="rank_change_new">Nessuno scrobbling nel periodo precedente</string>
     <string name="search">Cerca</string>
     <string name="profile">Profilo</string>
     <string name="profile_pic">Immagine del profilo</string>
@@ -122,6 +130,13 @@
     <string name="allow_background">Consenti lo scrobbling in background</string>
     <string name="grant_notification_access">Consenti accesso alle notifiche</string>
     <string name="grant_notification_access_desc">Necessario per individuare i metadati della musica. Non sarà letta alcuna notifica non-musicale</string>
+    <string name="send_notifications">Consenti le notifiche</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Controlla il numero e lo stato di scrobbling
+- Blocca o aggiungi ai preferiti direttamente dalla notifica
+- Ricevi notifiche sugli errori di scrobbling e come risolverli
+- Ricevi la lista dei tuoi artisti, album e brani più ascoltati della settimana
+- E altro ancora
+- Le notifiche non sono sonore\"\""</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Accedi con last.FM</string>
     <string name="authenticate_with_lastfm_desc">Potrai accedere a LibreFM, GNUFM e Listenbrainz in seguito, dalle impostazioni</string>
     <string name="swap" comment="(Swap title and artist)">Scambia</string>
@@ -353,5 +368,6 @@ I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google
 • Accedi con l’account che ha effettuato l’acquisto.
 • Installa questa app direttamente dal sito di Google Play.
 "</string>
+    <string name="billing_block">Blocca artisti/brani e salta o silenzia automaticamente</string>
     <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>
 </resources>

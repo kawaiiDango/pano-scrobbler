@@ -178,7 +178,10 @@
     <string name="share_this_chart">Condividi questa classifica</string>
     <string name="lastfm_reports">Report di LastFM</string>
     <string name="weekly">Settimanali</string>
+    <string name="weeks">Settimane</string>
     <string name="monthly">Mensili</string>
+    <string name="months">Mesi</string>
+    <string name="years">Anni</string>
     <string name="charts_overall">Generale</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>
     <string name="charts_custom" comment="Custom date range, but in short">Personalizzato</string>
@@ -216,6 +219,7 @@
     <string name="appwidget_show">Mostra</string>
     <string name="light">Chiaro</string>
     <string name="dark">Scuro</string>
+    <string name="system_colors">Colori del sistema</string>
     <string name="appwidget_alpha">Opacità sfondo</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Il widget si aggiornerà ogni %1$d minuti</string>
     <string name="primary_color">Colore principale</string>
@@ -242,8 +246,15 @@
     <string name="edit_regex_warning">⚠ Assicurati di conoscere le <a href="https://www.google.com/search?q=regex+java+tutorial+italiano">espressioni regolari in java</a> prima di fare uso di questa funzione, o usa uno dei <b>preset</b> forniti. Le corrispondenze delle regex sono cercate in ordine dall\'alto al basso</string>
     <string name="blocked_metadata_info">ℹ️ Compilando più di uno di questi campi si applicherà tra loro un operatore AND</string>
     <string name="blocked_metadata_noti">Tocca per bloccare e saltare</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Comandi lettore musicale</string>
+    <string name="skip" comment="skip to next track">Salta</string>
+    <string name="mute">Silenzia</string>
     <string name="block">Blocca</string>
     <string name="hidden_tags">Tag nascoste</string>
+    <string name="pin">Fissa in primo piano</string>
+    <string name="unpin">Non fissare più</string>
+    <string name="pin_limit_reached" formatted="true">Raggiunto limite di elementi fissati (%1$d)</string>
+    <string name="pin_help">Tieni premuti gli elementi in primo piano per riordinarli</string>
     <string name="use_channel" comment="(Use youtube channel name)">Usa il nome del canale YouTube</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Vuoi abilitare la regola di modifica del pattern: %1$s?</string>
     <string name="show_persistent_noti">Mostra una notifica permanente</string>
@@ -308,6 +319,12 @@
     <string name="pref_lastfm_disable">Non inviare scrobbling a lastFM</string>
     <string name="pref_lastfm_disable_desc">È comunque necessario accedere a lastFM perché il resto dell’interfaccia funzioni</string>
     <string name="pref_translate">Traduci questa app</string>
+    <string name="pref_translate_credits">Riconoscimenti traduzione</string>
+    <string name="pref_oss_credits">Riconoscimenti open source</string>
+    <string name="pref_check_updates">Ricerca degli aggiornamenti</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Aggiornamento disponibile: %1$s</string>
+    <string name="download">Scarica</string>
+    <string name="changelog">Registro modifiche</string>
     <string name="import_hey_wtf">Quello probabilmente non è un file esportato da Pano Scrobbler</string>
     <string name="export_failed">Esportazione fallita</string>
     <string name="imported">Importato</string>
@@ -373,5 +390,6 @@ I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google
 • Installa questa app direttamente dal sito di Google Play.
 "</string>
     <string name="billing_block">Blocca artisti/brani e salta o silenzia automaticamente</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fissa in primo piano e riordina gli amici (fino a %1$d)</string>
     <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>
 </resources>

@@ -174,6 +174,7 @@
     <string name="random_not_found">Nessun brano trovato</string>
     <string name="loved_track">Brano preferito</string>
     <string name="randomize">Casuale</string>
+    <string name="random_text">Casuale</string>
     <string name="graph_daily">Numero di scrobbling giornalieri</string>
     <string name="graph_weekly">Numero di scrobbling settimanali</string>
     <string name="graph_monthly">Numero di scrobbling mensili</string>
@@ -223,6 +224,7 @@
     <string name="text" comment="text to test regex rules with">Testo</string>
     <string name="edit_regex_warning">⚠ Assicurati di conoscere le <a href="https://www.google.com/search?q=regex+java+tutorial+italiano">espressioni regolari in java</a> prima di fare uso di questa funzione, o usa uno dei <b>preset</b> forniti. Le corrispondenze delle regex sono cercate in ordine dall\'alto al basso</string>
     <string name="blocked_metadata_info">ℹ️ Compilando più di uno di questi campi si applicherà tra loro un operatore AND</string>
+    <string name="blocked_metadata_noti">Tocca per bloccare e saltare</string>
     <string name="block">Blocca</string>
     <string name="use_channel" comment="(Use youtube channel name)">Usa il nome del canale YouTube</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Vuoi abilitare la regola di modifica del pattern: %1$s?</string>

@@ -75,7 +75,7 @@ class RegexEditsAddDialogFragment : DialogFragment() {
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 if (validate()) {
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    activity!!.lifecycleScope.launch(Dispatchers.IO) {
                         val prevRegexEdit = regexEdit.copy()
                         regexEdit.apply {
                             if (isNew)

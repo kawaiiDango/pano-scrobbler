@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.result
 import com.arn.scrobble.*
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ListItemInfoBinding

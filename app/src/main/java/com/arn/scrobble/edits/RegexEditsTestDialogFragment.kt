@@ -35,7 +35,7 @@ class RegexEditsTestDialogFragment : DialogFragment() {
             }
 
             override fun afterTextChanged(editable: Editable) {
-                lifecycleScope.launch(Dispatchers.IO) {
+                activity!!.lifecycleScope.launch(Dispatchers.IO) {
                     mutex.withLock {
                         val text = editable.toString()
                         val sd = ScrobbleData()

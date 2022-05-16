@@ -36,9 +36,17 @@
         <item quantity="one">%1$s brano</item>
         <item quantity="other">%1$s brani</item>
     </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d corrispondenza</item>
+        <item quantity="other">%1$d corrispondenze</item>
+    </plurals>
     <plurals name="num_simple_edits">
         <item quantity="one">%1$s modifica</item>
         <item quantity="other">%1$s modifiche</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s modifica del pattern</item>
+        <item quantity="other">%1$s modifiche del pattern</item>
     </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s metadato bloccato</item>
@@ -50,6 +58,7 @@
     <string name="settings">Configurazioni</string>
     <string name="bug_report">Segnalazione Bug</string>
     <string name="album_art">Copertina album</string>
+    <string name="artist_image">Foto artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossibile individuare il titolo</string>
     <string name="network_error">Errore di rete</string>
     <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobbling è troppo antico. Vorresti invece salvare questa modifica per gli scrobbling futuri?</string>

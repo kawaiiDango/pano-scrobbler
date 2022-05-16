@@ -283,7 +283,7 @@
     <string name="pref_noti_categories">Categorie di notifiche</string>
     <string name="pref_scrobble_noti">Notifiche di scrobbling</string>
     <string name="pref_lockscreen_noti">Notifiche nella schermata di blocco</string>
-    <string name="pref_offline_info">ℹ️ Gli scrobbling &amp; preferiti effettuati offline saranno salvati e inviati in seguito.</string>
+    <string name="pref_offline_info">ℹ️ I preferiti &amp; gli scrobbling effettuati offline saranno salvati e inviati in seguito.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">App per lo scrobbling</string>
     <string name="pref_enabled_apps_summary">ℹ️ Supporta le app che mostrano metadati musicali. Per evitare gli scrobbling duplicati da Spotify, attiva lo scrobbling in un solo posto.</string>
     <string name="pref_enabled_apps_title">Scegli app</string>

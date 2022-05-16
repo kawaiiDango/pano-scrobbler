@@ -339,7 +339,7 @@
     <string name="update_available" formatted="true" comment="%1= the version number">Aggiornamento disponibile: %1$s</string>
     <string name="download">Scarica</string>
     <string name="changelog">Registro modifiche</string>
-    <string name="import_hey_wtf">Quello probabilmente non è un file esportato da Pano Scrobbler</string>
+    <string name="import_hey_wtf">Probabilmente quello non è un file esportato da Pano Scrobbler</string>
     <string name="export_failed">Esportazione fallita</string>
     <string name="imported">Importato</string>
     <string name="import_options">Opzioni d’importazione</string>

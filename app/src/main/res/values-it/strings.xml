@@ -61,6 +61,8 @@
     <string name="artist_image">Foto artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossibile individuare il titolo</string>
     <string name="network_error">Errore di rete</string>
+    <string name="disable_tls_verify">Ignora gli errori di TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobbling ignorato</string>
     <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobbling è troppo antico. Vorresti invece salvare questa modifica per gli scrobbling futuri?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Alcuni campi obbligatori sono vuoti</string>
     <string name="artist">Artista</string>
@@ -347,6 +349,7 @@
     <string name="import_lists_keep">Unisci tenendo modifiche e lista bloccati esistenti</string>
     <string name="import_settings">Importa le configurazioni</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Intenti di broadcast</string>
+    <string name="current_track">Per il brano in riproduzione:</string>
     <string name="pref_intents">Intenti per Tasker ecc.</string>
     <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
@@ -358,6 +361,7 @@
     <string name="no_browser">Nessun browser installato</string>
     <string name="no_player">Nessun lettore musicale installato</string>
     <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Movente dato dal sistema: %s</string>
     <string name="not_running_fix_action">Risolvi</string>
     <string name="login_submit">Verifica</string>
     <string name="scrobble">Scrobble</string>

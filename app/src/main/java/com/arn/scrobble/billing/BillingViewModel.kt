@@ -4,19 +4,19 @@ import android.app.Activity
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.ProductDetails
 
 
 class BillingViewModel(application: Application) : AndroidViewModel(application) {
 
     val proStatus: LiveData<Boolean>
-    val proSkuDetails: LiveData<SkuDetails>
+    val proProductDetails: LiveData<ProductDetails>
     val proPendingSince: LiveData<Long>
 
     private val repository = BillingRepository.getInstance(application).apply {
         startDataSourceConnections()
         proStatus = proStatusLd
-        proSkuDetails = proSkuDetailsLd
+        proProductDetails = proProductDetailsLd
         proPendingSince = proPendingSinceLd
     }
 
@@ -27,7 +27,7 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
         repository.endDataSourceConnections()
     }
 
-    fun makePurchase(activity: Activity, skuDetails: SkuDetails) {
-        repository.launchBillingFlow(activity, skuDetails)
+    fun makePurchase(activity: Activity, productDetails: ProductDetails) {
+        repository.launchBillingFlow(activity, productDetails)
     }
 }

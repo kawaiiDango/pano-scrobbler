@@ -103,9 +103,9 @@ class BillingFragment : Fragment() {
         }
 
         binding.startBilling.setOnClickListener {
-            val skuDetails = billingViewModel.proSkuDetails.value
-            if (skuDetails != null)
-                billingViewModel.makePurchase(activity!!, skuDetails)
+            val productDetails = billingViewModel.proProductDetails.value
+            if (productDetails != null)
+                billingViewModel.makePurchase(activity!!, productDetails)
             else {
                 MaterialAlertDialogBuilder(context!!)
                     .setMessage(R.string.thank_you)
@@ -132,9 +132,9 @@ class BillingFragment : Fragment() {
             .into(binding.shareImage)
 */
         billingViewModel = (activity as MainActivity).billingViewModel
-        billingViewModel.proSkuDetails.observe(viewLifecycleOwner) {
+        billingViewModel.proProductDetails.observe(viewLifecycleOwner) {
             it?.let {
-                Stuff.log("price: " + it.priceCurrencyCode + it.price)
+                Stuff.log("price: " + it.oneTimePurchaseOfferDetails!!.priceCurrencyCode + it.oneTimePurchaseOfferDetails!!.formattedPrice)
             }
         }
         billingViewModel.proPendingSince.observe(viewLifecycleOwner) {

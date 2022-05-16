@@ -7,6 +7,8 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
+import com.android.billingclient.api.BillingClient.ProductType
+import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -20,7 +22,7 @@ import kotlin.math.min
 class BillingRepository private constructor(private val application: Application) :
     PurchasesUpdatedListener, BillingClientStateListener {
 
-    // Breaking change in billing v4: callbacks don't run on main thread, always use ld.postValue()
+    // Breaking change in billing v4: callbacks don't run on main thread, always use LiveData.postValue()
 
     // how long before the data source tries to reconnect to Google play
     private var reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
@@ -29,16 +31,7 @@ class BillingRepository private constructor(private val application: Application
     private val prefs by lazy { MainPrefs(application) }
     val proStatusLd by lazy { MutableLiveData(prefs.proStatus) }
     val proPendingSinceLd by lazy { MutableLiveData(0L) }
-    val proSkuDetailsLd by lazy {
-        val json = prefs.proSkuJson
-        val ld = MutableLiveData<SkuDetails>()
-        if (json != null) {
-            val skud = SkuDetails(json)
-            if (skud.sku == Tokens.PRO_SKU_NAME)
-                ld.value = skud
-        }
-        ld
-    }
+    val proProductDetailsLd by lazy { MutableLiveData<ProductDetails>() }
 
     fun startDataSourceConnections() {
         playStoreBillingClient = BillingClient.newBuilder(application.applicationContext)
@@ -63,16 +56,13 @@ class BillingRepository private constructor(private val application: Application
         )
     }
 
-    /**
-     * This is the callback for when connection to the Play [BillingClient] has been successfully
-     * established. It might make sense to get [SkuDetails] and [Purchases][Purchase] at this point.
-     */
+
     override fun onBillingSetupFinished(billingResult: BillingResult) {
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
                 handler.removeCallbacksAndMessages(null)
                 reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
-                querySkuDetailsAsync(BillingClient.SkuType.INAPP, INAPP_SKUS)
+                fetchProductDetails(Tokens.PRO_PRODUCT_ID)
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
@@ -109,7 +99,7 @@ class BillingRepository private constructor(private val application: Application
      * the release of entitlements occurs depends on the type of purchase. For consumable products,
      * the release may be deferred until after consumption by Google Play; for non-consumable
      * products and subscriptions, the release may be deferred until after
-     * [BillingClient.acknowledgePurchaseAsync] is called. You should keep receipts in the local
+     * [BillingClient.acknowledgePurchase] is called. You should keep receipts in the local
      * cache for augmented security and for making some transactions easier.
      *
      * THIS METHOD
@@ -129,7 +119,12 @@ class BillingRepository private constructor(private val application: Application
         if (!playStoreBillingClient.isReady)
             return
 
-        playStoreBillingClient.queryPurchasesAsync(BillingClient.SkuType.INAPP) { billingResult, purchases ->
+        val queryPurchasesParams = QueryPurchasesParams
+            .newBuilder()
+            .setProductType(ProductType.INAPP)
+            .build()
+
+        playStoreBillingClient.queryPurchasesAsync(queryPurchasesParams) { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 processPurchases(purchases.toHashSet())
             }
@@ -144,7 +139,7 @@ class BillingRepository private constructor(private val application: Application
                     validPurchases.add(purchase)
                 }
             } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
-                if (Tokens.PRO_SKU_NAME in purchase.skus) {
+                if (Tokens.PRO_PRODUCT_ID in purchase.products) {
                     Timber.tag(LOG_TAG).d(
                         "Received a pending purchase from " + Stuff.myRelativeTime(
                             application,
@@ -173,10 +168,10 @@ class BillingRepository private constructor(private val application: Application
     /**
      * If you do not acknowledge a purchase, the Google Play Store will provide a refund to the
      * users within a few days of the transaction. Therefore you have to implement
-     * [BillingClient.acknowledgePurchaseAsync] inside your app.
+     * [BillingClient.acknowledgePurchase] inside your app.
      */
     private fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
-        if (nonConsumables.isEmpty() || !nonConsumables.any { Tokens.PRO_SKU_NAME in it.skus }) {
+        if (nonConsumables.isEmpty() || !nonConsumables.any { Tokens.PRO_PRODUCT_ID in it.products }) {
             revokePro()
         }
 
@@ -191,7 +186,7 @@ class BillingRepository private constructor(private val application: Application
                         disburseNonConsumableEntitlement(purchase)
                     }
                     BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
-                        if (Tokens.PRO_SKU_NAME in purchase.skus) {
+                        if (Tokens.PRO_PRODUCT_ID in purchase.products) {
                             revokePro()
                         }
                     }
@@ -210,7 +205,7 @@ class BillingRepository private constructor(private val application: Application
      * In this sample, once the entitlement is disbursed the receipt is thrown out.
      */
     private fun disburseNonConsumableEntitlement(purchase: Purchase) {
-        if (Tokens.PRO_SKU_NAME in purchase.skus) {
+        if (Tokens.PRO_PRODUCT_ID in purchase.products) {
             prefs.proStatus = true
             if (proStatusLd.value != true) {
                 proStatusLd.postValue(true)
@@ -229,42 +224,42 @@ class BillingRepository private constructor(private val application: Application
             proStatusLd.postValue(false)
     }
 
-    private fun findProSku(skudList: List<SkuDetails>?): SkuDetails? {
-        val skud = skudList?.firstOrNull { it.sku == Tokens.PRO_SKU_NAME }
-        return if (skud != null && application.getString(R.string.app_name) in skud.title &&
-            application.getString(R.string.app_name) in skud.description &&
-            skud.sku != skud.title && skud.sku != skud.description
+    private fun findProProduct(productDetailsList: List<ProductDetails>?): ProductDetails? {
+        val productDetails =
+            productDetailsList?.firstOrNull { it.productId == Tokens.PRO_PRODUCT_ID }
+
+        return if (productDetails != null && application.getString(R.string.app_name) in productDetails.title &&
+            application.getString(R.string.app_name) in productDetails.name &&
+            productDetails.productId != productDetails.title && productDetails.productId != productDetails.name
         )
-            skud
-        else if (skud != null) {
-            prefs.proSkuJson = null
-            proSkuDetailsLd.postValue(null)
+            productDetails
+        else if (productDetails != null) {
+            proProductDetailsLd.postValue(null)
             revokePro()
             null
         } else null
     }
 
-    /**
-     * Presumably a set of SKUs has been defined on the Google Play Developer Console. This
-     * method is for requesting a (improper) subset of those SKUs. Hence, the method accepts a list
-     * of product IDs and returns the matching list of SkuDetails.
-     *
-     * The result is passed to [onSkuDetailsResponse]
-     */
-    private fun querySkuDetailsAsync(
-        @BillingClient.SkuType skuType: String,
-        skuList: List<String>
+
+    private fun fetchProductDetails(
+        productId: String
     ) {
-        val params = SkuDetailsParams.newBuilder()
-            .setSkusList(skuList)
-            .setType(skuType)
+        val queryProductDetailsParams = QueryProductDetailsParams.newBuilder()
+            .setProductList(
+                listOf(
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId(productId)
+                        .setProductType(ProductType.INAPP)
+                        .build()
+                )
+            )
             .build()
-        playStoreBillingClient.querySkuDetailsAsync(params) { billingResult, skuDetailsList ->
+
+        playStoreBillingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, productDetailsList ->
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
-                    findProSku(skuDetailsList)?.let {
-                        prefs.proSkuJson = it.originalJson
-                        proSkuDetailsLd.postValue(it)
+                    findProProduct(productDetailsList)?.let {
+                        proProductDetailsLd.postValue(it)
                     }
                 }
                 else -> {
@@ -279,20 +274,26 @@ class BillingRepository private constructor(private val application: Application
      * launch the Google Play Billing flow. The response to this call is returned in
      * [onPurchasesUpdated]
      */
-    fun launchBillingFlow(activity: Activity, skuDetails: SkuDetails) {
-        val skud = findProSku(listOf(skuDetails))
-        if (skud != null) {
-            val purchaseParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(skud)
+    fun launchBillingFlow(activity: Activity, productDetails: ProductDetails) {
+        findProProduct(listOf(productDetails))?.let { productDetails ->
+            val flowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(
+                    listOf(
+                        ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .build()
+                    )
+                )
                 .build()
-            playStoreBillingClient.launchBillingFlow(activity, purchaseParams)
+
+            playStoreBillingClient.launchBillingFlow(activity, flowParams)
         }
     }
 
     /**
      * This method is called by the [playStoreBillingClient] when new purchases are detected.
      * The purchase list in this method is not the same as the one in
-     * [queryPurchases][BillingClient.queryPurchases]. Whereas queryPurchases returns everything
+     * [queryPurchases][BillingClient.queryPurchasesAsync]. Whereas queryPurchases returns everything
      * this user owns, [onPurchasesUpdated] only returns the items that were just now purchased or
      * billed.
      *
@@ -326,7 +327,7 @@ class BillingRepository private constructor(private val application: Application
 
     companion object {
         private const val LOG_TAG = Stuff.TAG
-        private val INAPP_SKUS = listOf(Tokens.PRO_SKU_NAME)
+        private val INAPP_PRODUCT_IDS = listOf(Tokens.PRO_PRODUCT_ID)
 
         private const val RECONNECT_TIMER_START_MILLISECONDS = 1L * 1000L
         private const val RECONNECT_TIMER_MAX_TIME_MILLISECONDS = 1000L * 60L * 15L // 15 minutes

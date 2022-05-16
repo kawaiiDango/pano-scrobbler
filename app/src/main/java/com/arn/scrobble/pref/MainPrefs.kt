@@ -126,7 +126,6 @@ class MainPrefs(context: Context) : Krate {
     var acrcloudSecret by stringPref(PREF_ACR_SECRET)
 
     var proStatus by booleanPref(PREF_PRO_STATUS).withDefault(false)
-    var proSkuJson by stringPref(PREF_PRO_SKU_JSON)
     var digestSeconds by intPref(PREF_DIGEST_SECONDS)
     var scrobbleCount by intPref(PREF_SCROBBLE_COUNT).withDefault(0)
     var firstLaunchTime by longPref(PREF_FIRST_LAUNCHED)
@@ -191,7 +190,6 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_THEME_DYNAMIC = "theme_dynamic"
         const val PREF_THEME_DAY_NIGHT = "theme_day_night"
         const val PREF_PRO_STATUS = "pro_status"
-        const val PREF_PRO_SKU_JSON = "pro_sku_json"
         const val PREF_DIGEST_SECONDS = "digest_seconds"
         const val PREF_LOCALE = "locale"
         const val PREF_SEARCH_IN_SOURCE = "search_in_source"

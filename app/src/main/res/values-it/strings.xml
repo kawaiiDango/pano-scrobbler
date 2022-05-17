@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
         <item quantity="one">%1$s scrobbling</item>
-        <item quantity="other">%1$s scrobbling</item>
+        <item quantity="other">%1$s scrobble</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s ascoltatore</item>
@@ -55,15 +55,15 @@
     <string name="yes">Sì</string>
     <string name="no">No</string>
     <string name="reset">Ripristina</string>
-    <string name="settings">Configurazioni</string>
+    <string name="settings">Configura</string>
     <string name="bug_report">Segnalazione Bug</string>
     <string name="album_art">Copertina album</string>
     <string name="artist_image">Foto artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossibile individuare il titolo</string>
     <string name="network_error">Errore di rete</string>
     <string name="disable_tls_verify">Ignora gli errori di TLS</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobbling ignorato</string>
-    <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobbling è troppo antico. Vorresti invece salvare questa modifica per gli scrobbling futuri?</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorato</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobble è troppo vecchio. Vorresti invece salvare questa modifica per gli scrobble futuri?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Alcuni campi obbligatori sono vuoti</string>
     <string name="artist">Artista</string>
     <string name="artists">Artisti</string>
@@ -122,6 +122,9 @@
     <string name="reindex">Indice rapido</string>
     <string name="full_index">Indice completo</string>
     <string name="take_long_time">Potrebbe richiedere molto tempo</string>
+    <string name="full_index_desc">Usa solo in caso tu abbia modificato o cancellato scrobbles dal sito web.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Ho cercato i primi %1$s elementi per ogni categoria.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Ultima indicizzazione effettuata il %1$s.</string>
     <string name="profile">Profilo</string>
     <string name="profile_pic">Immagine del profilo</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opzioni per questo elemento</string>
@@ -182,6 +185,7 @@
     <string name="saved_as_pending">Salvato come scrobbling in attesa</string>
     <string name="sort">Ordina</string>
     <string name="past_scrobbles">Cronologia scrobbling</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto temporale</string>
     <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">Di %1$s</string>
     <string name="my_scrobbles">I miei scrobbling</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Gli scrobbling di %1$s</string>

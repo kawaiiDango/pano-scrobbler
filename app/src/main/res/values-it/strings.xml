@@ -111,6 +111,7 @@
     <string name="share">Condividi</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Cambia dimensione griglia</string>
+    <string name="pinch_to_zoom">Pizzica per ingrandire</string>
     <string name="more_info">Altre info</string>
     <string name="rank_change" comment="%1= delta change">Spostamento in classifica: %s</string>
     <string name="rank_change_no_change">Nessuno spostamento</string>
@@ -118,6 +119,9 @@
     <string name="search">Cerca</string>
     <string name="library" comment="search within the library">Libreria</string>
     <string name="global" comment="search globally across lastfm">Globale</string>
+    <string name="reindex">Indice rapido</string>
+    <string name="full_index">Indice completo</string>
+    <string name="take_long_time">Potrebbe richiedere molto tempo</string>
     <string name="profile">Profilo</string>
     <string name="profile_pic">Immagine del profilo</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opzioni per questo elemento</string>

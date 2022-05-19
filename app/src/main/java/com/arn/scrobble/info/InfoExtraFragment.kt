@@ -110,7 +110,6 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             binding.infoExtraFrame2.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
             binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
             binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoScrobbles.visibility = View.GONE
-            binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoBar.visibility = View.GONE
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
                 LFMRequester(

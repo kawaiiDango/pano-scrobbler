@@ -203,18 +203,30 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
             if (BuildConfig.DEBUG && entry.stonksDelta != Int.MAX_VALUE && entry.stonksDelta != null)
                 numScrobblesString += " • ${entry.stonksDelta}"
 
-            binding.chartInfoScrobbles.text = numScrobblesString
+            if (entry.playcount >= 0) {
+                binding.chartInfoScrobbles.visibility = View.VISIBLE
+                binding.chartInfoScrobbles.text = numScrobblesString
+            } else {
+                binding.chartInfoScrobbles.visibility = View.GONE
+            }
+
             if (!showArtists)
                 binding.chartInfoSubtitle.visibility = View.GONE
 
-            val maxCount = getMaxCount()
-            if (maxCount <= 0) {
-                binding.chartInfoBar.visibility = View.GONE
-                binding.chartInfoScrobbles.visibility = View.GONE
-            } else {
-                binding.chartInfoBar.progress = entry.playcount * 100 / maxCount
+            val progressValue = if (entry.similarityMatch > 0)
+                (entry.similarityMatch * 100).toInt()
+            else {
+                val maxCount = getMaxCount()
+                if (maxCount > 0)
+                    (entry.playcount * 100 / maxCount)
+                else
+                    -1
+            }
+            if (progressValue >= 0) {
+                binding.chartInfoBar.progress = progressValue
                 binding.chartInfoBar.visibility = View.VISIBLE
-                binding.chartInfoScrobbles.visibility = View.VISIBLE
+            } else {
+                binding.chartInfoBar.visibility = View.GONE
             }
 
             val errorDrawable = itemView.context.getTintedDrawable(

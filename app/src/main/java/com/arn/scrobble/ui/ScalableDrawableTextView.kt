@@ -10,13 +10,11 @@ import kotlin.math.roundToInt
 class ScalableDrawableTextView(
     context: Context,
     attrs: AttributeSet?,
-    defStyleAttr: Int,
-    defStyleRes: Int
+    defStyleAttr: Int
 ) : MaterialTextView(
     context,
     attrs,
-    defStyleAttr,
-    defStyleRes
+    defStyleAttr
 ) {
     private var mDrawableWidth = 0
     private var mDrawableHeight = 0
@@ -25,19 +23,12 @@ class ScalableDrawableTextView(
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : this(
-        context,
-        attrs,
-        defStyleAttr,
-        0
-    )
-
     init {
         val array = context.obtainStyledAttributes(
             attrs,
             R.styleable.ScalableDrawableTextView,
             defStyleAttr,
-            defStyleRes
+            0
         )
         try {
             mDrawableWidth = array.getDimensionPixelSize(

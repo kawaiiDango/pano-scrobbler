@@ -56,7 +56,7 @@
         android:id="@+id/chart_info_scrobbles"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textAppearance="?textAppearanceBodySmall"
         tools:text="39 scrobbles" />
 

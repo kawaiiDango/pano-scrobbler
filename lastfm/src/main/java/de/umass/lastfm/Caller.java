@@ -31,39 +31,48 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import de.umass.lastfm.Result.Status;
-import de.umass.lastfm.cache.Cache;
+import de.umass.lastfm.cache.ExpirationPolicy;
+import okhttp3.CacheControl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import static de.umass.util.StringUtilities.encode;
 import static de.umass.util.StringUtilities.map;
-import static de.umass.util.StringUtilities.md5;
 
 /**
  * The <code>Caller</code> class handles the low-level communication between the client and last.fm.<br/>
@@ -77,7 +86,7 @@ import static de.umass.util.StringUtilities.md5;
 public class Caller {
 
     private static final String PARAM_API_KEY = "api_key";
-    private static final String PARAM_METHOD = "method";
+    public static final String PARAM_METHOD = "method";
 
     static final String DEFAULT_API_ROOT = "https://ws.audioscrobbler.com/2.0/";
     private static final Caller instance = new Caller();
@@ -86,16 +95,16 @@ public class Caller {
 
     private String apiRootUrl = DEFAULT_API_ROOT;
 
-    private Proxy proxy;
-    private String userAgent = "tst";
-
     private boolean debugMode = false;
 
-    private Cache cache;
-    //	private Result lastResult;
     private Result lastError;
-    int timeout = 20000;
-    private HashMap<Integer, ErrorNotifier> errorNotifiersMap = new HashMap<>();
+
+    private OkHttpClient client = new OkHttpClient.Builder()
+            .build();
+
+    private OkHttpClient okHttpClientTlsNoVerify = null;
+
+    private final HashMap<Integer, ErrorNotifier> errorNotifiersMap = new HashMap<>();
 
     public static TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
@@ -111,9 +120,6 @@ public class Caller {
             }
     };
 
-//	private Caller() {
-//		cache = new FileSystemCache();
-//	}
 
     /**
      * Returns the single instance of the <code>Caller</code> class.
@@ -122,6 +128,60 @@ public class Caller {
      */
     public static Caller getInstance() {
         return instance;
+    }
+
+    public void setClient(OkHttpClient client) {
+        this.client = client;
+    }
+
+    public OkHttpClient getClient() {
+        return client;
+    }
+
+    public void setCache(@NonNull File directory, int maxSize) {
+        setCache(directory, maxSize, null);
+    }
+
+    public void setCache(@NonNull File directory, int maxSize, @Nullable ExpirationPolicy policy) {
+        CacheInterceptor cacheInterceptor;
+
+        if (policy == null) {
+            cacheInterceptor = new CacheInterceptor();
+        } else {
+            cacheInterceptor = new CacheInterceptor(policy);
+        }
+
+        client = client.newBuilder()
+                .addNetworkInterceptor(cacheInterceptor)
+                .cache(new okhttp3.Cache(directory, maxSize))
+                .build();
+    }
+
+    public OkHttpClient getOkHttpClientTlsNoVerify() {
+
+        if (okHttpClientTlsNoVerify == null) {
+            okHttpClientTlsNoVerify = createOkHttpClientIgnoreSslErrors(client);
+        }
+
+        return okHttpClientTlsNoVerify;
+    }
+
+    public OkHttpClient createOkHttpClientIgnoreSslErrors(OkHttpClient okHttpClient) {
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAllCerts, new SecureRandom());
+
+            SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            return okHttpClient.newBuilder()
+                    .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
+                    .hostnameVerifier((hostname, session) -> true)
+                    .build();
+
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -139,43 +199,9 @@ public class Caller {
      * @param proxy A <code>Proxy</code> or <code>null</code>.
      */
     public void setProxy(Proxy proxy) {
-        this.proxy = proxy;
-    }
-
-    public Proxy getProxy() {
-        return proxy;
-    }
-
-    /**
-     * Sets a User Agent this Caller will use for all upcoming HTTP requests. For testing purposes use "tst".
-     * If you distribute your application use an identifiable User-Agent.
-     *
-     * @param userAgent a User-Agent string
-     */
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    /**
-     * Returns the current {@link Cache}.
-     *
-     * @return the Cache
-     */
-    public Cache getCache() {
-        return cache;
-    }
-
-    /**
-     * Sets the active {@link Cache}. May be <code>null</code> to disable caching.
-     *
-     * @param cache the new Cache or <code>null</code>
-     */
-    public void setCache(Cache cache) {
-        this.cache = cache;
+        client = client.newBuilder()
+                .proxy(proxy)
+                .build();
     }
 
     /**
@@ -205,15 +231,6 @@ public class Caller {
         return log;
     }
 
-    /**
-     * Returns the {@link Result} of the last operation, or <code>null</code> if no call operation has been
-     * performed yet.
-     *
-     * @return the last Result object
-     */
-//	public Result getLastResult() {
-//		return lastResult;
-//	}
     public Result getLastError() {
         return lastError;
     }
@@ -256,8 +273,9 @@ public class Caller {
 
     public Result call(String apiRootUrl, String method, String apiKey, Map<String, String> params,
                        Session session) {
-        params = new HashMap<String, String>(params); // create new Map in case params is an immutable Map
+        params = new HashMap<>(params); // create new Map in case params is an immutable Map
         InputStream inputStream = null;
+        boolean loadedFromNetwork;
 
         if (apiRootUrl == null) {
             if (session != null)
@@ -266,188 +284,129 @@ public class Caller {
                 apiRootUrl = this.apiRootUrl;
         }
 
-        // try to load from cache
-        String cacheEntryName = Cache.createCacheEntryName(apiRootUrl, method, params);
-        long cacheTime = cache != null ? cache.getExpirationPolicy().getExpirationTime(method, params) : -1;
-        boolean loadedFromNetwork = false;
-        CacheStrategy cacheStrategy;
-        if (session != null && session.getCacheStrategy() != null) {
-            cacheStrategy = session.getCacheStrategy();
-        } else {
-            cacheStrategy = CacheStrategy.CACHE_FIRST;
+        // fill parameter map with apiKey and session info
+
+        if (session != null) {
+            params.put(PARAM_API_KEY, session.getApiKey());
+            params.put("sk", session.getKey());
+            params.put("api_sig", Authenticator.createSignature(method, params, session.getSecret()));
         }
 
-        if (cache != null) {
-            inputStream = getStreamFromCache(cacheEntryName, cacheStrategy);
-        }
+        if (!params.containsKey(PARAM_API_KEY))
+            params.put(PARAM_API_KEY, apiKey);
 
-        // no entry in cache, load from web
-        if (inputStream == null &&
-                (cache != null &&
-                        cacheStrategy != CacheStrategy.CACHE_ONLY &&
-                        cacheStrategy != CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED)) {
-            // fill parameter map with apiKey and session info
+        try {
+            CacheStrategy cacheStrategy = null;
+            boolean isTlsNoVerify = false;
 
             if (session != null) {
-                params.put(PARAM_API_KEY, session.getApiKey());
-                params.put("sk", session.getKey());
-                params.put("api_sig", Authenticator.createSignature(method, params, session.getSecret()));
+                cacheStrategy = session.getCacheStrategy();
+                isTlsNoVerify = session.isTlsNoVerify();
             }
 
-            if (!params.containsKey(PARAM_API_KEY))
-                params.put(PARAM_API_KEY, apiKey);
+            Response response = getOkHttpResponse(apiRootUrl, method, params, cacheStrategy, isTlsNoVerify);
+            ResponseBody responseBody = response.body();
 
-            try {
-                HttpsURLConnection urlConnection = openPostConnection(apiRootUrl, method, params);
-                if (session != null && session.isTlsNoVerify()) {
-                    try {
-                        SSLContext sc = SSLContext.getInstance("TLS");
-                        sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                        urlConnection.setSSLSocketFactory(sc.getSocketFactory());
-                    } catch (Exception e) {
-                    }
-                }
-                inputStream = getInputStreamFromConnection(urlConnection);
-
-                loadedFromNetwork = true;
-
-                if (inputStream == null) {
-                    Result result = Result.createHttpErrorResult(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
-                    if (session != null) {
-                        session.setResult(result);
-                    }
-                    return result;
-//					return lastResult;
-                } else {
-                    if (cache != null && cacheTime != -1 && urlConnection.getResponseCode() == 200) { //scrobbles and np were getting cached
-                        long expires = urlConnection.getHeaderFieldDate("Expires", -1);
-                        if (expires == -1) {
-                            expires = cache.findExpirationDate(method, params);
-                        }
-                        if (expires != -1) {
-                            cache.store(cacheEntryName, inputStream, expires); // if data wasn't cached store new result
-                            inputStream = cache.load(cacheEntryName);
-                            if (inputStream == null)
-                                throw new CallException("Caching/Reloading failed");
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                throw new CallException(e);
+            if (responseBody != null) {
+                inputStream = responseBody.byteStream();
+            } else {
+                Result result = Result.createHttpErrorResult(response.code(), response.message());
+                if (session != null)
+                    session.setResult(result);
+                return result;
             }
+
+            loadedFromNetwork = response.networkResponse() != null;
+//            boolean loadedFromCache = response.cacheResponse() != null;
+
+//            getLogger().log(Level.WARNING, "loadedFromNetwork: " + loadedFromNetwork + ", loadedFromCache: " + loadedFromCache);
+
+        } catch (Exception e) {
+            throw new CallException(e);
         }
 
         try {
-            Result result;
-            if (inputStream == null)
-                result = Result.createRestErrorResult(-1, "Not cached");
-            else
-                result = createResultFromInputStream(inputStream);
+            Result result = createResultFromInputStream(inputStream);
             if (!result.isSuccessful()) {
                 String errMsg = String.format(method + " failed with result: %s%n", result);
                 log.warning(errMsg);
 
-                if (errorNotifiersMap.get(result.errorCode) != null)
-                    errorNotifiersMap.get(result.errorCode).notify(new CallException(errMsg));
+                ErrorNotifier errorNotifier = errorNotifiersMap.get(result.errorCode);
+                if (errorNotifier != null)
+                    errorNotifier.notify(new CallException(errMsg));
 
-                if (cache != null) {
-                    cache.remove(cacheEntryName);
-                }
                 lastError = result;
             } else {
                 lastError = null;
                 result.setFromCache(!loadedFromNetwork);
             }
-//			this.lastResult = result;
-            if (session != null) {
+            if (session != null)
                 session.setResult(result);
-            }
             return result;
         } catch (Exception e) {
-            if (cache != null)
-                cache.remove(cacheEntryName);
             throw new CallException(e);
         }
     }
 
-    private InputStream getStreamFromCache(String cacheEntryName, CacheStrategy cacheStrategy) {
-        boolean isCached = cache != null && cache.contains(cacheEntryName);
-        boolean isExpired = isCached && cache.isExpired(cacheEntryName);
-        boolean shouldLoadFromCache = false;
-
-        switch (cacheStrategy) {
-            case CACHE_ONLY:
-            case CACHE_FIRST:
-                shouldLoadFromCache = isCached && !isExpired;
-                break;
-            case CACHE_ONLY_INCLUDE_EXPIRED:
-            case CACHE_FIRST_INCLUDE_EXPIRED:
-                shouldLoadFromCache = isCached;
-                break;
-            case NETWORK_ONLY:
-                break;
-        }
-
-        if (shouldLoadFromCache) {
-            return cache.load(cacheEntryName);
-        }
-        return null;
-    }
-
-    /**
-     * Creates a new {@link HttpsURLConnection}, sets the proxy, if available, and sets the User-Agent property.
-     *
-     * @param url URL to connect to
-     * @return a new connection.
-     * @throws IOException if an I/O exception occurs.
-     */
+    // This is only here for this thing to compile.
+    @Deprecated
     public HttpsURLConnection openConnection(String url) throws IOException {
         log.info("Open connection: " + url);
         URL u = new URL(url);
-        HttpsURLConnection urlConnection;
-        if (proxy != null)
-            urlConnection = (HttpsURLConnection) u.openConnection(proxy);
-        else
-            urlConnection = (HttpsURLConnection) u.openConnection();
-        urlConnection.setRequestProperty("User-Agent", userAgent);
+        HttpsURLConnection urlConnection = (HttpsURLConnection) u.openConnection();
+        urlConnection.setRequestProperty("User-Agent", "tst");
         return urlConnection;
     }
 
-    private HttpsURLConnection openPostConnection(String apiRootUrl, String method, Map<String, String> params) throws IOException {
-        if (method.equals("track.getInfo") || method.equals("album.getInfo") || method.equals("artist.getInfo")) {
-            String post = buildPostBody(method, params);
-            log.info("Post body: " + post);
-            HttpsURLConnection urlConnection = openConnection(apiRootUrl + "?" + post);
-            urlConnection.setConnectTimeout(timeout);
-            urlConnection.setReadTimeout(timeout);
-            return urlConnection;
+    private Response getOkHttpResponse(
+            String apiRootUrl,
+            String method,
+            Map<String, String> params,
+            @Nullable CacheStrategy cacheStrategy,
+            boolean isTlsNoVerify
+    ) throws IOException {
+        String query = buildPostBody(method, params);
+        Request.Builder requestBuilder = new Request.Builder();
+
+        if (method.contains(".get")) {
+            requestBuilder.url(apiRootUrl + "?" + query);
         } else {
-            HttpsURLConnection urlConnection = openConnection(apiRootUrl);
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setConnectTimeout(timeout);
-            urlConnection.setReadTimeout(timeout);
-            String post = buildPostBody(method, params);
-            log.info("Post body: " + post);
-            urlConnection.setRequestProperty("Content-Length", Integer.toString(post.length()));
-            urlConnection.setDoOutput(true);
-            OutputStream outputStream = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-            writer.write(post);
-            writer.close();
-            return urlConnection;
-        }
-    }
-
-    private InputStream getInputStreamFromConnection(HttpsURLConnection connection) throws IOException {
-        int responseCode = connection.getResponseCode();
-
-        if (responseCode == HttpsURLConnection.HTTP_FORBIDDEN || responseCode == HttpsURLConnection.HTTP_BAD_REQUEST) {
-            return connection.getErrorStream();
-        } else if (responseCode == HttpsURLConnection.HTTP_OK) {
-            return connection.getInputStream();
+            requestBuilder.url(apiRootUrl)
+                    .post(RequestBody.create(query, MediaType.parse("application/x-www-form-urlencoded")));
         }
 
-        return null;
+        if (cacheStrategy == null)
+            cacheStrategy = CacheStrategy.CACHE_FIRST;
+
+        switch (cacheStrategy) {
+            case CACHE_FIRST:
+                // nothing
+                break;
+            case CACHE_ONLY_INCLUDE_EXPIRED:
+                requestBuilder.cacheControl(CacheControl.FORCE_CACHE);
+                break;
+            case NETWORK_ONLY:
+                requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
+                break;
+            case CACHE_FIRST_ONE_DAY:
+                requestBuilder.cacheControl(
+                        new CacheControl.Builder()
+                                .maxAge(1, TimeUnit.DAYS)
+                                .build()
+                );
+                break;
+            case CACHE_FIRST_ONE_WEEK:
+                requestBuilder.cacheControl(
+                        new CacheControl.Builder()
+                                .maxAge(7, TimeUnit.DAYS)
+                                .build()
+                );
+                break;
+        }
+
+        OkHttpClient callingClient = isTlsNoVerify ? getOkHttpClientTlsNoVerify() : getClient();
+
+        return callingClient.newCall(requestBuilder.build()).execute();
     }
 
     private Result createResultFromInputStream(InputStream inputStream) throws SAXException, IOException {
@@ -479,14 +438,15 @@ public class Caller {
 
     private String buildPostBody(String method, Map<String, String> params, String... strings) {
         StringBuilder builder = new StringBuilder(100);
-        builder.append("method=");
-        builder.append(method);
-        builder.append('&');
+        builder.append(PARAM_METHOD)
+                .append("=")
+                .append(method)
+                .append('&');
         for (Iterator<Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
             Entry<String, String> entry = it.next();
-            builder.append(entry.getKey());
-            builder.append('=');
-            builder.append(encode(entry.getValue()));
+            builder.append(entry.getKey())
+                    .append('=')
+                    .append(encode(entry.getValue()));
             if (it.hasNext() || strings.length > 0)
                 builder.append('&');
         }
@@ -505,21 +465,10 @@ public class Caller {
         return builder.toString();
     }
 
-    private String createSignature(Map<String, String> params, String secret) {
-        Set<String> sorted = new TreeSet<String>(params.keySet());
-        StringBuilder builder = new StringBuilder(50);
-        for (String s : sorted) {
-            builder.append(s);
-            builder.append(encode(params.get(s)));
-        }
-        builder.append(secret);
-        return md5(builder.toString());
-    }
-
     public enum CacheStrategy {
         CACHE_FIRST,
-        CACHE_ONLY,
-        CACHE_FIRST_INCLUDE_EXPIRED,
+        CACHE_FIRST_ONE_DAY,
+        CACHE_FIRST_ONE_WEEK,
         CACHE_ONLY_INCLUDE_EXPIRED,
         NETWORK_ONLY
     }

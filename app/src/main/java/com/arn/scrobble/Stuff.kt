@@ -116,6 +116,7 @@ object Stuff {
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val CRASH_REPORT_INTERVAL = 120 * 60 * 1000L
     const val CHARTS_WIDGET_REFRESH_INTERVAL = 30 * 60 * 1000L
+    const val LASTFM_JAVA_CACHE_SIZE = 30 * 1024 * 1024
     const val TRACK_INFO_VALIDITY = 5 * 1000L
     const val TRACK_INFO_WINDOW = 60 * 1000L
     const val TRACK_INFO_REQUESTS = 2
@@ -598,19 +599,6 @@ object Stuff {
                 }
             }
         }.awaitAll()
-    }
-
-    fun OkHttpClient.Builder.ignoreSslErrors(): OkHttpClient.Builder {
-        // Create a trust manager that does not validate certificate chains
-        val trustAllCerts = Caller.trustAllCerts
-        // Install the all-trusting trust manager
-        val sslContext = SSLContext.getInstance("TLS")
-        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-        // Create an ssl socket factory with our all-trusting manager
-        val sslSocketFactory = sslContext.socketFactory
-
-        return sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-            .hostnameVerifier { _, _ -> true }
     }
 
     fun Context.copyToClipboard(text: String, toast: Boolean = true) {

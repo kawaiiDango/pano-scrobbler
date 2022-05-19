@@ -26,6 +26,8 @@
 
 package de.umass.lastfm.cache;
 
+import android.annotation.TargetApi;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -65,7 +67,7 @@ import de.umass.util.StringUtilities;
  *
  * @author Janni Kovacs
  */
-
+@TargetApi(26)
 public class FileSystemCacheNio extends Cache implements ScrobbleCache {
 
     private static final String SUBMISSIONS_FILE = "submissions.txt";
@@ -225,7 +227,7 @@ public class FileSystemCacheNio extends Cache implements ScrobbleCache {
             FileChannel channel = FileChannel.open(pt, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             lock = channel.lock();
 
-            BufferedWriter w = new BufferedWriter(Channels.newWriter(channel, StandardCharsets.UTF_8));
+            BufferedWriter w = new BufferedWriter(Channels.newWriter(channel, "UTF-8"));
             for (SubmissionData submission : submissions) {
                 w.append(submission.toString());
                 w.newLine();
@@ -250,7 +252,7 @@ public class FileSystemCacheNio extends Cache implements ScrobbleCache {
         try {
             FileChannel channel = FileChannel.open(pt, StandardOpenOption.READ);
             lock = channel.lock(0L, Long.MAX_VALUE, true);
-            BufferedReader r = new BufferedReader(Channels.newReader(channel, StandardCharsets.UTF_8));
+            BufferedReader r = new BufferedReader(Channels.newReader(channel, "UTF-8"));
             String line = r.readLine();
             r.close();
             return line == null || "".equals(line);
@@ -270,7 +272,7 @@ public class FileSystemCacheNio extends Cache implements ScrobbleCache {
             FileChannel channel = FileChannel.open(pt, StandardOpenOption.READ);
             if (Files.exists(pt)) {
                 lock = channel.lock(0L, Long.MAX_VALUE, true);
-                BufferedReader r = new BufferedReader(Channels.newReader(channel, StandardCharsets.UTF_8));
+                BufferedReader r = new BufferedReader(Channels.newReader(channel, "UTF-8"));
                 List<SubmissionData> list = new ArrayList<SubmissionData>(50);
                 String line;
                 while ((line = r.readLine()) != null) {
@@ -317,7 +319,7 @@ public class FileSystemCacheNio extends Cache implements ScrobbleCache {
             Path pt = Paths.get(cacheDir, SUBMISSIONS_FILE);
             FileChannel channel = FileChannel.open(pt, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             lock = channel.lock();
-            BufferedWriter w = new BufferedWriter(Channels.newWriter(channel, StandardCharsets.UTF_8));
+            BufferedWriter w = new BufferedWriter(Channels.newWriter(channel, "UTF-8"));
             for (ScrobbleData scrobble : scrobbles) {
                 w.append(encodeScrobbleData(scrobble));
                 w.newLine();
@@ -340,7 +342,7 @@ public class FileSystemCacheNio extends Cache implements ScrobbleCache {
             FileChannel channel = FileChannel.open(pt, StandardOpenOption.READ);
             lock = channel.lock(0L, Long.MAX_VALUE, true);
             if (Files.exists(pt)) {
-                BufferedReader r = new BufferedReader(Channels.newReader(channel, StandardCharsets.UTF_8));
+                BufferedReader r = new BufferedReader(Channels.newReader(channel, "UTF-8"));
                 List<ScrobbleData> list = new ArrayList<ScrobbleData>(50);
                 String line;
                 while ((line = r.readLine()) != null) {

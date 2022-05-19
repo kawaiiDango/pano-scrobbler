@@ -18,8 +18,6 @@ import com.google.android.material.color.DynamicColorsOptions
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Caller
-import de.umass.lastfm.cache.FileSystemCache
-import de.umass.lastfm.cache.FileSystemCacheNio
 import timber.log.Timber
 import java.io.File
 import java.util.*
@@ -88,14 +86,9 @@ class App : Application() {
 
     private fun initCaller() {
         Caller.getInstance().apply {
-            userAgent = Stuff.USER_AGENT
             logger.level = Level.WARNING
-            cache =
-//                if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-//                    FileSystemCacheNio(cacheDir.absolutePath + File.separator + "lastfm-java")
-//                else
-                    FileSystemCache(File(cacheDir, "lastfm-java"))
-            cache.expirationPolicy = LFMCachePolicy()
+            client = LFMRequester.okHttpClient
+            setCache(File(cacheDir, "lastfm-java"), Stuff.LASTFM_JAVA_CACHE_SIZE)
             setErrorNotifier(29) { e ->
                 Timber.tag(Stuff.TAG).w(e)
             }

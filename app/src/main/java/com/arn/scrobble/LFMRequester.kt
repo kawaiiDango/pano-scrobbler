@@ -6,7 +6,6 @@ import android.util.LruCache
 import android.webkit.URLUtil
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
-import com.arn.scrobble.Stuff.ignoreSslErrors
 import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.Stuff.toBundle
@@ -123,7 +122,7 @@ class LFMRequester(
         to: Long = -1,
         includeNowPlaying: Boolean = false,
         doDeltaIndex: Boolean = false,
-        limit: Int = 600,
+        limit: Int = 500,
     ) {
         toExec = {
             checkSession(usernamep)
@@ -477,7 +476,7 @@ class LFMRequester(
                         prevTimePeriod,
                         1,
                         usernamep,
-                        Caller.CacheStrategy.CACHE_FIRST_INCLUDE_EXPIRED,
+                        Caller.CacheStrategy.CACHE_FIRST_ONE_DAY,
                         -1
                     )
                 }
@@ -1784,9 +1783,7 @@ class LFMRequester(
         }
 
         val okHttpClientTlsNoVerify by lazy {
-            okHttpClient.newBuilder()
-                .ignoreSslErrors()
-                .build()
+            Caller.getInstance().createOkHttpClientIgnoreSslErrors(okHttpClient)!!
         }
 
         fun getValidTrack(

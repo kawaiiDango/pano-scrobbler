@@ -27,8 +27,10 @@
 package de.umass.lastfm.cache;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+
+import de.umass.lastfm.Caller;
+import okhttp3.HttpUrl;
 
 /**
  * This Policy maintains a list of methods which should be cached one week. Everything else won't be cached if
@@ -39,45 +41,45 @@ import java.util.Set;
 public class DefaultExpirationPolicy implements ExpirationPolicy {
 
 
-	/**
-	 * One day in milliseconds
-	 */
-	protected static final long ONE_DAY = 1000 * 60 * 60 * 24;
+    /**
+     * One day in milliseconds
+     */
+    protected static final long ONE_DAY = 1000 * 60 * 60 * 24;
 
-	/**
-	 * One week in milliseconds
-	 */
-	protected static final long ONE_WEEK = ONE_DAY * 7;
+    /**
+     * One week in milliseconds
+     */
+    protected static final long ONE_WEEK = ONE_DAY * 7;
     public static final long FIVE_MINUTES = 1000 * 60 * 5;
     public static final long ONE_MONTH = ONE_DAY * 30;
 
-	/**
-	 * Contains the lower case method names for all requests that should be cached 1 week
-	 */
-	protected static final Set<String> ONE_WEEK_METHODS = new HashSet<String>();
-	protected static final Set<String> ONE_MONTH_METHODS = new HashSet<String>();
-	protected static final Set<String> FIVE_MINUTES_METHODS = new HashSet<String>();
+    /**
+     * Contains the lower case method names for all requests that should be cached 1 week
+     */
+    protected static final Set<String> ONE_WEEK_METHODS = new HashSet<>();
+    protected static final Set<String> ONE_MONTH_METHODS = new HashSet<>();
+    protected static final Set<String> FIVE_MINUTES_METHODS = new HashSet<>();
 
-	static {
-		// similar data
-		ONE_WEEK_METHODS.add("artist.getsimilar");
-		ONE_WEEK_METHODS.add("tag.getsimilar");
+    static {
+        // similar data
+        ONE_WEEK_METHODS.add("artist.getsimilar");
+        ONE_WEEK_METHODS.add("tag.getsimilar");
 //		ONE_WEEK_METHODS.add("track.getsimilar");  //scrobble counts get outdated
-		// top chart data
+        // top chart data
 //		ONE_WEEK_METHODS.add("artist.gettopalbums");
 //		ONE_WEEK_METHODS.add("artist.gettoptracks");
-		ONE_WEEK_METHODS.add("geo.gettopartists");
-		ONE_WEEK_METHODS.add("geo.gettoptracks");
-		ONE_WEEK_METHODS.add("tag.gettopalbums");
-		ONE_WEEK_METHODS.add("tag.gettopartists");
-		ONE_WEEK_METHODS.add("tag.gettoptags");
-		ONE_WEEK_METHODS.add("tag.gettoptracks");
+        ONE_WEEK_METHODS.add("geo.gettopartists");
+        ONE_WEEK_METHODS.add("geo.gettoptracks");
+        ONE_WEEK_METHODS.add("tag.gettopalbums");
+        ONE_WEEK_METHODS.add("tag.gettopartists");
+        ONE_WEEK_METHODS.add("tag.gettoptags");
+        ONE_WEEK_METHODS.add("tag.gettoptracks");
 //		ONE_WEEK_METHODS.add("user.gettopalbums");
 //		ONE_WEEK_METHODS.add("user.gettopartists");
 //		ONE_WEEK_METHODS.add("user.gettoptracks");
-		ONE_WEEK_METHODS.add("user.gettoptags");
+        ONE_WEEK_METHODS.add("user.gettoptags");
 
-		//track info without username
+        //track info without username
         ONE_WEEK_METHODS.add("track.getinfo");
         //album info without username
         ONE_WEEK_METHODS.add("album.getinfo");
@@ -99,43 +101,50 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
         FIVE_MINUTES_METHODS.add("user.getweeklyartistchart");
         FIVE_MINUTES_METHODS.add("user.getweeklytrackchart");
         FIVE_MINUTES_METHODS.add("user.getweeklychartlist");
-	}
+    }
 
-	/**
-	 * Contains the expiration time for weekly chart data for the current week, which is
-	 * one week by default; last.fm TOS says:
-	 * <blockquote>
-	 * You agree to cache similar artist and any chart data (top tracks, top artists, top albums) for a minimum of one week.
-	 * </blockquote>
-	 * but they might be outdated the next day.
-	 * For now we will cache them one week. If you always need the latest charts but don't want to disable
-	 * caching use the {@link #setCacheRecentWeeklyCharts(long)} method to set this value.
-	 * This variable also applies to the getWeeklyChartList method
-	 */
-	protected long cacheRecentWeeklyCharts = FIVE_MINUTES;
+    /**
+     * Contains the expiration time for weekly chart data for the current week, which is
+     * one week by default; last.fm TOS says:
+     * <blockquote>
+     * You agree to cache similar artist and any chart data (top tracks, top artists, top albums) for a minimum of one week.
+     * </blockquote>
+     * but they might be outdated the next day.
+     * For now we will cache them one week. If you always need the latest charts but don't want to disable
+     * caching use the {@link #setCacheRecentWeeklyCharts(long)} method to set this value.
+     * This variable also applies to the getWeeklyChartList method
+     */
+    protected long cacheRecentWeeklyCharts = FIVE_MINUTES;
 
-	public long getExpirationTime(String method, Map<String, String> params) {
-		method = method.toLowerCase();
+    public long getExpirationTime(HttpUrl url) {
+        String method = url.queryParameter(Caller.PARAM_METHOD);
+        String username = url.queryParameter("username");
+
+        if (method == null) {
+            return -1;
+        }
+
+        method = method.toLowerCase();
 //		if (method.contains("weekly")) {
 //			if (!method.contains("list"))
 //				return params.containsKey("to") && params.containsKey("from") ? Long.MAX_VALUE : cacheRecentWeeklyCharts;
 //			else
 //				return cacheRecentWeeklyCharts;
 //		}
-		if (method.equals("track.getinfo") || method.equals("album.getinfo"))
-			return !params.containsKey("username") ? ONE_WEEK : -1;
+        if (method.equals("track.getinfo") || method.equals("album.getinfo"))
+            return username == null ? ONE_WEEK : -1;
 
-		if (ONE_WEEK_METHODS.contains(method))
-		    return ONE_WEEK;
-		else if (ONE_MONTH_METHODS.contains(method))
+        if (ONE_WEEK_METHODS.contains(method))
+            return ONE_WEEK;
+        else if (ONE_MONTH_METHODS.contains(method))
             return ONE_MONTH;
         else if (FIVE_MINUTES_METHODS.contains(method))
             return FIVE_MINUTES;
-		else
-		    return -1;
-	}
+        else
+            return -1;
+    }
 
-	public void setCacheRecentWeeklyCharts(long cacheRecentWeeklyCharts) {
-		this.cacheRecentWeeklyCharts = cacheRecentWeeklyCharts;
-	}
+    public void setCacheRecentWeeklyCharts(long cacheRecentWeeklyCharts) {
+        this.cacheRecentWeeklyCharts = cacheRecentWeeklyCharts;
+    }
 }

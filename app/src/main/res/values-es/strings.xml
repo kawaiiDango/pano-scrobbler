@@ -104,6 +104,7 @@
     <string name="share">Compartir</string>
     <string name="more_info">Más información</string>
     <string name="search">Buscar</string>
+    <string name="library" comment="search within the library">Biblioteca</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Imagen de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opciones para este elemento</string>

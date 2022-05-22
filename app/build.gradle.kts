@@ -119,18 +119,18 @@ dependencies {
     kapt("androidx.room:room-compiler:2.4.2")
     implementation("androidx.room:room-runtime:2.4.2")
     implementation("com.android.billingclient:billing:5.0.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
     implementation("com.google.android.material:material:1.7.0-alpha01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:30.0.0"))
+    implementation(platform("com.google.firebase:firebase-bom:30.0.2"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
 
-    implementation("io.coil-kt:coil:2.0.0")
-    implementation("io.coil-kt:coil-gif:2.0.0")
+    implementation("io.coil-kt:coil:2.1.0")
+    implementation("io.coil-kt:coil-gif:2.1.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")
@@ -140,7 +140,7 @@ dependencies {
     implementation("io.michaelrocks.bimap:bimap:1.1.0")
     implementation("com.github.hadilq:live-event:1.3.0")
 //    implementation("com.brandongogetap:stickyheaders:0.6.2")
-    implementation("com.mikepenz:aboutlibraries-core:10.1.0")
+    implementation("com.mikepenz:aboutlibraries-core:10.2.0")
     //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
 
     implementation(project(":lastfm"))

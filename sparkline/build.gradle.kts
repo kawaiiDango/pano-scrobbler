@@ -17,5 +17,5 @@ dependencies {
     implementation("androidx.annotation:annotation:1.3.0")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:3.3.3")
+    testImplementation("org.mockito:mockito-core:4.5.1")
 }

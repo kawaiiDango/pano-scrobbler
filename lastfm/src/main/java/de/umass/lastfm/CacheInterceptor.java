@@ -31,26 +31,28 @@ public class CacheInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         HttpUrl url = request.url();
-        Response response = chain.proceed(request);
 
         long cacheTimeMillis = policy.getExpirationTime(url);
 
         if (cacheTimeMillis > 0 && !request.method().equals("GET")) {
             Caller.getInstance().getLogger().log(Level.WARNING, "CacheInterceptor: Ignoring non-GET cacheable request");
-            return response;
+            return chain.proceed(request);
         } else if (cacheTimeMillis > 0) {
             CacheControl cacheControl = new CacheControl.Builder()
                     .maxAge((int) (cacheTimeMillis / 1000), TimeUnit.SECONDS)
                     .build();
 
-            return response.newBuilder()
+            return chain.proceed(request)
+                    .newBuilder()
                     .removeHeader("Pragma")
                     .removeHeader("Cache-Control")
                     .header("Cache-Control", cacheControl.toString())
                     .build();
         } else {
-            return response;
+            request.cacheControl().noStore();
+            return chain.proceed(request);
         }
+
     }
 
 }

@@ -122,7 +122,7 @@ class LFMRequester(
         to: Long = -1,
         includeNowPlaying: Boolean = false,
         doDeltaIndex: Boolean = false,
-        limit: Int = 500,
+        limit: Int = if (usernamep == null) 400 else 50,
     ) {
         toExec = {
             checkSession(usernamep)
@@ -303,8 +303,10 @@ class LFMRequester(
         toExec = {
             Stuff.log(this::getFriends.name + " " + page)
             checkSession(usernamep)
-            lastfmSession.cacheStrategy =
-                if (Stuff.isOnline) Caller.CacheStrategy.NETWORK_ONLY else Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+            lastfmSession.cacheStrategy = if (Stuff.isOnline)
+                    Caller.CacheStrategy.NETWORK_ONLY
+                else
+                    Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
 
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             var pr: PaginatedResult<User>

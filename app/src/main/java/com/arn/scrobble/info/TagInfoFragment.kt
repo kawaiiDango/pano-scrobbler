@@ -68,6 +68,8 @@ class TagInfoFragment : BottomSheetDialogFragment() {
             val similarTags = it.second
 
             binding.root.clearAnimation()
+            scheduleTransition()
+
             binding.tagInfoContent.visibility = View.VISIBLE
 
             binding.tagInfoTaggers.text = NumberFormat.getInstance().format(tagInfo.reach)
@@ -80,7 +82,7 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                     idx = wikiText.indexOf("<a href=\"https://www.last.fm")
                 if (idx != -1)
                     wikiText = wikiText.substring(0, idx).trim()
-                if (!wikiText.isNullOrBlank()) {
+                if (!wikiText.isBlank()) {
                     wikiText = wikiText.replace("\n", "<br>")
                     binding.tagInfoWikiContainer.visibility = View.VISIBLE
                     binding.tagInfoWiki.text = Html.fromHtml(wikiText)

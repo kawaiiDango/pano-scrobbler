@@ -448,7 +448,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun getNumColumns(): Int {
-        return (resources.displayMetrics.widthPixels - (activity as MainActivity).coordinatorPadding) /
+        val cols = (resources.displayMetrics.widthPixels - (activity as MainActivity).coordinatorPadding) /
                 resources.getDimension(R.dimen.grid_size).roundToInt()
+        return cols.coerceIn(2, 5)
     }
 }

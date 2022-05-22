@@ -79,6 +79,10 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 //		ONE_WEEK_METHODS.add("user.gettoptracks");
         ONE_WEEK_METHODS.add("user.gettoptags");
 
+        ONE_WEEK_METHODS.add("user.getlovedtracks");
+        ONE_WEEK_METHODS.add("user.getrecenttracks");
+        ONE_WEEK_METHODS.add("user.getfriends");
+
         //track info without username
         ONE_WEEK_METHODS.add("track.getinfo");
         //album info without username
@@ -119,8 +123,10 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
     public long getExpirationTime(HttpUrl url) {
         String method = url.queryParameter(Caller.PARAM_METHOD);
         String username = url.queryParameter("username");
+        String page = url.queryParameter("page");
 
-        if (method == null) {
+        if (method == null || (page != null && !page.equals("1"))) {
+            // cache only the first page
             return -1;
         }
 

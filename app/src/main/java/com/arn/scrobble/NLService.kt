@@ -658,8 +658,8 @@ class NLService : NotificationListenerService() {
                     val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(title)
 
                     unparsedScrobbleData = scrobbleData.copy()
-                    scrobbleData.artist = parsedArtist
-                    scrobbleData.track = parsedTitle
+                    if (parsedArtist.isNotEmpty()) scrobbleData.artist = parsedArtist
+                    if (parsedTitle.isNotEmpty()) scrobbleData.track = parsedTitle
                     scrobbleData.albumArtist = ""
                     scrobbleData.album = ""
                 } else if (packageName in browserPackages) {

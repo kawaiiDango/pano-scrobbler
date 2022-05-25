@@ -8,6 +8,10 @@
         <item quantity="one">%1$s dinleyici</item>
         <item quantity="other">%1$s dinleyici</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s gün</item>
+        <item quantity="other">%1$s gün</item>
+    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s hafta</item>
         <item quantity="other">%1$s hafta</item>
@@ -54,6 +58,7 @@
     <string name="settings">Ayarlar</string>
     <string name="bug_report">Hata raporu</string>
     <string name="album_art">Albüm kapağı</string>
+    <string name="artist_image">Sanatçı resmi</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Başlık ayrıştırılamadı</string>
     <string name="network_error">Bağlantı hatası</string>
     <string name="scrobble_ignored_save_edit">Lastfm düzenlemeyi muhtemelen skrop çok eski olduğu için dikkate almadı. Bu düzenlemeyi gelecek skroplar için saklamak ister misiniz?</string>
@@ -104,6 +109,7 @@
     <string name="share">Paylaş</string>
     <string name="more_info">Daha fazla bilgi</string>
     <string name="search">Ara</string>
+    <string name="library" comment="search within the library">Kitaplık</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profil fotoğrafı</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Bu öğe için seçenekler</string>

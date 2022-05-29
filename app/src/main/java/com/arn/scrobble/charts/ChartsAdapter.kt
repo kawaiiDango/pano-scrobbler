@@ -124,7 +124,6 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
         private var isOneColumn = false
 
         init {
-            Stuff.log(itemView.toString())
             itemView.setOnClickListener(this)
         }
 

@@ -171,9 +171,12 @@ class NLService : NotificationListenerService() {
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
 //        if (!BuildConfig.DEBUG)
         coroutineScope.launch {
-            while (isActive) {
+            while (prefs.crashlyticsEnabled) {
                 delay(Stuff.CRASH_REPORT_INTERVAL)
-                FirebaseCrashlytics.getInstance().sendUnsentReports()
+
+                kotlin.runCatching {
+                    FirebaseCrashlytics.getInstance().sendUnsentReports()
+                }
             }
         }
 

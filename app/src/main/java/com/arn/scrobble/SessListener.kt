@@ -77,6 +77,7 @@ class SessListener(
                     //Medoly needs this
                     controller.playbackState.let { cb.onPlaybackStateChanged(it) }
                     controller.metadata.let { cb.onMetadataChanged(it) }
+                    controller.playbackInfo.let { cb.onAudioInfoChanged(it) }
 
                     controllersMap[controller.sessionToken] = controller to cb
                 }
@@ -93,7 +94,8 @@ class SessListener(
         controllersMap.values.firstOrNull { it.second.hashesAndTimes.lastScrobbleHash == hash }?.second
 
     fun findControllersByHash(hash: Int) =
-        controllersMap.values.filter { it.second.hashesAndTimes.lastScrobbleHash == hash }.map { it.first }
+        controllersMap.values.filter { it.second.hashesAndTimes.lastScrobbleHash == hash }
+            .map { it.first }
 
     fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later
@@ -161,6 +163,7 @@ class SessListener(
         private var title = ""
         private var albumArtist = ""
         private var duration = -1L
+        private var isRemotePlayback = false
         var isMuted = false
 
         private val syntheticStateHandler = Handler(handler.looper)
@@ -281,7 +284,7 @@ class SessListener(
 
             Stuff.log(
                 "onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
-                        "duration=$duration lastState=$lastState, package=$packageName cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
+                        "duration=$duration lastState=$lastState, package=$packageName isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
             )
             if (!sameAsOld || onlyDurationUpdated) {
                 this.artist = artist
@@ -423,6 +426,14 @@ class SessListener(
                     mutedHash = null
                 isMuted = false
             }
+        }
+
+        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo?) {
+            if (BuildConfig.DEBUG)
+                Stuff.log("audioinfo updated $packageName: $info")
+
+            isRemotePlayback =
+                info?.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE
         }
 
         private fun resetMeta() {

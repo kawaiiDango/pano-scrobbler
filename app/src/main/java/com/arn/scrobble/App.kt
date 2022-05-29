@@ -38,13 +38,6 @@ class App : Application() {
 
         initCaller()
 
-//        if (!BuildConfig.DEBUG) {
-        FirebaseApp.initializeApp(applicationContext)
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
-        FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
-        Timber.plant(CrashlyticsTree())
-//        }
-
         Timber.plant(Timber.DebugTree())
 
         // migrate prefs
@@ -82,6 +75,17 @@ class App : Application() {
             }
             .build()
         DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
+
+        if (mainPrefs.crashlyticsEnabled) {
+            FirebaseApp.initializeApp(applicationContext)
+            FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && getProcessName() == BuildConfig.APPLICATION_ID ||
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+            ) {
+                FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+            } // do manual collection in other (background) processes
+            Timber.plant(CrashlyticsTree())
+        }
     }
 
     private fun initCaller() {

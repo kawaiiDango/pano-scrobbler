@@ -9,6 +9,7 @@ import android.app.job.JobScheduler
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.media.MediaMetadata
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -584,6 +585,13 @@ object Stuff {
                 this.name == other.name &&
                 this.album == other.album &&
                 this.playedWhen == other.playedWhen
+    }
+
+    fun MediaMetadata.dump() {
+        val data = keySet().joinToString(separator = "\n") {
+            "$it: ${getString(it)}"
+        }
+        log("MediaMetadata\n$data")
     }
 
     // https://stackoverflow.com/a/65046522/1067596

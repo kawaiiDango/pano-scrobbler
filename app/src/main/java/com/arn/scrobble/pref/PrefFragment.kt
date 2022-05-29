@@ -49,6 +49,7 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.transition.MaterialSharedAxis
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -123,7 +124,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             ).forEach {
                 findPreference<Preference>(it)?.isVisible = false
             }
-            notiCategories.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            notiCategories.setOnPreferenceClickListener {
                 val intent = Intent().apply {
                     action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
                     putExtra(Settings.EXTRA_APP_PACKAGE, activity!!.packageName)
@@ -176,7 +177,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
 
         val appList = findPreference<Preference>(MainPrefs.PREF_ALLOWED_PACKAGES)!!
-        appList.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        appList.setOnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.frame, AppListFragment())
                 .addToBackStack(null)
@@ -202,25 +203,28 @@ class PrefFragment : PreferenceFragmentCompat() {
             .title = getString(R.string.s_top_scrobbles, getString(R.string.monthly))
 
         findPreference<Preference>("charts_widget")!!
-            .onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val appWidgetManager =
-                    getSystemService(context!!, AppWidgetManager::class.java) as AppWidgetManager
-                if (appWidgetManager.isRequestPinAppWidgetSupported) {
-                    val pi = PendingIntent.getActivity(
-                        context,
-                        30,
-                        Intent(context, ChartsWidgetActivity::class.java)
-                            .apply { putExtra(Stuff.EXTRA_PINNED, true) },
-                        Stuff.updateCurrentOrMutable
-                    )
+            .setOnPreferenceClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val appWidgetManager =
+                        getSystemService(
+                            context!!,
+                            AppWidgetManager::class.java
+                        ) as AppWidgetManager
+                    if (appWidgetManager.isRequestPinAppWidgetSupported) {
+                        val pi = PendingIntent.getActivity(
+                            context,
+                            30,
+                            Intent(context, ChartsWidgetActivity::class.java)
+                                .apply { putExtra(Stuff.EXTRA_PINNED, true) },
+                            Stuff.updateCurrentOrMutable
+                        )
 
-                    val myProvider = ComponentName(context!!, ChartsWidgetProvider::class.java)
-                    appWidgetManager.requestPinAppWidget(myProvider, null, pi)
+                        val myProvider = ComponentName(context!!, ChartsWidgetProvider::class.java)
+                        appWidgetManager.requestPinAppWidget(myProvider, null, pi)
+                    }
                 }
+                true
             }
-            true
-        }
 
         findPreference<Preference>("themes")!!
             .setOnPreferenceClickListener {
@@ -228,6 +232,15 @@ class PrefFragment : PreferenceFragmentCompat() {
                     .replace(R.id.frame, ThemesFragment())
                     .addToBackStack(null)
                     .commit()
+                true
+            }
+
+        findPreference<SwitchPreference>(MainPrefs.PREF_CRASHLYTICS_ENABLED)!!
+            .setOnPreferenceChangeListener { preference, newValue ->
+                kotlin.runCatching {
+                    FirebaseCrashlytics.getInstance()
+                        .setCrashlyticsCollectionEnabled(newValue as Boolean)
+                }
                 true
             }
 
@@ -253,52 +266,52 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
 
         findPreference<Preference>(MainPrefs.PREF_EXPORT)
-            ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            val cal = Calendar.getInstance()
+            ?.setOnPreferenceClickListener {
+                val cal = Calendar.getInstance()
 
-            if (prefs.proStatus && prefs.showScrobbleSources) {
+                if (prefs.proStatus && prefs.showScrobbleSources) {
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        putExtra(
+                            Intent.EXTRA_TITLE, getString(
+                                R.string.export_file_name,
+                                "private_" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
+                            )
+                        )
+                    }
+
+                    exportPrivateDataRequest.launch(intent)
+                }
+
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "application/json"
                     putExtra(
                         Intent.EXTRA_TITLE, getString(
                             R.string.export_file_name,
-                            "private_" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
+                            "" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
                         )
                     )
                 }
 
-                exportPrivateDataRequest.launch(intent)
+                exportRequest.launch(intent)
+                true
             }
-
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/json"
-                putExtra(
-                    Intent.EXTRA_TITLE, getString(
-                        R.string.export_file_name,
-                        "" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
-                    )
-                )
-            }
-
-            exportRequest.launch(intent)
-            true
-        }
 
         findPreference<Preference>(MainPrefs.PREF_IMPORT)
-            ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            // On Android 11 TV:
-            // Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider
-            // from ProcessRecord{a608cee 5039:com.google.android.documentsui/u0a21}
-            // (pid=5039, uid=10021) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/*"
+            ?.setOnPreferenceClickListener {
+                // On Android 11 TV:
+                // Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider
+                // from ProcessRecord{a608cee 5039:com.google.android.documentsui/u0a21}
+                // (pid=5039, uid=10021) requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/*"
+                }
+                importRequest.launch(intent)
+                true
             }
-            importRequest.launch(intent)
-            true
-        }
         hideOnTV.add(findPreference("imexport")!!)
 
 
@@ -390,60 +403,60 @@ class PrefFragment : PreferenceFragmentCompat() {
         )
 
         findPreference<Preference>(MainPrefs.PREF_INTENTS)!!
-            .onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            .setOnPreferenceClickListener {
 
-            val itemsRaw = listOf(
-                NLService.iSCROBBLER_ON,
-                NLService.iSCROBBLER_OFF,
-                null,
-                NLService.iLOVE,
-                NLService.iUNLOVE,
-                NLService.iCANCEL,
-            )
+                val itemsRaw = listOf(
+                    NLService.iSCROBBLER_ON,
+                    NLService.iSCROBBLER_OFF,
+                    null,
+                    NLService.iLOVE,
+                    NLService.iUNLOVE,
+                    NLService.iCANCEL,
+                )
 
-            val itemsDisplay = itemsRaw.map {
-                if (it == null)
-                    getString(R.string.current_track)
-                else
-                    "\t\t$it"
-            }.toTypedArray()
+                val itemsDisplay = itemsRaw.map {
+                    if (it == null)
+                        getString(R.string.current_track)
+                    else
+                        "\t\t$it"
+                }.toTypedArray()
 
-            val dialog = MaterialAlertDialogBuilder(context!!)
-                .setTitle(R.string.pref_intents_dialog_title)
-                .setItems(itemsDisplay, null)
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
+                val dialog = MaterialAlertDialogBuilder(context!!)
+                    .setTitle(R.string.pref_intents_dialog_title)
+                    .setItems(itemsDisplay, null)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
 
-            dialog.listView.setOnItemClickListener { _, _, selectedIdx, _ ->
-                val item = itemsRaw[selectedIdx]
-                context!!.copyToClipboard(item ?: return@setOnItemClickListener)
+                dialog.listView.setOnItemClickListener { _, _, selectedIdx, _ ->
+                    val item = itemsRaw[selectedIdx]
+                    context!!.copyToClipboard(item ?: return@setOnItemClickListener)
+                }
+
+                true
             }
 
-            true
-        }
-
         findPreference<Preference>("translate")!!
-            .onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            context!!.openInBrowser(getString(R.string.crowdin_link))
-            true
-        }
+            .setOnPreferenceClickListener {
+                context!!.openInBrowser(getString(R.string.crowdin_link))
+                true
+            }
 
         findPreference<Preference>("translate_credits")!!
-            .onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            context!!.openInBrowser(getString(R.string.crowdin_link) + "/members")
-            true
-        }
+            .setOnPreferenceClickListener {
+                context!!.openInBrowser(getString(R.string.crowdin_link) + "/members")
+                true
+            }
 
         findPreference<Preference>("privacy")!!
-            .onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            context!!.openInBrowser(getString(R.string.privacy_policy_link))
-            true
-        }
+            .setOnPreferenceClickListener {
+                context!!.openInBrowser(getString(R.string.privacy_policy_link))
+                true
+            }
 
         val about = findPreference<Preference>("about")!!
         try {
             about.title = "v " + BuildConfig.VERSION_NAME
-            about.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            about.setOnPreferenceClickListener {
                 context!!.openInBrowser(about.summary.toString())
                 true
             }
@@ -455,7 +468,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             findPreference<Preference>("song_search_url")!!.isVisible = true
 
         val libraries = findPreference<Preference>("libraries")!!
-        libraries.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        libraries.setOnPreferenceClickListener {
             parentFragmentManager
                 .beginTransaction()
                 .replace(R.id.frame, LicensesFragment())
@@ -627,7 +640,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         activity!!.registerReceiver(sessChangeReceiver, iF, NLService.BROADCAST_PERMISSION, null)
 
         val simpleEdits = findPreference<Preference>("simple_edits")!!
-        simpleEdits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        simpleEdits.setOnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.frame, SimpleEditsFragment())
                 .addToBackStack(null)
@@ -650,7 +663,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
 
         val regexEdits = findPreference<Preference>("regex_edits")!!
-        regexEdits.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        regexEdits.setOnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.frame, RegexEditsFragment())
                 .addToBackStack(null)
@@ -673,7 +686,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
 
         val blockedMetadata = findPreference<Preference>("blocked_metadata")!!
-        blockedMetadata.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        blockedMetadata.setOnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.frame, BlockedMetadataFragment())
                 .addToBackStack(null)

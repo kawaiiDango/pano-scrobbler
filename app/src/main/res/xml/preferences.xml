@@ -212,6 +212,12 @@
             android:key="intents" />
 
         <SwitchPreference
+            android:title="@string/pref_crashlytics_enabled"
+            android:key="crashlytics_enabled"
+            android:defaultValue="true"
+            android:persistent="true"/>
+
+        <SwitchPreference
             android:title="@string/pref_check_updates"
             android:key="check_for_updates"
             android:persistent="true"

@@ -488,6 +488,7 @@
     <string name="pref_pixel_np_nope">Available only on Pixel devices</string>
     <string name="pref_locale">Languages</string>
     <string name="pref_change_locale">Change language</string>
+    <string name="pref_crashlytics_enabled">Report errors automatically</string>
     <string name="locale_only_ui">Only applies to the main UI</string>
     <string name="pref_misc">Misc.</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>

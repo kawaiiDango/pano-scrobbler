@@ -46,6 +46,7 @@ class MainPrefs(context: Context) : Krate {
     var pixelNowPlaying by booleanPref(PREF_PIXEL_NP).withDefault(true)
     var fetchAlbumArtist by booleanPref(PREF_FETCH_AA).withDefault(false)
     var searchInSource by booleanPref(PREF_SEARCH_IN_SOURCE).withDefault(false)
+    var crashlyticsEnabled by booleanPref(PREF_CRASHLYTICS_ENABLED).withDefault(true)
     var searchType by kotlinxPref<SearchResultsExperimentAdapter.SearchType>(PREF_SEARCH_TYPE).withDefault(
         SearchResultsExperimentAdapter.SearchType.GLOBAL
     )
@@ -194,6 +195,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_LOCALE = "locale"
         const val PREF_SEARCH_IN_SOURCE = "search_in_source"
         const val PREF_SEARCH_TYPE = "search_type"
+        const val PREF_CRASHLYTICS_ENABLED = "crashlytics_enabled"
         const val PREF_LASTFM_USER = "lastfm_user"
 
         const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"

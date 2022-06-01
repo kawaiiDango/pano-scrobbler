@@ -624,9 +624,9 @@ object Stuff {
     ): List<ApplicationExitInfo> {
         return try {
             val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 5)
+            val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 20)
             if (printAll) {
-                exitReasons.forEachIndexed { index, applicationExitInfo ->
+                exitReasons.take(5).forEachIndexed { index, applicationExitInfo ->
                     Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
                 }
             }

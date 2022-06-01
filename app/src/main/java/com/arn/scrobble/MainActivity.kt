@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
+import androidx.core.view.children
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -165,13 +166,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (isTv) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                for (i in 0..binding.coordinatorMain.toolbar.childCount) {
-                    val child = binding.coordinatorMain.toolbar.getChildAt(i)
-                    if (child is ImageButton) {
-                        child.setFocusable(false)
-                        break
-                    }
-                }
+                binding.coordinatorMain.toolbar.children
+                    .find { it is ImageButton }
+                    ?.isFocusable = false
         }
         binding.drawerLayout.addDrawerListener(toggle)
         binding.navView.setNavigationItemSelectedListener(this)
@@ -222,27 +219,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             if (intent.getStringExtra(NLService.B_ARTIST) != null)
                                 showInfoFragment(intent)
                             else {
-                                var wasKilled = false
-                                var exitReasonString: String? = null
-
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BuildConfig.DEBUG) {
-                                    val lastExitReason = getScrobblerExitReasons(
-                                        prefs.lastKillCheckTime,
-                                        false
-                                    ).firstOrNull()
-
-                                    if (lastExitReason != null) {
-                                        exitReasonString = lastExitReason.description
-                                        wasKilled = true
-                                    }
-                                } else {
-                                    wasKilled = !Stuff.isScrobblerRunning(this)
-                                }
-
-                                prefs.lastKillCheckTime = System.currentTimeMillis()
+                                val wasKilled = !Stuff.isScrobblerRunning(this)
 
                                 if (wasKilled) {
-                                    showNotRunning(exitReasonString)
+                                    showNotRunning()
                                 } else if (!isTv && billingViewModel.proStatus.value != true) {
                                     AppRater(this, prefs).appLaunched()
                                     Updater(this, prefs).withSnackbar()
@@ -544,17 +524,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onBackPressed()
     }
 
-    private fun showNotRunning(exitReasonString: String?) {
+    private fun showNotRunning() {
         Snackbar
             .make(binding.coordinatorMain.frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
             .setAction(R.string.not_running_fix_action) {
-                FixItFragment()
-                    .apply {
-                        arguments = Bundle().apply {
-                            putString(Stuff.ARG_DATA, exitReasonString)
-                        }
-                        show(supportFragmentManager, null)
-                    }
+                FixItFragment().show(supportFragmentManager, null)
             }
             .addCallback(object : Snackbar.Callback() {
                 override fun onShown(sb: Snackbar?) {

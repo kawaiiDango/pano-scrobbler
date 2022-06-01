@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import com.arn.scrobble.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.databinding.DialogFixItBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
@@ -20,7 +21,6 @@ class FixItFragment : BottomSheetDialogFragment() {
 
     private var _binding: DialogFixItBinding? = null
     private val binding get() = _binding!!
-    private val exitReason get() = arguments?.getString(Stuff.ARG_DATA)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,9 +72,16 @@ class FixItFragment : BottomSheetDialogFragment() {
                 }
             }
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            context!!.getScrobblerExitReasons(prefs.lastKillCheckTime, false)
+                .firstOrNull()
+                ?.let {
+                    binding.fixItExitReason.text =
+                        getString(R.string.kill_reason, "\n" + it.description)
+                }
 
-        exitReason?.let {
-            binding.fixItExitReason.text = getString(R.string.kill_reason, it)
+            prefs.lastKillCheckTime = System.currentTimeMillis()
+            // this is technically wrong
         }
     }
 }

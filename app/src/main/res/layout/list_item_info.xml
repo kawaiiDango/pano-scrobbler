@@ -47,7 +47,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/info_link"
-            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            style="?materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/more_info"
@@ -55,7 +55,6 @@
             android:visibility="gone"
             app:icon="@drawable/vd_open_in_new"
             app:iconTint="?colorSecondary"
-            app:strokeWidth="0dp"
             tools:visibility="visible" />
     </LinearLayout>
 
@@ -218,7 +217,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/info_user_tags"
-                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                style="?materialIconButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/my_tags"
@@ -226,12 +225,11 @@
                 android:visibility="gone"
                 app:icon="@drawable/vd_user_tag"
                 app:iconTint="?colorSecondary"
-                app:strokeWidth="0dp"
                 tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/info_play"
-                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                style="?materialIconButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/search"
@@ -239,17 +237,15 @@
                 android:visibility="gone"
                 app:icon="@drawable/vd_search_play"
                 app:iconTint="?colorSecondary"
-                app:strokeWidth="0dp"
                 tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/info_heart"
-                style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                style="?materialIconButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:iconTint="?colorSecondary"
-                app:strokeWidth="0dp"
                 tools:srcCompat="@drawable/vd_heart"
                 tools:visibility="visible" />
 

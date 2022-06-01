@@ -117,7 +117,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/hero_calendar"
-                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                    style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.6"
@@ -125,13 +125,12 @@
                     android:tooltipText="@string/time_jump"
                     android:visibility="invisible"
                     app:icon="@drawable/vd_calendar_today"
-                    app:strokeWidth="0dp"
                     app:iconSize="22dp"
                     tools:visibility="visible" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/hero_share"
-                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                    style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.6"
@@ -139,13 +138,12 @@
                     android:tooltipText="@string/share_this_song"
                     android:visibility="invisible"
                     app:icon="@drawable/vd_share"
-                    app:strokeWidth="0dp"
                     app:iconSize="22dp"
                     tools:visibility="visible" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/hero_info"
-                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                    style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.6"
@@ -153,13 +151,12 @@
                     android:tooltipText="@string/more_info"
                     android:visibility="invisible"
                     app:icon="@drawable/vd_info"
-                    app:strokeWidth="0dp"
                     app:iconSize="22dp"
                     tools:visibility="visible" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/hero_randomize"
-                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                    style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.6"
@@ -167,13 +164,12 @@
                     android:tooltipText="@string/random"
                     android:visibility="gone"
                     app:icon="@drawable/vd_die"
-                    app:strokeWidth="0dp"
                     app:iconSize="22dp"
                     tools:visibility="visible" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/hero_play"
-                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                    style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.6"
@@ -181,7 +177,6 @@
                     android:tooltipText="@string/search"
                     android:visibility="invisible"
                     app:icon="@drawable/vd_search_play"
-                    app:strokeWidth="0dp"
                     app:iconSize="22dp"
                     tools:visibility="visible" />
 

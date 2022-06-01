@@ -11,11 +11,15 @@ object Tokens {
     const val ACR_SECRET = ""
     const val SPOTIFY_ARTIST_INFO_SERVER = "" // blank or [self hosted server](https://github.com/kawaiidango/spotify-artist-search-server)
     const val SPOTIFY_ARTIST_INFO_KEY = ""
-    const val PRO_SKU_NAME = ""
-    const val SIGNATURE = "apk signature"
-    const val BASE_64_ENCODED_PUBLIC_KEY = ""
+    const val PRO_PRODUCT_ID = ""
+    const val SIGNATURE = "(apk signature)"
+    const val BASE_64_ENCODED_PUBLIC_KEY = "(of the signing key)"
 }
 ```
 Remove the lines below `// remove if not needed` in app/build.gradle.kts and /build.gradle.kts
 
 Create app/version.txt and put a positive integer in it
+
+Create a Firebase project for Crashlytics and add google-services.json
+
+See https://firebase.google.com/docs/android/setup

@@ -8,6 +8,10 @@
         <item quantity="one">%1$s dinleyici</item>
         <item quantity="other">%1$s dinleyici</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s gün</item>
+        <item quantity="other">%1$s gün</item>
+    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s hafta</item>
         <item quantity="other">%1$s hafta</item>
@@ -54,6 +58,7 @@
     <string name="settings">Ayarlar</string>
     <string name="bug_report">Hata raporu</string>
     <string name="album_art">Albüm kapağı</string>
+    <string name="artist_image">Sanatçı resmi</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Başlık ayrıştırılamadı</string>
     <string name="network_error">Bağlantı hatası</string>
     <string name="scrobble_ignored_save_edit">Lastfm düzenlemeyi muhtemelen skrop çok eski olduğu için dikkate almadı. Bu düzenlemeyi gelecek skroplar için saklamak ister misiniz?</string>
@@ -104,6 +109,7 @@
     <string name="share">Paylaş</string>
     <string name="more_info">Daha fazla bilgi</string>
     <string name="search">Ara</string>
+    <string name="library" comment="search within the library">Kitaplık</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profil fotoğrafı</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Bu öğe için seçenekler</string>
@@ -232,6 +238,9 @@
     <string name="edit_regex_warning">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
     <string name="blocked_metadata_info">ℹ️ Bu alanların birinden fazlasının doldurulması, aralarında bir AND operatörü uygulamasına yol açacaktır</string>
     <string name="block">Engelle</string>
+    <string name="pin">Sabitle</string>
+    <string name="unpin">Sabitlemeyi kaldır</string>
+    <string name="pin_limit_reached" formatted="true">Sabitleme sınırına ulaşıldı (%1$d)</string>
     <string name="use_channel" comment="(Use youtube channel name)">Kanal ismini kullan</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">\"%1$s\" kalıp düzenlemesini etkinleştirmek istiyor musunuz?</string>
     <string name="show_persistent_noti">Kalıcı bildirim göster</string>
@@ -271,6 +280,7 @@
     <string name="pref_fetch_aa_desc">Bu bilgiyi sağlamayan oynatıcılar için kullanılır. Alınan veriler sizin etiketlerinizden farklı olabilir. LastFM bazı şarkıların verilerine sahip olmayabilir.</string>
     <string name="pref_pixel_np">Pixel\'de Şimdi Oynatılanı Skropla</string>
     <string name="pref_pixel_np_nope">Sadece Pixel cihazlarda mevcut</string>
+    <string name="pref_locale">Diller</string>
     <string name="pref_change_locale">Dili değiştir</string>
     <string name="locale_only_ui">Sadece uygulama için geçerlidir</string>
     <string name="pref_misc">Çeşitli</string>
@@ -295,6 +305,8 @@
     <string name="pref_lastfm_disable">LastFM\'e skroplama</string>
     <string name="pref_lastfm_disable_desc">Arayüzün kalan işlevlerinin çalışabilmesi için yine de bir lastFM hesabıya oturum açmalısınız</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
+    <string name="download">İndir</string>
+    <string name="changelog">Değişiklikler</string>
     <string name="import_hey_wtf">Bu muhtemelen Pano Scrobbler\'dan dışa aktarılmış bir dosya değil</string>
     <string name="export_failed">Dışa aktarma başarısız</string>
     <string name="imported">İçe aktarıldı</string>
@@ -305,6 +317,7 @@
     <string name="import_lists_keep">Birleştir, mevcut düzenlemeleri ve engel listesini koru</string>
     <string name="import_settings">Ayarları içe aktar</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Yayın intentleri</string>
+    <string name="current_track">Çalan parça:</string>
     <string name="pref_intents">Tasker vb. için intentler</string>
     <string name="copied">Kopyalandı!</string>
     <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>

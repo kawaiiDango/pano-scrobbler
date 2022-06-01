@@ -4,6 +4,14 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s auditeur</item>
+        <item quantity="other">%1$s auditeurs</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s jour</item>
+        <item quantity="other">%1$s jours</item>
+    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s semaine</item>
         <item quantity="other">%1$s semaines</item>
@@ -16,13 +24,45 @@
         <item quantity="one">%1$s année</item>
         <item quantity="other">%1$s années</item>
     </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s artiste</item>
+        <item quantity="other">%1$s artistes</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s album</item>
+        <item quantity="other">%1$s albums</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s piste</item>
+        <item quantity="other">%1$s pistes</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d résultat</item>
+        <item quantity="other">%1$d résultats</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s modification</item>
+        <item quantity="other">%1$s modifications</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s modification de motif</item>
+        <item quantity="other">%1$s modifications de motif</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s métadonnée bloquée</item>
+        <item quantity="other">%1$s métadonnée bloquée</item>
+    </plurals>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
+    <string name="reset">Réinitialiser</string>
     <string name="settings">Configurer</string>
     <string name="bug_report">Rapporter un bug</string>
     <string name="album_art">Pochette d\'album</string>
+    <string name="artist_image">Image d\'artiste</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossible d\'analyser le titre</string>
     <string name="network_error">Erreur de réseau</string>
+    <string name="disable_tls_verify">Ignorer les erreurs TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoré</string>
     <string name="scrobble_ignored_save_edit">Lastfm a ignoré l\'édition probablement parce que le scrobble est trop ancien. Voulez-vous sauvegarder cet édition pour les scrobbles futurs à la place ?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Les champs nécessaires sont vides</string>
     <string name="artist">Artiste</string>
@@ -56,6 +96,7 @@
     <string name="enabled_apps">Applications activées</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Presque prêt…</string>
     <string name="music_players">Lecteurs de musique</string>
+    <string name="video_players">Applications de streaming vidéo</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Autres applications</string>
     <string name="choose_apps">Choisir une application pour scrobbler</string>
     <string name="offline">Hors-ligne. Les données affichées ne sont pas rafraichies</string>
@@ -64,10 +105,15 @@
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">J\'écoutais\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s écoutait\n%1$s %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Mon %1$s %2$s:\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%2$s en %1$s de %4$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Partager cette musique</string>
     <string name="share">Partager</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Légende</string>
+    <string name="grid_size">Changer la taille de la grille</string>
+    <string name="pinch_to_zoom">Pincer pour zoomer</string>
     <string name="more_info">Plus d\'informations</string>
+    <string name="rank_change" comment="%1= delta change">Changement en classement: %s</string>
     <string name="search">Rechercher</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Image de profil</string>

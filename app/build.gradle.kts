@@ -112,7 +112,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.3")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
     implementation("androidx.navigation:navigation-ui-ktx:2.4.2")
@@ -122,9 +122,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.7.0-alpha01")
+    implementation("com.google.android.material:material:1.7.0-alpha02")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:30.0.2"))
+    implementation(platform("com.google.firebase:firebase-bom:30.1.0"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -140,7 +140,7 @@ dependencies {
     implementation("io.michaelrocks.bimap:bimap:1.1.0")
     implementation("com.github.hadilq:live-event:1.3.0")
 //    implementation("com.brandongogetap:stickyheaders:0.6.2")
-    implementation("com.mikepenz:aboutlibraries-core:10.2.0")
+    implementation("com.mikepenz:aboutlibraries-core:10.3.0")
     //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
 
     implementation(project(":lastfm"))

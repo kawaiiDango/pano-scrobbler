@@ -18,33 +18,30 @@ Buttons in notifications don't work as expected. This is a WSA bug.
 
 #### Features:
 - No ADs ever
-- Scrobble from anything which produces audio with metadata, including Youtube, Chrome, Telegram etc.
-- Scrobble to lastFM, LibreFM, GNU FM and Listenbrainz
-- View scrobble count in notification
-- Verify the metadata with lastFM's records before scrobbling
-- View track, album, artist and album artist details
-- View scrobbles from a specified date
-- Work with scrobbles (love a track, cancel a scrobble)
-- Edit recent scrobbles for free
-- Delete existing scrobbles
-- Check what your friends are listening to and view their profiles
-- Scrobble a song from mic or the S app (Android 8+)
-- Supports TVs (Oreo and lower needs adb commands)
-- Supports Pixel Now Playing
-- Import & export settings and saved edits
-- Intents for apps like Tasker, Macrodroid etc
-- View top artists, albums or tracks
-- View daily, weekly, monthly or yearly scrobble count graphs
-- I'm feeling lucky, a shuffle all for your entire listening history
-- Fetch albums and album artists from lastfm, if missing, before scrobbling
-- Search
-- Weekly/monthly top scrobble notifications
-- Add/remove personal tags
-- Customizable homescreen widget
-- Mix and match themes
-- Block artists/tracks and auto skip or mute
-- Pattern edits (upto 30)
-- Show icons and search in apps you scrobbled from
+- Scrobbles to LastFM, LibreFM, GNU FM and Listenbrainz (A LastFM login is required for now)
+- Supports phones, TVs, tablets and Android desktops including Windows 11
+- Interactive notification: View scrobble counts, love, cancel or block tracks directly from the notification
+- View track, album, artist, album artist and tag details
+- View scrobbles from a specific time such as last year, last month etc.
+- Edit or delete existing scrobbles. Remembers edits
+- Fix metadata such as "Remastered" or your own patterns with regex edits
+- Block artists, tracks etc and auto skip or mute when they play
+- Check what your friends are listening to and view their stats
+- Identify and scrobble a song from the microphone
+- Scrobble from AutoShazam and Pixel Now Playing
+- Import & export settings, edits and blocklists
+- View charts for a specific week, month, year or custom range, with change indicators
+- Charts are also available as a customizable home-screen widget
+- View scrobble count graphs for specific time periods
+- Get a random track, album or artist from your listening history
+- Search for a track, artist or album
+- Fetch albums and album artists from LastFM, if missing, before scrobbling
+- Get your top scrobble digests as a notification at the end of every week and month
+- Add or remove personal tags
+- Mix and match themes, supports Material You
+- Broadcast Intents for automation apps like Tasker
+- Show scrobble sources beside each scrobble and directly search in the app you scrobbled from
+- In-app update checker for devices without Play Store
 
 #### Building:
 See [instructions.md](instructions.md)

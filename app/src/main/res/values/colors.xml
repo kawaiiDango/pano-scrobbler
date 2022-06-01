@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="pinkLight">#FFB0CD</color>
+    <color name="pinkLightStart">@color/mdcolor_sakurapink_10</color>
+    <color name="pinkLight">@color/mdcolor_sakurapink_100</color>
     <color name="pinkDark">#AB2C5D</color>
     <color name="pinkExtraDark">#66002E</color>
     <color name="chipBgOnBlack">#1a1a1a</color>
     <color name="statusBarScrim">#32000000</color>
-    <color name="gradient_launcher_fg">#fff</color>
-    <color name="shortcut_launcher_fg">#fff</color>
-    <color name="gradient_shortcut_fg">#fff</color>
+    <color name="gradient_launcher_fg">@color/pinkLight</color>
+    <color name="gradient_shortcut_fg">@color/pinkLight</color>
     <color name="splash_fg">@color/pinkDark</color>
-
-<!--    <color name="pinkNoti">#ec407a</color>-->
-<!--    <color name="purpleOutline">#66c79bcf</color>-->
-<!--    <color name="purpleSecondary">#e1bee7</color>-->
-<!--    <color name="pinkPrimary">#f06292</color>-->
-<!--    <color name="pinkPrimaryContainer">#880E4F</color>-->
-<!--    <color name="pinkPrimary_t">#45F06292</color>-->
-<!--    <color name="pinkSurfaceVariant">#45d37e9b</color> -->
 
     <color name="pinkNoti">#EC5F8F</color>
     <color name="purpleOutline">#50F8F0F7</color>

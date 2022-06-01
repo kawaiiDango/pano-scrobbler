@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <gradient xmlns:android="http://schemas.android.com/apk/res/android"
-    android:startColor="#fff"
+    android:startColor="@color/pinkLightStart"
     android:endColor="@color/pinkLight"
     android:type="linear"
     android:startX="40"

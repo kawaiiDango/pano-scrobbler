@@ -61,6 +61,8 @@
     <string name="artist_image">Sanatçı resmi</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Başlık ayrıştırılamadı</string>
     <string name="network_error">Bağlantı hatası</string>
+    <string name="disable_tls_verify">TLS hatalarını yoksay</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Skrop yoksayıldı</string>
     <string name="scrobble_ignored_save_edit">Lastfm düzenlemeyi muhtemelen skrop çok eski olduğu için dikkate almadı. Bu düzenlemeyi gelecek skroplar için saklamak ister misiniz?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Gerekli alanlar boş</string>
     <string name="artist">Sanatçı</string>
@@ -107,7 +109,13 @@
     <string name="share_sig">(Pano Scrobbler tarafından)</string>
     <string name="share_this_song">Bu şarkıyı paylaş</string>
     <string name="share">Paylaş</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Göstergeler</string>
+    <string name="grid_size">Görünümü değiştir</string>
+    <string name="pinch_to_zoom">İki parmakla yakınlaştır</string>
     <string name="more_info">Daha fazla bilgi</string>
+    <string name="rank_change" comment="%1= delta change">Sıralama değişikliği: %s</string>
+    <string name="rank_change_no_change">Değişiklik yok</string>
+    <string name="rank_change_new">Bir önceki dönemde skroplanmamış</string>
     <string name="search">Ara</string>
     <string name="library" comment="search within the library">Kitaplık</string>
     <string name="profile">Profil</string>
@@ -136,6 +144,7 @@
     <string name="allow_background">Arkaplanda skroplamaya izin ver</string>
     <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
     <string name="grant_notification_access_desc">Müzik metaverisi almak için gerekli. Müzik harici veriler okunmaz</string>
+    <string name="send_notifications">Bildirimlere izin ver</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">LastFM ile kimlik doğrulaması yapın</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM ve Listenbrainz sonradan ayarlar aracılığıyla doğrulanabilir</string>
     <string name="swap" comment="(Swap title and artist)">Değiştir</string>
@@ -175,8 +184,12 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">Bulunamadı</string>
     <string name="share_this_chart">Bu listeyi paylaş</string>
+    <string name="lastfm_reports">LastFM dinleme raporları</string>
     <string name="weekly">Haftalık</string>
+    <string name="weeks">Haftalık</string>
     <string name="monthly">Aylık</string>
+    <string name="months">Aylık</string>
+    <string name="years">Yıllık</string>
     <string name="charts_overall">Genel</string>
     <string name="charts_no_data">Bu dönem için veri yok</string>
     <string name="charts_custom" comment="Custom date range, but in short">Özel</string>
@@ -188,6 +201,7 @@
     <string name="random_not_found">Parça bulunamadı</string>
     <string name="loved_track">Beğenilenler</string>
     <string name="randomize">Rastgele Seç</string>
+    <string name="random_text">Rastgele</string>
     <string name="graph_daily">Günlük skrop sayısı</string>
     <string name="graph_weekly">Haftalık skrop sayısı</string>
     <string name="graph_monthly">Aylık skrop sayısı</string>
@@ -213,6 +227,7 @@
     <string name="appwidget_show">Göster</string>
     <string name="light">Açık</string>
     <string name="dark">Koyu</string>
+    <string name="system_colors">Sistem renkleri</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget her %1$d dakikada bir yenilenir</string>
     <string name="primary_color">Ana renk</string>
@@ -222,6 +237,7 @@
     <string name="edit_name" comment="name for regex pattern">İsim (isteğe bağlı)</string>
     <string name="edit_regex">Düzenli ifade kalıbı</string>
     <string name="edit_regex_replacement">Düzenli ifade değiştirme</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Alanlar</string>
     <string name="edit_replace">Değiştir</string>
     <string name="edit_first" comment="First occurrence of a pattern">İlkini</string>
     <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
@@ -237,7 +253,11 @@
     <string name="text" comment="text to test regex rules with">Metin</string>
     <string name="edit_regex_warning">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
     <string name="blocked_metadata_info">ℹ️ Bu alanların birinden fazlasının doldurulması, aralarında bir AND operatörü uygulamasına yol açacaktır</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Oynatıcı komutları</string>
+    <string name="skip" comment="skip to next track">Atla</string>
+    <string name="mute">Sessize al</string>
     <string name="block">Engelle</string>
+    <string name="hidden_tags">Gizlenmiş etiketler</string>
     <string name="pin">Sabitle</string>
     <string name="unpin">Sabitlemeyi kaldır</string>
     <string name="pin_limit_reached" formatted="true">Sabitleme sınırına ulaşıldı (%1$d)</string>
@@ -259,7 +279,7 @@
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Müzik uygulamaları</string>
     <string name="pref_enabled_apps_summary">ℹ️ Müzik metaverisini paylaşan uygulamaları destekler. Spotify\'da oluşabilecek çift skropları engellemek için sadece bir yerde etkin bırakın.</string>
     <string name="pref_enabled_apps_title">Uygulamaları seçin</string>
-    <string name="pref_auto_detect_summary">…yine de bu uygulamayı onaylamak/dikkate almamak için size soracağız</string>
+    <string name="pref_auto_detect_summary">…yine de bu uygulamayı onaylamak/yoksaymak için size soracağız</string>
     <string name="pref_auto_detect">Yeni müzik uygulamalarını algıla</string>
     <string name="pref_delay">Skrop gecikmesi (hangisi daha önceyse)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Dakika</string>
@@ -282,6 +302,7 @@
     <string name="pref_pixel_np_nope">Sadece Pixel cihazlarda mevcut</string>
     <string name="pref_locale">Diller</string>
     <string name="pref_change_locale">Dili değiştir</string>
+    <string name="pref_crashlytics_enabled">Hataları otomatik olarak bildir</string>
     <string name="locale_only_ui">Sadece uygulama için geçerlidir</string>
     <string name="pref_misc">Çeşitli</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL\'si</string>
@@ -305,6 +326,10 @@
     <string name="pref_lastfm_disable">LastFM\'e skroplama</string>
     <string name="pref_lastfm_disable_desc">Arayüzün kalan işlevlerinin çalışabilmesi için yine de bir lastFM hesabıya oturum açmalısınız</string>
     <string name="pref_translate">Bu uygulamayı çevir</string>
+    <string name="pref_translate_credits">Çeviri ekibi</string>
+    <string name="pref_oss_credits">Açık kaynak lisansları</string>
+    <string name="pref_check_updates">Güncellemeleri kontrol et</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Yeni güncelleme: %1$s</string>
     <string name="download">İndir</string>
     <string name="changelog">Değişiklikler</string>
     <string name="import_hey_wtf">Bu muhtemelen Pano Scrobbler\'dan dışa aktarılmış bir dosya değil</string>

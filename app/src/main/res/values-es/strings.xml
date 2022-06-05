@@ -37,8 +37,8 @@
         <item quantity="other">%1$s canciones</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
-        <item quantity="one">%1$d coincidencia</item>
-        <item quantity="other">%1$d coincidencias</item>
+        <item quantity="one">%1$d resultado</item>
+        <item quantity="other">%1$d resultados</item>
     </plurals>
     <plurals name="num_simple_edits">
         <item quantity="one">%1$s edición</item>
@@ -54,31 +54,31 @@
     </plurals>
     <string name="yes">Si</string>
     <string name="no">No</string>
-    <string name="reset">Reiniciar</string>
+    <string name="reset">Restablecer</string>
     <string name="settings">Configuración</string>
     <string name="bug_report">Reportar error</string>
     <string name="album_art">Imagen del álbum</string>
     <string name="artist_image">Imagen del artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">No se ha podido analizar el título</string>
-    <string name="network_error">Error de red</string>
+    <string name="network_error">Error de conexión</string>
     <string name="disable_tls_verify">Ignorar errores de TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorado</string>
-    <string name="scrobble_ignored_save_edit">Lastfm ignoró la edición probablemente porque el scrobble es demasiado antiguo. ¿Le gustaría guardar esta edición para futuros scrobbles?</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ignoró la edición, probablemente porque el scrobble es demasiado antiguo. ¿Te gustaría guardar esta edición para scrobbles futuros?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Los campos obligatorios están vacíos</string>
     <string name="artist">Artista</string>
     <string name="artists">Artistas</string>
-    <string name="top_artists" comment="Top artists the user has listened to">Artistas más escuchados</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Top artistas</string>
     <string name="album_artist">Artista del álbum</string>
     <string name="artist_channel" comment="Artist or youtube channel">Artista / canal</string>
     <string name="similar_artists">Artistas similares</string>
     <string name="album_optional">Álbum (opcional)</string>
     <string name="album">Álbum</string>
     <string name="albums">Álbumes</string>
-    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Álbumes más escuchados</string>
-    <string name="track">Tema</string>
-    <string name="tracks">Temas</string>
-    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Temas más escuchados</string>
-    <string name="similar_tracks">Temas similares</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top álbumes</string>
+    <string name="track">Canción</string>
+    <string name="tracks">Canciones</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Canciones más escuchadas</string>
+    <string name="similar_tracks">Canciones similares</string>
     <string name="similar" comment="Similar tracks but in short">Similar</string>
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Ahora en scrobbling…</string>
@@ -88,17 +88,17 @@
     <string name="state_unrecognised_artist">Artista no reconocido</string>
     <string name="tap_to_edit">(Toca para editar)</string>
     <string name="recently_scrobbled">Recientemente Scrobbled</string>
-    <string name="recently_loved">Favoritos recientes</string>
+    <string name="recently_loved">♥ Favoritos recientes</string>
     <string name="recents" comment="Short for recently scrobbled">Recientes</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primer scrobble el %1$s</string>
     <string name="auto" comment="automatic or default setting">Automático</string>
     <string name="graph_info">… últimos 5 meses</string>
     <string name="enabled_apps">Aplicaciones habilitadas</string>
-    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ya casi está…</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Casi listos…</string>
     <string name="music_players">Reproductores de música</string>
     <string name="video_players">Aplicaciones de streaming</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Otras Aplicaciones</string>
-    <string name="choose_apps">Escoge las aplicaciones para hacer scrobbles</string>
+    <string name="choose_apps">Selecciona las aplicaciones para hacer scrobble</string>
     <string name="offline">Sin conexión. Los datos mostrados no son recientes</string>
     <string name="unavailable_offline">No disponible sin conexión</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servicios</string>
@@ -218,7 +218,7 @@
     <string name="random_text">Aleatorio</string>
     <string name="graph_daily">Conteo diario de scrobble</string>
     <string name="graph_weekly">Conteo semanal de scrobble</string>
-    <string name="graph_monthly">Conteo mensual de scrobble</string>
+    <string name="graph_monthly">Conteo mensual de scrobbles</string>
     <string name="graph_yearly">Conteo anual de scrobble</string>
     <string name="graph_scrub_msg">Las horas están en su zona horaria \nMantenga presionado o suelte la gráfica para ver las cuentas exactas</string>
     <string name="original" comment="Original metadata before editing">Original</string>
@@ -226,7 +226,7 @@
     <string name="tag" comment="last.fm tag">Etiqueta</string>
     <string name="taggers" comment="(number of) people who have tagged">Etiquetadores</string>
     <string name="taggings" comment="(total count of) a particular tag">Etiquetado</string>
-    <string name="digest_weekly">Mis mejores scrobbles de la última semana</string>
+    <string name="digest_weekly">Mis top scrobbles de la última semana</string>
     <string name="digest_monthly">Mis mejores scrobbles del último mes</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s mejores scrobbles</string>
     <string name="my_tags">Mis etiquetas</string>
@@ -344,8 +344,8 @@
     <string name="pref_translate">Traducir esta aplicación</string>
     <string name="pref_translate_credits">Créditos de traducción</string>
     <string name="pref_oss_credits">Créditos de código abierto</string>
-    <string name="pref_check_updates">Comprobar actualizaciones</string>
-    <string name="update_available" formatted="true" comment="%1= the version number">Actualización disponible: %1$s</string>
+    <string name="pref_check_updates">Buscar actualizaciones</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Nueva versión disponible: %1$s</string>
     <string name="download">Descargar</string>
     <string name="changelog">Registro de cambios</string>
     <string name="import_hey_wtf">Probablemente no sea un archivo de exportación de Pano Scrobbler</string>
@@ -415,6 +415,6 @@ Google Play administra tus compras. Están enlazadas con una cuenta de Google Pl
 • Instalar esta aplicación directamente desde la página web de Google Play.
 "</string>
     <string name="billing_block">Bloquear artistas/pistas y omitir o silenciar automáticamente</string>
-    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fijar hasta %1$d amigos y reordenarlos</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fija hasta %1$d amigos y reordenalos</string>
     <string name="billing_sharing">Eliminar el nombre de la aplicación al compartir</string>
 </resources>

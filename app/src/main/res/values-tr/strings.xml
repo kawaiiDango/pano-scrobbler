@@ -414,7 +414,7 @@ Satın alma işlemleriniz Google Play tarafından yönetilir ve satın almayı g
 • Satın alma işlemi gerçekleştirilen hesapla oturum açın.
 • Uygulamayı direkt Google Play web sayfasından kurun.
 "</string>
-    <string name="billing_block">Sanatçıları/parçaları engelleyip otomatik olarak atlayın/susturun</string>
+    <string name="billing_block">Sanatçıları/parçaları engelleyip otomatik olarak atla/sustur</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Arkadaşlarınızı sabitleyip yeniden sıralayın (en fazla %1$d)</string>
     <string name="billing_sharing">Paylaşımlarda uygulama ismini kaldır</string>
 </resources>

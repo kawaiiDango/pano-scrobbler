@@ -154,6 +154,7 @@ object Stuff {
     const val PACKAGE_PIXEL_NP = "com.google.intelligence.sense"
     const val PACKAGE_PIXEL_NP_R = "com.google.android.as"
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
+    const val PACKAGE_AMM = "com.kieronquinn.app.ambientmusicmod"
     const val PACKAGE_SHAZAM = "com.shazam.android"
     const val CHANNEL_SHAZAM = "auto_shazam_v2"
     const val PACKAGE_XIAMI = "fm.xiami.main"
@@ -366,6 +367,16 @@ object Stuff {
             } catch (e: PackageManager.NameNotFoundException) {
                 false
             }
+        }
+    }	
+
+    fun isPackageInstalled(context: Context, packageName: String): Boolean {
+        return try {
+            context.packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).apply {
+                `package` = packageName
+            }, 0) != null
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
         }
     }
 

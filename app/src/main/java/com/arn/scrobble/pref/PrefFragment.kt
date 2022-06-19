@@ -187,7 +187,8 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val pixelNp = findPreference<SwitchPreference>(MainPrefs.PREF_PIXEL_NP)!!
         hideOnTV.add(pixelNp)
-        if (Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE) {
+        if (Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE
+			&& !Stuff.isPackageInstalled(requireContext(), Stuff.PACKAGE_AMM)) {
             pixelNp.summary = getString(R.string.pref_pixel_np_nope)
             pixelNp.isEnabled = false
             pixelNp.isPersistent = false

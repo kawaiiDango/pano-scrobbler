@@ -320,6 +320,7 @@
     <string name="pref_pixel_np_nope">Доступно лише на пристроях Pixel</string>
     <string name="pref_locale">Мови</string>
     <string name="pref_change_locale">Змінити мову</string>
+    <string name="pref_crashlytics_enabled">Автоматично повідомляти про помилки</string>
     <string name="locale_only_ui">Застосовується лише до головного інтерфейсу користувача</string>
     <string name="pref_misc">Інше.</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
@@ -345,6 +346,7 @@
     <string name="pref_translate">Допомогти з перекладом</string>
     <string name="pref_translate_credits">Подяка перекладачам</string>
     <string name="pref_oss_credits">Використано відкритий код</string>
+    <string name="pref_check_updates">Перевірити наявність оновлень</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Доступне оновлення: %1$s</string>
     <string name="download">Завантажити</string>
     <string name="changelog">Журнал змін</string>

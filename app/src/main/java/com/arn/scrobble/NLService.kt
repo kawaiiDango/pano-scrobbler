@@ -1073,10 +1073,7 @@ class NLService : NotificationListenerService() {
 //                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
                 setLargeIcon(notiIconBitmap)
             }
-            val n = build()
-            if (modNeeded)
-                n.bigContentView = null
-            return n
+            return build()
         }
 
         fun remove(hash: Int, removeNoti: Boolean = true) {

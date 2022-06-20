@@ -266,6 +266,9 @@
             android:key="lastfm_disable"
             android:summary="@string/pref_lastfm_disable_desc"
             android:title="@string/pref_lastfm_disable"/>
+        <Preference
+            android:title="@string/delete_account"
+            android:key="delete_account"/>
     </PreferenceCategory>
     <PreferenceCategory
         app:icon="@drawable/vd_info"
@@ -279,5 +282,10 @@
         <Preference
             android:summary="@string/github_link"
             android:key="about" />
+        <EditTextPreference
+            android:title="@string/force_exception"
+            android:defaultValue=""
+            app:isPreferenceVisible="false"
+            android:key="force_exception" />
     </PreferenceCategory>
 </PreferenceScreen>

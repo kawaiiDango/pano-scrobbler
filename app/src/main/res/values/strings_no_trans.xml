@@ -22,5 +22,6 @@
 
 <!-- strings for features not finalized  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
+    <string name="force_exception" translatable="false">Force log an exception</string>
 
 </resources>

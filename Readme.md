@@ -16,7 +16,7 @@
 Pano Scrobbler works on Windows 11 with WSA. It scrobbles from other Android apps.
 Buttons in notifications don't work as expected. This is a WSA bug.
 
-#### Features:
+### Features:
 - No ADs ever
 - Scrobbles to LastFM, LibreFM, GNU FM and Listenbrainz (A LastFM login is required for now)
 - Supports phones, TVs, tablets and Android desktops including Windows 11
@@ -43,7 +43,7 @@ Buttons in notifications don't work as expected. This is a WSA bug.
 - Show scrobble sources beside each scrobble and directly search in the app you scrobbled from
 - In-app update checker for devices without Play Store
 
-#### Building:
+### Building:
 See [instructions.md](instructions.md)
 
 - Inspiration from: Musixmatch's FloatingLyrics

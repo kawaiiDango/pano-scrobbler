@@ -592,6 +592,8 @@
     <string name="fix_it_action"
         comment="(To open an app)"
         >Open</string>
+    <string name="delete_account">Delete your account</string>
+    <string name="delete_account_custom_servers">For custom servers, check their respective documentations.</string>
 
 <!--  pro  -->
     <string name="get_pro">Support this app</string>

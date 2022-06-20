@@ -298,11 +298,11 @@ class SessListener(
                     unmute(clearMutedHash = isMuted)
 
                 // scrobbled when ad was playing
-                if (onlyDurationUpdated && packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)) {
-                    scheduleSyntheticStateIfNeeded()
-                    if (!handler.hasMessages(currHash))
-                        return
-                }
+//                if (onlyDurationUpdated && packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)) {
+//                    scheduleSyntheticStateIfNeeded()
+//                    if (!handler.hasMessages(currHash))
+//                        return
+//                }
 
                 // for cases:
                 // - meta is sent after play
@@ -329,11 +329,11 @@ class SessListener(
             val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT
 
             if (lastState == state /* bandcamp does this */ &&
-                playbackState.errorMessage != "synthetic" &&
-                !(state == PlaybackState.STATE_PLAYING &&
-                        isPossiblyAtStart &&
-                        packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)
-                        )
+                playbackState.errorMessage != "synthetic"
+//                && !(state == PlaybackState.STATE_PLAYING &&
+//                        isPossiblyAtStart &&
+//                        packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)
+//                        )
             )
                 return
 

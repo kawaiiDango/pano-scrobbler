@@ -16,6 +16,7 @@ import android.os.Bundle
 import android.os.Process
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.format.DateUtils
+import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.arn.scrobble.pref.MainPrefs
@@ -74,8 +75,8 @@ object Stuff {
     const val TYPE_TAG_CLOUD = 6
     const val NP_ID = -5
     const val LIBREFM_KEY = "panoScrobbler"
-    const val LAST_KEY = Tokens.LAST_KEY
-    const val LAST_SECRET = Tokens.LAST_SECRET
+    val LAST_KEY = Tokens.LAST_KEY
+    val LAST_SECRET = Tokens.LAST_SECRET
     const val TAG = "scrobbler"
     const val DL_SETTINGS = 31
     const val DL_APP_LIST = 32
@@ -154,7 +155,6 @@ object Stuff {
     const val PACKAGE_PIXEL_NP = "com.google.intelligence.sense"
     const val PACKAGE_PIXEL_NP_R = "com.google.android.as"
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
-    const val PACKAGE_AMM = "com.kieronquinn.app.ambientmusicmod"
     const val PACKAGE_SHAZAM = "com.shazam.android"
     const val CHANNEL_SHAZAM = "auto_shazam_v2"
     const val PACKAGE_XIAMI = "fm.xiami.main"
@@ -172,7 +172,7 @@ object Stuff {
     const val PACKAGE_YMUSIC = "com.kapp.youtube.final"
     const val PACKAGE_SOUNDCLOUD = "com.soundcloud.android"
 
-    val MARKET_URL = "market://details?id=" + BuildConfig.APPLICATION_ID
+    const val MARKET_URL = "market://details?id=" + BuildConfig.APPLICATION_ID
 
     val IGNORE_ARTIST_META = setOf(
         "com.google.android.youtube",
@@ -200,7 +200,7 @@ object Stuff {
     val needSyntheticStates = arrayOf(
         PACKAGE_BLACKPLAYER,
         PACKAGE_BLACKPLAYEREX,
-        PACKAGE_YOUTUBE_MUSIC,
+//        PACKAGE_YOUTUBE_MUSIC,
     )
 
     val STARTUPMGR_INTENTS = listOf(
@@ -659,3 +659,7 @@ object Stuff {
 
     fun <T> List<T>.wrappedGet(index: Int) = this[(index + size) % size]
 }
+
+@Keep
+// Useful for force logging to crashlytics in debug builds
+class ForceLogException(override val message: String?) : Exception(message)

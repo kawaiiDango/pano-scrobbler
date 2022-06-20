@@ -25,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
@@ -53,6 +54,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.text.NumberFormat
 import java.util.*
 
@@ -188,7 +190,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         val pixelNp = findPreference<SwitchPreference>(MainPrefs.PREF_PIXEL_NP)!!
         hideOnTV.add(pixelNp)
         if (Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE
-			&& !Stuff.isPackageInstalled(requireContext(), Stuff.PACKAGE_AMM)) {
+			&& !Stuff.isPackageInstalled(requireContext(), Stuff.PACKAGE_PIXEL_NP_AMM)) {
             pixelNp.summary = getString(R.string.pref_pixel_np_nope)
             pixelNp.isEnabled = false
             pixelNp.isPersistent = false
@@ -436,6 +438,16 @@ class PrefFragment : PreferenceFragmentCompat() {
                 true
             }
 
+        findPreference<Preference>("delete_account")!!
+            .setOnPreferenceClickListener {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.frame, DeleteAccountFragment())
+                    .addToBackStack(null)
+                    .commit()
+
+                true
+            }
+
         findPreference<Preference>("translate")!!
             .setOnPreferenceClickListener {
                 context!!.openInBrowser(getString(R.string.crowdin_link))
@@ -465,8 +477,21 @@ class PrefFragment : PreferenceFragmentCompat() {
             e.printStackTrace()
         }
 
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
             findPreference<Preference>("song_search_url")!!.isVisible = true
+            findPreference<EditTextPreference>("force_exception")!!.apply {
+                isVisible = true
+                setOnBindEditTextListener { editText ->
+                    editText.setText("Unspecified")
+                }
+                setOnPreferenceChangeListener { preference, newValue ->
+                    Timber.tag(Stuff.TAG).e(ForceLogException(newValue.toString()))
+                    preference as EditTextPreference
+                    preference.text = ""
+                    true
+                }
+            }
+        }
 
         val libraries = findPreference<Preference>("libraries")!!
         libraries.setOnPreferenceClickListener {
@@ -742,7 +767,6 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
         }
     }
-
 }
 
 private const val STATE_LOGIN = 0

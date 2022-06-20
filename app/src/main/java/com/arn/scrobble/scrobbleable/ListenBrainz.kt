@@ -8,14 +8,12 @@ import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import okhttp3.Headers
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
-import java.net.URL
 
 
 class ListenBrainz : Scrobblable() {
@@ -104,7 +102,7 @@ class ListenBrainz : Scrobblable() {
                 url.toHttpUrl(),
                 headers = Headers.headersOf("Authorization", "token $token"),
             )
-                // this works even without the token or an incorrect token
+            // this works even without the token or an incorrect token
 
             return client.newCall(request).execute().use { response ->
                 if (response.isSuccessful)

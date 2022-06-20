@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace = "com.robinhood.spark"
     compileSdk = 32
 
     defaultConfig {

@@ -295,7 +295,7 @@ class NLService : NotificationListenerService() {
             scrobbleFromNoti(
                 sbn,
                 removed = false,
-                packageNames = listOf(Stuff.PACKAGE_PIXEL_NP, Stuff.PACKAGE_PIXEL_NP_R, Stuff.PACKAGE_PIXEL_NP_AMM),
+                packageNames = Stuff.PIXEL_NP_PACKAGES,
                 channelName = Stuff.CHANNEL_PIXEL_NP,
                 notiField = Notification.EXTRA_TITLE,
                 format = R.string.song_format_string
@@ -323,7 +323,7 @@ class NLService : NotificationListenerService() {
                 scrobbleFromNoti(
                     sbn,
                     removed = true,
-                    packageNames = listOf(Stuff.PACKAGE_PIXEL_NP, Stuff.PACKAGE_PIXEL_NP_R, Stuff.PACKAGE_PIXEL_NP_AMM),
+                    packageNames = Stuff.PIXEL_NP_PACKAGES,
                     channelName = Stuff.CHANNEL_PIXEL_NP,
                 )
             if (isAppEnabled(Stuff.PACKAGE_SHAZAM))
@@ -338,7 +338,7 @@ class NLService : NotificationListenerService() {
 
     private fun scrobbleFromNoti(
         sbn: StatusBarNotification?, removed: Boolean,
-        packageNames: List<String>, channelName: String,
+        packageNames: Collection<String>, channelName: String,
         notiField: String = Notification.EXTRA_TITLE,
         @StringRes format: Int = 0
     ) {
@@ -481,7 +481,7 @@ class NLService : NotificationListenerService() {
                 iALLOWLIST, iBLOCKLIST -> {
                     //handle pixel_np blacklist in its own settings
                     val pkgName = intent.getStringExtra(B_PACKAGE_NAME)!!
-                    if (pkgName == Stuff.PACKAGE_PIXEL_NP || pkgName == Stuff.PACKAGE_PIXEL_NP_R || pkgName == Stuff.PACKAGE_PIXEL_NP_AMM) {
+                    if (pkgName in Stuff.PIXEL_NP_PACKAGES) {
                         if (intent.action == iBLOCKLIST) {
                             prefs.pixelNowPlaying = false
                             handler.remove(currentBundle.getInt(B_HASH))

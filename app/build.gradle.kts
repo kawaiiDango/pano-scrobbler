@@ -38,6 +38,7 @@ android {
     compileSdk = 32
     defaultConfig {
         applicationId = "com.arn.scrobble"
+        namespace = "com.arn.scrobble"
         minSdk = 21
 //        targetSdkPreview = "Tiramisu"
         targetSdk = 32

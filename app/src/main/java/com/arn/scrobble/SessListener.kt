@@ -329,11 +329,11 @@ class SessListener(
             val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT
 
             if (lastState == state /* bandcamp does this */ &&
-                playbackState.errorMessage != "synthetic"
-//                && !(state == PlaybackState.STATE_PLAYING &&
-//                        isPossiblyAtStart &&
-//                        packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)
-//                        )
+                playbackState.errorMessage != "synthetic" &&
+                !(state == PlaybackState.STATE_PLAYING &&
+                        isPossiblyAtStart
+//                        && packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)
+                        )
             )
                 return
 

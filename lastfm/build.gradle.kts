@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace = "de.umass.lastfm"
     compileSdk = 32
 
     defaultConfig {

@@ -30,15 +30,12 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import timber.log.Timber
 import java.io.IOException
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
-import javax.net.ssl.SSLContext
-import javax.net.ssl.X509TrustManager
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -138,7 +135,7 @@ object Stuff {
     val NLS_SETTINGS = if (Build.VERSION.SDK_INT > 21)
         ACTION_NOTIFICATION_LISTENER_SETTINGS
     else "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
-    const val LASTFM_AUTH_CB_URL =
+    val LASTFM_AUTH_CB_URL =
         "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=pscrobble://auth/lastfm"
     const val LIBREFM_AUTH_CB_URL =
         "https://www.libre.fm/api/auth?api_key=$LIBREFM_KEY&cb=pscrobble://auth/librefm"
@@ -197,10 +194,15 @@ object Stuff {
         PACKAGE_SOUNDCLOUD,
     )
 
-    val needSyntheticStates = arrayOf(
+    val needSyntheticStates = setOf(
         PACKAGE_BLACKPLAYER,
         PACKAGE_BLACKPLAYEREX,
 //        PACKAGE_YOUTUBE_MUSIC,
+    )
+    val PIXEL_NP_PACKAGES = setOf(
+        PACKAGE_PIXEL_NP,
+        PACKAGE_PIXEL_NP_R,
+        PACKAGE_PIXEL_NP_AMM,
     )
 
     val STARTUPMGR_INTENTS = listOf(
@@ -368,13 +370,11 @@ object Stuff {
                 false
             }
         }
-    }	
+    }
 
     fun isPackageInstalled(context: Context, packageName: String): Boolean {
         return try {
-            context.packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).apply {
-                `package` = packageName
-            }, 0) != null
+            context.packageManager.getPackageInfo(packageName, 0) != null
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
@@ -547,13 +547,13 @@ object Stuff {
     fun String.isUrlOrDomain(): Boolean {
         // got some internal IOBE, catch everything
         return try {
-            toHttpUrlOrNull()?.topPrivateDomain() != null
+            toHttpUrl().topPrivateDomain() != null
         } catch (e: Exception) {
             false
         }
                 ||
                 try {
-                    "https://$this".toHttpUrlOrNull()?.topPrivateDomain() != null
+                    "https://$this".toHttpUrl().topPrivateDomain() != null
                 } catch (e: Exception) {
                     false
                 }

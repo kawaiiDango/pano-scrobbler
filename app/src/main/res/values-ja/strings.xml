@@ -283,13 +283,14 @@
     <string name="pref_user_label" comment="(Like username)">ユーザー</string>
     <string name="pref_token_label" comment="For Listenbrainz">認証トークン</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
-    <string name="pref_now_playing">再生中の状態情報を送信</string>
+    <string name="pref_now_playing">再生中の状態情報を送信する</string>
     <string name="pref_fetch_aa">LastFMからアルバムアーティストを取得する</string>
     <string name="pref_fetch_aa_desc">アルバムアーティストの表示が行われないプレーヤーの場合に行います。取得データがタグ付けされたものと異なっていたり、LastFMには一部曲が存在しない場合があります。</string>
     <string name="pref_pixel_np">Pixelのこの曲なに？</string>
     <string name="pref_pixel_np_nope">Pixel端末でのみ利用可能</string>
     <string name="pref_locale">言語</string>
     <string name="pref_change_locale">言語を変更</string>
+    <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>
     <string name="locale_only_ui">メインUIにのみ適用されます</string>
     <string name="pref_misc">その他</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>

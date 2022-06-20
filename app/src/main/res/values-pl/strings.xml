@@ -12,17 +12,72 @@
         <item quantity="many">%1$s słuchaczów</item>
         <item quantity="other">%1$s słuchacze</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s dzień</item>
+        <item quantity="few">%1$s dni</item>
+        <item quantity="many">%1$s dni</item>
+        <item quantity="other">%1$s dni</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s miesiąc</item>
+        <item quantity="few">%1$s miesięcy</item>
+        <item quantity="many">%1$s miesięcy</item>
+        <item quantity="other">%1$s miesięcy</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s rok</item>
+        <item quantity="few">%1$s lat</item>
+        <item quantity="many">%1$s lat</item>
+        <item quantity="other">%1$s lat</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s artysta</item>
+        <item quantity="few">%1$s artystów</item>
+        <item quantity="many">%1$s artyści</item>
+        <item quantity="other">%1$s artyści</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s album</item>
+        <item quantity="few">%1$s albumów</item>
+        <item quantity="many">%1$s Albumy</item>
+        <item quantity="other">%1$s Albumy</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s utwór</item>
+        <item quantity="few">%1$s utwory</item>
+        <item quantity="many">%1$s utwórów</item>
+        <item quantity="other">%1$s utwory</item>
+    </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d dopasowanie</item>
         <item quantity="few">%1$d dopasowań</item>
         <item quantity="many">%1$d dopasowań</item>
         <item quantity="other">%1$d dopasowania</item>
     </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s edycja</item>
+        <item quantity="few">%1$s edycji</item>
+        <item quantity="many">%1$s edycje</item>
+        <item quantity="other">%1$s edycje</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s edycja wzoru</item>
+        <item quantity="few">%1$s edycja wzoru</item>
+        <item quantity="many">%1$s edycji wzoru</item>
+        <item quantity="other">%1$s edycji wzoru</item>
+    </plurals>
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
     <string name="reset">Reset</string>
     <string name="settings">Konfiguruj</string>
+    <string name="bug_report">Zgłoś błąd</string>
+    <string name="album_art">Okładka albumu</string>
+    <string name="artist_image">Obraz artysty</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Nie udało się przetworzyć tytułu</string>
     <string name="network_error">Błąd sieci</string>
+    <string name="disable_tls_verify">Ignoruj błędy TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble zignorowane</string>
+    <string name="scrobble_ignored_save_edit">Lastfm zignorował edycję prawdopodobnie dlatego, że scrobble jest zbyt stary. Czy chcesz zapisać tę edycję dla przyszłych scrobbli?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Nie wszystkie wymagane pola zostały wypełnione</string>
     <string name="artist">Wykonawca</string>
     <string name="artists">Wykonawcy</string>

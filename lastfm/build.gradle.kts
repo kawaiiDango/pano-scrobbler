@@ -14,6 +14,6 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.3.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("androidx.annotation:annotation:1.4.0")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.9")
 }

@@ -102,8 +102,8 @@ aboutLibraries {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("androidx.core:core-ktx:1.8.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.media:media:1.6.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
@@ -131,7 +131,7 @@ dependencies {
 
     implementation("io.coil-kt:coil:2.1.0")
     implementation("io.coil-kt:coil-gif:2.1.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.9")
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")
     implementation("hu.autsoft:krate-kotlinx:2.0.0")

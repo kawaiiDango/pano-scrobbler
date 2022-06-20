@@ -14,8 +14,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.3.0")
+    implementation("androidx.annotation:annotation:1.4.0")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:4.6.0")
+    testImplementation("org.mockito:mockito-core:4.6.1")
 }

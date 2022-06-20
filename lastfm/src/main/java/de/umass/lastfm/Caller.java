@@ -307,14 +307,7 @@ public class Caller {
             Response response = getOkHttpResponse(apiRootUrl, method, params, cacheStrategy, isTlsNoVerify);
             ResponseBody responseBody = response.body();
 
-            if (responseBody != null) {
-                inputStream = responseBody.byteStream();
-            } else {
-                Result result = Result.createHttpErrorResult(response.code(), response.message());
-                if (session != null)
-                    session.setResult(result);
-                return result;
-            }
+            inputStream = responseBody.byteStream();
 
             loadedFromNetwork = response.networkResponse() != null;
 //            boolean loadedFromCache = response.cacheResponse() != null;

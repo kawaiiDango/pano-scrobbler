@@ -6,6 +6,9 @@ import de.umass.lastfm.Result
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
+import okhttp3.Headers
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -42,21 +45,19 @@ class ListenBrainz : Scrobblable() {
             .put("listen_type", listenType)
             .put("payload", payload)
 
-        val url = URL("${apiRoot}1/submit-listens")
+        val url = "${apiRoot}1/submit-listens"
 
         try {
-            val request = Request.Builder()
-                .url(url)
-                .header("Authorization", "token $token")
-                .post(
-                    data.toString().toRequestBody("application/json".toMediaType())
-                )
-                .build()
+            val request = Request(
+                url.toHttpUrl(),
+                headers = Headers.headersOf("Authorization", "token $token"),
+                body = data.toString().toRequestBody("application/json".toMediaType()),
+            )
 
             return client.newCall(request).execute()
                 .use { response ->
                     var errMsg = ""
-                    val bodyJson = JSONObject(response.body!!.string())
+                    val bodyJson = JSONObject(response.body.string())
                     if (bodyJson.has("status"))
                         errMsg = bodyJson.getString("status")
                     else if (bodyJson.has("error")) {
@@ -97,17 +98,17 @@ class ListenBrainz : Scrobblable() {
     }
 
     fun recents(username: String, limit: Int): JSONObject? {
-        val url = URL("${apiRoot}1/user/$username/listens?count=$limit")
+        val url = "${apiRoot}1/user/$username/listens?count=$limit"
         try {
-            val request = Request.Builder()
-                .url(url)
-                .header("Authorization", "token $token")
+            val request = Request(
+                url.toHttpUrl(),
+                headers = Headers.headersOf("Authorization", "token $token"),
+            )
                 // this works even without the token or an incorrect token
-                .build()
 
             return client.newCall(request).execute().use { response ->
                 if (response.isSuccessful)
-                    JSONObject(response.body!!.string())
+                    JSONObject(response.body.string())
                 else
                     null
             }
@@ -118,16 +119,16 @@ class ListenBrainz : Scrobblable() {
     }
 
     fun username(): String? {
-        val url = URL("${apiRoot}1/validate-token")
+        val url = "${apiRoot}1/validate-token"
 
         var username: String? = null
-        val request = Request.Builder()
-            .url(url)
-            .header("Authorization", "token $token")
-            .build()
+        val request = Request(
+            url.toHttpUrl(),
+            headers = Headers.headersOf("Authorization", "token $token"),
+        )
         client.newCall(request).execute().use { response ->
             if (response.isSuccessful) {
-                val respJson = JSONObject(response.body!!.string())
+                val respJson = JSONObject(response.body.string())
                 if (respJson.getBoolean("valid"))
                     username = respJson.getString("user_name")
             }

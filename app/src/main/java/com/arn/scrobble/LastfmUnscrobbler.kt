@@ -9,6 +9,7 @@ import com.frybits.harmony.getHarmonySharedPreferences
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import org.json.JSONObject
@@ -58,8 +59,8 @@ class LastfmUnscrobbler(context: Context?) {
                 )
             )
 
-            val contentType = response.body?.contentType()
-            val content = response.body?.string()!!
+            val contentType = response.body.contentType()
+            val content = response.body.string()
             println(content)
 
             val wrappedBody = content.toResponseBody(contentType)
@@ -96,9 +97,7 @@ class LastfmUnscrobbler(context: Context?) {
 
     fun loginWithPassword(password: String): String? {
         var errMsg: String? = "" //null if success
-        val request = Request.Builder()
-            .url(URL_LOGIN)
-            .build()
+        val request = Request(URL_LOGIN.toHttpUrl())
 
         //fetch csrf token
         try {
@@ -129,16 +128,16 @@ class LastfmUnscrobbler(context: Context?) {
             .add(FIELD_PASSWORD, password)
             .build()
 
-        val request = Request.Builder()
-            .url(URL_LOGIN)
-            .header("Referer", URL_LOGIN)
-            .post(body)
-            .build()
+        val request = Request(
+            URL_LOGIN.toHttpUrl(),
+            headers = Headers.headersOf("Referer", URL_LOGIN),
+            body = body
+        )
 
         try {
             val resp = client.newCall(request).execute()
 
-            val respString = resp.body?.string() ?: ""
+            val respString = resp.body.string()
 
             if (resp.code != 200) {
                 return if (resp.code == 403 || resp.code == 401) {
@@ -171,17 +170,17 @@ class LastfmUnscrobbler(context: Context?) {
                 .build()
 
             val url = "$URL_USER$username/library/delete"
-            val request = Request.Builder()
-                .url(url)
-                .header("Referer", URL_USER + username)
-                .post(body)
-                .build()
+            val request = Request(
+                url.toHttpUrl(),
+                headers = Headers.headersOf("Referer", URL_USER + username),
+                body = body
+            )
 
             try {
                 val resp = client.newCall(request).execute()
-                val respStr = resp.body?.string()
+                val respStr = resp.body.string()
                 if (resp.code == 200) {
-                    success = JSONObject(respStr!!).getBoolean("result")
+                    success = JSONObject(respStr).getBoolean("result")
 
                     if (success)
                         Stuff.log("LastfmUnscrobbler unscrobbled: $track")

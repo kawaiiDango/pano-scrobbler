@@ -30,6 +30,7 @@ import de.umass.lastfm.*
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 import kotlinx.coroutines.*
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
@@ -318,16 +319,14 @@ class LFMRequester(
                     lastfmSession
                 )
             } catch (e: NullPointerException) {
-                val request = Request.Builder()
-                    .url("https://www.last.fm/user/$username/following?page=$page")
-                    .build()
+                val request = Request("https://www.last.fm/user/$username/following?page=$page".toHttpUrl())
                 val users = mutableListOf<User>()
                 try {
                     okHttpClient.newCall(request).execute()
                         .use { response ->
                             if (!response.isSuccessful)
                                 throw IOException("Response code ${response.code}")
-                            val body = response.body!!.string()
+                            val body = response.body.string()
                             if (body.isEmpty())
                                 throw IOException("Empty body")
 
@@ -1238,14 +1237,12 @@ class LFMRequester(
             val monthlyPlayCounts = mutableListOf(0, 0, 0, 0, 0)
             if (Stuff.isOnline && URLUtil.isHttpsUrl(url)) {
                 try {
-                    val request = Request.Builder()
-                        .url(url)
-                        .build()
+                    val request = Request(url.toHttpUrl())
                     okHttpClient.newCall(request).execute()
                         .use { response ->
                             if (!response.isSuccessful)
                                 throw IOException("Response code ${response.code}")
-                            val body = response.body!!.string()
+                            val body = response.body.string()
 
                             if (body.isEmpty())
                                 throw IOException("Empty body")

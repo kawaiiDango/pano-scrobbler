@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 import java.io.IOException
 
@@ -62,9 +63,7 @@ class Updater(
             return
 
         withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url(githubApiUrl)
-                .build()
+            val request = Request(githubApiUrl.toHttpUrl())
 
             try {
                 LFMRequester.okHttpClient
@@ -73,7 +72,7 @@ class Updater(
                     .use { response ->
 
                         if (response.isSuccessful) {
-                            val body = response.body!!.byteStream()
+                            val body = response.body.byteStream()
                             val releases = json.decodeFromStream<GithubReleases>(body)
                             val upstreamVersionCode =
                                 Integer.parseInt(releases.tag_name.replace(".", ""))

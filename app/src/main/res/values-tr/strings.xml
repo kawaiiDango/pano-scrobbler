@@ -397,6 +397,8 @@
     <string name="fix_it_startup_title">Pil tasarufu ve başlangıç yöneticileri</string>
     <string name="fix_it_battery_title">Pil optimizasyonlarını devre dışı bırak</string>
     <string name="fix_it_action" comment="(To open an app)">Aç</string>
+    <string name="delete_account">Hesabınızı silin</string>
+    <string name="delete_account_custom_servers">Özel sunucularda hesap silme işlemi için sunucunun dokümanlarını inceleyin.</string>
     <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="help">Yardım</string>

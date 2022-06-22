@@ -13,8 +13,8 @@ plugins {
     id("kotlin-parcelize")
     id ("com.github.triplet.play")
     kotlin("plugin.serialization") version "1.6.20"
-    id("com.mikepenz.aboutlibraries.plugin") version "10.1.0"
-    id("com.github.breadmoirai.github-release") version "2.3.7"
+    id("com.mikepenz.aboutlibraries.plugin") version "10.3.0"
+    id("com.github.breadmoirai.github-release") version "2.4.1"
 }
 
 android {

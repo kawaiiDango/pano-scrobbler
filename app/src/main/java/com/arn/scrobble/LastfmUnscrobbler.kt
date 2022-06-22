@@ -176,9 +176,8 @@ class LastfmUnscrobbler(context: Context?) {
                 body = body
             )
 
-            try {
-                val resp = client.newCall(request).execute()
-                val respStr = resp.body.string()
+            client.newCall(request).execute().use { resp ->
+                val respStr = kotlin.runCatching { resp.body.string() }.getOrDefault("")
                 if (resp.code == 200) {
                     success = JSONObject(respStr).getBoolean("result")
 
@@ -190,10 +189,8 @@ class LastfmUnscrobbler(context: Context?) {
                 } else {
                     Stuff.log("LastfmUnscrobbler: error unscrobbling: " + resp.code + " response: " + respStr)
                 }
-
-            } catch (e: Exception) {
-                Stuff.log("err: LastfmUnscrobbler unscrobble err: " + e.message)
             }
+
             success
         }
 

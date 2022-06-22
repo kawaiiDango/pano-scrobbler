@@ -295,31 +295,27 @@ public class Caller {
         if (!params.containsKey(PARAM_API_KEY))
             params.put(PARAM_API_KEY, apiKey);
 
+        Response response = null;
+        CacheStrategy cacheStrategy = null;
+        boolean isTlsNoVerify = false;
+
+        if (session != null) {
+            cacheStrategy = session.getCacheStrategy();
+            isTlsNoVerify = session.isTlsNoVerify();
+        }
+
         try {
-            CacheStrategy cacheStrategy = null;
-            boolean isTlsNoVerify = false;
-
-            if (session != null) {
-                cacheStrategy = session.getCacheStrategy();
-                isTlsNoVerify = session.isTlsNoVerify();
-            }
-
-            Response response = getOkHttpResponse(apiRootUrl, method, params, cacheStrategy, isTlsNoVerify);
+            response = getOkHttpResponse(apiRootUrl, method, params, cacheStrategy, isTlsNoVerify);
             ResponseBody responseBody = response.body();
 
             inputStream = responseBody.byteStream();
-
             loadedFromNetwork = response.networkResponse() != null;
 //            boolean loadedFromCache = response.cacheResponse() != null;
 
 //            getLogger().log(Level.WARNING, "loadedFromNetwork: " + loadedFromNetwork + ", loadedFromCache: " + loadedFromCache);
 
-        } catch (Exception e) {
-            throw new CallException(e);
-        }
-
-        try {
             Result result = createResultFromInputStream(inputStream);
+
             if (!result.isSuccessful()) {
                 String errMsg = String.format(method + " failed with result: %s%n", result);
                 log.warning(errMsg);
@@ -338,6 +334,10 @@ public class Caller {
             return result;
         } catch (Exception e) {
             throw new CallException(e);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
         }
     }
 

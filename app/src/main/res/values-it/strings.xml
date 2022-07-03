@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobbling</item>
+        <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobble</item>
     </plurals>
     <plurals name="num_listeners">
@@ -318,6 +318,7 @@
     <string name="pref_pixel_np_nope">Disponibile solo sui dispositivi Pixel</string>
     <string name="pref_locale">Lingua</string>
     <string name="pref_change_locale">Cambia lingua</string>
+    <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
     <string name="locale_only_ui">Si applica solo all’interfaccia principale</string>
     <string name="pref_misc">Varie</string>
     <string name="pref_gnufm_title">URL della nixtape GNU FM</string>
@@ -396,6 +397,8 @@
     <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
     <string name="fix_it_battery_title">Disattiva l\'ottimizzazione della batteria</string>
     <string name="fix_it_action" comment="(To open an app)">Apri</string>
+    <string name="delete_account">Cancella il tuo account</string>
+    <string name="delete_account_custom_servers">Per i server personalizzati, controlla le rispettive documentazioni.</string>
     <!--  pro  -->
     <string name="get_pro">Sostieni questa app</string>
     <string name="help">Aiuto</string>

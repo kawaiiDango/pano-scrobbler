@@ -1,4 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s scrobbel</item>
+        <item quantity="other">%1$s scrobbels</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s luisteraar</item>
+        <item quantity="other">%1$s luisteraars</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s dag</item>
+        <item quantity="other">%1$s dagen</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s week</item>
+        <item quantity="other">%1$s weken</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s Maand</item>
+        <item quantity="other">%1$s Maanden</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s jaar</item>
+        <item quantity="other">%1$s Jaren</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s artiest</item>
+        <item quantity="other">%1$s artiesten</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s album</item>
+        <item quantity="other">%1$s albums</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s nummer</item>
+        <item quantity="other">%1$s nummers</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d match</item>
+        <item quantity="other">%1$d Matches</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s bewerking</item>
+        <item quantity="other">%1$s bewerkingen</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s patroon bewerking</item>
+        <item quantity="other">%1$s patroon bewerkingen</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s geblokkeerd metadata</item>
+        <item quantity="other">%1$s geblokkeerd metadata</item>
+    </plurals>
+    <string name="yes">Ja</string>
+    <string name="no">Nee</string>
+    <string name="reset">Resetten</string>
+    <string name="settings">Configureren</string>
+    <string name="bug_report">Fout melden</string>
+    <string name="album_art">Albumhoes</string>
+    <string name="artist_image">Artiest afbeelding</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Kon titel niet verwerken</string>
+    <string name="network_error">Netwerkfout</string>
+    <string name="disable_tls_verify">TLS-fouten negeren</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobbel genegeerd</string>
+    <string name="scrobble_ignored_save_edit">Lastfm heeft de wijziging waarschijnlijk genegeerd omdat de scrobbel te oud is. Wilt u deze bewerking in plaats daarvan opslaan voor toekomstige scrobbels?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Verplicht(e) veld(en) zijn leeg</string>
+    <string name="artist">Artiest</string>
+    <string name="artists">Artiesten</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Topartiesten</string>
+    <string name="album_artist">Album artiest</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Artiest / Kanaal</string>
+    <string name="similar_artists">Vergelijkbare artiesten</string>
+    <string name="album_optional">Album (optioneel)</string>
+    <string name="album">Album</string>
+    <string name="albums">Albums</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albums</string>
+    <string name="track">Nummer</string>
+    <string name="tracks">Nummers</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Top nummers</string>
+    <string name="similar_tracks">Vergelijkbare nummers</string>
+    <string name="similar" comment="Similar tracks but in short">Vergelijkbaar</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s – %2$s</string>
+    <string name="state_scrobbling">Nu aan het scrobbelen…</string>
+    <string name="state_scrobbled">Gescrobbeld</string>
+    <string name="unscrobble">Onscrobbel</string>
+    <string name="state_unscrobbled">Geonscrobbeld</string>
+    <string name="state_unrecognised_artist">Niet-herkende artiest</string>
+    <string name="tap_to_edit">(Klik om te bewerken)</string>
+    <string name="recently_scrobbled">Recent gescrobbeld</string>
+    <string name="recently_loved">Recent geloved</string>
+    <string name="recents" comment="Short for recently scrobbled">Recenten</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Voor het eerst gescrobbeld op %1$s</string>
+    <string name="auto" comment="automatic or default setting">Automatisch</string>
+    <string name="graph_info">… afgelopen 5 maanden</string>
+    <string name="enabled_apps">Ingeschakelde apps</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Bijna klaar…</string>
+    <string name="music_players">Muziekspelers</string>
+    <string name="video_players">Video Streaming Apps</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andere Apps</string>
+    <string name="choose_apps">Kies apps om te scrobbelen</string>
     <!--  pro  -->
 </resources>

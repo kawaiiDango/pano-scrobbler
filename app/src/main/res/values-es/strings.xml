@@ -397,6 +397,8 @@
     <string name="fix_it_startup_title">Ahorradores de energía / gestores de arranque</string>
     <string name="fix_it_battery_title">Desactivar las optimizaciones de batería</string>
     <string name="fix_it_action" comment="(To open an app)">Abrir</string>
+    <string name="delete_account">Eliminar tu cuenta</string>
+    <string name="delete_account_custom_servers">Para servidores personalizados, verifique sus respectivas documentaciones.</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="help">Ayuda</string>

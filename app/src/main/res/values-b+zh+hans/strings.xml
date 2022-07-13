@@ -141,7 +141,6 @@
     <string name="press_back">完成后点击返回</string>
     <string name="powered_acr">由 <i><b>ACR</b>Cloud</i>驱动</string>
     <string name="details">详细资料</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">将 %1$s 同步至 %2$s</string>
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
     <string name="past_scrobbles">过去的音乐记录</string>
@@ -250,7 +249,6 @@
     <string name="pref_privacy_policy">隐私策略</string>
     <string name="pref_search_title">歌曲搜索应用</string>
     <string name="pref_scrobble_only">(仅限记录)</string>
-    <string name="pref_scrobble_love_only">（仅限记录 &amp; 标记喜爱）</string>
     <string name="pref_user_label" comment="(Like username)">用户名</string>
     <string name="pref_token_label" comment="For Listenbrainz">认证密钥</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>

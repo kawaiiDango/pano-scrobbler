@@ -181,7 +181,6 @@
     <string name="press_back">Druk op terug wanneer je klaar bent</string>
     <string name="powered_acr">Mogelijk gemaakt door <i><b>ACR</b>Cloud</i></string>
     <string name="details">Details</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">Zal%1$s naar %2$s</string>
     <string name="saved_as_pending">Opgeslagen als een wachtende scrobbel</string>
     <string name="sort">Sorteren</string>
     <string name="past_scrobbles">Vorige scrobbels</string>

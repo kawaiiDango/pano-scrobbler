@@ -181,7 +181,6 @@
     <string name="press_back">Presione atrás cuando haya terminado</string>
     <string name="powered_acr">Desarrollado por <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalles</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">Va de %1$s a %2$s</string>
     <string name="saved_as_pending">Guardado como scrobble pendiente</string>
     <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Scrobbles pasados</string>
@@ -307,7 +306,6 @@
     <string name="pref_privacy_policy">Política de privacidad</string>
     <string name="pref_search_title">Aplicación para buscar canciones</string>
     <string name="pref_scrobble_only">(Solo scrobbles)</string>
-    <string name="pref_scrobble_love_only">(Scrobbles &amp; solo favoritos)</string>
     <string name="pref_user_label" comment="(Like username)">Usuario</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token de autenticación</string>
     <string name="api_url" comment="For Listenbrainz">URL de la API</string>

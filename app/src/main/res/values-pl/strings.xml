@@ -195,7 +195,6 @@
     <string name="press_back">Naciśnij wstecz po zakończeniu</string>
     <string name="powered_acr">Obsługiwane przez <i><b>ACR</b>Cloud</i></string>
     <string name="details">Szczegóły</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">Dodaj %1$s do %2$s</string>
     <string name="saved_as_pending">Zapisano jako oczekujący scrobble</string>
     <string name="sort">Sortuj</string>
     <string name="past_scrobbles">Poprzednie scrobblowanie</string>

@@ -225,6 +225,7 @@
 - Get your top scrobbles every week
 - And more
 - The notifications do not make a sound"""</string>
+    <string name="will_not_scrobble">⚠️Skipping this step will disable scrobbling</string>
     <string name="authenticate_with_lastfm"
         comment="Login with last.fm"
         >Authenticate with last.FM</string>
@@ -258,9 +259,6 @@
     <string name="press_back">Press back when done</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Details</string>
-    <string name="details_text" formatted="true"
-        comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm"
-        >Will %1$s to %2$s</string>
     <string name="saved_as_pending">Saved as a pending scrobble</string>
     <string name="sort">Sort</string>
     <string name="past_scrobbles">Past scrobbles</string>
@@ -470,7 +468,6 @@
     <string name="pref_privacy_policy">Privacy policy</string>
     <string name="pref_search_title">Song search app</string>
     <string name="pref_scrobble_only">(Scrobble only)</string>
-    <string name="pref_scrobble_love_only">(Scrobble &amp; love only)</string>
     <string name="pref_user_label"
         comment="(Like username)"
         >User</string>

@@ -183,7 +183,6 @@
     <string name="press_back">Після завершення натисніть назад</string>
     <string name="powered_acr">Працює за допомогою <i><b>ACR</b>Cloud</i></string>
     <string name="details">Деталі</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">Чи %1$s до %2$s</string>
     <string name="saved_as_pending">Збережено як відкладений скробл</string>
     <string name="sort">Сортувати</string>
     <string name="past_scrobbles">Останні скробли</string>
@@ -309,7 +308,6 @@
     <string name="pref_privacy_policy">Політика конфіденційності</string>
     <string name="pref_search_title">Додаток для пошуку пісні</string>
     <string name="pref_scrobble_only">(Тільки скроблінг)</string>
-    <string name="pref_scrobble_love_only">(Тільки скроблінг &amp; вподобайки)</string>
     <string name="pref_user_label" comment="(Like username)">Користувач</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентифікації</string>
     <string name="api_url" comment="For Listenbrainz">URL-адреса API</string>

@@ -160,7 +160,6 @@
     <string name="press_back">終了時に戻るを押す</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">詳細</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">%1$sが後ほど%2$sに記録されます</string>
     <string name="saved_as_pending">保留中のScrobbleとして保存しました</string>
     <string name="sort">並べ替え</string>
     <string name="past_scrobbles">過去のScrobble</string>
@@ -279,7 +278,6 @@
     <string name="pref_privacy_policy">プライバシーポリシー</string>
     <string name="pref_search_title">曲検索アプリ</string>
     <string name="pref_scrobble_only">(Scrobbleのみ)</string>
-    <string name="pref_scrobble_love_only">(Scrobble &amp; Loveのみ)</string>
     <string name="pref_user_label" comment="(Like username)">ユーザー</string>
     <string name="pref_token_label" comment="For Listenbrainz">認証トークン</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>

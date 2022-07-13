@@ -180,7 +180,6 @@
     <string name="press_back">Нажмите назад, когда закончите</string>
     <string name="powered_acr">На платформе <i><b>ACR</b>Cloud</i></string>
     <string name="details">Детали</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">Будет %1$s для %2$s</string>
     <string name="saved_as_pending">Сохранено как ожидающий скроббл</string>
     <string name="sort">Сортировка</string>
     <string name="past_scrobbles">Прошлые скробблы</string>
@@ -290,7 +289,6 @@
     <string name="pref_privacy_policy">Политика конфиденциальности</string>
     <string name="pref_search_title">Сервис поиска песен</string>
     <string name="pref_scrobble_only">(Только скробблинг)</string>
-    <string name="pref_scrobble_love_only">(Только скробблинг &amp; лайки)</string>
     <string name="pref_user_label" comment="(Like username)">Пользователь</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентификации</string>
     <string name="api_url" comment="For Listenbrainz">URL-адрес API</string>

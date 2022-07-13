@@ -181,7 +181,6 @@
     <string name="press_back">Bittiğinde geri tuşuna basın</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Ayrıntılar</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">%2$s hizmetini %1$s</string>
     <string name="saved_as_pending">Askıda skrop olarak kaydedildi</string>
     <string name="sort">Tür</string>
     <string name="past_scrobbles">Geçmiş skroplar</string>
@@ -307,7 +306,6 @@
     <string name="pref_privacy_policy">Gizlilik politikası</string>
     <string name="pref_search_title">Şarkı arama uygulaması</string>
     <string name="pref_scrobble_only">(Sadece skrop)</string>
-    <string name="pref_scrobble_love_only">(Sadece skrop &amp; beğeni)</string>
     <string name="pref_user_label" comment="(Like username)">Kullanıcı</string>
     <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
     <string name="api_url" comment="For Listenbrainz">API Adresi</string>

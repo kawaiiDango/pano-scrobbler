@@ -234,7 +234,6 @@
     <string name="pref_about" comment="Info about this app">À propos</string>
     <string name="pref_search_title">Application de recherche de musique</string>
     <string name="pref_scrobble_only">(Scrobbler seulement)</string>
-    <string name="pref_scrobble_love_only">(Scrobbler &amp; aimer seulement)</string>
     <string name="pref_user_label" comment="(Like username)">Utilisateur</string>
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>

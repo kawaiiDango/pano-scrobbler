@@ -113,6 +113,31 @@
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Poprvé scrobblováno dne %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
     <string name="graph_info">… posledních 5 měsíců</string>
+    <string name="enabled_apps">Povolené Aplikace</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Skoro hotovo…</string>
+    <string name="music_players">Hudební Přehrávače</string>
+    <string name="video_players">Aplikace pro Streamování Videí</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostatní Aplikace</string>
+    <string name="choose_apps">Vyberte aplikace ke scrobblování</string>
+    <string name="offline">Offline. Zobrazená data nejsou čerstvá</string>
+    <string name="unavailable_offline">Není dostupné offline</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Služby</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Poslouchal jsem \n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s poslouchal/a \n%1$s %2$s</string>
+    <string name="share_sig">(pomocí Pano Scrobbler)</string>
+    <string name="share_this_song">Sdílet skladbu</string>
+    <string name="share">Sdílet</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Vysvětlivky</string>
+    <string name="grid_size">Změnit velikost mřížky</string>
+    <string name="pinch_to_zoom">Přetažením přiblížit</string>
+    <string name="more_info">Více informací</string>
+    <string name="rank_change_no_change">Beze změn</string>
+    <string name="search">Hledat</string>
+    <string name="library" comment="search within the library">Knihovna</string>
+    <string name="global" comment="search globally across lastfm">Globálně</string>
+    <string name="reindex">Rychlý index</string>
+    <string name="full_index">Plný index</string>
+    <string name="take_long_time">Tohle může zabrat dlouho</string>
     <string name="pending_scrobbles">Čekající Scrobbly</string>
     <string name="pending_scrobble">Čekající scrobble</string>
     <string name="pending_scrobbles_noti">Zpracovávám čekající scrobbly</string>

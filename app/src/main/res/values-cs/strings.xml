@@ -138,6 +138,24 @@
     <string name="reindex">Rychlý index</string>
     <string name="full_index">Plný index</string>
     <string name="take_long_time">Tohle může zabrat dlouho</string>
+    <string name="full_index_desc">Použijte pouze v případě, že jste upravili nebo odstranili scrobbly z webu.</string>
+    <string name="profile">Profil</string>
+    <string name="profile_pic">Profilový obrázek</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">Možnosti pro tuto položku</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s detekováno</string>
+    <string name="new_player_prompt">Nadále scrobblovat tuto aplikaci?</string>
+    <string name="no_track_url">Tato skladba nemá stránku na lastFM</string>
+    <string name="no_scrobbles">Zatím zde nejsou žádné skladby…</string>
+    <string name="no_friends">Zatím žádní přátelé z lastFM…</string>
+    <string name="channel_err">Chyby při scrobblování</string>
+    <string name="new_app">Nová aplikace</string>
+    <string name="no_apps_enabled">Nejsou povoleny žádné aplikace</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d dalších</string>
+    <string name="show_all">Zobrazit vše</string>
+    <string name="edit">Upravit</string>
+    <string name="delete">Smazat</string>
+    <string name="love">Oblíbit</string>
+    <string name="unlove">Zrušit oblíbení</string>
     <string name="pending_scrobbles">Čekající Scrobbly</string>
     <string name="pending_scrobble">Čekající scrobble</string>
     <string name="pending_scrobbles_noti">Zpracovávám čekající scrobbly</string>
@@ -251,4 +269,10 @@
     <string name="import_lists_replace_all">Nahradit všechny úpravy a seznam blokovaných</string>
     <string name="import_lists_replace_existing">Sloučit a nahradit existující úpravy a seznamy blokovaných</string>
     <!--  pro  -->
+    <string name="help">Pomoc</string>
+    <string name="pro_also_get">Také získáte následující funkce:</string>
+    <string name="thank_you">Díky!</string>
+    <string name="billing_troubleshoot_title">Obnovit nákup</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Připněte až %1$d přátel a seřaďte si je</string>
+    <string name="billing_sharing">Odstranit název aplikace při sdílení</string>
 </resources>

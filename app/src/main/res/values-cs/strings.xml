@@ -83,5 +83,147 @@
     <string name="network_error">Chyba sítě</string>
     <string name="disable_tls_verify">Ignorovat chyby TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorován</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ignoroval úpravu, protože scrobble je nejspíš moc starý. Chcete místo toho tuto úpravu uložit pro budoucí scrobbly?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Požadovaná pole jsou prázdná</string>
+    <string name="artist">Interpret</string>
+    <string name="artists">Interpreti</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Nejlepší interpreti</string>
+    <string name="album_artist">Interpret alba</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Interpret / kanál</string>
+    <string name="similar_artists">Podobní umělci</string>
+    <string name="album_optional">Album (volitelné)</string>
+    <string name="album">Album</string>
+    <string name="albums">Alba</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Nejlepší alba</string>
+    <string name="track">Skladba</string>
+    <string name="tracks">Skladby</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Nejlepší skladby</string>
+    <string name="similar_tracks">Podobné skladby</string>
+    <string name="similar" comment="Similar tracks but in short">Podobné</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
+    <string name="state_scrobbling">Nyní scrobbluji…</string>
+    <string name="state_scrobbled">Scroblováno</string>
+    <string name="unscrobble">Zrušit scrobble</string>
+    <string name="state_unscrobbled">Zrušeno</string>
+    <string name="state_unrecognised_artist">Neznámý interpret</string>
+    <string name="tap_to_edit">(Klepněte pro upravení)</string>
+    <string name="recently_scrobbled">Nedávno Scrobblováno</string>
+    <string name="recently_loved">♥ Nedávno Oblíbené</string>
+    <string name="recents" comment="Short for recently scrobbled">Nedávné</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Poprvé scrobblováno dne %1$s</string>
+    <string name="auto" comment="automatic or default setting">Auto</string>
+    <string name="graph_info">… posledních 5 měsíců</string>
+    <string name="pending_scrobbles">Čekající Scrobbly</string>
+    <string name="pending_scrobble">Čekající scrobble</string>
+    <string name="pending_scrobbles_noti">Zpracovávám čekající scrobbly</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobblů • %2$s dnes</string>
+    <string name="friends">Přátelé</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobblů od %2$s</string>
+    <string name="allow_background">Povolit scrobblování na pozadí</string>
+    <string name="grant_notification_access">Udělit přístup k oznámením</string>
+    <string name="grant_notification_access_desc">Nutné pro získání metadat skladeb. Nebudou přečtena žádná nehudební oznámení</string>
+    <string name="send_notifications">Povolit oznámení</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Možnost kontrolovat stav a počet scrobblů
+- Přidávejte do oblíbených či zablokovaných přímo skrz oznámení
+- Buďte v obraze o chybách při scrobblování a co s nimi můžete dělat
+- Dostávejte top scrobbly každý týden
+- A mnoho dalšího
+- Oznámení nevydává zvuk\"\""</string>
+    <string name="will_not_scrobble">⚠️Přeskočení tohoto kroku zakáže scrobblování</string>
+    <string name="authenticate_with_lastfm" comment="Login with last.fm">Propojit s last.FM</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM a Listenbrainz lze následně propojit skrze nastavení</string>
+    <string name="swap" comment="(Swap title and artist)">Prohodit</string>
+    <string name="rate_msg">Líbí se vám aplikace?</string>
+    <string name="rate_action">Ohodnoťte ji</string>
+    <string name="time_just_now">právě teď</string>
+    <string name="no_mail_apps">Není nainstalovaný žádný e-mailový klient</string>
+    <string name="loved">Oblíbené</string>
+    <string name="unloved">Odebráno z oblíbených</string>
+    <string name="simple_edits">Úpravy</string>
+    <string name="force_remembered">Vynutit scrobble (bude zapamatováno)</string>
+    <string name="grant_rec_perm">Prosím povolte oprávnění pro přístup k mikrofonu</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitparády</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tagový mrak</string>
+    <string name="scrobble_from_mic">Scrobblovat z mikrofonu</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Z mikrofonu</string>
+    <string name="add_to_hs">Přidat na domovskou obrazovku</string>
+    <string name="listening">Poslouchám hudbu, která hraje kolem tebe…</string>
+    <string name="uploading">Nahrávám…</string>
+    <string name="recording_failed">Nepodařilo se spustit nahrávání. Mikrofon může být zaneprázdněn nebo nedostupný</string>
+    <string name="press_back">Po dokončení stiskněte tlačítko zpět</string>
+    <string name="powered_acr">Poháněno pomocí <i><b>ACR</b>Cloud</i></string>
+    <string name="details">Detaily</string>
+    <string name="saved_as_pending">Uloženo jako čekající scrobble</string>
+    <string name="sort">Seřadit</string>
+    <string name="past_scrobbles">Předchozí scrobbly</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Skočit v čase</string>
+    <string name="my_scrobbles">Moje scrobbly</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbly uživatele %1$s</string>
+    <string name="listeners">Posluchači</string>
+    <string name="scrobbles">Scrobbly</string>
+    <string name="collapse" comment="(view only a few items)">Sbalit</string>
+    <string name="expand" comment="(view all items)">Rozbalit</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s má v oblíbených</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbly do %1$s</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Z %1$s</string>
+    <string name="not_found" comment="Shown in search">Nenalezeno</string>
+    <string name="random_theme">Náhodný při každém spuštění</string>
+    <string name="edit_name" comment="name for regex pattern">Přátelský název (volitelné)</string>
+    <string name="edit_regex">Regex vzor</string>
+    <string name="edit_regex_replacement">Regex nahrazení</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Pole</string>
+    <string name="edit_replace">Nahradit</string>
+    <string name="edit_first" comment="First occurrence of a pattern">První</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Všechny</string>
+    <string name="edit_continue">Při nalezení pokračovat ve srovnávání ostatních regexů</string>
+    <string name="edit_case_sensitive">Rozlišovat velká a malá písmena</string>
+    <string name="edit_regex_test">Test</string>
+    <string name="edit_presets">Předvolby</string>
+    <string name="edit_presets_available">Dostupné předvolby</string>
+    <string name="edit_no_presets_available">Všechny předvolby se používají</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Předvolba: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Dosažen limit vzorů (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Úchyt pro přetažení</string>
+    <string name="text" comment="text to test regex rules with">Text</string>
+    <string name="edit_regex_warning">⚠ Ujistěte se, že rozumíte <a href="https://www.google.com/search?q=regex+tutorial">regexu javy</a> před používáním tohoto nástroje, nebo použijte jednu z <b>předvoleb</b>. Regex shody se porovnávají shora dolů</string>
+    <string name="blocked_metadata_info">ℹ️ Vyplnění více než jednoho pole použije mezi nimi AND operátor</string>
+    <string name="blocked_metadata_noti">Klepnutím zablokujete a přeskočíte</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Akce přehráváče</string>
+    <string name="skip" comment="skip to next track">Přeskočit</string>
+    <string name="mute">Ztlumit</string>
+    <string name="block">Zablokovat</string>
+    <string name="hidden_tags">Skryté tagy</string>
+    <string name="pin">Připnout</string>
+    <string name="unpin">Odepnout</string>
+    <string name="pin_limit_reached" formatted="true">Limit připnutí dosažen (%1$d)</string>
+    <string name="pin_help">Dlouhým stiskem na připnuté položky můžete měnit jejich pořadí</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Použít název kanálu</string>
+    <string name="show_persistent_noti">Zobrazovat trvalé oznámení</string>
+    <string name="fix_it_desc">To může u některých zařízení pomoct scrobbleru běžet na pozadí</string>
+    <string name="persistent_noti_desc">Dlouhým stiskem skryjete</string>
+    <string name="scrobbler_off">Scrobbler zakázán</string>
+    <string name="scrobbler_on">Scrobbler je aktivní</string>
+    <string name="pref_master">Scrobblovat hudbu</string>
+    <string name="pref_master_qs_hint">Lze také přepnout z dlaždice rychlého nastavení</string>
+    <string name="pref_noti_q">Pokud se ikona nezobrazuje, můžete propagovat oznámení</string>
+    <string name="pref_noti">Oznámení</string>
+    <string name="pref_noti_categories">Kategorie oznámení</string>
+    <string name="pref_scrobble_noti">Oznámení o scrobblování</string>
+    <string name="pref_lockscreen_noti">Oznámení na zamykací obrazovce</string>
+    <string name="pref_offline_info">ℹ️ Offline scrobbly a oblíbené budou uloženy pro pozdější odeslání.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblovat z</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Podporuje aplikace, které odhalují metadata hudby. Chcete-li zabránit dvojímu scrobblu ze Spotify, povolte jej pouze na jednom místě.</string>
+    <string name="pref_enabled_apps_title">Vybrat aplikace</string>
+    <string name="pref_auto_detect_summary">…stále vás požádáme o potvrzení/ignorování této aplikace</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Dostupná aktualizace: %1$s</string>
+    <string name="download">Stáhnout</string>
+    <string name="changelog">Seznam změn</string>
+    <string name="import_hey_wtf">To nejspíš není exportovaný soubor Pano Scrobbler</string>
+    <string name="export_failed">Export se nezdařil</string>
+    <string name="imported">Importováno</string>
+    <string name="import_options">Možnosti importu</string>
+    <string name="import_lists_nope">Neimportovat úpravy a seznam blokovaných</string>
+    <string name="import_lists_replace_all">Nahradit všechny úpravy a seznam blokovaných</string>
+    <string name="import_lists_replace_existing">Sloučit a nahradit existující úpravy a seznamy blokovaných</string>
     <!--  pro  -->
 </resources>

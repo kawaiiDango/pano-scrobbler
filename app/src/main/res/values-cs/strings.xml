@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s scrobble</item>
+        <item quantity="few">%1$s scrobbly</item>
+        <item quantity="many">%1$s scrobblů</item>
+        <item quantity="other">%1$s scrobblů</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s posluchač</item>
+        <item quantity="few">%1$s posluchači</item>
+        <item quantity="many">%1$s posluchačů</item>
+        <item quantity="other">%1$s posluchačů</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s den</item>
+        <item quantity="few">%1$s dny</item>
+        <item quantity="many">%1$s dnů</item>
+        <item quantity="other">%1$s dnů</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s týden</item>
+        <item quantity="few">%1$s týdny</item>
+        <item quantity="many">%1$s týdnů</item>
+        <item quantity="other">%1$s týdnů</item>
+    </plurals>
     <!--  pro  -->
 </resources>

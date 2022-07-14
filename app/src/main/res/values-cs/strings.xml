@@ -24,5 +24,64 @@
         <item quantity="many">%1$s týdnů</item>
         <item quantity="other">%1$s týdnů</item>
     </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s měsíc</item>
+        <item quantity="few">%1$s měsíce</item>
+        <item quantity="many">%1$s měsíců</item>
+        <item quantity="other">%1$s měsíců</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s rok</item>
+        <item quantity="few">%1$s roky</item>
+        <item quantity="many">%1$s let</item>
+        <item quantity="other">%1$s let</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s umělec</item>
+        <item quantity="few">%1$s umělci</item>
+        <item quantity="many">%1$s umělců</item>
+        <item quantity="other">%1$s umělců</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s album</item>
+        <item quantity="few">%1$s alba</item>
+        <item quantity="many">%1$s alb</item>
+        <item quantity="other">%1$s alb</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s skladba</item>
+        <item quantity="few">%1$s skladby</item>
+        <item quantity="many">%1$s skladeb</item>
+        <item quantity="other">%1$s skladeb</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d shoda</item>
+        <item quantity="few">%1$d shody</item>
+        <item quantity="many">%1$d shod</item>
+        <item quantity="other">%1$d shod</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s úprava</item>
+        <item quantity="few">%1$s úpravy</item>
+        <item quantity="many">%1$s úprav</item>
+        <item quantity="other">%1$s úprav</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s zablokované metadata</item>
+        <item quantity="few">%1$s zablokovaná metadata</item>
+        <item quantity="many">%1$s zablokovaných metadat</item>
+        <item quantity="other">%1$s zablokovaných metadat</item>
+    </plurals>
+    <string name="yes">Ano</string>
+    <string name="no">Ne</string>
+    <string name="reset">Obnovit</string>
+    <string name="settings">Nastavit</string>
+    <string name="bug_report">Hlášení o chybě</string>
+    <string name="album_art">Obal alba</string>
+    <string name="artist_image">Obrázek umělce</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Nepodařilo se zpracovat název</string>
+    <string name="network_error">Chyba sítě</string>
+    <string name="disable_tls_verify">Ignorovat chyby TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorován</string>
     <!--  pro  -->
 </resources>

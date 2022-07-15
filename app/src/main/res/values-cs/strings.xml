@@ -210,6 +210,12 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbly do %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Z %1$s</string>
     <string name="not_found" comment="Shown in search">Nenalezeno</string>
+    <string name="original" comment="Original metadata before editing">Originál</string>
+    <string name="tag" comment="last.fm tag">Tag</string>
+    <string name="appwidget_show">Zobrazit</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget bude obnoven každých %1$d minut</string>
+    <string name="primary_color">Primární barva</string>
+    <string name="secondary_color">Sekundární barva</string>
     <string name="random_theme">Náhodný při každém spuštění</string>
     <string name="edit_name" comment="name for regex pattern">Přátelský název (volitelné)</string>
     <string name="edit_regex">Regex vzor</string>
@@ -258,6 +264,38 @@
     <string name="pref_enabled_apps_summary">ℹ️ Podporuje aplikace, které odhalují metadata hudby. Chcete-li zabránit dvojímu scrobblu ze Spotify, povolte jej pouze na jednom místě.</string>
     <string name="pref_enabled_apps_title">Vybrat aplikace</string>
     <string name="pref_auto_detect_summary">…stále vás požádáme o potvrzení/ignorování této aplikace</string>
+    <string name="pref_auto_detect">Automaticky detekovat nové hudební aplikace</string>
+    <string name="pref_delay">Zpoždění Scrobble (podle toho, co nastane dříve)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minut</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
+    <string name="pref_logout">Odhlásit se</string>
+    <string name="pref_confirm_logout">POTVRDIT ODHLÁŠENÍ? Klepněte znovu</string>
+    <string name="pref_login">Přihlásit se</string>
+    <string name="pref_about" comment="Info about this app">O Aplikaci</string>
+    <string name="pref_privacy_policy">Zásady ochrany osobních údajů</string>
+    <string name="pref_scrobble_only">(Pouze Scrobble)</string>
+    <string name="pref_user_label" comment="(Like username)">Uživatel</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Autorizační token</string>
+    <string name="api_url" comment="For Listenbrainz">URL API</string>
+    <string name="pref_now_playing">Odeslat právě přehrávané</string>
+    <string name="pref_fetch_aa">Načítat interprety alba z lastFM</string>
+    <string name="pref_fetch_aa_desc">Pro přehrávače, které tato data neposkytují. Načtená data se mohou lišit od vašich tagů. lastFM nemusí mít data pro některé skladby.</string>
+    <string name="pref_pixel_np">Scrobblovat \"Now Playing\" na Pixelech</string>
+    <string name="pref_pixel_np_nope">Dostupné pouze na zařízeních Pixel</string>
+    <string name="pref_locale">Jazyky</string>
+    <string name="pref_change_locale">Změnit jazyk</string>
+    <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>
+    <string name="locale_only_ui">Platí pouze pro hlavní uživatelské rozhraní</string>
+    <string name="pref_misc">Ostatní</string>
+    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
+    <string name="pref_imexport">Import a export</string>
+    <string name="pref_export">Exportovat</string>
+    <string name="pref_export_desc">Zálohuje nastavení, úpravy a seznam blokovaných. Z bezpečnostních důvodů neukládá přihlášení. Užitečné při přesouvání mezi zařízeními nebo sdílení s kamarády.</string>
+    <string name="pref_import">Importovat</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Přizpůsobení</string>
+    <string name="pref_themes">Motivy</string>
+    <string name="pref_lastfm_disable">Nescrobblovat na lastFM</string>
+    <string name="pref_lastfm_disable_desc">Pro funkčnost zbytku uživatelského rozhraní stále potřebujete přihlášení na lastFM</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Dostupná aktualizace: %1$s</string>
     <string name="download">Stáhnout</string>
     <string name="changelog">Seznam změn</string>
@@ -268,6 +306,13 @@
     <string name="import_lists_nope">Neimportovat úpravy a seznam blokovaných</string>
     <string name="import_lists_replace_all">Nahradit všechny úpravy a seznam blokovaných</string>
     <string name="import_lists_replace_existing">Sloučit a nahradit existující úpravy a seznamy blokovaných</string>
+    <string name="navigation_drawer_close">Zavřít navigační lištu</string>
+    <string name="cleared_disabled_apps">Vymazány zakázané aplikace</string>
+    <string name="fix_it_title">Možné opravy</string>
+    <string name="fix_it_startup_title">Spořiče napájení / správci spouštění</string>
+    <string name="fix_it_battery_title">Zakázat optimalizace výdrže baterie</string>
+    <string name="fix_it_action" comment="(To open an app)">Otevřít</string>
+    <string name="delete_account">Smazat svůj účet</string>
     <!--  pro  -->
     <string name="help">Pomoc</string>
     <string name="pro_also_get">Také získáte následující funkce:</string>

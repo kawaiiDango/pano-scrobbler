@@ -54,8 +54,11 @@
     <string name="settings">Einstellungen</string>
     <string name="bug_report">Fehler melden</string>
     <string name="album_art">Album-Cover</string>
+    <string name="artist_image">Interpretenbild</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Titel wurde nicht gefunden</string>
     <string name="network_error">Netzwerkfehler</string>
+    <string name="disable_tls_verify">TLS Fehler ignorieren</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoriert</string>
     <string name="scrobble_ignored_save_edit">Lastfm hat die Bearbeitung ignoriert, da der Scrobble wahrscheinlich zu alt ist. Möchten Sie diese Bearbeitung stattdessen für zukünftige Scrobbles speichern?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Erforderliche Felder sind leer</string>
     <string name="artist">Interpret</string>
@@ -102,6 +105,8 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Diesen Titel teilen</string>
     <string name="share">Teilen</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Legende</string>
+    <string name="grid_size">Rastergröße ändern</string>
     <string name="more_info">Weitere Infos</string>
     <string name="search">Suchen</string>
     <string name="library" comment="search within the library">Bibliothek</string>

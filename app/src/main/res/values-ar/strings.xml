@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="top_artists" comment="Top artists the user has listened to">أعلى الفنانين</string>
+    <string name="album_artist">فنان الألبوم</string>
     <!--  pro  -->
 </resources>

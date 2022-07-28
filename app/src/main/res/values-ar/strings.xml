@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="yes">تأكيد</string>
+    <string name="no">لا</string>
+    <string name="reset">إعادة ضبط</string>
+    <string name="settings">ضبط</string>
+    <string name="bug_report">الإبلاغ عن الأخطاء</string>
+    <string name="album_art">صورة الألبوم</string>
+    <string name="artist_image">صورة ألفنان</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">خطأ في تحليل العنوان</string>
+    <string name="network_error">خطأ بالشبكة</string>
+    <string name="disable_tls_verify">أهمال أخطاء TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">تم تجاهل الأسكروبل</string>
+    <string name="scrobble_ignored_save_edit">لاست أف أم تجاهل التعديل علي الأرجح بسبب الأسكروبل قديم جدا. هل ترغب بحفظ هذا التعديل للاسكروبلس المستقبليه عوضا عن ؟</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">بعض الخانات لم يتم إملائها </string>
+    <string name="artist">الفنان</string>
+    <string name="artists">الفنانين</string>
     <string name="top_artists" comment="Top artists the user has listened to">أعلى الفنانين</string>
     <string name="album_artist">فنان الألبوم</string>
+    <string name="artist_channel" comment="Artist or youtube channel">الفنان / قناة</string>
+    <string name="similar_artists">فنانون مشابهون</string>
+    <string name="album_optional">الألبوم (أختياري)</string>
+    <string name="album">الألبوم </string>
+    <string name="albums">الألبومات</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">أعلى الألبومات</string>
+    <string name="track">أغنية</string>
+    <string name="tracks">الأغاني</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">أعلي الأغاني</string>
+    <string name="similar_tracks">أغاني متشابهة</string>
+    <string name="similar" comment="Similar tracks but in short">متشابهة</string>
+    <string name="state_scrobbling">أسكروبلنج ألان...</string>
+    <string name="state_scrobbled">سكروبلد</string>
+    <string name="unscrobble">لم يتم أسكروبلنج</string>
+    <string name="state_unscrobbled">لم يتم أسكروبلنج</string>
+    <string name="state_unrecognised_artist">فنان غير معروف</string>
+    <string name="tap_to_edit">(اضغط للتعديل)</string>
+    <string name="recently_scrobbled">تم الاسكروبلنج موخرا</string>
+    <string name="recently_loved">محبوب موخرا ❤️</string>
+    <string name="show_all">عرض الكل</string>
+    <string name="edit">تعديل</string>
+    <string name="delete">حذف</string>
+    <string name="love">أحببته</string>
+    <string name="unlove">ازالة الحب</string>
+    <string name="pending_scrobbles">أسكروبلس معلق</string>
+    <string name="pending_scrobble">أسكروبل معلق</string>
+    <string name="pending_scrobbles_noti">يتم تحويل الأسكروبلس المعلق </string>
     <!--  pro  -->
 </resources>

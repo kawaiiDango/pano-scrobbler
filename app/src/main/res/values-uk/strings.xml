@@ -160,6 +160,7 @@
 - Отримайте топ скробли кожної неделі
 -Та більше
 - Сповіщення беззвучні\"\""</string>
+    <string name="will_not_scrobble">⚠️Пропуск цього кроку вимкне скробблінг</string>
     <string name="authenticate_with_lastfm" comment="Login with last.fm">Авторизуватись з last.FM</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM і Listenbrainz можна автентифікувати після цього через налаштування</string>
     <string name="swap" comment="(Swap title and artist)">Замінити</string>
@@ -397,6 +398,8 @@
     <string name="fix_it_startup_title">Економія енергії, менеджер запусків</string>
     <string name="fix_it_battery_title">Вимкнути оптимізацію використання батареї</string>
     <string name="fix_it_action" comment="(To open an app)">Відкрити</string>
+    <string name="delete_account">Видалити обліковий запис</string>
+    <string name="delete_account_custom_servers">Для користувацьких серверів перевірте їх відповідні документи.</string>
     <!--  pro  -->
     <string name="get_pro">Підтримати проєкт</string>
     <string name="help">Допомога</string>

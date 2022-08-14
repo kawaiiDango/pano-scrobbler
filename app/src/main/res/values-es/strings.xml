@@ -158,7 +158,6 @@
 - Consigue tus mejores scrobbles cada semana
 - Y más
 - Las notificaciones no hacen ruido\"\""</string>
-    <string name="authenticate_with_lastfm" comment="Login with last.fm">Autenticar con last.FM</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM y Listenbrainz pueden ser autenticados después de esto, desde la configuración</string>
     <string name="swap" comment="(Swap title and artist)">Intercambiar</string>
     <string name="rate_msg">¿Disfrutando de esta aplicación?</string>
@@ -317,7 +316,6 @@
     <string name="pref_locale">Idiomas</string>
     <string name="pref_change_locale">Elegir idioma</string>
     <string name="pref_crashlytics_enabled">Reportar errores automáticamente</string>
-    <string name="locale_only_ui">Sólo se aplica a la interfaz principal</string>
     <string name="pref_misc">Misceláneo.</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Importar &amp; Exportar</string>

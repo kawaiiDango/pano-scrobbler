@@ -130,7 +130,6 @@
     <string name="allow_background">Permitir scrobbling em segundo plano</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para recuperar metadados da música. Nenhum outro tipo notificação é lida</string>
-    <string name="authenticate_with_lastfm" comment="Login with last.fm">Autenticar com Last.FM</string>
     <string name="authenticate_with_lastfm_desc">Pode depois iniciar sessão no LibreFM, GNUFM e Listenbrainz, a partir das configurações</string>
     <string name="swap" comment="(Swap title and artist)">Trocar</string>
     <string name="rate_msg">Gostando do aplicativo?</string>
@@ -270,7 +269,6 @@
     <string name="pref_pixel_np">Scrobble do que o Pixel estiver a reproduzir</string>
     <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
     <string name="pref_change_locale">Mudar língua</string>
-    <string name="locale_only_ui">Só se aplica à interface de usuário principal</string>
     <string name="pref_misc">Diversos</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Importar &amp; exportar</string>

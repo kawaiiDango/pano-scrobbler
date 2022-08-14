@@ -172,8 +172,6 @@
 - Otrzymuj co tydzień top listę scrobbli
 - I więcej
 - Powiadomienia nie wydają dźwięku\"\""</string>
-    <string name="will_not_scrobble">⚠️Pominięcie tego kroku wyłączy scrobbling</string>
-    <string name="authenticate_with_lastfm" comment="Login with last.fm">Uwierzytelnij przez last.FM</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM i Listenbrainz mogą być uwierzytelniane później, w ustawieniach</string>
     <string name="swap" comment="(Swap title and artist)">Zamień</string>
     <string name="rate_msg">Podoba Ci się ta aplikacja?</string>

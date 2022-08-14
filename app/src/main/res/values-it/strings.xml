@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobbling</item>
+        <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobble</item>
     </plurals>
     <plurals name="num_listeners">
@@ -158,7 +158,6 @@
 - Ricevi la lista dei tuoi artisti, album e brani più ascoltati della settimana
 - E altro ancora
 - Le notifiche non sono sonore\"\""</string>
-    <string name="authenticate_with_lastfm" comment="Login with last.fm">Accedi con last.FM</string>
     <string name="authenticate_with_lastfm_desc">Potrai accedere a LibreFM, GNUFM e Listenbrainz in seguito, dalle impostazioni</string>
     <string name="swap" comment="(Swap title and artist)">Scambia</string>
     <string name="rate_msg">Ti piace questa app?</string>
@@ -181,7 +180,6 @@
     <string name="press_back">Al termine, premere indietro</string>
     <string name="powered_acr">Fornito da <i><b>ACR</b>Cloud</i></string>
     <string name="details">Dettagli</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">%1$s verso %2$s</string>
     <string name="saved_as_pending">Salvato come scrobbling in attesa</string>
     <string name="sort">Ordina</string>
     <string name="past_scrobbles">Cronologia scrobbling</string>
@@ -307,7 +305,6 @@
     <string name="pref_privacy_policy">Informativa sulla privacy</string>
     <string name="pref_search_title">App per la ricerca brani</string>
     <string name="pref_scrobble_only">(Solo scrobbling)</string>
-    <string name="pref_scrobble_love_only">(Solo scrobbling &amp; preferiti)</string>
     <string name="pref_user_label" comment="(Like username)">Utente</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token di autenticazione</string>
     <string name="api_url" comment="For Listenbrainz">URL dell\'API</string>
@@ -318,7 +315,7 @@
     <string name="pref_pixel_np_nope">Disponibile solo sui dispositivi Pixel</string>
     <string name="pref_locale">Lingua</string>
     <string name="pref_change_locale">Cambia lingua</string>
-    <string name="locale_only_ui">Si applica solo all’interfaccia principale</string>
+    <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
     <string name="pref_misc">Varie</string>
     <string name="pref_gnufm_title">URL della nixtape GNU FM</string>
     <string name="pref_imexport">Importazione &amp; esportazione</string>
@@ -396,6 +393,8 @@
     <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
     <string name="fix_it_battery_title">Disattiva l\'ottimizzazione della batteria</string>
     <string name="fix_it_action" comment="(To open an app)">Apri</string>
+    <string name="delete_account">Cancella il tuo account</string>
+    <string name="delete_account_custom_servers">Per i server personalizzati, controlla le rispettive documentazioni.</string>
     <!--  pro  -->
     <string name="get_pro">Sostieni questa app</string>
     <string name="help">Aiuto</string>

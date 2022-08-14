@@ -54,8 +54,11 @@
     <string name="settings">Einstellungen</string>
     <string name="bug_report">Fehler melden</string>
     <string name="album_art">Album-Cover</string>
+    <string name="artist_image">Interpretenbild</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Titel wurde nicht gefunden</string>
     <string name="network_error">Netzwerkfehler</string>
+    <string name="disable_tls_verify">TLS Fehler ignorieren</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoriert</string>
     <string name="scrobble_ignored_save_edit">Lastfm hat die Bearbeitung ignoriert, da der Scrobble wahrscheinlich zu alt ist. Möchten Sie diese Bearbeitung stattdessen für zukünftige Scrobbles speichern?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Erforderliche Felder sind leer</string>
     <string name="artist">Interpret</string>
@@ -102,8 +105,12 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Diesen Titel teilen</string>
     <string name="share">Teilen</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Legende</string>
+    <string name="grid_size">Rastergröße ändern</string>
     <string name="more_info">Weitere Infos</string>
     <string name="search">Suchen</string>
+    <string name="library" comment="search within the library">Bibliothek</string>
+    <string name="take_long_time">Dies kann einige Zeit in Anspruch nehmen</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profilbild</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Optionen für dieses Item</string>
@@ -130,7 +137,13 @@
     <string name="allow_background">Scrobbeln im Hintergrund erlauben</string>
     <string name="grant_notification_access">Zugriff auf die Benachrichtigungen gewähren</string>
     <string name="grant_notification_access_desc">Benötigt, um Musik-Metadaten abzurufen. Keine Nicht-Musik-Benachrichtigungen werden gelesen</string>
-    <string name="authenticate_with_lastfm" comment="Login with last.fm">Mit last.FM authentifizieren</string>
+    <string name="send_notifications">Benachrichtigungen zulassen</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Überprüfen Sie Scrobble-Status und -Statistiken
+- Favorisieren oder blocken direkt über die Benachrichtigung
+- Benachrichtigungen bei Fehler des Scrobbeln und mögliche Lösungsvorschläge
+- Wöchentliche Top-Scrobbels
+- Und mehr
+- Benachrichtigungen sind stumm\"\""</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM und Listenbrainz können später in den Einstellungen authentifiziert werden</string>
     <string name="swap" comment="(Swap title and artist)">Tauschen</string>
     <string name="rate_msg">Gefällt Ihnen diese App?</string>
@@ -153,7 +166,6 @@
     <string name="press_back">Drücke zurück, wenn fertig</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Details</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">%1$s zu %2$s</string>
     <string name="saved_as_pending">Gespeichert als ausstehender Scrobble</string>
     <string name="sort">Sortieren</string>
     <string name="past_scrobbles">Vorherige Scrobbles</string>
@@ -170,7 +182,9 @@
     <string name="not_found" comment="Shown in search">Nicht gefunden</string>
     <string name="share_this_chart">Diagramm mit anderen teilen</string>
     <string name="weekly">Wöchentlich</string>
+    <string name="weeks">Wochen</string>
     <string name="monthly">Monatlich</string>
+    <string name="months">Monate</string>
     <string name="charts_overall">Gesamtübersicht</string>
     <string name="charts_no_data">Keine Daten in diesem Zeitraum</string>
     <string name="charts_custom" comment="Custom date range, but in short">Benutzerdefiniert</string>
@@ -262,7 +276,6 @@
     <string name="pref_privacy_policy">Datenschutzrichtlinie</string>
     <string name="pref_search_title">Songsuche App</string>
     <string name="pref_scrobble_only">(Nur Scrobbeln)</string>
-    <string name="pref_scrobble_love_only">(Nur Scrobbeln &amp; Favorisieren)</string>
     <string name="pref_user_label" comment="(Like username)">Benutzer</string>
     <string name="pref_token_label" comment="For Listenbrainz">Authentifizierungstoken</string>
     <string name="api_url" comment="For Listenbrainz">API-URL</string>
@@ -271,8 +284,9 @@
     <string name="pref_fetch_aa_desc">Für Musik-Apps die diese Daten nicht zur Verfügung stellen. Die abgerufenen Daten können sich von Ihren Tags unterscheiden. lastFM hat möglicherweise keine Daten für einige Songs.</string>
     <string name="pref_pixel_np">Scrobbel Pixels \"Now Playing\"</string>
     <string name="pref_pixel_np_nope">Nur auf Pixel-Geräten verfügbar</string>
+    <string name="pref_locale">Sprachen</string>
     <string name="pref_change_locale">Sprache ändern</string>
-    <string name="locale_only_ui">Gilt nur für die Haupt-UI</string>
+    <string name="pref_crashlytics_enabled">Fehler automatisch melden</string>
     <string name="pref_misc">Sonst.</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Importieren &amp; Exportieren</string>
@@ -295,6 +309,11 @@
     <string name="pref_lastfm_disable">Nicht zu lastFM scrobbeln</string>
     <string name="pref_lastfm_disable_desc">Sie benötigen eine lastFM-Anmeldung, damit der Rest funktioniert</string>
     <string name="pref_translate">Diese App übersetzen</string>
+    <string name="pref_translate_credits">Danksagung an die Übersetzer</string>
+    <string name="pref_oss_credits">Open-Source-Credits</string>
+    <string name="pref_check_updates">Nach Updates suchen</string>
+    <string name="download">Download</string>
+    <string name="changelog">Changelog</string>
     <string name="import_hey_wtf">Es handelt sich hierbei wahrscheinlich nicht um eine Pano Scrobbler Exportdatei</string>
     <string name="export_failed">Export fehlgeschlagen</string>
     <string name="imported">Importiert</string>
@@ -305,6 +324,7 @@
     <string name="import_lists_keep">Zusammenführen, bestehende Änderungen und Sperrlisten beibehalten</string>
     <string name="import_settings">Import-Einstellungen</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Broadcast-Absichten</string>
+    <string name="current_track">Aktuelles Lied:</string>
     <string name="pref_intents">Absichten für Tasker usw.</string>
     <string name="copied">Kopiert!</string>
     <string name="lastfm_reauth">Du musst dich neu authentifizieren, um Scrobbles bearbeiten oder löschen zu können</string>
@@ -342,6 +362,7 @@
     <string name="fix_it_startup_title">Stromsparer / Start-Manager</string>
     <string name="fix_it_battery_title">Batterie-Optimierung ausschalten</string>
     <string name="fix_it_action" comment="(To open an app)">Öffnen</string>
+    <string name="delete_account">Dein Konto Löschen</string>
     <!--  pro  -->
     <string name="get_pro">Diese App unterstützen</string>
     <string name="help">Hilfe</string>

@@ -80,6 +80,7 @@
     <string name="album_art">Обложка альбома</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось обнаружить заголовок</string>
     <string name="network_error">Ошибка сети</string>
+    <string name="disable_tls_verify">Игнорировать ошибки TLS</string>
     <string name="scrobble_ignored_save_edit">Lastfm проигнорировал правку, вероятно, потому, что скроббл слишком старый. Хотели бы вы вместо этого сохранить это изменение для будущих скробблов?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Обязательные поля не заполнены</string>
     <string name="artist">Исполнитель</string>
@@ -131,6 +132,8 @@
     <string name="search">Поиск</string>
     <string name="library" comment="search within the library">Библиотека</string>
     <string name="global" comment="search globally across lastfm">Глобальное</string>
+    <string name="reindex">Быстрый индекс</string>
+    <string name="take_long_time">Это может занять некоторое время</string>
     <string name="profile">Профиль</string>
     <string name="profile_pic">Изображение профиля</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Опции для этого элемента</string>
@@ -157,7 +160,7 @@
     <string name="allow_background">Разрешить скробблинг в фоновом режиме</string>
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
-    <string name="authenticate_with_lastfm" comment="Login with last.fm">Авторизируйтесь в last.FM</string>
+    <string name="send_notifications">Разрешить уведомления</string>
     <string name="authenticate_with_lastfm_desc">Вы можете войти в LibreFM, GNUFM и Listenbrainz позже в настройках</string>
     <string name="swap" comment="(Swap title and artist)">Свап</string>
     <string name="rate_msg">Нравится это приложение?</string>
@@ -180,7 +183,6 @@
     <string name="press_back">Нажмите назад, когда закончите</string>
     <string name="powered_acr">На платформе <i><b>ACR</b>Cloud</i></string>
     <string name="details">Детали</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">Будет %1$s для %2$s</string>
     <string name="saved_as_pending">Сохранено как ожидающий скроббл</string>
     <string name="sort">Сортировка</string>
     <string name="past_scrobbles">Прошлые скробблы</string>
@@ -197,7 +199,10 @@
     <string name="not_found" comment="Shown in search">Не найдено</string>
     <string name="share_this_chart">Поеделиться этим чартом</string>
     <string name="weekly">Еженедельно</string>
+    <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
+    <string name="months">Месяцы</string>
+    <string name="years">Года</string>
     <string name="charts_overall">За все время</string>
     <string name="charts_no_data">Нет данных за этот период</string>
     <string name="charts_custom" comment="Custom date range, but in short">Пользовательский</string>
@@ -209,6 +214,7 @@
     <string name="random_not_found">Трек не найден</string>
     <string name="loved_track">Любимый трек</string>
     <string name="randomize">Случайный выбор</string>
+    <string name="random_text">Случайно</string>
     <string name="graph_daily">Ежедневный подсчет скробблов</string>
     <string name="graph_weekly">Еженедельный подсчет скробблов</string>
     <string name="graph_monthly">Ежемесячный подсчет скробблов</string>
@@ -234,6 +240,7 @@
     <string name="appwidget_show">Показать</string>
     <string name="light">Светлая</string>
     <string name="dark">Темная</string>
+    <string name="system_colors">Системные цвета</string>
     <string name="appwidget_alpha">Прозрачность фона</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Виджет обновляется каждые %1$d минут</string>
     <string name="primary_color">Основной цвет</string>
@@ -243,6 +250,7 @@
     <string name="edit_name" comment="name for regex pattern">Дружественное имя (необязательно)</string>
     <string name="edit_regex">Шаблон регулярного выражения</string>
     <string name="edit_regex_replacement">Замена регулярного выражения</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Поля</string>
     <string name="edit_replace">Замена</string>
     <string name="edit_first" comment="First occurrence of a pattern">Первый</string>
     <string name="edit_all" comment="All occurrences of a pattern">Все</string>
@@ -258,8 +266,15 @@
     <string name="text" comment="text to test regex rules with">Текст</string>
     <string name="edit_regex_warning">ℹ️ Перед использованием убедитесь, что вы понимаете <a href="https://www.google.com/search?q=regex+tutorial">Java Regex</a> или используйте одну из <b>предустановок</b>. Поиск совпадений с регулярным выражением осуществляется сверху вниз</string>
     <string name="blocked_metadata_info">ℹ️ При заполнении более чем одного из этих полей между ними будет применяться оператор И</string>
+    <string name="blocked_metadata_noti">Нажмите, чтобы заблокировать и пропустить</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Действия плеера</string>
     <string name="skip" comment="skip to next track">Пропустить</string>
+    <string name="mute">Без звука</string>
     <string name="block">Блокировать</string>
+    <string name="hidden_tags">Скрытые метки</string>
+    <string name="pin">Закрепить</string>
+    <string name="unpin">Открепить</string>
+    <string name="pin_limit_reached" formatted="true">Достигнуто ограничение по закрепам (%1$d)</string>
     <string name="use_channel" comment="(Use youtube channel name)">Использовать название канала</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Хотите включить правило редактирования шаблона: %1$s?</string>
     <string name="show_persistent_noti">Показывать постоянное уведомление</string>
@@ -290,7 +305,6 @@
     <string name="pref_privacy_policy">Политика конфиденциальности</string>
     <string name="pref_search_title">Сервис поиска песен</string>
     <string name="pref_scrobble_only">(Только скробблинг)</string>
-    <string name="pref_scrobble_love_only">(Только скробблинг &amp; лайки)</string>
     <string name="pref_user_label" comment="(Like username)">Пользователь</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентификации</string>
     <string name="api_url" comment="For Listenbrainz">URL-адрес API</string>
@@ -299,8 +313,8 @@
     <string name="pref_fetch_aa_desc">Для плееров, которые не предоставляют эти данные. Полученные данные могут отличаться от ваших тегов. lastFM может не иметь данных для некоторых песен.</string>
     <string name="pref_pixel_np">Скробблить Now Playing на устройствах Pixel</string>
     <string name="pref_pixel_np_nope">Доступно только на устройствах Pixel</string>
+    <string name="pref_locale">Языки</string>
     <string name="pref_change_locale">Изменить язык</string>
-    <string name="locale_only_ui">Применяется только к основному пользовательскому интерфейсу</string>
     <string name="pref_misc">Разное</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Импорт и экспорт</string>
@@ -334,6 +348,7 @@
     <string name="import_lists_keep">Объединить, сохранить существующие правки и черный список</string>
     <string name="import_settings">Настройки импорта</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Трансляция интентов</string>
+    <string name="current_track">Текущий трек:</string>
     <string name="pref_intents">Интенты для Tasker и других приложений</string>
     <string name="copied">Скопировано!</string>
     <string name="lastfm_reauth">Вам необходимо повторно пройти аутентификацию, чтобы редактировать или удалять скробблы</string>
@@ -371,6 +386,8 @@
     <string name="fix_it_startup_title">Экономия энергии / менеджеры запусков</string>
     <string name="fix_it_battery_title">Отключить оптимизацию батареи</string>
     <string name="fix_it_action" comment="(To open an app)">Открыть</string>
+    <string name="delete_account">Удалить свою учётную запись</string>
+    <string name="delete_account_custom_servers">Для пользовательских серверов, проверьте их документацию.</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="help">Помощь</string>

@@ -137,7 +137,6 @@
 - 週初のトップScrobbleのお知らせ
 - などなど
 - 通知音は鳴りません\"\""</string>
-    <string name="authenticate_with_lastfm" comment="Login with last.fm">Last.FMの認証</string>
     <string name="authenticate_with_lastfm_desc">LibreFM、GNUFM、Listenbrainzの認証は後ほど設定から行えます</string>
     <string name="swap" comment="(Swap title and artist)">入れ替え</string>
     <string name="rate_msg">アプリに満足していただいていますか？</string>
@@ -160,7 +159,6 @@
     <string name="press_back">終了時に戻るを押す</string>
     <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">詳細</string>
-    <string name="details_text" formatted="true" comment="%1= the word scrobble, love or unlove, %2= the service such as lastfm">%1$sが後ほど%2$sに記録されます</string>
     <string name="saved_as_pending">保留中のScrobbleとして保存しました</string>
     <string name="sort">並べ替え</string>
     <string name="past_scrobbles">過去のScrobble</string>
@@ -279,7 +277,6 @@
     <string name="pref_privacy_policy">プライバシーポリシー</string>
     <string name="pref_search_title">曲検索アプリ</string>
     <string name="pref_scrobble_only">(Scrobbleのみ)</string>
-    <string name="pref_scrobble_love_only">(Scrobble &amp; Loveのみ)</string>
     <string name="pref_user_label" comment="(Like username)">ユーザー</string>
     <string name="pref_token_label" comment="For Listenbrainz">認証トークン</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
@@ -291,7 +288,6 @@
     <string name="pref_locale">言語</string>
     <string name="pref_change_locale">言語を変更</string>
     <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>
-    <string name="locale_only_ui">メインUIにのみ適用されます</string>
     <string name="pref_misc">その他</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">インポート &amp; エクスポート</string>

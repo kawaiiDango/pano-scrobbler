@@ -22,8 +22,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 
-import com.arn.scrobble.Stuff;
-
 import androidx.annotation.FloatRange;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.core.graphics.drawable.DrawableCompat;

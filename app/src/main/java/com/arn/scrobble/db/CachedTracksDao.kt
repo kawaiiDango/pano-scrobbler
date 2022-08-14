@@ -57,7 +57,7 @@ interface CachedTracksDao {
 
     companion object {
 
-        fun deltaUpdateAll(
+        suspend fun deltaUpdateAll(
             context: Context,
             track: Track,
             deltaCount: Int,

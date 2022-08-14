@@ -178,10 +178,6 @@ class InfoAdapter(
             when (key) {
                 NLService.B_TRACK -> {
                     entry as Track
-                    binding.infoPlay.visibility = View.VISIBLE
-                    binding.infoPlay.setOnClickListener {
-                        UiUtils.launchSearchIntent(itemView.context, entry, pkgName)
-                    }
                     binding.infoType.setImageResource(R.drawable.vd_note)
                     binding.infoType.contentDescription = itemView.context.getString(R.string.track)
                     if (entry.url != null) {
@@ -293,6 +289,10 @@ class InfoAdapter(
                 }
             }
             binding.infoName.text = entry.name
+
+            binding.infoPlay.setOnClickListener {
+                UiUtils.launchSearchIntent(itemView.context, entry, pkgName)
+            }
 
             entry.url ?: return
             binding.infoUserTags.visibility = View.VISIBLE

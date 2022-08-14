@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import de.umass.lastfm.Artist
-import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 
 @Entity(

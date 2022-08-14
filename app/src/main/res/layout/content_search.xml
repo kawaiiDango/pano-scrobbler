@@ -8,31 +8,55 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp"
         android:background="@android:color/transparent"
-        app:liftOnScroll="false"
-        android:touchscreenBlocksFocus="false">
+        android:touchscreenBlocksFocus="false"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/search_term"
+            style="?textInputOutlinedExposedDropdownMenuStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
-            style="?textInputOutlinedExposedDropdownMenuStyle"
+            app:endIconMode="dropdown_menu"
             app:hintEnabled="false"
             app:layout_scrollFlags="enterAlways|scroll|snap"
-            app:endIconMode="dropdown_menu"
             app:startIconDrawable="@drawable/vd_search">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/search_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/search"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:imeOptions="actionSearch"
-                android:contentDescription="@string/search"
                 android:singleLine="true" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/search_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                app:checkedChip="@id/search_global"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_global"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/global" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_library"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/library" />
+            </com.google.android.material.chip.ChipGroup>
 
         </com.google.android.material.textfield.TextInputLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -48,15 +72,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="invisible"
+            android:max="1000"
             tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_results_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
             android:layoutAnimation="@anim/layout_animation_slide_up"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            android:visibility="gone" />
 
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

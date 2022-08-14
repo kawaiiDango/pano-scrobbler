@@ -3,7 +3,6 @@ package com.arn.scrobble.edits
 import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import android.text.style.ImageSpan
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -12,9 +11,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemRegexEditBinding
-import com.arn.scrobble.db.Converters
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.ui.ItemClickListener
 import com.google.android.material.color.MaterialColors

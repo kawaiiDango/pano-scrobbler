@@ -117,14 +117,6 @@
             android:dependency="show_scrobble_sources"
             android:persistent="true"/>
 
-
-        <EditTextPreference
-            android:key="song_search_url"
-            android:defaultValue="https://www.youtube.com/results?search_query=$artist+$title"
-            android:title="@string/song_search_url"
-            app:isPreferenceVisible="false"
-            android:persistent="true"/>
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -150,8 +142,7 @@
 
         <Preference
             android:key="locale"
-            android:title="@string/pref_change_locale"
-            android:summary="@string/locale_only_ui"/>
+            android:title="@string/pref_change_locale"/>
 
         <Preference
             android:title="@string/pref_translate"
@@ -282,10 +273,29 @@
         <Preference
             android:summary="@string/github_link"
             android:key="about" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/debug_menu"
+        android:icon="@drawable/vd_bug"
+        android:key="debug"
+        app:isPreferenceVisible="false">
+
         <EditTextPreference
             android:title="@string/force_exception"
             android:defaultValue=""
-            app:isPreferenceVisible="false"
-            android:key="force_exception" />
+            android:key="force_exception"/>
+
+        <EditTextPreference
+            android:key="song_search_url"
+            android:defaultValue="https://www.youtube.com/results?search_query=$artist+$title"
+            android:title="@string/song_search_url"
+            android:persistent="true"/>
+
+        <EditTextPreference
+            android:key="touhou_circles"
+            android:defaultValue=""
+            android:title="@string/touhou_circles"
+            android:persistent="true"/>
     </PreferenceCategory>
 </PreferenceScreen>

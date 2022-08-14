@@ -7,7 +7,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pending.PendingListData

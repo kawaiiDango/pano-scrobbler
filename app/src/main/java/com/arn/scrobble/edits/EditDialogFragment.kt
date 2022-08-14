@@ -54,6 +54,7 @@ class EditDialogFragment : LoginFragment() {
 
         fun moveImeActionToLast2() {
             binding.loginTextfieldLast.editText!!.imeOptions = EditorInfo.IME_NULL
+            binding.loginTextfieldLast.editText!!.setOnEditorActionListener(null)
             binding.loginTextfieldLast2.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
                     (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)
@@ -252,7 +253,9 @@ class EditDialogFragment : LoginFragment() {
                                             it.album = album
                                         }
 
-                                        CachedTracksDao.deltaUpdateAll(context!!, trackObj, 1)
+                                        withContext(Dispatchers.IO) {
+                                            CachedTracksDao.deltaUpdateAll(context!!, trackObj, 1)
+                                        }
                                     }
                                 }
                             }

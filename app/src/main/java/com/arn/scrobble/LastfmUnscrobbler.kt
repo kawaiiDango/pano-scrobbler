@@ -93,67 +93,8 @@ class LastfmUnscrobbler(context: Context?) {
         (cookieJar as PersistentCookieJar).clear()
     }
 
+    // intercepted from webview login
     fun haveCsrfCookie() = csrfToken != null
-
-    fun loginWithPassword(password: String): String? {
-        var errMsg: String? = "" //null if success
-        val request = Request(URL_LOGIN.toHttpUrl())
-
-        //fetch csrf token
-        try {
-            val resp = client.newCall(request).execute()
-            if (resp.code == 200) {
-                if (csrfToken == null)
-                    Stuff.log("err: LastfmUnscrobbler csrfToken == null")
-                else
-                    errMsg = authenticate(username, password)
-            } else
-                errMsg = "Error: HTTP status " + resp.code
-            resp.close()
-        } catch (e: Exception) {
-            errMsg = e.message
-        }
-
-        if (errMsg != null)
-            clearCookies()
-        return errMsg
-    }
-
-    private fun authenticate(username: String, password: String): String? {
-        //null if success
-
-        val body = FormBody.Builder()
-            .add(FIELD_CSRFTOKEN, csrfToken ?: return "No csrf token")
-            .add(FIELD_USERNAME, username)
-            .add(FIELD_PASSWORD, password)
-            .build()
-
-        val request = Request(
-            URL_LOGIN.toHttpUrl(),
-            headers = Headers.headersOf("Referer", URL_LOGIN),
-            body = body
-        )
-
-        try {
-            val resp = client.newCall(request).execute()
-
-            val respString = resp.body.string()
-
-            if (resp.code != 200) {
-                return if (resp.code == 403 || resp.code == 401) {
-                    "Incorrect credentials"
-                } else {
-                    "authenticate status: " + resp.code
-                }
-            } else if (respString.indexOf("auth-avatar") == -1)
-                return "Couldn't log in"
-            resp.close()
-        } catch (e: Exception) {
-            return "Could not log in: " + e.message
-        }
-
-        return null
-    }
 
     suspend fun unscrobble(artist: String, track: String, timeMillis: Long): Boolean =
         lock.withLock { // does this fix the csrf invalidation problem?

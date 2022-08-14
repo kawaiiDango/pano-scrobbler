@@ -13,7 +13,7 @@ import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMarginsRelative
 import androidx.viewbinding.ViewBinding
-import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
+import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -50,9 +50,9 @@ class ChartsWidgetActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
-
+        ColorPatchUtils.setDarkMode(this, billingViewModel.proStatus.value == true)
         super.onCreate(savedInstanceState)
+        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
 
         binding = ActivityAppwidgetChartsConfigBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -148,8 +148,8 @@ class ChartsWidgetActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context?) {
-        if (newBase != null)
-            super.attachBaseContext(newBase.getLocaleContextWrapper())
+        super.attachBaseContext(newBase ?: return)
+        setLocaleCompat()
     }
 
     private fun initFromPrefs() {

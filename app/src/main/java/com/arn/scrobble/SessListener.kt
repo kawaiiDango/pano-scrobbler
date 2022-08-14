@@ -269,11 +269,18 @@ class SessListener(
                     // Kroger () [] ~ Advertisement
                     if (albumArtist.isEmpty() && album.isEmpty() && title.isNotEmpty()) {
                         resetMeta()
-                        if (BuildConfig.DEBUG) { // this probably also mutes podcasts but thats fine for me
-                            mutedHash = currHash
-                            mute(currHash)
-                        }
                         return
+                    }
+
+                    if (BuildConfig.DEBUG) {
+                        val circles = prefs.touhouCircles.split('\n')
+                        if (artist in circles) {
+                            val titleArtist = title.split(" feat\\.? ".toRegex())
+                            if (titleArtist.size == 2) {
+                                title = titleArtist[0]
+                                artist = titleArtist[1]
+                            }
+                        }
                     }
                 }
             }
@@ -286,6 +293,10 @@ class SessListener(
                 "onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
                         "duration=$duration lastState=$lastState, package=$packageName isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
             )
+
+            if (artist == "" || title == "")
+                return
+
             if (!sameAsOld || onlyDurationUpdated) {
                 this.artist = artist
                 this.album = album
@@ -307,8 +318,7 @@ class SessListener(
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
-                if (artist != "" && title != "" &&
-                    (!handler.hasMessages(currHash) || !onlyDurationUpdated) &&
+                if ((!handler.hasMessages(currHash) || !onlyDurationUpdated) &&
                     lastState == PlaybackState.STATE_PLAYING
                 ) {
                     hashesAndTimes.timePlayed = 0

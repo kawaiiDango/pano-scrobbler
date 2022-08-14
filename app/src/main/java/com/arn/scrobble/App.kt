@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.LocaleList
 import android.os.StrictMode
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
@@ -20,7 +19,6 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Caller
 import timber.log.Timber
 import java.io.File
-import java.util.*
 import java.util.logging.Level
 
 
@@ -31,10 +29,6 @@ class App : Application() {
             enableStrictMode()
         }
         super.onCreate()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            LocaleUtils.systemDefaultLocaleList = LocaleList.getDefault()
-        LocaleUtils.systemDefaultLocale = Locale.getDefault()
 
         initCaller()
 

@@ -35,7 +35,7 @@ import coil.decode.ImageDecoderDecoder
 import coil.imageLoader
 import coil.load
 import coil.size.Precision
-import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
+import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.billing.BillingViewModel
@@ -43,14 +43,15 @@ import com.arn.scrobble.databinding.ActivityMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.info.InfoFragment
+import com.arn.scrobble.onboarding.OnboardingFragment
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.PrefFragment
-import com.arn.scrobble.search.SearchExperimentFragment
 import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.isTv
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
 import com.arn.scrobble.ui.UiUtils.openInBrowser
@@ -86,6 +87,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Stuff.timeIt("onCreate start")
+
+        var canShowNotices = false
+        ColorPatchUtils.setDarkMode(this, billingViewModel.proStatus.value == true)
+
         super.onCreate(savedInstanceState)
 
         ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
@@ -181,8 +186,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 false
 
         if (savedInstanceState == null) {
-            if (FirstThingsFragment.checkAuthTokenExists(prefs) &&
-                FirstThingsFragment.checkNLAccess(this)
+            if (OnboardingFragment.isLoggedIn(prefs)
             ) {
 
                 var directOpenExtra = intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) ?: 0
@@ -218,21 +222,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         if (!handleDeepLink(intent)) {
                             if (intent.getStringExtra(NLService.B_ARTIST) != null)
                                 showInfoFragment(intent)
-                            else {
-                                val wasKilled = !Stuff.isScrobblerRunning(this)
-
-                                if (wasKilled) {
-                                    showNotRunning()
-                                } else if (!isTv && billingViewModel.proStatus.value != true) {
-                                    AppRater(this, prefs).appLaunched()
-                                    Updater(this, prefs).withSnackbar()
-                                }
-                            }
+                            else
+                                canShowNotices = true
                         }
                     }
                 }
             } else {
-                showFirstThings(hidePassBox)
+                showOnboarding(hidePassBox)
             }
         } else {
             binding.coordinatorMain.tabBar.visibility =
@@ -278,6 +274,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
         }
 
+        if (canShowNotices) {
+            if (!showFixItSnackbarIfNeeded()) {
+                if (billingViewModel.proStatus.value != true)
+                    AppRater(this, prefs).appLaunched()
+                Updater(this, prefs).withSnackbar()
+            }
+        }
+
         if (prefs.proStatus && prefs.showScrobbleSources) {
             val filter = IntentFilter().apply {
                 addAction(NLService.iNOW_PLAYING_INFO_S)
@@ -288,7 +292,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 NLService.BROADCAST_PERMISSION
             )
         }
-//        showNotRunning()
+//        showFixItSnackbarIfNeeded()
     }
 
     fun showHomePager() {
@@ -298,8 +302,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .commit()
     }
 
-    private fun showFirstThings(hidePassBox: Boolean) {
-        val f = FirstThingsFragment()
+    private fun showOnboarding(hidePassBox: Boolean) {
+        val f = OnboardingFragment()
         f.arguments = Bundle().apply {
             putBoolean(Stuff.ARG_NOPASS, hidePassBox)
         }
@@ -456,10 +460,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 supportFragmentManager.beginTransaction()
                     .replace(
                         R.id.frame,
-                        if (BuildConfig.DEBUG)
-                            SearchExperimentFragment()
-                        else
-                            SearchFragment()
+                        SearchFragment()
                     )
                     .addToBackStack(null)
                     .commit()
@@ -524,24 +525,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onBackPressed()
     }
 
-    private fun showNotRunning() {
-        Snackbar
-            .make(binding.coordinatorMain.frame, R.string.not_running, Snackbar.LENGTH_INDEFINITE)
-            .setAction(R.string.not_running_fix_action) {
-                FixItFragment().show(supportFragmentManager, null)
-            }
-            .addCallback(object : Snackbar.Callback() {
-                override fun onShown(sb: Snackbar?) {
-                    super.onShown(sb)
-                    if (sb != null && isTv)
-                        sb.view.postDelayed({
-                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action)
-                                .requestFocus()
-                        }, 200)
+    private fun showFixItSnackbarIfNeeded(): Boolean {
+        val nlsEnabled = OnboardingFragment.isNotificationListenerEnabled(this)
+        
+        if (nlsEnabled && !Stuff.isScrobblerRunning(this)) {
+            Snackbar.make(
+                binding.coordinatorMain.frame,
+                R.string.not_running,
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction(R.string.not_running_fix_action) {
+                    FixItFragment().show(supportFragmentManager, null)
                 }
-            })
-            .show()
-        Timber.tag(Stuff.TAG).w(Exception("${Stuff.SCROBBLER_PROCESS_NAME} not running"))
+                .focusOnTv()
+                .show()
+            Timber.tag(Stuff.TAG).w(Exception("${Stuff.SCROBBLER_PROCESS_NAME} not running"))
+        } else if (!nlsEnabled || !prefs.scrobblerEnabled) {
+            Snackbar.make(
+                binding.coordinatorMain.frame,
+                R.string.scrobbler_off,
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction(R.string.enable) {
+                    if (!prefs.scrobblerEnabled)
+                        prefs.scrobblerEnabled = true
+                    else
+                        showOnboarding(true)
+                }
+                .focusOnTv()
+                .show()
+        } else
+            return false
+        return true
     }
 
     private fun mailLogs() {
@@ -669,29 +684,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val uri = intent.data!!
         val scheme = uri.scheme!!
         val path = uri.path ?: return false
-        if (scheme == "pscrobble") {
-            val token = uri.getQueryParameter("token") ?: return false
+        if (scheme == Stuff.DEEPLINK_PROTOCOL_NAME) {
             when (path) {
-                "/lastfm" ->
-                    LFMRequester(applicationContext, lifecycleScope).doAuth(
-                        R.string.lastfm,
-                        token
-                    )
-                "/librefm" ->
-                    LFMRequester(applicationContext, lifecycleScope).doAuth(
-                        R.string.librefm,
-                        token
-                    )
-                "/gnufm" ->
-                    LFMRequester(applicationContext, lifecycleScope).doAuth(
-                        R.string.gnufm,
-                        token
-                    )
                 "/testFirstThings" -> {
                     prefs.lastfmSessKey = null
                     for (i in 0..supportFragmentManager.backStackEntryCount)
                         supportFragmentManager.popBackStackImmediate()
-                    showFirstThings(true)
+                    showOnboarding(true)
                 }
                 else -> {
                     Stuff.log("handleDeepLink unknown path $path")
@@ -746,8 +745,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun attachBaseContext(newBase: Context?) {
-        if (newBase != null)
-            super.attachBaseContext(newBase.getLocaleContextWrapper())
+        super.attachBaseContext(newBase ?: return)
+        setLocaleCompat()
     }
 
     public override fun onStart() {
@@ -798,7 +797,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
 //        Stuff.log("focus: $currentFocus")
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
             val f = currentFocus
@@ -809,7 +808,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     f.nextFocusRightId = R.id.pager
             }
         }
-        return super.onKeyDown(keyCode, event)
+        return super.onKeyUp(keyCode, event)
     }
 
     public override fun onStop() {

@@ -143,6 +143,7 @@ open class LoginFragment : DialogFragment() {
                         ""
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 e.message
             }
             withContext(Dispatchers.Main) {
@@ -211,7 +212,7 @@ open class LoginFragment : DialogFragment() {
                         wf.arguments = Bundle().apply {
                             putString(
                                 Stuff.ARG_URL,
-                                url + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=pscrobble://auth/gnufm"
+                                url + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/gnufm"
                             )
                             putBoolean(Stuff.ARG_TLS_NO_VERIFY, tlsNoVerify)
                         }

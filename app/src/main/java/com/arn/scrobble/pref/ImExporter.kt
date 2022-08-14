@@ -9,7 +9,6 @@ import android.util.JsonReader
 import android.util.JsonToken
 import android.util.JsonWriter
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.*
 import com.arn.scrobble.pref.JsonHelpers.readJson

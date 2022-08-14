@@ -1,6 +1,7 @@
 package com.arn.scrobble.pref
 
 import android.app.Activity
+import android.app.LocaleManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.*
@@ -8,10 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.provider.Settings
 import android.text.SpannableString
 import android.text.Spanned
@@ -25,13 +23,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.EditTextPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
+import androidx.preference.*
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.*
+import com.arn.scrobble.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.DialogImportBinding
@@ -39,6 +36,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.edits.BlockedMetadataFragment
 import com.arn.scrobble.edits.RegexEditsFragment
 import com.arn.scrobble.edits.SimpleEditsFragment
+import com.arn.scrobble.onboarding.OnboardingFragment
 import com.arn.scrobble.themes.ThemesFragment
 import com.arn.scrobble.ui.UiUtils.isTv
 import com.arn.scrobble.ui.UiUtils.openInBrowser
@@ -138,7 +136,14 @@ class PrefFragment : PreferenceFragmentCompat() {
             notiCategories.isVisible = false
         }
 
-        val changeLocalePref = findPreference<Preference>("locale")!!
+        val nlsEnabled = OnboardingFragment.isNotificationListenerEnabled(context!!)
+        if (!nlsEnabled) {
+            findPreference<Preference>(MainPrefs.PREF_MASTER)!!
+                .isEnabled = false
+        }
+
+        val changeLocalePref = findPreference<Preference>(MainPrefs.PREF_LOCALE)!!
+
         val _entryValues = LocaleUtils.localesSet.toTypedArray()
         var prevLang = ""
         val _entries = _entryValues.map {
@@ -158,9 +163,26 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val entries = arrayOf(getString(R.string.auto)) + _entries
         val entryValues = arrayOf("auto") + _entryValues
-        val currentLocale = prefs.locale ?: "auto"
+        var currentLocale = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+            prefs.locale
+        else {
+            val ll = context!!.getSystemService(LocaleManager::class.java).applicationLocales
+            if (ll.size() == 0)
+                null
+            else
+                ll.get(0).toLanguageTag()
+        }
+
+        currentLocale = currentLocale ?: "auto"
+
         val checkedIndex = entryValues.indexOf(currentLocale)
 
+        changeLocalePref.setSummaryProvider { preference ->
+            var idx = entryValues.indexOf(currentLocale)
+            if (idx == -1)
+                idx = 0 // choose "Auto"
+            entries[idx]
+        }
         changeLocalePref.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 MaterialAlertDialogBuilder(context!!)
@@ -170,7 +192,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                         val newLocale = entryValues[idx]
                         if (currentLocale != newLocale) {
                             prefs.locale = newLocale
-                            activity!!.recreate()
+                            context!!.setLocaleCompat(force = true)
                         }
                     }
                     .setNegativeButton(android.R.string.cancel, null)
@@ -190,7 +212,8 @@ class PrefFragment : PreferenceFragmentCompat() {
         val pixelNp = findPreference<SwitchPreference>(MainPrefs.PREF_PIXEL_NP)!!
         hideOnTV.add(pixelNp)
         if (Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE
-			&& !Stuff.isPackageInstalled(requireContext(), Stuff.PACKAGE_PIXEL_NP_AMM)) {
+            && !Stuff.isPackageInstalled(requireContext(), Stuff.PACKAGE_PIXEL_NP_AMM)
+        ) {
             pixelNp.summary = getString(R.string.pref_pixel_np_nope)
             pixelNp.isEnabled = false
             pixelNp.isPersistent = false
@@ -478,18 +501,18 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
 
         if (BuildConfig.DEBUG) {
-            findPreference<Preference>("song_search_url")!!.isVisible = true
-            findPreference<EditTextPreference>("force_exception")!!.apply {
-                isVisible = true
-                setOnBindEditTextListener { editText ->
-                    editText.setText("Unspecified")
-                }
-                setOnPreferenceChangeListener { preference, newValue ->
-                    Timber.tag(Stuff.TAG).e(ForceLogException(newValue.toString()))
-                    preference as EditTextPreference
-                    preference.text = ""
-                    true
-                }
+            findPreference<PreferenceCategory>("debug")!!.isVisible = true
+        }
+
+        findPreference<EditTextPreference>("force_exception")!!.apply {
+            setOnBindEditTextListener { editText ->
+                editText.setText("Unspecified")
+            }
+            setOnPreferenceChangeListener { preference, newValue ->
+                Timber.tag(Stuff.TAG).e(ForceLogException(newValue.toString()))
+                preference as EditTextPreference
+                preference.text = ""
+                true
             }
         }
 
@@ -660,11 +683,6 @@ class PrefFragment : PreferenceFragmentCompat() {
         setAuthLabel("listenbrainz")
         setAuthLabel("lb")
 
-        val iF = IntentFilter().apply {
-            addAction(NLService.iSESS_CHANGED_S)
-        }
-        activity!!.registerReceiver(sessChangeReceiver, iF, NLService.BROADCAST_PERMISSION, null)
-
         val simpleEdits = findPreference<Preference>("simple_edits")!!
         simpleEdits.setOnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
@@ -753,19 +771,8 @@ class PrefFragment : PreferenceFragmentCompat() {
     }
 
     override fun onStop() {
-        activity!!.unregisterReceiver(sessChangeReceiver)
         restoreHandler.removeCallbacksAndMessages(null)
         super.onStop()
-    }
-
-    private val sessChangeReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == NLService.iSESS_CHANGED_S) {
-                setAuthLabel("lastfm")
-                setAuthLabel("librefm")
-                setAuthLabel("gnufm")
-            }
-        }
     }
 }
 

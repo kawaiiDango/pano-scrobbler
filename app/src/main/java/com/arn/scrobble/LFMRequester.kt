@@ -23,7 +23,7 @@ import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.Scrobblable
-import com.arn.scrobble.search.SearchResultsExperimentAdapter
+import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.search.SearchVM
 import com.arn.scrobble.ui.UiUtils.toast
 import de.umass.lastfm.*
@@ -38,7 +38,6 @@ import java.io.IOException
 import java.io.InterruptedIOException
 import java.lang.ref.WeakReference
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.math.log10
 import kotlin.math.min
 import kotlin.math.pow
@@ -788,7 +787,7 @@ class LFMRequester(
                 }
                 SearchVM.SearchResults(
                     term,
-                    SearchResultsExperimentAdapter.SearchType.GLOBAL,
+                    SearchResultsAdapter.SearchType.GLOBAL,
                     emptyList(),
                     tracks.await(),
                     artists.await(),
@@ -825,7 +824,7 @@ class LFMRequester(
                 }
                 SearchVM.SearchResults(
                     term,
-                    SearchResultsExperimentAdapter.SearchType.LOCAL,
+                    SearchResultsAdapter.SearchType.LOCAL,
                     lovedTracks.await(),
                     tracks.await(),
                     artists.await(),
@@ -1705,8 +1704,6 @@ class LFMRequester(
         }
     }
 
-    // adb shell am start -W -a android.intent.action.VIEW -d "pscrobble://auth/lastfm?token=hohoho" com.arn.scrobble
-
     fun doAuth(@StringRes type: Int, token: String?) {
         toExec = {
             if (!token.isNullOrEmpty()) {
@@ -1742,10 +1739,8 @@ class LFMRequester(
                         }
                     }
                 }
-                val intent = Intent(NLService.iSESS_CHANGED_S)
-                context.sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
             }
-            null
+            true
         }
     }
 
@@ -1773,12 +1768,9 @@ class LFMRequester(
 
         val okHttpClient by lazy {
             OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .writeTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(20, TimeUnit.SECONDS)
-                .callTimeout(20, TimeUnit.SECONDS)
                 .followRedirects(false)
                 .build()
+            // default timeouts are 10 seconds for each step and none for call
         }
 
         val okHttpClientTlsNoVerify by lazy {

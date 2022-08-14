@@ -3,12 +3,10 @@ package com.arn.scrobble.charts
 import android.content.Context
 import android.text.format.DateUtils
 import androidx.annotation.DrawableRes
-import androidx.annotation.Keep
 import androidx.annotation.PluralsRes
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.setMidnight
 import de.umass.lastfm.Period
-import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit

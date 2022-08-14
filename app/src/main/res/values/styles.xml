@@ -132,21 +132,6 @@
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 
-    <style name="firstThings">
-        <item name="android:layout_margin">10dp</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:background">@drawable/selector_first_things</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:clipToPadding">false</item>
-        <item name="android:elevation">@dimen/elevation_appbar</item>
-        <item name="android:outlineProvider">bounds</item>
-        <item name="android:stateListAnimator">@null</item>
-        <item name="android:translationZ">@dimen/tz_hero_btn</item>
-    </style>
-
     <style name="friendsLinks" parent="Widget.Material3.Button.OutlinedButton">
         <item name="iconTint">?colorSecondary</item>
         <item name="android:layout_width">wrap_content</item>
@@ -154,18 +139,6 @@
         <item name="iconGravity">top</item>
         <item name="android:checkable">false</item>
         <item name="iconSize">24dp</item>
-    </style>
-
-    <style name="ProFeaturesText">
-        <item name="android:textAppearance">?textAppearanceBodyLarge</item>
-        <item name="android:layout_marginStart">8dp</item>
-    </style>
-
-    <style name="ProFeaturesImage">
-        <item name="shapeAppearance">@style/roundedCorners</item>
-        <item name="android:layout_width">100dp</item>
-        <item name="android:layout_height">100dp</item>
-        <item name="android:layout_margin">8dp</item>
     </style>
 
     <style name="bottomSheetContent">

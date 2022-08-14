@@ -234,10 +234,8 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/search"
                 android:tooltipText="@string/search"
-                android:visibility="gone"
                 app:icon="@drawable/vd_search_play"
-                app:iconTint="?colorSecondary"
-                tools:visibility="visible" />
+                app:iconTint="?colorSecondary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/info_heart"

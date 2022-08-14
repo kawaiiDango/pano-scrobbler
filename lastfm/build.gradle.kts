@@ -4,11 +4,10 @@ plugins {
 
 android {
     namespace = "de.umass.lastfm"
-    compileSdk = 32
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
     }
 
     resourcePrefix = "lastfm_"
@@ -16,5 +15,5 @@ android {
 
 dependencies {
     implementation("androidx.annotation:annotation:1.4.0")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.9")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
 }

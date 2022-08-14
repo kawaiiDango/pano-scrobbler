@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WebView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:theme="@style/WebViewTheme"
-    android:id="@+id/webview"
-    android:forceDarkAllowed="true"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:forceDarkAllowed="true"
+        android:theme="@style/WebViewTheme" />
+
+    <View
+        android:id="@+id/touch_blocker_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.4"
+        android:background="@color/background_pure"
+        android:clickable="true"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</FrameLayout>

@@ -12,8 +12,8 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
     id ("com.github.triplet.play")
-    kotlin("plugin.serialization") version "1.6.20"
-    id("com.mikepenz.aboutlibraries.plugin") version "10.3.0"
+    kotlin("plugin.serialization") version "1.6.21"
+    id("com.mikepenz.aboutlibraries.plugin") version "10.4.0"
     id("com.github.breadmoirai.github-release") version "2.4.1"
 }
 
@@ -34,14 +34,12 @@ android {
         throw GradleException("Could not read version.txt!")
     }
 
-//    compileSdkPreview = "Tiramisu"
-    compileSdk = 32
+    compileSdk = 33
     defaultConfig {
         applicationId = "com.arn.scrobble"
         namespace = "com.arn.scrobble"
         minSdk = 21
-//        targetSdkPreview = "Tiramisu"
-        targetSdk = 32
+        targetSdk = 33
         versionCode = verCode
         versionName = "${verCode / 100}.${verCode % 100} - ${
             SimpleDateFormat("YYYY, MMM dd").format(Date())
@@ -103,36 +101,36 @@ aboutLibraries {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("androidx.appcompat:appcompat:1.4.2")
-    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.appcompat:appcompat:1.6.0-beta01")
+    implementation("androidx.core:core-ktx:1.9.0-beta01")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.media:media:1.6.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
-    implementation("androidx.navigation:navigation-ui-ktx:2.4.2")
-    kapt("androidx.room:room-compiler:2.4.2")
-    implementation("androidx.room:room-runtime:2.4.2")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.1")
+    implementation("androidx.navigation:navigation-ui-ktx:2.5.1")
+    kapt("androidx.room:room-compiler:2.4.3")
+    implementation("androidx.room:room-runtime:2.4.3")
     implementation("com.android.billingclient:billing:5.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.7.0-alpha02")
+    implementation("com.google.android.material:material:1.7.0-beta01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:30.1.0"))
+    implementation(platform("com.google.firebase:firebase-bom:30.3.2"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
 
     implementation("io.coil-kt:coil:2.1.0")
     implementation("io.coil-kt:coil-gif:2.1.0")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.9")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")
     implementation("hu.autsoft:krate-kotlinx:2.0.0")
@@ -140,8 +138,10 @@ dependencies {
     implementation("io.github.kawaiidango.kumo-android:kumo-core:1.28.1")
     implementation("io.michaelrocks.bimap:bimap:1.1.0")
     implementation("com.github.hadilq:live-event:1.3.0")
+    implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
+
 //    implementation("com.brandongogetap:stickyheaders:0.6.2")
-    implementation("com.mikepenz:aboutlibraries-core:10.3.0")
+    implementation("com.mikepenz:aboutlibraries-core:10.4.0")
     //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
 
     implementation(project(":lastfm"))
@@ -156,15 +156,15 @@ dependencies {
 // play store and github publishing scripts
 // remove if not needed
 
-val localProperties = gradleLocalProperties(rootDir)
+val localProperties = gradleLocalProperties(rootDir) as Map<String, String>
 
 android {
     signingConfigs {
         register("release") {
-            storeFile = file(localProperties["release.keystore"] as String)
-            storePassword = localProperties["release.storePassword"] as String
-            keyAlias = localProperties["release.alias"] as String
-            keyPassword = localProperties["release.password"] as String
+            storeFile = file(localProperties["release.keystore"]!!)
+            storePassword = localProperties["release.storePassword"]
+            keyAlias = localProperties["release.alias"]
+            keyPassword = localProperties["release.password"]
         }
     }
 
@@ -190,7 +190,7 @@ play {
 }
 
 githubRelease {
-    token(localProperties["github.token"] as String)
+    token(localProperties["github.token"])
     owner("kawaiidango")
     repo("pscrobbler")
     val changelog = file("src/main/play/release-notes/en-US/default.txt").readText() +

@@ -273,7 +273,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         anchor: View,
         userSerializable: UserSerializable
     ) {
-        val userLink = userSerializable.url ?: return
+        val userLink = userSerializable.url
         val popup =
             PopupWindow(contentBinding.root, anchor.measuredWidth, anchor.measuredHeight, true)
                 .apply {
@@ -319,8 +319,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             fun updatePinIndicator(isPinned: Boolean) {
                 if (username != null)
                     return
-                if (BuildConfig.DEBUG)
-                    contentBinding.friendsPin.visibility = View.VISIBLE
+                contentBinding.friendsPin.visibility = View.VISIBLE
                 contentBinding.friendsPin.setImageResource(
                     if (isPinned)
                         R.drawable.vd_pin_off

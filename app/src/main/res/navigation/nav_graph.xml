@@ -20,6 +20,18 @@
         <action
             android:id="@+id/action_homePagerFragment_to_searchExperimentFragment"
             app:destination="@id/searchExperimentFragment" />
+        <action
+            android:id="@+id/action_homePagerFragment_to_chartsPagerFragment"
+            app:destination="@id/chartsPagerFragment" />
+        <action
+            android:id="@+id/action_homePagerFragment_to_randomFragment"
+            app:destination="@id/randomFragment" />
+        <action
+            android:id="@+id/action_homePagerFragment_to_pendingScrFragment"
+            app:destination="@id/pendingScrFragment" />
+        <action
+            android:id="@+id/action_homePagerFragment_self2"
+            app:destination="@id/homePagerFragment" />
     </fragment>
     <fragment
         android:id="@+id/prefFragment"
@@ -31,6 +43,21 @@
         <action
             android:id="@+id/action_prefFragment_to_blockedMetadataFragment"
             app:destination="@id/blockedMetadataFragment" />
+        <action
+            android:id="@+id/action_prefFragment_to_themesFragment"
+            app:destination="@id/themesFragment" />
+        <action
+            android:id="@+id/action_prefFragment_to_simpleEditsFragment"
+            app:destination="@id/simpleEditsFragment" />
+        <action
+            android:id="@+id/action_prefFragment_to_regexEditsFragment"
+            app:destination="@id/regexEditsFragment" />
+        <action
+            android:id="@+id/action_prefFragment_to_licensesFragment"
+            app:destination="@id/licensesFragment" />
+        <action
+            android:id="@+id/action_prefFragment_to_deleteAccountFragment"
+            app:destination="@id/deleteAccountFragment" />
     </fragment>
     <fragment
         android:id="@+id/recFragment"
@@ -80,4 +107,111 @@
         android:id="@+id/blockedMetadataFragment"
         android:name="com.arn.scrobble.edits.BlockedMetadataFragment"
         android:label="BlockedMetadataFragment" />
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.arn.scrobble.onboarding.OnboardingFragment"
+        android:label="OnboardingFragment" >
+        <action
+            android:id="@+id/action_onboardingFragment_to_homePagerFragment"
+            app:destination="@id/homePagerFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/blockedMetadataAddDialogFragment"
+        android:name="com.arn.scrobble.edits.BlockedMetadataAddDialogFragment"
+        android:label="BlockedMetadataAddDialogFragment" />
+    <fragment
+        android:id="@+id/themesFragment"
+        android:name="com.arn.scrobble.themes.ThemesFragment"
+        android:label="ThemesFragment" />
+    <fragment
+        android:id="@+id/webViewFragment"
+        android:name="com.arn.scrobble.WebViewFragment"
+        android:label="WebViewFragment" />
+    <fragment
+        android:id="@+id/testFragment"
+        android:name="com.arn.scrobble.TestFragment"
+        android:label="TestFragment" />
+    <dialog
+        android:id="@+id/tagInfoFragment"
+        android:name="com.arn.scrobble.info.TagInfoFragment"
+        android:label="TagInfoFragment" />
+    <fragment
+        android:id="@+id/simpleEditsFragment"
+        android:name="com.arn.scrobble.edits.SimpleEditsFragment"
+        android:label="SimpleEditsFragment" />
+    <fragment
+        android:id="@+id/regexEditsFragment"
+        android:name="com.arn.scrobble.edits.RegexEditsFragment"
+        android:label="RegexEditsFragment" >
+        <action
+            android:id="@+id/action_regexEditsFragment_to_regexEditsAddDialogFragment"
+            app:destination="@id/regexEditsAddDialogFragment" />
+        <action
+            android:id="@+id/action_regexEditsFragment_to_regexEditsTestDialogFragment"
+            app:destination="@id/regexEditsTestDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/regexEditsAddDialogFragment"
+        android:name="com.arn.scrobble.edits.RegexEditsAddDialogFragment"
+        android:label="RegexEditsAddDialogFragment" />
+    <dialog
+        android:id="@+id/userTagsFragment"
+        android:name="com.arn.scrobble.info.UserTagsFragment"
+        android:label="UserTagsFragment" />
+    <dialog
+        android:id="@+id/fixItFragment"
+        android:name="com.arn.scrobble.FixItFragment"
+        android:label="FixItFragment" />
+    <dialog
+        android:id="@+id/hiddenTagsFragment"
+        android:name="com.arn.scrobble.charts.HiddenTagsFragment"
+        android:label="HiddenTagsFragment" />
+    <fragment
+        android:id="@+id/licensesFragment"
+        android:name="com.arn.scrobble.pref.LicensesFragment"
+        android:label="LicensesFragment" />
+    <dialog
+        android:id="@+id/loginFragment"
+        android:name="com.arn.scrobble.LoginFragment"
+        android:label="LoginFragment" />
+    <fragment
+        android:id="@+id/randomFragment"
+        android:name="com.arn.scrobble.RandomFragment"
+        android:label="RandomFragment" />
+    <fragment
+        android:id="@+id/deleteAccountFragment"
+        android:name="com.arn.scrobble.pref.DeleteAccountFragment"
+        android:label="DeleteAccountFragment" />
+    <dialog
+        android:id="@+id/editDialogFragment"
+        android:name="com.arn.scrobble.edits.EditDialogFragment"
+        android:label="EditDialogFragment" />
+    <dialog
+        android:id="@+id/infoFragment"
+        android:name="com.arn.scrobble.info.InfoFragment"
+        android:label="InfoFragment" />
+    <fragment
+        android:id="@+id/infoExtraFullFragment"
+        android:name="com.arn.scrobble.info.InfoExtraFullFragment"
+        android:label="InfoExtraFullFragment" />
+    <dialog
+        android:id="@+id/infoExtraFragment"
+        android:name="com.arn.scrobble.info.InfoExtraFragment"
+        android:label="InfoExtraFragment" />
+    <dialog
+        android:id="@+id/regexEditsTestDialogFragment"
+        android:name="com.arn.scrobble.edits.RegexEditsTestDialogFragment"
+        android:label="RegexEditsTestDialogFragment" />
+    <dialog
+        android:id="@+id/monthPickerFragment"
+        android:name="com.arn.scrobble.charts.MonthPickerFragment"
+        android:label="MonthPickerFragment" />
+    <fragment
+        android:id="@+id/pendingScrFragment"
+        android:name="com.arn.scrobble.pending.PendingScrFragment"
+        android:label="PendingScrFragment" />
+    <fragment
+        android:id="@+id/trackHistoryFragment"
+        android:name="com.arn.scrobble.recents.TrackHistoryFragment"
+        android:label="TrackHistoryFragment" />
 </navigation>

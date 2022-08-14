@@ -67,7 +67,7 @@ class BillingFragment : Fragment() {
             R.drawable.vd_palette to getString(R.string.pref_themes),
             R.drawable.vd_apps to getString(R.string.pref_show_scrobble_sources),
             R.drawable.vd_ban to getString(R.string.billing_block),
-//            R.drawable.vd_pin to getString(R.string.billing_pin_friends, 10),
+            R.drawable.vd_pin to getString(R.string.billing_pin_friends, 10),
             R.drawable.vd_share to getString(R.string.billing_sharing),
         )
 

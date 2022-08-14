@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.friends.UserSerializable
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.User

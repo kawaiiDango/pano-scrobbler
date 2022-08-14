@@ -133,7 +133,7 @@ class DigestJob : JobService() {
             )
 
             val nb = NotificationCompat.Builder(applicationContext, channelId)
-                .setColor(ColorPatchUtils.getNotiColor(applicationContext))
+                .apply { setColor(ColorPatchUtils.getNotiColor(applicationContext) ?: return@apply) }
                 .setSmallIcon(R.drawable.vd_charts)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentTitle(title)

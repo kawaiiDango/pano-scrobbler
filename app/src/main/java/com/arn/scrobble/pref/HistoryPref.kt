@@ -36,4 +36,12 @@ class HistoryPref(
         history.remove(term)
         history.add(0, term)
     }
+
+    fun remove(term: String) {
+        history.remove(term)
+    }
+
+    fun removeAll() {
+        history.clear()
+    }
 }

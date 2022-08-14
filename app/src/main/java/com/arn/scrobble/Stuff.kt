@@ -46,6 +46,7 @@ import kotlin.math.pow
 
 object Stuff {
     const val SCROBBLER_PROCESS_NAME = "bgScrobbler"
+    const val DEEPLINK_PROTOCOL_NAME = "pscrobbler"
     const val TAG_HOME_PAGER = "home_pager"
     const val TAG_CHART_PAGER = "chart_pager"
     const val TAG_FIRST_THINGS = "first_things"
@@ -136,9 +137,9 @@ object Stuff {
         ACTION_NOTIFICATION_LISTENER_SETTINGS
     else "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
     val LASTFM_AUTH_CB_URL =
-        "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=pscrobble://auth/lastfm"
+        "https://www.last.fm/api/auth?api_key=$LAST_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/lastfm"
     const val LIBREFM_AUTH_CB_URL =
-        "https://www.libre.fm/api/auth?api_key=$LIBREFM_KEY&cb=pscrobble://auth/librefm"
+        "https://www.libre.fm/api/auth?api_key=$LIBREFM_KEY&cb=$DEEPLINK_PROTOCOL_NAME://auth/librefm"
 
     private var timeIt = 0L
 
@@ -241,7 +242,7 @@ object Stuff {
 
     val updateCurrentOrMutable: Int
         get() {
-            if (Build.VERSION.SDK_INT >= 31)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 return PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             return PendingIntent.FLAG_UPDATE_CURRENT
         }
@@ -636,16 +637,18 @@ object Stuff {
     ): List<ApplicationExitInfo> {
         return try {
             val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 20)
-            if (printAll) {
-                exitReasons.take(5).forEachIndexed { index, applicationExitInfo ->
-                    Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
-                }
-            }
+            val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 30)
+
             exitReasons.filter {
                 it.processName == "$packageName:$SCROBBLER_PROCESS_NAME"
-                        && it.reason == ApplicationExitInfo.REASON_OTHER
+//                        && it.reason == ApplicationExitInfo.REASON_OTHER
                         && it.timestamp > afterTime
+            }.also {
+                if (printAll) {
+                    it.take(5).forEachIndexed { index, applicationExitInfo ->
+                        Timber.tag("exitReasons").w("${index + 1}. $applicationExitInfo")
+                    }
+                }
             }
         } catch (e: Exception) {
             emptyList()

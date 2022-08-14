@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.getOrDefaultKey
@@ -17,7 +16,8 @@ object ColorPatchUtils {
     const val primaryDefault = "Sakurapink"
     const val secondaryDefault = "Deeporange"
 
-    fun setTheme(context: Context, proStatus: Boolean) {
+    // before Activity.onCreate
+    fun setDarkMode(context: Context, proStatus: Boolean) {
         val prefs = MainPrefs(context)
 
         var dayNightConstant = prefs.themeDayNight
@@ -30,6 +30,22 @@ object ColorPatchUtils {
             dayNightConstant = AppCompatDelegate.MODE_NIGHT_YES
         }
         AppCompatDelegate.setDefaultNightMode(dayNightConstant)
+    }
+
+    // after Activity.onCreate
+    fun setTheme(context: Context, proStatus: Boolean) {
+        val prefs = MainPrefs(context)
+
+//        var dayNightConstant = prefs.themeDayNight
+//        if (dayNightConstant !in arrayOf(
+//                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+//                AppCompatDelegate.MODE_NIGHT_YES,
+//                AppCompatDelegate.MODE_NIGHT_NO
+//            ) || !proStatus
+//        ) {
+//            dayNightConstant = AppCompatDelegate.MODE_NIGHT_YES
+//        }
+//        AppCompatDelegate.setDefaultNightMode(dayNightConstant)
 
         if (prefs.themeDynamic && DynamicColors.isDynamicColorAvailable() && proStatus) {
             if (prefs.themeTintBackground)
@@ -82,11 +98,11 @@ object ColorPatchUtils {
             context.theme.applyStyle(R.style.ColorPatchManual_Pure_Background, true)
     }
 
-    fun getNotiColor(context: Context): Int {
+    fun getNotiColor(context: Context): Int? {
         val prefs = MainPrefs(context)
 
         if (prefs.proStatus && prefs.themeDynamic && DynamicColors.isDynamicColorAvailable())
-            return ContextCompat.getColor(context, android.R.color.system_accent1_200)
+            return null
 
         val primaryStyle = if (prefs.proStatus)
             prefs.themePrimary

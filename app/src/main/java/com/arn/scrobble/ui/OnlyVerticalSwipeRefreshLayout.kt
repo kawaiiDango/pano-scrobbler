@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.arn.scrobble.Stuff
 import kotlin.math.abs
 
 // https://stackoverflow.com/a/34224634/1067596

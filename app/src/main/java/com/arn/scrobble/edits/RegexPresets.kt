@@ -1,7 +1,6 @@
 package com.arn.scrobble.edits
 
 import android.content.Context
-import androidx.annotation.StringRes
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.db.RegexEdit

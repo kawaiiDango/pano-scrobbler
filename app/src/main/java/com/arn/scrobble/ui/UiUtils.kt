@@ -64,6 +64,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
+import de.umass.lastfm.Album
+import de.umass.lastfm.Artist
+import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 import kotlin.math.abs
 import kotlin.math.max
@@ -306,7 +309,7 @@ object UiUtils {
                 }
 
                 if (iconTintColor != null)
-                    item.icon.setTint(iconTintColor)
+                    item.icon?.setTint(iconTintColor)
             }
         }
     }
@@ -420,11 +423,31 @@ object UiUtils {
         )
     }
 
-    fun launchSearchIntent(context: Context, track: Track, pkgName: String?) {
-        launchSearchIntent(context, track.name, track.artist, pkgName)
+    fun launchSearchIntent(context: Context, musicEntry: MusicEntry, pkgName: String?) {
+        var searchQueryFirst = ""
+        var searchQuerySecond = ""
+
+        when(musicEntry) {
+            is Artist -> {
+                searchQueryFirst = musicEntry.name
+            }
+            is Album -> {
+                searchQueryFirst = musicEntry.artist
+                searchQuerySecond = musicEntry.name
+            }
+            is Track -> {
+                searchQueryFirst = musicEntry.artist
+                searchQuerySecond = musicEntry.name
+            }
+        }
+
+        launchSearchIntent(context, searchQueryFirst, searchQuerySecond, pkgName)
     }
 
-    fun launchSearchIntent(context: Context, artist: String, track: String, pkgName: String?) {
+    private fun launchSearchIntent(context: Context, artist: String, track: String, pkgName: String?) {
+        if (artist.isEmpty() && track.isEmpty())
+            return
+
         val prefs = MainPrefs(context)
 
         if (BuildConfig.DEBUG && Stuff.isWindows11 && prefs.songSearchUrl.isNotEmpty()) { // open song urls in windows browser for me
@@ -437,9 +460,19 @@ object UiUtils {
 
         val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
-            putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
-            putExtra(SearchManager.QUERY, "$artist $track")
+
+            if (artist.isNotEmpty())
+                putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
+            if (track.isNotEmpty())
+                putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
+
+            val query = when {
+                artist.isEmpty() -> track
+                track.isEmpty() -> artist
+                else -> "$artist $track"
+            }
+            putExtra(SearchManager.QUERY, query)
+
             if (pkgName != null && prefs.proStatus && prefs.showScrobbleSources && prefs.searchInSource)
                 `package` = pkgName
         }
@@ -604,6 +637,10 @@ object UiUtils {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun View.postRequestFocus() {
+        post { requestFocus() }
     }
 
     val Context.hasMouse: Boolean

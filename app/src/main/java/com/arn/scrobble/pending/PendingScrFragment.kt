@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.PopupMenuUtils
 import com.arn.scrobble.recents.TracksVM

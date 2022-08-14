@@ -364,11 +364,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
         if (!isShowingLoves) {
             coordinatorBinding.heroCalendar.setOnClickListener { view ->
-                if (!BuildConfig.DEBUG) {
-                    openCalendar()
-                    return@setOnClickListener
-                }
-
                 val anchorTime = viewModel.toTime ?: System.currentTimeMillis()
                 val timePeriodsToIcons =
                     TimePeriodsGenerator(registeredTime, anchorTime, context!!).recentsTimeJumps
@@ -774,7 +769,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     .setValidator(object : CalendarConstraints.DateValidator {
                         override fun describeContents() = 0
 
-                        override fun writeToParcel(p0: Parcel?, p1: Int) {}
+                        override fun writeToParcel(p0: Parcel, p1: Int) {}
 
                         override fun isValid(date: Long) = date in registeredTime..endTime
                     })
@@ -788,12 +783,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             loadRecents(1, true)
         }
 
-        if (!BuildConfig.DEBUG) {
-            dpd.addOnNegativeButtonClickListener {
-                if (viewModel.toTime != null) {
-                    viewModel.toTime = null
-                    loadRecents(1, true)
-                }
+        dpd.addOnNegativeButtonClickListener {
+            if (viewModel.toTime != null) {
+                viewModel.toTime = null
+                loadRecents(1, true)
             }
         }
 

@@ -90,39 +90,31 @@ object PopupMenuUtils {
         val popup = PopupMenu(context, anchor)
         popup.menuInflater.inflate(R.menu.pending_item_menu, popup.menu)
 
+        val servicesList = mutableListOf<String>()
+        @StringRes
+        val state = when (p) {
+            is PendingScrobble -> p.state
+            is PendingLove -> p.state
+            else -> throw RuntimeException("Not a Pending Item")
+        }
+        Stuff.SERVICE_BIT_POS.forEach { (id, pos) ->
+            if (state and (1 shl pos) != 0)
+                servicesList += context.getString(id)
+        }
+
         if (p is PendingLove)
             popup.menu.removeItem(R.id.menu_love)
 
+        if (servicesList.size == 1)
+            popup.menu.removeItem(R.id.menu_services)
+
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.menu_details -> {
-                    val servicesList = mutableListOf<String>()
-                    val state: Int
-
-                    @StringRes
-                    val actionRes: Int
-                    if (p is PendingScrobble) {
-                        state = p.state
-                        actionRes = R.string.scrobble
-                    } else if (p is PendingLove) {
-                        state = p.state
-                        actionRes = if (p.shouldLove)
-                            R.string.love
-                        else
-                            R.string.unlove
-                    } else
-                        throw RuntimeException("Not a Pending Item")
-                    Stuff.SERVICE_BIT_POS.forEach { (id, pos) ->
-                        if (state and (1 shl pos) != 0)
-                            servicesList += context.getString(id)
-                    }
+                R.id.menu_services -> {
                     MaterialAlertDialogBuilder(context)
                         .setMessage(
-                            context.getString(
-                                R.string.details_text,
-                                context.getString(actionRes).lowercase(),
+                            context.getString(R.string.scrobble_services) +
                                 servicesList.joinToString(", ")
-                            )
                         )
                         .setPositiveButton(android.R.string.ok, null)
                         .show()

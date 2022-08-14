@@ -208,7 +208,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                     .setValidator(object : CalendarConstraints.DateValidator {
                         override fun describeContents() = 0
 
-                        override fun writeToParcel(p0: Parcel?, p1: Int) {}
+                        override fun writeToParcel(p0: Parcel, p1: Int) {}
 
                         override fun isValid(date: Long): Boolean {
                             return date in validTimesUTC
@@ -246,7 +246,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                     .setValidator(object : CalendarConstraints.DateValidator {
                         override fun describeContents() = 0
 
-                        override fun writeToParcel(p0: Parcel?, p1: Int) {}
+                        override fun writeToParcel(p0: Parcel, p1: Int) {}
 
                         override fun isValid(date: Long) = date in registeredTime..time
                     })

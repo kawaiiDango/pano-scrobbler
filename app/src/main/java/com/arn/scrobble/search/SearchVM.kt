@@ -9,7 +9,6 @@ import com.arn.scrobble.ui.SectionedVirtualList
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
-import kotlinx.coroutines.Job
 
 
 class SearchVM(app: Application) : AndroidViewModel(app) {
@@ -18,12 +17,12 @@ class SearchVM(app: Application) : AndroidViewModel(app) {
     val indexingProgress by lazy { MutableLiveData<Double>(null) }
     private var searchJob: LFMRequester? = null
 
-    fun loadSearches(term: String, searchType: SearchResultsExperimentAdapter.SearchType) {
+    fun loadSearches(term: String, searchType: SearchResultsAdapter.SearchType) {
         searchJob?.cancel()
         searchJob = LFMRequester(getApplication(), viewModelScope, searchResults).apply {
             when (searchType) {
-                SearchResultsExperimentAdapter.SearchType.GLOBAL -> getSearches(term)
-                SearchResultsExperimentAdapter.SearchType.LOCAL -> getLocalSearches(term)
+                SearchResultsAdapter.SearchType.GLOBAL -> getSearches(term)
+                SearchResultsAdapter.SearchType.LOCAL -> getLocalSearches(term)
             }
         }
     }
@@ -38,7 +37,7 @@ class SearchVM(app: Application) : AndroidViewModel(app) {
 
     class SearchResults(
         val term: String,
-        val searchType: SearchResultsExperimentAdapter.SearchType,
+        val searchType: SearchResultsAdapter.SearchType,
         val lovedTracks: List<Track>,
         val tracks: List<Track>,
         val artists: List<Artist>,

@@ -235,8 +235,6 @@ class RandomFragment : ChartsPeriodFragment() {
         )
 
         binding.itemName.text = musicEntry.name
-        var searchQueryFirst = ""
-        var searchQuerySecond = ""
 
         when (musicEntry) {
             is Track -> {
@@ -246,24 +244,16 @@ class RandomFragment : ChartsPeriodFragment() {
                 binding.trackDate.visibility = View.VISIBLE
                 binding.trackDate.text =
                     Stuff.myRelativeTime(context!!, musicEntry.playedWhen?.time ?: 0)
-
-                searchQueryFirst = musicEntry.artist
-                searchQuerySecond = musicEntry.name
             }
             is Album -> {
                 binding.itemArtist.visibility = View.VISIBLE
                 binding.itemArtist.text = musicEntry.artist
 
                 binding.trackDate.visibility = View.GONE
-
-                searchQueryFirst = musicEntry.artist
-                searchQuerySecond = musicEntry.name
             }
             is Artist -> {
                 binding.itemArtist.visibility = View.GONE
                 binding.trackDate.visibility = View.GONE
-
-                searchQueryFirst = musicEntry.name
             }
         }
 
@@ -298,7 +288,7 @@ class RandomFragment : ChartsPeriodFragment() {
         arrayOf(binding.randomPlay, binding.randomPlayFiller)
             .forEach {
                 it.setOnClickListener {
-                    UiUtils.launchSearchIntent(context!!, searchQueryFirst, searchQuerySecond, null)
+                    UiUtils.launchSearchIntent(context!!, musicEntry, null)
                 }
             }
         val imgUrl =

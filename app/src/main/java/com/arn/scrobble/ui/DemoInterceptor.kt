@@ -3,7 +3,6 @@ package com.arn.scrobble.ui
 import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
-import com.arn.scrobble.R
 
 class DemoInterceptor : Interceptor {
 

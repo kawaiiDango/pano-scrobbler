@@ -1,6 +1,5 @@
 package com.arn.scrobble
 
-import de.umass.lastfm.scrobble.ScrobbleData
 import java.util.*
 
 

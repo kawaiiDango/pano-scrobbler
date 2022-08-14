@@ -17,13 +17,13 @@ class GridScaleGestureDetector(
         return true
     }
 
-    override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
+    override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
         cumulativeScaleFactor = 1f
         inProgress = true
         return true
     }
 
-    override fun onScaleEnd(detector: ScaleGestureDetector?) {
+    override fun onScaleEnd(detector: ScaleGestureDetector) {
         onScaleEnd(cumulativeScaleFactor)
 
         view.scaleX = 1f

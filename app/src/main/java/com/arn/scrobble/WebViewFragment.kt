@@ -10,8 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.databinding.ContentWebviewBinding
 import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.startFadeLoop
 import com.arn.scrobble.ui.UiUtils.toast
 import okhttp3.Cookie
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -30,6 +33,7 @@ class WebViewFragment : Fragment() {
         get() = arguments?.getBoolean(Stuff.ARG_SAVE_COOKIES) ?: false
     private val isTlsNoVerify
         get() = arguments?.getBoolean(Stuff.ARG_TLS_NO_VERIFY) ?: false
+    private val viewModel by viewModels<WebViewVM>()
 
 
     override fun onCreateView(
@@ -43,17 +47,28 @@ class WebViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.webview.webViewClient = MyWebViewClient()
+        // In Android O and afterwards, this function does not have any effect, the form data will be saved to platform's autofill service if applicable.
         binding.webview.settings.saveFormData = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && resources.getBoolean(R.bool.is_dark)) {
             binding.webview.settings.forceDark = WebSettings.FORCE_DARK_ON
         }
-        // In Android O and afterwards, this function does not have any effect, the form data will be saved to platform's autofill service if applicable.
 //        webview.settings.javaScriptEnabled =true
 
         binding.webview.loadUrl(url)
         if (!binding.webview.isInTouchMode)
             binding.webview.requestFocus()
-        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.callbackProcessedLd.observe(viewLifecycleOwner) { done ->
+            if (done == true) {
+                binding.webview.clearAnimation()
+
+                try {
+                    parentFragmentManager.popBackStack()
+                } catch (e: IllegalStateException) {
+                    view.context!!.toast(R.string.press_back)
+                }
+            }
+        }
     }
 
     /*
@@ -77,9 +92,14 @@ class WebViewFragment : Fragment() {
         super.onDestroyView()
     }
 
-    inner class MyWebViewClient : WebViewClient() {
-        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-            if (url.startsWith("pscrobble://auth/lastfm?")) {
+    private fun handleCallbackUrl(url: String): Boolean {
+        val uri = Uri.parse(url)
+        val path = uri.path ?: return false
+        if (uri.scheme != Stuff.DEEPLINK_PROTOCOL_NAME)
+            return false
+        val token = uri.getQueryParameter("token") ?: return false
+        when (path) {
+            "/lastfm" -> {
                 if (saveCookies) {
                     val httpUrl = "https://www.last.fm/".toHttpUrl()
                     val cookieString =
@@ -110,9 +130,35 @@ class WebViewFragment : Fragment() {
                     val unscrobbler = LastfmUnscrobbler(context)
                     unscrobbler.putCookies(httpUrl, cookies)
                 }
+
+                LFMRequester(context!!, viewModel.viewModelScope, viewModel.callbackProcessedLd)
+                    .doAuth(R.string.lastfm, token)
             }
+            "/librefm" -> {
+                LFMRequester(context!!, viewModel.viewModelScope, viewModel.callbackProcessedLd)
+                    .doAuth(R.string.librefm, token)
+            }
+            "/gnufm" -> {
+                LFMRequester(context!!, viewModel.viewModelScope, viewModel.callbackProcessedLd)
+                    .doAuth(R.string.gnufm, token)
+            }
+            else -> {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private fun disableWebviewClicks() {
+        binding.touchBlockerOverlay.visibility = View.VISIBLE
+    }
+
+    inner class MyWebViewClient : WebViewClient() {
+        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+
             if (
-                url.startsWith("pscrobble://auth/") ||
+//                url.startsWith("${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/") ||
                 url.startsWith("https://www.last.fm/join") ||
                 url.startsWith("https://secure.last.fm/settings/lostpassword")
             ) {
@@ -125,7 +171,14 @@ class WebViewFragment : Fragment() {
                 }
                 return true
             }
-            return false
+
+            val callbackHandled = handleCallbackUrl(url)
+            if (callbackHandled) {
+                disableWebviewClicks()
+                binding.webview.startFadeLoop()
+            }
+
+            return callbackHandled
         }
 
         override fun onReceivedError(

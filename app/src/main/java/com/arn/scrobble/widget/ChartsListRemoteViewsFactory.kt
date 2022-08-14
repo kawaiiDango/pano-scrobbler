@@ -112,7 +112,7 @@ class ChartsListRemoteViewsFactory(private val context: Context, intent: Intent)
         return rv
     }
 
-    override fun getLoadingView(): RemoteViews? {
+    override fun getLoadingView(): RemoteViews {
         // You can create a custom loading view (for instance when getViewAt() is slow.) If you
         // return null here, you will get the default loading view.
         return RemoteViews(context.packageName, R.layout.appwidget_list_loading)

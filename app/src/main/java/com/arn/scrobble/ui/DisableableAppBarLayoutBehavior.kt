@@ -76,7 +76,7 @@ class DisableableAppBarLayoutBehavior(context: Context, attrs: AttributeSet? = n
     }
 
     private fun setDragCallback() {
-        setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+        setDragCallback(object : DragCallback() {
             override fun canDrag(appBarLayout: AppBarLayout): Boolean {
                 return isEnabled
             }

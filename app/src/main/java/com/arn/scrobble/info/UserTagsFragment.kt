@@ -20,6 +20,7 @@ import com.arn.scrobble.databinding.DialogUserTagsBinding
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils
+import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
@@ -37,11 +38,42 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         )
     }
     private val historyAdapter by lazy {
-        ArrayAdapter(
+        object : ArrayAdapter<String>(
             context!!,
             R.layout.list_item_history,
             historyPref.history
-        )
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val historyTextView = super.getView(position, convertView, parent)
+                if (convertView == null) {
+                    historyTextView.setOnClickListener {
+                        val item = getItem(position)!!
+                        hideKeyboard()
+                        binding.userTagsInputEdittext.setText(item, false)
+                        binding.userTagsInputEdittext.clearFocus()
+                    }
+                    historyTextView.setOnLongClickListener {
+                        MaterialAlertDialogBuilder(context)
+                            .setMessage(R.string.clear_history_specific)
+                            .setPositiveButton(R.string.yes) { dialogInterface, i ->
+                                val item = getItem(position)!!
+                                historyPref.remove(item)
+                                remove(item)
+                                notifyDataSetChanged()
+                            }
+                            .setNegativeButton(R.string.no, null)
+                            .setNeutralButton(R.string.clear_all_history) { dialogInterface, i ->
+                                historyPref.removeAll()
+                                clear()
+                                notifyDataSetChanged()
+                            }
+                            .show()
+                        false
+                    }
+                }
+                return historyTextView
+            }
+        }
     }
     private var _binding: DialogUserTagsBinding? = null
     private val binding

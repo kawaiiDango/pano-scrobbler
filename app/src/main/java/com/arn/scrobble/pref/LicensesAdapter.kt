@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemLicenseBinding
 import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.mikepenz.aboutlibraries.Libs

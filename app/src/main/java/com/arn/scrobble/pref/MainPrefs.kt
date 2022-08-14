@@ -2,12 +2,11 @@ package com.arn.scrobble.pref
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.search.SearchResultsExperimentAdapter
+import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils.isTv
 import com.frybits.harmony.getHarmonySharedPreferences
@@ -15,8 +14,6 @@ import de.umass.lastfm.Period
 import hu.autsoft.krate.*
 import hu.autsoft.krate.default.withDefault
 import hu.autsoft.krate.kotlinx.kotlinxPref
-import java.util.concurrent.TimeUnit
-import kotlin.math.max
 
 class MainPrefs(context: Context) : Krate {
 
@@ -47,8 +44,8 @@ class MainPrefs(context: Context) : Krate {
     var fetchAlbumArtist by booleanPref(PREF_FETCH_AA).withDefault(false)
     var searchInSource by booleanPref(PREF_SEARCH_IN_SOURCE).withDefault(false)
     var crashlyticsEnabled by booleanPref(PREF_CRASHLYTICS_ENABLED).withDefault(true)
-    var searchType by kotlinxPref<SearchResultsExperimentAdapter.SearchType>(PREF_SEARCH_TYPE).withDefault(
-        SearchResultsExperimentAdapter.SearchType.GLOBAL
+    var searchType by kotlinxPref<SearchResultsAdapter.SearchType>(PREF_SEARCH_TYPE).withDefault(
+        SearchResultsAdapter.SearchType.GLOBAL
     )
 
     var locale by stringPref(PREF_LOCALE)
@@ -138,6 +135,7 @@ class MainPrefs(context: Context) : Krate {
     var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(emptySet())
     var pinnedFriendsJson by kotlinxPref<List<UserSerializable>>(PREF_ACTIVITY_PINNED_FRIENDS)
         .withDefault(emptyList())
+    var touhouCircles by stringPref(PREF_TOUHOU_CIRCLES).withDefault("")
 
     var songSearchUrl by stringPref(PREF_ACTIVITY_SONG_SEARCH_URL).withDefault("https://www.youtube.com/results?search_query=\$artist+\$title")
 
@@ -197,6 +195,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_SEARCH_TYPE = "search_type"
         const val PREF_CRASHLYTICS_ENABLED = "crashlytics_enabled"
         const val PREF_LASTFM_USER = "lastfm_user"
+        const val PREF_TOUHOU_CIRCLES = "touhou_circles"
 
         const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
         const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"

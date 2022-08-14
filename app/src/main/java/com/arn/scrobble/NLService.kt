@@ -21,6 +21,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.media.app.MediaStyleMod
+import com.arn.scrobble.LocaleUtils.getStringInDeviceLocale
+import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.PlayerActions.love
 import com.arn.scrobble.PlayerActions.skip
 import com.arn.scrobble.PlayerActions.unlove
@@ -50,7 +52,7 @@ class NLService : NotificationListenerService() {
     private var lastNpTask: LFMRequester? = null
     private lateinit var coroutineScope: CoroutineScope
     private var currentBundle = Bundle()
-    private var notiColor = Color.MAGENTA
+    private var notiColor: Int? = Color.MAGENTA
     private var job: Job? = null
     private var browserPackages: Set<String> = mutableSetOf()
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
@@ -61,6 +63,10 @@ class NLService : NotificationListenerService() {
         super.onCreate()
 //        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
         init()
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase?.setLocaleCompat() ?: return)
     }
 
     //from https://gist.github.com/xinghui/b2ddd8cffe55c4b62f5d8846d5545bf9
@@ -167,7 +173,6 @@ class NLService : NotificationListenerService() {
 //        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 //        isOnline = cm.activeNetworkInfo?.isConnected == true
         DigestJob.scheduleAlarms(applicationContext)
-        sendBroadcast(Intent(iNLS_STARTED_S), BROADCAST_PERMISSION)
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
 //        if (!BuildConfig.DEBUG)
         coroutineScope.launch {
@@ -353,7 +358,7 @@ class NLService : NotificationListenerService() {
                     handler.remove(currentBundle.getInt(B_HASH))
                     return
                 }
-                val meta = MetadataUtils.scrobbleFromNotiExtractMeta(notiText, getString(format))
+                val meta = MetadataUtils.scrobbleFromNotiExtractMeta(notiText, getStringInDeviceLocale(format))
                 if (meta != null) {
                     val (artist, title) = meta
                     val hash = Stuff.genHashCode(artist, "", title, sbn.packageName)
@@ -746,7 +751,7 @@ class NLService : NotificationListenerService() {
                 NotificationCompat.VISIBILITY_SECRET
             return NotificationCompat.Builder(applicationContext)
                 .setShowWhen(false)
-                .setColor(notiColor)
+                .apply { setColor(notiColor ?: return@apply) }
                 .setAutoCancel(true)
                 .setCustomBigContentView(null)
                 .setVisibility(visibility)
@@ -1111,8 +1116,6 @@ class NLService : NotificationListenerService() {
         const val iSCROBBLER_ON = "com.arn.scrobble.SCROBBLER_ON"
         const val iSCROBBLER_OFF = "com.arn.scrobble.SCROBBLER_OFF"
 
-        const val iNLS_STARTED_S = "com.arn.scrobble.NLS_STARTED"
-        const val iSESS_CHANGED_S = "com.arn.scrobble.SESS_CHANGED"
         const val iMETA_UPDATE_S = "com.arn.scrobble.iMETA_UPDATE"
         const val iOTHER_ERR_S = "com.arn.scrobble.OTHER_ERR"
         const val iBAD_META_S = "com.arn.scrobble.BAD_META"

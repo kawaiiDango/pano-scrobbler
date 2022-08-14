@@ -20,10 +20,10 @@
     <string name="preset_explicit" translatable="false">Explicit</string>
     <string name="preset_album_version" translatable="false">Album version</string>
 
-<!-- strings for features not finalized  -->
+<!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
     <string name="force_exception" translatable="false">Force log an exception</string>
     <string name="touhou_circles" translatable="false">2hu circles (newline separated)</string>
-    <string name="debug" translatable="false">Debug</string>
+    <string name="debug_menu" translatable="false">Shrine maiden\'s menu</string>
 
 </resources>

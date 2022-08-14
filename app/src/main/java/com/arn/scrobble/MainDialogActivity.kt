@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.arn.scrobble.LocaleUtils.getLocaleContextWrapper
+import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.edits.BlockedMetadataAddDialogFragment
@@ -15,9 +15,10 @@ class MainDialogActivity : AppCompatActivity() {
     private val billingViewModel by viewModels<BillingViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
 
+        ColorPatchUtils.setDarkMode(this, billingViewModel.proStatus.value == true)
         super.onCreate(savedInstanceState)
+        ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
 
         val dialogFragment = when {
             intent.extras?.getParcelable(Stuff.ARG_DATA) as? BlockedMetadata != null -> {
@@ -39,13 +40,11 @@ class MainDialogActivity : AppCompatActivity() {
             if (supportFragmentManager.backStackEntryCount == 0)
                 finish()
         }
-//        if (savedInstanceState == null) {
-//        }
     }
 
     override fun attachBaseContext(newBase: Context?) {
-        if (newBase != null)
-            super.attachBaseContext(newBase.getLocaleContextWrapper())
+        super.attachBaseContext(newBase ?: return)
+        setLocaleCompat()
     }
 
 }

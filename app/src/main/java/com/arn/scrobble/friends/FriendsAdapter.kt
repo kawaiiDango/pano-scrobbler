@@ -117,7 +117,7 @@ class FriendsAdapter(
             isPinned = viewModel.isPinned(userSerializable.name)
 
             binding.friendsName.text =
-                (if (userSerializable.realname.isNullOrEmpty()) userSerializable.name else userSerializable.realname) +
+                (if (userSerializable.realname.isEmpty()) userSerializable.name else userSerializable.realname) +
                         (if (isPinned) " 📍" else "")
 
             if (Stuff.DEMO_MODE)

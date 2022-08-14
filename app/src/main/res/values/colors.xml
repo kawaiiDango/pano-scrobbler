@@ -21,10 +21,8 @@
     <color name="pinkSurfaceVariant">#45EBC4CF</color>
 
     <color name="img_border">#B3000000</color>
-    <color name="overlay_center">#A6FFFFFF</color>
-    <color name="overlay_end">#CCFFFFFF</color>
-    <color name="overlay_hero_center">#B3FFFFFF</color>
-    <color name="overlay_hero_end">#D9FFFFFF</color>
+    <color name="overlay_center">#74FFFFFF</color>
+    <color name="overlay_end">#B3FFFFFF</color>
     <color name="background_pure">#FFF</color>
     <color name="foreground_pure">#000</color>
     <color name="background_gray">#dedede</color>

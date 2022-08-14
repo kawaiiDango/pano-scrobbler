@@ -1,7 +1,6 @@
 package com.arn.scrobble.scrobbleable
 
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Tokens
 import de.umass.lastfm.CallException
 import de.umass.lastfm.Result
 import de.umass.lastfm.Session

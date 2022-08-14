@@ -2,11 +2,6 @@ package com.arn.scrobble.charts
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.pref.HistoryPref
-import de.umass.lastfm.MusicEntry
 import io.michaelrocks.bimap.BiMap
 
 

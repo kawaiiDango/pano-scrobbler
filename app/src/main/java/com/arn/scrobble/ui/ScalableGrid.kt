@@ -57,7 +57,7 @@ class ScalableGrid(
         initColumnCounts()
     }
 
-    fun initColumnCounts() {
+    private fun initColumnCounts() {
         val totalWidth = context.resources.displayMetrics.widthPixels
         defaultNumCols = (totalWidth /
                 context.resources.getDimension(R.dimen.grid_size)).roundToInt()

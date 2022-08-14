@@ -158,7 +158,6 @@
 - Ricevi la lista dei tuoi artisti, album e brani più ascoltati della settimana
 - E altro ancora
 - Le notifiche non sono sonore\"\""</string>
-    <string name="authenticate_with_lastfm" comment="Login with last.fm">Accedi con last.FM</string>
     <string name="authenticate_with_lastfm_desc">Potrai accedere a LibreFM, GNUFM e Listenbrainz in seguito, dalle impostazioni</string>
     <string name="swap" comment="(Swap title and artist)">Scambia</string>
     <string name="rate_msg">Ti piace questa app?</string>
@@ -317,7 +316,6 @@
     <string name="pref_locale">Lingua</string>
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
-    <string name="locale_only_ui">Si applica solo all’interfaccia principale</string>
     <string name="pref_misc">Varie</string>
     <string name="pref_gnufm_title">URL della nixtape GNU FM</string>
     <string name="pref_imexport">Importazione &amp; esportazione</string>

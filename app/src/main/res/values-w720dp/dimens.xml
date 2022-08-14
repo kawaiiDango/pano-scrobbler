@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="coordinator_padding">280dp</dimen>
-    <dimen name="first_things_margin">200dp</dimen>
 </resources>

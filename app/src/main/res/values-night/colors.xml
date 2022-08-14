@@ -3,8 +3,6 @@
     <color name="img_border">#B3FFFFFF</color>
     <color name="overlay_center">#8C000000</color>
     <color name="overlay_end">#CC000000</color>
-    <color name="overlay_hero_center">#99000000</color>
-    <color name="overlay_hero_end">#D9000000</color>
     <color name="background_pure">#000</color>
     <color name="foreground_pure">#FFF</color>
     <color name="background_gray">#212121</color>

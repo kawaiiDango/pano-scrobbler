@@ -2,7 +2,6 @@ package com.arn.scrobble.search
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -97,7 +96,7 @@ class SearchFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 (actionId == EditorInfo.IME_NULL && keyEvent.action == KeyEvent.ACTION_DOWN)
             ) {
-//                loadSearches(textView.text.toString())
+                loadSearches(textView.text.toString())
                 hideKeyboard()
                 textView.clearFocus()
                 true
@@ -137,48 +136,47 @@ class SearchFragment : Fragment() {
 
         historyPref.load()
 
-        val arrayAdapter = object : ArrayAdapter<String>(context!!, R.layout.list_item_history) {
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val historyTextView = super.getView(position, convertView, parent)
-                if (convertView == null) {
-                    historyTextView.setOnClickListener {
-                        val item = getItem(position)!!
-                        hideKeyboard()
-                        binding.searchEdittext.setText(item, false)
-                        binding.searchTerm.clearFocus()
-//            val term = arrayAdapter.getItem(pos) as String
-//            loadSearches(term)
+        val searchHistoryAdapter =
+            object : ArrayAdapter<String>(context!!, R.layout.list_item_history) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val historyTextView = super.getView(position, convertView, parent)
+                    if (convertView == null) {
+                        historyTextView.setOnClickListener {
+                            val term = getItem(position)
+                            hideKeyboard()
+                            binding.searchEdittext.setText(term, false)
+                            binding.searchTerm.clearFocus()
+                            loadSearches(term)
+                        }
+                        historyTextView.setOnLongClickListener {
+                            MaterialAlertDialogBuilder(context)
+                                .setMessage(R.string.clear_history_specific)
+                                .setPositiveButton(R.string.yes) { dialogInterface, i ->
+                                    val item = getItem(position)
+                                    historyPref.remove(item)
+                                }
+                                .setNegativeButton(R.string.no, null)
+                                .setNeutralButton(R.string.clear_all_history) { dialogInterface, i ->
+                                    historyPref.removeAll()
+                                }
+                                .show()
+                            false
+                        }
                     }
-                    historyTextView.setOnLongClickListener {
-                        MaterialAlertDialogBuilder(context)
-                            .setMessage(R.string.clear_history_specific)
-                            .setPositiveButton(R.string.yes) { dialogInterface, i ->
-                                val item = getItem(position)!!
-                                historyPref.remove(item)
-                                remove(item)
-                                notifyDataSetChanged()
-                            }
-                            .setNegativeButton(R.string.no, null)
-                            .setNeutralButton(R.string.clear_all_history) { dialogInterface, i ->
-                                historyPref.removeAll()
-                                clear()
-                                notifyDataSetChanged()
-                            }
-                            .show()
-                        false
-                    }
+                    return historyTextView
                 }
-                return historyTextView
+
+                override fun getItem(position: Int) = historyPref.history[position]
+
+                override fun getCount() = historyPref.history.size
+            }
+
+        binding.searchEdittext.setAdapter(searchHistoryAdapter)
+        binding.searchEdittext.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                updateSearchHistory()
             }
         }
-        arrayAdapter.addAll(historyPref.history)
-        binding.searchEdittext.setAdapter(arrayAdapter)
-//        binding.searchEdittext.setOnItemClickListener { adapterView, v, pos, l ->
-//            hideKeyboard()
-//            binding.searchTerm.clearFocus()
-////            val term = arrayAdapter.getItem(pos) as String
-////            loadSearches(term)
-//        }
 
         val resultsItemClickListener = object : MusicEntryItemClickListener {
             override fun onItemClick(view: View, entry: MusicEntry) {
@@ -189,16 +187,6 @@ class SearchFragment : Fragment() {
         }
         val resultsAdapter =
             SearchResultsAdapter(context!!, viewModel, resultsItemClickListener)
-
-        val touchListener = View.OnTouchListener { p0, p1 ->
-            if (binding.searchTerm.editText!!.isFocused) {
-                hideKeyboard()
-                binding.searchTerm.clearFocus()
-            }
-            false
-        }
-
-        binding.searchResultsList.setOnTouchListener(touchListener)
 
         binding.searchResultsList.adapter = resultsAdapter
         binding.searchResultsList.layoutManager = LinearLayoutManager(context)
@@ -227,12 +215,6 @@ class SearchFragment : Fragment() {
 
         viewModel.searchResults.observe(viewLifecycleOwner) {
             it ?: return@observe
-            if (!it.isEmpty) {
-                historyPref.add(it.term)
-                arrayAdapter.remove(it.term)
-                arrayAdapter.insert(it.term, 0)
-                arrayAdapter.notifyDataSetChanged()
-            }
             binding.searchProgress.isIndeterminate = true
             binding.searchProgress.hide()
             binding.searchResultsList.visibility = View.VISIBLE
@@ -260,17 +242,27 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun updateSearchHistory() {
+        val term = binding.searchEdittext.text.toString()
+        if (term.isNotEmpty()) {
+            historyPref.add(term)
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         setTitle(R.string.search)
     }
 
     override fun onStop() {
+        updateSearchHistory()
         historyPref.save()
         super.onStop()
     }
 
     private fun loadSearches(term: String) {
+        lastTimerJob?.cancel()
+
         binding.searchResultsList.visibility = View.GONE
         binding.searchProgress.show()
         if (prefs.searchType == SearchResultsAdapter.SearchType.LOCAL && prefs.lastMaxIndexTime == null)

@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.app.Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES
 import android.content.*
 import android.content.pm.LabeledIntent
+import android.graphics.Rect
 import android.media.session.MediaSessionManager
 import android.net.ConnectivityManager
 import android.net.Network
@@ -14,8 +15,11 @@ import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -89,7 +93,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Stuff.timeIt("onCreate start")
 
         var canShowNotices = false
-        ColorPatchUtils.setDarkMode(this, billingViewModel.proStatus.value == true)
 
         super.onCreate(savedInstanceState)
 
@@ -809,6 +812,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         return super.onKeyUp(keyCode, event)
+    }
+
+    // https://stackoverflow.com/a/28939113/1067596
+    // EditText, clear focus on touch outside
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    v.clearFocus()
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 
     public override fun onStop() {

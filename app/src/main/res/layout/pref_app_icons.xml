@@ -36,6 +36,7 @@
         android:layout_gravity="center"
         android:textAppearance="?textAppearanceTitleLarge"
         android:visibility="gone"
+        android:paddingStart="8dp"
         tools:text="+50"
         tools:visibility="visible" />
 </LinearLayout>

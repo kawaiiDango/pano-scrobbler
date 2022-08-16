@@ -17,14 +17,17 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import com.arn.scrobble.*
-import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.NLService
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.firstOrNull
-import com.arn.scrobble.ui.UiUtils.setArrowColors
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ContentThemesBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
+import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.setArrowColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -115,6 +118,8 @@ class ThemesFragment : Fragment() {
 
         binding.themeDone.setOnClickListener {
             if ((activity as MainActivity).billingViewModel.proStatus.value == true) {
+
+                val prevDayNightId = prefs.themeDayNight
                 saveTheme()
                 if (!binding.themeRandom.isChecked)
                     context!!.sendBroadcast(
@@ -122,7 +127,11 @@ class ThemesFragment : Fragment() {
                         NLService.BROADCAST_PERMISSION
                     )
                 parentFragmentManager.popBackStack()
-                activity!!.recreate()
+
+                if (prefs.themeDayNight != prevDayNightId)
+                    ColorPatchUtils.setDarkMode(context!!, true) // recreates
+                else
+                    activity!!.recreate()
             } else {
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.frame, BillingFragment())

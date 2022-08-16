@@ -21,7 +21,10 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.toast
-import de.umass.lastfm.*
+import de.umass.lastfm.Album
+import de.umass.lastfm.Artist
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import io.michaelrocks.bimap.BiMap
 import io.michaelrocks.bimap.HashBiMap
@@ -425,11 +428,13 @@ object Stuff {
         return result
     }
 
-    fun NotificationManager.isNotiEnabled(pref: SharedPreferences, channelId: String) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isWindows11)
-            getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
-        else
+    fun NotificationManager.isChannelEnabled(pref: SharedPreferences, channelId: String) =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isWindows11) {
+            areNotificationsEnabled() &&
+                    getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE
+        } else {
             pref.getBoolean(channelId, true)
+        }
 
     fun timeToUTC(time: Long) = time + TimeZone.getDefault().getOffset(System.currentTimeMillis())
 

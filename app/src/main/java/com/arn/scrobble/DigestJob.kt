@@ -13,7 +13,7 @@ import android.content.Intent
 import android.os.PersistableBundle
 import android.text.Html
 import androidx.core.app.NotificationCompat
-import com.arn.scrobble.Stuff.isNotiEnabled
+import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.Stuff.scheduleExpeditedCompat
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.pref.MainPrefs
@@ -33,7 +33,7 @@ class DigestJob : JobService() {
     override fun onStartJob(jp: JobParameters): Boolean {
         scheduleAlarms(applicationContext)
         if (prefs.lastfmUsername != null &&
-            nm.isNotiEnabled(
+            nm.isChannelEnabled(
                 prefs.sharedPreferences,
                 MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY
             )

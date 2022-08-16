@@ -28,7 +28,7 @@ import com.arn.scrobble.PlayerActions.skip
 import com.arn.scrobble.PlayerActions.unlove
 import com.arn.scrobble.Stuff.copy
 import com.arn.scrobble.Stuff.getScrobblerExitReasons
-import com.arn.scrobble.Stuff.isNotiEnabled
+import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.Stuff.isUrlOrDomain
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.db.BlockedMetadata
@@ -168,7 +168,6 @@ class NLService : NotificationListenerService() {
             // Media controller needs notification listener service
             // permissions to be granted.
         }
-//        KeepNLSAliveJob.checkAndSchedule(applicationContext)
 
 //        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 //        isOnline = cm.activeNetworkInfo?.isConnected == true
@@ -765,7 +764,7 @@ class NLService : NotificationListenerService() {
             loved: Boolean = false,
             userPlayCount: Int = 0
         ) {
-            if (!nm.isNotiEnabled(
+            if (!nm.isChannelEnabled(
                     prefs.sharedPreferences,
                     MainPrefs.CHANNEL_NOTI_SCROBBLING
                 )

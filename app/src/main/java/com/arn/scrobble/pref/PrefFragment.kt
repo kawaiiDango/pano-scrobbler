@@ -2,14 +2,19 @@ package com.arn.scrobble.pref
 
 import android.app.Activity
 import android.app.LocaleManager
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
-import android.content.*
+import android.content.ComponentName
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.text.SpannableString
 import android.text.Spanned
@@ -30,6 +35,7 @@ import com.arn.scrobble.*
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.copyToClipboard
+import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.db.PanoDb
@@ -214,13 +220,24 @@ class PrefFragment : PreferenceFragmentCompat() {
         if (Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE
             && !Stuff.isPackageInstalled(requireContext(), Stuff.PACKAGE_PIXEL_NP_AMM)
         ) {
-            pixelNp.summary = getString(R.string.pref_pixel_np_nope)
-            pixelNp.isEnabled = false
-            pixelNp.isPersistent = false
-            pixelNp.isChecked = false
+            pixelNp.apply {
+                summary = getString(R.string.pref_pixel_np_nope)
+                isEnabled = false
+                isPersistent = false
+                isChecked = false
+            }
         }
         val autoDetect = findPreference<SwitchPreference>(MainPrefs.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
+        val nm = getSystemService(context!!, NotificationManager::class.java)!!
+        if (!nm.isChannelEnabled(prefs.sharedPreferences, MainPrefs.CHANNEL_NOTI_NEW_APP)) {
+            autoDetect.apply {
+                summary = getString(R.string.notification_channel_blocked)
+                isEnabled = false
+                isPersistent = false
+                isChecked = false
+            }
+        }
 
         findPreference<Preference>(MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY)!!
             .title = getString(R.string.s_top_scrobbles, getString(R.string.weekly))

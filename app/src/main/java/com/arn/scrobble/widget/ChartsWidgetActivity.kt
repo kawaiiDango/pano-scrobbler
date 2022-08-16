@@ -50,7 +50,6 @@ class ChartsWidgetActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        ColorPatchUtils.setDarkMode(this, billingViewModel.proStatus.value == true)
         super.onCreate(savedInstanceState)
         ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
 

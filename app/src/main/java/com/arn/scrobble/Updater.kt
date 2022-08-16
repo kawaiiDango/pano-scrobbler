@@ -10,7 +10,7 @@ import android.os.Build
 import android.view.View
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
-import com.arn.scrobble.Stuff.isNotiEnabled
+import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.addAction
 import com.arn.scrobble.ui.UiUtils.focusOnTv
@@ -155,7 +155,7 @@ class Updater(
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (!notificationManager.isNotiEnabled(
+        if (!notificationManager.isChannelEnabled(
                 prefs.sharedPreferences,
                 MainPrefs.CHANNEL_NOTI_UPDATE
             )

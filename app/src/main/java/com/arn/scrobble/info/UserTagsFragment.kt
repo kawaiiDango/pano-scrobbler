@@ -41,13 +41,12 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         object : ArrayAdapter<String>(
             context!!,
             R.layout.list_item_history,
-            historyPref.history
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val historyTextView = super.getView(position, convertView, parent)
                 if (convertView == null) {
                     historyTextView.setOnClickListener {
-                        val item = getItem(position)!!
+                        val item = getItem(position)
                         hideKeyboard()
                         binding.userTagsInputEdittext.setText(item, false)
                         binding.userTagsInputEdittext.clearFocus()
@@ -56,16 +55,12 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
                         MaterialAlertDialogBuilder(context)
                             .setMessage(R.string.clear_history_specific)
                             .setPositiveButton(R.string.yes) { dialogInterface, i ->
-                                val item = getItem(position)!!
+                                val item = getItem(position)
                                 historyPref.remove(item)
-                                remove(item)
-                                notifyDataSetChanged()
                             }
                             .setNegativeButton(R.string.no, null)
                             .setNeutralButton(R.string.clear_all_history) { dialogInterface, i ->
                                 historyPref.removeAll()
-                                clear()
-                                notifyDataSetChanged()
                             }
                             .show()
                         false
@@ -73,6 +68,10 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
                 }
                 return historyTextView
             }
+
+            override fun getItem(position: Int) = historyPref.history[position]
+
+            override fun getCount() = historyPref.history.size
         }
     }
     private var _binding: DialogUserTagsBinding? = null

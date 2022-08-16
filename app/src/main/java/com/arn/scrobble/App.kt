@@ -11,6 +11,7 @@ import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.themes.ColorPatchUtils
 import com.frybits.harmony.getHarmonySharedPreferences
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
@@ -61,6 +62,8 @@ class App : Application() {
             enableOpeningLastfmLinks()
             mainPrefs.lastfmLinksEnabled = true
         }
+
+        ColorPatchUtils.setDarkMode(this, mainPrefs.proStatus)
 
         val colorsOptions = DynamicColorsOptions.Builder()
             .setThemeOverlay(R.style.AppTheme_Dynamic_Overlay)

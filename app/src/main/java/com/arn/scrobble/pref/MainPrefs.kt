@@ -1,8 +1,10 @@
 package com.arn.scrobble.pref
 
+import android.app.NotificationManager
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.friends.UserSerializable
@@ -20,6 +22,7 @@ class MainPrefs(context: Context) : Krate {
     override val sharedPreferences = context.getHarmonySharedPreferences(NAME)
 
     private val isTv by lazy { context.isTv }
+    private val nm by lazy { context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 
     var scrobblerEnabled by booleanPref(PREF_MASTER).withDefault(true)
     var allowedPackages by stringSetPref(PREF_ALLOWED_PACKAGES).withDefault(setOf())
@@ -27,7 +30,10 @@ class MainPrefs(context: Context) : Krate {
 
     private var _autoDetectApps by booleanPref(PREF_AUTO_DETECT).withDefault(true)
     val autoDetectApps
-        get() = if (isTv) false else _autoDetectApps
+        get() = if (isTv || !nm.isChannelEnabled(sharedPreferences, CHANNEL_NOTI_NEW_APP))
+            false
+        else
+            _autoDetectApps
 
     private var _delaySecs by intPref(PREF_DELAY_SECS).withDefault(PREF_DELAY_SECS_DEFAULT)
     val delaySecs
@@ -82,7 +88,8 @@ class MainPrefs(context: Context) : Krate {
     var lastFullIndexedScrobbleTime by longPref(PREF_ACTIVITY_LAST_FULL_INDEXED_SCROBBLE_TIME)
     var lastDeltaIndexedScrobbleTime by longPref(PREF_ACTIVITY_LAST_DELTA_INDEXED_SCROBBLE_TIME)
 
-    val lastMaxIndexedScrobbleTime get() = lastDeltaIndexedScrobbleTime ?: lastFullIndexedScrobbleTime
+    val lastMaxIndexedScrobbleTime
+        get() = lastDeltaIndexedScrobbleTime ?: lastFullIndexedScrobbleTime
     val lastMaxIndexTime get() = lastDeltaIndexTime ?: lastFullIndexTime
 
     var gridColumnsToAdd by intPref(PREF_ACTIVITY_GRID_COLUMNS_TO_ADD).withDefault(0)
@@ -229,7 +236,8 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_ACTIVITY_LAST_FULL_INDEXED_TIME = "last_full_indexed_time"
         const val PREF_ACTIVITY_LAST_DELTA_INDEXED_TIME = "last_delta_indexed_time"
         const val PREF_ACTIVITY_LAST_FULL_INDEXED_SCROBBLE_TIME = "last_full_indexed_scrobble_time"
-        const val PREF_ACTIVITY_LAST_DELTA_INDEXED_SCROBBLE_TIME = "last_delta_indexed_scrobble_time"
+        const val PREF_ACTIVITY_LAST_DELTA_INDEXED_SCROBBLE_TIME =
+            "last_delta_indexed_scrobble_time"
         const val PREF_ACTIVITY_GRID_COLUMNS_TO_ADD = "grid_columns_to_add"
         const val PREF_ACTIVITY_GRID_SINGLE_COLUMN = "grid_single_column"
         const val PREF_ACTIVITY_GRID_PINCH_LEARNT = "grid_pinch_learnt"

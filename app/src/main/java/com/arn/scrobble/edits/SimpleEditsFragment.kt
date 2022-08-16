@@ -61,13 +61,6 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.editsList.layoutManager = LinearLayoutManager(context!!)
         binding.editsList.adapter = adapter
-        binding.editsList.setOnTouchListener { v, motionEvent ->
-            if (binding.searchTerm.editText!!.isFocused) {
-                hideKeyboard()
-                binding.searchTerm.clearFocus()
-            }
-            false
-        }
 
         binding.searchTerm.editText?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {

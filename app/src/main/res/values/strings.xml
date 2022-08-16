@@ -224,6 +224,7 @@
     <string name="grant_notification_access">Grant notification access</string>
     <string name="grant_notification_access_desc">Needed to retrieve music metadata. No non-music notifications are read</string>
     <string name="send_notifications">Allow notifications</string>
+    <string name="notification_channel_blocked">This requires notifications to be enabled</string>
     <string name="send_notifications_desc"
         comment="Shown before asking for notification permission on Android 13+"
         >"""- Check scrobble status and counts

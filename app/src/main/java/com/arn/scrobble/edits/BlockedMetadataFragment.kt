@@ -63,13 +63,6 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
         )
         binding.blockList.adapter = adapter
         binding.blockList.layoutManager = LinearLayoutManager(context!!)
-        binding.blockList.setOnTouchListener { v, motionEvent ->
-            if (binding.searchTerm.editText!!.isFocused) {
-                hideKeyboard()
-                binding.searchTerm.clearFocus()
-            }
-            false
-        }
 
         if (!binding.root.isInTouchMode)
             binding.blockAdd.requestFocus()

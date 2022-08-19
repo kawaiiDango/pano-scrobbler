@@ -118,7 +118,7 @@ dependencies {
     kapt("androidx.room:room-compiler:2.4.3")
     implementation("androidx.room:room-runtime:2.4.3")
     implementation("com.android.billingclient:billing:5.0.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
     implementation("com.google.android.material:material:1.7.0-beta01")
@@ -128,8 +128,8 @@ dependencies {
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
 
-    implementation("io.coil-kt:coil:2.1.0")
-    implementation("io.coil-kt:coil-gif:2.1.0")
+    implementation("io.coil-kt:coil:2.2.0")
+    implementation("io.coil-kt:coil-gif:2.2.0")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")

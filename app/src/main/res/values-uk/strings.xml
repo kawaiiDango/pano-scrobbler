@@ -160,6 +160,7 @@
 - Отримайте топ скробли кожної неделі
 -Та більше
 - Сповіщення беззвучні\"\""</string>
+    <string name="will_not_scrobble">Пропуск цього кроку вимкне скробблінг</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM і Listenbrainz можна автентифікувати після цього через налаштування</string>
     <string name="swap" comment="(Swap title and artist)">Замінити</string>
     <string name="rate_msg">Подобається цей додаток?</string>

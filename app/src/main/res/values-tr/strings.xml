@@ -155,12 +155,14 @@
     <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
     <string name="grant_notification_access_desc">Müzik metaverisi almak için gerekli. Müzik harici veriler okunmaz</string>
     <string name="send_notifications">Bildirimlere izin ver</string>
+    <string name="notification_channel_blocked">Bildirimlerin etkinleştirilmesi gerekiyor</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Skrop durumu ve sayısına bakma
 - Bildirim üzerinden beğenme veya engelleme
 - Skroplama hataları ve olası çözümler konusunda bilgilendirilme
 - En çok dinlenenleri haftalık olarak gösterme
 - Ve dahası
 - Bildirimler sesli değildir\"\""</string>
+    <string name="will_not_scrobble">Bu adımı atlarsan skroplama devre dışı bırakılacak</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM ve Listenbrainz sonradan ayarlar aracılığıyla doğrulanabilir</string>
     <string name="swap" comment="(Swap title and artist)">Değiştir</string>
     <string name="rate_msg">Uygulamamızı beğendiniz mi?</string>
@@ -285,6 +287,7 @@
     <string name="persistent_noti_desc">Saklamak için uzun bas</string>
     <string name="scrobbler_off">Skroplayıcı devre dışı</string>
     <string name="scrobbler_on">Skroplayıcı aktif</string>
+    <string name="enable" comment="To enable the scrobbler">Etkinleştir</string>
     <string name="pref_master">Müzik skropla</string>
     <string name="pref_master_qs_hint">Ayrıca hızlı ayarlar kutucuğundan da değiştirilebilir</string>
     <string name="pref_noti_q">Simge görünmüyorsa cihazınızın bildirim ayarlarından ekleyebilirsiniz</string>

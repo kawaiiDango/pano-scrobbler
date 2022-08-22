@@ -102,6 +102,7 @@
     <string name="offline">Çevrimdışı. Güncel veriler gösterilemiyor</string>
     <string name="unavailable_offline">Çevrimdışı kullanılamıyor</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Hizmetler</string>
+    <string name="others">Diğer</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Bak ne dinliyorum:\n%1$s (%2$s)</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Bak %3$s ne dinliyor:\n%1$s (%2$s)</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Tarafımca %2$s (%1$s):\n%3$s</string>
@@ -117,6 +118,8 @@
     <string name="rank_change_no_change">Değişiklik yok</string>
     <string name="rank_change_new">Bir önceki dönemde skroplanmamış</string>
     <string name="search">Ara</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Tüm geçmişi temizle</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Bu öge geçmişten silinsin mi?</string>
     <string name="library" comment="search within the library">Kitaplık</string>
     <string name="global" comment="search globally across lastfm">Genel</string>
     <string name="reindex">Hızlı endeksleme</string>

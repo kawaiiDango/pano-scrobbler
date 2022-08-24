@@ -75,9 +75,9 @@ class SessListener(
                         MyCallback(controller.packageName, hashesAndTimes, controller.sessionToken)
                     controller.registerCallback(cb)
                     //Medoly needs this
-                    controller.playbackState.let { cb.onPlaybackStateChanged(it) }
-                    controller.metadata.let { cb.onMetadataChanged(it) }
-                    controller.playbackInfo.let { cb.onAudioInfoChanged(it) }
+                    controller.playbackState?.let { cb.onPlaybackStateChanged(it) }
+                    controller.metadata?.let { cb.onMetadataChanged(it) }
+                    controller.playbackInfo?.let { cb.onAudioInfoChanged(it) }
 
                     controllersMap[controller.sessionToken] = controller to cb
                 }
@@ -262,6 +262,9 @@ class SessListener(
                         albumArtist = ""
                     }
                 }
+                Stuff.PACKAGE_NICOBOX -> {
+                    artist = "Unknown"
+                }
                 Stuff.PACKAGE_SPOTIFY -> {
                     // ads look like these:
                     // e.g. GCTC () [] ~ Free Spring Tuition
@@ -318,7 +321,7 @@ class SessListener(
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
-                if ((!handler.hasMessages(currHash) || !onlyDurationUpdated) &&
+                if ((!handler.hasMessages(currHash) || onlyDurationUpdated) &&
                     lastState == PlaybackState.STATE_PLAYING
                 ) {
                     hashesAndTimes.timePlayed = 0

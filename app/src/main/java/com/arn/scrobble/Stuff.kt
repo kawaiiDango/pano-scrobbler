@@ -172,6 +172,7 @@ object Stuff {
     const val PACKAGE_YOUTUBE_TV = "com.google.android.youtube.tv"
     const val PACKAGE_YMUSIC = "com.kapp.youtube.final"
     const val PACKAGE_SOUNDCLOUD = "com.soundcloud.android"
+    const val PACKAGE_NICOBOX = "jp.nicovideo.nicobox"
 
     const val MARKET_URL = "market://details?id=" + BuildConfig.APPLICATION_ID
 
@@ -186,7 +187,7 @@ object Stuff {
         "com.liskovsoft.smarttubetv",
         "org.schabi.newpipe",
         PACKAGE_YMUSIC,
-        "jp.nicovideo.nicobox",
+        PACKAGE_NICOBOX,
         PACKAGE_SOUNDCLOUD,
 
         // radios

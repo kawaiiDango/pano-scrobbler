@@ -1,4 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s scrobble</item>
+        <item quantity="few">%1$s scrobblea</item>
+        <item quantity="other">%1$s scrobblea</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s slušatelj</item>
+        <item quantity="few">%1$s slušatelja</item>
+        <item quantity="other">%1$s slušatelja</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s dan</item>
+        <item quantity="few">%1$s dana</item>
+        <item quantity="other">%1$s dana</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s tjedan</item>
+        <item quantity="few">%1$s tjedna</item>
+        <item quantity="other">%1$s tjedana</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s mjesec</item>
+        <item quantity="few">%1$s mjeseca</item>
+        <item quantity="other">%1$s mjeseci</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s godina</item>
+        <item quantity="few">%1$s godine</item>
+        <item quantity="other">%1$s godina</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s izvođač</item>
+        <item quantity="few">%1$s izvođača</item>
+        <item quantity="other">%1$s izvođača</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s album</item>
+        <item quantity="few">%1$s albuma</item>
+        <item quantity="other">%1$s albuma</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s pjesma</item>
+        <item quantity="few">%1$s pjesme</item>
+        <item quantity="other">%1$s pjesama</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d podudaranje</item>
+        <item quantity="few">%1$d podudaranja</item>
+        <item quantity="other">%1$d podudaranja</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s uređivanje</item>
+        <item quantity="few">%1$s uređivanja</item>
+        <item quantity="other">%1$s uređivanja</item>
+    </plurals>
+    <string name="yes">Da</string>
+    <string name="no">Ne</string>
+    <string name="reset">Ponovno postavi</string>
     <!--  pro  -->
 </resources>

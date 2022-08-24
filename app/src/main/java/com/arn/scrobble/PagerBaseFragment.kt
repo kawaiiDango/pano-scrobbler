@@ -97,7 +97,7 @@ open class PagerBaseFragment : Fragment(), TabLayout.OnTabSelectedListener {
 
     override fun onTabSelected(tab: TabLayout.Tab) {
         TransitionManager.beginDelayedTransition(
-            tab.customView as ViewGroup,
+            (tab.customView as? ViewGroup) ?: return,
             AutoTransition()
                 .setDuration(200)
                 .setOrdering(AutoTransition.ORDERING_TOGETHER)

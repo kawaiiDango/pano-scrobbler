@@ -540,10 +540,10 @@ class NLService : NotificationListenerService() {
                 }
                 iBAD_META_S -> {
                     val scrobbleData = ScrobbleData().apply {
-                        track = intent.getStringExtra(B_TRACK)!!
-                        album = intent.getStringExtra(B_ALBUM)!!
-                        artist = intent.getStringExtra(B_ARTIST)!!
-                        albumArtist = intent.getStringExtra(B_ALBUM_ARTIST)!!
+                        track = intent.getStringExtra(B_TRACK) ?: ""
+                        album = intent.getStringExtra(B_ALBUM) ?: ""
+                        artist = intent.getStringExtra(B_ARTIST) ?: ""
+                        albumArtist = intent.getStringExtra(B_ALBUM_ARTIST) ?: ""
                         timestamp =
                             (intent.getLongExtra(B_TIME, System.currentTimeMillis()) / 1000).toInt()
                     }

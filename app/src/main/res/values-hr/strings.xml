@@ -58,5 +58,101 @@
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="reset">Ponovno postavi</string>
+    <string name="settings">Konfiguriraj</string>
+    <string name="bug_report">Prijava greške</string>
+    <string name="album_art">Naslovnica albuma</string>
+    <string name="artist_image">Slika izvođača</string>
+    <string name="network_error">Mrežna greška</string>
+    <string name="disable_tls_verify">Ignoriraj TLS greške</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoriran</string>
+    <string name="scrobble_ignored_save_edit">Lastfm je ignorirao uređivanje vjerojatno jer je scrobble prestar. Želite li ovo uređivanje spremiti za buduće scrobbleove?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Obavezna polja su prazna</string>
+    <string name="artist">Izvođač</string>
+    <string name="artists">Izvođači</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Top izvođači</string>
+    <string name="album_artist">Izvođač albuma</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Izvođač / kanal</string>
+    <string name="similar_artists">Slični izvođači</string>
+    <string name="album_optional">Album (neobavezno)</string>
+    <string name="album">Album</string>
+    <string name="albums">Albumi</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albumi</string>
+    <string name="track">Pjesma</string>
+    <string name="tracks">Pjesme</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Top pjesme</string>
+    <string name="similar_tracks">Slične pjesme</string>
+    <string name="similar" comment="Similar tracks but in short">Slično</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
+    <string name="state_scrobbling">Sada scrobblea…</string>
+    <string name="state_scrobbled">Scrobbleano</string>
+    <string name="unscrobble">Ukloni scrobble</string>
+    <string name="state_unscrobbled">Scrobble uklonjen</string>
+    <string name="state_unrecognised_artist">Neprepoznati izvođač</string>
+    <string name="tap_to_edit">(dodirni za uređivanje)</string>
+    <string name="recently_scrobbled">Nedavno scrobbleano</string>
+    <string name="recently_loved">♥ Nedavni favoriti</string>
+    <string name="channel_err">Greške kod scrobbleanja</string>
+    <string name="new_app">Nova aplikacija</string>
+    <string name="no_apps_enabled">Nijedna aplikacija nije omogućena</string>
+    <string name="show_all">Prikaži sve</string>
+    <string name="edit">Uredi</string>
+    <string name="delete">Izbriši</string>
+    <string name="friends">Prijatelji</string>
+    <string name="rate_msg">Sviđa Vam se ova aplikacija?</string>
+    <string name="rate_action">Ocijenite</string>
+    <string name="time_just_now">upravo sada</string>
+    <string name="no_mail_apps">Nema instaliranih klijenata za epoštu</string>
+    <string name="simple_edits">Uređivanja</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
+    <string name="scrobble_from_mic">Scrobblea pomoću mikrofona</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Pomoću mikrofona</string>
+    <string name="add_to_hs">Dodaj na početni zaslon</string>
+    <string name="uploading">Prenošenje…</string>
+    <string name="details">Detalji</string>
+    <string name="sort">Sortiraj</string>
+    <string name="past_scrobbles">Prošli scrobbleovi</string>
+    <string name="my_scrobbles">Moji scrobbleovi</string>
+    <string name="random_not_found">Nema pronađenih pjesama</string>
+    <string name="random_text">Nasumično</string>
+    <string name="original" comment="Original metadata before editing">Izvorno</string>
+    <string name="corrected" comment="Corrected metadata after editing">Ispravljeno</string>
+    <string name="tag" comment="last.fm tag">Oznaka</string>
+    <string name="my_tags">Moje oznake</string>
+    <string name="close">Zatvori</string>
+    <string name="user_tags_hint">Nova oznaka</string>
+    <string name="user_tags_empty">Niste dodali nijednu oznaku</string>
+    <string name="appwidget_loading">Učitavanje…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Razdoblje</string>
+    <string name="appwidget_theme">Tema</string>
+    <string name="appwidget_shadow">Sjena</string>
+    <string name="appwidget_show">Prikaži</string>
+    <string name="light">Svijetlo</string>
+    <string name="dark">Tamno</string>
+    <string name="system_colors">Boje sustava</string>
+    <string name="primary_color">Primarna boja</string>
+    <string name="secondary_color">Sekundarna boja</string>
+    <string name="tint_background">Ton pozadine</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Polja</string>
+    <string name="edit_replace">Zamijeni</string>
+    <string name="edit_first" comment="First occurrence of a pattern">Prvo</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Sve</string>
+    <string name="edit_regex_test">Testiraj</string>
+    <string name="pref_logout">Odjava</string>
+    <string name="pref_confirm_logout">POTVRDITI ODJAVU? Pritisnite ponovno</string>
+    <string name="pref_login">Prijava</string>
+    <string name="pref_about" comment="Info about this app">O aplikaciji</string>
+    <string name="pref_privacy_policy">Politika privatnosti</string>
+    <string name="pref_locale">Jezici</string>
+    <string name="pref_change_locale">Promijeni jezik</string>
+    <string name="pref_misc">Razno</string>
+    <string name="pref_export">Izvezi</string>
+    <string name="pref_import">Uvezi</string>
+    <string name="pref_themes">Teme</string>
+    <string name="copied">Kopirano!</string>
+    <string name="not_running_fix_action">Popravi</string>
+    <string name="login_submit">Potvrdi</string>
+    <string name="fix_it_action" comment="(To open an app)">Otvori</string>
+    <string name="delete_account">Izbriši svoj račun</string>
     <!--  pro  -->
 </resources>

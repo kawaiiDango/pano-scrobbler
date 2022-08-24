@@ -11,7 +11,6 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
-import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.pref.MainPrefs
 import java.lang.ref.WeakReference
 import java.util.*
@@ -35,6 +34,7 @@ object LocaleUtils {
         "uk",
         "cs",
         "nl",
+        "ar",
     ).toSortedSet()
 
     val showScriptSet = setOf(

@@ -104,6 +104,7 @@
     <string name="offline">Офлайн. Дані не оновлюються</string>
     <string name="unavailable_offline">Недоступно в офлайн режимі</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервіси</string>
+    <string name="others">Інші</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слухав \n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слухав \n%1$s %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Мій %1$s %2$s:\n%3$s</string>
@@ -119,6 +120,8 @@
     <string name="rank_change_no_change">Без змін</string>
     <string name="rank_change_new">Не скроблено за попередній період</string>
     <string name="search">Пошук</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Видалити всю мою історію</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Видалити цей запис з історії?</string>
     <string name="library" comment="search within the library">Бібліотека</string>
     <string name="global" comment="search globally across lastfm">Глобальний</string>
     <string name="reindex">Швидкий покажчик</string>
@@ -196,7 +199,7 @@
     <string name="expand" comment="(view all items)">Розгорнути</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s вподобав це</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Скроблів по %1$s</string>
-    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Від %1$s</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">З %1$s</string>
     <string name="not_found" comment="Shown in search">Не знайдено</string>
     <string name="share_this_chart">Поділитися цим чартом</string>
     <string name="lastfm_reports">Звіти LastFM</string>
@@ -285,6 +288,7 @@
     <string name="persistent_noti_desc">Натисніть і утримуйте кнопку щоб сховати</string>
     <string name="scrobbler_off">Скроблер вимкнено</string>
     <string name="scrobbler_on">Скроблер увімкнений</string>
+    <string name="enable" comment="To enable the scrobbler">Увімкнути</string>
     <string name="pref_master">Скроблінг пісень</string>
     <string name="pref_master_qs_hint">Можна перемкнути з плитки швидких налаштувань</string>
     <string name="pref_noti_q">Ви можете підвищити рівень сповіщення, якщо іконка не відображається</string>

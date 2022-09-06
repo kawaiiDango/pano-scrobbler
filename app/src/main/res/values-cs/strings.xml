@@ -122,6 +122,7 @@
     <string name="offline">Offline. Zobrazená data nejsou čerstvá</string>
     <string name="unavailable_offline">Není dostupné offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Služby</string>
+    <string name="others">Ostatní</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Poslouchal jsem \n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s poslouchal/a \n%1$s %2$s</string>
     <string name="share_sig">(pomocí Pano Scrobbler)</string>
@@ -208,8 +209,23 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbly do %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Z %1$s</string>
     <string name="not_found" comment="Shown in search">Nenalezeno</string>
+    <string name="weekly">Týdenní</string>
+    <string name="monthly">Měsíční</string>
+    <string name="charts_no_data">Žádné údaje v tomto období</string>
+    <string name="charts_custom" comment="Custom date range, but in short">Vlastní</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Na základě %1$s</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Není k dispozici dostatek dat</string>
+    <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Zkusím štěstí</string>
+    <string name="random_not_found">Žádná skladba nenalezena</string>
+    <string name="loved_track">Oblíbená skladba</string>
+    <string name="randomize">Náhodně</string>
     <string name="original" comment="Original metadata before editing">Originál</string>
     <string name="tag" comment="last.fm tag">Tag</string>
+    <string name="user_tags_hint">Nová značka</string>
+    <string name="user_tags_empty">Nebyly přidány žádné značky</string>
+    <string name="appwidget_loading">Načítání…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Období</string>
     <string name="appwidget_show">Zobrazit</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget bude obnoven každých %1$d minut</string>
     <string name="primary_color">Primární barva</string>
@@ -303,6 +319,18 @@
     <string name="import_lists_nope">Neimportovat úpravy a seznam blokovaných</string>
     <string name="import_lists_replace_all">Nahradit všechny úpravy a seznam blokovaných</string>
     <string name="import_lists_replace_existing">Sloučit a nahradit existující úpravy a seznamy blokovaných</string>
+    <string name="current_track">Aktuální skladba:</string>
+    <string name="copied">Zkopírováno!</string>
+    <string name="custom_listenbrainz">Vlastní Listenbrainz server</string>
+    <string name="failed_encode_url">Kódování URL selhalo</string>
+    <string name="no_browser">Není nainstalován žádný prohlížeč</string>
+    <string name="no_player">Není nainstalován žádný hudební přehrávač</string>
+    <string name="not_running">⚠ Skrobbler byl vypnut vaším systémem</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Důvod vypnutí uvedený systémem: %s</string>
+    <string name="not_running_fix_action">Opravit</string>
+    <string name="login_submit">Ověřit</string>
+    <string name="scrobble">Scrobble</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d zbývajících</string>
     <string name="navigation_drawer_close">Zavřít navigační lištu</string>
     <string name="cleared_disabled_apps">Vymazány zakázané aplikace</string>
     <string name="fix_it_title">Možné opravy</string>
@@ -311,6 +339,7 @@
     <string name="fix_it_action" comment="(To open an app)">Otevřít</string>
     <string name="delete_account">Smazat svůj účet</string>
     <!--  pro  -->
+    <string name="get_pro">Podpořit aplikaci</string>
     <string name="help">Pomoc</string>
     <string name="pro_also_get">Také získáte následující funkce:</string>
     <string name="thank_you">Díky!</string>

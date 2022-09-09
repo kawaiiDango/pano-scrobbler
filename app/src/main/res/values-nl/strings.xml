@@ -102,6 +102,7 @@
     <string name="offline">Offline. Getoonde data is niet nieuw</string>
     <string name="unavailable_offline">Niet offline beschikbaar</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Diensten</string>
+    <string name="others">Overigen</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Ik was aan het luisteren naar\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s luisterde naar\n%1$s %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Mijn%1$s %2$s:\n%3$s</string>
@@ -117,6 +118,8 @@
     <string name="rank_change_no_change">Geen verandering</string>
     <string name="rank_change_new">Niet gescrobbeld in de vorige periode</string>
     <string name="search">Zoeken</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Wis alle geschiedenis</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Verwijder dit item uit de geschiedenis?</string>
     <string name="library" comment="search within the library">Bibliotheek</string>
     <string name="global" comment="search globally across lastfm">Globaal</string>
     <string name="reindex">Snel indexeren</string>
@@ -152,12 +155,14 @@
     <string name="grant_notification_access">Toegang tot meldingen geven</string>
     <string name="grant_notification_access_desc">Nodig om de muziekmetadata op te halen. Niet-muziek-meldingen worden niet gelezen</string>
     <string name="send_notifications">Meldingen toestaan</string>
+    <string name="notification_channel_blocked">Dit vereist dat meldingen ingeschakeld zijn</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Controleer de scrobbel status en aantallen
 - Love of blokkeer direct vanuit de melding
 - Krijg een melding over scrobbel fouten en acties die je kan ondernemen
 - Krijg je top scrobbels elke week
 - En meer
 - De meldingen maken geen geluid\"\""</string>
+    <string name="will_not_scrobble">Het overslaan van deze stap zal scrobbling uitschakelen</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM en Listenbrainz kunnen hierna worden geverifieerd vanuit instellingen</string>
     <string name="swap" comment="(Swap title and artist)">Wissel</string>
     <string name="rate_msg">Tevreden over de app?</string>
@@ -261,6 +266,7 @@
     <string name="edit_no_presets_available">Alle voorinstellingen zijn in gebruik</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Voorinstelling: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Patroon limiet bereikt (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Sleephandvat</string>
     <string name="text" comment="text to test regex rules with">Tekst</string>
     <string name="edit_regex_warning">⚠ Zorg ervoor dat je <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> begrijpt voordat je dit gebruikt, of gebruik een van de <b>voorinstellingen</b> die gegeven zijn. Regex matches worden van boven naar beneden geprobeerd</string>
     <string name="blocked_metadata_info">ℹ️ Meer dan één van deze velden invullen zal een AND operator tussen ze toepassen</string>
@@ -281,8 +287,21 @@
     <string name="persistent_noti_desc">Lang ingedrukt houden om dit te verbergen</string>
     <string name="scrobbler_off">Scrobbler uitgeschakeld</string>
     <string name="scrobbler_on">Scrobbler actief</string>
+    <string name="enable" comment="To enable the scrobbler">Schakel in</string>
     <string name="pref_master">Scrobbel muziek</string>
     <string name="pref_master_qs_hint">Kan ook via de snelle instellingen tegel worden aangezet.</string>
+    <string name="pref_noti_q">Je kunt de melding promoten, als het pictogram niet wordt weergegeven</string>
+    <string name="pref_noti">Meldingen</string>
+    <string name="pref_noti_categories">Meldingscategorieën</string>
+    <string name="pref_scrobble_noti">Scrobble meldingen</string>
+    <string name="pref_lockscreen_noti">Vergrendelscherm meldingen</string>
+    <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves worden opgeslagen, om later verstuurd te worden.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbel vanaf</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Ondersteunt apps die muziek metadata onthullen. Om dubbele scrobbles van Spotify te voorkomen, schakel het alleen in op één plek.</string>
+    <string name="pref_enabled_apps_title">Kies apps</string>
+    <string name="pref_auto_detect_summary">…we zullen je nog steeds vragen om die app te bevestigen of te negeren</string>
+    <string name="pref_auto_detect">Detecteer nieuwe muziekachitge apps automatisch</string>
+    <string name="pref_delay">Scrobble-vertraging (welke vroeger is)</string>
     <string name="pref_search_title">Nummer zoek app</string>
     <string name="pref_scrobble_only">(Alleen scrobbelen)</string>
     <string name="pref_user_label" comment="(Like username)">Gebruiker</string>

@@ -302,6 +302,13 @@
     <string name="pref_auto_detect_summary">…we zullen je nog steeds vragen om die app te bevestigen of te negeren</string>
     <string name="pref_auto_detect">Detecteer nieuwe muziekachitge apps automatisch</string>
     <string name="pref_delay">Scrobble-vertraging (welke vroeger is)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuten</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
+    <string name="pref_logout">Log uit</string>
+    <string name="pref_confirm_logout">UITLOGGEN BEVESTIGEN? Tik nogmaals</string>
+    <string name="pref_login">Log in</string>
+    <string name="pref_about" comment="Info about this app">Over</string>
+    <string name="pref_privacy_policy">Privacybeleid</string>
     <string name="pref_search_title">Nummer zoek app</string>
     <string name="pref_scrobble_only">(Alleen scrobbelen)</string>
     <string name="pref_user_label" comment="(Like username)">Gebruiker</string>
@@ -350,7 +357,58 @@
     <string name="import_lists_nope">Bewerkingen en blokkeerlijst niet importeren</string>
     <string name="import_lists_replace_all">Alle bewerkingen en blokkeerlijst vervangen</string>
     <string name="import_lists_replace_existing">Samenvoegen, vervangen van bestaande bewerkingen en blokkeerlijst</string>
+    <string name="import_lists_keep">Voeg samen en behoud bestaande bewerkingen en blokkeerlijst</string>
+    <string name="import_settings">Importeer instellingen</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Zend intenties uit</string>
+    <string name="current_track">Huidig nummer:</string>
+    <string name="pref_intents">Intenties voor Tasker enz</string>
+    <string name="copied">Gekopieerd!</string>
+    <string name="lastfm_reauth">U moet opnieuw verifiëren om scrobbles te kunnen bewerken of verwijderen</string>
+    <string name="custom_listenbrainz">Aangepaste Listenbrainz-server</string>
+    <string name="failed_encode_url">Kan URL niet coderen</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Controleer %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Speciale app-toegang voor &gt; Notificatie toegang voor &gt; %1$s</string>
+    <string name="artist_extra">Tracks, albums &amp; vergelijkbaar</string>
+    <string name="no_browser">Er is geen browser geïnstalleerd</string>
+    <string name="no_player">Er is geen muziekspeler geïnstalleerd</string>
+    <string name="not_running">⚠ De scrobbler is gesloten door uw systeem</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Reden voor sluiting gegeven door het systeem: %s</string>
+    <string name="not_running_fix_action">Maak het</string>
+    <string name="login_submit">Verifieer</string>
+    <string name="scrobble">Scrobble</string>
+    <string name="acr_host" comment="Web hostname">Host</string>
+    <string name="acr_key">Toegangssleutel</string>
+    <string name="acr_secret">Geheim</string>
+    <string name="add_acr_key">Voeg ACRCloud-sleutel toe</string>
+    <string name="remove_acr_key">Verwijder ACRCloud-sleutel</string>
+    <string name="add_acr_consider">Overweeg om uw eigen ACRCloud-sleutel toe te voegen om te voorkomen dat de rate-limits worden bereikt</string>
+    <string name="add">Voeg toe</string>
+    <string name="add_acr_key_info">"• Meld u aan op https://console.acrcloud.com
+• Navigeer naar Projecten &gt; Geluid &amp; videoherkenning
+• Maak een nieuw project, selecteer Opgenomen audio en de ACRCloud Muziek-bucket"</string>
+    <string name="shazam_scrobbling">Als je continu wilt scrobbelen, open je <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> in plaats daarvan en start je Auto Shazam. Zorg er ook voor dat Shazam is ingeschakeld voor scrobbelen.</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d resterend</string>
+    <string name="submitting_loves" formatted="true">Loves aan het indienen, %1$d resterend</string>
+    <string name="pending_batch" comment="For pending scrobbles">Een batch indienen</string>
+    <string name="webview_error">De pagina kon niet worden geladen (werkt je internet?)</string>
+    <string name="navigation_drawer_open">Open het navigatiemenu of ga terug</string>
+    <string name="navigation_drawer_close">Sluit navigatiemenu</string>
+    <string name="graph">Lijngrafiek</string>
+    <string name="cleared_disabled_apps">Uitgeschakelde apps gewist</string>
+    <string name="fix_it_title">Mogelijke oplossingen</string>
+    <string name="fix_it_startup_title">Energiespaarders / opstartmanagers</string>
+    <string name="fix_it_battery_title">Schakel batterij-optimalisaties uit</string>
+    <string name="fix_it_action" comment="(To open an app)">Open</string>
+    <string name="delete_account">Verwijder je account</string>
+    <string name="delete_account_custom_servers">Raadpleeg voor aangepaste servers hun respectievelijke documentatie.</string>
     <!--  pro  -->
+    <string name="get_pro">Steun deze app</string>
+    <string name="help">Help</string>
+    <string name="pro_support">Dit is een eenvoudige en snelle manier voor geweldige gebruikers zoals jij om hun steun te betonen en de waarde van deze app te erkennen.</string>
+    <string name="pro_also_get">Je krijgt ook de volgende functies:</string>
+    <string name="thank_you">Bedankt!</string>
+    <string name="purchase_pending">Uw aankoop is nog niet bevestigd door uw betalingsprovider. Kom na een paar minuten nog eens terug.</string>
+    <string name="billing_troubleshoot_title">Herstel aankoop</string>
     <string name="billing_troubleshoot">"Al aangeschaft?
 
 Je aankopen worden beheerd door Google Play. Ze zijn gekoppeld met het Google Play-account dat de aankoop heeft gemaakt. Wanneer u de app op een nieuw apparaat met meerdere accounts installeert, kan Google Play deze aan het verkeerde account koppelen. De beste oplossing om expliciet een account te selecteren dat een aankoop bezit, is om de app te installeren vanaf een computer via Google Play webpagina:

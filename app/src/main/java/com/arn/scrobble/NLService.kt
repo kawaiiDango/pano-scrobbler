@@ -26,11 +26,11 @@ import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.PlayerActions.love
 import com.arn.scrobble.PlayerActions.skip
 import com.arn.scrobble.PlayerActions.unlove
-import com.arn.scrobble.Stuff.copy
 import com.arn.scrobble.Stuff.getScrobblerExitReasons
+import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.Stuff.isUrlOrDomain
-import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
@@ -42,16 +42,18 @@ import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.text.NumberFormat
+import java.util.*
+import kotlin.math.min
 
 
 class NLService : NotificationListenerService() {
     private val prefs by lazy { MainPrefs(applicationContext) }
     private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
     private var sessListener: SessListener? = null
-    private lateinit var handler: ScrobbleHandler
+    private lateinit var scrobbleHandler: ScrobbleHandler
     private var lastNpTask: LFMRequester? = null
     private lateinit var coroutineScope: CoroutineScope
-    private var currentBundle = Bundle()
+    private lateinit var packageTrackMap: MutableMap<String, PlayingTrackInfo> // package name to track info
     private var notiColor: Int? = Color.MAGENTA
     private var job: Job? = null
     private var browserPackages: Set<String> = mutableSetOf()
@@ -136,12 +138,13 @@ class NLService : NotificationListenerService() {
 
         notiColor = ColorPatchUtils.getNotiColor(applicationContext)
 
-        handler = ScrobbleHandler(mainLooper)
+        scrobbleHandler = ScrobbleHandler(mainLooper)
         val sessManager =
             applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
-        sessListener = SessListener(prefs, handler, audioManager)
+        sessListener = SessListener(prefs, scrobbleHandler, audioManager)
+        packageTrackMap = sessListener!!.packageTrackMap
         browserPackages = Stuff.getBrowsersAsStrings(packageManager)
         try {
             sessManager.addOnActiveSessionsChangedListener(
@@ -220,7 +223,7 @@ class NLService : NotificationListenerService() {
                 .removeOnActiveSessionsChangedListener(sessListener!!)
             sessListener!!.unregisterPrefsChangeListener()
             sessListener = null
-            handler.removeCallbacksAndMessages(null)
+            scrobbleHandler.removeCallbacksAndMessages(null)
         }
         job?.cancel()
         PanoDb.destroyInstance()
@@ -352,72 +355,384 @@ class NLService : NotificationListenerService() {
             val n = sbn.notification
             if (n.channelId == channelName) {
                 val notiText = n.extras.getString(notiField) ?: return
+                val trackInfo = packageTrackMap[sbn.packageName]
+
                 Stuff.log("${this::scrobbleFromNoti.name} $notiText removed=$removed")
+
                 if (removed) {
-                    handler.remove(currentBundle.getInt(B_HASH))
+                    scrobbleHandler.remove(trackInfo?.hash ?: return)
                     return
                 }
-                val meta = MetadataUtils.scrobbleFromNotiExtractMeta(notiText, getStringInDeviceLocale(format))
+                val meta = MetadataUtils.scrobbleFromNotiExtractMeta(
+                    notiText,
+                    getStringInDeviceLocale(format)
+                )
                 if (meta != null) {
                     val (artist, title) = meta
                     val hash = Stuff.genHashCode(artist, "", title, sbn.packageName)
-                    if (handler.hasMessages(currentBundle.getInt(B_HASH)))
-                        handler.remove(currentBundle.getInt(B_HASH))
-
-                    val delay =
-                        System.currentTimeMillis() - currentBundle.getLong(B_TIME) - currentBundle.getLong(
-                            B_DELAY
+                    if (trackInfo != null && trackInfo.hash == hash) {
+                        val scrobbleTimeReached =
+                            SystemClock.elapsedRealtime() >= trackInfo.scrobbleElapsedRealtime
+                        if (!scrobbleTimeReached && !scrobbleHandler.has(hash)) { //"resume" scrobbling
+                            scrobbleHandler.addScrobble(trackInfo)
+                            notifyScrobble(trackInfo)
+                        } else if (System.currentTimeMillis() - trackInfo.playStartTime < Stuff.NOTI_SCROBBLE_INTERVAL) {
+                            Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
+                        }
+                    } else {
+                        // different song, scrobble it
+                        trackInfo?.let { scrobbleHandler.remove(it.hash, false) }
+                        val newTrackInfo = PlayingTrackInfo(
+                            artist = artist,
+                            title = title,
+                            playStartTime = System.currentTimeMillis(),
+                            hash = hash,
+                            packageName = sbn.packageName,
                         )
-                    if (currentBundle.getInt(B_HASH) == hash && delay < 0) { //"resume" scrobbling
-                        val m = handler.obtainMessage()
-                        m.data = currentBundle
-                        m.what = hash
-                        handler.sendMessageDelayed(m, -delay)
-                        handler.notifyScrobble(
-                            artist,
-                            title,
-                            hash,
-                            true,
-                            currentBundle.getBoolean(B_USER_LOVED)
-                        )
-                    } else if (currentBundle.getInt(B_HASH) == hash &&
-                        System.currentTimeMillis() - currentBundle.getLong(B_TIME) < Stuff.NOTI_SCROBBLE_INTERVAL
-                    )
-                        Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
-                    else
-                        handler.nowPlaying(
-                            artist,
-                            "",
-                            title,
-                            "",
-                            0,
-                            0,
-                            hash,
-                            sbn.packageName,
-                            true
-                        )
-                } else
+                        packageTrackMap[sbn.packageName] = newTrackInfo
+                        scrobbleHandler.nowPlaying(newTrackInfo, prefs.delaySecs.coerceAtMost(3 * 60 * 1000).toLong())
+                    }
+                } else {
                     Stuff.log("\"${this::scrobbleFromNoti.name} parse failed")
+                }
             }
         }
     }
 
-    private fun markAsScrobbled(hash: Int) {
-        sessListener?.packageMap?.values?.any {
-            if (it.lastScrobbleHash == hash) {
-                it.lastScrobbledHash = hash
-                true
-            } else
-                false
+
+    private fun buildNotification(): NotificationCompat.Builder {
+        val visibility = if (prefs.notiLockscreen)
+            NotificationCompat.VISIBILITY_PUBLIC
+        else
+            NotificationCompat.VISIBILITY_SECRET
+        return NotificationCompat.Builder(applicationContext)
+            .setShowWhen(false)
+            .apply { color = (notiColor ?: return@apply) }
+            .setAutoCancel(true)
+            .setCustomBigContentView(null)
+            .setVisibility(visibility)
+    }
+
+    private fun notifyScrobble(trackInfo: PlayingTrackInfo) {
+        if (!nm.isChannelEnabled(
+                prefs.sharedPreferences,
+                MainPrefs.CHANNEL_NOTI_SCROBBLING
+            )
+        )
+            return
+
+        val  nowPlaying = scrobbleHandler.has(trackInfo.hash)
+
+        var i = Intent()
+            .putExtra(B_HASH, trackInfo.hash)
+        val loveAction = if (trackInfo.userLoved) {
+            i.action = iUNLOVE
+            val loveIntent = PendingIntent.getBroadcast(
+                applicationContext, 4, i,
+                Stuff.updateCurrentOrImmutable
+            )
+            Stuff.getNotificationAction(
+                R.drawable.vd_heart_break,
+                "\uD83D\uDC94",
+                getString(R.string.unlove),
+                loveIntent
+            )
+        } else {
+            i.action = iLOVE
+            val loveIntent = PendingIntent.getBroadcast(
+                applicationContext, 3, i,
+                Stuff.updateCurrentOrImmutable
+            )
+            Stuff.getNotificationAction(
+                R.drawable.vd_heart,
+                "\uD83E\uDD0D",
+                getString(R.string.love),
+                loveIntent
+            )
+        }
+
+        i = Intent(applicationContext, MainActivity::class.java)
+            .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_RECENTS)
+        val launchIntent = PendingIntent.getActivity(
+            applicationContext, 8, i,
+            Stuff.updateCurrentOrImmutable
+        )
+
+        i = Intent(iCANCEL)
+            .putExtra(B_HASH, trackInfo.hash)
+            .putSingle(ScrobbleError(getString(R.string.state_unscrobbled)))
+
+        val cancelToastIntent = PendingIntent.getBroadcast(
+            applicationContext, 5, i,
+            Stuff.updateCurrentOrImmutable
+        )
+
+        val state =
+            if (nowPlaying)
+                ""
+//                    "▷ "
+            else
+//                    "✅︎ "
+                "✓ "
+
+        val style = MediaStyleMod()
+        val nb = buildNotification()
+            .setAutoCancel(false)
+            .setChannelId(MainPrefs.CHANNEL_NOTI_SCROBBLING)
+            .setSmallIcon(R.drawable.vd_noti)
+            .setContentIntent(launchIntent)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setStyleCompat(style)
+            .addAction(loveAction)
+        if (trackInfo.userPlayCount > 0)
+            nb.setContentTitle(
+                state + getString(
+                    R.string.artist_title,
+                    trackInfo.artist,
+                    trackInfo.title
+                )
+            )
+                .setContentText(
+                    resources.getQuantityString(
+                        R.plurals.num_scrobbles_noti,
+                        trackInfo.userPlayCount,
+                        NumberFormat.getInstance().format(trackInfo.userPlayCount)
+                    )
+                )
+        else
+            nb.setContentTitle(state + trackInfo.title)
+                .setContentText(trackInfo.artist)
+
+        if (nowPlaying) {
+//                nb.setSubText(getString(R.string.state_scrobbling))
+            nb.addAction(
+                Stuff.getNotificationAction(
+                    R.drawable.vd_remove,
+                    "⛔️",
+                    getString(R.string.unscrobble),
+                    cancelToastIntent
+                )
+            )
+            if (resources.getBoolean(R.bool.is_rtl))
+                style.setShowActionsInCompactView(1, 0)
+            else
+                style.setShowActionsInCompactView(0, 1)
+        } else {
+//                nb.setSubText(getString(R.string.state_scrobbled))
+            style.setShowActionsInCompactView(0)
+        }
+
+        try {
+            nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.buildMediaStyleMod())
+        } catch (e: RuntimeException) {
+            val nExpandable = nb.setLargeIcon(null)
+                .setStyle(null)
+                .build()
+            nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nExpandable)
         }
     }
 
-    private fun broadcastNowPlayingInfo() {
-        val i = Intent(iNOW_PLAYING_INFO_S).apply {
-            putExtras(currentBundle)
-        }
-        sendBroadcast(i, BROADCAST_PERMISSION)
+    private fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
+        val i = Intent(applicationContext, MainDialogActivity::class.java)
+            .putExtra(B_STANDALONE_DIALOG, true)
+            .putExtras(trackInfo.toMultiFieldBundle())
+
+        val editIntent = PendingIntent.getActivity(
+            applicationContext, 9, i,
+            Stuff.updateCurrentOrImmutable
+        )
+
+        val subtitleSpanned = if (scrobbleError.description != null)
+            Html.fromHtml(scrobbleError.description)
+        else
+            getString(R.string.artist_title, trackInfo.artist, trackInfo.title)
+
+        val nb = buildNotification()
+            .setAutoCancel(false)
+            .setChannelId(MainPrefs.CHANNEL_NOTI_SCR_ERR)
+            .setSmallIcon(R.drawable.vd_noti_err)
+            .setContentIntent(editIntent)
+            .setContentText(subtitleSpanned)
+            .setContentTitle("${trackInfo.title} " + getString(R.string.tap_to_edit))
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setStyleCompat(
+                NotificationCompat.BigTextStyle()
+                    .setBigContentTitle(scrobbleError.title)
+                    .bigText(subtitleSpanned)
+            )
+        scrobbleHandler.remove(trackInfo.hash, false)
+
+        nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
+        sessListener?.findTrackInfoByHash(trackInfo.hash)?.markAsScrobbled()
     }
+
+    private fun notifyOtherError(scrobbleError: ScrobbleError) {
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        val launchIntent = PendingIntent.getActivity(
+            applicationContext, 8, intent,
+            Stuff.updateCurrentOrImmutable
+        )
+        val spanned = Html.fromHtml(scrobbleError.description)
+
+        val nb = buildNotification()
+            .setChannelId(MainPrefs.CHANNEL_NOTI_SCROBBLING)
+            .setSmallIcon(R.drawable.vd_noti_err)
+            .setContentIntent(launchIntent)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentText(spanned) //required on recent oneplus devices
+
+        val isMinimised = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                nm.getNotificationChannel(MainPrefs.CHANNEL_NOTI_SCROBBLING).importance < NotificationManager.IMPORTANCE_LOW
+        if (isMinimised)
+            nb.setContentTitle(scrobbleError.description?.replace("</?br?>".toRegex(), ""))
+        else
+            nb.setContentTitle(scrobbleError.title)
+
+        nb.setStyleCompat(
+            NotificationCompat.BigTextStyle()
+                .setBigContentTitle(scrobbleError.title)
+                .bigText(spanned)
+        )
+
+        nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
+    }
+
+    private fun notifyUnscrobbled(hash: Int) {
+        val delay = 4000L
+        val trackInfo = sessListener?.findTrackInfoByHash(hash) ?: return
+
+        val blockedMetadata = BlockedMetadata(
+            track = trackInfo.title,
+            album = trackInfo.album,
+            artist = trackInfo.artist,
+            albumArtist = trackInfo.albumArtist,
+            skip = true,
+        )
+        val intent = Intent(this, MainDialogActivity::class.java).apply {
+            putExtra(Stuff.ARG_DATA, blockedMetadata)
+            putExtra(B_IGNORED_ARTIST, trackInfo.ignoredArtist)
+            putExtra(B_HASH, hash)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            20,
+            intent,
+            Stuff.updateCurrentOrImmutable
+        )
+
+        val nb = buildNotification()
+            .setChannelId(MainPrefs.CHANNEL_NOTI_SCROBBLING)
+            .setSmallIcon(R.drawable.vd_noti_err)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentTitle(getString(R.string.state_unscrobbled) + " • " + getString(R.string.blocked_metadata_noti))
+            .setContentIntent(pendingIntent)
+            .setTimeoutAfter(delay)
+        nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            scrobbleHandler.postDelayed({ nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0) }, delay)
+    }
+
+    private fun notifyAppDetected(pkgName: String) {
+        val appName = try {
+            val applicationInfo = packageManager.getApplicationInfo(pkgName, 0)
+            packageManager.getApplicationLabel(applicationInfo).toString()
+        } catch (e: Exception) {
+            //eat up all NPEs and stuff
+            pkgName
+        }
+
+        var intent = Intent(iBLOCKLIST)
+            .putExtra(B_PACKAGE_NAME, pkgName)
+        val ignoreIntent = PendingIntent.getBroadcast(
+            applicationContext, 1, intent,
+            Stuff.updateCurrentOrImmutable
+        )
+        intent = Intent(iALLOWLIST)
+            .putExtra(B_PACKAGE_NAME, pkgName)
+        val okayIntent = PendingIntent.getBroadcast(
+            applicationContext, 2, intent,
+            Stuff.updateCurrentOrImmutable
+        )
+        intent = Intent(applicationContext, MainActivity::class.java)
+            .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST)
+        val launchIntent = PendingIntent.getActivity(
+            applicationContext, 7, intent,
+            Stuff.updateCurrentOrImmutable
+        )
+
+        val n = buildNotification()
+            .setContentTitle(getString(R.string.new_player, appName))
+            .setContentText(getString(R.string.new_player_prompt))
+            .setChannelId(MainPrefs.CHANNEL_NOTI_NEW_APP)
+            .setSmallIcon(R.drawable.vd_appquestion_noti)
+            .setContentIntent(launchIntent)
+            .addAction(
+                Stuff.getNotificationAction(
+                    R.drawable.vd_ban,
+                    "\uD83D\uDEAB",
+                    getString(R.string.no),
+                    ignoreIntent
+                )
+            )
+            .addAction(
+                Stuff.getNotificationAction(
+                    R.drawable.vd_check,
+                    "✔",
+                    getString(R.string.yes),
+                    okayIntent
+                )
+            )
+            .setStyleCompat(
+                if (resources.getBoolean(R.bool.is_rtl))
+                    MediaStyleMod().setShowActionsInCompactView(1, 0)
+                else
+                    MediaStyleMod().setShowActionsInCompactView(0, 1)
+            )
+            .buildMediaStyleMod()
+        nm.notify(MainPrefs.CHANNEL_NOTI_NEW_APP, 0, n)
+    }
+
+    private var notiIconBitmap: Bitmap? = null
+
+    private fun NotificationCompat.Builder.setSubtextCompat(state: String): NotificationCompat.Builder {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            setSubText(state)
+        } else {
+            setContentInfo(state)
+        }
+        return this
+    }
+
+    private fun NotificationCompat.Builder.setStyleCompat(style: NotificationCompat.Style): NotificationCompat.Builder {
+        if (!(Stuff.isWindows11 && style is MediaStyleMod))
+            setStyle(style)
+
+        return this
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun NotificationCompat.Builder.buildMediaStyleMod(): Notification {
+        val modNeeded =
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && !mActions.isNullOrEmpty()
+        if (modNeeded) {
+            if (notiIconBitmap == null || notiIconBitmap?.isRecycled == true) {
+                notiIconBitmap =
+                    AppCompatResources.getDrawable(applicationContext, R.drawable.ic_launcher)
+                        ?.toBitmap()
+            }
+//                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
+            setLargeIcon(notiIconBitmap)
+        }
+        return build()
+    }
+
+//    private fun broadcastNowPlayingInfo() {
+//        val i = Intent(iNOW_PLAYING_INFO_S).apply {
+//            putExtras(currentBundle)
+//        }
+//        sendBroadcast(i, BROADCAST_PERMISSION)
+//    }
 
     private val nlserviceReciver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -425,57 +740,53 @@ class NLService : NotificationListenerService() {
                 iCANCEL -> {
                     val hash: Int
                     if (!intent.hasExtra(B_HASH)) {
-                        hash = currentBundle.getInt(B_HASH)
-                        if (currentBundle[B_HASH] == null || !handler.hasMessages(hash))
+                        val trackInfo = packageTrackMap.values.find { it.isPlaying } ?: return
+                        hash = trackInfo.hash
+                        if (!scrobbleHandler.has(hash))
                             return
                         nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0)
+                        trackInfo.markAsScrobbled()
                     } else {
                         hash = intent.getIntExtra(B_HASH, 0)
-                        val errMag = intent.getStringExtra(B_ERR_MSG)
-                        if (errMag != null)
-                            handler.notifyUnscrobbled(hash)
-                        else
-                            nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0)
+                        sessListener?.findTrackInfoByHash(hash)?.markAsScrobbled()
+                        notifyUnscrobbled(hash)
                     }
-                    handler.removeMessages(hash)
-                    markAsScrobbled(hash)
+                    scrobbleHandler.remove(hash, false)
                 }
                 iLOVE, iUNLOVE -> {
                     val loved = intent.action == iLOVE
-                    var artist = intent.getStringExtra(B_ARTIST)
-                    var title = intent.getStringExtra(B_TRACK)
-                    val hash = currentBundle.getInt(B_HASH, 0)
-                    val pkgName = currentBundle.getString(B_PACKAGE_NAME)
-                    if (artist == null && title == null) {
-                        if (currentBundle.getBoolean(B_IS_SCROBBLING) && currentBundle.getString(
-                                B_ARTIST
-                            ) != null &&
-                            currentBundle.getString(B_TRACK) != null
-                        ) {
-                            artist = currentBundle.getString(B_ARTIST)!!
-                            title = currentBundle.getString(B_TRACK)!!
-                            toast(
-                                (if (loved)
-                                    "♥"
-                                else
-                                    "\uD83D\uDC94"
-                                        ) + getString(R.string.artist_title, artist, title)
-                            )
-                            if (loved == currentBundle.getBoolean(B_USER_LOVED, false))
-                                return
-                        } else
-                            return
+                    val hash = intent.getIntExtra(B_HASH, 0)
+                    val trackInfo = if (!intent.hasExtra(B_HASH)) {
+                        packageTrackMap.values.find { it.isPlaying } ?: return
+                    } else {
+                        sessListener?.findTrackInfoByHash(hash) ?: return
                     }
+
+                    if (trackInfo.artist.isEmpty() || trackInfo.title.isEmpty())
+                        return
+
+                    if (hash == 0) {
+                        // called from automation app
+                        toast(
+                            (if (loved)
+                                "♥"
+                            else
+                                "\uD83D\uDC94"
+                                    ) + getString(
+                                R.string.artist_title,
+                                trackInfo.artist,
+                                trackInfo.title
+                            )
+                        )
+                    }
+
                     LFMRequester(applicationContext, coroutineScope)
-                        .loveOrUnlove(Track(title!!, null, artist!!), loved)
-                    val np = handler.hasMessages(hash)
-                    currentBundle.putBoolean(B_USER_LOVED, loved)
-                    handler.notifyScrobble(
-                        artist,
-                        title, hash, np, loved, currentBundle.getInt(B_USER_PLAY_COUNT)
-                    )
-                    if (pkgName != null && BuildConfig.DEBUG)
-                        sessListener?.findControllersByPackage(pkgName)?.apply {
+                        .loveOrUnlove(Track(trackInfo.title, null, trackInfo.artist), loved)
+
+                    trackInfo.userLoved = loved
+                    notifyScrobble(trackInfo)
+                    if (BuildConfig.DEBUG)
+                        sessListener?.findControllersByPackage(trackInfo.packageName)?.apply {
                             if (loved)
                                 love()
                             else
@@ -488,7 +799,9 @@ class NLService : NotificationListenerService() {
                     if (pkgName in Stuff.PIXEL_NP_PACKAGES) {
                         if (intent.action == iBLOCKLIST) {
                             prefs.pixelNowPlaying = false
-                            handler.remove(currentBundle.getInt(B_HASH))
+                            packageTrackMap[pkgName]?.let {
+                                scrobbleHandler.remove(it.hash)
+                            }
                             nm.cancel(MainPrefs.CHANNEL_NOTI_NEW_APP, 0)
                             return
                         }
@@ -530,43 +843,24 @@ class NLService : NotificationListenerService() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 iOTHER_ERR_S -> {
-                    if (intent.getBooleanExtra(B_PENDING, false))
-                        handler.notifyOtherError(
-                            getString(R.string.saved_as_pending),
-                            intent.getStringExtra(B_ERR_MSG)!!
-                        )
-                    else
-                        handler.notifyOtherError(" ", intent.getStringExtra(B_ERR_MSG)!!)
+                    val scrobbleError =
+                        intent.getSingle<ScrobbleError>()!!
+                    notifyOtherError(scrobbleError)
                 }
                 iBAD_META_S -> {
-                    val scrobbleData = ScrobbleData().apply {
-                        track = intent.getStringExtra(B_TRACK) ?: ""
-                        album = intent.getStringExtra(B_ALBUM) ?: ""
-                        artist = intent.getStringExtra(B_ARTIST) ?: ""
-                        albumArtist = intent.getStringExtra(B_ALBUM_ARTIST) ?: ""
-                        timestamp =
-                            (intent.getLongExtra(B_TIME, System.currentTimeMillis()) / 1000).toInt()
-                    }
-                    handler.notifyBadMeta(
-                        scrobbleData,
-                        intent.getStringExtra(B_PACKAGE_NAME)!!,
-                        intent.getIntExtra(B_HASH, 0),
-                        intent.getStringExtra(B_ERR_MSG)!!,
-                        intent.getStringExtra(B_ERR_DESC),
-                    )
+                    val trackInfo =
+                        intent.getSingle<PlayingTrackInfo>()!!
+                    val scrobbleError =
+                        intent.getSingle<ScrobbleError>()!!
+
+                    notifyBadMeta(trackInfo, scrobbleError)
                 }
                 iMETA_UPDATE_S -> {
-                    if (handler.hasMessages(intent.getIntExtra(B_HASH, 0))) {
-                        currentBundle.putAll(intent.extras!!)
-                        handler.notifyScrobble(
-                            currentBundle.getString(B_ARTIST)!!,
-                            currentBundle.getString(B_TRACK)!!,
-                            intent.getIntExtra(B_HASH, 0),
-                            true,
-                            currentBundle.getBoolean(B_USER_LOVED),
-                            currentBundle.getInt(B_USER_PLAY_COUNT)
-                        )
-                    }
+                    val receivedTrackInfo =
+                        intent.getSingle<PlayingTrackInfo>()!!
+                    val trackInfo = sessListener?.findTrackInfoByHash(receivedTrackInfo.hash) ?: return
+                    trackInfo.updateMetaFrom(receivedTrackInfo)
+                    notifyScrobble(trackInfo)
                 }
                 iBLOCK_ACTION_S -> {
                     val hash = intent.getIntExtra(B_HASH, 0)
@@ -586,9 +880,9 @@ class NLService : NotificationListenerService() {
                 iTHEME_CHANGED_S -> {
                     notiColor = ColorPatchUtils.getNotiColor(applicationContext)
                 }
-                iNOW_PLAYING_INFO_REQUEST_S -> {
-                    broadcastNowPlayingInfo()
-                }
+//                iNOW_PLAYING_INFO_REQUEST_S -> {
+//                    broadcastNowPlayingInfo()
+//                }
             }
         }
     }
@@ -603,505 +897,150 @@ class NLService : NotificationListenerService() {
     }
 
     inner class ScrobbleHandler : Handler {
+        private val tracksCopyPQ = PriorityQueue<PlayingTrackInfo>(20) { a, b ->
+            (a.scrobbleElapsedRealtime - b.scrobbleElapsedRealtime).toInt()
+        }
+
         constructor() : super()
         constructor(looper: Looper) : super(looper)
 
-//        private val messagesMap = HashMap<Int, WeakReference<Message>>()
+        init {
+            // start ticker
+            sendEmptyMessageDelayed(0, 1000)
+        }
 
-//        fun rescheduleScrobble(hash: Int, newDelay: Long) {
-//            val msg = messagesMap[hash]?.get()
-//            if (msg != null) {
-//                removeMessages(hash)
-//                sendMessageDelayed(msg, newDelay)
-//            }
-//        }
-
+        // ticker, only handles empty messages and messagePQ
+        // required because uptimeMillis pauses / slows down in deep sleep
         override fun handleMessage(m: Message) {
-            val hash = m.data.getInt(B_HASH)
-            val packageN = m.data.getString(B_PACKAGE_NAME)!!
+            val queuedMessage = tracksCopyPQ.peek()
+            if (queuedMessage != null && queuedMessage.scrobbleElapsedRealtime <= SystemClock.elapsedRealtime()) {
+                tracksCopyPQ.remove(queuedMessage)
+                submitScrobble(queuedMessage)
+            }
+            sendEmptyMessageDelayed(0, 1000)
+        }
 
-            val scrobbleData = ScrobbleData().apply {
-                track = m.data.getString(B_TRACK)!!
-                artist = m.data.getString(B_ARTIST)!!
-                album = m.data.getString(B_ALBUM)!!
-                albumArtist = m.data.getString(B_ALBUM_ARTIST)!!
-                timestamp = (m.data.getLong(B_TIME) / 1000).toInt()
-                duration = (m.data.getLong(B_DURATION) / 1000).toInt() // in secs
+        fun has(hash: Int) = tracksCopyPQ.any { it.hash == hash }
+
+        fun reschedule(hash: Int, newElapsedRealtime: Long) {
+            tracksCopyPQ.find { it.hash == hash }
+                ?.scrobbleElapsedRealtime = newElapsedRealtime
+        }
+
+        fun addScrobble(trackInfo: PlayingTrackInfo) =
+            trackInfo.copy().also {
+                tracksCopyPQ.add(it)
             }
 
-            submitScrobble(scrobbleData, packageN, m.what)
-            markAsScrobbled(hash)
+        fun printContents() {
+            Stuff.log(tracksCopyPQ.toString())
+            val shit = tracksCopyPQ.any { it.hash == 345678 }
+            Stuff.log(shit.toString())
         }
 
-        fun nowPlaying(
-            artist: String,
-            album: String,
-            title: String,
-            albumArtist: String,
-            position: Long,
-            duration: Long,
-            hash: Int,
-            packageName: String,
-            lessDelay: Boolean = false
-        ) {
-            if (title != "" && !hasMessages(hash)) {
-                val now = System.currentTimeMillis()
-
-                val scrobbleData = ScrobbleData()
-                scrobbleData.artist = MetadataUtils.sanitizeArtist(artist)
-                scrobbleData.album = MetadataUtils.sanitizeAlbum(album)
-                scrobbleData.track = title
-                scrobbleData.albumArtist = MetadataUtils.sanitizeAlbumArtist(albumArtist)
-                scrobbleData.timestamp = (now / 1000).toInt() // in secs
-                scrobbleData.duration = (duration / 1000).toInt() // in secs
-
-                var unparsedScrobbleData: ScrobbleData? = null
-
-                // music only items have an album field,
-                // and the correct artist name on official youtube tv app
-                val ignoreArtistMeta = shouldIgnoreArtistMeta(packageName, scrobbleData)
-
-                if (ignoreArtistMeta) {
-                    val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(title)
-
-                    unparsedScrobbleData = scrobbleData.copy()
-                    scrobbleData.artist = parsedArtist
-                    scrobbleData.track = parsedTitle
-                    scrobbleData.albumArtist = ""
-                    scrobbleData.album = ""
-                } else if (packageName in browserPackages) {
-                    unparsedScrobbleData = scrobbleData.copy()
-                }
-
-                lastNpTask?.cancel()
-                lastNpTask = LFMRequester(applicationContext, coroutineScope).apply {
-                    scrobble(true, scrobbleData, hash, packageName, unparsedScrobbleData)
-                }
-
-                val b = scrobbleData.toBundle().apply {
-                    putBoolean(B_FORCEABLE, unparsedScrobbleData == null)
-                    putInt(B_HASH, hash)
-                    putBoolean(B_IS_SCROBBLING, true)
-                    putString(B_PACKAGE_NAME, packageName)
-                    putString(B_IGNORED_ARTIST, unparsedScrobbleData?.artist)
-                }
-
-                val delayMillis = prefs.delaySecs.toLong() * 1000
-                val delayPer = prefs.delayPercent.toLong()
-                var delay =
-                    if (duration > 10000 && duration * delayPer / 100 < delayMillis) //dont scrobble <10 sec songs?
-                        duration * delayPer / 100
-                    else {
-                        if (lessDelay)
-                            delayMillis * 2 / 3 //esp for pixel now playing
-                        else
-                            delayMillis
-                    }
-                if (delay - position > 1000)
-                    delay -= position
-                b.putLong(B_DELAY, delay)
-                currentBundle = b
-
-                val m = obtainMessage()
-                m.data = b
-                m.what = hash
-//                messagesMap[hash] = WeakReference(m)
-                sendMessageDelayed(m, delay)
-
-                notifyScrobble(
-                    scrobbleData.artist,
-                    scrobbleData.track,
-                    hash,
-                    nowPlaying = true,
-                    loved = false
-                )
-                if (packageName !in prefs.allowedPackages) {
-                    notifyApp(packageName)
-                }
-
-                broadcastNowPlayingInfo()
-
-                //for rating
-                AppRater.incrementScrobbleCount(prefs)
-            }
-        }
-
-        private fun submitScrobble(scrobbleData: ScrobbleData, packageName: String, hash: Int) {
-            LFMRequester(applicationContext, coroutineScope)
-                .scrobble(false, scrobbleData, hash, packageName)
-
-            var userPlayCount = currentBundle.getInt(B_USER_PLAY_COUNT)
-            if (userPlayCount > 0)
-                currentBundle.putInt(B_USER_PLAY_COUNT, ++userPlayCount)
-            notifyScrobble(
-                scrobbleData.artist,
-                scrobbleData.track,
-                hash,
-                false,
-                currentBundle.getBoolean(B_USER_LOVED),
-                userPlayCount
-            )
-        }
-
-        private fun buildNotification(): NotificationCompat.Builder {
-            val visibility = if (prefs.notiLockscreen)
-                NotificationCompat.VISIBILITY_PUBLIC
-            else
-                NotificationCompat.VISIBILITY_SECRET
-            return NotificationCompat.Builder(applicationContext)
-                .setShowWhen(false)
-                .apply { setColor(notiColor ?: return@apply) }
-                .setAutoCancel(true)
-                .setCustomBigContentView(null)
-                .setVisibility(visibility)
-        }
-
-        fun notifyScrobble(
-            artist: String,
-            title: String,
-            hash: Int,
-            nowPlaying: Boolean,
-            loved: Boolean = false,
-            userPlayCount: Int = 0
-        ) {
-            if (!nm.isChannelEnabled(
-                    prefs.sharedPreferences,
-                    MainPrefs.CHANNEL_NOTI_SCROBBLING
-                )
-            )
+        fun nowPlaying(trackInfo: PlayingTrackInfo, fixedDelay: Long? = null) {
+            if (trackInfo.title.isEmpty() || has(trackInfo.hash))
                 return
-            var i = Intent()
-                .putExtra(B_ARTIST, artist)
-                .putExtra(B_TRACK, title)
-            val loveAction = if (loved) {
-                i.action = iUNLOVE
-                val loveIntent = PendingIntent.getBroadcast(
-                    applicationContext, 4, i,
-                    Stuff.updateCurrentOrImmutable
-                )
-                Stuff.getNotificationAction(
-                    R.drawable.vd_heart_break,
-                    "\uD83D\uDC94",
-                    getString(R.string.unlove),
-                    loveIntent
-                )
-            } else {
-                i.action = iLOVE
-                val loveIntent = PendingIntent.getBroadcast(
-                    applicationContext, 3, i,
-                    Stuff.updateCurrentOrImmutable
-                )
-                Stuff.getNotificationAction(
-                    R.drawable.vd_heart,
-                    "\uD83E\uDD0D",
-                    getString(R.string.love),
-                    loveIntent
-                )
+
+            trackInfo.artist = MetadataUtils.sanitizeArtist(trackInfo.artist)
+            trackInfo.album = MetadataUtils.sanitizeArtist(trackInfo.album)
+            trackInfo.albumArtist = MetadataUtils.sanitizeAlbumArtist(trackInfo.albumArtist)
+
+            var unparsedScrobbleData: ScrobbleData? = null
+
+            // music only items have an album field,
+            // and the correct artist name on official youtube tv app
+            val ignoreArtistMeta = shouldIgnoreArtistMeta(trackInfo)
+
+            if (ignoreArtistMeta) {
+                val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(trackInfo.title)
+
+                unparsedScrobbleData = trackInfo.toScrobbleData()
+
+                trackInfo.artist = parsedArtist
+                trackInfo.title = parsedTitle
+                trackInfo.albumArtist = ""
+                trackInfo.album = ""
+
+            } else if (trackInfo.packageName in browserPackages) {
+                unparsedScrobbleData = trackInfo.toScrobbleData()
             }
 
-            i = Intent(applicationContext, MainActivity::class.java)
-                .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_RECENTS)
-            val launchIntent = PendingIntent.getActivity(
-                applicationContext, 8, i,
-                Stuff.updateCurrentOrImmutable
-            )
+            lastNpTask?.cancel()
 
-            i = Intent(iCANCEL)
-                .putExtra(B_HASH, hash)
-                .putExtra(B_ERR_MSG, getString(R.string.state_unscrobbled))
 
-            val cancelToastIntent = PendingIntent.getBroadcast(
-                applicationContext, 5, i,
-                Stuff.updateCurrentOrImmutable
-            )
+            trackInfo.isPlaying = true
+            trackInfo.ignoredArtist = unparsedScrobbleData?.artist ?: ""
 
-            val state =
-                if (nowPlaying)
-                    ""
-//                    "▷ "
-                else
-//                    "✅︎ "
-                    "✓ "
+            val delayMillis = prefs.delaySecs.toLong() * 1000
+            val delayFraction = prefs.delayPercent / 100.0
+            val delayMillisFraction = (trackInfo.durationMillis * delayFraction).toLong()
 
-            val style = MediaStyleMod()
-            val nb = buildNotification()
-                .setAutoCancel(false)
-                .setChannelId(MainPrefs.CHANNEL_NOTI_SCROBBLING)
-                .setSmallIcon(R.drawable.vd_noti)
-                .setContentIntent(launchIntent)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setStyleCompat(style)
-                .addAction(loveAction)
-            if (userPlayCount > 0)
-                nb.setContentTitle(state + getString(R.string.artist_title, artist, title))
-                    .setContentText(
-                        resources.getQuantityString(
-                            R.plurals.num_scrobbles_noti,
-                            userPlayCount,
-                            NumberFormat.getInstance().format(userPlayCount)
-                        )
-                    )
-            else
-                nb.setContentTitle(state + title)
-                    .setContentText(artist)
+            var finalDelay = min(delayMillisFraction, delayMillis)
 
-            if (nowPlaying) {
-//                nb.setSubText(getString(R.string.state_scrobbling))
-                nb.addAction(
-                    Stuff.getNotificationAction(
-                        R.drawable.vd_remove,
-                        "⛔️",
-                        getString(R.string.unscrobble),
-                        cancelToastIntent
-                    )
-                )
-                if (resources.getBoolean(R.bool.is_rtl))
-                    style.setShowActionsInCompactView(1, 0)
-                else
-                    style.setShowActionsInCompactView(0, 1)
-            } else {
-//                nb.setSubText(getString(R.string.state_scrobbled))
-                style.setShowActionsInCompactView(0)
+            if (fixedDelay != null) // for scrobble from notification
+                finalDelay = fixedDelay
+
+            if (finalDelay - trackInfo.timePlayed > 1000) {
+                finalDelay -= trackInfo.timePlayed
             }
 
-            try {
-                nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.buildMediaStyleMod())
-            } catch (e: RuntimeException) {
-                val nExpandable = nb.setLargeIcon(null)
-                    .setStyle(null)
-                    .build()
-                nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nExpandable)
+            finalDelay = finalDelay.coerceAtLeast(10 * 1000) // don't scrobble < 10 seconds
+
+            val submitTime = SystemClock.elapsedRealtime() + finalDelay
+            trackInfo.scrobbleElapsedRealtime = submitTime
+            val trackInfoCopy = addScrobble(trackInfo)
+
+            lastNpTask = LFMRequester(applicationContext, coroutineScope).apply {
+                scrobble(true, trackInfoCopy, unparsedScrobbleData)
             }
+
+            notifyScrobble(trackInfo)
+            if (trackInfo.packageName !in prefs.allowedPackages) {
+                notifyAppDetected(trackInfo.packageName)
+            }
+
+//            broadcastNowPlayingInfo()
+
+            //for rating
+            AppRater.incrementScrobbleCount(prefs)
         }
 
-        fun notifyBadMeta(
-            scrobbleData: ScrobbleData,
-            packageName: String,
-            hash: Int,
-            title: String,
-            errDesc: String?
-        ) {
-            val b = scrobbleData.toBundle().apply {
-                putBoolean(B_STANDALONE, true)
-                putString(B_PACKAGE_NAME, packageName)
-            }
-            val i = Intent(applicationContext, MainDialogActivity::class.java).apply {
-                putExtras(b)
-            }
+        private fun submitScrobble(trackInfoCopy: PlayingTrackInfo) {
+            LFMRequester(applicationContext, coroutineScope)
+                .scrobble(false, trackInfoCopy)
 
-            val editIntent = PendingIntent.getActivity(
-                applicationContext, 9, i,
-                Stuff.updateCurrentOrImmutable
-            )
+            val trackInfo = sessListener?.findTrackInfoByHash(trackInfoCopy.hash) ?: return
 
-            val subtitleSpanned = if (errDesc != null)
-                Html.fromHtml(errDesc)
-            else
-                getString(R.string.artist_title, scrobbleData.artist, scrobbleData.track)
+            if (trackInfo.userPlayCount > 0)
+                trackInfo.userPlayCount++
 
-            val nb = buildNotification()
-                .setAutoCancel(false)
-                .setChannelId(MainPrefs.CHANNEL_NOTI_SCR_ERR)
-                .setSmallIcon(R.drawable.vd_noti_err)
-                .setContentIntent(editIntent)
-                .setContentText(subtitleSpanned)
-                .setContentTitle("$title " + getString(R.string.tap_to_edit))
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setStyleCompat(
-                    NotificationCompat.BigTextStyle()
-                        .setBigContentTitle(title)
-                        .bigText(subtitleSpanned)
-                )
-            remove(hash, false)
-            currentBundle = Bundle()
+            notifyScrobble(trackInfo)
 
-            nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
-            markAsScrobbled(hash)
+            trackInfo.markAsScrobbled()
         }
 
-        fun notifyOtherError(title: String, errMsg: String) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            val launchIntent = PendingIntent.getActivity(
-                applicationContext, 8, intent,
-                Stuff.updateCurrentOrImmutable
+        private fun shouldIgnoreArtistMeta(trackInfo: PlayingTrackInfo): Boolean {
+            return if (
+                trackInfo.packageName == Stuff.PACKAGE_YOUTUBE_TV && trackInfo.album.isNotEmpty() ||
+                trackInfo.packageName == Stuff.PACKAGE_YMUSIC &&
+                trackInfo.album.replace("YMusic", "").isNotEmpty()
             )
-            val spanned = Html.fromHtml(errMsg)
-
-            val nb = buildNotification()
-                .setChannelId(MainPrefs.CHANNEL_NOTI_SCROBBLING)
-                .setSmallIcon(R.drawable.vd_noti_err)
-                .setContentIntent(launchIntent)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setContentText(spanned) //required on recent oneplus devices
-
-            val isMinimised = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                    nm.getNotificationChannel(MainPrefs.CHANNEL_NOTI_SCROBBLING).importance < NotificationManager.IMPORTANCE_LOW
-            if (isMinimised)
-                nb.setContentTitle(errMsg.replace("</?br?>".toRegex(), ""))
-            else
-                nb.setContentTitle(title)
-//            nb.setSubtextCompat(getString(R.string.state_didnt_scrobble))
-
-            nb.setStyleCompat(
-                NotificationCompat.BigTextStyle()
-                    .setBigContentTitle(title)
-                    .bigText(spanned)
-            )
-
-            nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
-        }
-
-        fun notifyUnscrobbled(hash: Int) {
-            val delay = 4000L
-
-            val blockedMetadata = BlockedMetadata(
-                track = currentBundle.getString(B_TRACK) ?: "",
-                album = currentBundle.getString(B_ALBUM) ?: "",
-                artist = currentBundle.getString(B_ARTIST) ?: "",
-                albumArtist = currentBundle.getString(B_ALBUM_ARTIST) ?: "",
-                skip = true,
-            )
-            val intent = Intent(this@NLService, MainDialogActivity::class.java).apply {
-                putExtra(Stuff.ARG_DATA, blockedMetadata)
-                putExtra(B_IGNORED_ARTIST, currentBundle.getString(B_IGNORED_ARTIST))
-                putExtra(B_HASH, hash)
-            }
-
-            val pendingIntent = PendingIntent.getActivity(
-                this@NLService,
-                20,
-                intent,
-                Stuff.updateCurrentOrImmutable
-            )
-
-            val nb = buildNotification()
-                .setChannelId(MainPrefs.CHANNEL_NOTI_SCROBBLING)
-                .setSmallIcon(R.drawable.vd_noti_err)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setContentTitle(getString(R.string.state_unscrobbled) + " • " + getString(R.string.blocked_metadata_noti))
-                .setContentIntent(pendingIntent)
-                .setTimeoutAfter(delay)
-            nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                handler.postDelayed({ nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0) }, delay)
-        }
-
-        private fun notifyApp(packageName: String) {
-            val appName = try {
-                val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-                packageManager.getApplicationLabel(applicationInfo).toString()
-            } catch (e: Exception) {
-                //eat up all NPEs and stuff
-                packageName
-            }
-
-            var intent = Intent(iBLOCKLIST)
-                .putExtra(B_PACKAGE_NAME, packageName)
-            val ignoreIntent = PendingIntent.getBroadcast(
-                applicationContext, 1, intent,
-                Stuff.updateCurrentOrImmutable
-            )
-            intent = Intent(iALLOWLIST)
-                .putExtra(B_PACKAGE_NAME, packageName)
-            val okayIntent = PendingIntent.getBroadcast(
-                applicationContext, 2, intent,
-                Stuff.updateCurrentOrImmutable
-            )
-            intent = Intent(applicationContext, MainActivity::class.java)
-                .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_APP_LIST)
-            val launchIntent = PendingIntent.getActivity(
-                applicationContext, 7, intent,
-                Stuff.updateCurrentOrImmutable
-            )
-
-            val n = buildNotification()
-                .setContentTitle(getString(R.string.new_player, appName))
-                .setContentText(getString(R.string.new_player_prompt))
-                .setChannelId(MainPrefs.CHANNEL_NOTI_NEW_APP)
-                .setSmallIcon(R.drawable.vd_appquestion_noti)
-                .setContentIntent(launchIntent)
-                .addAction(
-                    Stuff.getNotificationAction(
-                        R.drawable.vd_ban,
-                        "\uD83D\uDEAB",
-                        getString(R.string.no),
-                        ignoreIntent
-                    )
-                )
-                .addAction(
-                    Stuff.getNotificationAction(
-                        R.drawable.vd_check,
-                        "✔",
-                        getString(R.string.yes),
-                        okayIntent
-                    )
-                )
-                .setStyleCompat(
-                    if (resources.getBoolean(R.bool.is_rtl))
-                        MediaStyleMod().setShowActionsInCompactView(1, 0)
-                    else
-                        MediaStyleMod().setShowActionsInCompactView(0, 1)
-                )
-                .buildMediaStyleMod()
-            nm.notify(MainPrefs.CHANNEL_NOTI_NEW_APP, 0, n)
-        }
-
-        private var notiIconBitmap: Bitmap? = null
-
-        private fun NotificationCompat.Builder.setSubtextCompat(state: String): NotificationCompat.Builder {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                setSubText(state)
-            } else {
-                setContentInfo(state)
-            }
-            return this
-        }
-
-        private fun NotificationCompat.Builder.setStyleCompat(style: NotificationCompat.Style): NotificationCompat.Builder {
-            if (!(Stuff.isWindows11 && style is MediaStyleMod))
-                setStyle(style)
-
-            return this
-        }
-
-        @SuppressLint("RestrictedApi")
-        private fun NotificationCompat.Builder.buildMediaStyleMod(): Notification {
-            val modNeeded =
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && !mActions.isNullOrEmpty()
-            if (modNeeded) {
-                if (notiIconBitmap == null || notiIconBitmap?.isRecycled == true) {
-                    notiIconBitmap =
-                        AppCompatResources.getDrawable(applicationContext, R.drawable.ic_launcher)
-                            ?.toBitmap()
-                }
-//                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)
-                setLargeIcon(notiIconBitmap)
-            }
-            return build()
+                false
+            else trackInfo.packageName in Stuff.IGNORE_ARTIST_META ||
+                    trackInfo.packageName in browserPackages && trackInfo.artist.isUrlOrDomain()
         }
 
         fun remove(hash: Int, removeNoti: Boolean = true) {
             Stuff.log("$hash cancelled")
-            removeMessages(hash)
-            if (hash == currentBundle.getInt(B_HASH)) {
-                currentBundle.putBoolean(B_IS_SCROBBLING, false)
-                if (removeNoti)
-                    nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0)
-                broadcastNowPlayingInfo()
-            }
+            tracksCopyPQ.removeAll { it.hash == hash }
+            sessListener?.findTrackInfoByHash(hash)?.isPlaying = false
+            if (removeNoti)
+                nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0)
+//              broadcastNowPlayingInfo()
         }
     }
 
-    private fun shouldIgnoreArtistMeta(packageName: String, scrobbleData: ScrobbleData): Boolean {
-        return if (
-            packageName == Stuff.PACKAGE_YOUTUBE_TV && !scrobbleData.album.isNullOrEmpty() ||
-            packageName == Stuff.PACKAGE_YMUSIC &&
-            !scrobbleData.album?.replace("YMusic", "").isNullOrEmpty()
-        )
-            false
-        else packageName in Stuff.IGNORE_ARTIST_META ||
-                packageName in browserPackages && scrobbleData.artist.isUrlOrDomain()
-    }
 
     companion object {
         const val iCANCEL = "com.arn.scrobble.CANCEL"
@@ -1130,17 +1069,8 @@ class NLService : NotificationListenerService() {
         const val B_TIME = "time"
         const val B_ARTIST = "artist"
         const val B_ALBUM = "album"
-        const val B_DURATION = "duration"
-        const val B_USER_PLAY_COUNT = "playcount"
-        const val B_USER_LOVED = "loved"
+        const val B_STANDALONE_DIALOG = "standalone_dialog"
         const val B_HASH = "hash"
-        const val B_ERR_MSG = "err"
-        const val B_ERR_DESC = "err_desc"
-        const val B_PENDING = "pending_saved"
-        const val B_STANDALONE = "alone"
-        const val B_FORCEABLE = "forceable"
-        const val B_DELAY = "delay"
-        const val B_IS_SCROBBLING = "scrobbling"
         const val B_PACKAGE_NAME = "package_name"
         const val B_IGNORED_ARTIST = "ignored_artist"
     }

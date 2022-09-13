@@ -92,14 +92,17 @@
 
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
-            <intent-filter android:label="@string/pref_login">
+            <intent-filter android:label="Screen">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data
-                    android:host="auth"
+                    android:host="screen"
+                    android:scheme="pscrobbler" />
+                <data
+                    android:host="test"
                     android:scheme="pscrobbler" />
             </intent-filter>
 
@@ -194,6 +197,8 @@
                 android:name="android.service.quicksettings.TOGGLEABLE_TILE"
                 android:value="true" />
         </service>
+        <service android:name="com.arn.scrobble.ListenAlongService"
+            android:process=":bgScrobbler" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

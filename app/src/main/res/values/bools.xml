@@ -2,4 +2,5 @@
 <resources>
     <bool name="is_rtl">false</bool>
     <bool name="is_dark">false</bool>
+    <bool name="is_tablet_ui">false</bool>
 </resources>

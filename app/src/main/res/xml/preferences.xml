@@ -13,17 +13,6 @@
         android:selectable="false"
         android:summary="@string/pref_offline_info" />
 
-<!--
-    <ListPreference
-        android:title="@string/pref_search_title"
-        android:entries="@array/search_sites_title"
-        android:entryValues="@array/search_sites_url"
-        android:defaultValue="@string/search_site_default"
-        android:key="search_url"
-        android:persistent="false"
-    />
-    -->
-
     <PreferenceCategory
         app:icon="@drawable/vd_apps"
         android:title="@string/pref_scrobble_from">

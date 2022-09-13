@@ -7,8 +7,8 @@ import android.webkit.URLUtil
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.Stuff.mapConcurrently
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.Stuff.setMidnight
-import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.db.*
@@ -304,9 +304,9 @@ class LFMRequester(
             Stuff.log(this::getFriends.name + " " + page)
             checkSession(usernamep)
             lastfmSession.cacheStrategy = if (Stuff.isOnline)
-                    Caller.CacheStrategy.NETWORK_ONLY
-                else
-                    Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+                Caller.CacheStrategy.NETWORK_ONLY
+            else
+                Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
 
             val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
             var pr: PaginatedResult<User>
@@ -318,7 +318,8 @@ class LFMRequester(
                     lastfmSession
                 )
             } catch (e: NullPointerException) {
-                val request = Request("https://www.last.fm/user/$username/following?page=$page".toHttpUrl())
+                val request =
+                    Request("https://www.last.fm/user/$username/following?page=$page".toHttpUrl())
                 val users = mutableListOf<User>()
                 try {
                     okHttpClient.newCall(request).execute()
@@ -865,7 +866,7 @@ class LFMRequester(
                 1,
                 lastfmSession
             ).pageResults.find { it.playedWhen != null }
-                ?: throw  IllegalStateException("No scrobbled tracks found")
+                ?: throw IllegalStateException("No scrobbled tracks found")
 
             for (i in 1..numPages) {
                 val artists = User.getTopArtists(
@@ -1279,16 +1280,14 @@ class LFMRequester(
 
     fun scrobble(
         nowPlaying: Boolean,
-        scrobbleData: ScrobbleData,
-        hash: Int,
-        packageName: String,
+        trackInfo: PlayingTrackInfo,
         unparsedData: ScrobbleData? = null
     ) {
         toExec = {
             Stuff.log(
                 this::scrobble.name + " " +
                         (if (nowPlaying) "np" else "submit")
-                        + " " + scrobbleData.artist + " - " + scrobbleData.track
+                        + " " + trackInfo.artist + " - " + trackInfo.title
             )
 
             coroutineScope {
@@ -1298,22 +1297,20 @@ class LFMRequester(
                 var savedAsPending = false
                 val forceable = unparsedData == null
 
-                if (scrobbleData.duration < 30)
-                    scrobbleData.duration = -1 // default
+                val scrobbleData = trackInfo.toScrobbleData()
+
                 val scrobblablesMap by lazy { Scrobblable.getScrobblablesMap(prefs) }
 
                 fun doFallbackScrobble(): Boolean {
-                    if (packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && unparsedData != null) {
-                        val b = unparsedData.toBundle().apply {
-                            putInt(NLService.B_HASH, hash)
-                            putString(NLService.B_PACKAGE_NAME, packageName)
-                        }
-                        val i = Intent(NLService.iMETA_UPDATE_S).apply {
-                            putExtras(b)
-                        }
+                    if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && unparsedData != null) {
+
+                        val newTrackInfo = trackInfo.updateMetaFrom(unparsedData)
+                        val i = Intent(NLService.iMETA_UPDATE_S)
+                            .putSingle(newTrackInfo)
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+
                         LFMRequester(context, scope, liveData)
-                            .scrobble(nowPlaying, unparsedData, hash, packageName)
+                            .scrobble(nowPlaying, newTrackInfo)
                         return true
                     }
                     return false
@@ -1326,14 +1323,14 @@ class LFMRequester(
                             .getBlockedEntry(scrobbleData, otherArtist)
                         if (blockedMetadata != null) {
                             val i = Intent(NLService.iCANCEL).apply {
-                                putExtra(NLService.B_HASH, hash)
+                                putExtra(NLService.B_HASH, trackInfo.hash)
                             }
                             context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
 
                             if (blockedMetadata.skip || blockedMetadata.mute) {
                                 val i2 = Intent(NLService.iBLOCK_ACTION_S).apply {
                                     putExtra(Stuff.ARG_DATA, blockedMetadata)
-                                    putExtra(NLService.B_HASH, hash)
+                                    putExtra(NLService.B_HASH, trackInfo.hash)
                                 }
                                 context.sendBroadcast(i2, NLService.BROADCAST_PERMISSION)
                             }
@@ -1375,28 +1372,22 @@ class LFMRequester(
 
                     if (scrobbleData.artist.isNullOrBlank() || scrobbleData.track.isNullOrBlank()) {
                         if (!doFallbackScrobble()) {
-                            val b = scrobbleData.toBundle().apply {
-                                putInt(NLService.B_HASH, hash)
-                                putBoolean(NLService.B_FORCEABLE, forceable)
-                                putString(
-                                    NLService.B_ERR_MSG,
-                                    context.getString(R.string.parse_error)
+                            val i = Intent(NLService.iBAD_META_S)
+                                .putSingle(
+                                    trackInfo.updateMetaFrom(scrobbleData)
                                 )
-                                putString(NLService.B_PACKAGE_NAME, packageName)
-                            }
-                            val i = Intent(NLService.iBAD_META_S).apply {
-                                putExtras(b)
-                            }
+                                .putSingle(
+                                    ScrobbleError(
+                                        context.getString(R.string.parse_error),
+                                        canForceScrobble = forceable
+                                    )
+                                )
                             context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                         }
                         return@coroutineScope
                     } else if (edit != null || regexEdits.values.sum() > 0) {
-                        val b = scrobbleData.toBundle().apply {
-                            putInt(NLService.B_HASH, hash)
-                        }
-                        val i = Intent(NLService.iMETA_UPDATE_S).apply {
-                            putExtras(b)
-                        }
+                        val i = Intent(NLService.iMETA_UPDATE_S)
+                            .putSingle(trackInfo.updateMetaFrom(scrobbleData))
 
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
@@ -1481,15 +1472,14 @@ class LFMRequester(
                     }
 
                     if (edit != null || track != null) {
-                        val b = scrobbleData.toBundle().apply {
-                            putInt(NLService.B_HASH, hash)
+                        trackInfo.updateMetaFrom(scrobbleData).apply {
                             if (track != null) {
-                                putBoolean(NLService.B_USER_LOVED, track!!.isLoved)
-                                putInt(NLService.B_USER_PLAY_COUNT, track!!.userPlaycount)
+                                userLoved = track!!.isLoved
+                                userPlayCount = track!!.userPlaycount
                             }
                         }
                         val i = Intent(NLService.iMETA_UPDATE_S)
-                            .putExtras(b)
+                            .putSingle(trackInfo)
 
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
@@ -1508,18 +1498,14 @@ class LFMRequester(
                         } else {
                             // unrecognized artist
                             if (!doFallbackScrobble()) {
-                                val b = scrobbleData.toBundle().apply {
-                                    putInt(NLService.B_HASH, hash)
-                                    putBoolean(NLService.B_FORCEABLE, forceable)
-                                    putString(NLService.B_PACKAGE_NAME, packageName)
-                                    putString(
-                                        NLService.B_ERR_MSG,
-                                        context.getString(R.string.state_unrecognised_artist)
+                                val i = Intent(NLService.iBAD_META_S)
+                                    .putSingle(trackInfo.updateMetaFrom(scrobbleData))
+                                    .putSingle(
+                                        ScrobbleError(
+                                            context.getString(R.string.state_unrecognised_artist),
+                                            canForceScrobble = forceable
+                                        )
                                     )
-                                }
-                                val i = Intent(NLService.iBAD_META_S).apply {
-                                    putExtras(b)
-                                }
                                 context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                             }
                         }
@@ -1529,7 +1515,7 @@ class LFMRequester(
                     // track player
                     val scrobbleSource = ScrobbleSource(
                         timeMillis = scrobbleData.timestamp * 1000L,
-                        pkg = packageName
+                        pkg = trackInfo.packageName
                     )
                     PanoDb.getDb(context)
                         .getScrobbleSourcesDao()
@@ -1595,25 +1581,27 @@ class LFMRequester(
                         val failedText = failedTextLines.joinToString("<br>\n")
                         Stuff.log("failedText= $failedText")
                         val i = if (ignored) {
-                            val b = scrobbleData.toBundle().apply {
-                                putInt(NLService.B_HASH, hash)
-                                putBoolean(NLService.B_FORCEABLE, forceable)
-                                putString(
-                                    NLService.B_ERR_MSG,
-                                    context.getString(R.string.scrobble_ignored)
+                            Intent(NLService.iBAD_META_S)
+                                .putSingle(trackInfo.updateMetaFrom(scrobbleData))
+                                .putSingle(
+                                    ScrobbleError(
+                                        "",
+                                        failedText,
+                                        canForceScrobble = forceable
+                                    )
                                 )
-                                putString(NLService.B_ERR_DESC, failedText)
-                                putString(NLService.B_PACKAGE_NAME, packageName)
-                            }
-                            Intent(NLService.iBAD_META_S).apply {
-                                putExtras(b)
-                            }
                         } else {
-                            Intent(NLService.iOTHER_ERR_S).apply {
-                                putExtra(NLService.B_ERR_MSG, failedText)
-                                putExtra(NLService.B_PENDING, savedAsPending)
-                                putExtra(NLService.B_HASH, hash)
-                            }
+                            Intent(NLService.iOTHER_ERR_S)
+                                .putSingle(
+                                    ScrobbleError(
+                                        if (savedAsPending)
+                                            context.getString(R.string.saved_as_pending)
+                                        else
+                                            ""
+                                        ,
+                                        failedText,
+                                    )
+                                )
                         }
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                     }
@@ -1625,9 +1613,13 @@ class LFMRequester(
     }
 
     fun loveOrUnlove(track: Track, love: Boolean, callback: ((Boolean) -> Unit)? = null) {
-        toExec = {
+        toExec = toExec@{
             checkSession()
             Stuff.log(this::loveOrUnlove.name + " " + love)
+
+            if (track.artist.isNullOrEmpty() || track.name.isNullOrEmpty())
+                return@toExec null
+
             var submittedAll = true
             val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs, supportsLove = true)
 
@@ -1859,6 +1851,7 @@ class LFMRequester(
             return ResponseBuilder.buildItem(result, Artist::class.java)
         }
 
+        @Deprecated("now done client side")
         fun getArtistInfoSpotify(artist: String): Artist? {
             if (Tokens.SPOTIFY_ARTIST_INFO_SERVER.isEmpty() || Tokens.SPOTIFY_ARTIST_INFO_KEY.isEmpty())
                 return null

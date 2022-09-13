@@ -1,8 +1,9 @@
-import java.util.*
-import java.text.SimpleDateFormat
-import com.mikepenz.aboutlibraries.plugin.StrictMode
-import com.mikepenz.aboutlibraries.plugin.DuplicateMode
+
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.mikepenz.aboutlibraries.plugin.DuplicateMode
+import com.mikepenz.aboutlibraries.plugin.StrictMode
+import java.text.SimpleDateFormat
+import java.util.*
 
 plugins {
     id("com.android.application")
@@ -12,7 +13,7 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
     id ("com.github.triplet.play")
-    kotlin("plugin.serialization") version "1.6.21"
+    kotlin("plugin.serialization") version "1.7.10"
     id("com.mikepenz.aboutlibraries.plugin") version "10.4.0"
     id("com.github.breadmoirai.github-release") version "2.4.1"
 }
@@ -101,8 +102,8 @@ aboutLibraries {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("androidx.appcompat:appcompat:1.6.0-beta01")
-    implementation("androidx.core:core-ktx:1.9.0-beta01")
+    implementation("androidx.appcompat:appcompat:1.6.0-rc01")
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.media:media:1.6.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
@@ -113,23 +114,24 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.1")
-    implementation("androidx.navigation:navigation-ui-ktx:2.5.1")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.2")
+    implementation("androidx.navigation:navigation-ui-ktx:2.5.2")
     kapt("androidx.room:room-compiler:2.4.3")
     implementation("androidx.room:room-runtime:2.4.3")
     implementation("com.android.billingclient:billing:5.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.7.0-beta01")
+    implementation("com.google.android.material:material:1.8.0-alpha01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:30.3.2"))
+    implementation(platform("com.google.firebase:firebase-bom:30.4.1"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
 
-    implementation("io.coil-kt:coil:2.2.0")
-    implementation("io.coil-kt:coil-gif:2.2.0")
+    val coilVersion = "2.2.1"
+    implementation("io.coil-kt:coil:$coilVersion")
+    implementation("io.coil-kt:coil-gif:$coilVersion")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")
@@ -139,6 +141,14 @@ dependencies {
     implementation("io.michaelrocks.bimap:bimap:1.1.0")
     implementation("com.github.hadilq:live-event:1.3.0")
     implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
+
+    val ktorVersion = "2.1.1"
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
 //    implementation("com.brandongogetap:stickyheaders:0.6.2")
     implementation("com.mikepenz:aboutlibraries-core:10.4.0")

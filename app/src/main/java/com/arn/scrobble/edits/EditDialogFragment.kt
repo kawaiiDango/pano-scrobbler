@@ -49,7 +49,7 @@ class EditDialogFragment : LoginFragment() {
 
         showsDialog = true
 
-        if (arguments?.getBoolean(NLService.B_STANDALONE) == true)
+        if (arguments?.getBoolean(NLService.B_STANDALONE_DIALOG) == true)
             isStandalone = true
 
         fun moveImeActionToLast2() {

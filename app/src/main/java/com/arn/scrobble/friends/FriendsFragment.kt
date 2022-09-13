@@ -1,6 +1,7 @@
 package com.arn.scrobble.friends
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -34,6 +36,7 @@ import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.platform.MaterialElevationScale
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
 import kotlin.math.min
@@ -48,10 +51,10 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
     private lateinit var adapter: FriendsAdapter
     private var runnable = Runnable {
-        if (viewModel.sorted)
-            refreshFriendsRecents()
-        else
+        if (!viewModel.sorted)
             loadFriends(1)
+        if (isResumed)
+            refreshFriendsRecents()
         lastRefreshTime = System.currentTimeMillis()
     }
     private var popupWr: WeakReference<PopupWindow>? = null
@@ -135,6 +138,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
             viewModel.sorted = false
             binding.friendsSort.hide()
             loadFriends(1)
+            if (isResumed)
+                refreshFriendsRecents()
+            lastRefreshTime = System.currentTimeMillis()
         }
 
         val glm = GridLayoutManager(context!!, getNumColumns())
@@ -391,6 +397,20 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     .addToBackStack(null)
                     .commit()
             }
+
+            if (BuildConfig.DEBUG) {
+                actionsBinding.friendsScrobbles.setOnLongClickListener {
+                    lifecycleScope.launch {
+                        ContextCompat.startForegroundService(
+                            context!!,
+                            Intent(context!!, ListenAlongService::class.java)
+                                .putExtra(Stuff.ARG_USERNAME, userSerializable.name)
+                        )
+                    }
+                    true
+                }
+            }
+
             actionsBinding.friendsCharts.setOnClickListener {
                 (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
@@ -447,8 +467,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun getNumColumns(): Int {
-        val cols = (resources.displayMetrics.widthPixels - (activity as MainActivity).coordinatorPadding) /
-                resources.getDimension(R.dimen.grid_size).roundToInt()
+        val cols =
+            (resources.displayMetrics.widthPixels - (activity as MainActivity).coordinatorPadding) /
+                    resources.getDimension(R.dimen.grid_size).roundToInt()
         return cols.coerceIn(2, 5)
     }
 }

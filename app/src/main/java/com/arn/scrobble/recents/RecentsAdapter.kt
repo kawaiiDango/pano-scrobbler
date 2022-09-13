@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.dispose
 import coil.load
 import coil.size.Scale
-import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentRecentsBinding
@@ -415,12 +414,13 @@ class RecentsAdapter(
                 }
             }
 
-            if (track.isNowPlaying && trackBundleLd.value?.getBoolean(NLService.B_IS_SCROBBLING) == true) {
-                trackBundleLd.value?.getString(NLService.B_PACKAGE_NAME)?.let {
-                    viewModel.pkgMap[0] = it
-                    fetchIcon(it)
-                }
-            } else if (timeMillis != null && viewModel.pkgMap[timeMillis] != null) {
+//            if (track.isNowPlaying && trackBundleLd.value?.getBoolean(NLService.B_IS_SCROBBLING) == true) {
+//                trackBundleLd.value?.getString(NLService.B_PACKAGE_NAME)?.let {
+//                    viewModel.pkgMap[0] = it
+//                    fetchIcon(it)
+//                }
+//            } else
+                if (timeMillis != null && viewModel.pkgMap[timeMillis] != null) {
                 fetchIcon(viewModel.pkgMap[timeMillis]!!)
             } else {
                 binding.playerIcon.dispose()

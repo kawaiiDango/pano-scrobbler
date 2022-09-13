@@ -5,7 +5,9 @@ import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.SpotifyRequester
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Tokens
 import de.umass.lastfm.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -36,11 +38,17 @@ class MusicEntryImageInterceptor : Interceptor {
                     nwReqCount++
                     fetchedEntry = when (entry) {
                         is Artist -> {
-                            val info = LFMRequester.getArtistInfoSpotify(entry.name)
-                            if (info?.name.equals(entry.name, ignoreCase = true))
-                                info
-                            else
-                                null
+                            if (Tokens.SPOTIFY_ARTIST_INFO_SERVER.isNotEmpty()) {
+                                val info = LFMRequester.getArtistInfoSpotify(entry.name)
+                                if (info?.name.equals(entry.name, ignoreCase = true))
+                                    info
+                                else
+                                    null
+                            } else {
+                                val imagesMap = SpotifyRequester.getSpotifyArtistImages(entry.name)
+                                Artist(entry.name, null)
+                                    .apply { imageUrlsMap = imagesMap }
+                            }
                         }
                         is Album -> Album.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
                         is Track -> Track.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
@@ -60,8 +68,8 @@ class MusicEntryImageInterceptor : Interceptor {
             entry.imageUrlsMap = fetchedEntry?.imageUrlsMap
 
         val imgUrl = if (entry is Artist)
-            fetchedEntry?.getImageURL(ImageSize.EXTRALARGE)
-                ?: "" // Spotify image is always EXTRALARGE
+            fetchedEntry?.getImageURL(musicEntryImageReq.size) ?: ""
+            // Spotify image isnt webp
         else
             fetchedEntry?.getWebpImageURL(musicEntryImageReq.size) ?: ""
 

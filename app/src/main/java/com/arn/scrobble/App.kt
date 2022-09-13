@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
@@ -30,6 +31,8 @@ class App : Application() {
             enableStrictMode()
         }
         super.onCreate()
+
+        context = applicationContext
 
         initCaller()
 
@@ -145,4 +148,11 @@ class App : Application() {
             PackageManager.DONT_KILL_APP
         )
     }
+
+    @SuppressLint("StaticFieldLeak")
+    companion object {
+        // not a leak
+        lateinit var context: Context
+    }
+
 }

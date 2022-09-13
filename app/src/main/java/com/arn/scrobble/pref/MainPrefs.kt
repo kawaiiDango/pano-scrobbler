@@ -143,6 +143,9 @@ class MainPrefs(context: Context) : Krate {
     var pinnedFriendsJson by kotlinxPref<List<UserSerializable>>(PREF_ACTIVITY_PINNED_FRIENDS)
         .withDefault(emptyList())
     var touhouCircles by stringPref(PREF_TOUHOU_CIRCLES).withDefault("")
+    // we want 401 and not 400
+    var spotifyAccessToken by stringPref(PREF_SPOTIFY_ACCESS_TOKEN).withDefault("qwertyuiopasdfghjklzxcvbnm")
+    var spotifyAccessTokenExpires by longPref(PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES).withDefault(-1)
 
     var songSearchUrl by stringPref(PREF_ACTIVITY_SONG_SEARCH_URL).withDefault("https://www.youtube.com/results?search_query=\$artist+\$title")
 
@@ -203,6 +206,8 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_CRASHLYTICS_ENABLED = "crashlytics_enabled"
         const val PREF_LASTFM_USER = "lastfm_user"
         const val PREF_TOUHOU_CIRCLES = "touhou_circles"
+        const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
+        const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"
 
         const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
         const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"

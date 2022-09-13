@@ -30,7 +30,6 @@ import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
-import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -335,18 +334,16 @@ class RecFragment : Fragment(),
                     getString(R.string.state_scrobbled) + "\n" +
                             getString(R.string.artist_title, artist, title)
                 )
-                val scrobbleData = ScrobbleData()
-                scrobbleData.artist = artist
-                scrobbleData.album = album
-                scrobbleData.track = title
-                scrobbleData.timestamp = (System.currentTimeMillis() / 1000).toInt() // in secs
+                val trackInfo = PlayingTrackInfo(
+                    context!!.packageName,
+                    title,
+                    album,
+                    artist,
+                    playStartTime = System.currentTimeMillis()
+                )
+
                 LFMRequester(context!!, CoroutineScope(Dispatchers.IO + Job()))
-                    .scrobble(
-                        false,
-                        scrobbleData,
-                        Stuff.genHashCode(artist, album, title, "rec"),
-                        BuildConfig.APPLICATION_ID
-                    )
+                    .scrobble(false, trackInfo)
             }
             1001 -> binding.recStatus.setTextAndAnimate(R.string.not_found)
             2000 -> {

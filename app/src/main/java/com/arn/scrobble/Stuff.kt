@@ -13,6 +13,7 @@ import android.media.MediaMetadata
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.os.Process
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.format.DateUtils
@@ -25,7 +26,6 @@ import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
-import de.umass.lastfm.scrobble.ScrobbleData
 import io.michaelrocks.bimap.BiMap
 import io.michaelrocks.bimap.HashBiMap
 import kotlinx.coroutines.async
@@ -529,28 +529,6 @@ object Stuff {
         this[Calendar.MILLISECOND] = 0
     }
 
-    fun ScrobbleData.toBundle() = Bundle().apply {
-        putString(NLService.B_ARTIST, artist)
-        putString(NLService.B_ALBUM, album)
-        putString(NLService.B_TRACK, track)
-        putString(NLService.B_ALBUM_ARTIST, albumArtist)
-        putLong(NLService.B_TIME, timestamp * 1000L)
-        putLong(NLService.B_DURATION, duration * 1000L)
-    }
-
-    fun ScrobbleData.copy() = ScrobbleData().also {
-        it.artist = artist
-        it.track = track
-        it.album = album
-        it.albumArtist = albumArtist
-        it.timestamp = timestamp
-        it.duration = duration
-        it.isChosenByUser = isChosenByUser
-        it.musicBrainzId = musicBrainzId
-        it.streamId = streamId
-        it.trackNumber = trackNumber
-    }
-
     fun String.isUrlOrDomain(): Boolean {
         // got some internal IOBE, catch everything
         return try {
@@ -608,10 +586,25 @@ object Stuff {
 
     fun MediaMetadata.dump() {
         val data = keySet().joinToString(separator = "\n") {
-            "$it: ${getString(it)}"
+            var value: String? = getString(it)
+            if (value == null)
+                value = getLong(it).toString()
+            if (value == "0")
+                value = getBitmap(it)?.toString()
+            if (value == null)
+                value = getRating(it)?.toString()
+            "$it: $value"
         }
         log("MediaMetadata\n$data")
     }
+
+    fun Intent.putSingle(parcelable: Parcelable): Intent {
+        putExtra(parcelable::class.qualifiedName, parcelable)
+        return this
+    }
+
+    inline fun <reified T: Parcelable> Intent.getSingle() =
+        getParcelableExtra<T>(T::class.qualifiedName)
 
     // https://stackoverflow.com/a/65046522/1067596
     suspend fun <TInput, TOutput> Iterable<TInput>.mapConcurrently(
@@ -634,6 +627,49 @@ object Stuff {
         clipboard.setPrimaryClip(clip)
         if (toast)
             toast(R.string.copied)
+    }
+
+    fun String.similarity(s: String): Double {
+        var longer = this
+        var shorter = s
+        if (this.length < s.length) { // longer should always have greater length
+            longer = s
+            shorter = this
+        }
+        val longerLength = longer.length
+        return if (longerLength == 0) {
+            1.0 /* both strings are zero length */
+        } else (longerLength - editDistance(longer, shorter)) / longerLength.toDouble()
+    }
+
+    // Example implementation of the Levenshtein Edit Distance
+    // See http://rosettacode.org/wiki/Levenshtein_distance#Java
+    private fun editDistance(s1: String, s2: String): Int {
+        val s1 = s1.lowercase(Locale.getDefault())
+        val s2 = s2.lowercase(Locale.getDefault())
+        val costs = IntArray(s2.length + 1)
+        for (i in 0..s1.length) {
+            var lastValue = i
+            for (j in 0..s2.length) {
+                if (i == 0) {
+                    costs[j] = j
+                } else {
+                    if (j > 0) {
+                        var newValue = costs[j - 1]
+                        if (s1[i - 1] != s2[j - 1])
+                            newValue = Math.min(
+                                Math.min(newValue, lastValue),
+                                costs[j]
+                            ) + 1
+                        costs[j - 1] = lastValue
+                        lastValue = newValue
+                    }
+                }
+            }
+            if (i > 0)
+                costs[s2.length] = lastValue
+        }
+        return costs[s2.length]
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

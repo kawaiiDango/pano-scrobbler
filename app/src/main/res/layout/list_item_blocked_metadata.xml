@@ -83,20 +83,18 @@
         app:tint="?colorSecondary"
         tools:srcCompat="@drawable/vd_skip" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/delete"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="40dp"
+        style="?materialIconButtonStyle"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingHorizontal="8dp"
         android:contentDescription="@string/delete"
         android:focusable="true"
         android:gravity="top|end"
         android:nextFocusLeft="@id/blocked_metadata_list_item"
         android:nextFocusRight="@id/blocked_metadata_list_item"
-        android:scaleX="1.3"
-        android:scaleY="1.3"
-        app:srcCompat="@drawable/vd_delete" />
+        app:iconSize="28dp"
+        app:icon="@drawable/vd_delete" />
 
 </LinearLayout>
 

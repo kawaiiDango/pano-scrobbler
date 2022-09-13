@@ -116,7 +116,6 @@ class DigestJob : JobService() {
                 MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY
 
             var intent = Intent(Intent.ACTION_SEND)
-                .putExtra(NLService.B_PACKAGE_NAME, packageName)
 
             intent.type = "text/plain"
             intent.putExtra(Intent.EXTRA_TEXT, shareText)

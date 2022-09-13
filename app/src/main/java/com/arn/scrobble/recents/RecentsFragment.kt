@@ -22,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -487,7 +488,12 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 coordinatorBinding.sparkline,
                 "lineColor",
                 tintFrom,
-                colors.foreground
+                ColorUtils.setAlphaComponent(colors.foreground,
+                    if (context!!.resources.getBoolean(R.bool.is_dark))
+                        179 // 0.7
+                    else
+                        230 // 0.9
+                )
             )
 
             if (activity.billingViewModel.proStatus.value != true ||

@@ -9,7 +9,9 @@ import android.media.session.MediaSession
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Build
+import android.os.Bundle
 import android.os.Handler
+import com.arn.scrobble.Stuff.dump
 import com.arn.scrobble.pref.MainPrefs
 import java.util.*
 
@@ -25,14 +27,14 @@ class SessListener(
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val controllersMap =
-        mutableMapOf<MediaSession.Token, Pair<MediaController, MyCallback>>()
+        mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
     private var controllers: List<MediaController>? = null
 
     private val blockedPackages = mutableSetOf<String>()
     private val allowedPackages = mutableSetOf<String>()
     private val loggedIn
         get() = prefs.lastfmSessKey != null
-    val packageMap = mutableMapOf<String, HashesAndTimes>()
+    val packageTrackMap = mutableMapOf<String, PlayingTrackInfo>()
     private var mutedHash: Int? = null
 
     init {
@@ -66,14 +68,18 @@ class SessListener(
                     }
                     val hasMultipleSessions =
                         numControllersForPackage > 1 || hasOtherTokensForPackage
-                    var hashesAndTimes = packageMap[controller.packageName]
-                    if (hashesAndTimes == null || hasMultipleSessions) {
-                        hashesAndTimes = HashesAndTimes()
-                        packageMap[controller.packageName] = hashesAndTimes
+                    var playingTrackInfo = packageTrackMap[controller.packageName]
+                    if (playingTrackInfo == null || hasMultipleSessions) {
+                        playingTrackInfo = PlayingTrackInfo(controller.packageName)
+                        packageTrackMap[controller.packageName] = playingTrackInfo
                     }
                     val cb =
-                        MyCallback(controller.packageName, hashesAndTimes, controller.sessionToken)
+                        ControllerCallback(
+                            playingTrackInfo,
+                            controller.sessionToken
+                        )
                     controller.registerCallback(cb)
+
                     //Medoly needs this
                     controller.playbackState?.let { cb.onPlaybackStateChanged(it) }
                     controller.metadata?.let { cb.onMetadataChanged(it) }
@@ -91,11 +97,14 @@ class SessListener(
         controllersMap.values.filter { it.first.packageName == packageName }.map { it.first }
 
     private fun findCallbackByHash(hash: Int) =
-        controllersMap.values.firstOrNull { it.second.hashesAndTimes.lastScrobbleHash == hash }?.second
+        controllersMap.values.firstOrNull { it.second.playingTrackInfo.lastScrobbleHash == hash }?.second
 
     fun findControllersByHash(hash: Int) =
-        controllersMap.values.filter { it.second.hashesAndTimes.lastScrobbleHash == hash }
+        controllersMap.values.filter { it.second.playingTrackInfo.lastScrobbleHash == hash }
             .map { it.first }
+
+    fun findTrackInfoByHash(hash: Int) =
+        packageTrackMap.values.find { it.hash == hash }
 
     fun mute(hash: Int) {
         // if pano didnt mute this, dont unmute later
@@ -134,10 +143,7 @@ class SessListener(
         while (it.hasNext()) {
             val (token, pair) = it.next()
             val (controller, callback) = pair
-            if (
-//                pair.first.packageName !in arrayOf(Stuff.IGNORE_ARTIST_META[0], Stuff.IGNORE_ARTIST_META[1], Stuff.PACKAGE_YOUTUBE_MUSIC) &&
-                (token !in tokensToKeep || packageNamesToKeep?.contains(pair.first.packageName) == false)
-            ) {
+            if (token !in tokensToKeep || packageNamesToKeep?.contains(pair.first.packageName) == false) {
                 callback.stop()
                 controller.unregisterCallback(callback)
                 it.remove()
@@ -149,46 +155,32 @@ class SessListener(
         prefs.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    inner class MyCallback(
-        private val packageName: String,
-        val hashesAndTimes: HashesAndTimes,
+    inner class ControllerCallback(
+        val playingTrackInfo: PlayingTrackInfo,
         private val token: MediaSession.Token
     ) : Callback() {
 
         private var lastState = -1
-        private var currHash = 0
-
-        private var artist = ""
-        private var album = ""
-        private var title = ""
-        private var albumArtist = ""
-        private var duration = -1L
         private var isRemotePlayback = false
         var isMuted = false
 
         private val syntheticStateHandler = Handler(handler.looper)
 
         fun scrobble() {
-            Stuff.log("playing: timePlayed=${hashesAndTimes.timePlayed} $title")
+//            if (BuildConfig.DEBUG && isRemotePlayback)
+//                return
+
+            Stuff.log("playing: timePlayed=${playingTrackInfo.timePlayed} ${playingTrackInfo.title}")
 
             scheduleSyntheticStateIfNeeded()
 
-            hashesAndTimes.lastScrobbleTime = System.currentTimeMillis()
-            handler.removeMessages(hashesAndTimes.lastScrobbleHash)
+            playingTrackInfo.playStartTime = System.currentTimeMillis()
+            handler.remove(playingTrackInfo.lastScrobbleHash, false)
 
-            handler.nowPlaying(
-                artist,
-                album,
-                title,
-                albumArtist,
-                hashesAndTimes.timePlayed,
-                duration,
-                currHash,
-                packageName
-            )
+            handler.nowPlaying(playingTrackInfo)
 
-            hashesAndTimes.lastScrobbleHash = currHash
-            hashesAndTimes.lastScrobbledHash = 0
+            playingTrackInfo.lastScrobbleHash = playingTrackInfo.hash
+            playingTrackInfo.lastSubmittedScrobbleHash = 0
 
             // if another player tried to scrobble, unmute whatever was muted
             // if self was muted, clear the muted hash too
@@ -196,7 +188,7 @@ class SessListener(
         }
 
         private fun scheduleSyntheticStateIfNeeded() {
-            if (packageName in Stuff.needSyntheticStates && duration > 0) {
+            if (playingTrackInfo.packageName in Stuff.needSyntheticStates && playingTrackInfo.durationMillis > 0) {
                 syntheticStateHandler.removeCallbacksAndMessages(null)
                 syntheticStateHandler.postDelayed({
                     onPlaybackStateChanged(
@@ -205,7 +197,7 @@ class SessListener(
                             .setErrorMessage("synthetic")
                             .build()
                     )
-                }, duration)
+                }, playingTrackInfo.durationMillis)
             }
         }
 
@@ -221,11 +213,11 @@ class SessListener(
             var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
 //            val genre = metadata?.getString(MediaMetadata.METADATA_KEY_GENRE)?.trim() ?: ""
             // The genre field is not used by google podcasts and podcast addict
-            var duration = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
-            if (duration < -1)
-                duration = -1
+            var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
+            if (durationMillis < -1)
+                durationMillis = -1
 
-            when (packageName) {
+            when (playingTrackInfo.packageName) {
                 Stuff.PACKAGE_XIAMI -> {
                     artist = artist.replace(";", "; ")
                 }
@@ -288,27 +280,31 @@ class SessListener(
                 }
             }
 
-            val sameAsOld = artist == this.artist && title == this.title && album == this.album
-                    && albumArtist == this.albumArtist
-            val onlyDurationUpdated = sameAsOld && duration != this.duration
+            val sameAsOld =
+                artist == playingTrackInfo.artist && title == playingTrackInfo.title && album == playingTrackInfo.album
+                        && albumArtist == playingTrackInfo.albumArtist
+            val onlyDurationUpdated = sameAsOld && durationMillis != playingTrackInfo.durationMillis
 
             Stuff.log(
                 "onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
-                        "duration=$duration lastState=$lastState, package=$packageName isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
+                        "duration=$durationMillis lastState=$lastState, package=${playingTrackInfo.packageName} isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
             )
+
+//            metadata.dump()
 
             if (artist == "" || title == "")
                 return
 
             if (!sameAsOld || onlyDurationUpdated) {
-                this.artist = artist
-                this.album = album
-                this.title = title
-                this.albumArtist = albumArtist
-                this.duration = duration
-                currHash = Stuff.genHashCode(artist, album, title, packageName)
+                playingTrackInfo.artist = artist
+                playingTrackInfo.album = album
+                playingTrackInfo.title = title
+                playingTrackInfo.albumArtist = albumArtist
+                playingTrackInfo.durationMillis = durationMillis
+                playingTrackInfo.hash =
+                    Stuff.genHashCode(artist, album, title, playingTrackInfo.packageName)
 
-                if (mutedHash != null && currHash != mutedHash && lastState == PlaybackState.STATE_PLAYING)
+                if (mutedHash != null && playingTrackInfo.hash != mutedHash && lastState == PlaybackState.STATE_PLAYING)
                     unmute(clearMutedHash = isMuted)
 
                 // scrobbled when ad was playing
@@ -321,10 +317,10 @@ class SessListener(
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
-                if ((!handler.hasMessages(currHash) || onlyDurationUpdated) &&
+                if ((!handler.has(playingTrackInfo.hash) || onlyDurationUpdated) &&
                     lastState == PlaybackState.STATE_PLAYING
                 ) {
-                    hashesAndTimes.timePlayed = 0
+                    playingTrackInfo.timePlayed = 0
                     scrobble()
                 }
             }
@@ -337,7 +333,7 @@ class SessListener(
             val state = playbackState.state
             val pos = playbackState.position // can be -1
 
-            Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos cb=${this@MyCallback.hashCode()} sl=${this@SessListener.hashCode()}")
+            Stuff.log("onPlaybackStateChanged=$state laststate=$lastState pos=$pos cb=${this@ControllerCallback.hashCode()} sl=${this@SessListener.hashCode()}")
 
             val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT
 
@@ -356,28 +352,28 @@ class SessListener(
                 PlaybackState.STATE_NONE,
                 PlaybackState.STATE_ERROR -> {
                     pause()
-                    Stuff.log("paused timePlayed=${hashesAndTimes.timePlayed}")
+                    Stuff.log("paused timePlayed=${playingTrackInfo.timePlayed}")
                 }
                 PlaybackState.STATE_PLAYING -> {
-                    if (mutedHash != null && currHash != mutedHash)
+                    if (mutedHash != null && playingTrackInfo.hash != mutedHash)
                         unmute(clearMutedHash = isMuted)
 
-                    if (title != "" && artist != "") {
+                    if (playingTrackInfo.title != "" && playingTrackInfo.artist != "") {
 
-                        if (!isMuted && currHash == mutedHash)
-                            mute(currHash)
+                        if (!isMuted && playingTrackInfo.hash == mutedHash)
+                            mute(playingTrackInfo.hash)
                         // ignore state=playing, pos=lowValue spam
-                        if (lastState == state && hashesAndTimes.lastScrobbleHash == currHash &&
-                            System.currentTimeMillis() - hashesAndTimes.lastScrobbleTime < Stuff.START_POS_LIMIT * 2
+                        if (lastState == state && playingTrackInfo.lastScrobbleHash == playingTrackInfo.hash &&
+                            System.currentTimeMillis() - playingTrackInfo.playStartTime < Stuff.START_POS_LIMIT * 2
                         )
                             return
 
-                        if (currHash != hashesAndTimes.lastScrobbleHash || (pos >= 0L && isPossiblyAtStart))
-                            hashesAndTimes.timePlayed = 0
+                        if (playingTrackInfo.hash != playingTrackInfo.lastScrobbleHash || (pos >= 0L && isPossiblyAtStart))
+                            playingTrackInfo.timePlayed = 0
 
-                        if (!handler.hasMessages(currHash) &&
+                        if (!handler.has(playingTrackInfo.hash) &&
                             ((pos >= 0L && isPossiblyAtStart) ||
-                                    currHash != hashesAndTimes.lastScrobbledHash)
+                                    playingTrackInfo.hash != playingTrackInfo.lastSubmittedScrobbleHash)
                         ) {
                             if (playbackState.errorMessage == "synthetic")
                                 Stuff.log("synthetic")
@@ -386,7 +382,7 @@ class SessListener(
                     }
                 }
                 else -> {
-                    Stuff.log("other ($state) : $title")
+                    Stuff.log("other ($state) : ${playingTrackInfo.title}")
                 }
             }
             if (state != PlaybackState.STATE_BUFFERING)
@@ -395,7 +391,7 @@ class SessListener(
         }
 
         override fun onSessionDestroyed() {
-            Stuff.log("onSessionDestroyed $packageName")
+            Stuff.log("onSessionDestroyed ${playingTrackInfo.packageName}")
             stop()
             synchronized(this@SessListener) {
                 controllersMap.remove(token)
@@ -406,14 +402,14 @@ class SessListener(
 
         fun pause() {
             if (lastState == PlaybackState.STATE_PLAYING) {
-                if (handler.hasMessages(hashesAndTimes.lastScrobbleHash))
-                    hashesAndTimes.timePlayed += System.currentTimeMillis() - hashesAndTimes.lastScrobbleTime
+                if (handler.has(playingTrackInfo.lastScrobbleHash))
+                    playingTrackInfo.timePlayed += System.currentTimeMillis() - playingTrackInfo.playStartTime
                 else
-                    hashesAndTimes.timePlayed = 0
+                    playingTrackInfo.timePlayed = 0
             }
-            if (packageName in Stuff.needSyntheticStates)
+            if (playingTrackInfo.packageName in Stuff.needSyntheticStates)
                 syntheticStateHandler.removeCallbacksAndMessages(null)
-            handler.remove(hashesAndTimes.lastScrobbleHash)
+            handler.remove(playingTrackInfo.lastScrobbleHash)
             if (isMuted)
                 unmute(clearMutedHash = false)
         }
@@ -441,20 +437,32 @@ class SessListener(
             }
         }
 
+        override fun onExtrasChanged(extras: Bundle?) {
+            if (BuildConfig.DEBUG)
+                Stuff.log("extras updated ${playingTrackInfo.packageName}: ${extras.dump()}")
+        }
+
+        override fun onSessionEvent(event: String, extras: Bundle?) {
+            if (BuildConfig.DEBUG)
+                Stuff.log("onSessionEvent ${playingTrackInfo.packageName}: $event ${extras.dump()}")
+        }
+
         override fun onAudioInfoChanged(info: MediaController.PlaybackInfo?) {
             if (BuildConfig.DEBUG)
-                Stuff.log("audioinfo updated $packageName: $info")
+                Stuff.log("audioinfo updated ${playingTrackInfo.packageName}: $info")
 
             isRemotePlayback =
                 info?.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE
         }
 
         private fun resetMeta() {
-            artist = ""
-            album = ""
-            title = ""
-            albumArtist = ""
-            duration = -1L
+            playingTrackInfo.apply {
+                artist = ""
+                album = ""
+                title = ""
+                albumArtist = ""
+                durationMillis = 0L
+            }
         }
     }
 
@@ -489,12 +497,5 @@ class SessListener(
                 .toSet()
             removeSessions(controllersMap.keys.toSet(), pkgsToKeep)
         }
-    }
-
-    class HashesAndTimes {
-        var lastScrobbleHash = 0
-        var lastScrobbledHash = 0
-        var lastScrobbleTime = 0L
-        var timePlayed = 0L
     }
 }

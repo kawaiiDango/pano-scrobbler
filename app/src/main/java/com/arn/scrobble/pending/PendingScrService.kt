@@ -54,7 +54,7 @@ class PendingScrService : Service() {
             .setSmallIcon(R.drawable.vd_noti)
             .setPriority(Notification.PRIORITY_MIN)
             .setContentIntent(launchIntent)
-            .apply { setColor(ColorPatchUtils.getNotiColor(applicationContext) ?: return@apply) }
+            .apply { color = (ColorPatchUtils.getNotiColor(applicationContext) ?: return@apply) }
             .setContentTitle(getString(R.string.pending_scrobbles_noti))
 
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -18,6 +18,7 @@ import com.arn.scrobble.db.CachedArtist.Companion.toArtist
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toTrack
+import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
@@ -287,15 +288,17 @@ class LFMRequester(
                 cal.timeInMillis / 1000, System.currentTimeMillis() / 1000, lastfmSession
             )
 
-            if (profile != null && recents != null)
+            if (profile != null && recents != null) {
+                prefs.currentUser = profile.toUserSerializable()
                 DrawerData(
                     scrobblesToday = recents.totalPages,
                     scrobblesTotal = profile.playcount,
                     registeredDate = profile.registeredDate?.time ?: 0,
                     profilePicUrl = profile.getWebpImageURL(ImageSize.EXTRALARGE) ?: "",
                 ).apply { saveToPref(context) }
-            else
+            } else {
                 DrawerData.loadFromPref(context)
+            }
         }
     }
 
@@ -1329,7 +1332,7 @@ class LFMRequester(
 
                             if (blockedMetadata.skip || blockedMetadata.mute) {
                                 val i2 = Intent(NLService.iBLOCK_ACTION_S).apply {
-                                    putExtra(Stuff.ARG_DATA, blockedMetadata)
+                                    putSingle(blockedMetadata)
                                     putExtra(NLService.B_HASH, trackInfo.hash)
                                 }
                                 context.sendBroadcast(i2, NLService.BROADCAST_PERMISSION)

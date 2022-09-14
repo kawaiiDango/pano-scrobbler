@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.databinding.DialogRegexEditBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
@@ -29,7 +29,7 @@ class RegexEditsAddDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogRegexEditBinding.inflate(layoutInflater)
-        val regexEditArg = arguments?.getParcelable<RegexEdit>(Stuff.ARG_DATA)?.copy()
+        val regexEditArg = arguments?.getSingle<RegexEdit>()?.copy()
         val isNew = regexEditArg == null
         val regexEdit = regexEditArg ?: RegexEdit()
         val dao by lazy { PanoDb.getDb(context!!).getRegexEditsDao() }

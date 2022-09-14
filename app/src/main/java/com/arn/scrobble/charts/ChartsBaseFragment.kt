@@ -227,13 +227,13 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
             }
         }
 
-        var shareText = if (username != null)
+        var shareText = if (!activityViewModel.userIsSelf)
             getString(
                 R.string.charts_share_username,
                 period.lowercase(),
                 topType.lowercase(),
                 list,
-                username
+                activityViewModel.peekUser().name
             )
         else
             getString(R.string.charts_share, period.lowercase(), topType.lowercase(), list)

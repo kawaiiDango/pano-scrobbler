@@ -38,14 +38,6 @@ class RandomFragment : ChartsPeriodFragment() {
         get() = _periodChipsBinding!!
     private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
 
-    override val username: String?
-        get() = arguments?.getString(Stuff.ARG_USERNAME)
-    override val registeredTime: Long
-        get() = arguments?.getLong(
-            Stuff.ARG_REGISTERED_TIME,
-            prefs.scrobblingSince
-        ) ?: prefs.scrobblingSince
-
     private val buttonToTypeBimap by lazy {
         HashBiMap.create(
             hashMapOf(
@@ -91,11 +83,11 @@ class RandomFragment : ChartsPeriodFragment() {
 
         postInit()
 
-        viewModel.username = username
-        randomViewModel.username = username
+        viewModel.username = activityViewModel.peekUser().name
+        randomViewModel.username = activityViewModel.peekUser().name
 
-        binding.randomizeText.text = if (username != null) {
-            getString(R.string.possession, username) + " " + getString(R.string.random_text)
+        binding.randomizeText.text = if (!activityViewModel.userIsSelf) {
+            getString(R.string.possession, activityViewModel.peekUser().name) + " " + getString(R.string.random_text)
         } else {
             getString(R.string.random_text)
         }
@@ -260,9 +252,7 @@ class RandomFragment : ChartsPeriodFragment() {
         binding.randomItem.setOnClickListener {
             if (musicEntry.url != null) {
                 val info = InfoFragment()
-                info.arguments = musicEntry.toBundle().apply {
-                    putString(Stuff.ARG_USERNAME, username)
-                }
+                info.arguments = musicEntry.toBundle()
                 info.show(parentFragmentManager, null)
             }
         }

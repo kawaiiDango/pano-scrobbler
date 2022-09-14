@@ -82,25 +82,24 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
     private lateinit var coordinatorBinding: CoordinatorMainBinding
     private lateinit var sparklineGroup: Array<View>
     private lateinit var heroButtonsGroup: Array<MaterialButton>
-    // cl Groups have a bug where changing visibility doesn't preserve alpha
+    // constraintLayout Groups have a bug where changing visibility doesn't preserve alpha
 
     private var _binding: ContentRecentsBinding? = null
     private val binding
         get() = _binding!!
     private var lastRefreshTime = System.currentTimeMillis()
     private val refreshHandler by lazy { Handler(Looper.getMainLooper()) }
-    private val username: String?
-        get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
-    private val registeredTime by lazy {
-        if (username == null)
-            prefs.scrobblingSince
-        else
-            parentFragment!!.arguments?.getLong(Stuff.ARG_REGISTERED_TIME, 0) ?: 0
-    }
-
     private val viewModel by viewModels<TracksVM>()
+    private val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
     private var animSet: AnimatorSet? = null
     protected open val isShowingLoves = false
+    private val username: String?
+        get() {
+            return if (activityViewModel.userIsSelf)
+                null
+            else
+                activityViewModel.peekUser().name
+        }
 
     private val focusChangeListener = object : FocusChangeListener {
         //only called when !view.isInTouchMode
@@ -323,7 +322,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     R.id.frame,
                     RandomFragment().apply {
                         arguments = Bundle().apply {
-                            putString(Stuff.ARG_USERNAME, username)
                             putInt(
                                 Stuff.ARG_TYPE,
                                 if (isShowingLoves)
@@ -367,7 +365,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             coordinatorBinding.heroCalendar.setOnClickListener { view ->
                 val anchorTime = viewModel.toTime ?: System.currentTimeMillis()
                 val timePeriodsToIcons =
-                    TimePeriodsGenerator(registeredTime, anchorTime, context!!).recentsTimeJumps
+                    TimePeriodsGenerator(activityViewModel.peekUser().registeredTime, anchorTime, context!!).recentsTimeJumps
 
                 val popupMenu = PopupMenu(context!!, view)
                 timePeriodsToIcons.forEachIndexed { index, (timePeriod, iconRes) ->
@@ -769,7 +767,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             .setTitleText(R.string.past_scrobbles)
             .setCalendarConstraints(
                 CalendarConstraints.Builder()
-                    .setStart(registeredTime)
+                    .setStart(activityViewModel.peekUser().registeredTime)
                     .setEnd(endTime)
                     .setOpenAt(time)
                     .setValidator(object : CalendarConstraints.DateValidator {
@@ -777,7 +775,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
                         override fun writeToParcel(p0: Parcel, p1: Int) {}
 
-                        override fun isValid(date: Long) = date in registeredTime..endTime
+                        override fun isValid(date: Long) = date in activityViewModel.peekUser().registeredTime..endTime
                     })
                     .build()
             )
@@ -843,7 +841,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
     private fun showTrackInfo(track: Track) {
         val info = InfoFragment()
         info.arguments = track.toBundle().apply {
-            putString(Stuff.ARG_USERNAME, username)
             val pkgName = if (track.playedWhen != null)
                 viewModel.pkgMap[track.playedWhen.time]
             else if (track.isNowPlaying)

@@ -348,7 +348,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             childFragmentManager.beginTransaction().add(fragment, type.toString()).commitNow()
 
         fragment.viewModel = viewModels<ChartsVM>({ fragment }).value
-        fragment.viewModel.username = username
+        fragment.viewModel.username = activityViewModel.peekUser().name
         fragment.viewModel.chartsType = type
 
         val adapter = ChartsOverviewAdapter(rootView)
@@ -466,8 +466,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         val pf = ChartsPagerFragment()
         pf.arguments = Bundle().apply {
             putInt(Stuff.ARG_TYPE, type)
-            putString(Stuff.ARG_USERNAME, username)
-            putLong(Stuff.ARG_REGISTERED_TIME, registeredTime)
         }
         (activity as MainActivity).enableGestures()
         activity!!.supportFragmentManager
@@ -480,7 +478,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     private fun genSparklineDurations() {
         val (timePeriods, periodType) = TimePeriodsGenerator.getSparklinePeriods(
             viewModel.selectedPeriod.value ?: return,
-            registeredTime
+            activityViewModel.peekUser().registeredTime
         )
         viewModel.periodCountRequested = true
 

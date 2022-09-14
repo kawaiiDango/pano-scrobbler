@@ -12,10 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.MainActivity
-import com.arn.scrobble.NLService
-import com.arn.scrobble.R
-import com.arn.scrobble.Stuff
+import com.arn.scrobble.*
 import com.arn.scrobble.Stuff.equalsExt
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
 import com.arn.scrobble.db.PanoDb
@@ -34,11 +31,10 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
     private var _binding: ContentTrackHistoryBinding? = null
     private val binding
         get() = _binding!!
-    private val username: String?
-        get() = arguments?.getString(Stuff.ARG_USERNAME)
     private val scrobbleCount: Int
         get() = arguments!!.getInt(Stuff.ARG_COUNT)
     private val viewModel by viewModels<TracksVM>()
+    private val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
     private lateinit var adapter: TrackHistoryAdapter
     private val argToTrack by lazy {
         Track(
@@ -76,15 +72,17 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
 
     private fun setTitleWithCount() {
         val formattedCount = NumberFormat.getInstance().format(scrobbleCount)
-        val title = if (username == null)
+        val title = if (activityViewModel.userIsSelf) {
             getString(R.string.my_scrobbles) + ": " + formattedCount
-        else
+        } else {
+            val username = activityViewModel.peekUser().name
             "$username: $formattedCount"
+        }
         setTitle(title)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.username = username
+        viewModel.username = activityViewModel.peekUser().name
 
         viewModel.tracksReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
@@ -124,7 +122,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         }
 
         val prefs = MainPrefs(context!!)
-        val isShowingPlayers = username == null && prefs.proStatus && prefs.showScrobbleSources
+        val isShowingPlayers = activityViewModel.userIsSelf && prefs.proStatus && prefs.showScrobbleSources
 
         adapter = TrackHistoryAdapter(
             viewModel,

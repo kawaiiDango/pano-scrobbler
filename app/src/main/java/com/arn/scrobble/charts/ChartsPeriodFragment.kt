@@ -7,6 +7,7 @@ import androidx.core.view.forEachIndexed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.firstOrNull
@@ -29,16 +30,11 @@ import kotlin.math.max
 abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     protected val viewModel by viewModels<ChartsVM>()
     protected open val chartsType = 0
-    protected open val username: String?
-        get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
-    protected open val registeredTime: Long
-        get() = parentFragment?.arguments?.getLong(
-            Stuff.ARG_REGISTERED_TIME,
-            prefs.scrobblingSince
-        ) ?: prefs.scrobblingSince
     protected abstract val periodChipsBinding: ChipsChartsPeriodBinding
     private lateinit var periodChipsAdapter: PeriodChipsAdapter
     private lateinit var prevSelectedPeriod: TimePeriod
+    protected val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
+
 
     protected val prefs by lazy { MainPrefs(context!!) }
 
@@ -65,7 +61,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
             periodChipsBinding.chartsPeriodType.text = periodType.localizedName
 
             val timePeriodsGenerator =
-                TimePeriodsGenerator(registeredTime, System.currentTimeMillis(), context)
+                TimePeriodsGenerator(activityViewModel.peekUser().registeredTime, System.currentTimeMillis(), context)
 
             viewModel.timePeriods.value = when (periodType) {
                 TimePeriodType.CONTINUOUS -> TimePeriodsGenerator.getContinuousPeriods(context!!)
@@ -76,7 +72,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                         0,
                         System.currentTimeMillis()
                     )
-                    val start = max(selectedPeriod.start, registeredTime)
+                    val start = max(selectedPeriod.start, activityViewModel.peekUser().registeredTime)
                     val end = selectedPeriod.end
                     listOf(
                         TimePeriod(context!!, start, end)
@@ -125,7 +121,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         periodChipsBinding.chartsPeriodsList.adapter = periodChipsAdapter
 
-        viewModel.username = username
+        viewModel.username = activityViewModel.peekUser().name
         viewModel.chartsType = chartsType
 
         viewModel.periodType.value = try {
@@ -232,7 +228,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     private fun showDateRangePicker() {
         val time = System.currentTimeMillis()
         var openAtTime = Stuff.timeToUTC(viewModel.selectedPeriod.value?.start ?: 0)
-        if (openAtTime !in registeredTime..time)
+        if (openAtTime !in activityViewModel.peekUser().registeredTime..time)
             openAtTime = System.currentTimeMillis()
 
         val dpd = MaterialDatePicker.Builder.dateRangePicker()
@@ -240,7 +236,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 //            .setTheme(context!!.attrToThemeId(R.attr.materialCalendarFullscreenTheme))
             .setCalendarConstraints(
                 CalendarConstraints.Builder()
-                    .setStart(registeredTime)
+                    .setStart(activityViewModel.peekUser().registeredTime)
                     .setEnd(time)
                     .setOpenAt(openAtTime)
                     .setValidator(object : CalendarConstraints.DateValidator {
@@ -248,7 +244,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
                         override fun writeToParcel(p0: Parcel, p1: Int) {}
 
-                        override fun isValid(date: Long) = date in registeredTime..time
+                        override fun isValid(date: Long) = date in activityViewModel.peekUser().registeredTime..time
                     })
                     .build()
             )

@@ -57,13 +57,10 @@ object Stuff {
     const val ARG_URL = "url"
     const val ARG_SAVE_COOKIES = "cookies"
     const val ARG_NOPASS = "nopass"
-    const val ARG_USERNAME = "username"
-    const val ARG_REGISTERED_TIME = "registered"
     const val ARG_TYPE = "type"
     const val ARG_TAG = "tag"
     const val ARG_SHOW_DIALOG = "dialog"
     const val ARG_COUNT = "count"
-    const val ARG_DATA = "data"
     const val ARG_PKG = "pkg"
     const val ARG_ACTION = "action"
     const val ARG_TLS_NO_VERIFY = "tls_no_verify"
@@ -603,8 +600,16 @@ object Stuff {
         return this
     }
 
+    fun Bundle.putSingle(parcelable: Parcelable): Bundle {
+        putParcelable(parcelable::class.qualifiedName, parcelable)
+        return this
+    }
+
     inline fun <reified T: Parcelable> Intent.getSingle() =
         getParcelableExtra<T>(T::class.qualifiedName)
+
+    inline fun <reified T: Parcelable> Bundle.getSingle() =
+        getParcelable<T>(T::class.qualifiedName)
 
     // https://stackoverflow.com/a/65046522/1067596
     suspend fun <TInput, TOutput> Iterable<TInput>.mapConcurrently(

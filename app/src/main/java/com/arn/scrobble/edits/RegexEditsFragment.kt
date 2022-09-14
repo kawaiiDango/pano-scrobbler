@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentRegexEditBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
@@ -131,7 +132,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
 
         val df = RegexEditsAddDialogFragment()
         df.arguments = Bundle().apply {
-            putParcelable(Stuff.ARG_DATA, regexEdit)
+            putSingle(regexEdit ?: return@apply)
         }
         df.show(childFragmentManager, null)
     }

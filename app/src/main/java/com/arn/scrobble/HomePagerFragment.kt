@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.viewpager.widget.ViewPager
+import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
 import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.tabs.TabLayout
 
@@ -15,8 +16,14 @@ class HomePagerFragment : PagerBaseFragment(), ViewPager.OnPageChangeListener {
     private var backStackChecked = false
     private val prefs by lazy { MainPrefs(context!!) }
     private val viewModel by viewModels<HomePagerVM>()
+    private val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.onClearedCallback = {
+            if (activityViewModel.userStackDepth > 1)
+                activityViewModel.popUser()
+        }
+
         tabMeta = arrayOf(
             R.string.scrobbles to R.drawable.vd_history,
             R.string.loved to R.drawable.vd_heart,
@@ -27,15 +34,17 @@ class HomePagerFragment : PagerBaseFragment(), ViewPager.OnPageChangeListener {
 
         viewModel.userInfo.observe(viewLifecycleOwner) { user ->
             user ?: return@observe
-            arguments!!.putLong(Stuff.ARG_REGISTERED_TIME, user.registeredDate.time)
+            activityViewModel.pushUser(user.toUserSerializable())
+            // todo fix after nav components
         }
 
-        if (arguments?.getString(Stuff.ARG_USERNAME) == null)
+        if (activityViewModel.userStackDepth == 1)
             setGestureExclusions(true)
         else {
             // opened VIEW link
-            if (arguments!!.getLong(Stuff.ARG_REGISTERED_TIME) == 0L)
-                viewModel.fetchUserInfo(arguments!!.getString(Stuff.ARG_USERNAME)!!)
+            // todo: reimplement
+//            if (arguments!!.getLong(Stuff.ARG_REGISTERED_TIME) == 0L)
+//                viewModel.fetchUserInfo(arguments!!.getString(Stuff.ARG_USERNAME)!!)
         }
         if (savedInstanceState == null)
             backStackChecked = false
@@ -65,7 +74,7 @@ class HomePagerFragment : PagerBaseFragment(), ViewPager.OnPageChangeListener {
         if (!backStackChecked) { //dont invoke if coming from background/app switching
             val lastTab = if (arguments != null && arguments!!.getInt(Stuff.ARG_TYPE, -1) != -1)
                 arguments!!.getInt(Stuff.ARG_TYPE)
-            else if (arguments?.getString(Stuff.ARG_USERNAME) != null)
+            else if (activityViewModel.userStackDepth > 1)
                 (view as ViewPager).currentItem
             else if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == Stuff.DL_RECENTS)
                 0
@@ -99,7 +108,7 @@ class HomePagerFragment : PagerBaseFragment(), ViewPager.OnPageChangeListener {
     override fun onTabSelected(tab: TabLayout.Tab) {
         super.onTabSelected(tab)
         if (activity!!.intent?.getIntExtra(Stuff.DIRECT_OPEN_KEY, 0) == 0 &&
-            arguments?.getString(Stuff.ARG_USERNAME) == null
+            activityViewModel.userStackDepth == 1
         ) {
             context ?: return
             prefs.lastHomePagerTab = tab.position

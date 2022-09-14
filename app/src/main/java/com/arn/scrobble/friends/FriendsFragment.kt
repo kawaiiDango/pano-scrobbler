@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ActionFriendsBinding
 import com.arn.scrobble.databinding.ContentFriendsBinding
@@ -58,9 +59,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
         lastRefreshTime = System.currentTimeMillis()
     }
     private var popupWr: WeakReference<PopupWindow>? = null
-    private val username: String?
-        get() = parentFragment?.arguments?.getString(Stuff.ARG_USERNAME)
     private val viewModel by viewModels<FriendsVM>()
+    private val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
     private var lastRefreshTime = System.currentTimeMillis()
     private val prefs by lazy { MainPrefs(context!!) }
     private var _binding: ContentFriendsBinding? = null
@@ -131,7 +131,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private fun postInit() {
         setTitle(0)
 
-        viewModel.username = username
+        viewModel.username = activityViewModel.peekUser().name
 
         binding.friendsSwipeRefresh.setProgressCircleColors()
         binding.friendsSwipeRefresh.setOnRefreshListener {
@@ -323,7 +323,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             }
 
             fun updatePinIndicator(isPinned: Boolean) {
-                if (username != null)
+                if (!activityViewModel.userIsSelf)
                     return
                 contentBinding.friendsPin.visibility = View.VISIBLE
                 contentBinding.friendsPin.setImageResource(
@@ -386,11 +386,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
             }
             actionsBinding.friendsScrobbles.setOnClickListener {
                 (activity as MainActivity).enableGestures()
+                activityViewModel.pushUser(userSerializable)
                 val f = HomePagerFragment()
-                f.arguments = Bundle().apply {
-                    putString(Stuff.ARG_USERNAME, userSerializable.name)
-                    putLong(Stuff.ARG_REGISTERED_TIME, userSerializable.registeredTime)
-                }
                 activity!!.supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
@@ -404,7 +401,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                         ContextCompat.startForegroundService(
                             context!!,
                             Intent(context!!, ListenAlongService::class.java)
-                                .putExtra(Stuff.ARG_USERNAME, userSerializable.name)
+                                .putSingle(userSerializable)
                         )
                     }
                     true
@@ -415,8 +412,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 (activity as MainActivity).enableGestures()
                 val f = HomePagerFragment()
                 f.arguments = Bundle().apply {
-                    putString(Stuff.ARG_USERNAME, userSerializable.name)
-                    putLong(Stuff.ARG_REGISTERED_TIME, userSerializable.registeredTime)
                     putInt(Stuff.ARG_TYPE, 3)
                 }
                 activity!!.supportFragmentManager

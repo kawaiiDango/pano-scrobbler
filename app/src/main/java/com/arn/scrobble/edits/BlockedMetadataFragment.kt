@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.ui.ItemClickListener
@@ -132,7 +133,7 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
     private fun showAddEditDialog(blockedMetadata: BlockedMetadata?) {
         val df = BlockedMetadataAddDialogFragment()
         df.arguments = Bundle().apply {
-            putParcelable(Stuff.ARG_DATA, blockedMetadata)
+            putSingle(blockedMetadata ?: return@apply)
         }
         df.show(childFragmentManager, null)
     }

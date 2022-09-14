@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.StrictMode
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
@@ -19,6 +20,7 @@ import com.google.android.material.color.DynamicColorsOptions
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Caller
+import de.umass.lastfm.ImageSize
 import timber.log.Timber
 import java.io.File
 import java.util.logging.Level
@@ -40,26 +42,7 @@ class App : Application() {
 
         // migrate prefs
         val mainPrefs = MainPrefs(this)
-        if (mainPrefs.prefVersion < 1) {
-            val defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-            migratePrefs(defaultPrefs, mainPrefs.sharedPreferences)
-
-            val activityPrefs = getSharedPreferences("activity_preferences", Context.MODE_PRIVATE)
-            migratePrefs(activityPrefs, mainPrefs.sharedPreferences)
-
-            val raterPrefs = getSharedPreferences("apprater", Context.MODE_PRIVATE)
-            migratePrefs(raterPrefs, mainPrefs.sharedPreferences)
-
-            val widgetPrefs = getSharedPreferences("widget_preferences", Context.MODE_PRIVATE)
-            val newWidgetPrefs = WidgetPrefs(this).sharedPreferences
-            migratePrefs(widgetPrefs, newWidgetPrefs)
-
-            val cookiePrefs = getSharedPreferences("CookiePersistence", Context.MODE_PRIVATE)
-            val newCookiePrefs = getHarmonySharedPreferences("CookiePersistence")
-            migratePrefs(cookiePrefs, newCookiePrefs)
-
-            mainPrefs.prefVersion = 1
-        }
+        migrateAllPrefs(mainPrefs)
 
         if (BuildConfig.DEBUG && !mainPrefs.lastfmLinksEnabled) {
             enableOpeningLastfmLinks()
@@ -113,6 +96,45 @@ class App : Application() {
             }
         }
         // two processes may be doing this at the same time
+    }
+
+    private fun migrateAllPrefs(mainPrefs: MainPrefs) {
+        if (mainPrefs.prefVersion < 1) {
+            val defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+            migratePrefs(defaultPrefs, mainPrefs.sharedPreferences)
+
+            val activityPrefs = getSharedPreferences("activity_preferences", Context.MODE_PRIVATE)
+            migratePrefs(activityPrefs, mainPrefs.sharedPreferences)
+
+            val raterPrefs = getSharedPreferences("apprater", Context.MODE_PRIVATE)
+            migratePrefs(raterPrefs, mainPrefs.sharedPreferences)
+
+            val widgetPrefs = getSharedPreferences("widget_preferences", Context.MODE_PRIVATE)
+            val newWidgetPrefs = WidgetPrefs(this).sharedPreferences
+            migratePrefs(widgetPrefs, newWidgetPrefs)
+
+            val cookiePrefs = getSharedPreferences("CookiePersistence", Context.MODE_PRIVATE)
+            val newCookiePrefs = getHarmonySharedPreferences("CookiePersistence")
+            migratePrefs(cookiePrefs, newCookiePrefs)
+
+            mainPrefs.prefVersion = 1
+        }
+
+        if (mainPrefs.lastfmSessKey != null && mainPrefs.lastfmUsername != null && mainPrefs.currentUser == null) {
+            mainPrefs.currentUser = UserSerializable(
+                mainPrefs.lastfmUsername!!,
+                "https://last.fm/user/${mainPrefs.lastfmUsername}",
+                mainPrefs.lastfmUsername!!,
+                "",
+                mainPrefs.scrobblingSince,
+                mapOf(
+                    ImageSize.MEDIUM to (mainPrefs.profilePicUrlCached ?: ""),
+                    ImageSize.LARGE to (mainPrefs.profilePicUrlCached ?: ""),
+                    ImageSize.EXTRALARGE to (mainPrefs.profilePicUrlCached ?: ""),
+                ),
+                mainPrefs.lastfmSessKey
+            )
+        }
     }
 
     private fun enableStrictMode() {

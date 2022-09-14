@@ -41,8 +41,8 @@ import kotlin.math.max
 
 class InfoAdapter(
     private val viewModel: InfoVM,
+    private val activityViewModel: MainNotifierViewModel,
     private val fragment: BottomSheetDialogFragment,
-    private val username: String?,
     private val pkgName: String?
 ) : RecyclerView.Adapter<InfoAdapter.VHInfo>() {
 
@@ -58,7 +58,7 @@ class InfoAdapter(
     override fun getItemCount() = viewModel.infoMap.size
 
     override fun onBindViewHolder(holder: VHInfo, position: Int) {
-        holder.setItemData(viewModel.infoMap.entries.toList()[position], username)
+        holder.setItemData(viewModel.infoMap.entries.toList()[position], activityViewModel)
     }
 
     inner class VHInfo(private val binding: ListItemInfoBinding) :
@@ -127,7 +127,6 @@ class InfoAdapter(
                             putString(NLService.B_ARTIST, album.artist)
                             putString(NLService.B_ALBUM, album.name)
                             putString(NLService.B_TRACK, tracks[position].name)
-                            putString(Stuff.ARG_USERNAME, username)
                         }
                         info.show(fragment.parentFragmentManager, null)
                     }
@@ -168,11 +167,9 @@ class InfoAdapter(
             }
         }
 
-        fun setItemData(pair: Map.Entry<String, MusicEntry>, username: String?) {
+        fun setItemData(pair: Map.Entry<String, MusicEntry>, activityViewModel: MainNotifierViewModel) {
             val (key, entry) = pair
-            val entryBundle = entry.toBundle().apply {
-                putString(Stuff.ARG_USERNAME, username)
-            }
+            val entryBundle = entry.toBundle()
             var imgData: Any? = null
 
             when (key) {
@@ -181,7 +178,7 @@ class InfoAdapter(
                     binding.infoType.setImageResource(R.drawable.vd_note)
                     binding.infoType.contentDescription = itemView.context.getString(R.string.track)
                     if (entry.url != null) {
-                        if (username == null) {
+                        if (activityViewModel.userIsSelf) {
                             setLoved(entry)
                             binding.infoHeart.visibility = View.VISIBLE
                             binding.infoHeart.setOnClickListener {
@@ -199,7 +196,7 @@ class InfoAdapter(
                                 binding.infoHeart.visibility = View.VISIBLE
                                 binding.infoHeart.setOnClickListener {
                                     itemView.context.toast(
-                                        itemView.context.getString(R.string.user_loved, username)
+                                        itemView.context.getString(R.string.user_loved, activityViewModel.peekUser().name)
                                     )
                                 }
                             }
@@ -339,9 +336,9 @@ class InfoAdapter(
 
             binding.infoContent.visibility = View.VISIBLE
 
-            if (username != null)
+            if (!activityViewModel.userIsSelf)
                 binding.infoUserScrobblesLabel.text =
-                    itemView.context.getString(R.string.user_scrobbles, username)
+                    itemView.context.getString(R.string.user_scrobbles, activityViewModel.peekUser().name)
             binding.infoUserScrobbles.text =
                 NumberFormat.getInstance().format(entry.userPlaycount)
             binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
@@ -376,7 +373,7 @@ class InfoAdapter(
                         }
                         is Album,
                         is Artist -> {
-                            val _username = username ?: MainPrefs(itemView.context).lastfmUsername
+                            val _username = activityViewModel.peekUser().name
                             val libraryUrl =
                                 entry.url.replace("/music/", "/user/$_username/library/music/")
                             itemView.context.openInBrowser(libraryUrl)

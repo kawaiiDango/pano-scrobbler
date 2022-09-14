@@ -35,9 +35,6 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         arguments!!.getString(NLService.B_ARTIST)!!
     }
 
-    private val username: String?
-        get() = arguments?.getString(Stuff.ARG_USERNAME)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -210,9 +207,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
     override fun onItemClick(view: View, entry: MusicEntry) {
         val info = InfoFragment()
-        info.arguments = entry.toBundle().apply {
-            putString(Stuff.ARG_USERNAME, username)
-        }
+        info.arguments = entry.toBundle()
         info.show(parentFragmentManager, null)
     }
 

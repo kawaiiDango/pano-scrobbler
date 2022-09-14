@@ -7,6 +7,8 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.arn.scrobble.*
+import com.arn.scrobble.Stuff.getSingle
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.DialogBlockedMetadataBinding
 import com.arn.scrobble.databinding.TextInputEditBinding
@@ -26,7 +28,7 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
         val prefs = MainPrefs(context!!)
 
         val blockedMetadata =
-            arguments?.getParcelable<BlockedMetadata>(Stuff.ARG_DATA)?.copy()
+            arguments?.getSingle<BlockedMetadata>()?.copy()
                 ?: BlockedMetadata(skip = true)
 
         val ignoredArtist = arguments?.getString(NLService.B_IGNORED_ARTIST)
@@ -112,7 +114,7 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                     }
                 if (activity is MainDialogActivity && blockedMetadata.skip) {
                     val i = Intent(NLService.iBLOCK_ACTION_S).apply {
-                        putExtra(Stuff.ARG_DATA, blockedMetadata)
+                        putSingle(blockedMetadata)
                         putExtra(NLService.B_HASH, arguments!!.getInt(NLService.B_HASH))
                     }
                     context!!.sendBroadcast(i, NLService.BROADCAST_PERMISSION)

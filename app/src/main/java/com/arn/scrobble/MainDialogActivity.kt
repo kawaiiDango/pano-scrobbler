@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.edits.BlockedMetadataAddDialogFragment
@@ -20,7 +21,7 @@ class MainDialogActivity : AppCompatActivity() {
         ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
 
         val dialogFragment = when {
-            intent.extras?.getParcelable(Stuff.ARG_DATA) as? BlockedMetadata != null -> {
+            intent.getSingle<BlockedMetadata>() != null -> {
                 BlockedMetadataAddDialogFragment()
             }
             else -> {

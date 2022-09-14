@@ -8,6 +8,7 @@ import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.friends.UserSerializable
+import com.arn.scrobble.friends.UsersListSerializable
 import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils.isTv
@@ -73,7 +74,8 @@ class MainPrefs(context: Context) : Krate {
     var lastChartsPeriodSelectedJson by kotlinxPref<TimePeriod>(
         PREF_ACTIVITY_LAST_CHARTS_PERIOD_SELECTED
     ).withDefault(TimePeriod(context, Period.ONE_MONTH))
-    var lastfmUser by kotlinxPref<UserSerializable>(PREF_LASTFM_USER)
+    var currentUser by kotlinxPref<UserSerializable>(PREF_CURRENT_USER)
+    var loggedInUsers by kotlinxPref<UsersListSerializable>(PREF_LOGGED_IN_USERS)
     var scrobblesTodayCached by intPref(PREF_ACTIVITY_TODAY_SCROBBLES).withDefault(0)
     var scrobblesTotalCached by intPref(PREF_ACTIVITY_TOTAL_SCROBBLES).withDefault(0)
     var scrobblingSince by longPref(PREF_ACTIVITY_SCROBBLING_SINCE).withDefault(0)
@@ -204,7 +206,8 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_SEARCH_IN_SOURCE = "search_in_source"
         const val PREF_SEARCH_TYPE = "search_type"
         const val PREF_CRASHLYTICS_ENABLED = "crashlytics_enabled"
-        const val PREF_LASTFM_USER = "lastfm_user"
+        const val PREF_CURRENT_USER = "current_user"
+        const val PREF_LOGGED_IN_USERS = "logged_in_users"
         const val PREF_TOUHOU_CIRCLES = "touhou_circles"
         const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
         const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"

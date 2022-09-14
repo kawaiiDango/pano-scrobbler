@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -21,6 +22,8 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 class InfoFragment : BottomSheetDialogFragment() {
 
     private val viewModel by viewModels<InfoVM>()
+    private val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,10 +35,10 @@ class InfoFragment : BottomSheetDialogFragment() {
         val artist = arguments!!.getString(NLService.B_ARTIST)!!
         val album = arguments!!.getString(NLService.B_ALBUM)
         val track = arguments!!.getString(NLService.B_TRACK)
-        val username = arguments!!.getString(Stuff.ARG_USERNAME)
+        val username = activityViewModel.peekUser().name
         val pkgName = arguments!!.getString(Stuff.ARG_PKG)
 
-        val adapter = InfoAdapter(viewModel, this, username, pkgName)
+        val adapter = InfoAdapter(viewModel, activityViewModel, this, pkgName)
         binding.infoList.layoutManager = LinearLayoutManager(context!!)
         binding.infoList.itemAnimator = null
 

@@ -609,7 +609,7 @@ class NLService : NotificationListenerService() {
             skip = true,
         )
         val intent = Intent(this, MainDialogActivity::class.java).apply {
-            putExtra(Stuff.ARG_DATA, blockedMetadata)
+            putSingle(blockedMetadata)
             putExtra(B_IGNORED_ARTIST, trackInfo.ignoredArtist)
             putExtra(B_HASH, hash)
         }
@@ -864,8 +864,7 @@ class NLService : NotificationListenerService() {
                 }
                 iBLOCK_ACTION_S -> {
                     val hash = intent.getIntExtra(B_HASH, 0)
-                    val blockedMetadata =
-                        intent.getParcelableExtra<BlockedMetadata>(Stuff.ARG_DATA)!!
+                    val blockedMetadata = intent.getSingle<BlockedMetadata>()!!
                     val controllers = sessListener?.findControllersByHash(hash)
                     if (!controllers.isNullOrEmpty()) {
                         if (blockedMetadata.skip) {

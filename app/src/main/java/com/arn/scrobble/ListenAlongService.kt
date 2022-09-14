@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.arn.scrobble.Stuff.getSingle
+import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import de.umass.lastfm.PaginatedResult
@@ -32,8 +34,8 @@ class ListenAlongService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.extras?.getString(Stuff.ARG_USERNAME)?.let {
-            currentUsername = it
+        intent?.getSingle<UserSerializable>()?.let {
+            currentUsername = it.name
         }
 
         showNotification()

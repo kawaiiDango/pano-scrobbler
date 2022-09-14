@@ -1,10 +1,14 @@
 package com.arn.scrobble.friends
 
+import android.os.Parcelable
 import de.umass.lastfm.ImageHolder
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.User
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
+@Parcelize
 @Serializable
 data class UserSerializable(
     var name: String,
@@ -13,8 +17,13 @@ data class UserSerializable(
     var country: String,
     var registeredTime: Long,
     var imgUrls: Map<ImageSize, String>,
-) : ImageHolder() {
+    val sessionKey: String? = null,
+) : ImageHolder(), Parcelable {
+
+    @IgnoredOnParcel
     var order: Int = 0
+
+    @IgnoredOnParcel
     var lastUpdated = System.currentTimeMillis()
 
     init {
@@ -51,4 +60,12 @@ data class UserSerializable(
             imgUrls = imageUrls
         )
     }
+}
+
+@Serializable
+data class UsersListSerializable(
+    // ("lastfm", UserSerializable())
+    val usersList: List<Pair<String, UserSerializable>>
+) {
+    fun find(type: String) = usersList.find { it.first == type }
 }

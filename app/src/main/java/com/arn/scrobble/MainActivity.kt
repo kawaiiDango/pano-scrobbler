@@ -709,9 +709,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .replace(
                     R.id.frame,
                     HomePagerFragment().apply {
-                        arguments = Bundle().apply {
-                            putString(Stuff.ARG_USERNAME, username)
-                        }
+//                        arguments = Bundle().apply {
+//                            putString(Stuff.ARG_USERNAME, username)
+//                        }
+                        // todo reimplement with nav components
                     },
                     Stuff.TAG_HOME_PAGER
                 )

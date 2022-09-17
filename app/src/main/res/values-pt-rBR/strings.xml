@@ -54,6 +54,7 @@
     <string name="settings">Configurações</string>
     <string name="bug_report">Relatório de erros</string>
     <string name="album_art">Capa do álbum</string>
+    <string name="artist_image">I</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar o título</string>
     <string name="network_error">Falha na rede</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de salvar esta edição para futuros scrobbles em vez disso?</string>

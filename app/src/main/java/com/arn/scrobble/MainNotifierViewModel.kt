@@ -18,7 +18,7 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     private val userStack by lazy {
         ArrayDeque<UserSerializable>().also { deq ->
             prefs.currentUser
-                ?.copy(sessionKey = null)
+                ?.user
                 ?.let { deq.addFirst(it) }
         }
     }

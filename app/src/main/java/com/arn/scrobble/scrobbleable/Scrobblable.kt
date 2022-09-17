@@ -64,3 +64,11 @@ abstract class Scrobblable {
     }
 
 }
+
+enum class ScrobblableEnum {
+    LASTFM,
+    LIBREFM,
+    GNUFM,
+    LISTENBRAINZ,
+    CUSTOM_LISTENBRAINZ
+}

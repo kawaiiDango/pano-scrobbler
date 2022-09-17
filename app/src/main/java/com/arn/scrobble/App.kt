@@ -4,23 +4,17 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.StrictMode
-import androidx.core.content.edit
-import androidx.preference.PreferenceManager
-import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.pref.MigratePrefs
 import com.arn.scrobble.themes.ColorPatchUtils
-import com.frybits.harmony.getHarmonySharedPreferences
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Caller
-import de.umass.lastfm.ImageSize
 import timber.log.Timber
 import java.io.File
 import java.util.logging.Level
@@ -41,25 +35,25 @@ class App : Application() {
         Timber.plant(Timber.DebugTree())
 
         // migrate prefs
-        val mainPrefs = MainPrefs(this)
-        migrateAllPrefs(mainPrefs)
+        val prefs = MainPrefs(this)
+        MigratePrefs.migrate(prefs)
 
-        if (BuildConfig.DEBUG && !mainPrefs.lastfmLinksEnabled) {
+        if (BuildConfig.DEBUG && !prefs.lastfmLinksEnabled) {
             enableOpeningLastfmLinks()
-            mainPrefs.lastfmLinksEnabled = true
+            prefs.lastfmLinksEnabled = true
         }
 
-        ColorPatchUtils.setDarkMode(this, mainPrefs.proStatus)
+        ColorPatchUtils.setDarkMode(this, prefs.proStatus)
 
         val colorsOptions = DynamicColorsOptions.Builder()
             .setThemeOverlay(R.style.AppTheme_Dynamic_Overlay)
             .setPrecondition { _, _ ->
-                mainPrefs.themeDynamic && mainPrefs.proStatus
+                prefs.themeDynamic && prefs.proStatus
             }
             .build()
         DynamicColors.applyToActivitiesIfAvailable(this, colorsOptions)
 
-        if (mainPrefs.crashlyticsEnabled) {
+        if (prefs.crashlyticsEnabled) {
             FirebaseApp.initializeApp(applicationContext)
             FirebaseCrashlytics.getInstance().setCustomKey("isDebug", BuildConfig.DEBUG)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && getProcessName() == BuildConfig.APPLICATION_ID ||
@@ -79,61 +73,6 @@ class App : Application() {
             setErrorNotifier(29) { e ->
                 Timber.tag(Stuff.TAG).w(e)
             }
-        }
-    }
-
-    private fun migratePrefs(prefFrom: SharedPreferences, prefTo: SharedPreferences) {
-        prefTo.edit {
-            prefFrom.all.forEach { (key, value) ->
-                when (value) {
-                    is Boolean -> putBoolean(key, value)
-                    is Float -> putFloat(key, value)
-                    is Int -> putInt(key, value)
-                    is Long -> putLong(key, value)
-                    is String -> putString(key, value)
-                    is Set<*> -> putStringSet(key, value as Set<String>)
-                }
-            }
-        }
-        // two processes may be doing this at the same time
-    }
-
-    private fun migrateAllPrefs(mainPrefs: MainPrefs) {
-        if (mainPrefs.prefVersion < 1) {
-            val defaultPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-            migratePrefs(defaultPrefs, mainPrefs.sharedPreferences)
-
-            val activityPrefs = getSharedPreferences("activity_preferences", Context.MODE_PRIVATE)
-            migratePrefs(activityPrefs, mainPrefs.sharedPreferences)
-
-            val raterPrefs = getSharedPreferences("apprater", Context.MODE_PRIVATE)
-            migratePrefs(raterPrefs, mainPrefs.sharedPreferences)
-
-            val widgetPrefs = getSharedPreferences("widget_preferences", Context.MODE_PRIVATE)
-            val newWidgetPrefs = WidgetPrefs(this).sharedPreferences
-            migratePrefs(widgetPrefs, newWidgetPrefs)
-
-            val cookiePrefs = getSharedPreferences("CookiePersistence", Context.MODE_PRIVATE)
-            val newCookiePrefs = getHarmonySharedPreferences("CookiePersistence")
-            migratePrefs(cookiePrefs, newCookiePrefs)
-
-            mainPrefs.prefVersion = 1
-        }
-
-        if (mainPrefs.lastfmSessKey != null && mainPrefs.lastfmUsername != null && mainPrefs.currentUser == null) {
-            mainPrefs.currentUser = UserSerializable(
-                mainPrefs.lastfmUsername!!,
-                "https://last.fm/user/${mainPrefs.lastfmUsername}",
-                mainPrefs.lastfmUsername!!,
-                "",
-                mainPrefs.scrobblingSince,
-                mapOf(
-                    ImageSize.MEDIUM to (mainPrefs.profilePicUrlCached ?: ""),
-                    ImageSize.LARGE to (mainPrefs.profilePicUrlCached ?: ""),
-                    ImageSize.EXTRALARGE to (mainPrefs.profilePicUrlCached ?: ""),
-                ),
-                mainPrefs.lastfmSessKey
-            )
         }
     }
 

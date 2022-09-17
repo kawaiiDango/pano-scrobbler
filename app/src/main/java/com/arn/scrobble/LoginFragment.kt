@@ -168,7 +168,7 @@ open class LoginFragment : DialogFragment() {
         when (title) {
             getString(R.string.listenbrainz) -> {
                 if (tlast.isNotBlank()) {
-                    val username = (ListenBrainz().setToken(tlast) as? ListenBrainz)?.username()
+                    val username = (ListenBrainz().setToken(tlast) as? ListenBrainz)?.validateAndGetUsername()
                     if (username != null) {
                         prefs.listenbrainzUsername = username
                         prefs.listenbrainzToken = tlast
@@ -186,7 +186,7 @@ open class LoginFragment : DialogFragment() {
                         val username = (ListenBrainz().setToken(tlast)
                             ?.setTlsNoVerify(tlsNoVerify)
                             ?.setApiRoot(url) as? ListenBrainz)
-                            ?.username()
+                            ?.validateAndGetUsername()
 
                         if (username != null) {
                             prefs.customListenbrainzRoot = url

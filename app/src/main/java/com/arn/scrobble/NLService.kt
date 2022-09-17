@@ -29,7 +29,6 @@ import com.arn.scrobble.PlayerActions.unlove
 import com.arn.scrobble.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.isChannelEnabled
-import com.arn.scrobble.Stuff.isUrlOrDomain
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
@@ -56,7 +55,7 @@ class NLService : NotificationListenerService() {
     private lateinit var packageTrackMap: MutableMap<String, PlayingTrackInfo> // package name to track info
     private var notiColor: Int? = Color.MAGENTA
     private var job: Job? = null
-    private var browserPackages: Set<String> = mutableSetOf()
+    private val browserPackages = mutableSetOf<String>()
 //    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
@@ -143,9 +142,9 @@ class NLService : NotificationListenerService() {
             applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
-        sessListener = SessListener(prefs, scrobbleHandler, audioManager)
+        sessListener = SessListener(scrobbleHandler, audioManager, browserPackages)
         packageTrackMap = sessListener!!.packageTrackMap
-        browserPackages = Stuff.getBrowsersAsStrings(packageManager)
+        browserPackages += Stuff.getBrowsersAsStrings(packageManager)
         try {
             sessManager.addOnActiveSessionsChangedListener(
                 sessListener!!,
@@ -390,7 +389,10 @@ class NLService : NotificationListenerService() {
                             packageName = sbn.packageName,
                         )
                         packageTrackMap[sbn.packageName] = newTrackInfo
-                        scrobbleHandler.nowPlaying(newTrackInfo, prefs.delaySecs.coerceAtMost(3 * 60 * 1000).toLong())
+                        scrobbleHandler.nowPlaying(
+                            newTrackInfo,
+                            prefs.delaySecs.coerceAtMost(3 * 60 * 1000).toLong()
+                        )
                     }
                 } else {
                     Stuff.log("\"${this::scrobbleFromNoti.name} parse failed")
@@ -421,7 +423,7 @@ class NLService : NotificationListenerService() {
         )
             return
 
-        val  nowPlaying = scrobbleHandler.has(trackInfo.hash)
+        val nowPlaying = scrobbleHandler.has(trackInfo.hash)
 
         var i = Intent()
             .putExtra(B_HASH, trackInfo.hash)
@@ -858,7 +860,8 @@ class NLService : NotificationListenerService() {
                 iMETA_UPDATE_S -> {
                     val receivedTrackInfo =
                         intent.getSingle<PlayingTrackInfo>()!!
-                    val trackInfo = sessListener?.findTrackInfoByHash(receivedTrackInfo.hash) ?: return
+                    val trackInfo =
+                        sessListener?.findTrackInfoByHash(receivedTrackInfo.hash) ?: return
                     trackInfo.updateMetaFrom(receivedTrackInfo)
                     notifyScrobble(trackInfo)
                 }
@@ -890,7 +893,7 @@ class NLService : NotificationListenerService() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == ACTION_PACKAGE_ADDED) {
                 if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false))
-                    browserPackages = Stuff.getBrowsersAsStrings(packageManager)
+                    browserPackages += Stuff.getBrowsersAsStrings(packageManager)
             }
         }
     }
@@ -944,14 +947,15 @@ class NLService : NotificationListenerService() {
             trackInfo.artist = MetadataUtils.sanitizeArtist(trackInfo.artist)
             trackInfo.album = MetadataUtils.sanitizeArtist(trackInfo.album)
             trackInfo.albumArtist = MetadataUtils.sanitizeAlbumArtist(trackInfo.albumArtist)
+            trackInfo.userPlayCount = 0
+            trackInfo.userLoved = false
 
             var unparsedScrobbleData: ScrobbleData? = null
 
             // music only items have an album field,
             // and the correct artist name on official youtube tv app
-            val ignoreArtistMeta = shouldIgnoreArtistMeta(trackInfo)
 
-            if (ignoreArtistMeta) {
+            if (trackInfo.ignoreOrigArtist) {
                 val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(trackInfo.title)
 
                 unparsedScrobbleData = trackInfo.toScrobbleData()
@@ -973,7 +977,10 @@ class NLService : NotificationListenerService() {
 
             val delayMillis = prefs.delaySecs.toLong() * 1000
             val delayFraction = prefs.delayPercent / 100.0
-            val delayMillisFraction = (trackInfo.durationMillis * delayFraction).toLong()
+            val delayMillisFraction = if (trackInfo.durationMillis > 0)
+                (trackInfo.durationMillis * delayFraction).toLong()
+            else
+                Long.MAX_VALUE // deal with negative or 0 delay
 
             var finalDelay = min(delayMillisFraction, delayMillis)
 
@@ -1017,17 +1024,6 @@ class NLService : NotificationListenerService() {
             notifyScrobble(trackInfo)
 
             trackInfo.markAsScrobbled()
-        }
-
-        private fun shouldIgnoreArtistMeta(trackInfo: PlayingTrackInfo): Boolean {
-            return if (
-                trackInfo.packageName == Stuff.PACKAGE_YOUTUBE_TV && trackInfo.album.isNotEmpty() ||
-                trackInfo.packageName == Stuff.PACKAGE_YMUSIC &&
-                trackInfo.album.replace("YMusic", "").isNotEmpty()
-            )
-                false
-            else trackInfo.packageName in Stuff.IGNORE_ARTIST_META ||
-                    trackInfo.packageName in browserPackages && trackInfo.artist.isUrlOrDomain()
         }
 
         fun remove(hash: Int, removeNoti: Boolean = true) {

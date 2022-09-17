@@ -25,6 +25,7 @@ import com.arn.scrobble.databinding.ButtonStepperBinding
 import com.arn.scrobble.databinding.ButtonStepperForLoginBinding
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.pref.MigratePrefs
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.arn.scrobble.ui.UiUtils.isTv
 import com.arn.scrobble.ui.UiUtils.openInBrowser
@@ -119,31 +120,26 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                 R.string.others
             )
 
-            var selectedServiceId = R.string.lastfm
-
             val binding = ButtonStepperForLoginBinding.inflate(LayoutInflater.from(context))
 
             binding.buttonService.setOnClickListener {
-                openLoginFor(selectedServiceId)
+                openLoginFor(R.string.lastfm)
             }
             binding.buttonService.postRequestFocus()
 
             binding.buttonServiceChooser.setOnClickListener {
                 val popup = PopupMenu(context, binding.buttonServiceChooser)
-                serviceIds.forEach { strId ->
+                serviceIds.filter { it != R.string.lastfm }.forEach { strId ->
                     popup.menu.add(0, strId, 0, strId)
                 }
 
                 popup.setOnMenuItemClickListener { menuItem ->
-                    selectedServiceId = menuItem.itemId
-                    openLoginFor(selectedServiceId)
+                    openLoginFor(menuItem.itemId)
                     true
                 }
 
                 popup.show()
             }
-
-            binding.buttonService.setText(selectedServiceId)
 
             // setup testing password box
             if (fragment.arguments?.getBoolean(Stuff.ARG_NOPASS) == true) {
@@ -171,6 +167,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                         if (splits.size == 3) {
                             prefs.lastfmUsername = splits[0]
                             prefs.lastfmSessKey = splits[1]
+                            MigratePrefs.migrateV2(prefs)
                             fragment.hideKeyboard()
                             continueIfDataValid()
                         }
@@ -230,6 +227,8 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                         intent,
                         PackageManager.MATCH_DEFAULT_ONLY
                     ) != null
+                    &&
+                    !Stuff.isWindows11 // workaround until MS fixes it
                 ) {
                     context.startActivity(intent)
                     if (context!!.isTv)

@@ -17,7 +17,6 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -148,15 +147,9 @@ class ThemesFragment : Fragment() {
             }
         }
 
-        if (!BuildConfig.DEBUG) {
-            binding.themeTintBg.visibility = View.GONE
-        }
-
         binding.themeTintBg.setOnCheckedChangeListener { compoundButton, checked ->
             previewPrimary(getThemeName(binding.themePrimarySwatches))
         }
-
-        binding.themeDayNight.visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
 
         binding.themeDayNight.setOnCheckedStateChangeListener { group, checkedIds ->
             updateThemedContext()

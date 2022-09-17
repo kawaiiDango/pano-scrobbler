@@ -103,7 +103,7 @@ class PrefFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         val field = preferenceManager::class.java.getDeclaredField("mSharedPreferences")
         field.isAccessible = true
-        field.set(preferenceManager, prefs.sharedPreferences)
+        field[preferenceManager] = prefs.sharedPreferences
 
         addPreferencesFromResource(R.xml.preferences)
 
@@ -625,9 +625,22 @@ class PrefFragment : PreferenceFragmentCompat() {
                         it.extras.putInt("state", STATE_CONFIRM)
                     }
                     STATE_CONFIRM -> {
+
+                        val authKey =
+                            preferenceManager.sharedPreferences!!.getString("${key}_sesskey", null)
+                                ?: preferenceManager.sharedPreferences!!.getString(
+                                    "${key}_token",
+                                    null
+                                )
+
                         preferenceManager.sharedPreferences!!.edit {
                             keysToClear.forEach { remove(it) }
                         }
+
+                        if (authKey != null)
+                            prefs.scrobbleAccounts.find { it.authKey == authKey }
+                                ?.let { prefs.scrobbleAccounts -= it }
+
                         logout?.invoke()
                         setAuthLabel(it)
                     }

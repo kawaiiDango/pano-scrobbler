@@ -1,6 +1,7 @@
 package com.arn.scrobble.friends
 
 import android.os.Parcelable
+import com.arn.scrobble.scrobbleable.ScrobblableEnum
 import de.umass.lastfm.ImageHolder
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.User
@@ -17,7 +18,6 @@ data class UserSerializable(
     var country: String,
     var registeredTime: Long,
     var imgUrls: Map<ImageSize, String>,
-    val sessionKey: String? = null,
 ) : ImageHolder(), Parcelable {
 
     @IgnoredOnParcel
@@ -63,9 +63,10 @@ data class UserSerializable(
 }
 
 @Serializable
-data class UsersListSerializable(
-    // ("lastfm", UserSerializable())
-    val usersList: List<Pair<String, UserSerializable>>
-) {
-    fun find(type: String) = usersList.find { it.first == type }
-}
+data class UserAccountSerializable(
+    val type: ScrobblableEnum,
+    val user: UserSerializable,
+    val authKey: String,
+    val apiRoot: String? = null,
+    val tlsNoVerify: Boolean = false,
+)

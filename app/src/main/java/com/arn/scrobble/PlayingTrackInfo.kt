@@ -24,6 +24,7 @@ data class PlayingTrackInfo(
     var userPlayCount: Int = 0,
     var userLoved: Boolean = false,
     var ignoredArtist: String? = null,
+    var ignoreOrigArtist: Boolean = false,
 
     var lastScrobbleHash: Int = 0,
     var lastSubmittedScrobbleHash: Int = 0,

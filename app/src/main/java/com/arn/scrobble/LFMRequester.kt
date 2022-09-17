@@ -18,12 +18,14 @@ import com.arn.scrobble.db.CachedArtist.Companion.toArtist
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toTrack
+import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.Scrobblable
+import com.arn.scrobble.scrobbleable.ScrobblableEnum
 import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.search.SearchVM
 import com.arn.scrobble.ui.UiUtils.toast
@@ -289,7 +291,6 @@ class LFMRequester(
             )
 
             if (profile != null && recents != null) {
-                prefs.currentUser = profile.toUserSerializable()
                 DrawerData(
                     scrobblesToday = recents.totalPages,
                     scrobblesTotal = profile.playcount,
@@ -1706,10 +1707,19 @@ class LFMRequester(
                     R.string.lastfm -> {
                         val lastfmSession =
                             Authenticator.getSession(null, token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
+
+                        UserAccountSerializable(
+                            ScrobblableEnum.LASTFM,
+                            User.getInfo(lastfmSession).toUserSerializable(),
+                            lastfmSession.key,
+                        ).let {
+                            prefs.currentUser = it
+                            prefs.scrobbleAccounts += it
+                        }
+
                         if (lastfmSession != null) {
                             prefs.lastfmUsername = lastfmSession.username
                             prefs.lastfmSessKey = lastfmSession.key
-
                             getDrawerInfo()
                         }
                     }
@@ -1718,6 +1728,13 @@ class LFMRequester(
                             Stuff.LIBREFM_API_ROOT,
                             token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY
                         )
+
+                        prefs.scrobbleAccounts += UserAccountSerializable(
+                            ScrobblableEnum.LIBREFM,
+                            User.getInfo(librefmSession).toUserSerializable(),
+                            librefmSession.key,
+                        )
+
                         if (librefmSession != null) {
                             prefs.librefmUsername = librefmSession.username
                             prefs.librefmSessKey = librefmSession.key
@@ -1728,6 +1745,15 @@ class LFMRequester(
                             prefs.gnufmRoot + "2.0/",
                             token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY
                         )
+
+                        prefs.scrobbleAccounts += UserAccountSerializable(
+                            ScrobblableEnum.GNUFM,
+                            User.getInfo(gnufmSession).toUserSerializable(),
+                            gnufmSession.key,
+                            gnufmSession.apiRootUrl.substringBeforeLast("2.0/"),
+                            gnufmSession.isTlsNoVerify
+                        )
+
                         if (gnufmSession != null) {
                             prefs.gnufmUsername = gnufmSession.username
                             prefs.gnufmSessKey = gnufmSession.key

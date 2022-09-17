@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import com.arn.scrobble.Stuff.dump
+import com.arn.scrobble.Stuff.isUrlOrDomain
 import com.arn.scrobble.pref.MainPrefs
 import java.util.*
 
@@ -20,12 +21,13 @@ import java.util.*
  */
 
 class SessListener(
-    private val prefs: MainPrefs,
-    private val handler: NLService.ScrobbleHandler,
+    private val scrobbleHandler: NLService.ScrobbleHandler,
     private val audioManager: AudioManager,
+    private val browserPackages: Set<String>
 ) : OnActiveSessionsChangedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private val prefs by lazy { MainPrefs(App.context) }
     private val controllersMap =
         mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
     private var controllers: List<MediaController>? = null
@@ -97,10 +99,10 @@ class SessListener(
         controllersMap.values.filter { it.first.packageName == packageName }.map { it.first }
 
     private fun findCallbackByHash(hash: Int) =
-        controllersMap.values.firstOrNull { it.second.playingTrackInfo.lastScrobbleHash == hash }?.second
+        controllersMap.values.firstOrNull { it.second.trackInfo.lastScrobbleHash == hash }?.second
 
     fun findControllersByHash(hash: Int) =
-        controllersMap.values.filter { it.second.playingTrackInfo.lastScrobbleHash == hash }
+        controllersMap.values.filter { it.second.trackInfo.lastScrobbleHash == hash }
             .map { it.first }
 
     fun findTrackInfoByHash(hash: Int) =
@@ -156,7 +158,7 @@ class SessListener(
     }
 
     inner class ControllerCallback(
-        val playingTrackInfo: PlayingTrackInfo,
+        val trackInfo: PlayingTrackInfo,
         private val token: MediaSession.Token
     ) : Callback() {
 
@@ -164,23 +166,23 @@ class SessListener(
         private var isRemotePlayback = false
         var isMuted = false
 
-        private val syntheticStateHandler = Handler(handler.looper)
+        private val syntheticStateHandler = Handler(scrobbleHandler.looper)
 
         fun scrobble() {
 //            if (BuildConfig.DEBUG && isRemotePlayback)
 //                return
 
-            Stuff.log("playing: timePlayed=${playingTrackInfo.timePlayed} ${playingTrackInfo.title}")
+            Stuff.log("playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}")
 
             scheduleSyntheticStateIfNeeded()
 
-            playingTrackInfo.playStartTime = System.currentTimeMillis()
-            handler.remove(playingTrackInfo.lastScrobbleHash, false)
+            trackInfo.playStartTime = System.currentTimeMillis()
+            scrobbleHandler.remove(trackInfo.lastScrobbleHash, false)
 
-            handler.nowPlaying(playingTrackInfo)
+            scrobbleHandler.nowPlaying(trackInfo)
 
-            playingTrackInfo.lastScrobbleHash = playingTrackInfo.hash
-            playingTrackInfo.lastSubmittedScrobbleHash = 0
+            trackInfo.lastScrobbleHash = trackInfo.hash
+            trackInfo.lastSubmittedScrobbleHash = 0
 
             // if another player tried to scrobble, unmute whatever was muted
             // if self was muted, clear the muted hash too
@@ -188,7 +190,7 @@ class SessListener(
         }
 
         private fun scheduleSyntheticStateIfNeeded() {
-            if (playingTrackInfo.packageName in Stuff.needSyntheticStates && playingTrackInfo.durationMillis > 0) {
+            if (trackInfo.packageName in Stuff.needSyntheticStates && trackInfo.durationMillis > 0) {
                 syntheticStateHandler.removeCallbacksAndMessages(null)
                 syntheticStateHandler.postDelayed({
                     onPlaybackStateChanged(
@@ -197,7 +199,7 @@ class SessListener(
                             .setErrorMessage("synthetic")
                             .build()
                     )
-                }, playingTrackInfo.durationMillis)
+                }, trackInfo.durationMillis)
             }
         }
 
@@ -217,7 +219,7 @@ class SessListener(
             if (durationMillis < -1)
                 durationMillis = -1
 
-            when (playingTrackInfo.packageName) {
+            when (trackInfo.packageName) {
                 Stuff.PACKAGE_XIAMI -> {
                     artist = artist.replace(";", "; ")
                 }
@@ -281,13 +283,13 @@ class SessListener(
             }
 
             val sameAsOld =
-                artist == playingTrackInfo.artist && title == playingTrackInfo.title && album == playingTrackInfo.album
-                        && albumArtist == playingTrackInfo.albumArtist
-            val onlyDurationUpdated = sameAsOld && durationMillis != playingTrackInfo.durationMillis
+                artist == trackInfo.artist && title == trackInfo.title && album == trackInfo.album
+                        && albumArtist == trackInfo.albumArtist
+            val onlyDurationUpdated = sameAsOld && durationMillis != trackInfo.durationMillis
 
             Stuff.log(
                 "onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
-                        "duration=$durationMillis lastState=$lastState, package=${playingTrackInfo.packageName} isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
+                        "duration=$durationMillis lastState=$lastState, package=${trackInfo.packageName} isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
             )
 
 //            metadata.dump()
@@ -296,15 +298,20 @@ class SessListener(
                 return
 
             if (!sameAsOld || onlyDurationUpdated) {
-                playingTrackInfo.artist = artist
-                playingTrackInfo.album = album
-                playingTrackInfo.title = title
-                playingTrackInfo.albumArtist = albumArtist
-                playingTrackInfo.durationMillis = durationMillis
-                playingTrackInfo.hash =
-                    Stuff.genHashCode(artist, album, title, playingTrackInfo.packageName)
+                trackInfo.artist = artist
+                trackInfo.album = album
+                trackInfo.title = title
+                trackInfo.albumArtist = albumArtist
+                trackInfo.ignoredArtist = null
+                trackInfo.ignoreOrigArtist = shouldIgnoreOrigArtist(trackInfo)
+                trackInfo.durationMillis = durationMillis
+                trackInfo.hash =
+                    Stuff.genHashCode(artist, album, title, trackInfo.packageName)
 
-                if (mutedHash != null && playingTrackInfo.hash != mutedHash && lastState == PlaybackState.STATE_PLAYING)
+                if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META)
+                    trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
+
+                if (mutedHash != null && trackInfo.hash != mutedHash && lastState == PlaybackState.STATE_PLAYING)
                     unmute(clearMutedHash = isMuted)
 
                 // scrobbled when ad was playing
@@ -317,10 +324,10 @@ class SessListener(
                 // for cases:
                 // - meta is sent after play
                 // - "gapless playback", where playback state never changes
-                if ((!handler.has(playingTrackInfo.hash) || onlyDurationUpdated) &&
+                if ((!scrobbleHandler.has(trackInfo.hash) || onlyDurationUpdated) &&
                     lastState == PlaybackState.STATE_PLAYING
                 ) {
-                    playingTrackInfo.timePlayed = 0
+                    trackInfo.timePlayed = 0
                     scrobble()
                 }
             }
@@ -352,28 +359,28 @@ class SessListener(
                 PlaybackState.STATE_NONE,
                 PlaybackState.STATE_ERROR -> {
                     pause()
-                    Stuff.log("paused timePlayed=${playingTrackInfo.timePlayed}")
+                    Stuff.log("paused timePlayed=${trackInfo.timePlayed}")
                 }
                 PlaybackState.STATE_PLAYING -> {
-                    if (mutedHash != null && playingTrackInfo.hash != mutedHash)
+                    if (mutedHash != null && trackInfo.hash != mutedHash)
                         unmute(clearMutedHash = isMuted)
 
-                    if (playingTrackInfo.title != "" && playingTrackInfo.artist != "") {
+                    if (trackInfo.title != "" && trackInfo.artist != "") {
 
-                        if (!isMuted && playingTrackInfo.hash == mutedHash)
-                            mute(playingTrackInfo.hash)
+                        if (!isMuted && trackInfo.hash == mutedHash)
+                            mute(trackInfo.hash)
                         // ignore state=playing, pos=lowValue spam
-                        if (lastState == state && playingTrackInfo.lastScrobbleHash == playingTrackInfo.hash &&
-                            System.currentTimeMillis() - playingTrackInfo.playStartTime < Stuff.START_POS_LIMIT * 2
+                        if (lastState == state && trackInfo.lastScrobbleHash == trackInfo.hash &&
+                            System.currentTimeMillis() - trackInfo.playStartTime < Stuff.START_POS_LIMIT * 2
                         )
                             return
 
-                        if (playingTrackInfo.hash != playingTrackInfo.lastScrobbleHash || (pos >= 0L && isPossiblyAtStart))
-                            playingTrackInfo.timePlayed = 0
+                        if (trackInfo.hash != trackInfo.lastScrobbleHash || (pos >= 0L && isPossiblyAtStart))
+                            trackInfo.timePlayed = 0
 
-                        if (!handler.has(playingTrackInfo.hash) &&
+                        if (!scrobbleHandler.has(trackInfo.hash) &&
                             ((pos >= 0L && isPossiblyAtStart) ||
-                                    playingTrackInfo.hash != playingTrackInfo.lastSubmittedScrobbleHash)
+                                    trackInfo.hash != trackInfo.lastSubmittedScrobbleHash)
                         ) {
                             if (playbackState.errorMessage == "synthetic")
                                 Stuff.log("synthetic")
@@ -382,7 +389,7 @@ class SessListener(
                     }
                 }
                 else -> {
-                    Stuff.log("other ($state) : ${playingTrackInfo.title}")
+                    Stuff.log("other ($state) : ${trackInfo.title}")
                 }
             }
             if (state != PlaybackState.STATE_BUFFERING)
@@ -391,7 +398,7 @@ class SessListener(
         }
 
         override fun onSessionDestroyed() {
-            Stuff.log("onSessionDestroyed ${playingTrackInfo.packageName}")
+            Stuff.log("onSessionDestroyed ${trackInfo.packageName}")
             stop()
             synchronized(this@SessListener) {
                 controllersMap.remove(token)
@@ -402,14 +409,14 @@ class SessListener(
 
         fun pause() {
             if (lastState == PlaybackState.STATE_PLAYING) {
-                if (handler.has(playingTrackInfo.lastScrobbleHash))
-                    playingTrackInfo.timePlayed += System.currentTimeMillis() - playingTrackInfo.playStartTime
+                if (scrobbleHandler.has(trackInfo.lastScrobbleHash))
+                    trackInfo.timePlayed += System.currentTimeMillis() - trackInfo.playStartTime
                 else
-                    playingTrackInfo.timePlayed = 0
+                    trackInfo.timePlayed = 0
             }
-            if (playingTrackInfo.packageName in Stuff.needSyntheticStates)
+            if (trackInfo.packageName in Stuff.needSyntheticStates)
                 syntheticStateHandler.removeCallbacksAndMessages(null)
-            handler.remove(playingTrackInfo.lastScrobbleHash)
+            scrobbleHandler.remove(trackInfo.lastScrobbleHash)
             if (isMuted)
                 unmute(clearMutedHash = false)
         }
@@ -439,24 +446,24 @@ class SessListener(
 
         override fun onExtrasChanged(extras: Bundle?) {
             if (BuildConfig.DEBUG)
-                Stuff.log("extras updated ${playingTrackInfo.packageName}: ${extras.dump()}")
+                Stuff.log("extras updated ${trackInfo.packageName}: ${extras.dump()}")
         }
 
         override fun onSessionEvent(event: String, extras: Bundle?) {
             if (BuildConfig.DEBUG)
-                Stuff.log("onSessionEvent ${playingTrackInfo.packageName}: $event ${extras.dump()}")
+                Stuff.log("onSessionEvent ${trackInfo.packageName}: $event ${extras.dump()}")
         }
 
         override fun onAudioInfoChanged(info: MediaController.PlaybackInfo?) {
             if (BuildConfig.DEBUG)
-                Stuff.log("audioinfo updated ${playingTrackInfo.packageName}: $info")
+                Stuff.log("audioinfo updated ${trackInfo.packageName}: $info")
 
             isRemotePlayback =
                 info?.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE
         }
 
         private fun resetMeta() {
-            playingTrackInfo.apply {
+            trackInfo.apply {
                 artist = ""
                 album = ""
                 title = ""
@@ -471,6 +478,19 @@ class SessListener(
         return prefs.scrobblerEnabled && loggedIn &&
                 (packageName in allowedPackages ||
                         (prefs.autoDetectApps && packageName !in blockedPackages))
+    }
+
+    private fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {
+        return if (
+            trackInfo.packageName == Stuff.PACKAGE_YOUTUBE_TV && trackInfo.album.isNotEmpty() ||
+            trackInfo.packageName == Stuff.PACKAGE_YMUSIC &&
+            trackInfo.album.replace("YMusic", "").isNotEmpty()
+        )
+            false
+        else (trackInfo.packageName in Stuff.IGNORE_ARTIST_META &&
+                !trackInfo.artist.endsWith("- Topic")) ||
+                (trackInfo.packageName in browserPackages &&
+                        trackInfo.artist.isUrlOrDomain())
     }
 
     override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {

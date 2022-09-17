@@ -124,7 +124,7 @@ dependencies {
 
     implementation("com.google.android.material:material:1.8.0-alpha01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:30.4.1"))
+    implementation(platform("com.google.firebase:firebase-bom:30.5.0"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -136,7 +136,7 @@ dependencies {
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")
     implementation("hu.autsoft:krate-kotlinx:2.0.0")
-    implementation("com.frybits.harmony:harmony:1.1.11")
+    implementation("com.frybits.harmony:harmony:1.2.0")
     implementation("io.github.kawaiidango.kumo-android:kumo-core:1.28.1")
     implementation("io.michaelrocks.bimap:bimap:1.1.0")
     implementation("com.github.hadilq:live-event:1.3.0")

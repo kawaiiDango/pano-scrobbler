@@ -528,17 +528,18 @@ object Stuff {
 
     fun String.isUrlOrDomain(): Boolean {
         // got some internal IOBE, catch everything
+        // .topPrivateDomain() reads the big public suffix file every time and causes ANRs
         return try {
-            toHttpUrl().topPrivateDomain() != null
+            toHttpUrl()
+            true
         } catch (e: Exception) {
-            false
+            try {
+                "https://$this".toHttpUrl()
+                true
+            } catch (e: Exception) {
+                false
+            }
         }
-                ||
-                try {
-                    "https://$this".toHttpUrl().topPrivateDomain() != null
-                } catch (e: Exception) {
-                    false
-                }
     }
 
     fun isScrobblerRunning(context: Context): Boolean {

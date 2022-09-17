@@ -102,6 +102,7 @@
     <string name="offline">Hors-ligne. Les données affichées ne sont pas rafraichies</string>
     <string name="unavailable_offline">Indisponible hors-ligne</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Services</string>
+    <string name="others">Autres</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">J\'écoutais\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s écoutait\n%1$s %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Mon %1$s %2$s:\n%3$s</string>
@@ -114,7 +115,15 @@
     <string name="pinch_to_zoom">Pincer pour zoomer</string>
     <string name="more_info">Plus d\'informations</string>
     <string name="rank_change" comment="%1= delta change">Changement en classement: %s</string>
+    <string name="rank_change_no_change">Aucune modification</string>
+    <string name="rank_change_new">Non scrobblé dans la période précédente</string>
     <string name="search">Rechercher</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Effacer l\'historique</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Supprimer cet élément de l\'historique ?</string>
+    <string name="library" comment="search within the library">Bibliothèque</string>
+    <string name="global" comment="search globally across lastfm">Global</string>
+    <string name="take_long_time">Cela peut prendre du temps</string>
+    <string name="full_index_desc">Utilisez ceci uniquement si vous avez modifié ou supprimé des scrobbles du site Web.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Image de profil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Options pour cet élément</string>

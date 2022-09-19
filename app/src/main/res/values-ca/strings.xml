@@ -1,4 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_days">
+        <item quantity="one">%1$s dia</item>
+        <item quantity="other">%1$s dies</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s setmana</item>
+        <item quantity="other">%1$s setmanes</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s mes</item>
+        <item quantity="other">%1$s mesos</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s any</item>
+        <item quantity="other">%1$s anys</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s artista</item>
+        <item quantity="other">%1$s artistes</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s àlbum</item>
+        <item quantity="other">%1$s àlbums</item>
+    </plurals>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="album_art">Caràtula de l\'àlbum</string>
+    <string name="artist_image">Imatge de l\'artista</string>
+    <string name="network_error">Error de xarxa</string>
+    <string name="artist">Artista</string>
+    <string name="artists">Artistes</string>
+    <string name="album_artist">Artista de l\'àlbum</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Artista o canal</string>
+    <string name="similar_artists">Artistes similars</string>
+    <string name="album_optional">Àlbum (opcional)</string>
+    <string name="album">Àlbum</string>
+    <string name="albums">Àlbums</string>
+    <string name="similar" comment="Similar tracks but in short">Similars</string>
+    <string name="recently_loved">♥ Agradat fa poc</string>
+    <string name="more_info">Més informació</string>
+    <string name="time_just_now">ara mateix</string>
+    <string name="simple_edits">Edicions</string>
+    <string name="scrobble_from_mic">Fes scrobble amb el micro</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Amb el micro</string>
+    <string name="add_to_hs">Afegeix a la pantalla d\'inici</string>
+    <string name="listening">S\'està escoltant la música del voltant…</string>
+    <string name="uploading">S\'està pujant…</string>
+    <string name="sort">Ordena</string>
+    <string name="past_scrobbles">Scrobbles anteriors</string>
+    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s</string>
     <!--  pro  -->
 </resources>

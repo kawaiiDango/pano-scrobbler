@@ -13,7 +13,7 @@ import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
 import com.arn.scrobble.pref.MainPrefs
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Locale
 
 
 object LocaleUtils {
@@ -36,6 +36,7 @@ object LocaleUtils {
         "nl",
         "ar",
         "hr",
+        "ca",
     ).toSortedSet()
 
     val showScriptSet = setOf(

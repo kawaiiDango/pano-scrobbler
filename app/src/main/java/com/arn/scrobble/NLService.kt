@@ -9,8 +9,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.AudioManager
 import android.media.session.MediaSessionManager
-import android.net.ConnectivityManager
-import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.*
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -56,7 +54,6 @@ class NLService : NotificationListenerService() {
     private var notiColor: Int? = Color.MAGENTA
     private var job: Job? = null
     private val browserPackages = mutableSetOf<String>()
-//    private var connectivityCb: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
         if (BuildConfig.DEBUG)
@@ -110,7 +107,6 @@ class NLService : NotificationListenerService() {
             addAction(iSCROBBLER_OFF)
 
             addAction(ACTION_TIME_CHANGED)
-            addAction(CONNECTIVITY_ACTION)
         }
         applicationContext.registerReceiver(nlserviceReciver, filter)
 
@@ -171,8 +167,6 @@ class NLService : NotificationListenerService() {
             // permissions to be granted.
         }
 
-//        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//        isOnline = cm.activeNetworkInfo?.isConnected == true
         DigestJob.scheduleAlarms(applicationContext)
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
 //        if (!BuildConfig.DEBUG)
@@ -192,6 +186,8 @@ class NLService : NotificationListenerService() {
                 Intent(this, PersistentNotificationService::class.java)
             )
 
+        App.initConnectivityCheck()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             getScrobblerExitReasons(printAll = true)
         }
@@ -203,8 +199,6 @@ class NLService : NotificationListenerService() {
         Stuff.log("destroy")
         try {
             applicationContext.unregisterReceiver(nlserviceReciver)
-//            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//            cm.unregisterNetworkCallback(connectivityCb)
         } catch (e: IllegalArgumentException) {
             Stuff.log("nlservicereciver wasn't registered")
         }
@@ -315,6 +309,16 @@ class NLService : NotificationListenerService() {
                 notiField = Notification.EXTRA_TEXT,
                 format = R.string.auto_shazam_now_playing
             )
+        if (BuildConfig.DEBUG) {
+            scrobbleFromNoti(
+                sbn,
+                removed = false,
+                packageNames = listOf(packageName),
+                channelName = MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI,
+                notiField = Notification.EXTRA_TITLE,
+                format = R.string.song_format_string
+            )
+        }
     }
 
     override fun onNotificationRemoved(
@@ -339,6 +343,14 @@ class NLService : NotificationListenerService() {
                     packageNames = listOf(Stuff.PACKAGE_SHAZAM),
                     channelName = Stuff.CHANNEL_SHAZAM,
                 )
+            if (BuildConfig.DEBUG) {
+                scrobbleFromNoti(
+                    sbn,
+                    removed = true,
+                    packageNames = listOf(packageName),
+                    channelName = MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI,
+                )
+            }
         }
     }
 
@@ -373,8 +385,9 @@ class NLService : NotificationListenerService() {
                         val scrobbleTimeReached =
                             SystemClock.elapsedRealtime() >= trackInfo.scrobbleElapsedRealtime
                         if (!scrobbleTimeReached && !scrobbleHandler.has(hash)) { //"resume" scrobbling
-                            scrobbleHandler.addScrobble(trackInfo)
+                            scrobbleHandler.addScrobble(trackInfo.copy())
                             notifyScrobble(trackInfo)
+                            Stuff.log("${this::scrobbleFromNoti.name} rescheduling")
                         } else if (System.currentTimeMillis() - trackInfo.playStartTime < Stuff.NOTI_SCROBBLE_INTERVAL) {
                             Stuff.log("${this::scrobbleFromNoti.name} ignoring possible duplicate")
                         }
@@ -391,7 +404,7 @@ class NLService : NotificationListenerService() {
                         packageTrackMap[sbn.packageName] = newTrackInfo
                         scrobbleHandler.nowPlaying(
                             newTrackInfo,
-                            prefs.delaySecs.coerceAtMost(3 * 60 * 1000).toLong()
+                            prefs.delaySecs.coerceAtMost(3 * 60) * 1000L
                         )
                     }
                 } else {
@@ -474,7 +487,6 @@ class NLService : NotificationListenerService() {
                 ""
 //                    "▷ "
             else
-//                    "✅︎ "
                 "✓ "
 
         val style = MediaStyleMod()
@@ -830,10 +842,6 @@ class NLService : NotificationListenerService() {
                     prefs.scrobblerEnabled = false
                     toast(R.string.scrobbler_off)
                 }
-                CONNECTIVITY_ACTION -> {
-                    val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                    Stuff.isOnline = cm.activeNetworkInfo?.isConnected == true
-                }
                 ACTION_TIME_CHANGED -> {
                     DigestJob.scheduleAlarms(applicationContext)
                 }
@@ -955,7 +963,7 @@ class NLService : NotificationListenerService() {
             // music only items have an album field,
             // and the correct artist name on official youtube tv app
 
-            if (trackInfo.ignoreOrigArtist) {
+            if (trackInfo.ignoreOrigArtist && trackInfo.ignoredArtist == null) { // not parsed yet
                 val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(trackInfo.title)
 
                 unparsedScrobbleData = trackInfo.toScrobbleData()
@@ -964,31 +972,29 @@ class NLService : NotificationListenerService() {
                 trackInfo.title = parsedTitle
                 trackInfo.albumArtist = ""
                 trackInfo.album = ""
-
-            } else if (trackInfo.packageName in browserPackages) {
-                unparsedScrobbleData = trackInfo.toScrobbleData()
+                trackInfo.ignoredArtist = unparsedScrobbleData.artist
             }
 
             lastNpTask?.cancel()
 
-
             trackInfo.isPlaying = true
-            trackInfo.ignoredArtist = unparsedScrobbleData?.artist ?: ""
 
-            val delayMillis = prefs.delaySecs.toLong() * 1000
-            val delayFraction = prefs.delayPercent / 100.0
-            val delayMillisFraction = if (trackInfo.durationMillis > 0)
-                (trackInfo.durationMillis * delayFraction).toLong()
-            else
-                Long.MAX_VALUE // deal with negative or 0 delay
+            var finalDelay: Long
+            if (fixedDelay == null) {
+                val delayMillis = prefs.delaySecs.toLong() * 1000
+                val delayFraction = prefs.delayPercent / 100.0
+                val delayMillisFraction = if (trackInfo.durationMillis > 0)
+                    (trackInfo.durationMillis * delayFraction).toLong()
+                else
+                    Long.MAX_VALUE // deal with negative or 0 delay
 
-            var finalDelay = min(delayMillisFraction, delayMillis)
+                finalDelay = min(delayMillisFraction, delayMillis)
 
-            if (fixedDelay != null) // for scrobble from notification
+                if (finalDelay - trackInfo.timePlayed > 1000) {
+                    finalDelay -= trackInfo.timePlayed
+                }
+            } else {
                 finalDelay = fixedDelay
-
-            if (finalDelay - trackInfo.timePlayed > 1000) {
-                finalDelay -= trackInfo.timePlayed
             }
 
             finalDelay = finalDelay.coerceAtLeast(10 * 1000) // don't scrobble < 10 seconds

@@ -136,7 +136,7 @@ dependencies {
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")
     implementation("hu.autsoft:krate-kotlinx:2.0.0")
-    implementation("com.frybits.harmony:harmony:1.2.0")
+    implementation("com.frybits.harmony:harmony:1.2.1")
     implementation("io.github.kawaiidango.kumo-android:kumo-core:1.28.1")
     implementation("io.michaelrocks.bimap:bimap:1.1.0")
     implementation("com.github.hadilq:live-event:1.3.0")

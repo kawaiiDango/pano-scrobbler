@@ -276,6 +276,11 @@
             android:key="force_exception"/>
 
         <EditTextPreference
+            android:title="@string/test_scrobble_from_noti"
+            android:defaultValue=""
+            android:key="test_scrobble_from_noti"/>
+
+        <EditTextPreference
             android:key="song_search_url"
             android:defaultValue="https://www.youtube.com/results?search_query=$artist+$title"
             android:title="@string/song_search_url"

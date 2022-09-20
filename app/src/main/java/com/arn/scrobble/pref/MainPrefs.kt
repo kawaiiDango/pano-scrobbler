@@ -220,6 +220,7 @@ class MainPrefs(context: Context) : Krate {
         const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
         const val CHANNEL_NOTI_PERSISTENT = "noti_persistent"
         const val CHANNEL_NOTI_UPDATE = "noti_update"
+        const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
 
         const val ACTIVITY_PREFS_NAME = "activity_preferences"
         const val PREF_ACTIVITY_APP_LIST_WAS_RUN = "app_list_run"

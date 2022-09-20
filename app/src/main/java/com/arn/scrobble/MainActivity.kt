@@ -7,9 +7,6 @@ import android.content.*
 import android.content.pm.LabeledIntent
 import android.graphics.Rect
 import android.media.session.MediaSessionManager
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -84,7 +81,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var pendingSubmitAttempted = false
     lateinit var binding: ActivityMainBinding
     private lateinit var navHeaderbinding: HeaderNavBinding
-    private lateinit var connectivityCb: ConnectivityManager.NetworkCallback
     val billingViewModel by viewModels<BillingViewModel>()
     val mainNotifierViewModel by viewModels<MainNotifierViewModel>()
     private val npReceiver by lazy { NPReceiver(mainNotifierViewModel) }
@@ -339,6 +335,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val lockMode = binding.drawerLayout.getDrawerLockMode(GravityCompat.START)
         backArrowShown = lockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED
         toggle.onDrawerSlide(binding.drawerLayout, if (backArrowShown) 1f else 0f)
+        App.initConnectivityCheck()
 
         Stuff.timeIt("onPostCreate")
     }
@@ -753,31 +750,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setLocaleCompat()
     }
 
-    public override fun onStart() {
-        super.onStart()
-
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val builder = NetworkRequest.Builder()
-        connectivityCb = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                Stuff.isOnline = true
-            }
-
-            override fun onLost(network: Network) {
-                Stuff.isOnline = cm.activeNetworkInfo?.isConnected == true
-            }
-
-            override fun onUnavailable() {
-                Stuff.isOnline = cm.activeNetworkInfo?.isConnected == true
-            }
-        }
-
-        cm.registerNetworkCallback(builder.build(), connectivityCb)
-
-        val ni = cm.activeNetworkInfo
-        Stuff.isOnline = ni?.isConnected == true
-    }
-
     private fun closeLockDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         if (coordinatorPadding > 0)
@@ -831,12 +803,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         return super.dispatchTouchEvent(event)
-    }
-
-    public override fun onStop() {
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        cm.unregisterNetworkCallback(connectivityCb)
-        super.onStop()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

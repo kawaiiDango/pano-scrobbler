@@ -26,5 +26,6 @@
     <string name="touhou_circles" translatable="false">2hu circles (newline separated)</string>
     <string name="debug_menu" translatable="false">Shrine maiden\'s menu</string>
     <string name="listen_along" translatable="false">Listen along</string>
+    <string name="test_scrobble_from_noti" translatable="false">Scrobble from noti</string>
 
 </resources>

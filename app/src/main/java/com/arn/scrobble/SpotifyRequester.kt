@@ -26,6 +26,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import java.io.File
 import kotlin.collections.set
+import kotlin.coroutines.cancellation.CancellationException
 
 object SpotifyRequester {
     private val prefs by lazy { MainPrefs(App.context) }
@@ -98,43 +99,38 @@ object SpotifyRequester {
     suspend fun getSpotifyArtistImages(artist: String): Map<ImageSize, String> {
         val imagesMap = mutableMapOf<ImageSize, String>()
 
-        try {
-            val response = spotifyClient.get {
-                url("https://api.spotify.com/v1/search")
-                parameter("q", artist)
-                parameter("type", "artist")
-                parameter("limit", 1)
-            }
-            val jsonObject = JSONObject(response.bodyAsText())
-            val artists = jsonObject.getJSONObject("artists")
-            if (artists.getInt("total") == 0)
-                return imagesMap
-
-            val artistItem = artists.getJSONArray("items").getJSONObject(0)
-            val artistItemName = artistItem.getString("name")
-
-            if (!artistItemName.equals(artist, ignoreCase = true))
-                return imagesMap
-
-            val images = artistItem.getJSONArray("images")
-            val imagesLength = images.length()
-
-            if (imagesLength == 0)
-                return imagesMap
-
-            val mediumImage = images.getJSONObject(imagesLength - 1).getString("url")
-            val largeImage = images.getJSONObject(imagesLength - 2).getString("url")
-            val hugeImage = images.getJSONObject(0).getString("url")
-
-            imagesMap[ImageSize.SMALL] = mediumImage
-            imagesMap[ImageSize.MEDIUM] = mediumImage
-            imagesMap[ImageSize.LARGE] = mediumImage
-            imagesMap[ImageSize.EXTRALARGE] = largeImage
-            imagesMap[ImageSize.MEGA] = hugeImage
-
-        } catch (e: Exception) {
-            Timber.tag(Stuff.TAG).w(e)
+        val response = spotifyClient.get {
+            url("https://api.spotify.com/v1/search")
+            parameter("q", artist)
+            parameter("type", "artist")
+            parameter("limit", 1)
         }
+        val jsonObject = JSONObject(response.bodyAsText())
+        val artists = jsonObject.getJSONObject("artists")
+        if (artists.getInt("total") == 0)
+            return imagesMap
+
+        val artistItem = artists.getJSONArray("items").getJSONObject(0)
+        val artistItemName = artistItem.getString("name")
+
+        if (!artistItemName.equals(artist, ignoreCase = true))
+            return imagesMap
+
+        val images = artistItem.getJSONArray("images")
+        val imagesLength = images.length()
+
+        if (imagesLength == 0)
+            return imagesMap
+
+        val mediumImage = images.getJSONObject(imagesLength - 1).getString("url")
+        val largeImage = images.getJSONObject(imagesLength - 2).getString("url")
+        val hugeImage = images.getJSONObject(0).getString("url")
+
+        imagesMap[ImageSize.SMALL] = mediumImage
+        imagesMap[ImageSize.MEDIUM] = mediumImage
+        imagesMap[ImageSize.LARGE] = mediumImage
+        imagesMap[ImageSize.EXTRALARGE] = largeImage
+        imagesMap[ImageSize.MEGA] = hugeImage
 
         return imagesMap
     }
@@ -161,11 +157,14 @@ object SpotifyRequester {
             val artistItemName = artistItem.getString("name")
 
             if (artistItemName.similarity(track.artist) >= similarityThreshold &&
-                    trackItemName.similarity(track.name) >= similarityThreshold)
+                trackItemName.similarity(track.name) >= similarityThreshold
+            )
                 return trackItem.getJSONObject("external_urls").getString("spotify")
 
             return null
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+        }
+        catch (e: Exception) {
             Timber.tag(Stuff.TAG).w(e)
         }
 

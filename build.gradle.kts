@@ -11,7 +11,7 @@ buildscript {
 }
 
 plugins {
-    id("com.android.application") version "7.4.0-alpha10" apply false
+    id("com.android.application") version "8.0.0-alpha01" apply false
     kotlin("android") version "1.7.10" apply false
     id("com.google.firebase.crashlytics") version "2.9.1" apply false
     id("com.google.gms.google-services") version "4.3.13" apply false

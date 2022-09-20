@@ -74,7 +74,7 @@ class LFMRequester(
                 if (errorLiveData != null)
                     errorLiveData.postValue(throwable)
                 else {
-                    Timber.e(throwable)
+                    Timber.tag(Stuff.TAG).e(throwable)
                     if (contextWr.get() != null && BuildConfig.DEBUG) {
                         scope.launch(Dispatchers.Main) {
                             context.toast("err: " + throwable.message)
@@ -590,7 +590,7 @@ class LFMRequester(
                         }
                     }
                 } catch (e: CallException) {
-                    Timber.e(e)
+                    Timber.tag(Stuff.TAG).e(e)
                     errored = true
                     throw e
                 }

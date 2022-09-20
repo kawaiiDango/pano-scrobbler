@@ -5,6 +5,10 @@ import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.StrictMode
 import com.arn.scrobble.pref.MainPrefs
@@ -112,6 +116,32 @@ class App : Application() {
 
     @SuppressLint("StaticFieldLeak")
     companion object {
+        // will be called multiple times
+        fun initConnectivityCheck() {
+            if (connectivityCheckInited) return
+
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val nr = NetworkRequest.Builder().apply {
+                addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            }.build()
+
+            cm.registerNetworkCallback(nr, object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    Stuff.isOnline = true
+                }
+
+                override fun onLost(network: Network) {
+                    Stuff.isOnline = false
+                }
+            })
+
+            connectivityCheckInited = true
+        }
+
+        private var connectivityCheckInited = false
+
         // not a leak
         lateinit var context: Context
     }

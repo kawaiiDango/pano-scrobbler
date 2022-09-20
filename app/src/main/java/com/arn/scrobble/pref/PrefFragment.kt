@@ -1,11 +1,9 @@
 package com.arn.scrobble.pref
 
-import android.app.Activity
-import android.app.LocaleManager
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
@@ -25,6 +23,7 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
@@ -529,6 +528,34 @@ class PrefFragment : PreferenceFragmentCompat() {
                 Timber.tag(Stuff.TAG).e(ForceLogException(newValue.toString()))
                 preference as EditTextPreference
                 preference.text = ""
+                true
+            }
+        }
+
+        findPreference<EditTextPreference>(MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI)!!.apply {
+            setOnBindEditTextListener { editText ->
+                editText.setText("Back Door by nachi")
+            }
+            setOnPreferenceChangeListener { preference, newValue ->
+                newValue as String
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    val channel = NotificationChannel(MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI, getString(R.string.test_scrobble_from_noti), NotificationManager.IMPORTANCE_DEFAULT)
+                    notificationManager.createNotificationChannel(channel)
+
+                    if (newValue.isNotEmpty()) {
+                        val notification = NotificationCompat.Builder(
+                            context,
+                            MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI
+                        )
+                            .setContentTitle(newValue)
+                            .setSmallIcon(R.drawable.vd_noti_persistent)
+                            .build()
+                        notificationManager.notify(55, notification)
+                    } else {
+                        notificationManager.cancel(55)
+                    }
+                }
                 true
             }
         }

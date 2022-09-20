@@ -228,7 +228,10 @@
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalització</string>
     <string name="pref_themes">Temes</string>
     <string name="pref_show_albums">Mostra els noms dels àlbums</string>
+    <string name="pref_search_in_source_desc">Per a les aplicacions compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Llistes</string>
+    <string name="pref_regex_edits">Edicions de patró</string>
+    <string name="pref_blocked_metadata">Metadades bloquejades</string>
     <string name="pref_lastfm_disable">No facis scrobble a lastFM</string>
     <string name="pref_translate">Tradueix l\'aplicació</string>
     <string name="pref_translate_credits">Agraïments de traducció</string>
@@ -248,12 +251,15 @@
     <string name="no_player">No hi ha cap reproductor de música instal·lat</string>
     <string name="not_running">⚠ El sistema ha tancat l\'scrobbler</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Raó del tancament: %s</string>
+    <string name="not_running_fix_action">Arregla-ho</string>
     <string name="login_submit">Verifica</string>
+    <string name="scrobble">Scrobble</string>
     <string name="acr_key">Clau d\'accés</string>
     <string name="acr_secret">Secreta</string>
     <string name="add_acr_key">Afegeix una clau d\'ACRCloud</string>
     <string name="remove_acr_key">Elimina la clau d\'ACRCloud</string>
     <string name="add">Afegeix</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>
     <string name="submitting_loves" formatted="true">S\'estan enviant els preferits, %1$d restants</string>
     <string name="graph">Gràfic de línies</string>
     <string name="fix_it_action" comment="(To open an app)">Obre</string>

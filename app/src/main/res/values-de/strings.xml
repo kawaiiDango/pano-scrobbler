@@ -110,9 +110,20 @@
     <string name="grid_size">Rastergröße ändern</string>
     <string name="pinch_to_zoom">Zum Zoomen auf- und zuziehen</string>
     <string name="more_info">Weitere Infos</string>
+    <string name="rank_change" comment="%1= delta change">Rangänderung: %s</string>
+    <string name="rank_change_no_change">Keine Änderung</string>
+    <string name="rank_change_new">Nicht gescrobbelt innerhalb des vorherigen Zeitraums</string>
     <string name="search">Suchen</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Ganzen Verlauf leeren</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Diesen Eintrag aus dem Verlauf entfernen?</string>
     <string name="library" comment="search within the library">Bibliothek</string>
+    <string name="global" comment="search globally across lastfm">Global</string>
+    <string name="reindex">Schnell indexieren</string>
+    <string name="full_index">Gesamter Index</string>
     <string name="take_long_time">Dies kann einige Zeit in Anspruch nehmen</string>
+    <string name="full_index_desc">Verwenden Sie dies nur, wenn Sie Scrobbles auf der Website bearbeitet oder gelöscht haben.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Durchsucht die wichtigsten %1$s Artikel in jeder Kategorie.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Zuletzt indexiert am %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profilbild</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Optionen für dieses Item</string>
@@ -140,12 +151,14 @@
     <string name="grant_notification_access">Zugriff auf die Benachrichtigungen gewähren</string>
     <string name="grant_notification_access_desc">Benötigt, um Musik-Metadaten abzurufen. Keine Nicht-Musik-Benachrichtigungen werden gelesen</string>
     <string name="send_notifications">Benachrichtigungen zulassen</string>
+    <string name="notification_channel_blocked">Dafür müssen Benachrichtigungen aktiviert sein</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Überprüfen Sie Scrobble-Status und -Statistiken
 - Favorisieren oder blocken direkt über die Benachrichtigung
 - Benachrichtigungen bei Fehler des Scrobbeln und mögliche Lösungsvorschläge
 - Wöchentliche Top-Scrobbels
 - Und mehr
 - Benachrichtigungen sind stumm\"\""</string>
+    <string name="will_not_scrobble">Wenn Sie diesen Schritt überspringen, wird das Scrobbling deaktiviert</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM und Listenbrainz können später in den Einstellungen authentifiziert werden</string>
     <string name="swap" comment="(Swap title and artist)">Tauschen</string>
     <string name="rate_msg">Gefällt Ihnen diese App?</string>
@@ -171,6 +184,7 @@
     <string name="saved_as_pending">Gespeichert als ausstehender Scrobble</string>
     <string name="sort">Sortieren</string>
     <string name="past_scrobbles">Vorherige Scrobbles</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Zeitsprung</string>
     <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$ss</string>
     <string name="my_scrobbles">Meine Scrobbles</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$ss scrobbles</string>
@@ -183,10 +197,12 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Aus %1$s</string>
     <string name="not_found" comment="Shown in search">Nicht gefunden</string>
     <string name="share_this_chart">Diagramm mit anderen teilen</string>
+    <string name="lastfm_reports">LastFM Berichte</string>
     <string name="weekly">Wöchentlich</string>
     <string name="weeks">Wochen</string>
     <string name="monthly">Monatlich</string>
     <string name="months">Monate</string>
+    <string name="years">Jahre</string>
     <string name="charts_overall">Gesamtübersicht</string>
     <string name="charts_no_data">Keine Daten in diesem Zeitraum</string>
     <string name="charts_custom" comment="Custom date range, but in short">Benutzerdefiniert</string>
@@ -198,6 +214,7 @@
     <string name="random_not_found">Kein Titel gefunden</string>
     <string name="loved_track">Favorisierter Titel</string>
     <string name="randomize">Zufällig</string>
+    <string name="random_text">Zufällig</string>
     <string name="graph_daily">Tägliche Scrobble-Anzahl</string>
     <string name="graph_weekly">Wöchentliche Scrobble-Anzahl</string>
     <string name="graph_monthly">Monatliche Scrobble-Anzahl</string>
@@ -223,6 +240,7 @@
     <string name="appwidget_show">Zeigen</string>
     <string name="light">Hell</string>
     <string name="dark">Dunkel</string>
+    <string name="system_colors">Systemfarben</string>
     <string name="appwidget_alpha">Hintergrundtransparenz</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget wird alle %1$d Minuten aktualisiert</string>
     <string name="primary_color">Hauptfarbe</string>
@@ -232,6 +250,7 @@
     <string name="edit_name" comment="name for regex pattern">Friendly name (optional)</string>
     <string name="edit_regex">Regex-Muster</string>
     <string name="edit_regex_replacement">Regex-Ersatz</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Felder</string>
     <string name="edit_replace">Ersetzen</string>
     <string name="edit_first" comment="First occurrence of a pattern">Erster</string>
     <string name="edit_all" comment="All occurrences of a pattern">Alle</string>
@@ -247,7 +266,16 @@
     <string name="text" comment="text to test regex rules with">Text</string>
     <string name="edit_regex_warning">⚠ Vergewissern Sie sich, dass Sie <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> vor der Verwendung verstehen, oder verwenden Sie eine der <b>Voreinstellungen</b>. Regex-Matches werden von oben nach unten versucht</string>
     <string name="blocked_metadata_info">ℹ️ Beim Einfügen mehrerer Felder wird der UND Operator zwischen ihnen angewendet</string>
+    <string name="blocked_metadata_noti">Tippen zum Blockieren und Überspringen</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Player-Aktionen</string>
+    <string name="skip" comment="skip to next track">Überspringen</string>
+    <string name="mute">Stummschalten</string>
     <string name="block">Blockieren</string>
+    <string name="hidden_tags">Versteckte Tags</string>
+    <string name="pin">Anpinnen</string>
+    <string name="unpin">Loslösen</string>
+    <string name="pin_limit_reached" formatted="true">Anpinnlimit erreicht (%1$d)</string>
+    <string name="pin_help">Gepinnte Elemente lange halten, um sie neu zu ordnen</string>
     <string name="use_channel" comment="(Use youtube channel name)">Kanalnamen verwenden</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Möchten Sie die Patternbearbeitungsregel %1$s aktivieren?</string>
     <string name="show_persistent_noti">Dauerhafte Benachrichtigung anzeigen</string>
@@ -255,6 +283,7 @@
     <string name="persistent_noti_desc">Lange drücken, um dies zu verstecken</string>
     <string name="scrobbler_off">Scrobbler deaktiviert</string>
     <string name="scrobbler_on">Scrobbler aktiv</string>
+    <string name="enable" comment="To enable the scrobbler">Aktivieren</string>
     <string name="pref_master">Musik scrobbeln</string>
     <string name="pref_master_qs_hint">Kann auch von den Schnelleinstellungen umgeschaltet werden</string>
     <string name="pref_noti_q">Wenn das Symbol nicht angezeigt wird, können Sie die Benachrichtigung höherstufen</string>
@@ -314,6 +343,7 @@
     <string name="pref_translate_credits">Danksagung an die Übersetzer</string>
     <string name="pref_oss_credits">Open-Source-Credits</string>
     <string name="pref_check_updates">Nach Updates suchen</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Aktualisierung verfügbar: %1$s</string>
     <string name="download">Download</string>
     <string name="changelog">Changelog</string>
     <string name="import_hey_wtf">Es handelt sich hierbei wahrscheinlich nicht um eine Pano Scrobbler Exportdatei</string>
@@ -338,6 +368,7 @@
     <string name="no_browser">Kein Browser installiert</string>
     <string name="no_player">Kein Musikplayer installiert</string>
     <string name="not_running">⚠ Der Scrobbler wurde von deinem System gestoppt</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Vom System angegebener Abstürzgrund: %s</string>
     <string name="not_running_fix_action">Reparieren</string>
     <string name="login_submit">Bestätigen</string>
     <string name="scrobble">Scrobble</string>
@@ -365,6 +396,7 @@
     <string name="fix_it_battery_title">Batterie-Optimierung ausschalten</string>
     <string name="fix_it_action" comment="(To open an app)">Öffnen</string>
     <string name="delete_account">Dein Konto Löschen</string>
+    <string name="delete_account_custom_servers">Für benutzerdefinierte Server lesen Sie bitte die entsprechenden Dokumentationen.</string>
     <!--  pro  -->
     <string name="get_pro">Diese App unterstützen</string>
     <string name="help">Hilfe</string>
@@ -382,5 +414,7 @@ Ihre Käufe werden von Google Play verwaltet. Sie sind mit einem Google Play-Kon
 • Melden Sie sich mit einem Konto an, das den Kauf besitzt.
 • Installieren Sie diese App direkt von der Google Play-Webseite.
 "</string>
+    <string name="billing_block">Blockieren von Künstlern/Titeln und automatisches Überspringen oder Stummschalten</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Bis zu %1$d Freunde anheften und neu anordnen</string>
     <string name="billing_sharing">Entfernen Sie den App-Namen beim Teilen</string>
 </resources>

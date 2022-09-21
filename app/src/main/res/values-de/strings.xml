@@ -98,6 +98,7 @@
     <string name="offline">Offline. Angezeigte Daten sind nicht aktuell</string>
     <string name="unavailable_offline">Nicht verfügbar im Offline-Modus</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Dienste</string>
+    <string name="others">Andere</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Ich habe\n%1$s %2$s gehört</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s hörte\n%1$s %2$s an</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Meine %1$s %2$s:\n%3$s</string>
@@ -107,6 +108,7 @@
     <string name="share">Teilen</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legende</string>
     <string name="grid_size">Rastergröße ändern</string>
+    <string name="pinch_to_zoom">Zum Zoomen auf- und zuziehen</string>
     <string name="more_info">Weitere Infos</string>
     <string name="search">Suchen</string>
     <string name="library" comment="search within the library">Bibliothek</string>

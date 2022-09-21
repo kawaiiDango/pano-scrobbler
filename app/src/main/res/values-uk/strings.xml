@@ -157,6 +157,7 @@
     <string name="grant_notification_access">Надайте доступ до сповіщень</string>
     <string name="grant_notification_access_desc">Потрібний для отримання метаданих. Немузичні сповіщення не зчитуються</string>
     <string name="send_notifications">Дозволити сповіщення</string>
+    <string name="notification_channel_blocked">Це вимагає ввімкнення сповіщень</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Перевірте статус скроблінгу і підрахунки
 - Уподобайка чи блок безпосередньо від сповіщення
 - Отримуйте сповіщення про помилки скроблінгу та дії, які ви можете зробити

@@ -25,6 +25,7 @@ import java.util.logging.Level
 
 
 class App : Application() {
+    private var connectivityCheckInited = false
 
     override fun onCreate() {
         if (BuildConfig.DEBUG) {
@@ -114,34 +115,40 @@ class App : Application() {
         )
     }
 
+    // will be called multiple times
+    fun initConnectivityCheck() {
+        if (connectivityCheckInited) return
+
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val nr = NetworkRequest.Builder().apply {
+            addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        }.build()
+
+        cm.registerNetworkCallback(nr, object : ConnectivityManager.NetworkCallback() {
+            private val availableNetworks = mutableSetOf<Network>()
+
+            override fun onAvailable(network: Network) {
+                availableNetworks += network
+                updateOnlineStatus()
+            }
+
+            override fun onLost(network: Network) {
+                availableNetworks -= network
+                updateOnlineStatus()
+            }
+
+            private fun updateOnlineStatus() {
+                Stuff.isOnline = availableNetworks.isNotEmpty()
+            }
+        })
+
+        connectivityCheckInited = true
+    }
+
     @SuppressLint("StaticFieldLeak")
     companion object {
-        // will be called multiple times
-        fun initConnectivityCheck() {
-            if (connectivityCheckInited) return
-
-            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val nr = NetworkRequest.Builder().apply {
-                addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-            }.build()
-
-            cm.registerNetworkCallback(nr, object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    Stuff.isOnline = true
-                }
-
-                override fun onLost(network: Network) {
-                    Stuff.isOnline = false
-                }
-            })
-
-            connectivityCheckInited = true
-        }
-
-        private var connectivityCheckInited = false
-
         // not a leak
         lateinit var context: Context
     }

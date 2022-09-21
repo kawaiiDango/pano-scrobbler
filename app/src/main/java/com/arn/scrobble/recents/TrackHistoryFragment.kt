@@ -12,7 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.*
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.MainNotifierViewModel
+import com.arn.scrobble.NLService
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.equalsExt
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
 import com.arn.scrobble.db.PanoDb
@@ -82,7 +86,8 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.username = activityViewModel.peekUser().name
+        if (!activityViewModel.userIsSelf)
+            viewModel.username = activityViewModel.peekUser().name
 
         viewModel.tracksReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe

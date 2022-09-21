@@ -335,7 +335,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val lockMode = binding.drawerLayout.getDrawerLockMode(GravityCompat.START)
         backArrowShown = lockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED
         toggle.onDrawerSlide(binding.drawerLayout, if (backArrowShown) 1f else 0f)
-        App.initConnectivityCheck()
+        (application as App).initConnectivityCheck()
 
         Stuff.timeIt("onPostCreate")
     }

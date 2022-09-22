@@ -82,6 +82,7 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось обнаружить заголовок</string>
     <string name="network_error">Ошибка сети</string>
     <string name="disable_tls_verify">Игнорировать ошибки TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Скроббл проигнорирован</string>
     <string name="scrobble_ignored_save_edit">Lastfm проигнорировал правку, вероятно, потому, что скроббл слишком старый. Хотели бы вы вместо этого сохранить это изменение для будущих скробблов?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Обязательные поля не заполнены</string>
     <string name="artist">Исполнитель</string>
@@ -121,6 +122,7 @@
     <string name="offline">Не в сети. Показанные данные не актуальны</string>
     <string name="unavailable_offline">Недоступно в офлайн-режиме</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервисы</string>
+    <string name="others">Другие</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слушал\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слушал\n%1$s %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Мои %2$s за %1$s:\n%3$s</string>
@@ -128,6 +130,7 @@
     <string name="share_sig">(через Pano Scrobbler)</string>
     <string name="share_this_song">Поделиться этим треком</string>
     <string name="share">Поделиться</string>
+    <string name="grid_size">Изменить размер сетки</string>
     <string name="more_info">Больше информации</string>
     <string name="rank_change_no_change">Без изменений</string>
     <string name="search">Поиск</string>

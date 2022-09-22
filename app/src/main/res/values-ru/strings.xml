@@ -284,6 +284,7 @@
     <string name="persistent_noti_desc">Нажмите и удерживайте, чтобы скрыть это</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
+    <string name="enable" comment="To enable the scrobbler">Включить</string>
     <string name="pref_master">Скробблинг музыки</string>
     <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек</string>
     <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
@@ -317,6 +318,7 @@
     <string name="pref_pixel_np_nope">Доступно только на устройствах Pixel</string>
     <string name="pref_locale">Языки</string>
     <string name="pref_change_locale">Изменить язык</string>
+    <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>
     <string name="pref_misc">Разное</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Импорт и экспорт</string>
@@ -339,7 +341,11 @@
     <string name="pref_lastfm_disable">Не скробблить в LastFM</string>
     <string name="pref_lastfm_disable_desc">Для работы остальной части пользовательского интерфейса вам по-прежнему нужно войти в lastFm</string>
     <string name="pref_translate">Перевести это приложение</string>
+    <string name="pref_translate_credits">Авторы переводов</string>
+    <string name="pref_check_updates">Проверить обновления</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Доступно обновление: %1$s</string>
     <string name="download">Загрузить</string>
+    <string name="changelog">Список изменений</string>
     <string name="import_hey_wtf">Вероятно, это не файл экспорта Pano Scrobbler</string>
     <string name="export_failed">Экспорт не удался</string>
     <string name="imported">Импортирован</string>

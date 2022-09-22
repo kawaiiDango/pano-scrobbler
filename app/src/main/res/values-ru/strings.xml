@@ -78,6 +78,7 @@
     <string name="settings">Настроить</string>
     <string name="bug_report">Сообщить об ошибке</string>
     <string name="album_art">Обложка альбома</string>
+    <string name="artist_image">Изображение исполнителя</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось обнаружить заголовок</string>
     <string name="network_error">Ошибка сети</string>
     <string name="disable_tls_verify">Игнорировать ошибки TLS</string>
@@ -130,6 +131,7 @@
     <string name="more_info">Больше информации</string>
     <string name="rank_change_no_change">Без изменений</string>
     <string name="search">Поиск</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Очистить всю историю</string>
     <string name="library" comment="search within the library">Библиотека</string>
     <string name="global" comment="search globally across lastfm">Глобальное</string>
     <string name="reindex">Быстрый индекс</string>

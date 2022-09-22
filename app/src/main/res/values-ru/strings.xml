@@ -135,10 +135,13 @@
     <string name="rank_change_no_change">Без изменений</string>
     <string name="search">Поиск</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Очистить всю историю</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Убрать данный элемент из истории?</string>
     <string name="library" comment="search within the library">Библиотека</string>
     <string name="global" comment="search globally across lastfm">Глобальное</string>
     <string name="reindex">Быстрый индекс</string>
+    <string name="full_index">Полный индекс</string>
     <string name="take_long_time">Это может занять некоторое время</string>
+    <string name="full_index_desc">Используйте это только если вы изменили или удалили скробблы с сайта.</string>
     <string name="profile">Профиль</string>
     <string name="profile_pic">Изображение профиля</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Опции для этого элемента</string>
@@ -166,6 +169,8 @@
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
     <string name="send_notifications">Разрешить уведомления</string>
+    <string name="notification_channel_blocked">Это требует включенные уведомления</string>
+    <string name="will_not_scrobble">Пропуск этого шага отключит скробблинг</string>
     <string name="authenticate_with_lastfm_desc">Вы можете войти в LibreFM, GNUFM и Listenbrainz позже в настройках</string>
     <string name="swap" comment="(Swap title and artist)">Свап</string>
     <string name="rate_msg">Нравится это приложение?</string>
@@ -203,6 +208,7 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Из %1$s</string>
     <string name="not_found" comment="Shown in search">Не найдено</string>
     <string name="share_this_chart">Поеделиться этим чартом</string>
+    <string name="lastfm_reports">LastFM Отчеты</string>
     <string name="weekly">Еженедельно</string>
     <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
@@ -280,6 +286,7 @@
     <string name="pin">Закрепить</string>
     <string name="unpin">Открепить</string>
     <string name="pin_limit_reached" formatted="true">Достигнуто ограничение по закрепам (%1$d)</string>
+    <string name="pin_help">Долгое нажатие на закрепленные элементы для их упорядочения</string>
     <string name="use_channel" comment="(Use youtube channel name)">Использовать название канала</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Хотите включить правило редактирования шаблона: %1$s?</string>
     <string name="show_persistent_noti">Показывать постоянное уведомление</string>
@@ -345,6 +352,7 @@
     <string name="pref_lastfm_disable_desc">Для работы остальной части пользовательского интерфейса вам по-прежнему нужно войти в lastFm</string>
     <string name="pref_translate">Перевести это приложение</string>
     <string name="pref_translate_credits">Авторы переводов</string>
+    <string name="pref_oss_credits">Лицензия открытого ПО</string>
     <string name="pref_check_updates">Проверить обновления</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Доступно обновление: %1$s</string>
     <string name="download">Загрузить</string>
@@ -371,6 +379,7 @@
     <string name="no_browser">Браузер не установлен</string>
     <string name="no_player">Музыкальный плеер не установлен</string>
     <string name="not_running">⚠ Скробблер был остановлен вашей системой</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Причина закрытия указанная системой: %s</string>
     <string name="not_running_fix_action">Исправить это</string>
     <string name="login_submit">Проверить</string>
     <string name="scrobble">Скробблинг</string>

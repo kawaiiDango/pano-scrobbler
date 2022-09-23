@@ -36,12 +36,25 @@
         <item quantity="one">%1$s cançó</item>
         <item quantity="other">%1$s cançons</item>
     </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d coincidència</item>
+        <item quantity="other">%1$d coincidències</item>
+    </plurals>
     <plurals name="num_simple_edits">
         <item quantity="one">%1$s edició</item>
         <item quantity="other">%1$s edicions</item>
     </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s edició del patró</item>
+        <item quantity="other">%1$s edicions del patró</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s metadada bloquejada</item>
+        <item quantity="other">%1$s metadades bloquejades</item>
+    </plurals>
     <string name="yes">Sí</string>
     <string name="no">No</string>
+    <string name="reset">Restableix</string>
     <string name="settings">Configuració</string>
     <string name="bug_report">Informa d\'un error</string>
     <string name="album_art">Caràtula de l\'àlbum</string>
@@ -49,6 +62,9 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">No s\'ha pogut analitzar el títol</string>
     <string name="network_error">Error de xarxa</string>
     <string name="disable_tls_verify">Ignora els errors de TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorat</string>
+    <string name="scrobble_ignored_save_edit">Last.fm ha ignorat l\'edició probablement perquè l\'scrobble és massa antic. Vols desar l\'edició per a futurs scrobbles?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Hi ha camps obligatoris buits</string>
     <string name="artist">Artista</string>
     <string name="artists">Artistes</string>
     <string name="top_artists" comment="Top artists the user has listened to">Artistes més escoltats</string>
@@ -81,8 +97,14 @@
     <string name="music_players">Reproductors de música</string>
     <string name="video_players">Aplicacions de vídeo en temps real</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altres aplicacions</string>
+    <string name="choose_apps">Tria les aplicacions per a fer scrobbling</string>
+    <string name="offline">Sense connexió. Les informació no està actualitzada</string>
+    <string name="unavailable_offline">No disponible sense connexió</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serveis</string>
     <string name="others">Altres</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava escoltant\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escoltant\n%1$s %2$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Top %1$s %2$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Comparteix la cançó</string>
     <string name="share">Comparteix</string>
@@ -90,7 +112,9 @@
     <string name="grid_size">Canvia la quadrícula</string>
     <string name="pinch_to_zoom">Pessiga per a ampliar</string>
     <string name="more_info">Més informació</string>
+    <string name="rank_change" comment="%1= delta change">Canvi de posició: %s</string>
     <string name="rank_change_no_change">Sense canvis</string>
+    <string name="rank_change_new">No s\'ha fet scribbling en el període anterior</string>
     <string name="search">Cerca</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Neteja l\'historial</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Vols eliminar aquest element de l\'historial?</string>
@@ -98,13 +122,15 @@
     <string name="global" comment="search globally across lastfm">Global</string>
     <string name="reindex">Índex ràpid</string>
     <string name="full_index">Índex complet</string>
+    <string name="take_long_time">Açò pot tardar molt</string>
+    <string name="full_index_desc">Utilitza-ho només si has editat o eliminar scrobbles des del lloc web.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s detectat</string>
     <string name="new_player_prompt">Vols fer scrobble en aquesta aplicació?</string>
-    <string name="no_track_url">Aquesta cançó no té una pàgina en lastFM</string>
+    <string name="no_track_url">Aquesta cançó no té una pàgina en Last.fm</string>
     <string name="no_scrobbles">Encara no hi ha cançons…</string>
-    <string name="no_friends">Encara no tens amics de lastFM…</string>
+    <string name="no_friends">Encara no tens amics de Last.fm…</string>
     <string name="channel_err">Errors d\'scrobble</string>
     <string name="new_app">Aplicació nova</string>
     <string name="no_apps_enabled">No hi ha cap aplicació activada</string>
@@ -148,7 +174,8 @@
     <string name="user_loved" formatted="true" comment="%1= username">A %1$s li agrada</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles fins al %1$s</string>
     <string name="not_found" comment="Shown in search">No s\'ha trobat</string>
-    <string name="lastfm_reports">Informes de LastFM</string>
+    <string name="share_this_chart">Comparteix la llista</string>
+    <string name="lastfm_reports">Informes de Last.fm</string>
     <string name="weekly">Setmanal</string>
     <string name="weeks">Setmanes</string>
     <string name="monthly">Mensual</string>
@@ -156,6 +183,8 @@
     <string name="years">Anys</string>
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">No hi ha dades d\'aquest període</string>
+    <string name="charts_custom" comment="Custom date range, but in short">Personalitzat</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continu</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Basat en %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">No hi ha prou dades</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
@@ -173,9 +202,14 @@
     <string name="tag" comment="last.fm tag">Etiqueta</string>
     <string name="taggers" comment="(number of) people who have tagged">Etiquetadors</string>
     <string name="taggings" comment="(total count of) a particular tag">Etiquetatges</string>
+    <string name="digest_weekly">Top cançons de la setmana</string>
+    <string name="digest_monthly">Top cançons del mes</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Top %1$s de cançons</string>
     <string name="my_tags">Les meues etiquetes</string>
     <string name="close">Tanca</string>
     <string name="user_tags_hint">Etiqueta nova</string>
+    <string name="user_tags_empty">No has afegit cap etiqueta</string>
+    <string name="info_long_press_hint">Mantín una cançó per a obrir açò</string>
     <string name="appwidget_loading">S\'està carregant…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Període</string>
     <string name="appwidget_theme">Tema</string>
@@ -191,10 +225,16 @@
     <string name="tint_background">Tint del fons</string>
     <string name="random_theme">Aleatori en cada obertura</string>
     <string name="edit_name" comment="name for regex pattern">Nom amigable (opcional)</string>
+    <string name="edit_regex">Patró de regex</string>
+    <string name="edit_regex_replacement">Reemplaçament de regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Camps</string>
     <string name="edit_replace">Substitueix</string>
     <string name="edit_regex_test">Prova</string>
+    <string name="edit_presets">Predefinits</string>
+    <string name="edit_presets_available">Predefinits disponibles</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Botó de reordenació</string>
     <string name="text" comment="text to test regex rules with">Text</string>
+    <string name="blocked_metadata_noti">Toca per a saltar i bloquejar</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Accions del reproductor</string>
     <string name="skip" comment="skip to next track">Salta</string>
     <string name="mute">Silencia</string>
@@ -216,12 +256,16 @@
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentatge</string>
     <string name="pref_logout">Tanca la sessió</string>
     <string name="pref_confirm_logout">SEGUR QUE VOLS TANCAR LA SESSIÓ? Toca una altra vegada</string>
-    <string name="pref_login">Inicia essió</string>
+    <string name="pref_login">Inicia sessió</string>
     <string name="pref_about" comment="Info about this app">Quant a</string>
     <string name="pref_privacy_policy">Política de privacitat</string>
     <string name="pref_search_title">Aplicació de cerca de cançons</string>
+    <string name="pref_scrobble_only">(Només scrobbles)</string>
     <string name="pref_user_label" comment="(Like username)">Usuari</string>
     <string name="api_url" comment="For Listenbrainz">URL de l\'API</string>
+    <string name="pref_now_playing">Envia com a reproduint ara</string>
+    <string name="pref_fetch_aa">Obtín de Last.fm els artistes dels àlbums</string>
+    <string name="pref_fetch_aa_desc">Per als reproductors que no proporcionen aquestes dades. Les dades obtingudes poden diferir de les teues etiquetes. És possible que Last.fm no tinga les dades d\'algunes cançons.</string>
     <string name="pref_locale">Llengües</string>
     <string name="pref_change_locale">Canvia la llengua</string>
     <string name="pref_imexport">Importació i exportació</string>
@@ -234,7 +278,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Llistes</string>
     <string name="pref_regex_edits">Edicions de patró</string>
     <string name="pref_blocked_metadata">Metadades bloquejades</string>
-    <string name="pref_lastfm_disable">No facis scrobble a lastFM</string>
+    <string name="pref_lastfm_disable">No faces scrobble a Last.fm</string>
+    <string name="pref_lastfm_disable_desc">Necessites iniciar la sessió a Last.fm perquè funcione la resta de la interfície</string>
     <string name="pref_translate">Tradueix l\'aplicació</string>
     <string name="pref_translate_credits">Agraïments de traducció</string>
     <string name="pref_oss_credits">Crèdits del codi obert</string>
@@ -247,6 +292,7 @@
     <string name="import_settings">Importa la configuració</string>
     <string name="current_track">Cançó actual:</string>
     <string name="copied">S\'ha copiat!</string>
+    <string name="custom_listenbrainz">Servidor de Listenbrainz personalitzat</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Comprova %1$s</string>
     <string name="artist_extra">Cançons, àlbums i similars</string>
     <string name="no_browser">No hi ha cap navegador instal·lat</string>
@@ -266,9 +312,11 @@
     <string name="graph">Gràfic de línies</string>
     <string name="fix_it_action" comment="(To open an app)">Obre</string>
     <string name="delete_account">Elimina el compte</string>
+    <string name="delete_account_custom_servers">Per als servidors personalitzats, reviseu la seua documentació.</string>
     <!--  pro  -->
     <string name="get_pro">Dona suport a l\'aplicació</string>
     <string name="help">Ajuda</string>
     <string name="thank_you">Gràcies!</string>
+    <string name="billing_troubleshoot_title">Recupera la compra</string>
     <string name="billing_sharing">Elimina el nom de l\'aplicació en compartir</string>
 </resources>

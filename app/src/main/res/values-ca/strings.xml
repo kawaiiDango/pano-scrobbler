@@ -116,6 +116,7 @@
     <string name="unlove">Elimina dels preferits</string>
     <string name="pending_scrobbles">Scrobbles pendents</string>
     <string name="pending_scrobble">Scrobble pendent</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s avui</string>
     <string name="friends">Amics</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles des del %2$s</string>
     <string name="allow_background">Permet fer scrobbling en segon pla</string>
@@ -136,6 +137,7 @@
     <string name="uploading">S\'està pujant…</string>
     <string name="sort">Ordena</string>
     <string name="past_scrobbles">Scrobbles anteriors</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Salt en el temps</string>
     <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s</string>
     <string name="my_scrobbles">Els meus scrobbles</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de: %1$s</string>
@@ -204,7 +206,7 @@
     <string name="pref_master">Fes scrobble</string>
     <string name="pref_noti">Notificacions</string>
     <string name="pref_noti_categories">Categories de notificació</string>
-    <string name="pref_scrobble_noti">Notificacions d\'scrabble</string>
+    <string name="pref_scrobble_noti">Notificacions d\'scrobbles</string>
     <string name="pref_lockscreen_noti">Notificacions de la pantalla de bloqueig</string>
     <string name="pref_offline_info">ℹ️ Es desaran els scrobbles i els preferits fora de línia i s\'enviaran més tard.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Fes scrobble des de</string>

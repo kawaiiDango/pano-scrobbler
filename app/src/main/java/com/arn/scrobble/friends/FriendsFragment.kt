@@ -31,8 +31,6 @@ import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils.dp
-import com.arn.scrobble.ui.UiUtils.isTv
-import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.toast
@@ -234,7 +232,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 adapter.notifyItemChanged(idxChanged, 0)
             }
 
-            if (!context!!.isTv && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.sectionedList.size > 1 &&
+            if (!Stuff.isTv && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.sectionedList.size > 1 &&
                 viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size
             ) {
                 binding.friendsSort.show()
@@ -382,7 +380,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             }
 
             actionsBinding.friendsProfile.setOnClickListener {
-                context!!.openInBrowser(userLink)
+                Stuff.openInBrowser(userLink)
             }
             actionsBinding.friendsScrobbles.setOnClickListener {
                 (activity as MainActivity).enableGestures()

@@ -27,8 +27,6 @@ import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MigratePrefs
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.isTv
-import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.arn.scrobble.ui.UiUtils.postRequestFocus
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -145,7 +143,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
             if (fragment.arguments?.getBoolean(Stuff.ARG_NOPASS) == true) {
                 binding.testingPass.visibility = View.GONE
             } else {
-                if (context!!.isTv)
+                if (Stuff.isTv)
                     binding.testingPass.isFocusable = false
                 binding.testingPass.showSoftInputOnFocus = false
 
@@ -177,7 +175,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
 
                 binding.testingPass.setOnTouchListener { v, event ->
                     if (v != null) {
-                        if (context!!.isTv)
+                        if (Stuff.isTv)
                             v.isFocusable = true
                         v.onTouchEvent(event)
                         v.alpha = 0.2f
@@ -213,7 +211,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
         override fun createStepContentLayout(): View {
             val binding = ButtonStepperBinding.inflate(LayoutInflater.from(context))
             binding.openButton.setOnClickListener {
-                val intent = if (context!!.isTv && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                val intent = if (Stuff.isTv && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                     Intent().setComponent(
                         ComponentName(
                             "com.android.tv.settings",
@@ -231,7 +229,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                     !Stuff.isWindows11 // workaround until MS fixes it
                 ) {
                     context.startActivity(intent)
-                    if (context!!.isTv)
+                    if (Stuff.isTv)
                         context!!.toast(
                             context.getString(
                                 R.string.check_nls_tv,
@@ -294,7 +292,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
             val binding = ButtonStepperBinding.inflate(LayoutInflater.from(context))
 
             binding.openButton.setOnClickListener {
-                context!!.openInBrowser(
+                Stuff.openInBrowser(
                     "https://dontkillmyapp.com/" + Build.MANUFACTURER.lowercase()
                 )
                 clicked = true

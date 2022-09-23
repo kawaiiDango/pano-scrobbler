@@ -42,9 +42,7 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.*
 import com.arn.scrobble.ui.UiUtils.adjustHeight
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
-import com.arn.scrobble.ui.UiUtils.isTv
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
-import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.arn.scrobble.ui.UiUtils.setArrowColors
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.showWithIcons
@@ -169,7 +167,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         activity ?: return
         if (isShowingLoves) {
             coordinatorBinding.heroCalendar.isEnabled = false
-        } else if (!context!!.isTv) {
+        } else if (!Stuff.isTv) {
             coordinatorBinding.heroCalendar.isEnabled = true
         }
         viewModel.reemitColors()
@@ -243,7 +241,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 }
                 adapter.populate(oldList)
             }
-            if (viewModel.page != it.page && context!!.isTv)
+            if (viewModel.page != it.page && Stuff.isTv)
                 loadRecents(1, true)
             loadMoreListener.currentPage = it.page
 
@@ -340,7 +338,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             coordinatorBinding.heroPlay.setOnLongClickListener {
                 val track = coordinatorBinding.heroImg.tag
                 if (track is Track) {
-                    context!!.openInBrowser(
+                    Stuff.openInBrowser(
                         "https://en.touhouwiki.net/index.php?search=" +
                                 URLEncoder.encode("${track.artist} - ${track.name}", "UTF-8")
                     )
@@ -357,7 +355,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     viewModel.pkgMap[0]
                 else
                     null
-                UiUtils.launchSearchIntent(context!!, track, pkgName)
+                Stuff.launchSearchIntent(track, pkgName)
             }
         }
 
@@ -427,7 +425,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             synchronized(viewModel.tracks) {
                 adapter.populate(viewModel.tracks)
             }
-        if (!context!!.isTv) {
+        if (!Stuff.isTv) {
 
             if (username != null) {
                 coordinatorBinding.heroInfo.visibility = View.GONE

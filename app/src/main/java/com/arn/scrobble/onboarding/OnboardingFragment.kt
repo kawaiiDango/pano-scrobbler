@@ -82,7 +82,7 @@ class OnboardingFragment : Fragment(), StepperFormListener {
         onboardingSteps.addStep { LoginStep() }
         onboardingSteps.addStep { NotificationListenerStep() }
 
-        if (Stuff.isDkmaNeeded(context!!))
+        if (Stuff.isDkmaNeeded())
             onboardingSteps.addStep { DkmaStep() }
 
         onboardingSteps.addStep { ChooseAppsStep() }

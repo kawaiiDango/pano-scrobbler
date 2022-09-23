@@ -13,7 +13,6 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentAppListBinding
-import com.arn.scrobble.ui.UiUtils.isTv
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
@@ -63,14 +62,14 @@ class AppListFragment : Fragment() {
         if (!binding.appList.isInTouchMode)
             binding.appList.requestFocus()
 
-        if (context!!.isTv) {
+        if (Stuff.isTv) {
             context!!.toast(R.string.press_back)
         }
 
         binding.appList.layoutManager = LinearLayoutManager(context)
         val adapter = AppListAdapter(activity!!, viewModel)
         binding.appList.adapter = adapter
-        if (!context!!.isTv) {
+        if (!Stuff.isTv) {
             binding.appList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrollStateChanged(view: RecyclerView, scrollState: Int) {
@@ -107,7 +106,7 @@ class AppListFragment : Fragment() {
             mainNotifierViewModel.backButtonEnabled = !it
 
             if (!it) {
-                if (!context!!.isTv) {
+                if (!Stuff.isTv) {
                     binding.appListDone.show()
                 }
 

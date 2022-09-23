@@ -4,10 +4,10 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.UiUtils.isTv
 
 class VHPendingLove(
     private val binding: ListItemRecentsBinding,
@@ -18,7 +18,7 @@ class VHPendingLove(
         binding.recentsPlaying.visibility = View.GONE
         binding.recentsImg.setImageResource(R.drawable.vd_wave_simple_filled)
         binding.recentsImgOverlay.visibility = View.VISIBLE
-        if (itemView.context.isTv)
+        if (Stuff.isTv)
             binding.root.setOnClickListener {
                 itemClickListener.call(binding.recentsMenu, bindingAdapterPosition)
             }

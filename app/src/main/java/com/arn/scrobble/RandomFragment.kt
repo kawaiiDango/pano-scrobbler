@@ -15,12 +15,15 @@ import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.ui.MusicEntryImageReq
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import de.umass.lastfm.*
+import de.umass.lastfm.Album
+import de.umass.lastfm.Artist
+import de.umass.lastfm.ImageSize
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.Track
 import io.michaelrocks.bimap.HashBiMap
 import java.text.NumberFormat
 
@@ -87,7 +90,7 @@ class RandomFragment : ChartsPeriodFragment() {
         randomViewModel.username = activityViewModel.peekUser().name
 
         binding.randomizeText.text = if (!activityViewModel.userIsSelf) {
-            getString(R.string.possession, activityViewModel.peekUser().name) + " " + getString(R.string.random_text)
+            getString(R.string.random_text) + " • " + activityViewModel.peekUser().name
         } else {
             getString(R.string.random_text)
         }
@@ -278,7 +281,7 @@ class RandomFragment : ChartsPeriodFragment() {
         arrayOf(binding.randomPlay, binding.randomPlayFiller)
             .forEach {
                 it.setOnClickListener {
-                    UiUtils.launchSearchIntent(context!!, musicEntry, null)
+                    Stuff.launchSearchIntent(musicEntry, null)
                 }
             }
         val imgUrl =

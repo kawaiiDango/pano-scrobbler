@@ -3,7 +3,12 @@ package com.arn.scrobble.charts
 import android.content.Intent
 import android.os.Bundle
 import android.text.Html
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -227,16 +232,11 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
             }
         }
 
-        var shareText = if (!activityViewModel.userIsSelf)
-            getString(
-                R.string.charts_share_username,
-                period.lowercase(),
-                topType.lowercase(),
-                list,
-                activityViewModel.peekUser().name
-            )
-        else
-            getString(R.string.charts_share, period.lowercase(), topType.lowercase(), list)
+        var shareText = if (!activityViewModel.userIsSelf) {
+            "$topType • $period • ${activityViewModel.peekUser().name}:\n\n$list"
+        } else {
+            "$topType • $period:\n\n$list"
+        }
 
         if ((activity as MainActivity).billingViewModel.proStatus.value != true)
             shareText += "\n\n" + getString(R.string.share_sig)

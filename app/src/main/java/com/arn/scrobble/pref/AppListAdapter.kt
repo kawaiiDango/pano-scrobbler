@@ -1,7 +1,7 @@
 package com.arn.scrobble.pref
 
 import android.content.Context
-import android.content.pm.ResolveInfo
+import android.content.pm.ApplicationInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemAppBinding
 import com.arn.scrobble.ui.*
@@ -44,6 +45,7 @@ class AppListAdapter(
                     false
                 )
             )
+
             SectionedVirtualList.TYPE_HEADER_DEFAULT -> VHHeader(
                 HeaderWithActionBinding.inflate(
                     inflater,
@@ -51,6 +53,7 @@ class AppListAdapter(
                     false
                 )
             )
+
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }
@@ -59,7 +62,7 @@ class AppListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is VHItem -> holder.setData(data[position] as ResolveInfo)
+            is VHItem -> holder.setData(data[position] as ApplicationInfo)
 
             is VHHeader -> holder.setData(data[position] as ExpandableHeader)
 
@@ -70,7 +73,7 @@ class AppListAdapter(
     override fun onItemClick(view: View, position: Int) {
         if (getItemViewType(position) == SectionedVirtualList.TYPE_ITEM_DEFAULT) {
             val packageName =
-                (data[position] as ResolveInfo).activityInfo.packageName
+                (data[position] as ApplicationInfo).packageName
             if (packageName in viewModel.selectedPackages)
                 viewModel.selectedPackages -= packageName
             else
@@ -100,9 +103,13 @@ class AppListAdapter(
             itemClickListener.call(itemView, bindingAdapterPosition)
         }
 
-        fun setData(resolveInfo: ResolveInfo) {
-            val packageName = resolveInfo.activityInfo.packageName
-            binding.appListName.text = resolveInfo.loadLabel(packageManager)
+        fun setData(applicationInfo: ApplicationInfo) {
+            val packageName = applicationInfo.packageName
+            binding.appListName.text =
+                if (packageName == Stuff.PACKAGE_PIXEL_NP || packageName == Stuff.PACKAGE_PIXEL_NP_R)
+                    itemView.context.getString(R.string.pixel_np)
+                else
+                    applicationInfo.loadLabel(packageManager)
             binding.appListIcon.load(PackageName(packageName)) {
                 scale(Scale.FIT)
             }

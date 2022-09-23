@@ -15,7 +15,6 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.databinding.ContentTagInfoBinding
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
-import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.arn.scrobble.ui.UiUtils.startFadeLoop
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -56,7 +55,7 @@ class TagInfoFragment : BottomSheetDialogFragment() {
         }
 
         binding.tagInfoLink.setOnClickListener {
-            context!!.openInBrowser(
+            Stuff.openInBrowser(
                 "https://www.last.fm/tag/" + URLEncoder.encode(tag, "UTF-8")
             )
         }

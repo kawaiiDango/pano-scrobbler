@@ -38,6 +38,7 @@ import coil.load
 import coil.size.Precision
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.Stuff.getScrobblerExitReasons
+import com.arn.scrobble.Stuff.isTv
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ActivityMainBinding
@@ -53,9 +54,7 @@ import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.*
 import com.arn.scrobble.ui.UiUtils.focusOnTv
-import com.arn.scrobble.ui.UiUtils.isTv
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
-import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.arn.scrobble.ui.UiUtils.popBackStackTill
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.internal.NavigationMenuItemView
@@ -380,7 +379,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             if (servicesToUrls.size == 1)
-                openInBrowser(servicesToUrls.values.first())
+                Stuff.openInBrowser(servicesToUrls.values.first())
             else {
                 val popup = PopupMenu(this, it)
                 servicesToUrls.forEach { (strRes, url) ->
@@ -393,7 +392,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
 
                 popup.setOnMenuItemClickListener { menuItem ->
-                    openInBrowser(servicesToUrls[menuItem.itemId]!!)
+                    Stuff.openInBrowser(servicesToUrls[menuItem.itemId]!!)
                     true
                 }
                 popup.show()
@@ -528,7 +527,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun showFixItSnackbarIfNeeded(): Boolean {
         val nlsEnabled = OnboardingFragment.isNotificationListenerEnabled(this)
         
-        if (nlsEnabled && !Stuff.isScrobblerRunning(this)) {
+        if (nlsEnabled && !Stuff.isScrobblerRunning()) {
             Snackbar.make(
                 binding.coordinatorMain.frame,
                 R.string.not_running,
@@ -599,7 +598,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
 
-        if (!Stuff.isScrobblerRunning(this))
+        if (!Stuff.isScrobblerRunning())
             text += "Background service isn't running\n"
         if (lastExitInfo != null)
             text += "Last exit reason: $lastExitInfo\n"

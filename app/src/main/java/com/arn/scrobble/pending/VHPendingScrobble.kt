@@ -8,7 +8,6 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.UiUtils.isTv
 
 class VHPendingScrobble(
     private val binding: ListItemRecentsBinding,
@@ -23,7 +22,7 @@ class VHPendingScrobble(
         binding.recentsImgOverlay.visibility = View.VISIBLE
         binding.recentsImgOverlay.contentDescription =
             itemView.context.getString(R.string.pending_scrobble)
-        if (itemView.context.isTv)
+        if (Stuff.isTv)
             binding.root.setOnClickListener {
                 itemClickListener.call(binding.recentsMenu, bindingAdapterPosition)
             }

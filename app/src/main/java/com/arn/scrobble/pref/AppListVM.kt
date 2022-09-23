@@ -2,7 +2,9 @@ package com.arn.scrobble.pref
 
 import android.app.Application
 import android.content.Intent
-import android.content.pm.ResolveInfo
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
+import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -32,13 +34,13 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
 
             fun addSection(
                 enum: AppListAdapter.AppListSection,
-                appList: List<ResolveInfo>,
+                appList: List<ApplicationInfo>,
                 checkedByDefault: Boolean,
                 @StringRes titleRes: Int,
                 @DrawableRes iconRes: Int
             ) {
                 val filteredList =
-                    appList.filter { it.activityInfo.packageName !in packagesAdded }.sortApps()
+                    appList.filter { it.packageName !in packagesAdded }.sortApps()
                 sectionedList.addSection(
                     SectionWithHeader(
                         enum,
@@ -55,6 +57,52 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
             var intent = Intent(MediaStore.INTENT_ACTION_MUSIC_PLAYER)
             //the newer intent category doesn't match many players including poweramp
             val musicPlayers = packageManager.queryIntentActivities(intent, 0)
+                .map { it.activityInfo.applicationInfo }
+                .toMutableList()
+
+            intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+
+            val launcherApps = packageManager.queryIntentActivities(intent, 0)
+                .map { it.activityInfo.applicationInfo }
+                .removeSpam()
+                .toMutableList()
+            val launcherPackagesSet = launcherApps.packagesSet
+
+            intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+
+            launcherApps += packageManager.queryIntentActivities(intent, 0)
+                .map { it.activityInfo.applicationInfo }
+                .removeSpam()
+                .filter { it.packageName !in launcherPackagesSet }
+
+            val videoApps = Stuff.getBrowsers(packageManager)
+                .map { it.activityInfo.applicationInfo }
+                .toMutableList()
+
+            // pixel now playing
+            var nowPlayingPackageInfo: PackageInfo? = null
+            if (Build.MANUFACTURER.lowercase() == Stuff.MANUFACTURER_GOOGLE) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                    nowPlayingPackageInfo = kotlin.runCatching {
+                        packageManager.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_R, 0)
+                    }.getOrNull()
+                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    nowPlayingPackageInfo = kotlin.runCatching {
+                        packageManager.getPackageInfo(Stuff.PACKAGE_PIXEL_NP, 0)
+                    }.getOrNull()
+            }
+
+            if (nowPlayingPackageInfo == null)
+                nowPlayingPackageInfo = kotlin.runCatching {
+                    packageManager.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_AMM, 0)
+                }.getOrNull()
+
+            val ignoreMetaPackages = Stuff.IGNORE_ARTIST_META.toSet()
+
+            musicPlayers += launcherApps.filter { it.packageName == Stuff.PACKAGE_SHAZAM }
+            nowPlayingPackageInfo?.applicationInfo?.let { musicPlayers += it }
+
+            videoApps += launcherApps.filter { it.packageName in ignoreMetaPackages }
 
             addSection(
                 AppListAdapter.AppListSection.MUSIC_PLAYERS,
@@ -63,24 +111,6 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
                 R.string.music_players,
                 R.drawable.vd_play_circle
             )
-
-            intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-
-            val launcherApps = packageManager.queryIntentActivities(intent, 0)
-                .removeSpam().toMutableList()
-            val launcherPackagesSet = launcherApps.packagesSet
-
-            intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
-
-            launcherApps += packageManager.queryIntentActivities(intent, 0)
-                .removeSpam()
-                .filter { it.activityInfo.packageName !in launcherPackagesSet }
-
-            val videoApps = Stuff.getBrowsers(packageManager).toMutableList()
-
-            val ignoreMetaPackages = Stuff.IGNORE_ARTIST_META.toSet()
-
-            videoApps += launcherApps.filter { it.activityInfo.packageName in ignoreMetaPackages }
 
             addSection(
                 AppListAdapter.AppListSection.VIDEO_PLAYERS,
@@ -110,18 +140,17 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private val List<ResolveInfo>.packagesSet
-        get() = map { it.activityInfo.packageName }.toSet()
+    private val List<ApplicationInfo>.packagesSet
+        get() = map { it.packageName }.toSet()
 
-    private fun List<ResolveInfo>.removeSpam() = filter {
-        val ai = it.activityInfo.applicationInfo
-        ai.icon != 0 && ai.enabled
+    private fun List<ApplicationInfo>.removeSpam() = filter {
+        it.icon != 0 && it.enabled
     }
 
-    private fun List<ResolveInfo>.sortApps(): List<ResolveInfo> {
+    private fun List<ApplicationInfo>.sortApps(): List<ApplicationInfo> {
         val (selectedList, unselectedList) = this
-            .sortedWith(ResolveInfo.DisplayNameComparator(packageManager))
-            .partition { it.activityInfo.packageName in selectedPackages }
+            .sortedWith(ApplicationInfo.DisplayNameComparator(packageManager))
+            .partition { it.packageName in selectedPackages }
         return selectedList + unselectedList
     }
 

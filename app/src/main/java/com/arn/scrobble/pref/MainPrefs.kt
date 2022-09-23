@@ -11,7 +11,6 @@ import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.themes.ColorPatchUtils
-import com.arn.scrobble.ui.UiUtils.isTv
 import com.frybits.harmony.getHarmonySharedPreferences
 import de.umass.lastfm.Period
 import hu.autsoft.krate.*
@@ -22,7 +21,6 @@ class MainPrefs(context: Context) : Krate {
 
     override val sharedPreferences = context.getHarmonySharedPreferences(NAME)
 
-    private val isTv by lazy { context.isTv }
     private val nm by lazy { context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 
     var scrobblerEnabled by booleanPref(PREF_MASTER).withDefault(true)
@@ -31,7 +29,7 @@ class MainPrefs(context: Context) : Krate {
 
     private var _autoDetectApps by booleanPref(PREF_AUTO_DETECT).withDefault(true)
     val autoDetectApps
-        get() = if (isTv || !nm.isChannelEnabled(sharedPreferences, CHANNEL_NOTI_NEW_APP))
+        get() = if (Stuff.isTv || !nm.isChannelEnabled(sharedPreferences, CHANNEL_NOTI_NEW_APP))
             false
         else
             _autoDetectApps
@@ -47,7 +45,6 @@ class MainPrefs(context: Context) : Krate {
     var allowedArtists by stringSetPref(PREF_ALLOWED_ARTISTS).withDefault(setOf())
     var lastfmDisabled by booleanPref(PREF_LASTFM_DISABLE).withDefault(false)
     var submitNowPlaying by booleanPref(PREF_NOW_PLAYING).withDefault(true)
-    var pixelNowPlaying by booleanPref(PREF_PIXEL_NP).withDefault(true)
     var fetchAlbumArtist by booleanPref(PREF_FETCH_AA).withDefault(false)
     var searchInSource by booleanPref(PREF_SEARCH_IN_SOURCE).withDefault(false)
     var crashlyticsEnabled by booleanPref(PREF_CRASHLYTICS_ENABLED).withDefault(true)
@@ -185,7 +182,6 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_ACR_HOST = "acr_host"
         const val PREF_ACR_KEY = "acr_key"
         const val PREF_ACR_SECRET = "acr_secret"
-        const val PREF_PIXEL_NP = "pixel_np"
         const val PREF_LOCKSCREEN_NOTI = "lockscreen_noti"
         const val PREF_IMPORT = "import"
         const val PREF_EXPORT = "export"

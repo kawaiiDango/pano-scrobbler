@@ -3,18 +3,15 @@ package com.arn.scrobble.ui
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.SearchManager
-import android.app.UiModeManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.InsetDrawable
-import android.hardware.input.InputManager
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -26,17 +23,23 @@ import android.transition.TransitionManager
 import android.transition.TransitionSet
 import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowInsets
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
@@ -73,9 +76,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 object UiUtils {
-
-    private var _hasMouse: Boolean? = null
-    private var _isTv: Boolean? = null
 
     val Int.dp
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
@@ -179,7 +179,7 @@ object UiUtils {
     }
 
     fun Snackbar.focusOnTv(): Snackbar {
-        if (context.isTv) {
+        if (Stuff.isTv) {
             addCallback(object : Snackbar.Callback() {
                 override fun onShown(sb: Snackbar?) {
                     view.postDelayed({
@@ -361,22 +361,6 @@ object UiUtils {
         }
     }
 
-    fun Context.openInBrowser(url: String) {
-        try {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-            // prevent infinite loop
-            if (MainPrefs(this).lastfmLinksEnabled) {
-                browserIntent.`package` = Stuff.getDefaultBrowserPackage(packageManager)
-            }
-
-            startActivity(browserIntent)
-        } catch (e: ActivityNotFoundException) {
-            toast(R.string.no_browser)
-        }
-    }
-
     fun nowPlayingAnim(np: ImageView, isNowPlaying: Boolean) {
         if (isNowPlaying) {
             np.visibility = View.VISIBLE
@@ -421,74 +405,6 @@ object UiUtils {
                 R.attr.colorPrimaryContainer
             )
         )
-    }
-
-    fun launchSearchIntent(context: Context, musicEntry: MusicEntry, pkgName: String?) {
-        var searchQueryFirst = ""
-        var searchQuerySecond = ""
-
-        when(musicEntry) {
-            is Artist -> {
-                searchQueryFirst = musicEntry.name
-            }
-            is Album -> {
-                searchQueryFirst = musicEntry.artist
-                searchQuerySecond = musicEntry.name
-            }
-            is Track -> {
-                searchQueryFirst = musicEntry.artist
-                searchQuerySecond = musicEntry.name
-            }
-        }
-
-        launchSearchIntent(context, searchQueryFirst, searchQuerySecond, pkgName)
-    }
-
-    private fun launchSearchIntent(context: Context, artist: String, track: String, pkgName: String?) {
-        if (artist.isEmpty() && track.isEmpty())
-            return
-
-        val prefs = MainPrefs(context)
-
-        if (BuildConfig.DEBUG && Stuff.isWindows11 && prefs.songSearchUrl.isNotEmpty()) { // open song urls in windows browser for me
-            val searchUrl = prefs.songSearchUrl
-                .replace("\$artist", artist)
-                .replace("\$title", track)
-            context.openInBrowser(searchUrl)
-            return
-        }
-
-        val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-            if (artist.isNotEmpty())
-                putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
-            if (track.isNotEmpty())
-                putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
-
-            val query = when {
-                artist.isEmpty() -> track
-                track.isEmpty() -> artist
-                else -> "$artist $track"
-            }
-            putExtra(SearchManager.QUERY, query)
-
-            if (pkgName != null && prefs.proStatus && prefs.showScrobbleSources && prefs.searchInSource)
-                `package` = pkgName
-        }
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            if (pkgName != null) {
-                try {
-                    intent.`package` = null
-                    context.startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    context.toast(R.string.no_player)
-                }
-            } else
-                context.toast(R.string.no_player)
-        }
     }
 
     fun getColoredTitle(
@@ -582,7 +498,7 @@ object UiUtils {
     fun BottomSheetDialogFragment.expandIfNeeded() {
         val bottomSheetView =
             dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-        if (view?.isInTouchMode == false || context!!.hasMouse)
+        if (view?.isInTouchMode == false || Stuff.hasMouse)
             BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
     }
 
@@ -642,28 +558,4 @@ object UiUtils {
     fun View.postRequestFocus() {
         post { requestFocus() }
     }
-
-    val Context.hasMouse: Boolean
-        get() {
-            if (_hasMouse == null) {
-                val inputManager = getSystemService(Context.INPUT_SERVICE) as InputManager
-                _hasMouse = inputManager.inputDeviceIds.any {
-                    val device = inputManager.getInputDevice(it)
-                    // for windows 11 wsa
-                    device.supportsSource(InputDevice.SOURCE_MOUSE) or
-                            device.supportsSource(InputDevice.SOURCE_STYLUS)
-                }
-            }
-            return _hasMouse!!
-        }
-
-    val Context.isTv: Boolean
-        get() {
-            if (_isTv == null) {
-                val uiModeManager =
-                    getSystemService(AppCompatActivity.UI_MODE_SERVICE) as UiModeManager
-                _isTv = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
-            }
-            return _isTv!!
-        }
 }

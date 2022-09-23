@@ -22,7 +22,12 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.recents.PaletteColors
-import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
+import com.arn.scrobble.ui.InitialsDrawable
+import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.LoadMoreGetter
+import com.arn.scrobble.ui.PaletteTransition
+import com.arn.scrobble.ui.UiUtils
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import de.umass.lastfm.ImageSize
@@ -144,7 +149,7 @@ class FriendsAdapter(
                 }
 
                 binding.friendsTrackFrame.setOnClickListener {
-                    UiUtils.launchSearchIntent(itemView.context, track, null)
+                    Stuff.launchSearchIntent(track, null)
                 }
             } else {
                 binding.friendsTrackLl.visibility = View.INVISIBLE

@@ -143,12 +143,6 @@
     <string name="recents_share_username" formatted="true"
         comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username"
         >%3$s was listening to\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true"
-        comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks"
-        >My %1$s %2$s:\n%3$s</string>
-    <string name="charts_share_username" formatted="true"
-        comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username"
-        >%4$s\'s %1$s %2$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Share this song</string>
     <string name="share">Share</string>
@@ -270,9 +264,6 @@
     <string name="time_jump"
         comment="Button shows scrobbles from a specific time"
         >Time jump</string>
-    <string name="possession" formatted="true"
-        comment="%1= name (e.g. Reimu's)"
-        >%1$s\'s</string>
 
     <string name="my_scrobbles">My scrobbles</string>
     <string name="user_scrobbles" formatted="true"
@@ -489,8 +480,6 @@
     <string name="pref_now_playing">Submit now playing</string>
     <string name="pref_fetch_aa">Fetch album artists from lastFM</string>
     <string name="pref_fetch_aa_desc">For players that do not provide this data. The fetched data may differ from your tags. lastFM may not have the data for some songs.</string>
-    <string name="pref_pixel_np">Scrobble Pixel\'s Now Playing</string>
-    <string name="pref_pixel_np_nope">Available only on Pixel devices</string>
     <string name="pref_locale">Languages</string>
     <string name="pref_change_locale">Change language</string>
     <string name="pref_crashlytics_enabled">Report errors automatically</string>

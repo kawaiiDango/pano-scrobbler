@@ -3,18 +3,24 @@ package com.arn.scrobble.pref
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.JsonReader
 import android.util.JsonToken
 import android.util.JsonWriter
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.db.*
+import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.db.ScrobbleSource
+import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.pref.JsonHelpers.readJson
 import com.arn.scrobble.pref.JsonHelpers.writeJson
-import com.arn.scrobble.ui.UiUtils.isTv
-import java.io.*
+import java.io.Closeable
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 class ImExporter : Closeable {
     private var writer: OutputStreamWriter? = null
@@ -29,7 +35,6 @@ class ImExporter : Closeable {
         MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY,
         MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY,
         MainPrefs.PREF_LOCKSCREEN_NOTI,
-        MainPrefs.PREF_PIXEL_NP,
         MainPrefs.PREF_DELAY_SECS,
         MainPrefs.PREF_DELAY_PER,
         MainPrefs.PREF_NOW_PLAYING,
@@ -321,10 +326,7 @@ class ImExporter : Closeable {
                                         prefs.putString(settingsName, nextString())
                                     }
                                     JsonToken.BOOLEAN -> {
-                                        if (
-                                            settingsName == MainPrefs.PREF_AUTO_DETECT && context.isTv ||
-                                            settingsName == MainPrefs.PREF_PIXEL_NP && Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE
-                                        )
+                                        if (settingsName == MainPrefs.PREF_AUTO_DETECT && Stuff.isTv)
                                             skipValue()
                                         else
                                             prefs.putBoolean(settingsName, nextBoolean())

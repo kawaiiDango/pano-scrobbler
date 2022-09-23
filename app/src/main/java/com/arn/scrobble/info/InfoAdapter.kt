@@ -28,7 +28,6 @@ import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dismissAllDialogFragments
 import com.arn.scrobble.ui.UiUtils.dp
-import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -288,7 +287,7 @@ class InfoAdapter(
             binding.infoName.text = entry.name
 
             binding.infoPlay.setOnClickListener {
-                UiUtils.launchSearchIntent(itemView.context, entry, pkgName)
+                Stuff.launchSearchIntent(entry, pkgName)
             }
 
             entry.url ?: return
@@ -376,7 +375,7 @@ class InfoAdapter(
                             val _username = activityViewModel.peekUser().name
                             val libraryUrl =
                                 entry.url.replace("/music/", "/user/$_username/library/music/")
-                            itemView.context.openInBrowser(libraryUrl)
+                            Stuff.openInBrowser(libraryUrl)
                         }
                     }
                 }
@@ -455,7 +454,7 @@ class InfoAdapter(
             binding.infoLink.visibility = View.VISIBLE
             binding.infoLink.setOnClickListener {
                 if (entry.url != null)
-                    itemView.context.openInBrowser(entry.url)
+                    Stuff.openInBrowser(entry.url)
             }
         }
     }

@@ -1,15 +1,27 @@
 package com.arn.scrobble
 
 import android.annotation.SuppressLint
-import android.app.*
-import android.content.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.content.Intent.ACTION_PACKAGE_ADDED
 import android.content.Intent.ACTION_TIME_CHANGED
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.AudioManager
 import android.media.session.MediaSessionManager
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
+import android.os.SystemClock
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.text.Html
@@ -36,10 +48,15 @@ import com.arn.scrobble.ui.UiUtils.toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.NumberFormat
-import java.util.*
+import java.util.PriorityQueue
 import kotlin.math.min
 
 
@@ -76,20 +93,20 @@ class NLService : NotificationListenerService() {
 //    override fun onBind(intent: Intent): IBinder? {
 //        return null
 //    }
-/*
-    override fun onListenerConnected() {
-//    This sometimes gets called twice without calling onListenerDisconnected or onDestroy
-//    onCreate seems to get called only once in those cases.
-//    also unreliable on lp and mm
-        super.onListenerConnected()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (Looper.myLooper() == null) {
-                Handler(mainLooper!!).post { init() }
-            } else
-                init()
+    /*
+        override fun onListenerConnected() {
+    //    This sometimes gets called twice without calling onListenerDisconnected or onDestroy
+    //    onCreate seems to get called only once in those cases.
+    //    also unreliable on lp and mm
+            super.onListenerConnected()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (Looper.myLooper() == null) {
+                    Handler(mainLooper!!).post { init() }
+                } else
+                    init()
+            }
         }
-    }
-*/
+    */
 
     private fun init() {
         initChannels()
@@ -291,24 +308,22 @@ class NLService : NotificationListenerService() {
         pkgName in prefs.allowedPackages || (prefs.autoDetectApps && pkgName !in prefs.blockedPackages)
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        if (prefs.pixelNowPlaying)
-            scrobbleFromNoti(
-                sbn,
-                removed = false,
-                packageNames = Stuff.PIXEL_NP_PACKAGES,
-                channelName = Stuff.CHANNEL_PIXEL_NP,
-                notiField = Notification.EXTRA_TITLE,
-                format = R.string.song_format_string
-            )
-        if (isAppEnabled(Stuff.PACKAGE_SHAZAM))
-            scrobbleFromNoti(
-                sbn,
-                removed = false,
-                packageNames = listOf(Stuff.PACKAGE_SHAZAM),
-                channelName = Stuff.CHANNEL_SHAZAM,
-                notiField = Notification.EXTRA_TEXT,
-                format = R.string.auto_shazam_now_playing
-            )
+        scrobbleFromNoti(
+            sbn,
+            removed = false,
+            packageNames = Stuff.PACKAGES_PIXEL_NP,
+            channelName = Stuff.CHANNEL_PIXEL_NP,
+            notiField = Notification.EXTRA_TITLE,
+            format = R.string.song_format_string
+        )
+        scrobbleFromNoti(
+            sbn,
+            removed = false,
+            packageNames = listOf(Stuff.PACKAGE_SHAZAM),
+            channelName = Stuff.CHANNEL_SHAZAM,
+            notiField = Notification.EXTRA_TEXT,
+            format = R.string.auto_shazam_now_playing
+        )
         if (BuildConfig.DEBUG) {
             scrobbleFromNoti(
                 sbn,
@@ -329,20 +344,18 @@ class NLService : NotificationListenerService() {
         if (reason == REASON_APP_CANCEL || reason == REASON_APP_CANCEL_ALL ||
             reason == REASON_TIMEOUT || reason == REASON_ERROR
         ) {
-            if (prefs.pixelNowPlaying)
-                scrobbleFromNoti(
-                    sbn,
-                    removed = true,
-                    packageNames = Stuff.PIXEL_NP_PACKAGES,
-                    channelName = Stuff.CHANNEL_PIXEL_NP,
-                )
-            if (isAppEnabled(Stuff.PACKAGE_SHAZAM))
-                scrobbleFromNoti(
-                    sbn,
-                    removed = true,
-                    packageNames = listOf(Stuff.PACKAGE_SHAZAM),
-                    channelName = Stuff.CHANNEL_SHAZAM,
-                )
+            scrobbleFromNoti(
+                sbn,
+                removed = true,
+                packageNames = Stuff.PACKAGES_PIXEL_NP,
+                channelName = Stuff.CHANNEL_PIXEL_NP,
+            )
+            scrobbleFromNoti(
+                sbn,
+                removed = true,
+                packageNames = listOf(Stuff.PACKAGE_SHAZAM),
+                channelName = Stuff.CHANNEL_SHAZAM,
+            )
             if (BuildConfig.DEBUG) {
                 scrobbleFromNoti(
                     sbn,
@@ -355,13 +368,18 @@ class NLService : NotificationListenerService() {
     }
 
     private fun scrobbleFromNoti(
-        sbn: StatusBarNotification?, removed: Boolean,
-        packageNames: Collection<String>, channelName: String,
+        sbn: StatusBarNotification?,
+        removed: Boolean,
+        packageNames: Collection<String>,
+        channelName: String,
         notiField: String = Notification.EXTRA_TITLE,
         @StringRes format: Int = 0
     ) {
         if (prefs.scrobblerEnabled &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && sbn != null && sbn.packageName in packageNames
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            sbn != null &&
+            sbn.packageName in packageNames &&
+            isAppEnabled(sbn.packageName)
         ) {
             val n = sbn.notification
             if (n.channelId == channelName) {
@@ -767,6 +785,7 @@ class NLService : NotificationListenerService() {
                     }
                     scrobbleHandler.remove(hash, false)
                 }
+
                 iLOVE, iUNLOVE -> {
                     val loved = intent.action == iLOVE
                     val hash = intent.getIntExtra(B_HASH, 0)
@@ -807,19 +826,9 @@ class NLService : NotificationListenerService() {
                                 unlove()
                         }
                 }
+
                 iALLOWLIST, iBLOCKLIST -> {
-                    //handle pixel_np blacklist in its own settings
                     val pkgName = intent.getStringExtra(B_PACKAGE_NAME)!!
-                    if (pkgName in Stuff.PIXEL_NP_PACKAGES) {
-                        if (intent.action == iBLOCKLIST) {
-                            prefs.pixelNowPlaying = false
-                            packageTrackMap[pkgName]?.let {
-                                scrobbleHandler.remove(it.hash)
-                            }
-                            nm.cancel(MainPrefs.CHANNEL_NOTI_NEW_APP, 0)
-                            return
-                        }
-                    }
                     //create copies
                     val aSet = prefs.allowedPackages.toMutableSet()
                     val bSet = prefs.blockedPackages.toMutableSet()
@@ -834,14 +843,17 @@ class NLService : NotificationListenerService() {
 
                     nm.cancel(MainPrefs.CHANNEL_NOTI_NEW_APP, 0)
                 }
+
                 iSCROBBLER_ON -> {
                     prefs.scrobblerEnabled = true
                     toast(R.string.scrobbler_on)
                 }
+
                 iSCROBBLER_OFF -> {
                     prefs.scrobblerEnabled = false
                     toast(R.string.scrobbler_off)
                 }
+
                 ACTION_TIME_CHANGED -> {
                     DigestJob.scheduleAlarms(applicationContext)
                 }
@@ -857,6 +869,7 @@ class NLService : NotificationListenerService() {
                         intent.getSingle<ScrobbleError>()!!
                     notifyOtherError(scrobbleError)
                 }
+
                 iBAD_META_S -> {
                     val trackInfo =
                         intent.getSingle<PlayingTrackInfo>()!!
@@ -865,6 +878,7 @@ class NLService : NotificationListenerService() {
 
                     notifyBadMeta(trackInfo, scrobbleError)
                 }
+
                 iMETA_UPDATE_S -> {
                     val receivedTrackInfo =
                         intent.getSingle<PlayingTrackInfo>()!!
@@ -873,6 +887,7 @@ class NLService : NotificationListenerService() {
                     trackInfo.updateMetaFrom(receivedTrackInfo)
                     notifyScrobble(trackInfo)
                 }
+
                 iBLOCK_ACTION_S -> {
                     val hash = intent.getIntExtra(B_HASH, 0)
                     val blockedMetadata = intent.getSingle<BlockedMetadata>()!!
@@ -887,6 +902,7 @@ class NLService : NotificationListenerService() {
                         }
                     }
                 }
+
                 iTHEME_CHANGED_S -> {
                     notiColor = ColorPatchUtils.getNotiColor(applicationContext)
                 }

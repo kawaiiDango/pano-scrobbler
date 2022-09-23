@@ -4,22 +4,35 @@ import android.app.ActivityManager
 import android.app.ApplicationExitInfo
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.SearchManager
+import android.app.UiModeManager
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.content.res.Configuration
+import android.hardware.input.InputManager
 import android.media.MediaMetadata
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.os.Process
+import android.provider.MediaStore
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.format.DateUtils
+import android.view.InputDevice
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.toast
 import de.umass.lastfm.Album
@@ -38,7 +51,10 @@ import timber.log.Timber
 import java.io.IOException
 import java.text.DecimalFormat
 import java.text.NumberFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -180,6 +196,7 @@ object Stuff {
         "com.google.android.youtube.tvkids",
         "com.liskovsoft.smarttubetv.beta",
         "com.liskovsoft.smarttubetv",
+        "app.revanced.android.youtube",
         "org.schabi.newpipe",
         PACKAGE_YMUSIC,
         PACKAGE_NICOBOX,
@@ -199,7 +216,7 @@ object Stuff {
         PACKAGE_BLACKPLAYEREX,
 //        PACKAGE_YOUTUBE_MUSIC,
     )
-    val PIXEL_NP_PACKAGES = setOf(
+    val PACKAGES_PIXEL_NP = setOf(
         PACKAGE_PIXEL_NP,
         PACKAGE_PIXEL_NP_R,
         PACKAGE_PIXEL_NP_AMM,
@@ -360,11 +377,11 @@ object Stuff {
         return null
     }
 
-    fun isDkmaNeeded(context: Context): Boolean {
+    fun isDkmaNeeded(): Boolean {
         val packages = STARTUPMGR_INTENTS.map { it.first }.toSet()
         return packages.any {
             try {
-                context.packageManager.getApplicationInfo(it, 0)
+                App.context.packageManager.getApplicationInfo(it, 0)
                 true
             } catch (e: PackageManager.NameNotFoundException) {
                 false
@@ -372,9 +389,9 @@ object Stuff {
         }
     }
 
-    fun isPackageInstalled(context: Context, packageName: String): Boolean {
+    fun isPackageInstalled(packageName: String): Boolean {
         return try {
-            context.packageManager.getPackageInfo(packageName, 0) != null
+            App.context.packageManager.getPackageInfo(packageName, 0) != null
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
@@ -415,6 +432,96 @@ object Stuff {
             .map { it.activityInfo.applicationInfo.packageName }
             .toSet()
 
+    fun launchSearchIntent(musicEntry: MusicEntry, pkgName: String?) {
+        var searchQueryFirst = ""
+        var searchQuerySecond = ""
+
+        when (musicEntry) {
+            is Artist -> {
+                searchQueryFirst = musicEntry.name
+            }
+
+            is Album -> {
+                searchQueryFirst = musicEntry.artist
+                searchQuerySecond = musicEntry.name
+            }
+
+            is Track -> {
+                searchQueryFirst = musicEntry.artist
+                searchQuerySecond = musicEntry.name
+            }
+        }
+
+        launchSearchIntent(searchQueryFirst, searchQuerySecond, pkgName)
+    }
+
+    private fun launchSearchIntent(
+        artist: String,
+        track: String,
+        pkgName: String?
+    ) {
+        if (artist.isEmpty() && track.isEmpty())
+            return
+
+        val prefs = MainPrefs(App.context)
+
+        if (BuildConfig.DEBUG && isWindows11 && prefs.songSearchUrl.isNotEmpty()) { // open song urls in windows browser for me
+            val searchUrl = prefs.songSearchUrl
+                .replace("\$artist", artist)
+                .replace("\$title", track)
+            openInBrowser(searchUrl)
+            return
+        }
+
+        val intent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            if (artist.isNotEmpty())
+                putExtra(MediaStore.EXTRA_MEDIA_ARTIST, artist)
+            if (track.isNotEmpty())
+                putExtra(MediaStore.EXTRA_MEDIA_TITLE, track)
+
+            val query = when {
+                artist.isEmpty() -> track
+                track.isEmpty() -> artist
+                else -> "$artist $track"
+            }
+            putExtra(SearchManager.QUERY, query)
+
+            if (pkgName != null && prefs.proStatus && prefs.showScrobbleSources && prefs.searchInSource)
+                `package` = pkgName
+        }
+        try {
+            App.context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            if (pkgName != null) {
+                try {
+                    intent.`package` = null
+                    App.context.startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    App.context.toast(R.string.no_player)
+                }
+            } else
+                App.context.toast(R.string.no_player)
+        }
+    }
+
+    fun openInBrowser(url: String) {
+        try {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            // prevent infinite loop
+            if (MainPrefs(App.context).lastfmLinksEnabled) {
+                browserIntent.`package` = getDefaultBrowserPackage(App.context.packageManager)
+            }
+
+            App.context.startActivity(browserIntent)
+        } catch (e: ActivityNotFoundException) {
+            App.context.toast(R.string.no_browser)
+        }
+    }
+
     fun genHashCode(vararg objects: Any): Int {
         val prime = 31
         var result = 1
@@ -454,10 +561,12 @@ object Stuff {
                     it.putString(NLService.B_ALBUM, album)
                 it.putString(NLService.B_TRACK, name)
             }
+
             is Album -> {
                 it.putString(NLService.B_ARTIST, artist)
                 it.putString(NLService.B_ALBUM, name)
             }
+
             is Artist -> {
                 it.putString(NLService.B_ARTIST, name)
             }
@@ -528,21 +637,22 @@ object Stuff {
         // got some internal IOBE, catch everything
         // .topPrivateDomain() reads the big public suffix file every time and causes ANRs
         return try {
-            toHttpUrl()
-            true
+            toHttpUrl().host.contains('.')
         } catch (e: Exception) {
             try {
-                "https://$this".toHttpUrl()
-                true
+                "https://$this".toHttpUrl().host.contains('.')
             } catch (e: Exception) {
                 false
             }
         }
     }
 
-    fun isScrobblerRunning(context: Context): Boolean {
-        val serviceComponent = ComponentName(context, NLService::class.java)
-        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    fun isScrobblerRunning(): Boolean {
+        val serviceComponent = ComponentName(App.context, NLService::class.java)
+        val manager = ContextCompat.getSystemService(
+            App.context,
+            ActivityManager::class.java
+        ) as ActivityManager
         var serviceRunning = false
         val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
         if (runningServices == null) {
@@ -555,7 +665,7 @@ object Stuff {
                     "${this::isScrobblerRunning.name}  service - pid: " + service.pid + ", currentPID: " +
                             Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
                             service.clientCount + " process:" + service.process + ", clientLabel: " +
-                            if (service.clientLabel == 0) "0" else "(" + context.resources.getString(
+                            if (service.clientLabel == 0) "0" else "(" + App.context.resources.getString(
                                 service.clientLabel
                             ) + ")"
                 )
@@ -604,10 +714,10 @@ object Stuff {
         return this
     }
 
-    inline fun <reified T: Parcelable> Intent.getSingle() =
+    inline fun <reified T : Parcelable> Intent.getSingle() =
         getParcelableExtra<T>(T::class.qualifiedName)
 
-    inline fun <reified T: Parcelable> Bundle.getSingle() =
+    inline fun <reified T : Parcelable> Bundle.getSingle() =
         getParcelable<T>(T::class.qualifiedName)
 
     // https://stackoverflow.com/a/65046522/1067596
@@ -677,16 +787,17 @@ object Stuff {
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    fun Context.getScrobblerExitReasons(
+    fun getScrobblerExitReasons(
         afterTime: Long = -1,
         printAll: Boolean = false
     ): List<ApplicationExitInfo> {
         return try {
-            val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val activityManager =
+                ContextCompat.getSystemService(App.context, ActivityManager::class.java)!!
             val exitReasons = activityManager.getHistoricalProcessExitReasons(null, 0, 30)
 
             exitReasons.filter {
-                it.processName == "$packageName:$SCROBBLER_PROCESS_NAME"
+                it.processName == "${App.context.packageName}:$SCROBBLER_PROCESS_NAME"
 //                        && it.reason == ApplicationExitInfo.REASON_OTHER
                         && it.timestamp > afterTime
             }.also {
@@ -707,6 +818,21 @@ object Stuff {
     fun <K, V> Map<K, V>.getOrDefaultKey(key: K, defaultKey: K) = this[key] ?: this[defaultKey]!!
 
     fun <T> List<T>.wrappedGet(index: Int) = this[(index + size) % size]
+
+    val hasMouse by lazy {
+        val inputManager = ContextCompat.getSystemService(App.context, InputManager::class.java)!!
+        inputManager.inputDeviceIds.any {
+            val device = inputManager.getInputDevice(it)
+            // for windows 11 wsa
+            device.supportsSource(InputDevice.SOURCE_MOUSE) or
+                    device.supportsSource(InputDevice.SOURCE_STYLUS)
+        }
+    }
+
+    val isTv by lazy {
+        val uiModeManager = ContextCompat.getSystemService(App.context, UiModeManager::class.java)!!
+        uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+    }
 }
 
 @Keep

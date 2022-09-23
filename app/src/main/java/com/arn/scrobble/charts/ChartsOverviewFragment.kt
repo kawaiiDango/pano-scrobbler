@@ -27,7 +27,6 @@ import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.recents.SparkLineAdapter
-import com.arn.scrobble.ui.UiUtils.isTv
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.sp
@@ -222,7 +221,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             loadMoreSectionsIfNeeded()
         }
 
-        if (!context!!.isTv && !prefs.scrubLearnt)
+        if (!Stuff.isTv && !prefs.scrubLearnt)
             binding.chartsScrubMessage.visibility = View.VISIBLE
 
         binding.chartsSwipeRefresh.setProgressCircleColors()

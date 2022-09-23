@@ -11,6 +11,7 @@
     <string name="librefm" translatable="false">LibreFM</string>
     <string name="gnufm" translatable="false">GNU FM</string>
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
+    <string name="pixel_np" translatable="false">Pixel Now Playing</string>
     <string name="loading" translatable="false">…</string>
 <!--    <string name="mtrl_picker_cancel" description="Button text to indicate that the widget will ignore the user's selection [CHAR_LIMIT=16]" translatable="false">Reset</string>-->
     <string name="export_file_name" translatable="false" formatted="true">pano_scrobbler_export_%1$s.json</string>

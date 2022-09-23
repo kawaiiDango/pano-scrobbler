@@ -1,6 +1,10 @@
 package com.arn.scrobble.pref
 
-import android.app.*
+import android.app.Activity
+import android.app.LocaleManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -27,14 +31,25 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.*
+import androidx.preference.EditTextPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.*
+import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.ForceLogException
+import com.arn.scrobble.LastfmUnscrobbler
+import com.arn.scrobble.LocaleUtils
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.LoginFragment
+import com.arn.scrobble.NLService
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.Stuff.isChannelEnabled
+import com.arn.scrobble.WebViewFragment
 import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.db.PanoDb
@@ -43,8 +58,6 @@ import com.arn.scrobble.edits.RegexEditsFragment
 import com.arn.scrobble.edits.SimpleEditsFragment
 import com.arn.scrobble.onboarding.OnboardingFragment
 import com.arn.scrobble.themes.ThemesFragment
-import com.arn.scrobble.ui.UiUtils.isTv
-import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.widget.ChartsWidgetActivity
@@ -59,7 +72,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.text.NumberFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 
 /**
@@ -108,7 +122,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val hideOnTV = mutableListOf<Preference>()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !context!!.isTv) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !Stuff.isTv) {
             val master = findPreference<SwitchPreference>(MainPrefs.PREF_MASTER)!!
             master.summary = getString(R.string.pref_master_qs_hint)
         }
@@ -117,7 +131,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         hideOnTV += notiCategories
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !context!!.isTv) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !Stuff.isTv) {
             notiCategories.summary = getString(R.string.pref_noti_q)
         }
 
@@ -214,18 +228,6 @@ class PrefFragment : PreferenceFragmentCompat() {
             true
         }
 
-        val pixelNp = findPreference<SwitchPreference>(MainPrefs.PREF_PIXEL_NP)!!
-        hideOnTV.add(pixelNp)
-        if (Build.MANUFACTURER.lowercase() != Stuff.MANUFACTURER_GOOGLE
-            && !Stuff.isPackageInstalled(requireContext(), Stuff.PACKAGE_PIXEL_NP_AMM)
-        ) {
-            pixelNp.apply {
-                summary = getString(R.string.pref_pixel_np_nope)
-                isEnabled = false
-                isPersistent = false
-                isChecked = false
-            }
-        }
         val autoDetect = findPreference<SwitchPreference>(MainPrefs.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
         val nm = getSystemService(context!!, NotificationManager::class.java)!!
@@ -489,19 +491,19 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("translate")!!
             .setOnPreferenceClickListener {
-                context!!.openInBrowser(getString(R.string.crowdin_link))
+                Stuff.openInBrowser(getString(R.string.crowdin_link))
                 true
             }
 
         findPreference<Preference>("translate_credits")!!
             .setOnPreferenceClickListener {
-                context!!.openInBrowser(getString(R.string.crowdin_link) + "/members")
+                Stuff.openInBrowser(getString(R.string.crowdin_link) + "/members")
                 true
             }
 
         findPreference<Preference>("privacy")!!
             .setOnPreferenceClickListener {
-                context!!.openInBrowser(getString(R.string.privacy_policy_link))
+                Stuff.openInBrowser(getString(R.string.privacy_policy_link))
                 true
             }
 
@@ -509,7 +511,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         try {
             about.title = "v " + BuildConfig.VERSION_NAME
             about.setOnPreferenceClickListener {
-                context!!.openInBrowser(about.summary.toString())
+                Stuff.openInBrowser(about.summary.toString())
                 true
             }
         } catch (e: PackageManager.NameNotFoundException) {
@@ -570,7 +572,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             true
         }
 
-        if (context!!.isTv)
+        if (Stuff.isTv)
             hideOnTV.forEach {
                 it.isVisible = false
             }

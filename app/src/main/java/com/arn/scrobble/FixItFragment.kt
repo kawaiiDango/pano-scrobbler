@@ -9,11 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.arn.scrobble.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.databinding.DialogFixItBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
-import com.arn.scrobble.ui.UiUtils.openInBrowser
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
@@ -45,7 +43,7 @@ class FixItFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.fixItDkmaAction.setOnClickListener {
-            context!!.openInBrowser("https://dontkillmyapp.com")
+            Stuff.openInBrowser("https://dontkillmyapp.com")
         }
         val prefs = MainPrefs(context!!)
         if (!prefs.notiPersistent) {
@@ -73,7 +71,7 @@ class FixItFragment : BottomSheetDialogFragment() {
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            context!!.getScrobblerExitReasons(prefs.lastKillCheckTime, false)
+            Stuff.getScrobblerExitReasons(prefs.lastKillCheckTime, false)
                 .firstOrNull()
                 ?.let {
                     binding.fixItExitReason.text =

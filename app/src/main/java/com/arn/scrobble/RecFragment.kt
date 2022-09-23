@@ -12,7 +12,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.method.LinkMovementMethod
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.activity.result.ActivityResultLauncher
@@ -20,17 +25,24 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.acrcloud.rec.*
+import com.acrcloud.rec.ACRCloudClient
+import com.acrcloud.rec.ACRCloudConfig
+import com.acrcloud.rec.ACRCloudResult
+import com.acrcloud.rec.IACRCloudListener
+import com.acrcloud.rec.IACRCloudRadioMetadataListener
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.focusOnTv
-import com.arn.scrobble.ui.UiUtils.isTv
 import com.arn.scrobble.ui.UiUtils.setTextAndAnimate
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -72,7 +84,7 @@ class RecFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentRecBinding.inflate(inflater, container, false)
-        if (!context!!.isTv)
+        if (!Stuff.isTv)
             setHasOptionsMenu(true)
         return binding.root
     }
@@ -83,7 +95,7 @@ class RecFragment : Fragment(),
         if (Stuff.DEMO_MODE)
             binding.recShazam.text = binding.recShazam.text.toString().replace("Shazam", "S app")
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context!!.isTv)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Stuff.isTv)
             binding.recShazam.visibility = View.GONE
         else
             binding.recShazam.movementMethod = LinkMovementMethod.getInstance()

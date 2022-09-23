@@ -28,9 +28,16 @@ import com.arn.scrobble.pending.PendingListData
 import com.arn.scrobble.pending.PendingScrFragment
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
-import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
+import com.arn.scrobble.ui.FocusChangeListener
+import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.ItemLongClickListener
+import com.arn.scrobble.ui.LoadMoreGetter
+import com.arn.scrobble.ui.MusicEntryImageReq
+import com.arn.scrobble.ui.PackageName
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
-import com.arn.scrobble.ui.UiUtils.isTv
+import com.arn.scrobble.ui.VHHeader
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
@@ -224,19 +231,19 @@ class RecentsAdapter(
 
     fun setStatusHeader() {
         val username = if (viewModel.username != null)
-            fragmentBinding.root.context.getString(R.string.possession, viewModel.username) + " "
+            " • " + viewModel.username
         else
             ""
         val header = if (isShowingLoves)
-            username + fragmentBinding.root.context.getString(R.string.recently_loved)
+            fragmentBinding.root.context.getString(R.string.recently_loved) + username
         else if (viewModel.toTime != null)
-            username + fragmentBinding.root.context.getString(
+             fragmentBinding.root.context.getString(
                 R.string.scrobbles_till,
                 DateFormat.getMediumDateFormat(fragmentBinding.root.context)
                     .format(viewModel.toTime)
-            )
+            ) + username
         else
-            username + fragmentBinding.root.context.getString(R.string.recently_scrobbled)
+            fragmentBinding.root.context.getString(R.string.recently_scrobbled) + username
         setStatusHeader(header)
     }
 
@@ -378,7 +385,7 @@ class RecentsAdapter(
                 true
             }
             binding.root.onFocusChangeListener = this
-            if (viewModel.username != null && !binding.root.context.isTv) {
+            if (viewModel.username != null && !Stuff.isTv) {
                 binding.recentsMenu.visibility = View.INVISIBLE
                 binding.recentsMenuText.visibility = View.GONE
             } else

@@ -104,7 +104,8 @@
     <string name="others">Altres</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava escoltant\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escoltant\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Top %1$s %2$s:\n%3$s</string>
+    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">%2$s (%1$s):\n%3$s</string>
+    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%2$s (%1$s) per %4$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Comparteix la cançó</string>
     <string name="share">Comparteix</string>
@@ -173,6 +174,7 @@
     <string name="expand" comment="(view all items)">Expandeix</string>
     <string name="user_loved" formatted="true" comment="%1= username">A %1$s li agrada</string>
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles fins al %1$s</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">No s\'ha trobat</string>
     <string name="share_this_chart">Comparteix la llista</string>
     <string name="lastfm_reports">Informes de Last.fm</string>
@@ -242,15 +244,20 @@
     <string name="hidden_tags">Etiquetes amagades</string>
     <string name="pin">Fixa</string>
     <string name="unpin">No fixis</string>
+    <string name="scrobbler_off">Scrobbler desactivat</string>
+    <string name="scrobbler_on">Scrobbler activat</string>
     <string name="enable" comment="To enable the scrobbler">Activa</string>
     <string name="pref_master">Fes scrobble</string>
+    <string name="pref_master_qs_hint">També es pot ajustar des de la configuració ràpida</string>
     <string name="pref_noti">Notificacions</string>
     <string name="pref_noti_categories">Categories de notificació</string>
     <string name="pref_scrobble_noti">Notificacions d\'scrobbles</string>
     <string name="pref_lockscreen_noti">Notificacions de la pantalla de bloqueig</string>
     <string name="pref_offline_info">ℹ️ Es desaran els scrobbles i els preferits fora de línia i s\'enviaran més tard.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Fes scrobble des de</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Són compatibles les aplicacions que mostren metadades de música. Per a evitar scrobbles d\'Spotify duplicats, activa-ho només en un lloc.</string>
     <string name="pref_enabled_apps_title">Tria les aplicacions</string>
+    <string name="pref_auto_detect_summary">Et preguntarem si vols confirmar o ignorar cada aplicació</string>
     <string name="pref_auto_detect">Detecta automàticament les aplicacions de música</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuts</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentatge</string>
@@ -263,17 +270,23 @@
     <string name="pref_scrobble_only">(Només scrobbles)</string>
     <string name="pref_user_label" comment="(Like username)">Usuari</string>
     <string name="api_url" comment="For Listenbrainz">URL de l\'API</string>
-    <string name="pref_now_playing">Envia com a reproduint ara</string>
+    <string name="pref_now_playing">Envia la reproducció actual</string>
     <string name="pref_fetch_aa">Obtín de Last.fm els artistes dels àlbums</string>
     <string name="pref_fetch_aa_desc">Per als reproductors que no proporcionen aquestes dades. Les dades obtingudes poden diferir de les teues etiquetes. És possible que Last.fm no tinga les dades d\'algunes cançons.</string>
+    <string name="pref_pixel_np">Fes scrobble d\'«Està sonant» dels Pixel</string>
     <string name="pref_locale">Llengües</string>
     <string name="pref_change_locale">Canvia la llengua</string>
+    <string name="pref_misc">Altres</string>
     <string name="pref_imexport">Importació i exportació</string>
     <string name="pref_export">Exporta</string>
     <string name="pref_import">Importa</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalització</string>
     <string name="pref_themes">Temes</string>
     <string name="pref_show_albums">Mostra els noms dels àlbums</string>
+    <string name="pref_show_albums_desc">…als scrobbles</string>
+    <string name="pref_show_scrobble_sources">Mostra les icones de les aplicacions des d\'on es fa l\'scrobble</string>
+    <string name="pref_show_scrobble_sources_desc">…al costat de cada scrobble. Aquesta informació es queda al teu dispositiu</string>
+    <string name="pref_search_in_source">Cerca i reprodueix en l\'aplicació des d\'on s\'ha fet l\'scrobble</string>
     <string name="pref_search_in_source_desc">Per a les aplicacions compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Llistes</string>
     <string name="pref_regex_edits">Edicions de patró</string>
@@ -288,6 +301,7 @@
     <string name="download">Baixa</string>
     <string name="changelog">Historial de canvis</string>
     <string name="export_failed">L\'exportació ha fallat</string>
+    <string name="imported">Importat</string>
     <string name="import_options">Opcions d\'importació</string>
     <string name="import_settings">Importa la configuració</string>
     <string name="current_track">Cançó actual:</string>
@@ -310,6 +324,7 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>
     <string name="submitting_loves" formatted="true">S\'estan enviant els preferits, %1$d restants</string>
     <string name="graph">Gràfic de línies</string>
+    <string name="fix_it_title">Possibles correccions</string>
     <string name="fix_it_action" comment="(To open an app)">Obre</string>
     <string name="delete_account">Elimina el compte</string>
     <string name="delete_account_custom_servers">Per als servidors personalitzats, reviseu la seua documentació.</string>

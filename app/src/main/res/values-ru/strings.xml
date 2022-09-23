@@ -20,13 +20,13 @@
     </plurals>
     <plurals name="num_months">
         <item quantity="one">%1$s месяц</item>
-        <item quantity="few">%1$s месяца</item>
+        <item quantity="few">%1$s месяцев</item>
         <item quantity="many">%1$s месяцев</item>
         <item quantity="other">%1$s месяца</item>
     </plurals>
     <plurals name="num_years">
         <item quantity="one">%1$s год</item>
-        <item quantity="few">%1$s года</item>
+        <item quantity="few">%1$s лет</item>
         <item quantity="many">%1$s лет</item>
         <item quantity="other">%1$s лет</item>
     </plurals>
@@ -130,9 +130,11 @@
     <string name="share_sig">(через Pano Scrobbler)</string>
     <string name="share_this_song">Поделиться этим треком</string>
     <string name="share">Поделиться</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Легенда</string>
     <string name="grid_size">Изменить размер сетки</string>
     <string name="more_info">Больше информации</string>
     <string name="rank_change_no_change">Без изменений</string>
+    <string name="rank_change_new">Не заскробблено за предыдущий период</string>
     <string name="search">Поиск</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Очистить всю историю</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Убрать данный элемент из истории?</string>
@@ -142,6 +144,7 @@
     <string name="full_index">Полный индекс</string>
     <string name="take_long_time">Это может занять некоторое время</string>
     <string name="full_index_desc">Используйте это только если вы изменили или удалили скробблы с сайта.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Нашел топ %1$s предметов по каждой категории.</string>
     <string name="profile">Профиль</string>
     <string name="profile_pic">Изображение профиля</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Опции для этого элемента</string>

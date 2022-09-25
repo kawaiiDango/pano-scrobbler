@@ -155,18 +155,24 @@
     <string name="past_scrobbles">Prošli scrobbleovi</string>
     <string name="my_scrobbles">Moji scrobbleovi</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbleovi korisnika %1$s</string>
+    <string name="listeners">Slušatelji</string>
+    <string name="scrobbles">Scrobbleovi</string>
     <string name="collapse" comment="(view only a few items)">Sažmi</string>
     <string name="expand" comment="(view all items)">Proširi</string>
     <string name="not_found" comment="Shown in search">Nije pronađeno</string>
     <string name="share_this_chart">Podijeli ovu ljestvicu</string>
     <string name="lastfm_reports">LastFM izvješća</string>
     <string name="weekly">Tjedni</string>
+    <string name="weeks">Tjedni</string>
     <string name="monthly">Mjesečni</string>
+    <string name="months">Mjeseci</string>
+    <string name="years">Godine</string>
     <string name="charts_overall">Sveukupno</string>
     <string name="charts_no_data">Nema podataka za ovo razdoblje</string>
     <string name="charts_custom" comment="Custom date range, but in short">Prilagođeno</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Kontinuirano</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nema dovoljno podataka</string>
+    <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Prati me sreća</string>
     <string name="random_not_found">Nema pronađenih pjesama</string>
     <string name="randomize">Nasumično</string>
@@ -233,6 +239,9 @@
     <string name="pref_import">Uvezi</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizacija</string>
     <string name="pref_themes">Teme</string>
+    <string name="pref_show_albums">Prikaži nazive albuma</string>
+    <string name="pref_search_in_source_desc">Za podržane aplikacije</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Popisi</string>
     <string name="pref_regex_edits">Šablonska uređivanja</string>
     <string name="pref_blocked_metadata">Blokirani metapodatci</string>
     <string name="pref_translate">Prevedi ovu aplikaciju</string>
@@ -245,19 +254,26 @@
     <string name="export_failed">Izvoz nije uspio</string>
     <string name="imported">Uvezeno</string>
     <string name="import_options">Opcije uvoza</string>
+    <string name="import_lists_nope">Nemoj uvesti uređivanja i popise blokiranja</string>
+    <string name="import_lists_replace_all">Zamijeni sva uređivanja i popise blokiranja</string>
     <string name="import_settings">Postavke uvoza</string>
     <string name="current_track">Trenutna pjesma:</string>
     <string name="copied">Kopirano!</string>
+    <string name="failed_encode_url">Kodiranje URL-a nije uspjelo</string>
     <string name="artist_extra">Pjesme, albumi i slično</string>
     <string name="no_browser">Nema instaliranih preglednika</string>
     <string name="no_player">Nema instaliranih reproduktora glazbe</string>
     <string name="not_running_fix_action">Popravi</string>
     <string name="login_submit">Potvrdi</string>
     <string name="add">Dodaj</string>
+    <string name="navigation_drawer_open">Otvori navigacijsku ladicu ili idi natrag</string>
+    <string name="navigation_drawer_close">Zatvori navigacijsku ladicu</string>
+    <string name="fix_it_title">Mogući ispravci</string>
     <string name="fix_it_action" comment="(To open an app)">Otvori</string>
     <string name="delete_account">Izbriši svoj račun</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="help">Pomoć</string>
     <string name="thank_you">Hvala Vam!</string>
+    <string name="billing_troubleshoot_title">Obnovi kupovinu</string>
 </resources>

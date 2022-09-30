@@ -137,12 +137,14 @@
     <string name="grant_notification_access">通知へのアクセスの許可</string>
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
     <string name="send_notifications">通知を許可する</string>
+    <string name="notification_channel_blocked">このアプリからの通知を有効にしてください</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Scrobbleの状態や回数の確認
 - 通知から直接のLoveやブロック
 - Scrobbleのエラーと対処法についての通知
 - 週初のトップScrobbleのお知らせ
 - などなど
 - 通知音は鳴りません\"\""</string>
+    <string name="will_not_scrobble">この項目をスキップすると、Scrobbleが行われません</string>
     <string name="authenticate_with_lastfm_desc">LibreFM、GNUFM、Listenbrainzの認証は後ほど設定から行えます</string>
     <string name="swap" comment="(Swap title and artist)">入れ替え</string>
     <string name="rate_msg">アプリに満足していただいていますか？</string>
@@ -228,6 +230,7 @@
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">ウィジェットは%1$d分ごとに更新されます</string>
     <string name="primary_color">メインカラー</string>
     <string name="secondary_color">サブカラー</string>
+    <string name="tint_background">背景を明るくする</string>
     <string name="random_theme">起動するたびにランダム化する</string>
     <string name="edit_name" comment="name for regex pattern">名前 (任意)</string>
     <string name="edit_regex">正規表現パターン</string>

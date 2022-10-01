@@ -99,6 +99,7 @@
     <string name="grid_size">グリッドサイズを変更</string>
     <string name="pinch_to_zoom">ピンチ操作で拡大</string>
     <string name="more_info">詳細</string>
+    <string name="rank_change_new">前回期間にScrobbleされていません</string>
     <string name="search">検索</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">履歴を消去</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">この項目を履歴から消去しますか？</string>
@@ -132,7 +133,7 @@
     <string name="pending_scrobbles_noti">保留中のScrobbleを処理中</string>
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s Scrobble • 本日%2$s件</string>
     <string name="friends">フレンド</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobble %1$s件 — %2$sより</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s Scrobble — %2$sより</string>
     <string name="allow_background">バックグラウンドでもScrobbleする</string>
     <string name="grant_notification_access">通知へのアクセスの許可</string>
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
@@ -145,7 +146,7 @@
 - などなど
 - 通知音は鳴りません\"\""</string>
     <string name="will_not_scrobble">この項目をスキップすると、Scrobbleが行われません</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM、GNUFM、Listenbrainzの認証は後ほど設定から行えます</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM、GNUFM、ListenBrainzの認証は後ほど設定から行えます</string>
     <string name="swap" comment="(Swap title and artist)">入れ替え</string>
     <string name="rate_msg">アプリに満足していただいていますか？</string>
     <string name="rate_action">評価</string>
@@ -154,7 +155,7 @@
     <string name="loved">Loveトラック</string>
     <string name="unloved">未Loveトラック</string>
     <string name="simple_edits">訂正</string>
-    <string name="force_remembered">強制的にScrobble (次回以降も同様)</string>
+    <string name="force_remembered">強制的にScrobble (次回以降にも適用)</string>
     <string name="grant_rec_perm">マイクへのアクセス権限を許可してください</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">チャート</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">タグクラウド</string>
@@ -239,7 +240,7 @@
     <string name="edit_replace">置換対象:</string>
     <string name="edit_first" comment="First occurrence of a pattern">初回一致分のみ</string>
     <string name="edit_all" comment="All occurrences of a pattern">すべて</string>
-    <string name="edit_continue">これに一致した場合でも、他の正規表現も実行する</string>
+    <string name="edit_continue">これに一致した場合でも、他の正規表現を実行する</string>
     <string name="edit_case_sensitive">大文字と小文字を区別する</string>
     <string name="edit_regex_test">テスト</string>
     <string name="edit_presets">プリセット</string>
@@ -265,8 +266,8 @@
     <string name="show_persistent_noti">通知を永続的に表示する</string>
     <string name="fix_it_desc">これらは、一部デバイスにおいてバックグラウンドでScrobbleサービスを実行するのに役立ちます</string>
     <string name="persistent_noti_desc">長押しで非表示</string>
-    <string name="scrobbler_off">Scrobblerを無効化しました</string>
-    <string name="scrobbler_on">Scrobblerを有効化しました</string>
+    <string name="scrobbler_off">Scrobbler停止中</string>
+    <string name="scrobbler_on">Scrobbler稼働中</string>
     <string name="enable" comment="To enable the scrobbler">有効化</string>
     <string name="pref_master">音楽をScrobbleする</string>
     <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>

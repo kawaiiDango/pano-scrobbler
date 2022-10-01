@@ -281,7 +281,7 @@
     <string name="pref_enabled_apps_summary">ℹ️ 音楽のメタデータを表示するアプリに対応しています。Spotify利用時にScrobbleが重複する場合は、他の対象アプリを無効にしてみてください。</string>
     <string name="pref_enabled_apps_title">アプリを選択</string>
     <string name="pref_auto_detect_summary">…そのアプリの取捨選択をお願いすることになります</string>
-    <string name="pref_auto_detect">音楽系アプリのインストールを自動検出</string>
+    <string name="pref_auto_detect">音楽系アプリのインストールを自動検出する</string>
     <string name="pref_delay">Scrobbleの遅延 (いずれかの早い方優先)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">パーセント</string>
@@ -298,7 +298,7 @@
     <string name="pref_now_playing">再生中の状態情報を送信する</string>
     <string name="pref_fetch_aa">LastFMからアルバムアーティストを取得する</string>
     <string name="pref_fetch_aa_desc">アルバムアーティストの表示が行われないプレーヤーの場合に行います。取得データがタグ付けされたものと異なっていたり、LastFMには一部曲が存在しない場合があります。</string>
-    <string name="pref_pixel_np">Pixelのこの曲なに？</string>
+    <string name="pref_pixel_np">Pixelの「この曲なに？」をScrobbleする</string>
     <string name="pref_pixel_np_nope">Pixel端末でのみ利用可能</string>
     <string name="pref_locale">言語</string>
     <string name="pref_change_locale">言語を変更</string>
@@ -345,7 +345,7 @@
     <string name="pref_intents">Tasker等用のインテント</string>
     <string name="copied">コピーしました</string>
     <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>
-    <string name="custom_listenbrainz">Listenbrainzのサーバー</string>
+    <string name="custom_listenbrainz">ListenBrainzのサーバー</string>
     <string name="failed_encode_url">URLのエンコードに失敗しました</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$sを確認</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特別なアプリアクセス &gt; 通知へのアクセス &gt; %1$s</string>
@@ -371,7 +371,7 @@
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">残り%1$d件</string>
     <string name="submitting_loves" formatted="true">Loveを送信中、残り%1$d件</string>
     <string name="pending_batch" comment="For pending scrobbles">バッチを送信中</string>
-    <string name="webview_error">ページの読み込みし失敗しました (インターネットに接続されていますか？)</string>
+    <string name="webview_error">ページの読み込みに失敗しました (インターネットに接続されているか確認してください)</string>
     <string name="navigation_drawer_open">ナビゲーションドロワーを開くか、戻る</string>
     <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
     <string name="graph">折れ線グラフ</string>

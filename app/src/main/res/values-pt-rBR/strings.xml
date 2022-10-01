@@ -54,8 +54,10 @@
     <string name="settings">Configurações</string>
     <string name="bug_report">Relatório de erros</string>
     <string name="album_art">Capa do álbum</string>
+    <string name="artist_image">Foto do artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar o título</string>
     <string name="network_error">Falha na rede</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorado</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de salvar esta edição para futuros scrobbles em vez disso?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Faltam campos obrigatórios</string>
     <string name="artist">Artista</string>
@@ -76,8 +78,8 @@
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Scrobbling agora…</string>
     <string name="state_scrobbled">Scrobble feito</string>
-    <string name="unscrobble">Eliminar scrobble</string>
-    <string name="state_unscrobbled">Scrobble eliminado</string>
+    <string name="unscrobble">Apagar scrobble</string>
+    <string name="state_unscrobbled">Scrobble apagado</string>
     <string name="state_unrecognised_artist">Artista não reconhecido</string>
     <string name="tap_to_edit">(Toque para editar)</string>
     <string name="recently_scrobbled">Scrobbles recentes</string>
@@ -95,6 +97,7 @@
     <string name="offline">Offline. Dados mostrados não são recentes</string>
     <string name="unavailable_offline">Não disponível quando estiver offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
+    <string name="others">Outros</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Eu estava escutando\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escutando\n%1$s %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Meu %1$s %2$s:\n%3$s</string>
@@ -102,8 +105,17 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Compartilhar esta música</string>
     <string name="share">Compartilhar</string>
+    <string name="grid_size">Mudar tamanho da grade</string>
     <string name="more_info">Mais informações</string>
+    <string name="rank_change_new">Não há scrobbles no período anterior</string>
     <string name="search">Pesquisar</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Limpar todo o histórico</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Remover esse item do histórico?</string>
+    <string name="library" comment="search within the library">Bibiloteca</string>
+    <string name="global" comment="search globally across lastfm">Global</string>
+    <string name="take_long_time">Isso deve levar bastante tempo</string>
+    <string name="full_index_desc">Use isso apenas se você tiver editado ou apagado scrobbles no site.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pesquisado o top %1$s em cada categoria.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opções para este item</string>
@@ -130,6 +142,15 @@
     <string name="allow_background">Permitir scrobbling em segundo plano</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para recuperar metadados da música. Nenhum outro tipo notificação é lida</string>
+    <string name="send_notifications">Permitir notificações</string>
+    <string name="notification_channel_blocked">Isto requer que as notificações sejam ativadas</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"''''- Verificar status e contagem dos scrobbles
+- Favoritar ou deletar diretamente da notificação
+- Receber notificações sobre erros nos scrobbles e ações que você pode tomar
+- Receber seu top de scrobbles toda semana
+- E mais
+- As notificações não emitem som\"\""</string>
+    <string name="will_not_scrobble">Pular esse passo irá desativar os scrobbles</string>
     <string name="authenticate_with_lastfm_desc">Pode depois iniciar sessão no LibreFM, GNUFM e Listenbrainz, a partir das configurações</string>
     <string name="swap" comment="(Swap title and artist)">Trocar</string>
     <string name="rate_msg">Gostando do aplicativo?</string>
@@ -167,8 +188,12 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="share_this_chart">Partilhar esta tabela</string>
+    <string name="lastfm_reports">LastFM reports</string>
     <string name="weekly">Semanal</string>
+    <string name="weeks">Semanas</string>
     <string name="monthly">Mensalmente</string>
+    <string name="months">Meses</string>
+    <string name="years">Anos</string>
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
     <string name="charts_custom" comment="Custom date range, but in short">Personalizar</string>
@@ -180,6 +205,7 @@
     <string name="random_not_found">Nenhuma faixa encontrada</string>
     <string name="loved_track">Faixa favoritada</string>
     <string name="randomize">Aleatória</string>
+    <string name="random_text">Aleatório</string>
     <string name="graph_daily">Contagem diária de scrobbles</string>
     <string name="graph_weekly">Contagem semanal de scrobbles</string>
     <string name="graph_monthly">Contagem mensal de scrobbles</string>
@@ -205,6 +231,7 @@
     <string name="appwidget_show">Mostrar</string>
     <string name="light">Claro</string>
     <string name="dark">Escuro</string>
+    <string name="system_colors">Cores do sistema</string>
     <string name="appwidget_alpha">Opacidade do fundo</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">O widget será atualizado a cada %1$d minutos</string>
     <string name="primary_color">Cor principal</string>
@@ -214,6 +241,7 @@
     <string name="edit_name" comment="name for regex pattern">Nome amigável (opcional)</string>
     <string name="edit_regex">Padrão de regex</string>
     <string name="edit_regex_replacement">Substituição de Regex</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Campos</string>
     <string name="edit_replace">Substituir</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primeiro</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
@@ -229,7 +257,16 @@
     <string name="text" comment="text to test regex rules with">Texto</string>
     <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
+    <string name="blocked_metadata_noti">Toque para bloquear e pular</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Ações do player</string>
+    <string name="skip" comment="skip to next track">Pular</string>
+    <string name="mute">Mutar</string>
     <string name="block">Bloquear</string>
+    <string name="hidden_tags">Tags ocultas</string>
+    <string name="pin">Fixar</string>
+    <string name="unpin">Desafixar</string>
+    <string name="pin_limit_reached" formatted="true">Limite de fixados atingido (%1$d)</string>
+    <string name="pin_help">Mantenha pressionado os itens fixados para reordená-los</string>
     <string name="use_channel" comment="(Use youtube channel name)">Usar nome do canal</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Gostaria de habilitar a regra de edição do padrão: %1$s?</string>
     <string name="show_persistent_noti">Exibir uma notificação persistente</string>
@@ -237,6 +274,7 @@
     <string name="persistent_noti_desc">Pressione e segure para ocultar isso</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
+    <string name="enable" comment="To enable the scrobbler">Ativar</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das configurações rápidas</string>
     <string name="pref_noti_q">Pode promover a notificação, caso o ícone não apareça</string>
@@ -268,7 +306,9 @@
     <string name="pref_fetch_aa_desc">Para reprodutores que não fornecem esses dados. Os dados obtidos podem ser diferentes das suas etiquetas. O lastFM pode não ter dados para algumas músicas.</string>
     <string name="pref_pixel_np">Scrobble do que o Pixel estiver a reproduzir</string>
     <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
+    <string name="pref_locale">Idiomas</string>
     <string name="pref_change_locale">Mudar língua</string>
+    <string name="pref_crashlytics_enabled">Reportar erros automaticamente</string>
     <string name="pref_misc">Diversos</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Importar &amp; exportar</string>
@@ -291,6 +331,11 @@
     <string name="pref_lastfm_disable">Não faça scrobble no lastFM</string>
     <string name="pref_lastfm_disable_desc">Você ainda vai precisar fazer login no lastFM para o resto da interface funcionar</string>
     <string name="pref_translate">Traduzir esta app</string>
+    <string name="pref_translate_credits">Créditos da tradução</string>
+    <string name="pref_oss_credits">Licenças de código aberto</string>
+    <string name="pref_check_updates">Buscar por atualizações</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Atualização disponível: %1$s</string>
+    <string name="download">Download</string>
     <string name="import_hey_wtf">Esse provavelmente não é um arquivo de exportação do Pano Scrobbler</string>
     <string name="export_failed">A exportação falhou</string>
     <string name="imported">Importado</string>

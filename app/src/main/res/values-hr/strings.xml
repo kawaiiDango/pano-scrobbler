@@ -58,10 +58,11 @@
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="reset">Ponovno postavi</string>
-    <string name="settings">Konfiguriraj</string>
+    <string name="settings">Konfiguracija</string>
     <string name="bug_report">Prijava greške</string>
     <string name="album_art">Naslovnica albuma</string>
     <string name="artist_image">Slika izvođača</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Nije moguće analizirati naslov</string>
     <string name="network_error">Mrežna greška</string>
     <string name="disable_tls_verify">Ignoriraj TLS greške</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoriran</string>
@@ -91,13 +92,63 @@
     <string name="tap_to_edit">(dodirni za uređivanje)</string>
     <string name="recently_scrobbled">Nedavno scrobbleano</string>
     <string name="recently_loved">♥ Nedavni favoriti</string>
+    <string name="recents" comment="Short for recently scrobbled">Nedavno</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Prvi puta scrobbleano %1$s</string>
+    <string name="auto" comment="automatic or default setting">Auto</string>
+    <string name="graph_info">… posljednjih 5 mjeseci</string>
+    <string name="enabled_apps">Omogućene aplikacije</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Još malo…</string>
+    <string name="music_players">Reproduktori glazbe</string>
+    <string name="video_players">Aplikacije za streaming videa</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostale aplikacije</string>
+    <string name="choose_apps">Odaberite aplikacije za scrobbleanje</string>
+    <string name="offline">Izvan mreže. Prikazani podatci nisu osvježeni</string>
+    <string name="unavailable_offline">Nije dostupno izvan mreže</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servisi</string>
+    <string name="others">Ostalo</string>
+    <string name="share_sig">(pomoću aplikacije Pano Scrobbler)</string>
+    <string name="share_this_song">Podijeli ovu pjesmu</string>
+    <string name="share">Podijeli</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
+    <string name="grid_size">Promijeni veličinu mreže</string>
+    <string name="more_info">Više informacija</string>
+    <string name="rank_change" comment="%1= delta change">Promjena ranga: %s</string>
+    <string name="rank_change_no_change">Nema promjene</string>
+    <string name="search">Traži</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Očisti svu povijest</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Ukloniti ovu stavku iz povijesti?</string>
+    <string name="library" comment="search within the library">Zbirka</string>
+    <string name="global" comment="search globally across lastfm">Globalno</string>
+    <string name="reindex">Brzo indeksiranje</string>
+    <string name="full_index">Potpuno indeksiranje</string>
+    <string name="take_long_time">Ovo može dugo potrajati</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Posljednje indeksiranje %1$s.</string>
+    <string name="profile">Profil</string>
+    <string name="profile_pic">Slika profila</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcije za ovu stavku</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Aplikacija %1$s detektirana</string>
+    <string name="new_player_prompt">Nastaviti scrobbleati ovu aplikaciju?</string>
+    <string name="no_track_url">Ova pjesma nema stranicu na lastFM-u</string>
+    <string name="no_scrobbles">Ovdje još nema pjesama…</string>
+    <string name="no_friends">Još nemate prijatelja na lastFM-u…</string>
     <string name="channel_err">Greške kod scrobbleanja</string>
     <string name="new_app">Nova aplikacija</string>
     <string name="no_apps_enabled">Nijedna aplikacija nije omogućena</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">Još %1$d</string>
     <string name="show_all">Prikaži sve</string>
     <string name="edit">Uredi</string>
     <string name="delete">Izbriši</string>
+    <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
+    <string name="pending_scrobble">Scrobble na čekanju</string>
+    <string name="pending_scrobbles_noti">Procesiranje scrobbleova na čekanju</string>
     <string name="friends">Prijatelji</string>
+    <string name="allow_background">Dopusti scrobbleanje u pozadini</string>
+    <string name="grant_notification_access">Dopusti pristup obavijestima</string>
+    <string name="grant_notification_access_desc">Potrebno za dohvaćanje informacija o glazbi. Obavijesti koje nisu povezane s glazbom se ne čitaju</string>
+    <string name="send_notifications">Dopusti obavijesti</string>
+    <string name="notification_channel_blocked">Za ovo je potrebno omogućiti obavijesti</string>
+    <string name="will_not_scrobble">Ako preskočite ovaj korak, scrobbleanje bit će onemogućeno</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM i Listenbrainz mogu se autentificirati nakon ovoga u postavkama</string>
     <string name="rate_msg">Sviđa Vam se ova aplikacija?</string>
     <string name="rate_action">Ocijenite</string>
     <string name="time_just_now">upravo sada</string>
@@ -105,19 +156,49 @@
     <string name="simple_edits">Uređivanja</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
-    <string name="scrobble_from_mic">Scrobblea pomoću mikrofona</string>
+    <string name="scrobble_from_mic">Scrobbleaj pomoću mikrofona</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Pomoću mikrofona</string>
     <string name="add_to_hs">Dodaj na početni zaslon</string>
     <string name="uploading">Prenošenje…</string>
+    <string name="powered_acr">Omogućuje <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalji</string>
+    <string name="saved_as_pending">Spremljeno kao scrobble na čekanju</string>
     <string name="sort">Sortiraj</string>
     <string name="past_scrobbles">Prošli scrobbleovi</string>
     <string name="my_scrobbles">Moji scrobbleovi</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbleovi korisnika %1$s</string>
+    <string name="listeners">Slušatelji</string>
+    <string name="scrobbles">Scrobbleovi</string>
+    <string name="collapse" comment="(view only a few items)">Sažmi</string>
+    <string name="expand" comment="(view all items)">Proširi</string>
+    <string name="not_found" comment="Shown in search">Nije pronađeno</string>
+    <string name="share_this_chart">Podijeli ovu ljestvicu</string>
+    <string name="lastfm_reports">LastFM izvješća</string>
+    <string name="weekly">Tjedni</string>
+    <string name="weeks">Tjedni</string>
+    <string name="monthly">Mjesečni</string>
+    <string name="months">Mjeseci</string>
+    <string name="years">Godine</string>
+    <string name="charts_overall">Sveukupno</string>
+    <string name="charts_no_data">Nema podataka za ovo razdoblje</string>
+    <string name="charts_custom" comment="Custom date range, but in short">Prilagođeno</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Kontinuirano</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nema dovoljno podataka</string>
+    <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">Prati me sreća</string>
     <string name="random_not_found">Nema pronađenih pjesama</string>
+    <string name="randomize">Nasumično</string>
     <string name="random_text">Nasumično</string>
+    <string name="graph_daily">Broj dnevnih scrobbleova</string>
+    <string name="graph_weekly">Broj tjednih scrobbleova</string>
+    <string name="graph_monthly">Broj mjesečnih scrobbleova</string>
+    <string name="graph_yearly">Broj godišnjih scrobbleova</string>
     <string name="original" comment="Original metadata before editing">Izvorno</string>
     <string name="corrected" comment="Corrected metadata after editing">Ispravljeno</string>
     <string name="tag" comment="last.fm tag">Oznaka</string>
+    <string name="digest_weekly">Moji prošlotjedni top scrobbleovi</string>
+    <string name="digest_monthly">Moji prošlomjesečni top scrobbleovi</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s top scrobbleovi</string>
     <string name="my_tags">Moje oznake</string>
     <string name="close">Zatvori</string>
     <string name="user_tags_hint">Nova oznaka</string>
@@ -130,6 +211,7 @@
     <string name="light">Svijetlo</string>
     <string name="dark">Tamno</string>
     <string name="system_colors">Boje sustava</string>
+    <string name="appwidget_alpha">Neprozirnost pozadine</string>
     <string name="primary_color">Primarna boja</string>
     <string name="secondary_color">Sekundarna boja</string>
     <string name="tint_background">Ton pozadine</string>
@@ -137,22 +219,87 @@
     <string name="edit_replace">Zamijeni</string>
     <string name="edit_first" comment="First occurrence of a pattern">Prvo</string>
     <string name="edit_all" comment="All occurrences of a pattern">Sve</string>
+    <string name="edit_case_sensitive">Razlikuj velika i mala slova</string>
     <string name="edit_regex_test">Testiraj</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Ručka za povlačenje</string>
+    <string name="text" comment="text to test regex rules with">Tekst</string>
+    <string name="skip" comment="skip to next track">Preskoči</string>
+    <string name="mute">Utišaj</string>
+    <string name="block">Blokiraj</string>
+    <string name="pin">Prikvači</string>
+    <string name="unpin">Otkvači</string>
+    <string name="pin_limit_reached" formatted="true">Dosegnuto ograničenje prikvačivanja (%1$d)</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Koristi naziv kanala</string>
+    <string name="show_persistent_noti">Prikaži trajnu obavijest</string>
+    <string name="persistent_noti_desc">Za skrivanje ovoga dugo pritisnite</string>
+    <string name="scrobbler_off">Scrobbler onemogućen</string>
+    <string name="scrobbler_on">Scrobbler aktivan</string>
+    <string name="enable" comment="To enable the scrobbler">Omogući</string>
+    <string name="pref_master">Scrobbleaj glazbu</string>
+    <string name="pref_noti">Obavijesti</string>
+    <string name="pref_noti_categories">Kategorije obavijesti</string>
+    <string name="pref_scrobble_noti">Obavijesti scrobbleanja</string>
+    <string name="pref_lockscreen_noti">Obavijesti na zaslonu zaključavanja</string>
+    <string name="pref_enabled_apps_title">Odaberite aplikacije</string>
     <string name="pref_logout">Odjava</string>
     <string name="pref_confirm_logout">POTVRDITI ODJAVU? Pritisnite ponovno</string>
     <string name="pref_login">Prijava</string>
     <string name="pref_about" comment="Info about this app">O aplikaciji</string>
     <string name="pref_privacy_policy">Politika privatnosti</string>
+    <string name="pref_user_label" comment="(Like username)">Korisnik</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Autentifikacijski token</string>
+    <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="pref_locale">Jezici</string>
     <string name="pref_change_locale">Promijeni jezik</string>
+    <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
     <string name="pref_misc">Razno</string>
+    <string name="pref_imexport">Uvoz i izvoz</string>
     <string name="pref_export">Izvezi</string>
+    <string name="pref_export_desc">Sigurnosno kopira postavke, uređivanja i popise blokiranja. Iz sigurnosnih razloga ne sprema prijave. Korisno za premještanje na novi uređaj ili dijeljenje s prijateljima.</string>
     <string name="pref_import">Uvezi</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizacija</string>
     <string name="pref_themes">Teme</string>
+    <string name="pref_show_albums">Prikaži nazive albuma</string>
+    <string name="pref_search_in_source_desc">Za podržane aplikacije</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Popisi</string>
+    <string name="pref_regex_edits">Šablonska uređivanja</string>
+    <string name="pref_blocked_metadata">Blokirani metapodatci</string>
+    <string name="pref_translate">Prevedi ovu aplikaciju</string>
+    <string name="pref_translate_credits">Popis prevoditelja</string>
+    <string name="pref_oss_credits">Licence otvorenog koda</string>
+    <string name="pref_check_updates">Provjeri ažuriranja</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Dostupno ažuriranje: %1$s</string>
+    <string name="download">Preuzimanje</string>
+    <string name="changelog">Popis promjena</string>
+    <string name="export_failed">Izvoz nije uspio</string>
+    <string name="imported">Uvezeno</string>
+    <string name="import_options">Opcije uvoza</string>
+    <string name="import_lists_nope">Nemoj uvesti uređivanja i popise blokiranja</string>
+    <string name="import_lists_replace_all">Zamijeni sva uređivanja i popise blokiranja</string>
+    <string name="import_settings">Postavke uvoza</string>
+    <string name="current_track">Trenutna pjesma:</string>
     <string name="copied">Kopirano!</string>
+    <string name="failed_encode_url">Kodiranje URL-a nije uspjelo</string>
+    <string name="artist_extra">Pjesme, albumi i slično</string>
+    <string name="no_browser">Nema instaliranih preglednika</string>
+    <string name="no_player">Nema instaliranih reproduktora glazbe</string>
     <string name="not_running_fix_action">Popravi</string>
     <string name="login_submit">Potvrdi</string>
+    <string name="add_acr_key">Dodaj ključ za ACRCloud</string>
+    <string name="remove_acr_key">Ukloni ključ za ACRCloud</string>
+    <string name="add_acr_consider">Za sprječavanje prelaženja ograničenja stope pristupa, razmislite o dodavanju vlastitog ključa za ACRCloud</string>
+    <string name="add">Dodaj</string>
+    <string name="navigation_drawer_open">Otvori navigacijsku ladicu ili idi natrag</string>
+    <string name="navigation_drawer_close">Zatvori navigacijsku ladicu</string>
+    <string name="fix_it_title">Mogući ispravci</string>
+    <string name="fix_it_battery_title">Onemogući optimizaciju baterije</string>
     <string name="fix_it_action" comment="(To open an app)">Otvori</string>
     <string name="delete_account">Izbriši svoj račun</string>
     <!--  pro  -->
+    <string name="get_pro">Podrži ovu aplikaciju</string>
+    <string name="help">Pomoć</string>
+    <string name="pro_also_get">Dobit ćete i slijedeće značajke:</string>
+    <string name="thank_you">Hvala Vam!</string>
+    <string name="purchase_pending">Vašu kupovinu još nije potvrdio Vaš davatelj usluga plaćanja. Provjerite ponovno za nekoliko minuta.</string>
+    <string name="billing_troubleshoot_title">Obnovi kupovinu</string>
 </resources>

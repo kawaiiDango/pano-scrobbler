@@ -13,9 +13,11 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
@@ -202,6 +204,18 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
     }
 
     private fun share() {
+        if (BuildConfig.DEBUG) {
+            CollageGeneratorFragment()
+                .apply {
+                    arguments = Bundle().apply {
+                        putSingle(viewModel.selectedPeriod.value ?: return)
+                        putInt(Stuff.ARG_TYPE, chartsType)
+                    }
+                }
+                .show(childFragmentManager, null)
+            return
+        }
+
         val entries = viewModel.chartsData
         if (entries.isEmpty() || viewModel.selectedPeriod.value == null)
             return
@@ -233,7 +247,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         }
 
         var shareText = if (!activityViewModel.userIsSelf) {
-            "$topType • $period • ${activityViewModel.peekUser().name}:\n\n$list"
+            "$topType • $period • ${activityViewModel.currentUser.name}:\n\n$list"
         } else {
             "$topType • $period:\n\n$list"
         }

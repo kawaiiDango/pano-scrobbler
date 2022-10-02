@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#000"
+    android:paddingHorizontal="16px"
+    android:paddingVertical="8px"
+    android:theme="@style/Theme.Material3.Dark">
+
+    <TextView
+        android:id="@+id/collage_footer_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="16px"
+        android:textSize="56px"
+        android:textStyle="bold"
+        tools:text="Top Artists" />
+
+    <TextView
+        android:id="@+id/collage_footer_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16px"
+        android:textSize="48px"
+        tools:text="Overall" />
+
+    <!--  Compound drawables do not appear in the image for some reason  -->
+    <ImageView
+        android:id="@+id/collage_username_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:tint="?colorControlNormal"
+        app:srcCompat="@drawable/vd_user" />
+
+    <TextView
+        android:id="@+id/collage_footer_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="50px"
+        tools:text="username" />
+
+    <TextView
+        android:id="@+id/collage_footer_branding_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16px"
+        android:textAlignment="textEnd"
+        android:textSize="42px"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/collage_footer_branding_image"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Pano\nScrobbler" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/collage_footer_branding_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginVertical="8px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/roundedCorners"
+        app:srcCompat="@drawable/ic_launcher" />
+
+    <ImageView
+        android:id="@+id/collage_type_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:tint="?colorControlNormal"
+        tools:srcCompat="@drawable/vd_mic" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/collage_footer_flow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:constraint_referenced_ids="collage_type_image, collage_footer_type, collage_footer_duration, collage_username_image, collage_footer_username"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

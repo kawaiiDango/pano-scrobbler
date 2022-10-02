@@ -11,7 +11,7 @@ import de.umass.lastfm.Track
 
 class MainNotifierViewModel(application: Application) : AndroidViewModel(application) {
 
-    val prefs = MainPrefs(application)
+    private val prefs = MainPrefs(application)
     val drawerData by lazy { MutableLiveData(DrawerData.loadFromPref(application)) }
     val editData by lazy { LiveEvent<Track>() }
     var backButtonEnabled = true
@@ -30,10 +30,10 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
 
     fun popUser() = userStack.removeFirst()
 
-    fun peekUser() = userStack.first()
+    val currentUser get() = userStack.first()
 
     val userIsSelf
-        get() = peekUser().name == prefs.lastfmUsername
+        get() = currentUser.name == prefs.lastfmUsername
 
     val userStackDepth
         get() = userStack.size

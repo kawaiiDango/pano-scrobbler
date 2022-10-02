@@ -81,6 +81,7 @@ object Stuff {
     const val ARG_ACTION = "action"
     const val ARG_TLS_NO_VERIFY = "tls_no_verify"
     const val ARG_ALLOWED_PACKAGES = MainPrefs.PREF_ALLOWED_PACKAGES
+    const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
     const val TYPE_TRACKS = 3

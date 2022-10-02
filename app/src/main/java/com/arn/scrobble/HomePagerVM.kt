@@ -15,7 +15,7 @@ class HomePagerVM(application: Application) : AndroidViewModel(application) {
     }
 
     override fun onCleared() {
-        // todo pop userstack
         onClearedCallback?.invoke()
+        onClearedCallback = null
     }
 }

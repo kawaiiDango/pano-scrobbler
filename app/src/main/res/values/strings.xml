@@ -54,6 +54,14 @@
     <plurals name="num_blocked_metadata">
         <item quantity="other">%1$s blocked metadata</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s friend</item>
+        <item quantity="other">%1$s friends</item>
+    </plurals>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -363,8 +371,8 @@
     <string name="system_colors">System colors</string>
     <string name="appwidget_alpha">Background Opacity</string>
     <string name="appwidget_refresh_every" formatted="true"
-        comment="%1= minutes, always more than 20"
-        >Widget will refresh every %1$d minutes</string>
+        comment="%1= 'n minutes'"
+        >Widget will refresh every %1$s</string>
 
     <string name="primary_color">Primary color</string>
     <string name="secondary_color">Secondary color</string>
@@ -436,6 +444,17 @@
     <string name="enable"
         comment="To enable the scrobbler"
         >Enable</string>
+    <string name="size"
+        comment="Collage size such as 3x3, 4x4 etc"
+        >Size</string>
+    <string name="skip_missing_images">Skip missing images</string>
+    <string name="create_collage">Create collage</string>
+    <string name="captions"
+        comment="Collage image captions such as artist names, play counts"
+        >Image captions</string>
+    <string name="username"
+        comment="last.fm Username"
+        >Username</string>
     <string name="pref_master">Scrobble music</string>
     <string name="pref_master_qs_hint">Can also be toggled from the quick settings tile</string>
     <string name="pref_noti_q">You may promote the notification, if the icon doesn\'t show up</string>

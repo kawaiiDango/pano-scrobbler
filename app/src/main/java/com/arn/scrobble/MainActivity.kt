@@ -3,7 +3,11 @@ package com.arn.scrobble
 import android.animation.ValueAnimator
 import android.app.ActivityManager
 import android.app.Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.LabeledIntent
 import android.graphics.Rect
 import android.media.session.MediaSessionManager
@@ -52,7 +56,14 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
-import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.AppIconFetcher
+import com.arn.scrobble.ui.AppIconKeyer
+import com.arn.scrobble.ui.DemoInterceptor
+import com.arn.scrobble.ui.InitialsDrawable
+import com.arn.scrobble.ui.MusicEntryImageInterceptor
+import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
+import com.arn.scrobble.ui.StarInterceptor
+import com.arn.scrobble.ui.StatefulAppBar
 import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
 import com.arn.scrobble.ui.UiUtils.popBackStackTill
@@ -65,7 +76,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.text.NumberFormat
-import java.util.*
+import java.util.Calendar
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,

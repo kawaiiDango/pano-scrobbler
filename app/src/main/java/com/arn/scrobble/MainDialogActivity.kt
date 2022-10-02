@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.billing.BillingViewModel
+import com.arn.scrobble.charts.CollageGeneratorFragment
+import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.edits.BlockedMetadataAddDialogFragment
 import com.arn.scrobble.edits.EditDialogFragment
@@ -14,6 +16,7 @@ import com.arn.scrobble.themes.ColorPatchUtils
 
 class MainDialogActivity : AppCompatActivity() {
     private val billingViewModel by viewModels<BillingViewModel>()
+    private val activityViewModel by viewModels<MainNotifierViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -23,6 +26,10 @@ class MainDialogActivity : AppCompatActivity() {
         val dialogFragment = when {
             intent.getSingle<BlockedMetadata>() != null -> {
                 BlockedMetadataAddDialogFragment()
+            }
+            intent.getSingle<TimePeriod>() != null -> {
+                activityViewModel.pushUser(intent.getSingle()!!)
+                CollageGeneratorFragment()
             }
             else -> {
                 EditDialogFragment()

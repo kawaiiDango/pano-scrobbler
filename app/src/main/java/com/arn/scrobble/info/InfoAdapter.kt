@@ -22,10 +22,8 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ListItemInfoBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.TrackHistoryFragment
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dismissAllDialogFragments
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
@@ -195,7 +193,7 @@ class InfoAdapter(
                                 binding.infoHeart.visibility = View.VISIBLE
                                 binding.infoHeart.setOnClickListener {
                                     itemView.context.toast(
-                                        itemView.context.getString(R.string.user_loved, activityViewModel.peekUser().name)
+                                        itemView.context.getString(R.string.user_loved, activityViewModel.currentUser.name)
                                     )
                                 }
                             }
@@ -337,7 +335,7 @@ class InfoAdapter(
 
             if (!activityViewModel.userIsSelf)
                 binding.infoUserScrobblesLabel.text =
-                    itemView.context.getString(R.string.user_scrobbles, activityViewModel.peekUser().name)
+                    itemView.context.getString(R.string.user_scrobbles, activityViewModel.currentUser.name)
             binding.infoUserScrobbles.text =
                 NumberFormat.getInstance().format(entry.userPlaycount)
             binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
@@ -372,7 +370,7 @@ class InfoAdapter(
                         }
                         is Album,
                         is Artist -> {
-                            val _username = activityViewModel.peekUser().name
+                            val _username = activityViewModel.currentUser.name
                             val libraryUrl =
                                 entry.url.replace("/music/", "/user/$_username/library/music/")
                             Stuff.openInBrowser(libraryUrl)

@@ -86,11 +86,11 @@ class RandomFragment : ChartsPeriodFragment() {
 
         postInit()
 
-        viewModel.username = activityViewModel.peekUser().name
-        randomViewModel.username = activityViewModel.peekUser().name
+        viewModel.username = activityViewModel.currentUser.name
+        randomViewModel.username = activityViewModel.currentUser.name
 
         binding.randomizeText.text = if (!activityViewModel.userIsSelf) {
-            getString(R.string.random_text) + " • " + activityViewModel.peekUser().name
+            getString(R.string.random_text) + " • " + activityViewModel.currentUser.name
         } else {
             getString(R.string.random_text)
         }

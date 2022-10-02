@@ -12,8 +12,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import com.arn.scrobble.*
-import com.arn.scrobble.db.*
+import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.LoginFragment
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.NLService
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
+import com.arn.scrobble.db.CachedTracksDao
+import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.db.ScrobbleSource
+import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.scrobbleable.Scrobblable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -25,7 +34,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.IOException
-import java.util.*
+import java.util.Date
 
 
 class EditDialogFragment : LoginFragment() {
@@ -48,9 +57,6 @@ class EditDialogFragment : LoginFragment() {
         super.onCreateView(layoutInflater, null, null)
 
         showsDialog = true
-
-        if (arguments?.getBoolean(NLService.B_STANDALONE_DIALOG) == true)
-            isStandalone = true
 
         fun moveImeActionToLast2() {
             binding.loginTextfieldLast.editText!!.imeOptions = EditorInfo.IME_NULL

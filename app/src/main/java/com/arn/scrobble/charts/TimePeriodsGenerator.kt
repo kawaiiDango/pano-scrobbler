@@ -1,14 +1,19 @@
 package com.arn.scrobble.charts
 
 import android.content.Context
+import android.os.Parcelable
 import android.text.format.DateUtils
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.setMidnight
 import de.umass.lastfm.Period
+import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Formatter
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.min
@@ -259,14 +264,14 @@ class TimePeriodsGenerator(
 
 }
 
+@Parcelize
 @kotlinx.serialization.Serializable
 data class TimePeriod(
     val start: Long,
     val end: Long,
     val period: Period? = null,
-) {
-
-    var name: String = ""
+    var name: String = "",
+) : Parcelable {
 
     constructor(context: Context, period: Period) : this(
         -1,

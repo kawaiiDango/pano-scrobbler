@@ -1,5 +1,6 @@
 package com.arn.scrobble.scrobbleable
 
+import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.Result
@@ -71,4 +72,10 @@ enum class ScrobblableEnum {
     GNUFM,
     LISTENBRAINZ,
     CUSTOM_LISTENBRAINZ
+}
+
+object Scrobblables {
+    private val prefs by lazy { MainPrefs(App.context) }
+    fun byType(type: ScrobblableEnum) = prefs.scrobbleAccounts.find { it.type == type }
+    fun allByType(type: ScrobblableEnum) = prefs.scrobbleAccounts.filter { it.type == type }.ifEmpty { null }
 }

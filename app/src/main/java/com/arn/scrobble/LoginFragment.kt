@@ -27,7 +27,7 @@ import org.json.JSONObject
 open class LoginFragment : DialogFragment() {
     protected val prefs by lazy { MainPrefs(context!!) }
     protected open val checksLogin = true
-    protected var isStandalone = false
+    protected val isStandalone by lazy { activity is MainDialogActivity }
     private var _binding: ContentLoginBinding? = null
     protected val binding
         get() = _binding!!

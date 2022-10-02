@@ -6,9 +6,6 @@ import coil.request.ImageResult
 import com.arn.scrobble.R
 
 class StarInterceptor : Interceptor {
-    private val starPatterns = arrayOf(
-        "2a96cbd8b46e442fc41c2b86b821562f"
-    )
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val imgUrl = chain.request.data as? String
@@ -20,5 +17,11 @@ class StarInterceptor : Interceptor {
             )
         } else
             chain.proceed(chain.request)
+    }
+
+    companion object {
+        val starPatterns = arrayOf(
+            "2a96cbd8b46e442fc41c2b86b821562f"
+        )
     }
 }

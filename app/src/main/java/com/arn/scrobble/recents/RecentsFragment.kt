@@ -24,6 +24,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
@@ -88,7 +89,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
     private var lastRefreshTime = System.currentTimeMillis()
     private val refreshHandler by lazy { Handler(Looper.getMainLooper()) }
     private val viewModel by viewModels<TracksVM>()
-    private val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
+    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var animSet: AnimatorSet? = null
     protected open val isShowingLoves = false
     private val username: String?
@@ -96,7 +97,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             return if (activityViewModel.userIsSelf)
                 null
             else
-                activityViewModel.peekUser().name
+                activityViewModel.currentUser.name
         }
 
     private val focusChangeListener = object : FocusChangeListener {
@@ -363,7 +364,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             coordinatorBinding.heroCalendar.setOnClickListener { view ->
                 val anchorTime = viewModel.toTime ?: System.currentTimeMillis()
                 val timePeriodsToIcons =
-                    TimePeriodsGenerator(activityViewModel.peekUser().registeredTime, anchorTime, context!!).recentsTimeJumps
+                    TimePeriodsGenerator(activityViewModel.currentUser.registeredTime, anchorTime, context!!).recentsTimeJumps
 
                 val popupMenu = PopupMenu(context!!, view)
                 timePeriodsToIcons.forEachIndexed { index, (timePeriod, iconRes) ->
@@ -765,7 +766,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             .setTitleText(R.string.past_scrobbles)
             .setCalendarConstraints(
                 CalendarConstraints.Builder()
-                    .setStart(activityViewModel.peekUser().registeredTime)
+                    .setStart(activityViewModel.currentUser.registeredTime)
                     .setEnd(endTime)
                     .setOpenAt(time)
                     .setValidator(object : CalendarConstraints.DateValidator {
@@ -773,7 +774,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
                         override fun writeToParcel(p0: Parcel, p1: Int) {}
 
-                        override fun isValid(date: Long) = date in activityViewModel.peekUser().registeredTime..endTime
+                        override fun isValid(date: Long) = date in activityViewModel.currentUser.registeredTime..endTime
                     })
                     .build()
             )

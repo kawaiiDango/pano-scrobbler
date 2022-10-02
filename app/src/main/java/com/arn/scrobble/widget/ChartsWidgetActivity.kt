@@ -129,9 +129,10 @@ class ChartsWidgetActivity : AppCompatActivity() {
         if (isPinned)
             binding.cancelButton.visibility = View.GONE
 
+        val numMins = (Stuff.CHARTS_WIDGET_REFRESH_INTERVAL / (1000 * 60)).toInt()
         binding.appwidgetRefreshEveryText.text = getString(
             R.string.appwidget_refresh_every,
-            Stuff.CHARTS_WIDGET_REFRESH_INTERVAL / (1000 * 60)
+            resources.getQuantityString(R.plurals.num_minutes, numMins, numMins)
         )
 
         initFromPrefs()

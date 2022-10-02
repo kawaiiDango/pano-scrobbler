@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.viewpager.widget.ViewPager
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
@@ -16,7 +17,7 @@ class HomePagerFragment : PagerBaseFragment(), ViewPager.OnPageChangeListener {
     private var backStackChecked = false
     private val prefs by lazy { MainPrefs(context!!) }
     private val viewModel by viewModels<HomePagerVM>()
-    private val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
+    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.onClearedCallback = {

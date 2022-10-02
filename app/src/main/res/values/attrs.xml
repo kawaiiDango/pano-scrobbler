@@ -15,13 +15,9 @@
   -->
 
 <resources>
-    <declare-styleable name="CircleProgressBar">
-        <attr name="min" format="integer" />
-        <attr name="max" format="integer" />
-        <attr name="progress" format="integer" />
-        <attr name="progressbarColor" format="color" />
-        <attr name="progressBarThickness" format="dimension" />
-
+    <declare-styleable name="OutlineTextView">
+        <attr name="outlineColor" format="color"/>
+        <attr name="outlineWidth" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="SquareFrameLayout">

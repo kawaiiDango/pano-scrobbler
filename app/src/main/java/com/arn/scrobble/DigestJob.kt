@@ -14,15 +14,24 @@ import android.os.PersistableBundle
 import android.text.Html
 import androidx.core.app.NotificationCompat
 import com.arn.scrobble.Stuff.isChannelEnabled
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.Stuff.scheduleExpeditedCompat
 import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.ScrobblableEnum
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import de.umass.lastfm.Period
 import de.umass.lastfm.Session
 import de.umass.lastfm.User
-import kotlinx.coroutines.*
-import java.util.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 class DigestJob : JobService() {
@@ -32,8 +41,10 @@ class DigestJob : JobService() {
 
     override fun onStartJob(jp: JobParameters): Boolean {
         scheduleAlarms(applicationContext)
-        if (prefs.lastfmUsername != null &&
-            nm.isChannelEnabled(
+
+        val lastfmAccount = Scrobblables.byType(ScrobblableEnum.LASTFM) ?: return false
+
+        if (nm.isChannelEnabled(
                 prefs.sharedPreferences,
                 MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY
             )
@@ -48,7 +59,7 @@ class DigestJob : JobService() {
                 else -> throw IllegalArgumentException("Unknown action")
             }
             GlobalScope.launch(coExceptionHandler) {
-                fetchAndNotify(period)
+                fetchAndNotify(period, lastfmAccount)
                 jobFinished(jp, false)
             }
 
@@ -58,7 +69,7 @@ class DigestJob : JobService() {
         return true
     }
 
-    private suspend fun fetchAndNotify(period: Period) {
+    private suspend fun fetchAndNotify(period: Period, lastfmAccount: UserAccountSerializable) {
         supervisorScope {
             val limit = 3
             val notificationTextList = mutableListOf<String>()
@@ -66,14 +77,16 @@ class DigestJob : JobService() {
             val lastfmSession =
                 Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, prefs.lastfmSessKey)
 
+            val lastfmUsername = lastfmAccount.user.name
+
             val artists = async {
-                User.getTopArtists(prefs.lastfmUsername, period, limit, 1, lastfmSession)
+                User.getTopArtists(lastfmUsername, period, limit, 1, lastfmSession)
             }
             val albums = async {
-                User.getTopAlbums(prefs.lastfmUsername, period, limit, 1, lastfmSession)
+                User.getTopAlbums(lastfmUsername, period, limit, 1, lastfmSession)
             }
             val tracks = async {
-                User.getTopTracks(prefs.lastfmUsername, period, limit, 1, lastfmSession)
+                User.getTopTracks(lastfmUsername, period, limit, 1, lastfmSession)
             }
 
             val resultsMap = mapOf(
@@ -124,6 +137,7 @@ class DigestJob : JobService() {
                 Intent.createChooser(intent, title),
                 Stuff.updateCurrentOrImmutable
             )
+
             intent = Intent(applicationContext, MainActivity::class.java)
                 .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_CHARTS)
             val launchIntent = PendingIntent.getActivity(
@@ -131,8 +145,22 @@ class DigestJob : JobService() {
                 Stuff.updateCurrentOrImmutable
             )
 
+            intent = Intent(applicationContext, MainDialogActivity::class.java)
+                .putExtra(Stuff.ARG_TYPE, Stuff.TYPE_ALL)
+                .putSingle(TimePeriod(this@DigestJob, period))
+                .putSingle(lastfmAccount.user)
+            // todo username
+            val collageIntent = PendingIntent.getActivity(
+                applicationContext, 19, intent,
+                Stuff.updateCurrentOrImmutable
+            )
+
             val nb = NotificationCompat.Builder(applicationContext, channelId)
-                .apply { setColor(ColorPatchUtils.getNotiColor(applicationContext) ?: return@apply) }
+                .apply {
+                    setColor(
+                        ColorPatchUtils.getNotiColor(applicationContext) ?: return@apply
+                    )
+                }
                 .setSmallIcon(R.drawable.vd_charts)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentTitle(title)
@@ -158,6 +186,18 @@ class DigestJob : JobService() {
                     else
                         NotificationCompat.VISIBILITY_SECRET
                 )
+
+            if (BuildConfig.DEBUG) {
+                nb.addAction(
+                    Stuff.getNotificationAction(
+                        R.drawable.vd_share,
+                        "↗",
+                        getString(R.string.share),
+                        collageIntent
+                    )
+                )
+            }
+
             nm.notify(channelId, period.ordinal, nb.build())
         }
     }
@@ -243,7 +283,7 @@ class DigestJob : JobService() {
             alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
 
 
-            val dailyTestDigests = false
+            val dailyTestDigests = true
             if (BuildConfig.DEBUG && dailyTestDigests) {
                 val dailyIntent = PendingIntent.getBroadcast(
                     context, 22,
@@ -252,10 +292,10 @@ class DigestJob : JobService() {
                 )
 
                 cal.timeInMillis = now
-                cal.setMidnight()
-                cal.add(Calendar.DAY_OF_YEAR, 1)
-                cal.add(Calendar.SECOND, secondsToAdd)
-//                cal.add(Calendar.SECOND, 20)
+//                cal.setMidnight()
+//                cal.add(Calendar.DAY_OF_YEAR, 1)
+//                cal.add(Calendar.SECOND, secondsToAdd)
+                cal.add(Calendar.SECOND, 20)
                 if (cal.timeInMillis < now)
                     cal.add(Calendar.DAY_OF_YEAR, 1)
                 val nextDay = cal.timeInMillis

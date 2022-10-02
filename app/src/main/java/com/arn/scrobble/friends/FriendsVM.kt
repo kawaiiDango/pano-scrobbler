@@ -32,7 +32,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     val urlToPaletteMap = mutableMapOf<String, PaletteColors>()
     val friendsReceiver = LiveEvent<PaginatedResult<User>>()
     val tracksReceiver = LiveEvent<Pair<String, PaginatedResult<Track>>>()
-    var username: String? = null
+    var showsPins = false
     var page = 1
     var totalPages = 1
     var sorted = false
@@ -40,7 +40,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
 
     val sectionedList by lazy {
 
-        if (username == null)
+        if (showsPins)
             prefs.pinnedFriendsJson
                 .sortedBy { it.order }
                 .forEach { addPin(it, save = false) }
@@ -61,9 +61,9 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun loadFriendsList(page: Int) {
+    fun loadFriendsList(page: Int, user: UserSerializable) {
         this.page = page
-        LFMRequester(getApplication(), viewModelScope, friendsReceiver).getFriends(page, username)
+        LFMRequester(getApplication(), viewModelScope, friendsReceiver).getFriends(page, user.name)
     }
 
     fun loadFriendsRecents(user: String) {

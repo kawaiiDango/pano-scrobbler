@@ -13,9 +13,14 @@ import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.frybits.harmony.getHarmonySharedPreferences
 import de.umass.lastfm.Period
-import hu.autsoft.krate.*
+import hu.autsoft.krate.Krate
+import hu.autsoft.krate.booleanPref
 import hu.autsoft.krate.default.withDefault
+import hu.autsoft.krate.intPref
 import hu.autsoft.krate.kotlinx.kotlinxPref
+import hu.autsoft.krate.longPref
+import hu.autsoft.krate.stringPref
+import hu.autsoft.krate.stringSetPref
 
 class MainPrefs(context: Context) : Krate {
 
@@ -82,6 +87,12 @@ class MainPrefs(context: Context) : Krate {
     var userTopTagsFetched by booleanPref(PREF_ACTIVITY_USER_TAG_HISTORY_FETCHED).withDefault(
         false
     )
+    var collageSkipMissing by booleanPref(PREF_COLLAGE_SKIP_MISSING).withDefault(false)
+    var collageUsername by booleanPref(PREF_COLLAGE_USERNAME).withDefault(true)
+    var collageText by booleanPref(PREF_COLLAGE_TEXT).withDefault(true)
+    var collageSize by intPref(PREF_COLLAGE_SIZE).withDefault(3)
+    var collageCaptions by booleanPref(PREF_COLLAGE_CAPTIONS).withDefault(true)
+
     var lastFullIndexTime by longPref(PREF_ACTIVITY_LAST_FULL_INDEXED_TIME)
     var lastDeltaIndexTime by longPref(PREF_ACTIVITY_LAST_DELTA_INDEXED_TIME)
     var lastFullIndexedScrobbleTime by longPref(PREF_ACTIVITY_LAST_FULL_INDEXED_SCROBBLE_TIME)
@@ -247,6 +258,12 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_ACTIVITY_GRID_SINGLE_COLUMN = "grid_single_column"
         const val PREF_ACTIVITY_GRID_PINCH_LEARNT = "grid_pinch_learnt"
         const val PREF_ACTIVITY_LAST_KILL_CHECK_TIME = "last_kill_checked"
+
+        const val PREF_COLLAGE_SIZE = "collage_size"
+        const val PREF_COLLAGE_CAPTIONS = "collage_captions"
+        const val PREF_COLLAGE_SKIP_MISSING = "collage_skip_missing"
+        const val PREF_COLLAGE_TEXT = "collage_text"
+        const val PREF_COLLAGE_USERNAME = "collage_username"
 
         const val PREF_SCROBBLE_COUNT = "scrobble_count"
         const val PREF_FIRST_LAUNCHED = "date_firstlaunch"

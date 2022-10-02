@@ -566,7 +566,6 @@ class NLService : NotificationListenerService() {
 
     private fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
         val i = Intent(applicationContext, MainDialogActivity::class.java)
-            .putExtra(B_STANDALONE_DIALOG, true)
             .putExtras(trackInfo.toMultiFieldBundle())
 
         val editIntent = PendingIntent.getActivity(
@@ -1086,7 +1085,6 @@ class NLService : NotificationListenerService() {
         const val B_TIME = "time"
         const val B_ARTIST = "artist"
         const val B_ALBUM = "album"
-        const val B_STANDALONE_DIALOG = "standalone_dialog"
         const val B_HASH = "hash"
         const val B_PACKAGE_NAME = "package_name"
         const val B_IGNORED_ARTIST = "ignored_artist"

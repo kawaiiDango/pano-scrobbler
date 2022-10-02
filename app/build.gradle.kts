@@ -151,7 +151,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
 //    implementation("com.brandongogetap:stickyheaders:0.6.2")
-    implementation("com.mikepenz:aboutlibraries-core:10.4.0")
+    implementation("com.mikepenz:aboutlibraries-core:10.5.0")
     //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
 
     implementation(project(":lastfm"))

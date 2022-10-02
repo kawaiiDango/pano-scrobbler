@@ -347,7 +347,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             childFragmentManager.beginTransaction().add(fragment, type.toString()).commitNow()
 
         fragment.viewModel = viewModels<ChartsVM>({ fragment }).value
-        fragment.viewModel.username = activityViewModel.peekUser().name
+        fragment.viewModel.username = activityViewModel.currentUser.name
         fragment.viewModel.chartsType = type
 
         val adapter = ChartsOverviewAdapter(rootView)
@@ -477,7 +477,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     private fun genSparklineDurations() {
         val (timePeriods, periodType) = TimePeriodsGenerator.getSparklinePeriods(
             viewModel.selectedPeriod.value ?: return,
-            activityViewModel.peekUser().registeredTime
+            activityViewModel.currentUser.registeredTime
         )
         viewModel.periodCountRequested = true
 

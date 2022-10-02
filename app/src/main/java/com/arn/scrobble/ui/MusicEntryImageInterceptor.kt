@@ -8,7 +8,11 @@ import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.SpotifyRequester
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Tokens
-import de.umass.lastfm.*
+import de.umass.lastfm.Album
+import de.umass.lastfm.Artist
+import de.umass.lastfm.ImageSize
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -50,7 +54,21 @@ class MusicEntryImageInterceptor : Interceptor {
                                     .apply { imageUrlsMap = imagesMap }
                             }
                         }
-                        is Album -> Album.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
+
+                        is Album -> {
+                            val hasMissingArtwork = entry.imageUrlsMap?.values?.firstOrNull()
+                                ?.let { imgUrl ->
+                                    StarInterceptor.starPatterns.any {
+                                        imgUrl.contains(it)
+                                    }
+                                } ?: true
+
+                            if (hasMissingArtwork)
+                                Album.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
+                            else
+                                entry
+                        }
+
                         is Track -> Track.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
                         else -> throw IllegalArgumentException("Not valid MusicEntry")
                     }
@@ -69,7 +87,7 @@ class MusicEntryImageInterceptor : Interceptor {
 
         val imgUrl = if (entry is Artist)
             fetchedEntry?.getImageURL(musicEntryImageReq.size) ?: ""
-            // Spotify image isnt webp
+        // Spotify image isnt webp
         else
             fetchedEntry?.getWebpImageURL(musicEntryImageReq.size) ?: ""
 

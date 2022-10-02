@@ -105,7 +105,11 @@
 
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
+
+        <item name="popupMenuBackground">@drawable/popup_menu_background</item>
         <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
+        <item name="bottomSheetDialogTheme">@style/RoundedBottomSheetDialog</item>
+        <item name="android:selectableItemBackground">@drawable/ripple_rounded</item>
         <item name="textInputOutlinedStyle">@style/Widget.App.TextInputLayout.OutlinedBox</item>
         <item name="textInputOutlinedExposedDropdownMenuStyle">@style/Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
 

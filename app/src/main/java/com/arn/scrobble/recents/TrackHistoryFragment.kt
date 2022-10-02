@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,7 +39,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
     private val scrobbleCount: Int
         get() = arguments!!.getInt(Stuff.ARG_COUNT)
     private val viewModel by viewModels<TracksVM>()
-    private val activityViewModel by viewModels<MainNotifierViewModel>({ activity!! })
+    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private lateinit var adapter: TrackHistoryAdapter
     private val argToTrack by lazy {
         Track(
@@ -79,7 +80,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         val title = if (activityViewModel.userIsSelf) {
             getString(R.string.my_scrobbles) + ": " + formattedCount
         } else {
-            val username = activityViewModel.peekUser().name
+            val username = activityViewModel.currentUser.name
             "$username: $formattedCount"
         }
         setTitle(title)
@@ -87,7 +88,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (!activityViewModel.userIsSelf)
-            viewModel.username = activityViewModel.peekUser().name
+            viewModel.username = activityViewModel.currentUser.name
 
         viewModel.tracksReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe

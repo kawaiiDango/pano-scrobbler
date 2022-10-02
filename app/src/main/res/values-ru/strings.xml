@@ -20,13 +20,13 @@
     </plurals>
     <plurals name="num_months">
         <item quantity="one">%1$s месяц</item>
-        <item quantity="few">%1$s месяца</item>
+        <item quantity="few">%1$s месяцев</item>
         <item quantity="many">%1$s месяцев</item>
         <item quantity="other">%1$s месяца</item>
     </plurals>
     <plurals name="num_years">
         <item quantity="one">%1$s год</item>
-        <item quantity="few">%1$s года</item>
+        <item quantity="few">%1$s лет</item>
         <item quantity="many">%1$s лет</item>
         <item quantity="other">%1$s лет</item>
     </plurals>
@@ -78,9 +78,11 @@
     <string name="settings">Настроить</string>
     <string name="bug_report">Сообщить об ошибке</string>
     <string name="album_art">Обложка альбома</string>
+    <string name="artist_image">Изображение исполнителя</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось обнаружить заголовок</string>
     <string name="network_error">Ошибка сети</string>
     <string name="disable_tls_verify">Игнорировать ошибки TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Скроббл проигнорирован</string>
     <string name="scrobble_ignored_save_edit">Lastfm проигнорировал правку, вероятно, потому, что скроббл слишком старый. Хотели бы вы вместо этого сохранить это изменение для будущих скробблов?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Обязательные поля не заполнены</string>
     <string name="artist">Исполнитель</string>
@@ -120,6 +122,7 @@
     <string name="offline">Не в сети. Показанные данные не актуальны</string>
     <string name="unavailable_offline">Недоступно в офлайн-режиме</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервисы</string>
+    <string name="others">Другие</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слушал\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слушал\n%1$s %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Мои %2$s за %1$s:\n%3$s</string>
@@ -127,13 +130,21 @@
     <string name="share_sig">(через Pano Scrobbler)</string>
     <string name="share_this_song">Поделиться этим треком</string>
     <string name="share">Поделиться</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Легенда</string>
+    <string name="grid_size">Изменить размер сетки</string>
     <string name="more_info">Больше информации</string>
     <string name="rank_change_no_change">Без изменений</string>
+    <string name="rank_change_new">Не заскробблено за предыдущий период</string>
     <string name="search">Поиск</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Очистить всю историю</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Убрать данный элемент из истории?</string>
     <string name="library" comment="search within the library">Библиотека</string>
     <string name="global" comment="search globally across lastfm">Глобальное</string>
     <string name="reindex">Быстрый индекс</string>
+    <string name="full_index">Полный индекс</string>
     <string name="take_long_time">Это может занять некоторое время</string>
+    <string name="full_index_desc">Используйте это только если вы изменили или удалили скробблы с сайта.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Нашел топ %1$s предметов по каждой категории.</string>
     <string name="profile">Профиль</string>
     <string name="profile_pic">Изображение профиля</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Опции для этого элемента</string>
@@ -161,6 +172,8 @@
     <string name="grant_notification_access">Предоставить доступ к уведомлениям</string>
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
     <string name="send_notifications">Разрешить уведомления</string>
+    <string name="notification_channel_blocked">Это требует включенные уведомления</string>
+    <string name="will_not_scrobble">Пропуск этого шага отключит скробблинг</string>
     <string name="authenticate_with_lastfm_desc">Вы можете войти в LibreFM, GNUFM и Listenbrainz позже в настройках</string>
     <string name="swap" comment="(Swap title and artist)">Свап</string>
     <string name="rate_msg">Нравится это приложение?</string>
@@ -198,6 +211,7 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Из %1$s</string>
     <string name="not_found" comment="Shown in search">Не найдено</string>
     <string name="share_this_chart">Поеделиться этим чартом</string>
+    <string name="lastfm_reports">LastFM Отчеты</string>
     <string name="weekly">Еженедельно</string>
     <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
@@ -275,6 +289,7 @@
     <string name="pin">Закрепить</string>
     <string name="unpin">Открепить</string>
     <string name="pin_limit_reached" formatted="true">Достигнуто ограничение по закрепам (%1$d)</string>
+    <string name="pin_help">Долгое нажатие на закрепленные элементы для их упорядочения</string>
     <string name="use_channel" comment="(Use youtube channel name)">Использовать название канала</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Хотите включить правило редактирования шаблона: %1$s?</string>
     <string name="show_persistent_noti">Показывать постоянное уведомление</string>
@@ -282,6 +297,7 @@
     <string name="persistent_noti_desc">Нажмите и удерживайте, чтобы скрыть это</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
+    <string name="enable" comment="To enable the scrobbler">Включить</string>
     <string name="pref_master">Скробблинг музыки</string>
     <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек</string>
     <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
@@ -315,6 +331,7 @@
     <string name="pref_pixel_np_nope">Доступно только на устройствах Pixel</string>
     <string name="pref_locale">Языки</string>
     <string name="pref_change_locale">Изменить язык</string>
+    <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>
     <string name="pref_misc">Разное</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Импорт и экспорт</string>
@@ -337,7 +354,12 @@
     <string name="pref_lastfm_disable">Не скробблить в LastFM</string>
     <string name="pref_lastfm_disable_desc">Для работы остальной части пользовательского интерфейса вам по-прежнему нужно войти в lastFm</string>
     <string name="pref_translate">Перевести это приложение</string>
+    <string name="pref_translate_credits">Авторы переводов</string>
+    <string name="pref_oss_credits">Лицензия открытого ПО</string>
+    <string name="pref_check_updates">Проверить обновления</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Доступно обновление: %1$s</string>
     <string name="download">Загрузить</string>
+    <string name="changelog">Список изменений</string>
     <string name="import_hey_wtf">Вероятно, это не файл экспорта Pano Scrobbler</string>
     <string name="export_failed">Экспорт не удался</string>
     <string name="imported">Импортирован</string>
@@ -360,6 +382,7 @@
     <string name="no_browser">Браузер не установлен</string>
     <string name="no_player">Музыкальный плеер не установлен</string>
     <string name="not_running">⚠ Скробблер был остановлен вашей системой</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Причина закрытия указанная системой: %s</string>
     <string name="not_running_fix_action">Исправить это</string>
     <string name="login_submit">Проверить</string>
     <string name="scrobble">Скробблинг</string>

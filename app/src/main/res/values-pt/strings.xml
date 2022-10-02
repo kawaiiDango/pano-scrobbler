@@ -102,6 +102,7 @@
     <string name="offline">Offline. Os dados mostrados não são recentes</string>
     <string name="unavailable_offline">Não disponível quando offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
+    <string name="others">Outros</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava a ouvir \n%1$s, a %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava a ouvir \n%1$s, a %2$s</string>
     <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">%2$s (%1$s):\n%3$s</string>
@@ -117,6 +118,8 @@
     <string name="rank_change_no_change">Sem alteração</string>
     <string name="rank_change_new">Sem registo de scrobbles no período anterior</string>
     <string name="search">Pesquisar</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Limpar todo o histórico</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Remover este item do histórico?</string>
     <string name="library" comment="search within the library">Biblioteca</string>
     <string name="global" comment="search globally across lastfm">Global</string>
     <string name="reindex">Índice rápido</string>
@@ -152,12 +155,14 @@
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para obter metadados da música. Nenhum outro tipo notificação é lida</string>
     <string name="send_notifications">Permitir notificações</string>
+    <string name="notification_channel_blocked">Isto requer que as notificações estejam ativadas</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Verifique o estado e a contagem dos scrobbles
 - Favorite ou bloqueie diretamente da notificação
 - Seja notificado sobre erros de scrobble e possíveis soluções para o problema
 - Confira a sua tabela de scrobbles todas as semanas
 - E muito mais
 - As notifcações não reproduzem nenhum som\"\""</string>
+    <string name="will_not_scrobble">Ignorar esta etapa desativará o scrobbling</string>
     <string name="authenticate_with_lastfm_desc">Pode depois iniciar sessão no LibreFM, GNUFM e Listenbrainz, a partir das definições</string>
     <string name="swap" comment="(Swap title and artist)">Inverter</string>
     <string name="rate_msg">A gostar desta aplicação?</string>
@@ -282,6 +287,7 @@
     <string name="persistent_noti_desc">Pressione e segure para ocultar isto</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
+    <string name="enable" comment="To enable the scrobbler">Ativar</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das definições rápidas</string>
     <string name="pref_noti_q">Pode incitar a notificação, se o ícone não aparecer</string>

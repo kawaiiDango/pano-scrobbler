@@ -105,8 +105,6 @@
     <string name="others">Otros</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estaba escuchando\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estaba escuchando\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Mi %1$s %2$s:\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s\'s %1$s %2$s:\n%3$s</string>
     <string name="share_sig">(a través de Pano Scrobbler)</string>
     <string name="share_this_song">Compartir esta canción</string>
     <string name="share">Compartir</string>
@@ -189,7 +187,6 @@
     <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Scrobbles pasados</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto en el tiempo</string>
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s\'s</string>
     <string name="my_scrobbles">Mis scrobbles</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s scrobbles</string>
     <string name="listeners">Oyentes</string>
@@ -200,7 +197,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles hasta %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">No encontrado</string>
-    <string name="share_this_chart">Compartir esta lista</string>
     <string name="lastfm_reports">Informes LastFM</string>
     <string name="weekly">Semana</string>
     <string name="weeks">Semanas</string>
@@ -246,7 +242,6 @@
     <string name="dark">Oscuro</string>
     <string name="system_colors">Colores del sistema</string>
     <string name="appwidget_alpha">Opacidad de fondo</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">El Widget se actualizará cada %1$d minutos</string>
     <string name="primary_color">Color principal</string>
     <string name="secondary_color">Color secundario</string>
     <string name="tint_background">Tinte de fondo</string>
@@ -317,8 +312,6 @@
     <string name="pref_now_playing">Enviar reproducción</string>
     <string name="pref_fetch_aa">Obtener artistas del último álbum</string>
     <string name="pref_fetch_aa_desc">Para los reproductores que no facilitan estos datos. Los datos obtenidos pueden diferir a los de tús etiquetas. Es posible que lastFM no tenga los datos de algunas canciones.</string>
-    <string name="pref_pixel_np">Scrobble Pixel ahora reproduciendo</string>
-    <string name="pref_pixel_np_nope">Disponible sólo en dispositivos Pixel</string>
     <string name="pref_locale">Idiomas</string>
     <string name="pref_change_locale">Elegir idioma</string>
     <string name="pref_crashlytics_enabled">Reportar errores automáticamente</string>

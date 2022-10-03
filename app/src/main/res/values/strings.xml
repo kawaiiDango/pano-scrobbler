@@ -297,7 +297,9 @@
     <string name="not_found"
         comment="Shown in search"
         >Not found</string>
-    <string name="share_this_chart">Share this chart</string>
+    <string name="save"
+        comment="saves a file"
+        >Save</string>
     <string name="lastfm_reports">LastFM reports</string>
     <string name="weekly">Weekly</string>
     <string name="weeks">Weeks</string>

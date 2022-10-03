@@ -85,8 +85,6 @@
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">服务</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">我最近在听 \n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s 最近在听 \n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">我的 %1$s %2$s：\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s 的 %1$s %2$s：\n%3$s</string>
     <string name="share_sig">（发送自 Pano Scrobbler）</string>
     <string name="share_this_song">分享这首歌曲</string>
     <string name="share">分享</string>
@@ -143,7 +141,6 @@
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
     <string name="past_scrobbles">过去的音乐记录</string>
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s 的</string>
     <string name="my_scrobbles">我的收听记录</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s 的音乐记录</string>
     <string name="listeners">听众</string>
@@ -154,7 +151,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">截至 %1$s 的音乐记录</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">来自 %1$s</string>
     <string name="not_found" comment="Shown in search">找不到结果</string>
-    <string name="share_this_chart">分享此图表</string>
     <string name="weekly">每周</string>
     <string name="monthly">每月</string>
     <string name="charts_overall">总览</string>
@@ -194,7 +190,6 @@
     <string name="light">浅色</string>
     <string name="dark">深色</string>
     <string name="appwidget_alpha">背景不透明度</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">小部件每 %1$d 分钟刷新一次</string>
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>
     <string name="tint_background">背景色调</string>
@@ -254,8 +249,6 @@
     <string name="pref_now_playing">提交当前播放的音乐</string>
     <string name="pref_fetch_aa">从 lastFM 获取专辑艺术家</string>
     <string name="pref_fetch_aa_desc">针对不提供此数据的播放器。获取的数据可能和实际标签不同。last.fm 可能没有某些歌曲的专辑艺术家数据。</string>
-    <string name="pref_pixel_np">对 Pixel 的闻曲知音结果进行记录</string>
-    <string name="pref_pixel_np_nope">仅适用于 Pixel 设备</string>
     <string name="pref_change_locale">更改语言</string>
     <string name="pref_misc">杂项</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>

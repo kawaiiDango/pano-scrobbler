@@ -227,7 +227,6 @@
     <string name="appwidget_loading">Načítání…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Období</string>
     <string name="appwidget_show">Zobrazit</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget bude obnoven každých %1$d minut</string>
     <string name="primary_color">Primární barva</string>
     <string name="secondary_color">Sekundární barva</string>
     <string name="random_theme">Náhodný při každém spuštění</string>
@@ -294,8 +293,6 @@
     <string name="pref_now_playing">Odeslat právě přehrávané</string>
     <string name="pref_fetch_aa">Načítat interprety alba z lastFM</string>
     <string name="pref_fetch_aa_desc">Pro přehrávače, které tato data neposkytují. Načtená data se mohou lišit od vašich tagů. lastFM nemusí mít data pro některé skladby.</string>
-    <string name="pref_pixel_np">Scrobblovat \"Now Playing\" na Pixelech</string>
-    <string name="pref_pixel_np_nope">Dostupné pouze na zařízeních Pixel</string>
     <string name="pref_locale">Jazyky</string>
     <string name="pref_change_locale">Změnit jazyk</string>
     <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>

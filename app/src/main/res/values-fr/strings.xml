@@ -105,8 +105,6 @@
     <string name="others">Autres</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">J\'écoutais\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s écoutait\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Mon %1$s %2$s:\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%2$s en %1$s de %4$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Partager cette musique</string>
     <string name="share">Partager</string>
@@ -178,7 +176,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles jusqu\'à %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De : %1$s</string>
     <string name="not_found" comment="Shown in search">Introuvable</string>
-    <string name="share_this_chart">Partager ce graphique</string>
     <string name="weekly">Hebdomadaire</string>
     <string name="monthly">Mensuel</string>
     <string name="charts_overall">Global</string>
@@ -206,7 +203,6 @@
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="appwidget_alpha">Opacité de l\'arrière-plan</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Le widget sera actualisé toutes les %1$d minutes</string>
     <string name="primary_color">Couleur principale</string>
     <string name="secondary_color">Couleur secondaire</string>
     <string name="random_theme">Aléatoire à chaque lancement</string>
@@ -246,8 +242,6 @@
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
     <string name="pref_fetch_aa">Récupérer les artistes de l\'album depuis lastFM</string>
-    <string name="pref_pixel_np">Scrabble Pixel est en cours de lecture</string>
-    <string name="pref_pixel_np_nope">Disponible uniquement sur les appareils Pixel</string>
     <string name="pref_change_locale">Changer de langage</string>
     <string name="pref_misc">Divers.</string>
     <string name="pref_gnufm_title">GNU FM nixtape URL</string>

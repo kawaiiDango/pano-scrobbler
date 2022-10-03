@@ -118,8 +118,6 @@
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Usługi</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Słuchałem\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s słuchał/a\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Mój %1$s %2$s:\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s\'s %1$s %2$s:\n%3$s</string>
     <string name="share_sig">(przez Pano Scrobbler)</string>
     <string name="share_this_song">Udostępnij ten utwór</string>
     <string name="share">Udostępnij</string>
@@ -198,7 +196,6 @@
     <string name="sort">Sortuj</string>
     <string name="past_scrobbles">Poprzednie scrobblowanie</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Skok czasu</string>
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s</string>
     <string name="my_scrobbles">Moje scrobble</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s scrobble</string>
     <string name="listeners">Słuchacze</string>
@@ -209,7 +206,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbluje do %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Z %1$s</string>
     <string name="not_found" comment="Shown in search">Nie znaleziono</string>
-    <string name="share_this_chart">Udostępnij ten wykres</string>
     <string name="lastfm_reports">Raporty LastFM</string>
     <string name="weekly">Co tydzień</string>
     <string name="weeks">Tygodnie</string>

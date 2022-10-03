@@ -104,8 +104,6 @@
     <string name="others">Altres</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava escoltant\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escoltant\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">%2$s (%1$s):\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%2$s (%1$s) per %4$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Comparteix la cançó</string>
     <string name="share">Comparteix</string>
@@ -165,7 +163,6 @@
     <string name="sort">Ordena</string>
     <string name="past_scrobbles">Scrobbles anteriors</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salt en el temps</string>
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s</string>
     <string name="my_scrobbles">Els meus scrobbles</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de: %1$s</string>
     <string name="listeners">Oients</string>
@@ -176,7 +173,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles fins al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">No s\'ha trobat</string>
-    <string name="share_this_chart">Comparteix la llista</string>
     <string name="lastfm_reports">Informes de Last.fm</string>
     <string name="weekly">Setmanal</string>
     <string name="weeks">Setmanes</string>
@@ -221,7 +217,6 @@
     <string name="dark">Fosc</string>
     <string name="system_colors">Colors del sistema</string>
     <string name="appwidget_alpha">Opacitat del fons</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">El giny s\'actualitzarà cada %1$d minuts</string>
     <string name="primary_color">Color principal</string>
     <string name="secondary_color">Color secundari</string>
     <string name="tint_background">Tint del fons</string>
@@ -273,7 +268,6 @@
     <string name="pref_now_playing">Envia la reproducció actual</string>
     <string name="pref_fetch_aa">Obtín de Last.fm els artistes dels àlbums</string>
     <string name="pref_fetch_aa_desc">Per als reproductors que no proporcionen aquestes dades. Les dades obtingudes poden diferir de les teues etiquetes. És possible que Last.fm no tinga les dades d\'algunes cançons.</string>
-    <string name="pref_pixel_np">Fes scrobble d\'«Està sonant» dels Pixel</string>
     <string name="pref_locale">Llengües</string>
     <string name="pref_change_locale">Canvia la llengua</string>
     <string name="pref_misc">Altres</string>

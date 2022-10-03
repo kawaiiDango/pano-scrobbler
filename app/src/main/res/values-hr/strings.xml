@@ -172,7 +172,6 @@
     <string name="collapse" comment="(view only a few items)">Sažmi</string>
     <string name="expand" comment="(view all items)">Proširi</string>
     <string name="not_found" comment="Shown in search">Nije pronađeno</string>
-    <string name="share_this_chart">Podijeli ovu ljestvicu</string>
     <string name="lastfm_reports">LastFM izvješća</string>
     <string name="weekly">Tjedni</string>
     <string name="weeks">Tjedni</string>

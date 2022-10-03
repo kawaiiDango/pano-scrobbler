@@ -91,8 +91,6 @@
     <string name="others">その他</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%1$s\nを%2$sに聴きました</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$sさんは%1$s\nを%2$sに聴きました</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">過去%1$sの%2$s:\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$sさんの過去%1$sの%2$s:\n%3$s</string>
     <string name="share_sig">(Pano Scrobblerより)</string>
     <string name="share_this_song">この曲を共有</string>
     <string name="share">共有</string>
@@ -172,7 +170,6 @@
     <string name="sort">並べ替え</string>
     <string name="past_scrobbles">過去のScrobble</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">日付の選択</string>
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$sの</string>
     <string name="my_scrobbles">My Scrobble</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$sのScrobble</string>
     <string name="listeners">リスナー</string>
@@ -183,7 +180,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">%1$sまでのScrobble</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">見つかりませんでした</string>
-    <string name="share_this_chart">このチャートを共有</string>
     <string name="lastfm_reports">LastFM レポート</string>
     <string name="weekly">1週間</string>
     <string name="weeks">週</string>
@@ -228,7 +224,6 @@
     <string name="dark">ダーク</string>
     <string name="system_colors">システムの色</string>
     <string name="appwidget_alpha">背景の透明度</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">ウィジェットは%1$d分ごとに更新されます</string>
     <string name="primary_color">メインカラー</string>
     <string name="secondary_color">サブカラー</string>
     <string name="tint_background">背景を明るくする</string>
@@ -298,8 +293,6 @@
     <string name="pref_now_playing">再生中の状態情報を送信する</string>
     <string name="pref_fetch_aa">LastFMからアルバムアーティストを取得する</string>
     <string name="pref_fetch_aa_desc">アルバムアーティストの表示が行われないプレーヤーの場合に行います。取得データがタグ付けされたものと異なっていたり、LastFMには一部曲が存在しない場合があります。</string>
-    <string name="pref_pixel_np">Pixelの「この曲なに？」をScrobbleする</string>
-    <string name="pref_pixel_np_nope">Pixel端末でのみ利用可能</string>
     <string name="pref_locale">言語</string>
     <string name="pref_change_locale">言語を変更</string>
     <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>

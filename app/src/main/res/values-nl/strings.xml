@@ -105,8 +105,6 @@
     <string name="others">Overigen</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Ik was aan het luisteren naar\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s luisterde naar\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Mijn%1$s %2$s:\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s\'s %1$s %2$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbeler)</string>
     <string name="share_this_song">Deel dit nummer</string>
     <string name="share">Delen</string>
@@ -189,7 +187,6 @@
     <string name="sort">Sorteren</string>
     <string name="past_scrobbles">Vorige scrobbels</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Tijd sprong</string>
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s\'s</string>
     <string name="my_scrobbles">Mijn scrobbels</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s\'s scrobbels</string>
     <string name="listeners">Luisteraars</string>
@@ -200,7 +197,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbels tot %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Uit %1$s</string>
     <string name="not_found" comment="Shown in search">Niet gevonden</string>
-    <string name="share_this_chart">Deze lijst delen</string>
     <string name="lastfm_reports">LastFM rapporten</string>
     <string name="weekly">Wekelijks</string>
     <string name="weeks">Weken</string>
@@ -246,7 +242,6 @@
     <string name="dark">Donker</string>
     <string name="system_colors">Systeemkleuren gebruiken</string>
     <string name="appwidget_alpha">Transparantie achtergrond</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget wordt elke %1$d minuten vernieuwd</string>
     <string name="primary_color">Primaire kleur</string>
     <string name="secondary_color">Secundaire kleur</string>
     <string name="tint_background">Tint achtergrond</string>
@@ -317,8 +312,6 @@
     <string name="pref_now_playing">Nu aan het spelen doorgeven</string>
     <string name="pref_fetch_aa">Album artiesten ophalen van lastFM</string>
     <string name="pref_fetch_aa_desc">Voor spelers die deze gegevens niet verstrekken. De opgehaalde gegevens kunnen verschillen van je tags. lastFM heeft mogelijk geen gegevens voor sommige nummers.</string>
-    <string name="pref_pixel_np">Scrobbel Pixels Speelt nu</string>
-    <string name="pref_pixel_np_nope">Alleen beschikbaar op Pixel apparaten</string>
     <string name="pref_locale">Talen</string>
     <string name="pref_change_locale">Taal wijzigen</string>
     <string name="pref_crashlytics_enabled">Rapporteer fouten automatisch</string>

@@ -105,8 +105,6 @@
     <string name="others">Diğer</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Bak ne dinliyorum:\n%1$s (%2$s)</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Bak %3$s ne dinliyor:\n%1$s (%2$s)</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Tarafımca %2$s (%1$s):\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%4$s tarafından %2$s (%1$s):\n%3$s</string>
     <string name="share_sig">(Pano Scrobbler tarafından)</string>
     <string name="share_this_song">Bu şarkıyı paylaş</string>
     <string name="share">Paylaş</string>
@@ -189,7 +187,6 @@
     <string name="sort">Tür</string>
     <string name="past_scrobbles">Geçmiş skroplar</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Geçmiş skroplar</string>
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s tarafından</string>
     <string name="my_scrobbles">Skroplarım</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s adlı kullanıcının skropları</string>
     <string name="listeners">Dinleyiciler</string>
@@ -200,7 +197,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">%1$s tarihine kadar skroplar</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">Bulunamadı</string>
-    <string name="share_this_chart">Bu listeyi paylaş</string>
     <string name="lastfm_reports">LastFM dinleme raporları</string>
     <string name="weekly">Haftalık</string>
     <string name="weeks">Haftalık</string>
@@ -246,7 +242,6 @@
     <string name="dark">Koyu</string>
     <string name="system_colors">Sistem renkleri</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">Widget her %1$d dakikada bir yenilenir</string>
     <string name="primary_color">Ana renk</string>
     <string name="secondary_color">İkincil renk</string>
     <string name="tint_background">Renkli arkaplan</string>
@@ -317,8 +312,6 @@
     <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
     <string name="pref_fetch_aa">Albüm sanatçılarını lastFM\'den al</string>
     <string name="pref_fetch_aa_desc">Bu bilgiyi sağlamayan oynatıcılar için kullanılır. Alınan veriler sizin etiketlerinizden farklı olabilir. LastFM bazı şarkıların verilerine sahip olmayabilir.</string>
-    <string name="pref_pixel_np">Pixel\'de Şimdi Oynatılanı Skropla</string>
-    <string name="pref_pixel_np_nope">Sadece Pixel cihazlarda mevcut</string>
     <string name="pref_locale">Diller</string>
     <string name="pref_change_locale">Dili değiştir</string>
     <string name="pref_crashlytics_enabled">Hataları otomatik olarak bildir</string>

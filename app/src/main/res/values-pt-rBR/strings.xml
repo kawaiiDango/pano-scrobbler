@@ -100,8 +100,6 @@
     <string name="others">Outros</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Eu estava escutando\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escutando\n%1$s %2$s</string>
-    <string name="charts_share" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks">Meu %1$s %2$s:\n%3$s</string>
-    <string name="charts_share_username" formatted="true" comment="%1= time period (e.g. 3 months, monthly), %2= top artists/albums/tracks, %3= list of artists/albums/tracks, %4= username">%2$s %1$s de %4$s:\n%3$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Compartilhar esta música</string>
     <string name="share">Compartilhar</string>
@@ -176,7 +174,6 @@
     <string name="saved_as_pending">Salvo como scrobble pendente</string>
     <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Histórico de scrobbles</string>
-    <string name="possession" formatted="true" comment="%1= name (e.g. Reimu's)">%1$s</string>
     <string name="my_scrobbles">Meus scrobbles</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de %1$s</string>
     <string name="listeners">Ouvintes</string>
@@ -187,7 +184,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles até %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">Não encontrado</string>
-    <string name="share_this_chart">Compartilhar este chart</string>
     <string name="lastfm_reports">LastFM reports</string>
     <string name="weekly">Semanal</string>
     <string name="weeks">Semanas</string>
@@ -233,7 +229,6 @@
     <string name="dark">Escuro</string>
     <string name="system_colors">Cores do sistema</string>
     <string name="appwidget_alpha">Opacidade do fundo</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= minutes, always more than 20">O widget será atualizado a cada %1$d minutos</string>
     <string name="primary_color">Cor principal</string>
     <string name="secondary_color">Cor secundária</string>
     <string name="tint_background">Definir fundo</string>
@@ -304,8 +299,6 @@
     <string name="pref_now_playing">Enviar em reprodução</string>
     <string name="pref_fetch_aa">Obter artistas dos álbuns do lastFM</string>
     <string name="pref_fetch_aa_desc">Para reprodutores que não fornecem esses dados. Os dados obtidos podem ser diferentes das suas etiquetas. O lastFM pode não ter dados para algumas músicas.</string>
-    <string name="pref_pixel_np">Scrobble do que o Pixel estiver a reproduzir</string>
-    <string name="pref_pixel_np_nope">Disponível apenas em dispositivos Pixel</string>
     <string name="pref_locale">Idiomas</string>
     <string name="pref_change_locale">Mudar língua</string>
     <string name="pref_crashlytics_enabled">Reportar erros automaticamente</string>

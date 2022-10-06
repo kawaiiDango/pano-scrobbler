@@ -73,7 +73,6 @@ class DigestJob : JobService() {
         supervisorScope {
             val limit = 3
             val notificationTextList = mutableListOf<String>()
-            val shareTextList = mutableListOf<String>()
             val lastfmSession =
                 Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, prefs.lastfmSessKey)
 
@@ -103,7 +102,6 @@ class DigestJob : JobService() {
                 val title = getString(titleRes)
                 val text = result.pageResults.joinToString { it.name }
                 notificationTextList += "<b>$title:</b>\n$text"
-                shareTextList += "$title:\n$text"
             }
 
             val title = getString(
@@ -119,24 +117,13 @@ class DigestJob : JobService() {
 
             val notificationText = Html.fromHtml(notificationTextList.joinToString("<br>\n"))
 
-            val shareText = title + "\n\n" + shareTextList.joinToString("\n") +
-                    (if (!prefs.proStatus) "\n\n" + getString(R.string.share_sig) else "")
-
-
             val channelId = if (period == Period.WEEK)
                 MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY
             else
                 MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY
 
-            var intent = Intent(Intent.ACTION_SEND)
+            var intent: Intent
 
-            intent.type = "text/plain"
-            intent.putExtra(Intent.EXTRA_TEXT, shareText)
-            val shareIntent = PendingIntent.getActivity(
-                applicationContext, 10 + period.ordinal,
-                Intent.createChooser(intent, title),
-                Stuff.updateCurrentOrImmutable
-            )
 
             intent = Intent(applicationContext, MainActivity::class.java)
                 .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_CHARTS)
@@ -149,7 +136,6 @@ class DigestJob : JobService() {
                 .putExtra(Stuff.ARG_TYPE, Stuff.TYPE_ALL)
                 .putSingle(TimePeriod(this@DigestJob, period))
                 .putSingle(lastfmAccount.user)
-            // todo username
             val collageIntent = PendingIntent.getActivity(
                 applicationContext, 19, intent,
                 Stuff.updateCurrentOrImmutable
@@ -157,9 +143,7 @@ class DigestJob : JobService() {
 
             val nb = NotificationCompat.Builder(applicationContext, channelId)
                 .apply {
-                    setColor(
-                        ColorPatchUtils.getNotiColor(applicationContext) ?: return@apply
-                    )
+                    color = (ColorPatchUtils.getNotiColor(applicationContext) ?: return@apply)
                 }
                 .setSmallIcon(R.drawable.vd_charts)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -167,10 +151,10 @@ class DigestJob : JobService() {
                 .setContentIntent(launchIntent)
                 .addAction(
                     Stuff.getNotificationAction(
-                        R.drawable.vd_share,
-                        "↗",
-                        getString(R.string.share),
-                        shareIntent
+                        R.drawable.vd_mosaic,
+                        "🖼️",
+                        getString(R.string.create_collage),
+                        collageIntent
                     )
                 )
                 .setContentText(notificationText)
@@ -186,17 +170,6 @@ class DigestJob : JobService() {
                     else
                         NotificationCompat.VISIBILITY_SECRET
                 )
-
-            if (BuildConfig.DEBUG) {
-                nb.addAction(
-                    Stuff.getNotificationAction(
-                        R.drawable.vd_share,
-                        "↗",
-                        getString(R.string.share),
-                        collageIntent
-                    )
-                )
-            }
 
             nm.notify(channelId, period.ordinal, nb.build())
         }
@@ -283,7 +256,7 @@ class DigestJob : JobService() {
             alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
 
 
-            val dailyTestDigests = true
+            val dailyTestDigests = false
             if (BuildConfig.DEBUG && dailyTestDigests) {
                 val dailyIntent = PendingIntent.getBroadcast(
                     context, 22,
@@ -292,10 +265,10 @@ class DigestJob : JobService() {
                 )
 
                 cal.timeInMillis = now
-//                cal.setMidnight()
-//                cal.add(Calendar.DAY_OF_YEAR, 1)
-//                cal.add(Calendar.SECOND, secondsToAdd)
-                cal.add(Calendar.SECOND, 20)
+                cal.setMidnight()
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                cal.add(Calendar.SECOND, secondsToAdd)
+//                cal.add(Calendar.SECOND, 20)
                 if (cal.timeInMillis < now)
                     cal.add(Calendar.DAY_OF_YEAR, 1)
                 val nextDay = cal.timeInMillis

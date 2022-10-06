@@ -1,19 +1,21 @@
 package com.arn.scrobble.charts
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.drawToBitmap
-import androidx.core.view.setPadding
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -30,23 +32,26 @@ import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.databinding.DialogCollageGeneratorBinding
 import com.arn.scrobble.databinding.FooterCollageBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
+import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
+import com.arn.scrobble.ui.UiUtils.getSelectedItemPosition
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.textview.MaterialTextView
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Calendar
 
 
 class CollageGeneratorFragment : BottomSheetDialogFragment() {
@@ -56,6 +61,26 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private val timePeriod get() = arguments!!.getSingle<TimePeriod>()!!
     private val prefs by lazy { MainPrefs(context!!) }
+    private lateinit var saveBySafRequest: ActivityResultLauncher<Intent>
+    private val minSize = 3
+    private val maxSize = 6
+    private var lastUri: Uri? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        saveBySafRequest =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                    context!!.contentResolver.openOutputStream(result.data!!.data!!)
+                        ?.use { ostream ->
+                            context!!.contentResolver.openInputStream(lastUri!!)?.use { istream ->
+                                istream.copyTo(ostream)
+                            }
+                        }
+                }
+            }
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -70,8 +95,6 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val minSize = 3
-        val maxSize = 6
         val sizes = (minSize..maxSize).map { "$it" }.toTypedArray()
         val types = arrayOf(
             getString(R.string.edit_all),
@@ -101,44 +124,78 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         binding.collageIncludeCaptions.isChecked = prefs.collageCaptions
         binding.collageIncludeText.isChecked = prefs.collageText
 
-        binding.collageGenerateButton.setOnClickListener { v ->
+        binding.collageShareButton.setOnClickListener {
+            onCreateCollageButtonClick(false)
+        }
 
-            binding.collageGenerateProgress.show()
-            v.visibility = View.INVISIBLE
+        binding.collageSaveButton.setOnClickListener {
+            onCreateCollageButtonClick(true)
+        }
+    }
 
-            prefs.collageSkipMissing = binding.collageSkipMissingImages.isChecked
-            prefs.collageCaptions = binding.collageIncludeCaptions.isChecked
-            prefs.collageUsername = binding.collageIncludeUsername.isChecked
-            prefs.collageText = binding.collageIncludeText.isChecked
-            prefs.collageSize =
-                binding.collageSizeText.text.toString().let { sizes.indexOf(it) + minSize }
+    private fun onCreateCollageButtonClick(save: Boolean) {
 
-            val type = binding.collageTypeText.text.toString().let { types.indexOf(it) }
+        binding.collageGenerateProgress.show()
+        binding.collageGenerateButtons.visibility = View.INVISIBLE
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                if (type == 0) { // digest
-                    val results = listOf(
-                        Stuff.TYPE_ARTISTS,
-                        Stuff.TYPE_ALBUMS,
-                        Stuff.TYPE_TRACKS
-                    ).mapConcurrently(3) {
-                        kotlin.runCatching { fetchCharts(it, timePeriod) }
-                    }
-                    if (results.all { it.isSuccess && it.getOrNull()?.pageResults != null }) {
-                        drawCollage(
-                            Stuff.TYPE_ALL,
-                            results.map { it.getOrNull()!!.pageResults.toList() })
-                    } else {
-                        context!!.toast(R.string.network_error)
-                    }
-                } else { // normal
-                    val result = kotlin.runCatching { fetchCharts(type, timePeriod) }
-                    if (result.isSuccess && result.getOrNull()?.pageResults?.isNotEmpty() == true) {
-                        drawCollage(type, listOf(result.getOrNull()!!.pageResults.toList()))
-                    } else {
-                        context!!.toast(R.string.network_error)
-                    }
+        prefs.collageSkipMissing = binding.collageSkipMissingImages.isChecked
+        prefs.collageCaptions = binding.collageIncludeCaptions.isChecked
+        prefs.collageUsername = binding.collageIncludeUsername.isChecked
+        prefs.collageText = binding.collageIncludeText.isChecked
+        prefs.collageSize = binding.collageSizeText.getSelectedItemPosition() + minSize
+
+        val collageType = binding.collageTypeText.getSelectedItemPosition()
+        val cal = Calendar.getInstance()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            val results = if (collageType == Stuff.TYPE_ALL) { // digest
+                listOf(
+                    Stuff.TYPE_ARTISTS,
+                    Stuff.TYPE_ALBUMS,
+                    Stuff.TYPE_TRACKS
+                ).mapConcurrently(3) {
+                    kotlin.runCatching { fetchCharts(it, timePeriod) }
                 }
+            } else {
+                val result = kotlin.runCatching { fetchCharts(collageType, timePeriod) }
+                listOf(result)
+            }
+
+            if (results.all { it.isSuccess && it.getOrNull()?.pageResults != null }) {
+                val (uri, text) = createCollage(
+                    collageType,
+                    results.map { it.getOrNull()!!.pageResults.toList() })
+
+                resetProgress()
+
+                if (save) {
+                    val mimeType = "image/jpeg"
+                    val fileName =
+                        "collage_" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" +
+                                cal[Calendar.DATE] + "_" + cal[Calendar.HOUR_OF_DAY] + "_" +
+                                cal[Calendar.MINUTE] + "_" + cal[Calendar.SECOND] + ".jpg"
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        Stuff.savePictureQ(uri, fileName, mimeType)
+
+                        binding.collageSaveButton.setText(R.string.saved_to_gallery)
+                        binding.collageSaveButton.isEnabled = false
+                        delay(2500)
+                        binding.collageSaveButton.setText(R.string.save)
+                        binding.collageSaveButton.isEnabled = true
+                    } else {
+                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = mimeType
+                            putExtra(Intent.EXTRA_TITLE, fileName)
+                        }
+                        saveBySafRequest.launch(intent)
+                    }
+                } else
+                    shareImageUri(uri, text)
+            } else {
+                context!!.toast(R.string.network_error)
             }
         }
     }
@@ -156,7 +213,10 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                 }
         }
 
-    private suspend fun drawCollage(type: Int, musicEntriesAll: List<List<MusicEntry>>) {
+    private suspend fun createCollage(
+        type: Int,
+        musicEntriesAll: List<List<MusicEntry>>
+    ): Pair<Uri, String?> {
         val collageSize = prefs.collageSize
         val textScaler = collageSize / 5f
         val isDigest = type == Stuff.TYPE_ALL
@@ -164,7 +224,6 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         val collageRoot = LinearLayout(context, null, R.style.Theme_Material3_Dark).apply {
             orientation = LinearLayout.VERTICAL
         }
-        val collageFooter = FooterCollageBinding.inflate(layoutInflater, collageRoot, false)
 
         fun createAddImagesContainer() =
             ChipGroup(context).apply {
@@ -176,17 +235,15 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                 setChipSpacing(0)
             }
 
-        fun createAddHeader(headerText: String) =
-            MaterialTextView(context!!).apply {
-                collageRoot.addView(this)
-                updateLayoutParams<LinearLayout.LayoutParams> {
-                    width = LinearLayout.LayoutParams.MATCH_PARENT
-                    height = LinearLayout.LayoutParams.WRAP_CONTENT
-                }
-                setTextSize(TypedValue.COMPLEX_UNIT_PX, 50f * textScaler)
-                setPadding(16)
-                text = headerText
-                setTextColor(ColorUtils.setAlphaComponent(0xffffff, 200))
+        fun createAddHeader(headerTextRes: Int, headerImageRes: Int) =
+            LayoutCollageHeaderBinding.inflate(layoutInflater, collageRoot, true).apply {
+                collageHeaderIcon.setImageResource(headerImageRes)
+                collageHeaderText.setText(headerTextRes)
+                collageHeaderText.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    collageHeaderText.textSize * textScaler
+                )
+
             }
 
         var text: String? = null
@@ -222,13 +279,31 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
 
                 binding.collageGenerateProgress.max = collageSize * 3
 
-                val headerText = when (musicEntries.first()) {
-                    is Artist -> getString(R.string.top_artists)
-                    is Album -> getString(R.string.top_albums)
-                    is Track -> getString(R.string.top_tracks)
-                    else -> throw IllegalArgumentException("Unknown type: $type")
+                val headerTextRes: Int
+                val headerIconRes: Int
+
+                when (musicEntries.first()) {
+                    is Artist -> {
+                        headerTextRes = R.string.top_artists
+                        headerIconRes = R.drawable.vd_mic
+                    }
+
+                    is Album -> {
+                        headerTextRes = R.string.top_albums
+                        headerIconRes = R.drawable.vd_album
+                    }
+
+                    is Track -> {
+                        headerTextRes = R.string.top_tracks
+                        headerIconRes = R.drawable.vd_note
+                    }
+
+                    else -> {
+                        throw IllegalArgumentException("Unknown type: $type")
+                    }
                 }
-                createAddHeader(headerText)
+
+                createAddHeader(headerTextRes, headerIconRes)
 
                 val imagesContainer = createAddImagesContainer()
                 musicEntriesAllPlaced += fetchImages(musicEntries, imagesContainer, collageSize)
@@ -244,16 +319,13 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                 text = shareTitle + createShareText(musicEntriesPlaced) + shareSig
         }
 
-
-        prepareFooter(collageFooter, type, textScaler)
-        collageRoot.addView(collageFooter.root)
+        createAddFooter(collageRoot, type, textScaler)
         val uri = getCollageFileUri(collageRoot)
-        withContext(Dispatchers.Main) {
-            shareImageUri(uri, text)
-        }
+        lastUri = uri
 
         if (BuildConfig.DEBUG)
             binding.collagePreview.load(uri)
+        return uri to text
     }
 
     private fun createDigestShareText(musicEntriesAll: List<List<MusicEntry>>): String {
@@ -296,7 +368,9 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         return FileProvider.getUriForFile(context!!, "com.arn.scrobble.fileprovider", collageFile)
     }
 
-    private fun prepareFooter(collageFooter: FooterCollageBinding, type: Int, textScaler: Float) {
+    private fun createAddFooter(collageRoot: LinearLayout, type: Int, textScaler: Float) {
+        val collageFooter = FooterCollageBinding.inflate(layoutInflater, collageRoot, true)
+
         if (prefs.collageUsername) {
             collageFooter.collageFooterUsername.visibility = View.VISIBLE
             collageFooter.collageUsernameImage.visibility = View.VISIBLE
@@ -406,22 +480,22 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             if (prefs.collageCaptions) {
                 when (entry) {
                     is Artist -> {
-                        gridItemBinding.collageCaption.text = entry.name
+                        gridItemBinding.collageCaption.text = " " + entry.name
                         gridItemBinding.collageSubcaption.visibility = View.GONE
                     }
 
                     is Album -> {
-                        gridItemBinding.collageCaption.text = entry.name
-                        gridItemBinding.collageSubcaption.text = entry.artist
+                        gridItemBinding.collageCaption.text = " " + entry.name
+                        gridItemBinding.collageSubcaption.text = " " + entry.artist
                     }
 
                     is Track -> {
-                        gridItemBinding.collageCaption.text = entry.name
-                        gridItemBinding.collageSubcaption.text = entry.artist
+                        gridItemBinding.collageCaption.text = " " + entry.name
+                        gridItemBinding.collageSubcaption.text = " " + entry.artist
                     }
                 }
                 gridItemBinding.collagePlayCount.text = resources.getQuantityString(
-                    R.plurals.num_scrobbles_noti, entry.playcount, entry.playcount
+                    R.plurals.num_scrobbles_noti, entry.playcount, " " + entry.playcount
                 )
             }
         }
@@ -461,13 +535,12 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             type = "image/jpeg"
         }
         startActivity(intent)
-        resetProgress()
     }
 
     private fun resetProgress() {
         binding.collageGenerateProgress.hide()
         binding.collageGenerateProgress.isIndeterminate = true
-        binding.collageGenerateButton.visibility = View.VISIBLE
+        binding.collageGenerateButtons.visibility = View.VISIBLE
     }
 
     override fun onStart() {

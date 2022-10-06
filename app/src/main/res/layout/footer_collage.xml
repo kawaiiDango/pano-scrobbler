@@ -7,6 +7,7 @@
     android:background="#000"
     android:paddingHorizontal="16px"
     android:paddingVertical="8px"
+    tools:ignore="PxUsage"
     android:theme="@style/Theme.Material3.Dark">
 
     <TextView
@@ -30,9 +31,11 @@
     <ImageView
         android:id="@+id/collage_username_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:tint="?colorControlNormal"
-        app:srcCompat="@drawable/vd_user" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/collage_footer_type"
+        app:layout_constraintTop_toTopOf="@id/collage_footer_type"
+        app:srcCompat="@drawable/vd_user"
+        app:tint="?colorControlNormal" />
 
     <TextView
         android:id="@+id/collage_footer_username"
@@ -69,7 +72,10 @@
     <ImageView
         android:id="@+id/collage_type_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:paddingEnd="8px"
+        app:layout_constraintBottom_toBottomOf="@id/collage_footer_type"
+        app:layout_constraintTop_toTopOf="@id/collage_footer_type"
         app:tint="?colorControlNormal"
         tools:srcCompat="@drawable/vd_mic" />
 
@@ -77,9 +83,8 @@
         android:id="@+id/collage_footer_flow1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:constraint_referenced_ids="collage_type_image, collage_footer_type, collage_footer_duration, collage_username_image, collage_footer_username"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
@@ -27,6 +26,7 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -531,6 +531,19 @@ object UiUtils {
                 anim.start()
             }
         }
+    }
+
+    fun AutoCompleteTextView.getSelectedItemPosition(): Int {
+        var pos = -1
+        val displayedText = text.toString()
+        for (i in 0 until adapter.count) {
+            if ((adapter.getItem(i) as? String) == displayedText) {
+                pos = i
+                break
+            }
+        }
+
+        return pos
     }
 
     fun Context.toast(@StringRes strRes: Int, len: Int = Toast.LENGTH_SHORT) {

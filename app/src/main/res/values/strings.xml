@@ -300,6 +300,7 @@
     <string name="save"
         comment="saves a file"
         >Save</string>
+    <string name="saved_to_gallery">Saved to gallery</string>
     <string name="lastfm_reports">LastFM reports</string>
     <string name="weekly">Weekly</string>
     <string name="weeks">Weeks</string>

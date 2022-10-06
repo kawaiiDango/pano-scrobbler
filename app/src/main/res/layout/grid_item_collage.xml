@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="300px"
-    android:layout_height="300px">
+    android:layout_height="300px"
+    tools:ignore="PxUsage">
 
     <ImageView
         android:id="@+id/collage_image"
@@ -23,11 +24,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
+            android:paddingHorizontal="5px"
             android:textColor="#fff"
-            android:textSize="19px"
+            android:textSize="20px"
             android:textStyle="bold"
             app:outlineColor="#000"
-            app:outlineWidth="4px"
+            app:outlineWidth="5px"
             tools:text="LIGHTS" />
 
         <com.arn.scrobble.ui.OutlineTextView
@@ -35,11 +37,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
+            android:paddingHorizontal="5px"
             android:textColor="#fff"
             android:textSize="18px"
             android:textStyle="bold"
             app:outlineColor="#000"
-            app:outlineWidth="4px"
+            app:outlineWidth="5px"
             tools:text="nachi" />
 
         <com.arn.scrobble.ui.OutlineTextView
@@ -47,11 +50,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
+            android:paddingHorizontal="5px"
             android:textColor="#fff"
             android:textSize="16px"
             android:textStyle="bold"
             app:outlineColor="#000"
-            app:outlineWidth="4px"
+            app:outlineWidth="5px"
             tools:text="666 scrobbles" />
     </LinearLayout>
 

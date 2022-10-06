@@ -1,6 +1,5 @@
 package com.arn.scrobble.charts
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Html
 import android.view.LayoutInflater
@@ -13,8 +12,6 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.putSingle
@@ -27,10 +24,6 @@ import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.showIcons
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import de.umass.lastfm.Album
-import de.umass.lastfm.Artist
-import de.umass.lastfm.Period
-import de.umass.lastfm.Track
 
 
 open class ChartsBaseFragment : ChartsPeriodFragment() {
@@ -76,7 +69,17 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_share -> share()
+            R.id.menu_collage -> {
+                CollageGeneratorFragment()
+                    .apply {
+                        arguments = Bundle().apply {
+                            putSingle(viewModel.selectedPeriod.value ?: return true)
+                            putInt(Stuff.ARG_TYPE, chartsType)
+                        }
+                    }
+                    .show(childFragmentManager, null)
+            }
+
             R.id.menu_legend -> {
 
                 var text = ""
@@ -109,6 +112,7 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
                     .setPositiveButton(android.R.string.ok, null)
                     .show()
             }
+
             R.id.menu_grid_size -> {
                 scalableGrid.resize(increase = true)
             }
@@ -201,66 +205,5 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
             return
         }
         viewModel.loadCharts(page)
-    }
-
-    private fun share() {
-        if (BuildConfig.DEBUG) {
-            CollageGeneratorFragment()
-                .apply {
-                    arguments = Bundle().apply {
-                        putSingle(viewModel.selectedPeriod.value ?: return)
-                        putInt(Stuff.ARG_TYPE, chartsType)
-                    }
-                }
-                .show(childFragmentManager, null)
-            return
-        }
-
-        val entries = viewModel.chartsData
-        if (entries.isEmpty() || viewModel.selectedPeriod.value == null)
-            return
-        val topType = when (entries[0]) {
-            is Artist -> getString(R.string.top_artists)
-            is Album -> getString(R.string.top_albums)
-            else -> getString(R.string.top_tracks)
-        }
-        val period = when (viewModel.selectedPeriod.value!!.period) {
-            Period.WEEK -> getString(R.string.weekly)
-            Period.ONE_MONTH -> getString(R.string.monthly)
-            else -> viewModel.selectedPeriod.value?.name ?: return
-        }
-        var pos = 1
-        val list = entries.take(10).joinToString(separator = "\n") {
-            when (it) {
-                is Track -> getString(
-                    R.string.charts_num_text,
-                    pos++,
-                    getString(R.string.artist_title, it.artist, it.name)
-                )
-                is Album -> getString(
-                    R.string.charts_num_text,
-                    pos++,
-                    getString(R.string.artist_title, it.artist, it.name)
-                )
-                else -> getString(R.string.charts_num_text, pos++, it.name)
-            }
-        }
-
-        var shareText = if (!activityViewModel.userIsSelf) {
-            "$topType • $period • ${activityViewModel.currentUser.name}:\n\n$list"
-        } else {
-            "$topType • $period:\n\n$list"
-        }
-
-        if ((activity as MainActivity).billingViewModel.proStatus.value != true)
-            shareText += "\n\n" + getString(R.string.share_sig)
-
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, shareText)
-            putExtra(Intent.EXTRA_TEXT, shareText)
-        }
-
-        startActivity(Intent.createChooser(intent, getString(R.string.share_this_chart)))
     }
 }

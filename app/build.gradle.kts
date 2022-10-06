@@ -129,7 +129,7 @@ dependencies {
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
 
-    val coilVersion = "2.2.1"
+    val coilVersion = "2.2.2"
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-gif:$coilVersion")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
@@ -142,7 +142,7 @@ dependencies {
     implementation("com.github.hadilq:live-event:1.3.0")
     implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
 
-    val ktorVersion = "2.1.1"
+    val ktorVersion = "2.1.2"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
     implementation("io.ktor:ktor-client-android:$ktorVersion")

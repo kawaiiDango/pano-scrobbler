@@ -89,7 +89,7 @@ class MainPrefs(context: Context) : Krate {
     )
     var collageSkipMissing by booleanPref(PREF_COLLAGE_SKIP_MISSING).withDefault(false)
     var collageUsername by booleanPref(PREF_COLLAGE_USERNAME).withDefault(true)
-    var collageText by booleanPref(PREF_COLLAGE_TEXT).withDefault(true)
+    var collageText by booleanPref(PREF_COLLAGE_TEXT).withDefault(false)
     var collageSize by intPref(PREF_COLLAGE_SIZE).withDefault(3)
     var collageCaptions by booleanPref(PREF_COLLAGE_CAPTIONS).withDefault(true)
 

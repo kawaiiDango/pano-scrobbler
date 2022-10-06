@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_share"
-        android:icon="@drawable/vd_share"
-        android:title="@string/share_this_chart"
+        android:id="@+id/menu_collage"
+        android:icon="@drawable/vd_mosaic"
+        android:title="@string/create_collage"
         app:iconTint="?android:colorForeground"
         app:showAsAction="never" />
 

@@ -81,20 +81,41 @@
 
     </com.google.android.material.chip.ChipGroup>
 
+    <ImageView
+        android:id="@+id/collage_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <FrameLayout
-        android:id="@+id/collage_generate_frame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:animateLayoutChanges="true">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/collage_generate_button"
-            style="?materialButtonOutlinedStyle"
+        <LinearLayout
+            android:id="@+id/collage_generate_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/create_collage"
-            app:icon="@drawable/vd_share" />
+            android:layout_gravity="end"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/collage_save_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="@string/save"
+                app:icon="@drawable/vd_save" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/collage_share_button"
+                style="?materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/share"
+                app:icon="@drawable/vd_share" />
+        </LinearLayout>
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/collage_generate_progress"
@@ -103,9 +124,4 @@
             android:layout_gravity="center_horizontal"
             android:visibility="invisible" />
     </FrameLayout>
-
-    <ImageView
-        android:id="@+id/collage_preview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </LinearLayout>

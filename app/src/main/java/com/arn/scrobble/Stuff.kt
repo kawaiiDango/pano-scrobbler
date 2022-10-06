@@ -12,6 +12,7 @@ import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -23,6 +24,7 @@ import android.media.MediaMetadata
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Parcelable
 import android.os.Process
 import android.provider.MediaStore
@@ -532,6 +534,44 @@ object Stuff {
         return result
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    @Throws(IOException::class)
+    fun savePictureQ(
+        internalStorageUri: Uri,
+        displayName: String,
+        mimeType: String,
+    ) {
+        val values = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+            put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+        }
+
+        var uri: Uri? = null
+
+        runCatching {
+            with(App.context.contentResolver) {
+                insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)?.also {
+                    uri = it // Keep uri reference so it can be removed on failure
+                    openOutputStream(it)?.use { ostream ->
+                        openInputStream(internalStorageUri)?.use { istream ->
+                            istream.copyTo(ostream)
+                        }
+                    } ?: throw IOException("Failed to open output stream.")
+
+                } ?: throw IOException("Failed to create new MediaStore record.")
+            }
+        }.getOrElse {
+            uri?.let { orphanUri ->
+                // Don't leave an orphan entry in the MediaStore
+                App.context.contentResolver.delete(orphanUri, null, null)
+            }
+
+            throw it
+        }
+    }
+
     fun NotificationManager.isChannelEnabled(pref: SharedPreferences, channelId: String) =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isWindows11) {
             areNotificationsEnabled() &&
@@ -758,7 +798,7 @@ object Stuff {
     }
 
     // Example implementation of the Levenshtein Edit Distance
-    // See http://rosettacode.org/wiki/Levenshtein_distance#Java
+// See http://rosettacode.org/wiki/Levenshtein_distance#Java
     private fun editDistance(s1: String, s2: String): Int {
         val s1 = s1.lowercase(Locale.getDefault())
         val s2 = s2.lowercase(Locale.getDefault())

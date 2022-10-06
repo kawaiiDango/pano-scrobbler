@@ -66,6 +66,12 @@
         <item quantity="many">%1$s edycji wzoru</item>
         <item quantity="other">%1$s edycji wzoru</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minuta</item>
+        <item quantity="few">%1$d minut(y)</item>
+        <item quantity="many">%1$d minut(y)</item>
+        <item quantity="other">%1$d minut(y)</item>
+    </plurals>
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
     <string name="reset">Reset</string>
@@ -116,6 +122,7 @@
     <string name="offline">Offline. Dane nie są aktualne</string>
     <string name="unavailable_offline">Niedostępne w trybie offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Usługi</string>
+    <string name="others">Inne</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Słuchałem\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s słuchał/a\n%1$s %2$s</string>
     <string name="share_sig">(przez Pano Scrobbler)</string>
@@ -129,6 +136,8 @@
     <string name="rank_change_no_change">Bez zmian</string>
     <string name="rank_change_new">Nie scrobblowano w poprzednim okresie</string>
     <string name="search">Szukaj</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Wyczyść całą historię</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Usunąć ten element z historii?</string>
     <string name="library" comment="search within the library">Biblioteka</string>
     <string name="global" comment="search globally across lastfm">Globalnie</string>
     <string name="reindex">Szybki indeks</string>
@@ -164,12 +173,14 @@
     <string name="grant_notification_access">Zezwól na dostęp do powiadomień</string>
     <string name="grant_notification_access_desc">Potrzebne do pobierania metadanych muzyki. Nie czytamy żadnych powiadomień</string>
     <string name="send_notifications">Zezwól na powiadomienia</string>
+    <string name="notification_channel_blocked">To wymaga włączenia powiadomień</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Sprawdź status i liczby scrobblowania
 - Polub lub blokuj bezpośrednio z powiadomienia
 - Otrzymuj powiadomienia o błędach scrobblowania i działaniach, które możesz podjąć
 - Otrzymuj co tydzień top listę scrobbli
 - I więcej
 - Powiadomienia nie wydają dźwięku\"\""</string>
+    <string name="will_not_scrobble">Pominięcie tego kroku wyłączy scrobblowanie</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM i Listenbrainz mogą być uwierzytelniane później, w ustawieniach</string>
     <string name="swap" comment="(Swap title and artist)">Zamień</string>
     <string name="rate_msg">Podoba Ci się ta aplikacja?</string>
@@ -206,6 +217,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbluje do %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Z %1$s</string>
     <string name="not_found" comment="Shown in search">Nie znaleziono</string>
+    <string name="save" comment="saves a file">Zapisz</string>
+    <string name="saved_to_gallery">Zapisano w Galerii</string>
     <string name="lastfm_reports">Raporty LastFM</string>
     <string name="weekly">Co tydzień</string>
     <string name="weeks">Tygodnie</string>

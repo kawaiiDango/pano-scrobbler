@@ -18,6 +18,12 @@
         <item quantity="many">%1$s dni</item>
         <item quantity="other">%1$s dni</item>
     </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s tydzień</item>
+        <item quantity="few">%1$s tygodni</item>
+        <item quantity="many">%1$s tygodni</item>
+        <item quantity="other">%1$s tygodni</item>
+    </plurals>
     <plurals name="num_months">
         <item quantity="one">%1$s miesiąc</item>
         <item quantity="few">%1$s miesięcy</item>
@@ -66,11 +72,23 @@
         <item quantity="many">%1$s edycji wzoru</item>
         <item quantity="other">%1$s edycji wzoru</item>
     </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s zablokowane metadane</item>
+        <item quantity="few">%1$s zablokowanych metadanych</item>
+        <item quantity="many">%1$s zablokowanych metadanych</item>
+        <item quantity="other">%1$s zablokowanych metadanych</item>
+    </plurals>
     <plurals name="num_minutes">
         <item quantity="one">%1$d minuta</item>
         <item quantity="few">%1$d minut(y)</item>
         <item quantity="many">%1$d minut(y)</item>
         <item quantity="other">%1$d minut(y)</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s znajomy</item>
+        <item quantity="few">%1$s znajomych</item>
+        <item quantity="many">%1$s znajomych</item>
+        <item quantity="other">%1$s znajomych</item>
     </plurals>
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
@@ -241,6 +259,56 @@
     <string name="graph_weekly">Tygodniowa liczba scrobbli</string>
     <string name="graph_monthly">Miesięczna liczba scrobbli</string>
     <string name="graph_yearly">Roczna liczba scrobbli</string>
+    <string name="graph_scrub_msg">Czasy są w Twojej strefie czasu\nPrzytrzymaj lub przeskakuj wykres aby zobaczyć dokładną liczbę</string>
+    <string name="original" comment="Original metadata before editing">Oryginalne</string>
+    <string name="corrected" comment="Corrected metadata after editing">Poprawione</string>
+    <string name="tag" comment="last.fm tag">Tag</string>
+    <string name="taggers" comment="(number of) people who have tagged">Edytorzy znaczników</string>
+    <string name="taggings" comment="(total count of) a particular tag">Znaczniki</string>
+    <string name="digest_weekly">Najlepsze scrobble tygodnia</string>
+    <string name="digest_monthly">Najlepsze scrobble miesiąca</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s najlepsze scrobble</string>
+    <string name="my_tags">Moje tagi</string>
+    <string name="close">Zamknij</string>
+    <string name="user_tags_hint">Nowy znacznik</string>
+    <string name="user_tags_empty">Nie dodano jeszcze żadnych tagów</string>
+    <string name="info_long_press_hint">Przytrzymaj utwór aby otworzyć</string>
+    <string name="appwidget_loading">Wczytywanie…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Okres</string>
+    <string name="appwidget_theme">Motyw</string>
+    <string name="appwidget_shadow">Cień</string>
+    <string name="appwidget_show">Pokaż</string>
+    <string name="light">Jasny</string>
+    <string name="dark">Ciemny</string>
+    <string name="system_colors">Kolory systemowe</string>
+    <string name="appwidget_alpha">Przeźroczystość tła</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Odśwież widżet co %1$s</string>
+    <string name="primary_color">Kolor podstawowy</string>
+    <string name="secondary_color">Kolor dodatkowy</string>
+    <string name="tint_background">Odcień tła</string>
+    <string name="random_theme">Losowy przy każdym uruchomieniu</string>
+    <string name="edit_name" comment="name for regex pattern">Nazwa (opcjonalnie)</string>
+    <string name="edit_regex">Wzór regex</string>
+    <string name="edit_regex_replacement">Zamiennik regex</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Pola</string>
+    <string name="edit_replace">Zamień</string>
+    <string name="edit_first" comment="First occurrence of a pattern">Pierwszy</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Wszystkie</string>
+    <string name="edit_continue">Jeśli znalezione, kontynuuj dopasowywanie innych regexów</string>
+    <string name="edit_case_sensitive">Wielkość liter ma znaczenie</string>
+    <string name="edit_regex_test">Test</string>
+    <string name="edit_presets">Szablony</string>
+    <string name="edit_presets_available">Dostępne szablony</string>
+    <string name="edit_no_presets_available">Wszystkie szablony są używane</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Szablon: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Osiągnięto limit szablonów (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Uchwyt przeciągania</string>
+    <string name="text" comment="text to test regex rules with">Tekst</string>
+    <string name="edit_regex_warning">⚠ Upewnij się, że znasz <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> przed użyciem lub użyj jednego z przygotowanych <b>wzorów</b>. Dopasowania regex są próbowane od góry w dół</string>
+    <string name="blocked_metadata_info">i Wypełnienie więcej niż jednego z tych pól, zastosuje między nimi operatora AND</string>
+    <string name="blocked_metadata_noti">Dotknij, aby zablokować i pominąć</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Akcje odtwarzacza</string>
+    <string name="skip" comment="skip to next track">Pomiń</string>
     <string name="mute">Wycisz</string>
     <string name="block">Blokuj</string>
     <string name="hidden_tags">Ukryte tagi</string>
@@ -255,6 +323,12 @@
     <string name="persistent_noti_desc">Przytrzymaj, aby ukryć</string>
     <string name="scrobbler_off">Scrobbler wyłączony</string>
     <string name="scrobbler_on">Scrobbler aktywny</string>
+    <string name="enable" comment="To enable the scrobbler">Włącz</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Rozmiar</string>
+    <string name="skip_missing_images">Pomiń brakujące obrazy</string>
+    <string name="create_collage">Utwórz kolaż</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Podpisy obrazów</string>
+    <string name="username" comment="last.fm Username">Nazwa użytkownika</string>
     <string name="pref_master">Scrobble muzyki</string>
     <string name="pref_master_qs_hint">Może być również przełączony z kafelka szybkich ustawień</string>
     <string name="pref_noti_q">Możesz promować powiadomienie, jeśli ikona nie wyświetla się</string>
@@ -262,5 +336,118 @@
     <string name="pref_noti_categories">Kategorie powiadomień</string>
     <string name="pref_scrobble_noti">Powiadomienia Scrobble\'a</string>
     <string name="pref_lockscreen_noti">Powiadomienia na ekranie blokady</string>
+    <string name="pref_offline_info">i Scrobble offline &amp; polubione zostaną zapisane do wysłania później.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbluj z</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Obsługuje aplikacje, które ujawniają metadane muzyki. Aby uniknąć podwójnych scrobbli ze Spotify, włącz je tylko w jednym miejscu.</string>
+    <string name="pref_enabled_apps_title">Wybierz aplikacje</string>
+    <string name="pref_auto_detect_summary">…nadal pytaj o potwierdzenie/ignorowanie tej aplikacji</string>
+    <string name="pref_auto_detect">Automatyczne wykrywanie nowych aplikacji muzycznych</string>
+    <string name="pref_delay">Opóźnij scrobblowanie (w zależności od tego, co nastąpi wcześniej)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuty</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
+    <string name="pref_logout">Wyloguj</string>
+    <string name="pref_confirm_logout">POTWIERDZASZ WYLOGOWANIE? Dotknij ponownie</string>
+    <string name="pref_login">Logowanie</string>
+    <string name="pref_about" comment="Info about this app">O aplikacji</string>
+    <string name="pref_privacy_policy">Polityka prywatności</string>
+    <string name="pref_search_title">Aplikacja do wyszukiwania utworów</string>
+    <string name="pref_scrobble_only">(Tylko scrobble)</string>
+    <string name="pref_user_label" comment="(Like username)">Użytkownik</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Token uwierzytelniający</string>
+    <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="pref_now_playing">Prześlij teraz odtwarzane</string>
+    <string name="pref_fetch_aa">Pobierz wykonawców albumu z lastFM</string>
+    <string name="pref_fetch_aa_desc">Dla odtwarzaczy które nie dostarczają tych danych. Pobrane dane mogą różnić się od Twoich tagów. lastFM może nie mieć danych dla niektórych piosenek.</string>
+    <string name="pref_locale">Języki</string>
+    <string name="pref_change_locale">Zmień język</string>
+    <string name="pref_crashlytics_enabled">Automatycznie wysyłaj raporty o błędach</string>
+    <string name="pref_misc">Różne</string>
+    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
+    <string name="pref_imexport">Import &amp; eksport</string>
+    <string name="pref_export">Eksportuj</string>
+    <string name="pref_export_desc">Kopiuje ustawienia, edycje i listę blokowanych. Nie zapisuje loginów, ze względów bezpieczeństwa. Przydatne przy zmianie urządzeń lub udostępniania znajomym</string>
+    <string name="pref_import">Importuj</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizacja</string>
+    <string name="pref_themes">Motywy</string>
+    <string name="pref_themes_desc">Wymieszaj i dopasuj\nZmienia również kolor powiadomień</string>
+    <string name="pref_widget_charts">Widżet ekranu głównego - Wykresy</string>
+    <string name="pref_show_albums">Pokaż tytuły albumów</string>
+    <string name="pref_show_albums_desc">…dla scrobbli</string>
+    <string name="pref_show_scrobble_sources">Pokaż ikony aplikacji, z których scrobblowałeś</string>
+    <string name="pref_show_scrobble_sources_desc">…obok każdego scrobbla. Te dane pozostają na Twoim urządzeniu</string>
+    <string name="pref_search_in_source">Szukaj &amp; odtwarzaj w aplikacji, z której scrobblowałeś</string>
+    <string name="pref_search_in_source_desc">Dla obsługiwanych aplikacji</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Listy</string>
+    <string name="pref_regex_edits">Edycje wzoru</string>
+    <string name="pref_blocked_metadata">Zablokowane metadane</string>
+    <string name="pref_lastfm_disable">Nie scrobbluj do lastFM</string>
+    <string name="pref_lastfm_disable_desc">Nadal potrzebujemy logowania do lastFM, aby reszta interfejsu użytkownika działała</string>
+    <string name="pref_translate">Przetłumacz tę aplikację</string>
+    <string name="pref_translate_credits">Podziękowania dla tłumaczy</string>
+    <string name="pref_oss_credits">Źródła otwartego oprogramowania</string>
+    <string name="pref_check_updates">Sprawdź aktualizacje</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Dostępna aktualizacja: %1$s</string>
+    <string name="download">Pobierz</string>
+    <string name="changelog">Lista zmian</string>
+    <string name="import_hey_wtf">To prawdopodobnie nie jest plik eksportu Pano Scrobbler</string>
+    <string name="export_failed">Eksportowanie nie powiodło się</string>
+    <string name="imported">Zaimportowano</string>
+    <string name="import_options">Opcje importu</string>
+    <string name="import_lists_nope">Nie importuj edycji i listy blokowania</string>
+    <string name="import_lists_replace_all">Zastąp wszystkie edycje i listę blokowania</string>
+    <string name="import_lists_replace_existing">Scal, zastępując istniejące edycje i listę blokowania</string>
+    <string name="import_lists_keep">Scal, zachowując istniejące edycje i listę blokowania</string>
+    <string name="import_settings">Ustawienia importu</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Przekazywanie intencji</string>
+    <string name="current_track">Aktualny utwór:</string>
+    <string name="pref_intents">Intencje dla Tasker itp.</string>
+    <string name="copied">Skopiowano!</string>
+    <string name="lastfm_reauth">Uwierzytelnii ponownie, aby edytować lub usunąć scrobble</string>
+    <string name="custom_listenbrainz">Niestandardowy serwer Listenbrainz</string>
+    <string name="failed_encode_url">Nie udało się wprowadzić adresu URL</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Sprawdź %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Specjalny dostęp do aplikacji &gt; Dostęp do powiadomień &gt; %1$s</string>
+    <string name="artist_extra">Ścieżki, albumy &amp; podobne</string>
+    <string name="no_browser">Brak zainstalowanej przeglądarki</string>
+    <string name="no_player">Brak zainstalowanego odtwarzacza muzyki</string>
+    <string name="not_running">⚠ Scrobbler został zabity przez twój system</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Powód zabicia podany przez system: %s</string>
+    <string name="not_running_fix_action">Napraw to</string>
+    <string name="login_submit">Weryfikacja</string>
+    <string name="scrobble">Scrobble</string>
+    <string name="acr_host" comment="Web hostname">Host</string>
+    <string name="acr_key">Klucz dostępu</string>
+    <string name="acr_secret">Sekret</string>
+    <string name="add_acr_key">Dodaj klucz ACRCloud</string>
+    <string name="remove_acr_key">Usuń klucz ACRCloud</string>
+    <string name="add_acr_consider">Aby zapobiec obniżeniu limitów szybkości, rozważ dodanie własnego klucza ACRCloud</string>
+    <string name="add">Dodaj</string>
+    <string name="add_acr_key_info">"• Zarejestruj się na https://console.acrcloud.com
+• Przejdź do Projekt &gt; Rozpoznawanie Audio &amp; video
+• Utwórz nowy projekt, wybierz Nagrane Audio i ACRCloud Music bucket"</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Pozostało %1$d</string>
+    <string name="submitting_loves" formatted="true">Przesyłanie polubionych, pozostało %1$d</string>
+    <string name="pending_batch" comment="For pending scrobbles">Przesyłanie pakietu</string>
+    <string name="webview_error">Nie udało się załadować strony (czy Twój internet działa?)</string>
+    <string name="navigation_drawer_open">Otwórz szufladę nawigacji lub wróć</string>
+    <string name="navigation_drawer_close">Zamknij szufladę nawigacji</string>
+    <string name="graph">Wykres liniowy</string>
+    <string name="cleared_disabled_apps">Wyczyszczono wyłączone aplikacje</string>
+    <string name="fix_it_title">Możliwe poprawki</string>
+    <string name="fix_it_startup_title">Oszczędzanie energii / menedżery uruchamiania</string>
+    <string name="fix_it_battery_title">Wyłącz optymalizację baterii</string>
+    <string name="fix_it_action" comment="(To open an app)">Otwórz</string>
+    <string name="delete_account">Usuń konto</string>
+    <string name="delete_account_custom_servers">Dla serwerów niestandardowych, sprawdź ich odpowiednią dokumentację.</string>
     <!--  pro  -->
+    <string name="get_pro">Wesprzyj tę aplikację</string>
+    <string name="help">Pomoc</string>
+    <string name="pro_support">Jest to prosty i szybki sposób dla niesamowitych użytkowników takich jak Ty, aby pokazać że doceniasz wartość, jaką oferuje ta aplikacja.</string>
+    <string name="pro_also_get">Otrzymasz również następujące funkcje:</string>
+    <string name="thank_you">Dziękujemy!</string>
+    <string name="purchase_pending">Zakup nie został jeszcze potwierdzony przez dostawcę płatności. Sprawdź ponownie za kilka minut.</string>
+    <string name="billing_troubleshoot_title">Przywróć zakup</string>
+    <string name="billing_block">Blokuj artystów/utwory i automatycznie pomiń lub wycisz</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Przypnij do %1$d znajomych i zmień kolejność</string>
+    <string name="billing_sharing">Usuń nazwę aplikacji podczas udostępniania</string>
 </resources>

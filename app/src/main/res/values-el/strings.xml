@@ -235,6 +235,15 @@
     <string name="pref_themes">Θέματα</string>
     <string name="pref_themes_desc">Μείγμα και αντιστοιχία\nΑλλάζει επίσης το χρώμα ειδοποίησης</string>
     <string name="pref_widget_charts">Αρχικό widget - Διαγράμματα</string>
+    <string name="pref_show_albums">Εμφάνιση εξωφύλλου άλμπουμ</string>
+    <string name="pref_show_albums_desc">…για scrobbles</string>
+    <string name="pref_show_scrobble_sources">Εμφάνιση εικονιδίων εφαρμογών από τις οποίες σαρώσατε</string>
+    <string name="pref_show_scrobble_sources_desc">…δίπλα σε κάθε scrobble. Αυτά τα δεδομένα παραμένουν στη συσκευή σας</string>
+    <string name="pref_search_in_source">Αναζητήστε &amp; παίξτε στην εφαρμογή που κάνατε scrobble από</string>
+    <string name="pref_search_in_source_desc">Για υποστηριζόμενες εφαρμογές</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Λίστες</string>
+    <string name="pref_regex_edits">Τροποποιήσεις μοτίβου</string>
+    <string name="pref_blocked_metadata">Μπλοκαρισμένα μεταδεδομένα</string>
     <string name="pref_lastfm_disable">Μην κάνεις scrobble για lastFM</string>
     <string name="pref_lastfm_disable_desc">Χρειάζεστε ακόμα να συνδεθείτε στο lastFM για να λειτουργήσει το υπόλοιπο του UI</string>
     <string name="pref_translate">Μεταφράστε αυτήν την εφαρμογή</string>
@@ -287,5 +296,15 @@
     <string name="webview_error">Η σελίδα απέτυχε να φορτώσει (δουλεύει η σύνδεσή σας;)</string>
     <string name="navigation_drawer_open">Άνοιγμα συρταριού πλοήγησης ή επιστροφή</string>
     <string name="navigation_drawer_close">Κλείσιμο συρταριού πλοήγησης</string>
+    <string name="graph">Γράφημα γραμμών</string>
+    <string name="cleared_disabled_apps">Εκκαθάριση απενεργοποιημένων εφαρμογών</string>
+    <string name="fix_it_title">Πιθανές διορθώσεις</string>
+    <string name="fix_it_startup_title">Εξοικονομητές ενέργειας / διαχειριστές εκκίνησης</string>
+    <string name="fix_it_battery_title">Απενεργοποίηση βελτιστοποιήσεων μπαταρίας</string>
+    <string name="fix_it_action" comment="(To open an app)">Άνοιγμα</string>
+    <string name="delete_account">Διαγραφή του λογαριασμού σας</string>
+    <string name="delete_account_custom_servers">Για προσαρμοσμένους διακομιστές, ελέγξτε τα αντίστοιχα έγγραφά τους.</string>
     <!--  pro  -->
+    <string name="get_pro">Υποστήριξη αυτής της εφαρμογής</string>
+    <string name="help">Βοήθεια</string>
 </resources>

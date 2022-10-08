@@ -15,5 +15,186 @@
     <string name="network_error">Σφάλμα δικτύου</string>
     <string name="disable_tls_verify">Αγνόηση σφαλμάτων TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Το Scrobble αγνοήθηκε</string>
+    <string name="scrobble_ignored_save_edit">Το Lastfm αγνόησε την επεξεργασία πιθανώς επειδή το scrobble είναι πολύ παλιό. Θέλετε να αποθηκεύσετε αυτή την επεξεργασία για μελλοντικά scrobbles;</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Τα απαιτούμενα πεδία είναι κενά</string>
+    <string name="artist">Καλλιτέχνης</string>
+    <string name="artists">Καλλιτέχνες</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Κορυφαίοι καλλιτέχνες</string>
+    <string name="album_artist">Καλλιτέχνης του Άλμπουμ</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Καλλιτέχνης / κανάλι</string>
+    <string name="similar_artists">Παρόμοιοι καλλιτέχνες</string>
+    <string name="album_optional">Άλμπουμ (προαιρετικό)</string>
+    <string name="album">Άλμπουμ</string>
+    <string name="albums">Άλμπουμ</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Κορυφαία άλμπουμ</string>
+    <string name="track">Κομμάτι</string>
+    <string name="tracks">Κομμάτια</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Κορυφαία Κομμάτια</string>
+    <string name="similar_tracks">Παρόμοια κομμάτια</string>
+    <string name="similar" comment="Similar tracks but in short">Παρόμοια</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
+    <string name="state_scrobbling">Τώρα κάνεις scrobbling…</string>
+    <string name="state_scrobbled">Scrobbλαρισμένα</string>
+    <string name="unscrobble">Ξεscrobble</string>
+    <string name="state_unscrobbled">Αφαιρέθηκε απο τα scrobbles σου</string>
+    <string name="state_unrecognised_artist">Μη αναγνωρισμένος καλλιτέχνης</string>
+    <string name="tap_to_edit">(πατήστε για επεξεργασία)</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d ακόμη</string>
+    <string name="show_all">Δες τα όλα</string>
+    <string name="edit">Επεξεργασία</string>
+    <string name="delete">Διαγραφή</string>
+    <string name="love">Αγάπησε</string>
+    <string name="unlove">Ξε-αγάπησε</string>
+    <string name="pending_scrobbles">Εκκρεμούν Scrobbles</string>
+    <string name="pending_scrobble">Εκκρεμεί Scrobble</string>
+    <string name="pending_scrobbles_noti">Επεξεργασία εκκρεμών scrobbles</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s σήμερα</string>
+    <string name="friends">Φίλοι</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, από %2$s</string>
+    <string name="allow_background">Να επιτρέπεται το scrobbling στο παρασκήνιο</string>
+    <string name="grant_notification_access">Πρόσβαση ειδοποιήσεων</string>
+    <string name="grant_notification_access_desc">Απαιτείται για την ανάκτηση μεταδεδομένων μουσικής. Δεν διαβάζονται ειδοποιήσεις εκτος της μουσικής</string>
+    <string name="send_notifications">Να επιτρέπονται οι ειδοποιήσεις</string>
+    <string name="notification_channel_blocked">Αυτό απαιτεί οι ειδοποιήσεις να είναι ενεργοποιημένες</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Ελέγξτε την κατάσταση scrobble και τις μετρήσεις
+- Αγαπήστε ή μπλοκάρετε απευθείας από την ειδοποίηση
+- Ενημερωθείτε για σφάλματα scrobble και ενέργειες που μπορείτε να πάρετε
+- Αποκτήστε τα κορυφαία scrobbles σας κάθε εβδομάδα
+- Και περισσότερα
+- Οι ειδοποιήσεις δεν κάνουν ήχο\"\""</string>
+    <string name="will_not_scrobble">Η παράλειψη αυτού του βήματος θα απενεργοποιήσει το scrobbling</string>
+    <string name="authenticate_with_lastfm_desc">Τα LibreFM, GNUFM και Listenbrainz μπορούν να ελεγχθούν μετά από αυτό, από τις ρυθμίσεις</string>
+    <string name="swap" comment="(Swap title and artist)">Ανταλλαγή</string>
+    <string name="rate_msg">Σας αρέσει η εφαρμογή;</string>
+    <string name="rate_action">Βαθμολογήστε την</string>
+    <string name="time_just_now">μόλις τώρα</string>
+    <string name="no_mail_apps">Δεν υπάρχει εγκατεστημένος email client</string>
+    <string name="loved">Αγαπημένο</string>
+    <string name="unloved">Ξε-αγαπημένο</string>
+    <string name="simple_edits">Επεξεργασίες</string>
+    <string name="force_remembered">Εξαναγκασμός scrobble (θα το θυμάμαι)</string>
+    <string name="grant_rec_perm">Παρακαλώ δώστε άδεια για να χρησιμοποιήσετε το μικρόφωνο</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Charts</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Σύννεφο ετικετών</string>
+    <string name="scrobble_from_mic">Scrobble από μικρόφωνο</string>
+    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Από το μικρόφωνο</string>
+    <string name="add_to_hs">Προσθήκη στην αρχική οθόνη</string>
+    <string name="listening">Ακούγοντας μουσική που παίζει γύρω σας…</string>
+    <string name="uploading">Μεταφόρτωση…</string>
+    <string name="recording_failed">Απέτυχε η εκκίνηση της εγγραφής. Το Mic μπορεί να είναι απασχολημένο ή μη διαθέσιμο σε αυτήν τη συσκευή</string>
+    <string name="press_back">Πατήστε πίσω όταν τελειώσετε</string>
+    <string name="powered_acr">Τροφοδοτείται από <i><b>ACR</b>Cloud</i></string>
+    <string name="details">Λεπτομέρειες</string>
+    <string name="saved_as_pending">Αποθηκεύτηκε ως scrobble που εκκρεμεί</string>
+    <string name="sort">Ταξινόμηση</string>
+    <string name="past_scrobbles">Παλαιότερα scrobbles</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Αναδρομή</string>
+    <string name="my_scrobbles">Παλαιότερα scrobbles</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">τα scrobble του %1$s </string>
+    <string name="listeners">Ακροατές</string>
+    <string name="scrobbles">Scrobbles</string>
+    <string name="collapse" comment="(view only a few items)">Κατάρρευση</string>
+    <string name="system_colors">Χρώματα συστήματος</string>
+    <string name="appwidget_alpha">Διαφάνεια φόντου</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Το widget θα ανανεώνεται κάθε %1$s</string>
+    <string name="primary_color">Κυρίως χρώμα</string>
+    <string name="secondary_color">Δευτερεύον χρώμα</string>
+    <string name="tint_background">Υπόδυση φόντου</string>
+    <string name="random_theme">Τυχαιοποίηση σε κάθε εκκίνηση</string>
+    <string name="edit_name" comment="name for regex pattern">Φιλικό όνομα (προαιρετικό)</string>
+    <string name="edit_regex">Μοτίβο Regex</string>
+    <string name="edit_regex_replacement">Αντικατάσταση Regex</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Πεδία</string>
+    <string name="edit_replace">Αντικατάσταση</string>
+    <string name="edit_first" comment="First occurrence of a pattern">Πρώτο</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Όλα</string>
+    <string name="edit_continue">Αν βρεθεί, συνεχίστε να ταιριάζετε με άλλες regexes</string>
+    <string name="edit_case_sensitive">Διάκριση πεζών-κεφαλαίων</string>
+    <string name="edit_regex_test">Δοκιμή</string>
+    <string name="edit_presets">Προεπιλογές</string>
+    <string name="edit_presets_available">Διαθέσιμες προεπιλογές</string>
+    <string name="edit_no_presets_available">Όλες οι προεπιλογές είναι σε χρήση</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Προεπιλογή: %1$s</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Φτάσατε το όριο μοτίβων (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Σύρσιμο μπάρας</string>
+    <string name="text" comment="text to test regex rules with">Κείμενο</string>
+    <string name="edit_regex_warning">⚠ Σιγουρευτείτε ότι καταλαβαίνετε <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> πριν χρησιμοποιήσετε αυτό, ή χρησιμοποιήστε μια από τις <b>προεπιλογές</b> που παρέχονται. Τα ταίρια Regex τρέχουν από πάνω προς τα κάτω</string>
+    <string name="blocked_metadata_info">ℹ️ Συμπληρώνοντας σε περισσότερα από ένα πεδίο θα εφαρμόσει έναν χειριστή αναμεταξύ τους</string>
+    <string name="blocked_metadata_noti">Πατήστε για αποκλεισμό και παράλειψη</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Ενέργειες παίκτη</string>
+    <string name="skip" comment="skip to next track">Παράλειψη</string>
+    <string name="mute">Σίγαση</string>
+    <string name="block">Αποκλεισμός</string>
+    <string name="hidden_tags">Κρυφές ετικέτες</string>
+    <string name="pin">Καρφίτσωμα</string>
+    <string name="unpin">Ξεκαρφίτσωμα</string>
+    <string name="pin_limit_reached" formatted="true">Συμπληρώθηκε το όριο Pin (%1$d)</string>
+    <string name="pin_help">Πατήστε παρατεταμένα καρφιτσωμένα στοιχεία για αναδιάταξη</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Χρήση ονόματος καναλιού</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Θα θέλατε να ενεργοποιήσετε τον κανόνα επεξεργασίας μοτίβου: %1$s;</string>
+    <string name="show_persistent_noti">Ενεργοποίηση συνεχών ειδοποιήσεων</string>
+    <string name="fix_it_desc">Αυτά μπορούν να βοηθήσουν να συνεχήσει το scrobbler να τρέχει στο παρασκήνιο σε ορισμένες συσκευές</string>
+    <string name="persistent_noti_desc">Πατήστε παρατεταμένα για απόκρυψη</string>
+    <string name="scrobbler_off">Scrobbler ανενεργό</string>
+    <string name="scrobbler_on">Scrobbler ενεργό</string>
+    <string name="enable" comment="To enable the scrobbler">Ενεργοποιήση</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Μέγεθος</string>
+    <string name="skip_missing_images">Παράλειψη εικόνων που λείπουν</string>
+    <string name="create_collage">Δημιουργία κολάζ</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Υπότιτλοι εικόνων</string>
+    <string name="username" comment="last.fm Username">Όνομα Χρήστη</string>
+    <string name="pref_master">Κάνε scrobble μουσική</string>
+    <string name="pref_lastfm_disable">Μην κάνεις scrobble για lastFM</string>
+    <string name="pref_lastfm_disable_desc">Χρειάζεστε ακόμα να συνδεθείτε στο lastFM για να λειτουργήσει το υπόλοιπο του UI</string>
+    <string name="pref_translate">Μεταφράστε αυτήν την εφαρμογή</string>
+    <string name="pref_translate_credits">Εύσημα μετάφρασης</string>
+    <string name="pref_oss_credits">Αναφορές ανοικτού κώδικα</string>
+    <string name="pref_check_updates">Έλεγχος Ενημερώσεων</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Διαθέσιμη ενημέρωση: %1$s</string>
+    <string name="download">Λήψη</string>
+    <string name="changelog">Αρχείο αλλαγών</string>
+    <string name="import_hey_wtf">Αυτό πιθανώς δεν είναι αρχείο εξαγωγής Pano Scrobbler</string>
+    <string name="export_failed">Η εξαγωγή απέτυχε</string>
+    <string name="imported">Εισαγόμενο</string>
+    <string name="import_options">Επιλογές εισαγωγής</string>
+    <string name="import_lists_nope">Να μην εισαχθούν επεξεργασίες και blocklist</string>
+    <string name="import_lists_replace_all">Αντικατάσταση όλων των τροποποιήσεων και λίστα αποκλεισμένων</string>
+    <string name="import_lists_replace_existing">Συγχώνευση, αντικαθιστόντας υπάρχουσες επεξεργασίες και την λίστα αποκλεισμών</string>
+    <string name="import_lists_keep">Συγχώνευση, διατήρηση υφιστάμενων επεξεργασιών και λίστα αποκλεισμών</string>
+    <string name="import_settings">Ρυθμίσεις εισαγωγής</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Προθέσεις εκπομπής</string>
+    <string name="current_track">Παρόν κομμάτι:</string>
+    <string name="pref_intents">Προτάσεις για Tasker κλπ</string>
+    <string name="copied">Αντιγράφηκε!</string>
+    <string name="lastfm_reauth">Πρέπει να επαληθεύσετε ξανά τον έλεγχο ταυτότητας για να επεξεργαστείτε ή να διαγράψετε scrobbles</string>
+    <string name="custom_listenbrainz">Προσαρμοσμένος διακομιστής Listenbrainz</string>
+    <string name="failed_encode_url">Αποτυχία κωδικοποίησης URL</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Έλεγχος %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Ειδική πρόσβαση στην εφαρμογή &gt; Πρόσβαση στις ειδοποιήσεις &gt; %1$s</string>
+    <string name="artist_extra">Κομμάτια, άλμπουμ &amp; παρόμοια</string>
+    <string name="no_browser">Δεν υπάρχει εγκατεστημένος φυλλομετρητής</string>
+    <string name="no_player">Δεν υπάρχει εγκατεστημένη εφαρμογή αναπαραγωγής μουσικής</string>
+    <string name="not_running">⚠ Το scrobbler σκοτώθηκε από το σύστημά σας</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Λόγος που έκλεισε η εφαρμογή απο το σύστημα: %s</string>
+    <string name="not_running_fix_action">Διόρθωσέ το</string>
+    <string name="login_submit">Επαλήθευση</string>
+    <string name="scrobble">Scrobble</string>
+    <string name="acr_host" comment="Web hostname">Διακομιστής</string>
+    <string name="acr_key">Κλειδί Πρόσβασης</string>
+    <string name="acr_secret">Κρυφό</string>
+    <string name="add_acr_key">Προσθήκη Κλειδιού ACRCloud</string>
+    <string name="remove_acr_key">Αφαίρεση Κλειδιού ACRCloud</string>
+    <string name="add_acr_consider">Για να αποτρέψετε το χτύπημα των ορίων ρυθμού, σκεφτείτε να προσθέσετε το δικό σας κλειδί ACRCloud</string>
+    <string name="add">Προσθήκη</string>
+    <string name="add_acr_key_info">"• Εγγραφείτε στο https://console.acrcloud. om
+• Πλοηγηθείτε σε έργα &gt; Αναγνώριση ήχου &amp; βίντεο
+• Δημιουργήστε ένα νέο έργο, επιλέξτε Ηχογραφημένο Ήχο και τον κάδο μουσικής ACRCloud"</string>
+    <string name="shazam_scrobbling">Για να κάνετε συνεχώς scrobble, ανοίξτε το <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> αντί αυτού και ξεκινήστε το Auto Shazam. Επίσης, βεβαιωθείτε ότι το Shazam είναι ενεργοποιημένο για scrobbling.</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Απομένουν %1$d</string>
+    <string name="submitting_loves" formatted="true">Υποβολή loves, %1$d απομένουν</string>
+    <string name="pending_batch" comment="For pending scrobbles">Υποβολή μιας παρτίδας</string>
+    <string name="webview_error">Η σελίδα απέτυχε να φορτώσει (δουλεύει η σύνδεσή σας;)</string>
+    <string name="navigation_drawer_open">Άνοιγμα συρταριού πλοήγησης ή επιστροφή</string>
+    <string name="navigation_drawer_close">Κλείσιμο συρταριού πλοήγησης</string>
     <!--  pro  -->
 </resources>

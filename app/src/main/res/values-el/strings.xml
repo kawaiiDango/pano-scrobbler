@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s μπλοκαρισμένα μεταδεδομένα</item>
+        <item quantity="other">%1$s μπλοκαρισμένα μεταδεδομένα</item>
+    </plurals>
+    <string name="yes">Ναι</string>
+    <string name="no">Όχι</string>
+    <string name="reset">Επαναφορά</string>
+    <string name="settings">Διαμόρφωση</string>
+    <string name="bug_report">Αναφορά σφαλμάτων</string>
+    <string name="album_art">Εξώφυλλο άλμπουμ</string>
+    <string name="artist_image">Εικόνα καλλιτέχνη</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Αδυναμία επαλήθευσης τίτλου</string>
+    <string name="network_error">Σφάλμα δικτύου</string>
+    <string name="disable_tls_verify">Αγνόηση σφαλμάτων TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Το Scrobble αγνοήθηκε</string>
     <!--  pro  -->
 </resources>

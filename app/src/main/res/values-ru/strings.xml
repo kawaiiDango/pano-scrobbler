@@ -12,6 +12,12 @@
         <item quantity="many">%1$s слушателей</item>
         <item quantity="other">%1$s слушателя</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s день</item>
+        <item quantity="few">%1$s дня</item>
+        <item quantity="many">%1$s дней</item>
+        <item quantity="other">%1$s дней</item>
+    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s неделя</item>
         <item quantity="few">%1$s недели</item>
@@ -31,10 +37,10 @@
         <item quantity="other">%1$s лет</item>
     </plurals>
     <plurals name="num_artists">
-        <item quantity="one">%1$s артист</item>
-        <item quantity="few">Исполнителей: %1$s</item>
-        <item quantity="many">Исполнителей: %1$s</item>
-        <item quantity="other">Исполнителей: %1$s</item>
+        <item quantity="one">%1$s исполнитель</item>
+        <item quantity="few">%1$s исполнителя</item>
+        <item quantity="many">%1$s исполнителей</item>
+        <item quantity="other">%1$s исполнителей</item>
     </plurals>
     <plurals name="num_albums">
         <item quantity="one">%1$s альбом</item>
@@ -56,13 +62,13 @@
     </plurals>
     <plurals name="num_simple_edits">
         <item quantity="one">%1$s редактирование</item>
-        <item quantity="few">%1$s редактирований</item>
+        <item quantity="few">%1$s редактирования</item>
         <item quantity="many">%1$s редактирований</item>
         <item quantity="other">%1$s редактирования</item>
     </plurals>
     <plurals name="num_regex_edits">
         <item quantity="one">%1$s редактирование шаблона</item>
-        <item quantity="few">%1$s редактирований шаблона</item>
+        <item quantity="few">%1$s редактирования шаблона</item>
         <item quantity="many">%1$s редактирований шаблона</item>
         <item quantity="other">%1$s редактирования шаблона</item>
     </plurals>
@@ -71,6 +77,18 @@
         <item quantity="few">%1$s блокировок метаданных</item>
         <item quantity="many">%1$s блокировок метаданных</item>
         <item quantity="other">%1$s блокировки метаданных</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d минута</item>
+        <item quantity="few">%1$d минуты</item>
+        <item quantity="many">%1$d минут</item>
+        <item quantity="other">%1$d минут</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s друг</item>
+        <item quantity="few">%1$s друга</item>
+        <item quantity="many">%1$s друзей</item>
+        <item quantity="other">%1$s друзей</item>
     </plurals>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -97,7 +115,7 @@
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Топ альбомы</string>
     <string name="track">Трек</string>
     <string name="tracks">Треки</string>
-    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Топ треки</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Популярные треки</string>
     <string name="similar_tracks">Похожие треки</string>
     <string name="similar" comment="Similar tracks but in short">Похожие</string>
     <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
@@ -131,6 +149,7 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Легенда</string>
     <string name="grid_size">Изменить размер сетки</string>
     <string name="more_info">Больше информации</string>
+    <string name="rank_change" comment="%1= delta change">Изменение рейтинга: %s</string>
     <string name="rank_change_no_change">Без изменений</string>
     <string name="rank_change_new">Не заскробблено за предыдущий период</string>
     <string name="search">Поиск</string>
@@ -143,6 +162,7 @@
     <string name="take_long_time">Это может занять некоторое время</string>
     <string name="full_index_desc">Используйте это только если вы изменили или удалили скробблы с сайта.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Нашел топ %1$s предметов по каждой категории.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Последнее индексирование: %1$s.</string>
     <string name="profile">Профиль</string>
     <string name="profile_pic">Изображение профиля</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Опции для этого элемента</string>
@@ -155,7 +175,7 @@
     <string name="new_app">Новое приложение</string>
     <string name="no_apps_enabled">Для скробблинга нет приложений</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">еще %1$d</string>
-    <string name="show_all">Увидеть все</string>
+    <string name="show_all">Показать все</string>
     <string name="edit">Изменить</string>
     <string name="delete">Удалить</string>
     <string name="love">Лайк</string>
@@ -171,6 +191,12 @@
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
     <string name="send_notifications">Разрешить уведомления</string>
     <string name="notification_channel_blocked">Это требует включенные уведомления</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Проверяйте статус скроббла и количество
+- Лайкайте или блокируйте прямо из уведомления
+- Получайте уведомления об ошибках и действиях, которые вы можете совершить
+- Получайте ваш топ скробблов каждую неделю
+- И более
+- Уведомления не издают звук\"\""</string>
     <string name="will_not_scrobble">Пропуск этого шага отключит скробблинг</string>
     <string name="authenticate_with_lastfm_desc">Вы можете войти в LibreFM, GNUFM и Listenbrainz позже в настройках</string>
     <string name="swap" comment="(Swap title and artist)">Свап</string>
@@ -197,6 +223,7 @@
     <string name="saved_as_pending">Сохранено как ожидающий скроббл</string>
     <string name="sort">Сортировка</string>
     <string name="past_scrobbles">Прошлые скробблы</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Временной прыжок</string>
     <string name="my_scrobbles">Мои скробблы</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Скробблы %1$s</string>
     <string name="listeners">Слушатели</string>
@@ -207,6 +234,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Скробблы к %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Из %1$s</string>
     <string name="not_found" comment="Shown in search">Не найдено</string>
+    <string name="save" comment="saves a file">Сохранить</string>
+    <string name="saved_to_gallery">Сохранено в галерею</string>
     <string name="lastfm_reports">LastFM Отчеты</string>
     <string name="weekly">Еженедельно</string>
     <string name="weeks">Недели</string>
@@ -252,6 +281,7 @@
     <string name="dark">Темная</string>
     <string name="system_colors">Системные цвета</string>
     <string name="appwidget_alpha">Прозрачность фона</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Виджет будет обновляться каждые %1$s</string>
     <string name="primary_color">Основной цвет</string>
     <string name="secondary_color">Вторичный цвет</string>
     <string name="tint_background">Оттеночный фон</string>
@@ -293,6 +323,11 @@
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
     <string name="enable" comment="To enable the scrobbler">Включить</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Размер</string>
+    <string name="skip_missing_images">Пропустить отсутствующие изображения</string>
+    <string name="create_collage">Создать коллаж</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Подписи изображений</string>
+    <string name="username" comment="last.fm Username">Имя пользователя</string>
     <string name="pref_master">Скробблинг музыки</string>
     <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек</string>
     <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
@@ -337,7 +372,7 @@
     <string name="pref_widget_charts">Виджет на главном экране</string>
     <string name="pref_show_albums">Показать названия альбомов</string>
     <string name="pref_show_albums_desc">для скробблов</string>
-    <string name="pref_show_scrobble_sources">Показывать значки приложений, из которых вы скробблили</string>
+    <string name="pref_show_scrobble_sources">Отображение иконок приложений, из которых вы скробблили</string>
     <string name="pref_show_scrobble_sources_desc">рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
     <string name="pref_search_in_source">Поиск воспроизведение в приложении, из которого вы скробблили</string>
     <string name="pref_search_in_source_desc">Для поддерживаемых приложений</string>
@@ -371,7 +406,7 @@
     <string name="failed_encode_url">Не удалось закодировать URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Проверьте %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Доступ к специальному приложению&gt; Доступ к уведомлениям&gt; %1$s</string>
-    <string name="artist_extra">Популярные треки, альбомы и похожие исполнители</string>
+    <string name="artist_extra">Треки, альбомы и похожие исполнители</string>
     <string name="no_browser">Браузер не установлен</string>
     <string name="no_player">Музыкальный плеер не установлен</string>
     <string name="not_running">⚠ Скробблер был остановлен вашей системой</string>
@@ -421,5 +456,7 @@
 • Войдите в систему с учетной записью, которой принадлежит покупка.
 • Установите это приложение прямо с веб-страницы Google Play.
 "</string>
+    <string name="billing_block">Блокировка исполнителей/треков и автоматический пропуск или отключение звука</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закрепить до %1$d друзей и изменить их порядок</string>
     <string name="billing_sharing">Удалить имя приложения при шеринге</string>
 </resources>

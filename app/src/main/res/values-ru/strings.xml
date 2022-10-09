@@ -156,7 +156,7 @@
     <string name="no_apps_enabled">Для скробблинга нет приложений</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">еще %1$d</string>
     <string name="show_all">Увидеть все</string>
-    <string name="edit">Исправления</string>
+    <string name="edit">Изменить</string>
     <string name="delete">Удалить</string>
     <string name="love">Лайк</string>
     <string name="unlove">Убрать лайк</string>

@@ -131,7 +131,6 @@ object Stuff {
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val OFFLINE_SCROBBLE_JOB_DELAY = 20 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
-    const val CRASH_REPORT_INTERVAL = 4 * 60 * 60 * 1000L
     const val CHARTS_WIDGET_REFRESH_INTERVAL = 30 * 60 * 1000L
     const val LASTFM_JAVA_CACHE_SIZE = 30 * 1024 * 1024
     const val TRACK_INFO_VALIDITY = 5 * 1000L

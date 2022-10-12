@@ -11,13 +11,20 @@ import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
-import com.arn.scrobble.db.*
+import com.arn.scrobble.db.CachedAlbum
 import com.arn.scrobble.db.CachedAlbum.Companion.toAlbum
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
+import com.arn.scrobble.db.CachedArtist
 import com.arn.scrobble.db.CachedArtist.Companion.toArtist
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
+import com.arn.scrobble.db.CachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toTrack
+import com.arn.scrobble.db.CachedTracksDao
+import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.PendingLove
+import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
 import com.arn.scrobble.pending.PendingScrJob
@@ -29,10 +36,37 @@ import com.arn.scrobble.scrobbleable.ScrobblableEnum
 import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.search.SearchVM
 import com.arn.scrobble.ui.UiUtils.toast
-import de.umass.lastfm.*
+import de.umass.lastfm.Album
+import de.umass.lastfm.Artist
+import de.umass.lastfm.Authenticator
+import de.umass.lastfm.CallException
+import de.umass.lastfm.Caller
+import de.umass.lastfm.ImageSize
+import de.umass.lastfm.Library
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.PaginatedResult
+import de.umass.lastfm.Period
+import de.umass.lastfm.ResponseBuilder
+import de.umass.lastfm.Result
+import de.umass.lastfm.Session
+import de.umass.lastfm.Tag
+import de.umass.lastfm.Track
+import de.umass.lastfm.User
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -40,7 +74,8 @@ import timber.log.Timber
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 import kotlin.math.log10
 import kotlin.math.min
 import kotlin.math.pow
@@ -70,6 +105,7 @@ class LFMRequester(
             is InterruptedException -> {
 
             }
+
             else -> {
                 if (errorLiveData != null)
                     errorLiveData.postValue(throwable)
@@ -392,6 +428,7 @@ class LFMRequester(
                         page,
                         lastfmSession
                     )
+
                     Stuff.TYPE_ALBUMS -> User.getTopAlbums(
                         username,
                         timePeriod.period,
@@ -399,6 +436,7 @@ class LFMRequester(
                         page,
                         lastfmSession
                     )
+
                     else -> User.getTopTracks(
                         username,
                         timePeriod.period,
@@ -419,6 +457,7 @@ class LFMRequester(
                         limit,
                         lastfmSession
                     )
+
                     Stuff.TYPE_ALBUMS -> User.getWeeklyAlbumChart(
                         username,
                         fromStr,
@@ -426,6 +465,7 @@ class LFMRequester(
                         limit,
                         lastfmSession
                     )
+
                     else -> User.getWeeklyTrackChart(
                         username,
                         fromStr,
@@ -457,12 +497,14 @@ class LFMRequester(
                     userPlayCount = 0
                 }
             }
+
             Stuff.TYPE_ALBUMS -> {
                 (entry as Album).toCachedAlbum().apply {
                     userPlayCount = 0
                     largeImageUrl = null
                 }
             }
+
             Stuff.TYPE_TRACKS -> {
                 (entry as Track).toCachedTrack().apply {
                     userPlayCount = 0
@@ -470,6 +512,7 @@ class LFMRequester(
                     isLoved = false
                 }
             }
+
             else -> throw IllegalArgumentException("Unknown type")
         }
 
@@ -565,6 +608,7 @@ class LFMRequester(
                                 musicEntry.name
                             )
                         }
+
                         is Album -> {
                             caller.call(
                                 "album.getTopTags",
@@ -575,6 +619,7 @@ class LFMRequester(
                                 musicEntry.name
                             )
                         }
+
                         is Track -> {
                             caller.call(
                                 "track.getTopTags",
@@ -585,6 +630,7 @@ class LFMRequester(
                                 musicEntry.name
                             )
                         }
+
                         else -> {
                             throw ClassCastException("Unknown music entry type")
                         }
@@ -691,6 +737,7 @@ class LFMRequester(
                             _total = it?.totalPages ?: 0
                         }
                     }
+
                     Stuff.TYPE_LOVES -> {
                         execHere<PaginatedResult<out MusicEntry>> {
                             getLoves(
@@ -1401,14 +1448,8 @@ class LFMRequester(
                         lastNp = scrobbleData to System.currentTimeMillis()
                         lastScrobbleData.timestamp = scrobbleData.timestamp
 
-                        val cacheOnly = if (lastScrobbleData == scrobbleData &&
+                        val cacheOnly = lastScrobbleData == scrobbleData &&
                             System.currentTimeMillis() - lastTime < Stuff.TRACK_INFO_VALIDITY
-                        ) {
-                            if (System.currentTimeMillis() - lastTime < 1000)
-                                Timber.tag(Stuff.TAG).w(Exception("Possible duplicate scrobble"))
-                            true
-                        } else
-                            false
 
                         track = getValidTrack(
                             scrobbleData.artist,
@@ -1601,8 +1642,7 @@ class LFMRequester(
                                         if (savedAsPending)
                                             context.getString(R.string.saved_as_pending)
                                         else
-                                            ""
-                                        ,
+                                            "",
                                         failedText,
                                     )
                                 )
@@ -1705,58 +1745,60 @@ class LFMRequester(
             if (!token.isNullOrEmpty()) {
                 when (type) {
                     R.string.lastfm -> {
-                        val lastfmSession =
+                        val session =
                             Authenticator.getSession(null, token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
 
-                        UserAccountSerializable(
-                            ScrobblableEnum.LASTFM,
-                            User.getInfo(lastfmSession).toUserSerializable(),
-                            lastfmSession.key,
-                        ).let {
-                            prefs.currentUser = it
-                            prefs.scrobbleAccounts += it
-                        }
+                        if (session != null) {
+                            UserAccountSerializable(
+                                ScrobblableEnum.LASTFM,
+                                User.getInfo(session).toUserSerializable(),
+                                session.key,
+                            ).let {
+                                prefs.currentUser = it
+                                prefs.scrobbleAccounts += it
+                            }
 
-                        if (lastfmSession != null) {
-                            prefs.lastfmUsername = lastfmSession.username
-                            prefs.lastfmSessKey = lastfmSession.key
+                            prefs.lastfmUsername = session.username
+                            prefs.lastfmSessKey = session.key
                             getDrawerInfo()
                         }
                     }
+
                     R.string.librefm -> {
-                        val librefmSession = Authenticator.getSession(
+                        val session = Authenticator.getSession(
                             Stuff.LIBREFM_API_ROOT,
                             token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY
                         )
 
-                        prefs.scrobbleAccounts += UserAccountSerializable(
-                            ScrobblableEnum.LIBREFM,
-                            User.getInfo(librefmSession).toUserSerializable(),
-                            librefmSession.key,
-                        )
+                        if (session != null) {
+                            prefs.scrobbleAccounts += UserAccountSerializable(
+                                ScrobblableEnum.LIBREFM,
+                                User.getInfo(session.username, session).toUserSerializable(),
+                                session.key,
+                            )
 
-                        if (librefmSession != null) {
-                            prefs.librefmUsername = librefmSession.username
-                            prefs.librefmSessKey = librefmSession.key
+                            prefs.librefmUsername = session.username
+                            prefs.librefmSessKey = session.key
                         }
                     }
+
                     R.string.gnufm -> {
-                        val gnufmSession = Authenticator.getSession(
+                        val session = Authenticator.getSession(
                             prefs.gnufmRoot + "2.0/",
                             token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY
                         )
 
-                        prefs.scrobbleAccounts += UserAccountSerializable(
-                            ScrobblableEnum.GNUFM,
-                            User.getInfo(gnufmSession).toUserSerializable(),
-                            gnufmSession.key,
-                            gnufmSession.apiRootUrl.substringBeforeLast("2.0/"),
-                            gnufmSession.isTlsNoVerify
-                        )
+                        if (session != null) {
+                            prefs.scrobbleAccounts += UserAccountSerializable(
+                                ScrobblableEnum.GNUFM,
+                                User.getInfo(session.username, session).toUserSerializable(),
+                                session.key,
+                                session.apiRootUrl.substringBeforeLast("2.0/"),
+                                session.isTlsNoVerify
+                            )
 
-                        if (gnufmSession != null) {
-                            prefs.gnufmUsername = gnufmSession.username
-                            prefs.gnufmSessKey = gnufmSession.key
+                            prefs.gnufmUsername = session.username
+                            prefs.gnufmSessKey = session.key
                         }
                     }
                 }

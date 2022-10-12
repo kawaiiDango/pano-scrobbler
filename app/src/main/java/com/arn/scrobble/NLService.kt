@@ -45,15 +45,12 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils.toast
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.PriorityQueue
@@ -186,16 +183,6 @@ class NLService : NotificationListenerService() {
 
         DigestJob.scheduleAlarms(applicationContext)
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
-//        if (!BuildConfig.DEBUG)
-        coroutineScope.launch {
-            while (prefs.crashlyticsEnabled) {
-                delay(Stuff.CRASH_REPORT_INTERVAL)
-
-                kotlin.runCatching {
-                    FirebaseCrashlytics.getInstance().sendUnsentReports()
-                }
-            }
-        }
 
         if (prefs.notiPersistent)
             ContextCompat.startForegroundService(

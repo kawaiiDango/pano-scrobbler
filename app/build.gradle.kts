@@ -3,7 +3,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 plugins {
     id("com.android.application")
@@ -102,7 +102,7 @@ aboutLibraries {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("androidx.appcompat:appcompat:1.6.0-rc01")
+    implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.media:media:1.6.0")

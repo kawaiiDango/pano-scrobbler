@@ -342,7 +342,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             shareTextList += "$title:\n$text"
         }
 
-        return shareTextList.joinToString("\n")
+        return shareTextList.joinToString("\n\n")
     }
 
     private suspend fun getCollageFileUri(collageRoot: LinearLayout): Uri {

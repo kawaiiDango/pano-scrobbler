@@ -55,8 +55,8 @@ data class UserSerializable(
             name = name,
             url = url,
             realname = realname,
-            country = country,
-            registeredTime = registeredDate.time,
+            country = country ?: "", // gnufm
+            registeredTime = registeredDate?.time ?: 0, // gnufm
             imgUrls = imageUrls
         )
     }

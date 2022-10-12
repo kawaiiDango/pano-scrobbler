@@ -20,7 +20,6 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import coil.imageLoader
-import coil.load
 import coil.request.ImageRequest
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
@@ -320,11 +319,10 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         }
 
         createAddFooter(collageRoot, type, textScaler)
-        val uri = getCollageFileUri(collageRoot)
+        val (bitmap, uri) = writeCollageAndGetBitmap(collageRoot)
         lastUri = uri
+        binding.collagePreview.setImageBitmap(bitmap)
 
-        if (BuildConfig.DEBUG)
-            binding.collagePreview.load(uri)
         return uri to text
     }
 
@@ -345,9 +343,10 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         return shareTextList.joinToString("\n\n")
     }
 
-    private suspend fun getCollageFileUri(collageRoot: LinearLayout): Uri {
+    private suspend fun writeCollageAndGetBitmap(collageRoot: LinearLayout): Pair<Bitmap, Uri> {
         val imageDimensionPx = 300
         val totalWidth = imageDimensionPx * prefs.collageSize
+        var bitmap: Bitmap
 
         val collageFile = File(context!!.filesDir, "collage.jpg")
         val specHeight = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
@@ -362,10 +361,13 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
 
         withContext(Dispatchers.IO) {
             FileOutputStream(collageFile).use { fos ->
-                collageRoot.drawToBitmap().compress(Bitmap.CompressFormat.JPEG, 95, fos)
+                bitmap = collageRoot.drawToBitmap()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
             }
         }
-        return FileProvider.getUriForFile(context!!, "com.arn.scrobble.fileprovider", collageFile)
+
+        return bitmap to
+                FileProvider.getUriForFile(context!!, "com.arn.scrobble.fileprovider", collageFile)
     }
 
     private fun createAddFooter(collageRoot: LinearLayout, type: Int, textScaler: Float) {

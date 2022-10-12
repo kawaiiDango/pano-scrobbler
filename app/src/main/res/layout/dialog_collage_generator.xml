@@ -81,11 +81,6 @@
 
     </com.google.android.material.chip.ChipGroup>
 
-    <ImageView
-        android:id="@+id/collage_preview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -124,4 +119,14 @@
             android:layout_gravity="center_horizontal"
             android:visibility="invisible" />
     </FrameLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/collage_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="#000"
+        android:maxWidth="150dp"
+        app:shapeAppearance="@style/roundedCorners" />
+
 </LinearLayout>

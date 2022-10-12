@@ -52,6 +52,14 @@
         <item quantity="one">%1$s engellenmiş metaveri</item>
         <item quantity="other">%1$s engellenmiş metaveri</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d dakika</item>
+        <item quantity="other">%1$d dakika</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s arkadaş</item>
+        <item quantity="other">%1$s arkadaş</item>
+    </plurals>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
     <string name="reset">Sıfırla</string>
@@ -197,6 +205,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">%1$s tarihine kadar skroplar</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">Bulunamadı</string>
+    <string name="save" comment="saves a file">Kaydet</string>
+    <string name="saved_to_gallery">Galeriye kaydedildi</string>
     <string name="lastfm_reports">LastFM dinleme raporları</string>
     <string name="weekly">Haftalık</string>
     <string name="weeks">Haftalık</string>
@@ -242,6 +252,7 @@
     <string name="dark">Koyu</string>
     <string name="system_colors">Sistem renkleri</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Widget her %1$s bir yenilenir</string>
     <string name="primary_color">Ana renk</string>
     <string name="secondary_color">İkincil renk</string>
     <string name="tint_background">Renkli arkaplan</string>
@@ -283,6 +294,11 @@
     <string name="scrobbler_off">Skroplayıcı devre dışı</string>
     <string name="scrobbler_on">Skroplayıcı aktif</string>
     <string name="enable" comment="To enable the scrobbler">Etkinleştir</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Ebat</string>
+    <string name="skip_missing_images">Eksik resimleri atla</string>
+    <string name="create_collage">Kolaj oluştur</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Görsele gömülü yazılar</string>
+    <string name="username" comment="last.fm Username">Kullanıcı adı</string>
     <string name="pref_master">Müzik skropla</string>
     <string name="pref_master_qs_hint">Ayrıca hızlı ayarlar kutucuğundan da değiştirilebilir</string>
     <string name="pref_noti_q">Simge görünmüyorsa cihazınızın bildirim ayarlarından ekleyebilirsiniz</string>

@@ -39,6 +39,12 @@
     <plurals name="num_blocked_metadata">
         <item quantity="other">%1$s件のブロックされたメタデータ</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="other">%1$d分</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="other">%1$s人のフレンド</item>
+    </plurals>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
     <string name="reset">リセット</string>
@@ -180,6 +186,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">%1$sまでのScrobble</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">見つかりませんでした</string>
+    <string name="save" comment="saves a file">保存</string>
+    <string name="saved_to_gallery">ギャラリーに保存しました</string>
     <string name="lastfm_reports">LastFM レポート</string>
     <string name="weekly">1週間</string>
     <string name="weeks">週</string>
@@ -224,6 +232,7 @@
     <string name="dark">ダーク</string>
     <string name="system_colors">システムの色</string>
     <string name="appwidget_alpha">背景の透明度</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">ウィジェットは%1$sごとに更新されます</string>
     <string name="primary_color">メインカラー</string>
     <string name="secondary_color">サブカラー</string>
     <string name="tint_background">背景を明るくする</string>
@@ -264,6 +273,8 @@
     <string name="scrobbler_off">Scrobbler停止中</string>
     <string name="scrobbler_on">Scrobbler稼働中</string>
     <string name="enable" comment="To enable the scrobbler">有効化</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">サイズ</string>
+    <string name="username" comment="last.fm Username">ユーザー名</string>
     <string name="pref_master">音楽をScrobbleする</string>
     <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>
     <string name="pref_noti_q">アイコンが表示されない場合、通知を促せます</string>

@@ -114,6 +114,7 @@
     <string name="more_info">Više informacija</string>
     <string name="rank_change" comment="%1= delta change">Promjena ranga: %s</string>
     <string name="rank_change_no_change">Nema promjene</string>
+    <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
     <string name="search">Traži</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Očisti svu povijest</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Ukloniti ovu stavku iz povijesti?</string>
@@ -138,6 +139,8 @@
     <string name="show_all">Prikaži sve</string>
     <string name="edit">Uredi</string>
     <string name="delete">Izbriši</string>
+    <string name="love">Volim</string>
+    <string name="unlove">Ne volim</string>
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string name="pending_scrobble">Scrobble na čekanju</string>
     <string name="pending_scrobbles_noti">Procesiranje scrobbleova na čekanju</string>
@@ -147,12 +150,21 @@
     <string name="grant_notification_access_desc">Potrebno za dohvaćanje informacija o glazbi. Obavijesti koje nisu povezane s glazbom se ne čitaju</string>
     <string name="send_notifications">Dopusti obavijesti</string>
     <string name="notification_channel_blocked">Za ovo je potrebno omogućiti obavijesti</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- provjera statusa scrobbleanja i prikaz brojača
+- označavanje kao voljeno ili blokiranje izravno iz obavijesti
+- obavještavanje o greškama kod scrobbleanja i kako ih ispraviti
+- obavještavanje o top scrobbleovima svakog tjedna
+- i više toga
+- obavijesti su tihe\""</string>
     <string name="will_not_scrobble">Ako preskočite ovaj korak, scrobbleanje bit će onemogućeno</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM i Listenbrainz mogu se autentificirati nakon ovoga u postavkama</string>
+    <string name="swap" comment="(Swap title and artist)">Zamijeni mjesta</string>
     <string name="rate_msg">Sviđa Vam se ova aplikacija?</string>
     <string name="rate_action">Ocijenite</string>
     <string name="time_just_now">upravo sada</string>
     <string name="no_mail_apps">Nema instaliranih klijenata za epoštu</string>
+    <string name="loved">Voljeno</string>
+    <string name="unloved">Nije voljeno</string>
     <string name="simple_edits">Uređivanja</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
@@ -160,17 +172,22 @@
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Pomoću mikrofona</string>
     <string name="add_to_hs">Dodaj na početni zaslon</string>
     <string name="uploading">Prenošenje…</string>
+    <string name="press_back">Pritisnite natrag kada ste gotovi</string>
     <string name="powered_acr">Omogućuje <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalji</string>
     <string name="saved_as_pending">Spremljeno kao scrobble na čekanju</string>
     <string name="sort">Sortiraj</string>
     <string name="past_scrobbles">Prošli scrobbleovi</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Vremenski skok</string>
     <string name="my_scrobbles">Moji scrobbleovi</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbleovi korisnika %1$s</string>
     <string name="listeners">Slušatelji</string>
     <string name="scrobbles">Scrobbleovi</string>
     <string name="collapse" comment="(view only a few items)">Sažmi</string>
     <string name="expand" comment="(view all items)">Proširi</string>
+    <string name="user_loved" formatted="true" comment="%1= username">%1$s voli ovo</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbleovi do %1$s</string>
+    <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iz: %1$s</string>
     <string name="not_found" comment="Shown in search">Nije pronađeno</string>
     <string name="save" comment="saves a file">Spremi</string>
     <string name="saved_to_gallery">Spremljeno u galeriju</string>
@@ -184,10 +201,12 @@
     <string name="charts_no_data">Nema podataka za ovo razdoblje</string>
     <string name="charts_custom" comment="Custom date range, but in short">Prilagođeno</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Kontinuirano</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Temeljeno na: %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nema dovoljno podataka</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Prati me sreća</string>
     <string name="random_not_found">Nema pronađenih pjesama</string>
+    <string name="loved_track">Voljena pjesma</string>
     <string name="randomize">Nasumično</string>
     <string name="random_text">Nasumično</string>
     <string name="graph_daily">Broj dnevnih scrobbleova</string>
@@ -216,6 +235,7 @@
     <string name="primary_color">Primarna boja</string>
     <string name="secondary_color">Sekundarna boja</string>
     <string name="tint_background">Ton pozadine</string>
+    <string name="edit_name" comment="name for regex pattern">Prepoznatljivo ime (neobavezno)</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Polja</string>
     <string name="edit_replace">Zamijeni</string>
     <string name="edit_first" comment="First occurrence of a pattern">Prvo</string>
@@ -227,6 +247,7 @@
     <string name="skip" comment="skip to next track">Preskoči</string>
     <string name="mute">Utišaj</string>
     <string name="block">Blokiraj</string>
+    <string name="hidden_tags">Skrivene oznake</string>
     <string name="pin">Prikvači</string>
     <string name="unpin">Otkvači</string>
     <string name="pin_limit_reached" formatted="true">Dosegnuto ograničenje prikvačivanja (%1$d)</string>
@@ -244,10 +265,12 @@
     <string name="username" comment="last.fm Username">Korisničko ime</string>
     <string name="pref_master">Scrobbleaj glazbu</string>
     <string name="pref_master_qs_hint">Može se omogućiti i u brzim postavkama</string>
+    <string name="pref_noti_q">Možete promovirati obavijest, ako se ikona ne prikazuje</string>
     <string name="pref_noti">Obavijesti</string>
     <string name="pref_noti_categories">Kategorije obavijesti</string>
     <string name="pref_scrobble_noti">Obavijesti scrobbleanja</string>
     <string name="pref_lockscreen_noti">Obavijesti na zaslonu zaključavanja</string>
+    <string name="pref_offline_info">ℹ️ Izvanmrežni scrobbleovi i oznake \"voljeno\" bit će spremljene i poslane kasnije.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbleaj iz</string>
     <string name="pref_enabled_apps_summary">ℹ️ Podržane su aplikacije koje dijele metapodatke o glazbi. Da biste izbjegli duplo scrobbleanje sa Spotifya, samo aktivirajte značajku na jednom mjestu.</string>
     <string name="pref_enabled_apps_title">Odaberite aplikacije</string>
@@ -317,6 +340,7 @@
     <string name="remove_acr_key">Ukloni ključ za ACRCloud</string>
     <string name="add_acr_consider">Za sprječavanje prelaženja ograničenja stope pristupa, razmislite o dodavanju vlastitog ključa za ACRCloud</string>
     <string name="add">Dodaj</string>
+    <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
     <string name="navigation_drawer_open">Otvori navigacijsku ladicu ili idi natrag</string>
     <string name="navigation_drawer_close">Zatvori navigacijsku ladicu</string>
     <string name="graph">Linijski grafikon</string>

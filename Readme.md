@@ -32,6 +32,7 @@ Buttons in notifications don't work as expected. This is a WSA bug.
 - Import & export settings, edits and blocklists
 - View charts for a specific week, month, year or custom range, with change indicators
 - Charts are also available as a customizable home-screen widget
+- Collage generator
 - View scrobble count graphs for specific time periods
 - Get a random track, album or artist from your listening history
 - Search for a track, artist or album

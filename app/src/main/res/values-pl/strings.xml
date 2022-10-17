@@ -93,7 +93,7 @@
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
     <string name="reset">Resetuj</string>
-    <string name="settings">Konfiguruj</string>
+    <string name="settings">Ustawienia</string>
     <string name="bug_report">Zgłoś błąd</string>
     <string name="album_art">Okładka albumu</string>
     <string name="artist_image">Obraz artysty</string>
@@ -129,7 +129,7 @@
     <string name="recently_loved">♥ Ostatnio polubione</string>
     <string name="recents" comment="Short for recently scrobbled">Ostatnie</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pierwsze scrobblowanie w %1$s</string>
-    <string name="auto" comment="automatic or default setting">Automatyczne</string>
+    <string name="auto" comment="automatic or default setting">Automatycznie</string>
     <string name="graph_info">… ostatnie 5 miesięcy</string>
     <string name="enabled_apps">Włączone aplikacje</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Prawie gotowe…</string>
@@ -179,8 +179,8 @@
     <string name="show_all">Pokaż wszystko</string>
     <string name="edit">Edytuj</string>
     <string name="delete">Usuń</string>
-    <string name="love">Lubię</string>
-    <string name="unlove">Usuń z ulubionych</string>
+    <string name="love">Polub</string>
+    <string name="unlove">Usuń z polubionych</string>
     <string name="pending_scrobbles">Oczekujące Scrobble</string>
     <string name="pending_scrobble">Oczekujące scrobble</string>
     <string name="pending_scrobbles_noti">Przetwarzanie oczekujących scrobbli</string>
@@ -205,7 +205,7 @@
     <string name="rate_action">Oceń</string>
     <string name="time_just_now">teraz</string>
     <string name="no_mail_apps">Klient e-mail nie jest zainstalowany</string>
-    <string name="loved">Ulubione</string>
+    <string name="loved">Polubione</string>
     <string name="unloved">Nielubione</string>
     <string name="simple_edits">Edycje</string>
     <string name="force_remembered">Wymuś scrobblowanie (zapamiętaj)</string>
@@ -243,10 +243,10 @@
     <string name="monthly">Co miesiąc</string>
     <string name="months">Miesiące</string>
     <string name="years">Lata</string>
-    <string name="charts_overall">Ogólnie</string>
+    <string name="charts_overall">Ogółem</string>
     <string name="charts_no_data">Brak danych dla tego okresu</string>
     <string name="charts_custom" comment="Custom date range, but in short">Własny</string>
-    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Ciągły</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Ostatnie</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Na podstawie %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Brak wystarczających danych</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
@@ -259,7 +259,7 @@
     <string name="graph_weekly">Tygodniowa liczba scrobbli</string>
     <string name="graph_monthly">Miesięczna liczba scrobbli</string>
     <string name="graph_yearly">Roczna liczba scrobbli</string>
-    <string name="graph_scrub_msg">Czasy są w Twojej strefie czasu\nPrzytrzymaj lub przeskakuj wykres aby zobaczyć dokładną liczbę</string>
+    <string name="graph_scrub_msg">Przytrzymaj i przesuń po wykresie, aby zobaczyć dokładną liczbę scrobbli w danym czasie</string>
     <string name="original" comment="Original metadata before editing">Oryginalne</string>
     <string name="corrected" comment="Corrected metadata after editing">Poprawione</string>
     <string name="tag" comment="last.fm tag">Tag</string>
@@ -330,8 +330,8 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Podpisy obrazów</string>
     <string name="username" comment="last.fm Username">Nazwa użytkownika</string>
     <string name="pref_master">Scrobbluj muzykę</string>
-    <string name="pref_master_qs_hint">Może być również przełączony z kafelka szybkich ustawień</string>
-    <string name="pref_noti_q">Możesz promować powiadomienie, jeśli ikona nie wyświetla się</string>
+    <string name="pref_master_qs_hint">Może to być również przełączane z kafelka szybkich ustawień</string>
+    <string name="pref_noti_q">Możesz edytować powiadomienia, jeśli ikona się nie wyświetla</string>
     <string name="pref_noti">Powiadomienia</string>
     <string name="pref_noti_categories">Kategorie powiadomień</string>
     <string name="pref_scrobble_noti">Powiadomienia o scrobblach</string>
@@ -355,7 +355,7 @@
     <string name="pref_user_label" comment="(Like username)">Użytkownik</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token uwierzytelniający</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
-    <string name="pref_now_playing">Prześlij teraz odtwarzane</string>
+    <string name="pref_now_playing">Przesyłaj \"Co jest grane\"</string>
     <string name="pref_fetch_aa">Pobierz wykonawców albumu z lastFM</string>
     <string name="pref_fetch_aa_desc">Dla odtwarzaczy które nie dostarczają tych danych. Pobrane dane mogą różnić się od Twoich tagów. lastFM może nie mieć danych dla niektórych piosenek.</string>
     <string name="pref_locale">Języki</string>
@@ -369,7 +369,7 @@
     <string name="pref_import">Importuj</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizacja</string>
     <string name="pref_themes">Motywy</string>
-    <string name="pref_themes_desc">Wymieszaj i dopasuj\nZmienia również kolor powiadomień</string>
+    <string name="pref_themes_desc">Wybierz i dopasuj\nZmienia również kolor powiadomień</string>
     <string name="pref_widget_charts">Widżet ekranu głównego - Wykresy</string>
     <string name="pref_show_albums">Pokaż tytuły albumów</string>
     <string name="pref_show_albums_desc">…dla scrobbli</string>
@@ -413,7 +413,7 @@
     <string name="not_running">⚠ Scrobbler został zabity przez twój system</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Powód zabicia podany przez system: %s</string>
     <string name="not_running_fix_action">Napraw to</string>
-    <string name="login_submit">Weryfikacja</string>
+    <string name="login_submit">Weryfikuj</string>
     <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Host</string>
     <string name="acr_key">Klucz dostępu</string>

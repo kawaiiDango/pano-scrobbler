@@ -11,9 +11,19 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.StrictMode
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.size.Precision
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MigratePrefs
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.ui.AppIconFetcher
+import com.arn.scrobble.ui.AppIconKeyer
+import com.arn.scrobble.ui.DemoInterceptor
+import com.arn.scrobble.ui.MusicEntryImageInterceptor
+import com.arn.scrobble.ui.StarInterceptor
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.google.firebase.FirebaseApp
@@ -24,7 +34,7 @@ import java.io.File
 import java.util.logging.Level
 
 
-class App : Application() {
+class App : Application(), ImageLoaderFactory {
     private var connectivityCheckInited = false
 
     override fun onCreate() {
@@ -146,6 +156,25 @@ class App : Application() {
 
         connectivityCheckInited = true
     }
+
+    override fun newImageLoader() = ImageLoader.Builder(this)
+        .components {
+            add(AppIconKeyer())
+            add(AppIconFetcher.Factory())
+            add(MusicEntryImageInterceptor())
+            add(StarInterceptor())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                add(ImageDecoderDecoder.Factory())
+            } else {
+                add(GifDecoder.Factory())
+            }
+
+            if (Stuff.DEMO_MODE)
+                add(DemoInterceptor())
+        }
+        .crossfade(Stuff.CROSSFADE_DURATION)
+        .precision(Precision.INEXACT)
+        .build()
 
     @SuppressLint("StaticFieldLeak")
     companion object {

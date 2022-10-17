@@ -33,13 +33,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
-import coil.Coil
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
 import coil.imageLoader
 import coil.load
-import coil.size.Precision
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.Stuff.getScrobblerExitReasons
 import com.arn.scrobble.Stuff.isTv
@@ -56,13 +51,8 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.PrefFragment
 import com.arn.scrobble.search.SearchFragment
 import com.arn.scrobble.themes.ColorPatchUtils
-import com.arn.scrobble.ui.AppIconFetcher
-import com.arn.scrobble.ui.AppIconKeyer
-import com.arn.scrobble.ui.DemoInterceptor
 import com.arn.scrobble.ui.InitialsDrawable
-import com.arn.scrobble.ui.MusicEntryImageInterceptor
 import com.arn.scrobble.ui.ShadowDrawerArrowDrawable
-import com.arn.scrobble.ui.StarInterceptor
 import com.arn.scrobble.ui.StatefulAppBar
 import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
@@ -119,27 +109,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         coordinatorPadding = binding.coordinatorMain.coordinator.paddingStart
-
-
-        val imageLoader = ImageLoader.Builder(applicationContext)
-            .components {
-                add(AppIconKeyer())
-                add(AppIconFetcher.Factory())
-                add(MusicEntryImageInterceptor())
-                add(StarInterceptor())
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    add(ImageDecoderDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
-                }
-
-                if (Stuff.DEMO_MODE)
-                    add(DemoInterceptor())
-            }
-            .crossfade(Stuff.CROSSFADE_DURATION)
-            .precision(Precision.INEXACT)
-            .build()
-        Coil.setImageLoader(imageLoader)
 
         binding.coordinatorMain.appBar.onStateChangeListener = { state ->
 
@@ -537,7 +506,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun showFixItSnackbarIfNeeded(): Boolean {
         val nlsEnabled = OnboardingFragment.isNotificationListenerEnabled(this)
-        
+
         if (nlsEnabled && !Stuff.isScrobblerRunning()) {
             Snackbar.make(
                 binding.coordinatorMain.frame,

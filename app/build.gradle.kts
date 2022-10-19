@@ -128,6 +128,7 @@ dependencies {
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.android.datatransport:transport-runtime:3.1.8")
 
     val coilVersion = "2.2.2"
     implementation("io.coil-kt:coil:$coilVersion")

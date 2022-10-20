@@ -253,6 +253,7 @@
     <string name="scrobbler_off">Scrobbler desactivat</string>
     <string name="scrobbler_on">Scrobbler activat</string>
     <string name="enable" comment="To enable the scrobbler">Activa</string>
+    <string name="skip_missing_images">Omet les imatges que falten</string>
     <string name="create_collage">Crea un collage</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Subtítols de les imatges</string>
     <string name="username" comment="last.fm Username">Nom d\'usuari</string>

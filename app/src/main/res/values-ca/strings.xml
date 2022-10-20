@@ -52,6 +52,14 @@
         <item quantity="one">%1$s metadada bloquejada</item>
         <item quantity="other">%1$s metadades bloquejades</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minut</item>
+        <item quantity="other">%1$d minuts</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s amic</item>
+        <item quantity="other">%1$s amics</item>
+    </plurals>
     <string name="yes">Sí</string>
     <string name="no">No</string>
     <string name="reset">Restableix</string>
@@ -160,6 +168,7 @@
     <string name="add_to_hs">Afegeix a la pantalla d\'inici</string>
     <string name="listening">S\'està escoltant la música del voltant…</string>
     <string name="uploading">S\'està pujant…</string>
+    <string name="saved_as_pending">S\'ha desat com a scrobble pendent</string>
     <string name="sort">Ordena</string>
     <string name="past_scrobbles">Scrobbles anteriors</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salt en el temps</string>
@@ -173,6 +182,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles fins al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">No s\'ha trobat</string>
+    <string name="save" comment="saves a file">Desa</string>
+    <string name="saved_to_gallery">S\'ha desat a la galeria</string>
     <string name="lastfm_reports">Informes de Last.fm</string>
     <string name="weekly">Setmanal</string>
     <string name="weeks">Setmanes</string>
@@ -242,8 +253,12 @@
     <string name="scrobbler_off">Scrobbler desactivat</string>
     <string name="scrobbler_on">Scrobbler activat</string>
     <string name="enable" comment="To enable the scrobbler">Activa</string>
+    <string name="create_collage">Crea un collage</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Subtítols de les imatges</string>
+    <string name="username" comment="last.fm Username">Nom d\'usuari</string>
     <string name="pref_master">Fes scrobble</string>
     <string name="pref_master_qs_hint">També es pot ajustar des de la configuració ràpida</string>
+    <string name="pref_noti_q">Pots prioritzar la notificació, si la icona no apareix</string>
     <string name="pref_noti">Notificacions</string>
     <string name="pref_noti_categories">Categories de notificació</string>
     <string name="pref_scrobble_noti">Notificacions d\'scrobbles</string>
@@ -270,12 +285,14 @@
     <string name="pref_fetch_aa_desc">Per als reproductors que no proporcionen aquestes dades. Les dades obtingudes poden diferir de les teues etiquetes. És possible que Last.fm no tinga les dades d\'algunes cançons.</string>
     <string name="pref_locale">Llengües</string>
     <string name="pref_change_locale">Canvia la llengua</string>
+    <string name="pref_crashlytics_enabled">Notifica els errors automàticament</string>
     <string name="pref_misc">Altres</string>
     <string name="pref_imexport">Importació i exportació</string>
     <string name="pref_export">Exporta</string>
     <string name="pref_import">Importa</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalització</string>
     <string name="pref_themes">Temes</string>
+    <string name="pref_widget_charts">Giny de la pantalla d\'inici – Gràfics</string>
     <string name="pref_show_albums">Mostra els noms dels àlbums</string>
     <string name="pref_show_albums_desc">…als scrobbles</string>
     <string name="pref_show_scrobble_sources">Mostra les icones de les aplicacions des d\'on es fa l\'scrobble</string>
@@ -294,9 +311,11 @@
     <string name="update_available" formatted="true" comment="%1= the version number">Actualització disponible: %1$s</string>
     <string name="download">Baixa</string>
     <string name="changelog">Historial de canvis</string>
+    <string name="import_hey_wtf">Segurament no és un fitxer d\'exportació de Pano Scrobbler</string>
     <string name="export_failed">L\'exportació ha fallat</string>
     <string name="imported">Importat</string>
     <string name="import_options">Opcions d\'importació</string>
+    <string name="import_lists_nope">No importes les edicions ni la llista de bloqueig</string>
     <string name="import_settings">Importa la configuració</string>
     <string name="current_track">Cançó actual:</string>
     <string name="copied">S\'ha copiat!</string>

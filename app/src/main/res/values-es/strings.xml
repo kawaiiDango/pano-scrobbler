@@ -205,6 +205,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles hasta %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">No encontrado</string>
+    <string name="save" comment="saves a file">Guardar</string>
+    <string name="saved_to_gallery">Guardado en la galería</string>
     <string name="lastfm_reports">Informes LastFM</string>
     <string name="weekly">Semana</string>
     <string name="weeks">Semanas</string>
@@ -250,6 +252,7 @@
     <string name="dark">Oscuro</string>
     <string name="system_colors">Colores del sistema</string>
     <string name="appwidget_alpha">Opacidad de fondo</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">El Widget se actualizará cada %1$s</string>
     <string name="primary_color">Color principal</string>
     <string name="secondary_color">Color secundario</string>
     <string name="tint_background">Tinte de fondo</string>
@@ -291,6 +294,10 @@
     <string name="scrobbler_off">Scrobbler desactivado</string>
     <string name="scrobbler_on">Scrobbler activado</string>
     <string name="enable" comment="To enable the scrobbler">Habilitar</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamaño</string>
+    <string name="skip_missing_images">Omitir las imagenes que faltan</string>
+    <string name="create_collage">Crear collage</string>
+    <string name="username" comment="last.fm Username">Nombre de usuario</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">También se puede cambiar desde el panel de ajustes rápidos</string>
     <string name="pref_noti_q">Puedes promover la notificación, si el icono no se muestra</string>

@@ -13,7 +13,7 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
     id ("com.github.triplet.play")
-    kotlin("plugin.serialization") version "1.7.10"
+    kotlin("plugin.serialization") version "1.7.20"
     id("com.mikepenz.aboutlibraries.plugin") version "10.5.1"
     id("com.github.breadmoirai.github-release") version "2.4.1"
 }
@@ -124,11 +124,10 @@ dependencies {
 
     implementation("com.google.android.material:material:1.8.0-alpha01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:31.0.0"))
+    implementation(platform("com.google.firebase:firebase-bom:31.0.1"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
-    implementation("com.google.android.datatransport:transport-runtime:3.1.8")
 
     val coilVersion = "2.2.2"
     implementation("io.coil-kt:coil:$coilVersion")

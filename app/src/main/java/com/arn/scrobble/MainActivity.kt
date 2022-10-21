@@ -33,7 +33,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
-import coil.imageLoader
 import coil.load
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.Stuff.getScrobblerExitReasons
@@ -798,7 +797,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             unregisterReceiver(npReceiver)
         } catch (e: Exception) {
         }
-        imageLoader.shutdown()
+//        imageLoader.shutdown()
         super.onDestroy()
     }
 

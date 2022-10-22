@@ -55,6 +55,26 @@
         <item quantity="few">%1$s uređivanja</item>
         <item quantity="other">%1$s uređivanja</item>
     </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s šablonsko uređivanje</item>
+        <item quantity="few">%1$s šablonska uređivanja</item>
+        <item quantity="other">%1$s šablonskih uređivanja</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s blokirani metapodatak</item>
+        <item quantity="few">%1$s blokirana metapodatka</item>
+        <item quantity="other">%1$s blokiranih metapodataka</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minuta</item>
+        <item quantity="few">%1$d minute</item>
+        <item quantity="other">%1$d minuta</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s prijatelj</item>
+        <item quantity="few">%1$s prijatelja</item>
+        <item quantity="other">%1$s prijatelja</item>
+    </plurals>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="reset">Ponovno postavi</string>
@@ -91,7 +111,7 @@
     <string name="state_unrecognised_artist">Neprepoznati izvođač</string>
     <string name="tap_to_edit">(dodirni za uređivanje)</string>
     <string name="recently_scrobbled">Nedavno scrobbleano</string>
-    <string name="recently_loved">♥ Nedavni favoriti</string>
+    <string name="recently_loved">♥ Nedavno voljeno</string>
     <string name="recents" comment="Short for recently scrobbled">Nedavno</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Prvi puta scrobbleano %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
@@ -106,6 +126,8 @@
     <string name="unavailable_offline">Nije dostupno izvan mreže</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servisi</string>
     <string name="others">Ostalo</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Slušao/la sam\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s je slušao/la\n%1$s %2$s</string>
     <string name="share_sig">(pomoću aplikacije Pano Scrobbler)</string>
     <string name="share_this_song">Podijeli ovu pjesmu</string>
     <string name="share">Podijeli</string>
@@ -144,7 +166,9 @@
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string name="pending_scrobble">Scrobble na čekanju</string>
     <string name="pending_scrobbles_noti">Procesiranje scrobbleova na čekanju</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">Scrobbleova: %1$s • Danas: %2$s</string>
     <string name="friends">Prijatelji</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobbleano %1$s puta od %2$s</string>
     <string name="allow_background">Dopusti scrobbleanje u pozadini</string>
     <string name="grant_notification_access">Dopusti pristup obavijestima</string>
     <string name="grant_notification_access_desc">Potrebno za dohvaćanje informacija o glazbi. Obavijesti koje nisu povezane s glazbom se ne čitaju</string>
@@ -223,6 +247,7 @@
     <string name="close">Zatvori</string>
     <string name="user_tags_hint">Nova oznaka</string>
     <string name="user_tags_empty">Niste dodali nijednu oznaku</string>
+    <string name="info_long_press_hint">Za otvaranje ovoga, dugo pritisnite na pjesmu</string>
     <string name="appwidget_loading">Učitavanje…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Razdoblje</string>
     <string name="appwidget_theme">Tema</string>
@@ -236,12 +261,14 @@
     <string name="secondary_color">Sekundarna boja</string>
     <string name="tint_background">Ton pozadine</string>
     <string name="edit_name" comment="name for regex pattern">Prepoznatljivo ime (neobavezno)</string>
+    <string name="edit_regex">Regex šablona</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Polja</string>
     <string name="edit_replace">Zamijeni</string>
     <string name="edit_first" comment="First occurrence of a pattern">Prvo</string>
     <string name="edit_all" comment="All occurrences of a pattern">Sve</string>
     <string name="edit_case_sensitive">Razlikuj velika i mala slova</string>
     <string name="edit_regex_test">Testiraj</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Dosegnuto ograničenje šablona (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Ručka za povlačenje</string>
     <string name="text" comment="text to test regex rules with">Tekst</string>
     <string name="skip" comment="skip to next track">Preskoči</string>
@@ -252,6 +279,7 @@
     <string name="unpin">Otkvači</string>
     <string name="pin_limit_reached" formatted="true">Dosegnuto ograničenje prikvačivanja (%1$d)</string>
     <string name="use_channel" comment="(Use youtube channel name)">Koristi naziv kanala</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Želite li omogućiti pravilo za šablonsko uređivanje: %1$s?</string>
     <string name="show_persistent_noti">Prikaži trajnu obavijest</string>
     <string name="fix_it_desc">Ovo može pomoći za pokretanje scrobblera u pozadini na nekim uređajima</string>
     <string name="persistent_noti_desc">Za skrivanje ovoga dugo pritisnite</string>
@@ -312,7 +340,7 @@
     <string name="pref_regex_edits">Šablonska uređivanja</string>
     <string name="pref_blocked_metadata">Blokirani metapodatci</string>
     <string name="pref_lastfm_disable">Ne scrobbleaj na lastFM</string>
-    <string name="pref_lastfm_disable_desc">I dalje trebate prijavu pomoću lastFM-a da bi ostatak sučelja funkcioniralo</string>
+    <string name="pref_lastfm_disable_desc">I dalje trebate prijavu pomoću lastFM-a da bi ostatak sučelja funkcionirao</string>
     <string name="pref_translate">Prevedi ovu aplikaciju</string>
     <string name="pref_translate_credits">Popis prevoditelja</string>
     <string name="pref_oss_credits">Licence otvorenog koda</string>
@@ -340,7 +368,9 @@
     <string name="remove_acr_key">Ukloni ključ za ACRCloud</string>
     <string name="add_acr_consider">Za sprječavanje prelaženja ograničenja stope pristupa, razmislite o dodavanju vlastitog ključa za ACRCloud</string>
     <string name="add">Dodaj</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">Preostalo %1$d</string>
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
+    <string name="pending_batch" comment="For pending scrobbles">Prenošenje više scrobbleova</string>
     <string name="navigation_drawer_open">Otvori navigacijsku ladicu ili idi natrag</string>
     <string name="navigation_drawer_close">Zatvori navigacijsku ladicu</string>
     <string name="graph">Linijski grafikon</string>

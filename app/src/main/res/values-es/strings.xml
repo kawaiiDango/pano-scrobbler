@@ -297,6 +297,7 @@
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamaño</string>
     <string name="skip_missing_images">Omitir las imagenes que faltan</string>
     <string name="create_collage">Crear collage</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Leyendas de las imágenes</string>
     <string name="username" comment="last.fm Username">Nombre de usuario</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">También se puede cambiar desde el panel de ajustes rápidos</string>

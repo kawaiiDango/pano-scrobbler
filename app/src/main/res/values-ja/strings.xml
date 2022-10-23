@@ -274,6 +274,8 @@
     <string name="scrobbler_on">Scrobbler稼働中</string>
     <string name="enable" comment="To enable the scrobbler">有効化</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">サイズ</string>
+    <string name="create_collage">コラージュを作る</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">画像キャプション</string>
     <string name="username" comment="last.fm Username">ユーザー名</string>
     <string name="pref_master">音楽をScrobbleする</string>
     <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>

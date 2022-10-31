@@ -54,6 +54,18 @@
         <item quantity="many">%1$s заблокованих метаданних</item>
         <item quantity="other">%1$s заблокованих метаданих</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d хвилина</item>
+        <item quantity="few">%1$d хвилин</item>
+        <item quantity="many">%1$d хвилин</item>
+        <item quantity="other">%1$d хвилин</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s друг</item>
+        <item quantity="few">%1$s друзів</item>
+        <item quantity="many">%1$s друзів</item>
+        <item quantity="other">%1$s друзів</item>
+    </plurals>
     <string name="yes">Так</string>
     <string name="no">Ні</string>
     <string name="reset">Скинути</string>

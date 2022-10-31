@@ -3,6 +3,7 @@ package com.arn.scrobble.pref
 import android.app.NotificationManager
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import com.arn.scrobble.MetadataUtils
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.charts.TimePeriod
@@ -149,7 +150,7 @@ class MainPrefs(context: Context) : Krate {
     var dontAskForRating by booleanPref(PREF_DONT_ASK_FOR_RATING).withDefault(false)
     var prefVersion by intPref(PREF_VERSION).withDefault(0)
     var lastfmLinksEnabled by booleanPref(PREF_ENABLE_LASTFM_LINKS).withDefault(false)
-    var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(emptySet())
+    var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(MetadataUtils.tagSpam)
     var pinnedFriendsJson by kotlinxPref<List<UserSerializable>>(PREF_ACTIVITY_PINNED_FRIENDS)
         .withDefault(emptyList())
     var touhouCircles by stringPref(PREF_TOUHOU_CIRCLES).withDefault("")

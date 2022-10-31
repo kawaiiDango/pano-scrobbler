@@ -8,4 +8,10 @@
         android:title="@string/hidden_tags"
         app:iconTint="?colorPrimary"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/vd_share"
+        android:title="@string/share"
+        app:iconTint="?colorPrimary"
+        app:showAsAction="always" />
 </menu>

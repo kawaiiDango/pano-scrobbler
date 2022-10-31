@@ -52,6 +52,16 @@
                     android:id="@+id/charts_tracks_frame"
                     layout="@layout/frame_charts_list" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/charts_create_collage"
+                    style="?materialButtonOutlinedStyle"
+                    android:layout_margin="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:icon="@drawable/vd_mosaic"
+                    android:text="@string/create_collage"/>
+
                 <include
                     android:id="@+id/charts_sparkline_header"
                     layout="@layout/header_with_action" />

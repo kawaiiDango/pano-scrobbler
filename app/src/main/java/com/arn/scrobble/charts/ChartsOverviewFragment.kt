@@ -1,9 +1,12 @@
 package com.arn.scrobble.charts
 
+import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +16,11 @@ import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.view.drawToBitmap
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,12 +29,15 @@ import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
+import com.arn.scrobble.databinding.FooterCollageBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.recents.SparkLineAdapter
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.ui.UiUtils.sp
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.color.MaterialColors
@@ -40,7 +49,13 @@ import com.kennycason.kumo.font.KumoFont
 import com.kennycason.kumo.font.scale.LinearFontScalar
 import com.kennycason.kumo.image.AngleGenerator
 import com.kennycason.kumo.palette.LinearGradientColorPalette
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.text.NumberFormat
 
 
@@ -205,10 +220,29 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                         )
                         true
                     }
+
+                    R.id.menu_share -> {
+                        viewModel.viewModelScope.launch {
+                            val uri = withContext(Dispatchers.IO) { getTagCloudUri() }
+                            if (uri != null) {
+                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                    putExtra(Intent.EXTRA_STREAM, uri)
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    type = "image/jpeg"
+                                }
+                                startActivity(intent)
+                            }
+                        }
+
+
+                        true
+                    }
+
                     else -> false
                 }
             }
-            popup.show()
+            popup.showWithIcons()
         }
         binding.chartsTagCloudHeader.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
             R.drawable.vd_tag,
@@ -227,6 +261,17 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         binding.chartsSwipeRefresh.setProgressCircleColors()
         binding.chartsSwipeRefresh.setOnRefreshListener {
             loadFirstPage(true)
+        }
+
+        binding.chartsCreateCollage.setOnClickListener {
+            CollageGeneratorFragment()
+                .apply {
+                    arguments = Bundle().apply {
+                        putSingle(viewModel.selectedPeriod.value ?: return@setOnClickListener)
+                        putInt(Stuff.ARG_TYPE, Stuff.TYPE_ALL)
+                    }
+                }
+                .show(parentFragmentManager, null)
         }
 
         viewModel.periodCountReceiver.observe(viewLifecycleOwner) {
@@ -339,6 +384,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                     View.GONE
                 binding.chartsArtistsFrame
             }
+
             Stuff.TYPE_ALBUMS -> binding.chartsAlbumsFrame
             Stuff.TYPE_TRACKS -> binding.chartsTracksFrame
             else -> throw IllegalArgumentException("Unknown type $type")
@@ -423,16 +469,19 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                 text = getQString(R.string.artists, R.plurals.num_artists)
                 header = binding.chartsArtistsHeader
             }
+
             Stuff.TYPE_ALBUMS -> {
                 count = albumsFragment.viewModel.totalCount
                 text = getQString(R.string.albums, R.plurals.num_albums)
                 header = binding.chartsAlbumsHeader
             }
+
             Stuff.TYPE_TRACKS -> {
                 count = tracksFragment.viewModel.totalCount
                 text = getQString(R.string.tracks, R.plurals.num_tracks)
                 header = binding.chartsTracksHeader
             }
+
             else -> throw IllegalArgumentException("Unknown type: $type")
         }
         header.headerText.text = text
@@ -530,6 +579,59 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                 context!!.toast("Generated in ${t2 - t1}ms")
             }
         return bmp
+    }
+
+    private suspend fun getTagCloudUri(): Uri? {
+        val tagCloudBitmap = viewModel.tagCloudBitmap?.second ?: return null
+        val selectedPeriod = viewModel.selectedPeriod.value ?: return null
+
+        val footerBinding = FooterCollageBinding.inflate(layoutInflater, null, false)
+
+        if (prefs.proStatus && !BuildConfig.DEBUG) {
+            footerBinding.collageFooterBrandingText.visibility = View.GONE
+            footerBinding.collageFooterBrandingImage.visibility = View.GONE
+        }
+
+        footerBinding.collageFooterDuration.text = selectedPeriod.name
+        footerBinding.collageFooterBrandingText.text =
+            getString(R.string.app_name).replace(" ", "\n")
+        footerBinding.collageUsernameImage.visibility = View.GONE
+        footerBinding.collageTypeImage.setImageResource(R.drawable.vd_tag)
+
+        footerBinding.root.measure(
+            View.MeasureSpec.makeMeasureSpec(tagCloudBitmap.width, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        footerBinding.root.layout(
+            footerBinding.root.left,
+            footerBinding.root.top,
+            footerBinding.root.measuredWidth,
+            footerBinding.root.measuredHeight
+        )
+        val footerBitmap = footerBinding.root.drawToBitmap()
+
+        // merge bitmaps
+        val bitmap = Bitmap.createBitmap(
+            tagCloudBitmap.width,
+            tagCloudBitmap.height + footerBinding.root.height,
+            Bitmap.Config.ARGB_8888
+        )
+        Canvas(bitmap).apply {
+            drawBitmap(tagCloudBitmap, 0f, 0f, null)
+            drawBitmap(footerBitmap, 0f, tagCloudBitmap.height.toFloat(), null)
+        }
+
+        val tagCloudFile = File(context!!.filesDir, "tagCloud.jpg")
+        withContext(Dispatchers.IO) {
+            FileOutputStream(tagCloudFile).use { fos ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
+            }
+        }
+        return FileProvider.getUriForFile(
+            context!!,
+            "com.arn.scrobble.fileprovider",
+            tagCloudFile
+        )
     }
 
 }

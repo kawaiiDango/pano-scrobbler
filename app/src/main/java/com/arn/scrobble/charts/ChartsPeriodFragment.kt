@@ -62,23 +62,30 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
             periodChipsBinding.chartsPeriodType.text = periodType.localizedName
 
             val timePeriodsGenerator =
-                TimePeriodsGenerator(activityViewModel.currentUser.registeredTime, System.currentTimeMillis(), context)
+                TimePeriodsGenerator(
+                    activityViewModel.currentUser.registeredTime,
+                    System.currentTimeMillis(),
+                    context
+                )
 
             viewModel.timePeriods.value = when (periodType) {
                 TimePeriodType.CONTINUOUS -> TimePeriodsGenerator.getContinuousPeriods(context!!)
                     .toBimap()
+
                 TimePeriodType.CUSTOM -> {
                     val selectedPeriod = viewModel.selectedPeriod.value ?: TimePeriod(
                         context!!,
                         0,
                         System.currentTimeMillis()
                     )
-                    val start = max(selectedPeriod.start, activityViewModel.currentUser.registeredTime)
+                    val start =
+                        max(selectedPeriod.start, activityViewModel.currentUser.registeredTime)
                     val end = selectedPeriod.end
                     listOf(
                         TimePeriod(context!!, start, end)
                     ).toBimap()
                 }
+
                 TimePeriodType.WEEK -> timePeriodsGenerator.weeks.toBimap()
                 TimePeriodType.MONTH -> timePeriodsGenerator.months.toBimap()
                 TimePeriodType.YEAR -> timePeriodsGenerator.years.toBimap()
@@ -245,7 +252,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
                         override fun writeToParcel(p0: Parcel, p1: Int) {}
 
-                        override fun isValid(date: Long) = date in activityViewModel.currentUser.registeredTime..time
+                        override fun isValid(date: Long) =
+                            date in activityViewModel.currentUser.registeredTime..time
                     })
                     .build()
             )

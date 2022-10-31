@@ -122,11 +122,10 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/collage_preview"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="#000"
-        android:maxWidth="150dp"
         app:shapeAppearance="@style/roundedCorners" />
 
 </LinearLayout>

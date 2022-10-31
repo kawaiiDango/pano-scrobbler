@@ -22,7 +22,8 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_service_chooser"
-            style="?materialIconButtonOutlinedStyle"
+            style="?materialButtonOutlinedStyle"
+            android:minWidth="@dimen/m3_btn_icon_only_min_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@drawable/vd_arrow_down"

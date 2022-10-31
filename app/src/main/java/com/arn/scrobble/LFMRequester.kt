@@ -667,7 +667,7 @@ class LFMRequester(
 
             val topTags = tags
                 .toList()
-                .filter { it.first.lowercase() !in MetadataUtils.tagSpam && it.first.lowercase() !in prefs.hiddenTags }
+                .filter { it.first.isNotEmpty() && it.first.lowercase() !in prefs.hiddenTags }
                 .sortedByDescending { it.second.score }
                 .take(nTags)
                 .toMap()

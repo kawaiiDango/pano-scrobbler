@@ -14,7 +14,11 @@ import android.os.Parcel
 import android.transition.Fade
 import android.transition.TransitionManager
 import android.util.DisplayMetrics
-import android.view.*
+import android.view.HapticFeedbackConstants
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
@@ -33,14 +37,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import coil.dispose
 import coil.load
-import com.arn.scrobble.*
+import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.MainNotifierViewModel
+import com.arn.scrobble.R
+import com.arn.scrobble.RandomFragment
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentRecentsBinding
 import com.arn.scrobble.databinding.CoordinatorMainBinding
 import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
+import com.arn.scrobble.ui.FocusChangeListener
+import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.ItemLongClickListener
+import com.arn.scrobble.ui.PaletteTransition
+import com.arn.scrobble.ui.SimpleHeaderDecoration
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.adjustHeight
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
@@ -298,6 +314,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     type = "text/plain"
                     putExtra(Intent.EXTRA_SUBJECT, shareText)
                     putExtra(Intent.EXTRA_TEXT, shareText)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
                 }
                 startActivity(Intent.createChooser(i, getString(R.string.share_this_song)))
             }

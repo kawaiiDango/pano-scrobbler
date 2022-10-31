@@ -400,12 +400,12 @@ class NLService : NotificationListenerService() {
                         // different song, scrobble it
                         trackInfo?.let { scrobbleHandler.remove(it.hash, false) }
                         val newTrackInfo = PlayingTrackInfo(
-                            artist = artist,
-                            title = title,
                             playStartTime = System.currentTimeMillis(),
                             hash = hash,
                             packageName = sbn.packageName,
                         )
+                        newTrackInfo.putOriginals(artist, title)
+
                         packageTrackMap[sbn.packageName] = newTrackInfo
                         scrobbleHandler.nowPlaying(
                             newTrackInfo,
@@ -628,7 +628,7 @@ class NLService : NotificationListenerService() {
         )
         val intent = Intent(this, MainDialogActivity::class.java).apply {
             putSingle(blockedMetadata)
-            putExtra(B_IGNORED_ARTIST, trackInfo.ignoredArtist)
+            putExtra(B_IGNORED_ARTIST, trackInfo.origArtist)
             putExtra(B_HASH, hash)
         }
 
@@ -918,7 +918,7 @@ class NLService : NotificationListenerService() {
 
         init {
             // start ticker
-            sendEmptyMessageDelayed(0, 1000)
+            sendEmptyMessageDelayed(0, 500)
         }
 
         // ticker, only handles empty messages and messagePQ
@@ -929,7 +929,7 @@ class NLService : NotificationListenerService() {
                 tracksCopyPQ.remove(queuedMessage)
                 submitScrobble(queuedMessage)
             }
-            sendEmptyMessageDelayed(0, 1000)
+            sendEmptyMessageDelayed(0, 500)
         }
 
         fun has(hash: Int) = tracksCopyPQ.any { it.hash == hash }
@@ -965,8 +965,8 @@ class NLService : NotificationListenerService() {
             // music only items have an album field,
             // and the correct artist name on official youtube tv app
 
-            if (trackInfo.ignoreOrigArtist && trackInfo.ignoredArtist == null) { // not parsed yet
-                val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(trackInfo.title)
+            if (trackInfo.ignoreOrigArtist) { // not parsed yet
+                val (parsedArtist, parsedTitle) = MetadataUtils.parseArtistTitle(trackInfo.origTitle)
 
                 unparsedScrobbleData = trackInfo.toScrobbleData()
 
@@ -974,7 +974,6 @@ class NLService : NotificationListenerService() {
                 trackInfo.title = parsedTitle
                 trackInfo.albumArtist = ""
                 trackInfo.album = ""
-                trackInfo.ignoredArtist = unparsedScrobbleData.artist
             }
 
             lastNpTask?.cancel()

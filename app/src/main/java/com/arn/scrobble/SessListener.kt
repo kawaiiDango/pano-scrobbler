@@ -14,7 +14,7 @@ import android.os.Handler
 import com.arn.scrobble.Stuff.dump
 import com.arn.scrobble.Stuff.isUrlOrDomain
 import com.arn.scrobble.pref.MainPrefs
-import java.util.*
+import java.util.Locale
 
 /**
  * Created by arn on 04/07/2017.
@@ -228,6 +228,10 @@ class SessListener(
                     albumArtist = ""
                 }
                 Stuff.PACKAGE_PODCAST_ADDICT -> {
+                    if (albumArtist != "") {
+                        artist = albumArtist
+                        albumArtist = ""
+                    }
                     val idx = artist.lastIndexOf(" • ")
                     if (idx != -1)
                         artist = artist.substring(0, idx)
@@ -283,8 +287,8 @@ class SessListener(
             }
 
             val sameAsOld =
-                artist == trackInfo.artist && title == trackInfo.title && album == trackInfo.album
-                        && albumArtist == trackInfo.albumArtist
+                artist == trackInfo.origArtist && title == trackInfo.origTitle && album == trackInfo.origAlbum
+                        && albumArtist == trackInfo.origAlbumArtist
             val onlyDurationUpdated = sameAsOld && durationMillis != trackInfo.durationMillis
 
             Stuff.log(
@@ -298,11 +302,8 @@ class SessListener(
                 return
 
             if (!sameAsOld || onlyDurationUpdated) {
-                trackInfo.artist = artist
-                trackInfo.album = album
-                trackInfo.title = title
-                trackInfo.albumArtist = albumArtist
-                trackInfo.ignoredArtist = null
+                trackInfo.putOriginals(artist, title, album, albumArtist)
+
                 trackInfo.ignoreOrigArtist = shouldIgnoreOrigArtist(trackInfo)
                 trackInfo.durationMillis = durationMillis
                 trackInfo.hash =

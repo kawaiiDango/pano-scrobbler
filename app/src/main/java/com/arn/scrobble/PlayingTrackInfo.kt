@@ -13,9 +13,17 @@ data class PlayingTrackInfo(
     val packageName: String,
 
     var title: String = "",
+    var origTitle: String = "",
+
     var album: String = "",
+    var origAlbum: String = "",
+
     var artist: String = "",
+    var origArtist: String = "",
+
     var albumArtist: String = "",
+    var origAlbumArtist: String = "",
+
     var playStartTime: Long = 0,
     var durationMillis: Long = 0,
     var scrobbleElapsedRealtime: Long = 0,
@@ -23,7 +31,6 @@ data class PlayingTrackInfo(
     var isPlaying: Boolean = false,
     var userPlayCount: Int = 0,
     var userLoved: Boolean = false,
-    var ignoredArtist: String? = null,
     var ignoreOrigArtist: Boolean = false,
 
     var lastScrobbleHash: Int = 0,
@@ -31,6 +38,19 @@ data class PlayingTrackInfo(
     var timePlayed: Long = 0L,
 
     ) : Parcelable {
+
+    fun putOriginals(artist: String, title: String) = putOriginals(artist, title, "", "")
+
+    fun putOriginals(artist: String, title: String, album: String, albumArtist: String) {
+        origArtist = artist
+        this.artist = artist
+        origTitle = title
+        this.title = title
+        origAlbum = album
+        this.album = album
+        origAlbumArtist = albumArtist
+        this.albumArtist = albumArtist
+    }
 
     fun toScrobbleData() = ScrobbleData().also {
         it.track = title
@@ -40,8 +60,7 @@ data class PlayingTrackInfo(
         it.timestamp = (playStartTime / 1000).toInt()
 
         val durationSecs = (durationMillis / 1000).toInt() // in secs
-        if (durationSecs >= 30)
-            it.duration = durationSecs
+        if (durationSecs >= 30) it.duration = durationSecs
     }
 
     fun toMultiFieldBundle() = Bundle().apply {
@@ -59,7 +78,6 @@ data class PlayingTrackInfo(
         albumArtist = p.albumArtist
         userLoved = p.userLoved
         userPlayCount = p.userPlayCount
-        ignoredArtist = p.ignoredArtist
         return this
     }
 

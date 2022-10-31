@@ -321,6 +321,10 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         createAddFooter(collageRoot, type, textScaler)
         val (bitmap, uri) = writeCollageAndGetBitmap(collageRoot)
         lastUri = uri
+        val aspectRatio = bitmap.width.toFloat() / bitmap.height
+        binding.collagePreview.updateLayoutParams {
+            height = (width/aspectRatio).toInt()
+        }
         binding.collagePreview.setImageBitmap(bitmap)
 
         return uri to text
@@ -382,7 +386,6 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             collageFooter.collageUsernameImage.visibility = View.GONE
         }
 
-        // todo finalize
         if (prefs.proStatus && !BuildConfig.DEBUG) {
             collageFooter.collageFooterBrandingImage.visibility = View.GONE
             collageFooter.collageFooterBrandingText.visibility = View.GONE

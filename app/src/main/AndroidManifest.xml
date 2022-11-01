@@ -53,6 +53,7 @@
         <receiver
             android:name=".widget.ChartsWidgetProvider"
             android:exported="true"
+            android:process=":bgScrobbler"
             android:label="@string/charts">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -74,8 +75,9 @@
         </receiver>
 
         <service
-            android:name=".widget.ChartsListService"
+            android:name="androidx.core.widget.RemoteViewsCompatService"
             android:exported="false"
+            android:process=":bgScrobbler"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <activity
@@ -176,6 +178,7 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".widget.ChartsWidgetUpdaterJob"
+            android:process=":bgScrobbler"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".DigestJob"

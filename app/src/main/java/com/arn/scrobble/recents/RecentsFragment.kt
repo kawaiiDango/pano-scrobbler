@@ -72,6 +72,7 @@ import com.robinhood.spark.animation.MorphSparkAnimator
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import java.net.URLEncoder
+import java.util.Objects
 import kotlin.math.max
 
 
@@ -637,7 +638,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         //load img, animate colors
         val errorDrawable = context!!.getTintedDrawable(
             R.drawable.vd_wave,
-            Stuff.genHashCode(track.artist, track.name)
+            Objects.hash(track.artist, track.name)
         )
 
         if (!imgUrl.isNullOrEmpty()) {
@@ -668,7 +669,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             coordinatorBinding.heroImg.dispose()
             val color = UiUtils.getMatColor(
                 coordinatorBinding.heroImg.context,
-                Stuff.genHashCode(track.artist, track.name)
+                Objects.hash(track.artist, track.name)
             )
             val swatch = Palette.Swatch(color, 1)
             val palette = Palette.from(listOf(swatch))

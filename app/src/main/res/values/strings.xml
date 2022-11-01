@@ -460,6 +460,8 @@
         >Username</string>
     <string name="pref_master">Scrobble music</string>
     <string name="pref_master_qs_hint">Can also be toggled from the quick settings tile</string>
+    <string name="pref_master_qs_add">Add the quick settings tile</string>
+    <string name="pref_master_qs_already_addded">Quick settings tile is already added</string>
     <string name="pref_noti_q">You may promote the notification, if the icon doesn\'t show up</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_noti_categories">Notification categories</string>

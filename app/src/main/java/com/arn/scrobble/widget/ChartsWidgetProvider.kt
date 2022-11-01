@@ -5,15 +5,16 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.widget.RemoteViewsCompat
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetTheme
+import java.util.Objects
 
 
 class ChartsWidgetProvider : AppWidgetProvider() {
@@ -62,9 +63,8 @@ class ChartsWidgetProvider : AppWidgetProvider() {
             val tab = intent.getIntExtra(WidgetPrefs.PREF_WIDGET_TAB, -1)
             if (tab != -1) {
                 prefs.tab = tab
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.appwidget_list)
             }
-            updateAppWidget(context, appWidgetManager, appWidgetId, prefs)
+            updateAppWidget(context, appWidgetManager, appWidgetId, prefs, tab != -1)
         }
     }
 }
@@ -73,7 +73,8 @@ internal fun updateAppWidget(
     context: Context,
     appWidgetManager: AppWidgetManager,
     appWidgetId: Int,
-    prefs: WidgetPrefs.SpecificWidgetPrefs
+    prefs: WidgetPrefs.SpecificWidgetPrefs,
+    scrollToTop: Boolean = false
 ) {
 
     // Here we setup the intent which points to the StackViewService which will
@@ -97,19 +98,27 @@ internal fun updateAppWidget(
     val rv = RemoteViews(context.packageName, layoutId)
 
     if (period != null) {
-        val intent = Intent(context, ChartsListService::class.java)
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        val items = RemoteViewsCompat.RemoteCollectionItems.Builder().apply {
+            setHasStableIds(true)
+            setViewTypeCount(2)
+            addItem(0, ChartsListUtils.createHeader(prefs))
 
-        // When intents are compared, the extras are ignored, so we need to embed the extras
-        // into the data so that the extras will not be ignored.
-        intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
-
-        rv.setRemoteAdapter(R.id.appwidget_list, intent)
+            ChartsListUtils.readList(prefs)
+                .forEachIndexed { i, item ->
+                    addItem(
+                        Objects.hash(item.title, item.subtitle, tab).toLong(),
+                        ChartsListUtils.createMusicItem(tab, i, item)
+                    )
+                }
+        }.build()
+        RemoteViewsCompat.setRemoteAdapter(context, rv, appWidgetId, R.id.appwidget_list, items)
     }
     // The empty view is displayed when the collection has no items. It should be a sibling
     // of the collection view.
     rv.setEmptyView(R.id.appwidget_list, R.id.appwidget_status)
 
+    if (scrollToTop)
+        rv.setScrollPosition(R.id.appwidget_list, 0)
 
     if (period == null || WidgetPrefs(context).chartsData(tab, period).dataJson == null)
         rv.setInt(R.id.appwidget_status, "setText", R.string.appwidget_loading)
@@ -137,21 +146,21 @@ internal fun updateAppWidget(
 
     tabIntent.putExtra(WidgetPrefs.PREF_WIDGET_TAB, Stuff.TYPE_ARTISTS)
     var tabIntentPending = PendingIntent.getBroadcast(
-        context, Stuff.genHashCode(appWidgetId, 1), tabIntent,
+        context, Objects.hash(appWidgetId, 1), tabIntent,
         Stuff.updateCurrentOrImmutable
     )
     rv.setOnClickPendingIntent(R.id.appwidget_artists, tabIntentPending)
 
     tabIntent.putExtra(WidgetPrefs.PREF_WIDGET_TAB, Stuff.TYPE_ALBUMS)
     tabIntentPending = PendingIntent.getBroadcast(
-        context, Stuff.genHashCode(appWidgetId, 2), tabIntent,
+        context, Objects.hash(appWidgetId, 2), tabIntent,
         Stuff.updateCurrentOrImmutable
     )
     rv.setOnClickPendingIntent(R.id.appwidget_albums, tabIntentPending)
 
     tabIntent.putExtra(WidgetPrefs.PREF_WIDGET_TAB, Stuff.TYPE_TRACKS)
     tabIntentPending = PendingIntent.getBroadcast(
-        context, Stuff.genHashCode(appWidgetId, 3), tabIntent,
+        context, Objects.hash(appWidgetId, 3), tabIntent,
         Stuff.updateCurrentOrImmutable
     )
     rv.setOnClickPendingIntent(R.id.appwidget_tracks, tabIntentPending)

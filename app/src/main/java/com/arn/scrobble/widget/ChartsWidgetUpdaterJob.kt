@@ -8,7 +8,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.scheduleExpeditedCompat
 import com.arn.scrobble.Stuff.setMidnight
@@ -17,9 +16,22 @@ import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.pref.WidgetPrefs
-import de.umass.lastfm.*
-import kotlinx.coroutines.*
-import java.util.*
+import de.umass.lastfm.Album
+import de.umass.lastfm.ImageSize
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.PaginatedResult
+import de.umass.lastfm.Period
+import de.umass.lastfm.Session
+import de.umass.lastfm.Track
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 class ChartsWidgetUpdaterJob : JobService() {
@@ -63,7 +75,7 @@ class ChartsWidgetUpdaterJob : JobService() {
             delay(1000) // wait for apply()
 
             appWidgetIds.forEach {
-                appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.appwidget_list)
+                ChartsListUtils.updateWidget(it)
             }
         }
 
@@ -157,11 +169,8 @@ class ChartsWidgetUpdaterJob : JobService() {
     companion object {
         private const val JOB_ID = 11
         private const val ONE_SHOT_JOB_ID = 12
-        var mightBeRunning = false // this may not be false when the job is force stopped
 
         fun checkAndSchedule(context: Context, runImmediately: Boolean) {
-            if (mightBeRunning)
-                return
             val js = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             val jobs = js.allPendingJobs
 

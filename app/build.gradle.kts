@@ -116,6 +116,7 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("androidx.core:core-remoteviews:1.0.0-beta03")
     kapt("androidx.room:room-compiler:2.4.3")
     implementation("androidx.room:room-runtime:2.4.3")
     implementation("com.android.billingclient:billing:5.0.0")

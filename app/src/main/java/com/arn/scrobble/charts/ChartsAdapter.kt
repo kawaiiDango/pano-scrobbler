@@ -23,6 +23,7 @@ import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import de.umass.lastfm.*
 import java.text.NumberFormat
+import java.util.Objects
 
 
 open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
@@ -76,8 +77,8 @@ open class ChartsAdapter(protected val binding: FrameChartsListBinding) :
     override fun getItemId(position: Int): Long {
         return when (val item = viewModel.chartsData[position]) {
             is Artist -> item.name.hashCode().toLong()
-            is Album -> Stuff.genHashCode(item.artist, item.name).toLong()
-            is Track -> Stuff.genHashCode(item.artist, item.name).toLong()
+            is Album -> Objects.hash(item.artist, item.name).toLong()
+            is Track -> Objects.hash(item.artist, item.name).toLong()
             else -> 0L
         }
     }

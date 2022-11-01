@@ -4,7 +4,6 @@ import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -14,11 +13,18 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMarginsRelative
 import androidx.viewbinding.ViewBinding
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
-import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.billing.BillingViewModel
-import com.arn.scrobble.databinding.*
+import com.arn.scrobble.databinding.ActivityAppwidgetChartsConfigBinding
+import com.arn.scrobble.databinding.AppwidgetChartsContentBinding
+import com.arn.scrobble.databinding.AppwidgetChartsDarkBinding
+import com.arn.scrobble.databinding.AppwidgetChartsDarkShadowBinding
+import com.arn.scrobble.databinding.AppwidgetChartsDynamicBinding
+import com.arn.scrobble.databinding.AppwidgetChartsDynamicShadowBinding
+import com.arn.scrobble.databinding.AppwidgetChartsLightBinding
+import com.arn.scrobble.databinding.AppwidgetChartsLightShadowBinding
+import com.arn.scrobble.databinding.ListItemChipPeriodBinding
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetTheme
 import com.arn.scrobble.themes.ColorPatchUtils
@@ -115,7 +121,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
                 prefs.period = key
                 prefs.periodName = widgetTimePeriods.periodsMap[key]?.name
             }
-            updateWidget()
+            ChartsListUtils.updateWidget(appWidgetId)
 
             if (widgetExists)
                 ChartsWidgetUpdaterJob.checkAndSchedule(applicationContext, true)
@@ -233,12 +239,4 @@ class ChartsWidgetActivity : AppCompatActivity() {
         previewBinding.appwidgetBg.alpha = alpha
     }
 
-    private fun updateWidget() {
-        val i = Intent(this, ChartsWidgetProvider::class.java).apply {
-            action = NLService.iUPDATE_WIDGET
-            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-            data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
-        }
-        sendBroadcast(i)
-    }
 }

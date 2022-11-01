@@ -524,16 +524,6 @@ object Stuff {
         }
     }
 
-    fun genHashCode(vararg objects: Any): Int {
-        val prime = 31
-        var result = 1
-        for (o in objects) {
-            result = result * prime + o.hashCode()
-        }
-        return result
-    }
-
-
     @RequiresApi(Build.VERSION_CODES.Q)
     @Throws(IOException::class)
     fun savePictureQ(

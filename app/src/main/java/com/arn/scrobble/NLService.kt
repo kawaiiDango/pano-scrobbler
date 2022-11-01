@@ -53,6 +53,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import timber.log.Timber
 import java.text.NumberFormat
+import java.util.Objects
 import java.util.PriorityQueue
 import kotlin.math.min
 
@@ -385,7 +386,7 @@ class NLService : NotificationListenerService() {
                 )
                 if (meta != null) {
                     val (artist, title) = meta
-                    val hash = Stuff.genHashCode(artist, "", title, sbn.packageName)
+                    val hash = Objects.hash(artist, "", title, sbn.packageName)
                     if (trackInfo != null && trackInfo.hash == hash) {
                         val scrobbleTimeReached =
                             SystemClock.elapsedRealtime() >= trackInfo.scrobbleElapsedRealtime

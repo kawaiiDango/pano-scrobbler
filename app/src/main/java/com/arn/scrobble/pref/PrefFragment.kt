@@ -5,6 +5,7 @@ import android.app.LocaleManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.StatusBarManager
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -12,6 +13,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Icon
 import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import android.os.Bundle
@@ -44,6 +46,7 @@ import com.arn.scrobble.LastfmUnscrobbler
 import com.arn.scrobble.LocaleUtils
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.LoginFragment
+import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -122,9 +125,37 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val hideOnTV = mutableListOf<Preference>()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !Stuff.isTv) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
+            !Stuff.isTv
+        ) {
             val master = findPreference<SwitchPreference>(MainPrefs.PREF_MASTER)!!
             master.summary = getString(R.string.pref_master_qs_hint)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            findPreference<Preference>("master_qs_add")!!.apply {
+                isVisible = true
+                setOnPreferenceClickListener {
+                    val statusBarManager = getSystemService(context, StatusBarManager::class.java)
+                        ?: return@setOnPreferenceClickListener false
+                    statusBarManager.requestAddTileService(
+                        ComponentName(context, MasterSwitchQS::class.java),
+                        getString(
+                            if (prefs.scrobblerEnabled)
+                                R.string.scrobbler_on
+                            else
+                                R.string.scrobbler_off
+                        ),
+                        Icon.createWithResource(context, R.drawable.vd_noti),
+                        context.mainExecutor
+                    ) { result ->
+                        if (result == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED)
+                            context.toast(R.string.pref_master_qs_already_addded)
+                    }
+                    true
+                }
+            }
         }
 
         val notiCategories = findPreference<Preference>("noti_categories")!!
@@ -171,8 +202,10 @@ class PrefFragment : PreferenceFragmentCompat() {
             val displayStr = when {
                 locale.language in LocaleUtils.showScriptSet ->
                     locale.displayLanguage + " (${locale.displayScript})"
+
                 prevLang == locale.language ->
                     locale.displayLanguage + " (${locale.displayCountry})"
+
                 else ->
                     locale.displayLanguage
             }
@@ -541,8 +574,13 @@ class PrefFragment : PreferenceFragmentCompat() {
             setOnPreferenceChangeListener { preference, newValue ->
                 newValue as String
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                    val channel = NotificationChannel(MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI, getString(R.string.test_scrobble_from_noti), NotificationManager.IMPORTANCE_DEFAULT)
+                    val notificationManager =
+                        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                    val channel = NotificationChannel(
+                        MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI,
+                        getString(R.string.test_scrobble_from_noti),
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    )
                     notificationManager.createNotificationChannel(channel)
 
                     if (newValue.isNotEmpty()) {
@@ -653,6 +691,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                         it.summary = span
                         it.extras.putInt("state", STATE_CONFIRM)
                     }
+
                     STATE_CONFIRM -> {
 
                         val authKey =
@@ -673,6 +712,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                         logout?.invoke()
                         setAuthLabel(it)
                     }
+
                     STATE_LOGIN -> login()
                 }
                 true

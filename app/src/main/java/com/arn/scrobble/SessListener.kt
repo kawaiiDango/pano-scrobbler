@@ -15,6 +15,7 @@ import com.arn.scrobble.Stuff.dump
 import com.arn.scrobble.Stuff.isUrlOrDomain
 import com.arn.scrobble.pref.MainPrefs
 import java.util.Locale
+import java.util.Objects
 
 /**
  * Created by arn on 04/07/2017.
@@ -307,7 +308,7 @@ class SessListener(
                 trackInfo.ignoreOrigArtist = shouldIgnoreOrigArtist(trackInfo)
                 trackInfo.durationMillis = durationMillis
                 trackInfo.hash =
-                    Stuff.genHashCode(artist, album, title, trackInfo.packageName)
+                    Objects.hash(artist, album, title, trackInfo.packageName)
 
                 if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META)
                     trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")

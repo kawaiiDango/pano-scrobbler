@@ -10,6 +10,10 @@
         android:title="@string/pref_master"/>
 
     <Preference
+        android:key="master_qs_add"
+        app:isPreferenceVisible="false"
+        android:title="@string/pref_master_qs_add" />
+    <Preference
         android:selectable="false"
         android:summary="@string/pref_offline_info" />
 

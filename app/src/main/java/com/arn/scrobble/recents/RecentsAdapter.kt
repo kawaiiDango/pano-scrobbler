@@ -44,6 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Objects
 
 
 /**
@@ -502,7 +503,7 @@ class RecentsAdapter(
             val imgUrl = track.getWebpImageURL(ImageSize.LARGE)
             val errorDrawable = itemView.context.getTintedDrawable(
                 R.drawable.vd_wave_simple_filled,
-                Stuff.genHashCode(track.artist, track.name)
+                Objects.hash(track.artist, track.name)
             )
 
             if (!isShowingLoves) {

@@ -54,6 +54,18 @@
         <item quantity="many">%1$s заблокованих метаданних</item>
         <item quantity="other">%1$s заблокованих метаданих</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d хвилина</item>
+        <item quantity="few">%1$d хвилин</item>
+        <item quantity="many">%1$d хвилин</item>
+        <item quantity="other">%1$d хвилин</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s друг</item>
+        <item quantity="few">%1$s друзів</item>
+        <item quantity="many">%1$s друзів</item>
+        <item quantity="other">%1$s друзів</item>
+    </plurals>
     <string name="yes">Так</string>
     <string name="no">Ні</string>
     <string name="reset">Скинути</string>
@@ -199,6 +211,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Скроблів по %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">З %1$s</string>
     <string name="not_found" comment="Shown in search">Не знайдено</string>
+    <string name="save" comment="saves a file">Зберегти</string>
+    <string name="saved_to_gallery">Збережено до галереї</string>
     <string name="lastfm_reports">Звіти LastFM</string>
     <string name="weekly">Щотижня</string>
     <string name="weeks">Тижні</string>
@@ -244,6 +258,7 @@
     <string name="dark">Темний</string>
     <string name="system_colors">Кольори системи</string>
     <string name="appwidget_alpha">Прозорість фону</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Віджет буде оновлюватися кожні %1$s</string>
     <string name="primary_color">Основний колір</string>
     <string name="secondary_color">Додатковий колір</string>
     <string name="tint_background">Відтінок фону</string>
@@ -285,6 +300,11 @@
     <string name="scrobbler_off">Скроблер вимкнено</string>
     <string name="scrobbler_on">Скроблер увімкнений</string>
     <string name="enable" comment="To enable the scrobbler">Увімкнути</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Розмір</string>
+    <string name="skip_missing_images">Пропуск відсутніх зображень</string>
+    <string name="create_collage">Створити колаж</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Підписи зображень</string>
+    <string name="username" comment="last.fm Username">Ім\'я користувача</string>
     <string name="pref_master">Скроблінг пісень</string>
     <string name="pref_master_qs_hint">Можна перемкнути з плитки швидких налаштувань</string>
     <string name="pref_noti_q">Ви можете підвищити рівень сповіщення, якщо іконка не відображається</string>

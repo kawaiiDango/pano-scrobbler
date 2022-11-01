@@ -266,7 +266,7 @@
     <string name="taggers" comment="(number of) people who have tagged">Отметившие</string>
     <string name="taggings" comment="(total count of) a particular tag">Теги</string>
     <string name="digest_weekly">Топ за последнюю неделю</string>
-    <string name="digest_monthly">Топ за последний месяц</string>
+    <string name="digest_monthly">Топ скробблы за последний месяц</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Лучшие скробблы %1$s</string>
     <string name="my_tags">Мои теги</string>
     <string name="close">Закрыть</string>

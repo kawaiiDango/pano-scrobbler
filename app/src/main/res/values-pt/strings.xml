@@ -52,6 +52,10 @@
         <item quantity="one">%1$s metadados bloqueado</item>
         <item quantity="other">%1$s metadados bloqueados</item>
     </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s amigo</item>
+        <item quantity="other">%1$s amigos</item>
+    </plurals>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="reset">Redefinir</string>
@@ -197,6 +201,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles até %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">Não encontrado</string>
+    <string name="save" comment="saves a file">Guardar</string>
+    <string name="saved_to_gallery">Guardada na galeria</string>
     <string name="lastfm_reports">Relatórios do LastFM</string>
     <string name="weekly">Semanal</string>
     <string name="weeks">Semanas</string>
@@ -242,6 +248,7 @@
     <string name="dark">Escuro</string>
     <string name="system_colors">Cores do sistema</string>
     <string name="appwidget_alpha">Opacidade do fundo</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">O widget será atualizado a cada %1$s</string>
     <string name="primary_color">Cor principal</string>
     <string name="secondary_color">Cor secundária</string>
     <string name="tint_background">Matriz de fundo</string>
@@ -283,8 +290,15 @@
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
     <string name="enable" comment="To enable the scrobbler">Ativar</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
+    <string name="skip_missing_images">Ignorar imagens em falta</string>
+    <string name="create_collage">Criar colagem</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Legendas de imagem</string>
+    <string name="username" comment="last.fm Username">Nome de utilizador</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das definições rápidas</string>
+    <string name="pref_master_qs_add">Adicionar botão de definições rápidas</string>
+    <string name="pref_master_qs_already_addded">O botão de definições rápidas já foi adicionado</string>
     <string name="pref_noti_q">Pode incitar a notificação, se o ícone não aparecer</string>
     <string name="pref_noti">Notificações</string>
     <string name="pref_noti_categories">Categorias de notificação</string>

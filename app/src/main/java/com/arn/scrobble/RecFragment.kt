@@ -348,15 +348,15 @@ class RecFragment : Fragment(),
                 )
                 val trackInfo = PlayingTrackInfo(
                     context!!.packageName,
-                    title,
-                    album,
-                    artist,
                     playStartTime = System.currentTimeMillis()
                 )
+
+                trackInfo.putOriginals(artist, title, album, "")
 
                 LFMRequester(context!!, CoroutineScope(Dispatchers.IO + Job()))
                     .scrobble(false, trackInfo)
             }
+
             1001 -> binding.recStatus.setTextAndAnimate(R.string.not_found)
             2000 -> {
                 if (acrConfig.recorderConfig.source != MediaRecorder.AudioSource.VOICE_RECOGNITION) {
@@ -365,6 +365,7 @@ class RecFragment : Fragment(),
                 } else
                     binding.recStatus.setTextAndAnimate(R.string.recording_failed)
             }
+
             2001 -> binding.recStatus.setTextAndAnimate(R.string.recording_failed)
             3003, 3015 -> showSnackbar()
             else -> {

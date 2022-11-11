@@ -88,6 +88,7 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Cançons més reproduïdes</string>
     <string name="similar_tracks">Cançons similars</string>
     <string name="similar" comment="Similar tracks but in short">Similars</string>
+    <string name="artist_title" formatted="true" comment="$artist — $title">%2$s — %1$s</string>
     <string name="state_scrobbling">Fent scrobbling…</string>
     <string name="state_scrobbled">Scrobble fet</string>
     <string name="unscrobble">Elimina l\'scrobble</string>
@@ -131,8 +132,10 @@
     <string name="full_index">Índex complet</string>
     <string name="take_long_time">Açò pot tardar molt</string>
     <string name="full_index_desc">Utilitza-ho només si has editat o eliminar scrobbles des del lloc web.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Última indexació el %1$s.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcions per a aquest element</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s detectat</string>
     <string name="new_player_prompt">Vols fer scrobble en aquesta aplicació?</string>
     <string name="no_track_url">Aquesta cançó no té una pàgina en Last.fm</string>
@@ -149,11 +152,13 @@
     <string name="unlove">Elimina dels preferits</string>
     <string name="pending_scrobbles">Scrobbles pendents</string>
     <string name="pending_scrobble">Scrobble pendent</string>
+    <string name="pending_scrobbles_noti">S\'estan processant els scrobbles pendents</string>
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s avui</string>
     <string name="friends">Amics</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles des del %2$s</string>
     <string name="allow_background">Permet fer scrobbling en segon pla</string>
     <string name="send_notifications">Permet notificacions</string>
+    <string name="will_not_scrobble">Si salteu aquest pas, es desactivarà l\'enviament d\'scrobbles</string>
     <string name="swap" comment="(Swap title and artist)">Intercanvia</string>
     <string name="rate_msg">T\'agrada l\'aplicació?</string>
     <string name="rate_action">Valora-la</string>
@@ -237,6 +242,7 @@
     <string name="edit_regex_replacement">Reemplaçament de regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Camps</string>
     <string name="edit_replace">Substitueix</string>
+    <string name="edit_all" comment="All occurrences of a pattern">Tot</string>
     <string name="edit_regex_test">Prova</string>
     <string name="edit_presets">Predefinits</string>
     <string name="edit_presets_available">Predefinits disponibles</string>
@@ -250,9 +256,11 @@
     <string name="hidden_tags">Etiquetes amagades</string>
     <string name="pin">Fixa</string>
     <string name="unpin">No fixis</string>
+    <string name="show_persistent_noti">Mostra una notificació persistent</string>
     <string name="scrobbler_off">Scrobbler desactivat</string>
     <string name="scrobbler_on">Scrobbler activat</string>
     <string name="enable" comment="To enable the scrobbler">Activa</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Disposició</string>
     <string name="skip_missing_images">Omet les imatges que falten</string>
     <string name="create_collage">Crea un collage</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Subtítols de les imatges</string>

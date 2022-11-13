@@ -195,14 +195,20 @@ class ImExporter : Closeable {
 
                     while (hasNext()) {
                         val name = nextName()
+
                         if (name in arrayOf(
                                 "edits",
                                 "simple_edits",
                                 "regex_edits",
                                 "blocked_metadata",
                                 "scrobble_sources",
-                            ) && editsMode != Stuff.EDITS_NOPE
+                            )
                         ) {
+                            if (editsMode == Stuff.EDITS_NOPE) {
+                                skipValue()
+                                continue
+                            }
+
                             when (name) {
                                 "simple_edits",
                                 "edits" -> {
@@ -221,6 +227,7 @@ class ImExporter : Closeable {
                                     else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
                                         dao.insertIgnore(edits)
                                 }
+
                                 "regex_edits" -> {
                                     val dao = PanoDb.getDb(context).getRegexEditsDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
@@ -246,6 +253,7 @@ class ImExporter : Closeable {
                                     else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
                                         dao.insertIgnore(deduplicatedEdits)
                                 }
+
                                 "blocked_metadata" -> {
                                     val dao = PanoDb.getDb(context).getBlockedMetadataDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
@@ -262,6 +270,7 @@ class ImExporter : Closeable {
                                     else if (editsMode == Stuff.EDITS_KEEP_EXISTING)
                                         dao.insertLowerCase(blockedMetadata, ignore = true)
                                 }
+
                                 "scrobble_sources" -> {
                                     val dao = PanoDb.getDb(context).getScrobbleSourcesDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
@@ -277,7 +286,13 @@ class ImExporter : Closeable {
                                 }
                             }
 
-                        } else if (name == "settings" && settings) {
+                        } else if (name == "settings") {
+
+                            if (!settings) {
+                                skipValue()
+                                continue
+                            }
+
                             val prefs = MainPrefs(context).sharedPreferences.edit()
                             val settingsNamesInJson = mutableSetOf<String>()
                             beginObject()
@@ -315,6 +330,7 @@ class ImExporter : Closeable {
                                         prefs.putStringSet(settingsName, list)
                                         endArray()
                                     }
+
                                     JsonToken.NUMBER -> {
                                         val numStr = nextString()
                                         if ('.' in numStr)
@@ -322,15 +338,18 @@ class ImExporter : Closeable {
                                         else
                                             prefs.putInt(settingsName, numStr.toInt())
                                     }
+
                                     JsonToken.STRING -> {
                                         prefs.putString(settingsName, nextString())
                                     }
+
                                     JsonToken.BOOLEAN -> {
                                         if (settingsName == MainPrefs.PREF_AUTO_DETECT && Stuff.isTv)
                                             skipValue()
                                         else
                                             prefs.putBoolean(settingsName, nextBoolean())
                                     }
+
                                     else -> skipValue()
                                 }
                             }

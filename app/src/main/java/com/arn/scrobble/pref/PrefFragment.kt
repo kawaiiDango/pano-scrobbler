@@ -765,7 +765,14 @@ class PrefFragment : PreferenceFragmentCompat() {
                             context!!.toast(R.string.import_hey_wtf, Toast.LENGTH_LONG)
                         else {
                             context!!.toast(R.string.imported)
-                            parentFragmentManager.popBackStack()
+                            parentFragmentManager
+                                .beginTransaction()
+                                .detach(this@PrefFragment)
+                                .commit()
+                            parentFragmentManager
+                                .beginTransaction()
+                                .attach(this@PrefFragment)
+                                .commit()
                         }
                     }
                 }

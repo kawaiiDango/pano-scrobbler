@@ -36,6 +36,28 @@
     <string name="tap_to_edit">(اضغط للتعديل)</string>
     <string name="recently_scrobbled">تم الاسكروبلنج موخرا</string>
     <string name="recently_loved">محبوب موخرا ❤️</string>
+    <string name="graph_info">… آخر 5 أشهر</string>
+    <string name="enabled_apps">التطبيقات المفعلة</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">تقريبا هناك…</string>
+    <string name="music_players">مشغلي الموسيقى</string>
+    <string name="video_players">تطبيقات بث الفيديو</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">تطبيقات أخرى</string>
+    <string name="choose_apps">اختر تطبيقات للتمرير</string>
+    <string name="offline">دون اتصال بالإنترنت. البيانات المعروضة ليست جديدة</string>
+    <string name="unavailable_offline">غير متوفر عند عدم الاتصال</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">الخدمات</string>
+    <string name="others">أخرى</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">كنت أستمع إلى\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s كان يستمع إلى\n%1$s %2$s</string>
+    <string name="share_sig">(عبر بانو سكرببلر)</string>
+    <string name="share_this_song">شارك هذه الأغنية</string>
+    <string name="share">مشاركة</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">عنوان توضيحي</string>
+    <string name="grid_size">تغيير حجم الشبكة</string>
+    <string name="pinch_to_zoom">اقرص للتكبير</string>
+    <string name="more_info">معلومات إضافية</string>
+    <string name="rank_change" comment="%1= delta change">تغيير الترتيب: %s</string>
+    <string name="rank_change_no_change">لا تغيير</string>
     <string name="show_all">عرض الكل</string>
     <string name="edit">تعديل</string>
     <string name="delete">حذف</string>

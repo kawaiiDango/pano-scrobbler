@@ -178,7 +178,6 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".widget.ChartsWidgetUpdaterJob"
-            android:process=":bgScrobbler"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".DigestJob"

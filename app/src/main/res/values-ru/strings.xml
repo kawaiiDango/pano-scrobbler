@@ -265,7 +265,7 @@
     <string name="tag" comment="last.fm tag">Тег</string>
     <string name="taggers" comment="(number of) people who have tagged">Отметившие</string>
     <string name="taggings" comment="(total count of) a particular tag">Теги</string>
-    <string name="digest_weekly">Топ за последнюю неделю</string>
+    <string name="digest_weekly">Топ скробблы за последнюю неделю</string>
     <string name="digest_monthly">Топ скробблы за последний месяц</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Лучшие скробблы %1$s</string>
     <string name="my_tags">Мои теги</string>
@@ -331,6 +331,8 @@
     <string name="username" comment="last.fm Username">Имя пользователя</string>
     <string name="pref_master">Скробблинг музыки</string>
     <string name="pref_master_qs_hint">Также можно переключать на плитках быстрых настроек</string>
+    <string name="pref_master_qs_add">Добавить плитку быстрых настроек</string>
+    <string name="pref_master_qs_already_addded">Плитка быстрых настроек уже добавлена</string>
     <string name="pref_noti_q">Вы можете продвигать уведомление, если значок не отображается</string>
     <string name="pref_noti">Уведомления</string>
     <string name="pref_noti_categories">Категории уведомлений</string>

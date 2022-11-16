@@ -956,7 +956,7 @@ class NLService : NotificationListenerService() {
                 return
 
             trackInfo.artist = MetadataUtils.sanitizeArtist(trackInfo.artist)
-            trackInfo.album = MetadataUtils.sanitizeArtist(trackInfo.album)
+            trackInfo.album = MetadataUtils.sanitizeAlbum(trackInfo.album)
             trackInfo.albumArtist = MetadataUtils.sanitizeAlbumArtist(trackInfo.albumArtist)
             trackInfo.userPlayCount = 0
             trackInfo.userLoved = false

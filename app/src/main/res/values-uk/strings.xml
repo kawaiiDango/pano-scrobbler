@@ -307,6 +307,8 @@
     <string name="username" comment="last.fm Username">Ім\'я користувача</string>
     <string name="pref_master">Скроблінг пісень</string>
     <string name="pref_master_qs_hint">Можна перемкнути з плитки швидких налаштувань</string>
+    <string name="pref_master_qs_add">Додати плитку швидких налаштувань</string>
+    <string name="pref_master_qs_already_addded">Плитка швидких налаштувань вже додана</string>
     <string name="pref_noti_q">Ви можете підвищити рівень сповіщення, якщо іконка не відображається</string>
     <string name="pref_noti">Сповіщення</string>
     <string name="pref_noti_categories">Категорії сповіщення</string>

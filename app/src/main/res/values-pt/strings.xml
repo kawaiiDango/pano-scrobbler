@@ -52,6 +52,10 @@
         <item quantity="one">%1$s metadados bloqueado</item>
         <item quantity="other">%1$s metadados bloqueados</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minutos</item>
+    </plurals>
     <plurals name="num_friends">
         <item quantity="one">%1$s amigo</item>
         <item quantity="other">%1$s amigos</item>

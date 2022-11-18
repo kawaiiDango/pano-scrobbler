@@ -80,7 +80,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Meilleurs titres</string>
     <string name="similar_tracks">Morceaux similaires</string>
     <string name="similar" comment="Similar tracks but in short">Similaire</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Maintenant en scrobbling…</string>
     <string name="state_scrobbled">Scrobbled</string>
     <string name="unscrobble">Unscrobble</string>
@@ -236,7 +235,6 @@
     <string name="pref_confirm_logout">CONFIRMER LA DÉCONNEXION ? Appuyez à nouveau</string>
     <string name="pref_login">Se connecter</string>
     <string name="pref_about" comment="Info about this app">À propos</string>
-    <string name="pref_search_title">Application de recherche de musique</string>
     <string name="pref_scrobble_only">(Scrobbler seulement)</string>
     <string name="pref_user_label" comment="(Like username)">Utilisateur</string>
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
@@ -244,7 +242,6 @@
     <string name="pref_fetch_aa">Récupérer les artistes de l\'album depuis lastFM</string>
     <string name="pref_change_locale">Changer de langage</string>
     <string name="pref_misc">Divers.</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_export">Exportation</string>
     <string name="pref_import">Importation</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personnalisation</string>
@@ -275,7 +272,6 @@
     <string name="not_running">⚠ Le scrobbler a été tué par votre système</string>
     <string name="not_running_fix_action">Réparer</string>
     <string name="login_submit">Vérifier</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Hôte</string>
     <string name="acr_key">Clef d’Accès</string>
     <string name="add_acr_key">Ajouter une clé ACRCloud</string>

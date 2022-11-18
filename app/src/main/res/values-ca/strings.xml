@@ -88,7 +88,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Cançons més reproduïdes</string>
     <string name="similar_tracks">Cançons similars</string>
     <string name="similar" comment="Similar tracks but in short">Similars</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%2$s — %1$s</string>
     <string name="state_scrobbling">Fent scrobbling…</string>
     <string name="state_scrobbled">Scrobble fet</string>
     <string name="unscrobble">Elimina l\'scrobble</string>
@@ -285,7 +284,6 @@
     <string name="pref_login">Inicia sessió</string>
     <string name="pref_about" comment="Info about this app">Quant a</string>
     <string name="pref_privacy_policy">Política de privacitat</string>
-    <string name="pref_search_title">Aplicació de cerca de cançons</string>
     <string name="pref_scrobble_only">(Només scrobbles)</string>
     <string name="pref_user_label" comment="(Like username)">Usuari</string>
     <string name="api_url" comment="For Listenbrainz">URL de l\'API</string>
@@ -337,7 +335,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Raó del tancament: %s</string>
     <string name="not_running_fix_action">Arregla-ho</string>
     <string name="login_submit">Verifica</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_key">Clau d\'accés</string>
     <string name="acr_secret">Secreta</string>
     <string name="add_acr_key">Afegeix una clau d\'ACRCloud</string>

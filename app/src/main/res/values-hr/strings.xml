@@ -103,7 +103,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Top pjesme</string>
     <string name="similar_tracks">Slične pjesme</string>
     <string name="similar" comment="Similar tracks but in short">Slično</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Sada scrobblea…</string>
     <string name="state_scrobbled">Scrobbleano</string>
     <string name="unscrobble">Ukloni scrobble</string>
@@ -318,7 +317,6 @@
     <string name="pref_login">Prijava</string>
     <string name="pref_about" comment="Info about this app">O aplikaciji</string>
     <string name="pref_privacy_policy">Politika privatnosti</string>
-    <string name="pref_search_title">Aplikacija za traženje pjesme</string>
     <string name="pref_scrobble_only">(samo scrobbleanje)</string>
     <string name="pref_user_label" comment="(Like username)">Korisnik</string>
     <string name="pref_token_label" comment="For Listenbrainz">Autentifikacijski token</string>
@@ -330,7 +328,6 @@
     <string name="pref_change_locale">Promijeni jezik</string>
     <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
     <string name="pref_misc">Razno</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Uvoz i izvoz</string>
     <string name="pref_export">Izvezi</string>
     <string name="pref_export_desc">Sigurnosno kopira postavke, uređivanja i popise blokiranja. Iz sigurnosnih razloga ne sprema prijave. Korisno za premještanje na novi uređaj ili dijeljenje s prijateljima.</string>
@@ -375,7 +372,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razlog za prekidanje rada kojeg je dao sustav: %s</string>
     <string name="not_running_fix_action">Popravi</string>
     <string name="login_submit">Potvrdi</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Poslužitelj</string>
     <string name="acr_key">Pristupni ključ</string>
     <string name="acr_secret">Tajna</string>

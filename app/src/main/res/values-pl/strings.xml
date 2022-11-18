@@ -118,7 +118,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Najczęściej odtwarzane utwory</string>
     <string name="similar_tracks">Podobne utwory</string>
     <string name="similar" comment="Similar tracks but in short">Podobne</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Teraz scrobbluję…</string>
     <string name="state_scrobbled">Zascrobblowano</string>
     <string name="unscrobble">Odscrobbluj</string>
@@ -352,7 +351,6 @@
     <string name="pref_login">Logowanie</string>
     <string name="pref_about" comment="Info about this app">O aplikacji</string>
     <string name="pref_privacy_policy">Polityka prywatności</string>
-    <string name="pref_search_title">Aplikacja do wyszukiwania utworów</string>
     <string name="pref_scrobble_only">(Tylko scrobble)</string>
     <string name="pref_user_label" comment="(Like username)">Użytkownik</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token uwierzytelniający</string>
@@ -364,7 +362,6 @@
     <string name="pref_change_locale">Zmień język</string>
     <string name="pref_crashlytics_enabled">Automatycznie wysyłaj raporty o błędach</string>
     <string name="pref_misc">Różne</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Import &amp; eksport</string>
     <string name="pref_export">Eksportuj</string>
     <string name="pref_export_desc">Kopiuje ustawienia, edycje i listę blokowanych. Nie zapisuje loginów, ze względów bezpieczeństwa. Przydatne przy zmianie urządzeń lub udostępniania znajomym</string>
@@ -416,7 +413,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Powód zabicia podany przez system: %s</string>
     <string name="not_running_fix_action">Napraw to</string>
     <string name="login_submit">Weryfikuj</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Host</string>
     <string name="acr_key">Klucz dostępu</string>
     <string name="acr_secret">Sekret</string>

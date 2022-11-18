@@ -107,10 +107,6 @@
     <string name="similar"
         comment="Similar tracks but in short"
         >Similar</string>
-
-    <string name="artist_title" formatted="true"
-        comment="$artist — $title"
-        >%1$s — %2$s</string>
     <string name="state_scrobbling">Now scrobbling…</string>
     <string name="state_scrobbled">Scrobbled</string>
     <string name="unscrobble">Unscrobble</string>
@@ -489,7 +485,6 @@
         comment="Info about this app"
         >About</string>
     <string name="pref_privacy_policy">Privacy policy</string>
-    <string name="pref_search_title">Song search app</string>
     <string name="pref_scrobble_only">(Scrobble only)</string>
     <string name="pref_user_label"
         comment="(Like username)"
@@ -508,7 +503,6 @@
     <string name="pref_change_locale">Change language</string>
     <string name="pref_crashlytics_enabled">Report errors automatically</string>
     <string name="pref_misc">Misc.</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Import &amp; export</string>
     <string name="pref_export">Export</string>
     <string name="pref_export_desc">Backs up settings, edits and blocklist. Does not save logins for security reasons. Useful for moving between devices or sharing with friends.</string>
@@ -576,7 +570,6 @@
         formatted="true">Kill reason given by the system: %s</string>
     <string name="not_running_fix_action">Fix it</string>
     <string name="login_submit">Verify</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_host"
         comment="Web hostname"
         >Host</string>

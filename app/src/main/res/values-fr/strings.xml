@@ -119,8 +119,11 @@
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Supprimer cet élément de l\'historique ?</string>
     <string name="library" comment="search within the library">Bibliothèque</string>
     <string name="global" comment="search globally across lastfm">Global</string>
+    <string name="reindex">Indexage rapide</string>
+    <string name="full_index">Indexage complet</string>
     <string name="take_long_time">Cela peut prendre du temps</string>
     <string name="full_index_desc">Utilisez ceci uniquement si vous avez modifié ou supprimé des scrobbles du site Web.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Recherche du top %1$s de chaque catégorie.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Image de profil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Options pour cet élément</string>

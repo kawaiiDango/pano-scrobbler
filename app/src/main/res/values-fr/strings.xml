@@ -125,6 +125,7 @@
     <string name="profile_pic">Image de profil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Options pour cet élément</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s détecté</string>
+    <string name="new_player_prompt">Continuer de scrobbler cette app ?</string>
     <string name="no_track_url">Cette musique ne possède pas de page sur lastFM</string>
     <string name="no_scrobbles">Aucunes chansons ici pour le moment…</string>
     <string name="no_friends">Aucun ami lastFM pour le moment…</string>
@@ -143,8 +144,11 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s aujourd\'hui</string>
     <string name="friends">Amis</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
+    <string name="allow_background">Autoriser le scrobbling en arrière-plan</string>
     <string name="grant_notification_access">Autoriser l\'accès aux notifications</string>
     <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n\'est lue</string>
+    <string name="send_notifications">Autoriser les notifications</string>
+    <string name="notification_channel_blocked">Ceci nécessite l\'activation des notifications</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM et Listenbrainz peuvent être authentifiés après cela, à partir des paramètres</string>
     <string name="swap" comment="(Swap title and artist)">Changer</string>
     <string name="rate_msg">Vous aimez cette application ?</string>

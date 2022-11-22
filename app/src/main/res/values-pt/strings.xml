@@ -88,7 +88,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Faixas mais ouvidas</string>
     <string name="similar_tracks">Faixas semelhantes</string>
     <string name="similar" comment="Similar tracks but in short">Semelhantes</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">A fazer scrobble…</string>
     <string name="state_scrobbled">Scrobble efetuado</string>
     <string name="unscrobble">Eliminar scrobble</string>
@@ -322,7 +321,6 @@
     <string name="pref_login">Iniciar sessão</string>
     <string name="pref_about" comment="Info about this app">Acerca</string>
     <string name="pref_privacy_policy">Política de privacidade</string>
-    <string name="pref_search_title">App de pesquisa de músicas</string>
     <string name="pref_scrobble_only">(Scrobble apenas)</string>
     <string name="pref_user_label" comment="(Like username)">Utilizador</string>
     <string name="pref_token_label" comment="For Listenbrainz">Código de autenticação</string>
@@ -334,7 +332,6 @@
     <string name="pref_change_locale">Alterar Idioma</string>
     <string name="pref_crashlytics_enabled">Reportar erros automaticamente</string>
     <string name="pref_misc">Diversos.</string>
-    <string name="pref_gnufm_title">URL nixtape GNU FM</string>
     <string name="pref_imexport">Importar &amp; exportar</string>
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Armazena as configurações, edições e lista de bloqueio. Não guarda dados da sessão por razões de segurança. Útil para mover entre dispositivos ou compartilhar com amigos.</string>
@@ -386,7 +383,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo da falha dado pelo sistema: %s</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit">Verificar</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Servidor</string>
     <string name="acr_key">Chave de Acesso</string>
     <string name="acr_secret">Código secreto</string>

@@ -88,7 +88,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">En çok dinlenen parçalar</string>
     <string name="similar_tracks">Benzer parçalar</string>
     <string name="similar" comment="Similar tracks but in short">Benzer</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Skroplanıyor…</string>
     <string name="state_scrobbled">Skroplandı</string>
     <string name="unscrobble">Skroplamayı geri al</string>
@@ -320,7 +319,6 @@
     <string name="pref_login">Oturum aç</string>
     <string name="pref_about" comment="Info about this app">Hakkında</string>
     <string name="pref_privacy_policy">Gizlilik politikası</string>
-    <string name="pref_search_title">Şarkı arama uygulaması</string>
     <string name="pref_scrobble_only">(Sadece skrop)</string>
     <string name="pref_user_label" comment="(Like username)">Kullanıcı</string>
     <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
@@ -332,7 +330,6 @@
     <string name="pref_change_locale">Dili değiştir</string>
     <string name="pref_crashlytics_enabled">Hataları otomatik olarak bildir</string>
     <string name="pref_misc">Çeşitli</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL\'si</string>
     <string name="pref_imexport">İçe Aktar &amp; Dışa Aktar</string>
     <string name="pref_export">Dışa Aktar</string>
     <string name="pref_export_desc">Ayarları, düzenlemeleri ve engel listesini yedekler. Oturum açma bilgilerini güvenlik sebepleriyle kaydetmez. Cihazın sık sık değiştirildiği veya arkadaşlarla paylaşıldığı durumlar için uygundur.</string>
@@ -384,7 +381,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sistem tarafından verilen sonlarılma sebebi: %s</string>
     <string name="not_running_fix_action">Düzelt</string>
     <string name="login_submit">Doğrula</string>
-    <string name="scrobble">Tümü</string>
     <string name="acr_host" comment="Web hostname">Sunucu</string>
     <string name="acr_key">Erişim anahtarı</string>
     <string name="acr_secret">Gizli</string>

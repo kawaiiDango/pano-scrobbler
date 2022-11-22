@@ -80,7 +80,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Meilleurs titres</string>
     <string name="similar_tracks">Morceaux similaires</string>
     <string name="similar" comment="Similar tracks but in short">Similaire</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Maintenant en scrobbling…</string>
     <string name="state_scrobbled">Scrobbled</string>
     <string name="unscrobble">Unscrobble</string>
@@ -120,12 +119,17 @@
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Supprimer cet élément de l\'historique ?</string>
     <string name="library" comment="search within the library">Bibliothèque</string>
     <string name="global" comment="search globally across lastfm">Global</string>
+    <string name="reindex">Indexage rapide</string>
+    <string name="full_index">Indexage complet</string>
     <string name="take_long_time">Cela peut prendre du temps</string>
     <string name="full_index_desc">Utilisez ceci uniquement si vous avez modifié ou supprimé des scrobbles du site Web.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Recherche du top %1$s de chaque catégorie.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Dernier indexage effectué le %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Image de profil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Options pour cet élément</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s détecté</string>
+    <string name="new_player_prompt">Continuer de scrobbler cette app ?</string>
     <string name="no_track_url">Cette musique ne possède pas de page sur lastFM</string>
     <string name="no_scrobbles">Aucunes chansons ici pour le moment…</string>
     <string name="no_friends">Aucun ami lastFM pour le moment…</string>
@@ -144,8 +148,11 @@
     <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s aujourd\'hui</string>
     <string name="friends">Amis</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, depuis %2$s</string>
+    <string name="allow_background">Autoriser le scrobbling en arrière-plan</string>
     <string name="grant_notification_access">Autoriser l\'accès aux notifications</string>
     <string name="grant_notification_access_desc">Nécessaire pour récupérer les métadonnées de musique. Aucune notification non musicale n\'est lue</string>
+    <string name="send_notifications">Autoriser les notifications</string>
+    <string name="notification_channel_blocked">Ceci nécessite l\'activation des notifications</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM et Listenbrainz peuvent être authentifiés après cela, à partir des paramètres</string>
     <string name="swap" comment="(Swap title and artist)">Changer</string>
     <string name="rate_msg">Vous aimez cette application ?</string>
@@ -236,7 +243,6 @@
     <string name="pref_confirm_logout">CONFIRMER LA DÉCONNEXION ? Appuyez à nouveau</string>
     <string name="pref_login">Se connecter</string>
     <string name="pref_about" comment="Info about this app">À propos</string>
-    <string name="pref_search_title">Application de recherche de musique</string>
     <string name="pref_scrobble_only">(Scrobbler seulement)</string>
     <string name="pref_user_label" comment="(Like username)">Utilisateur</string>
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
@@ -244,7 +250,6 @@
     <string name="pref_fetch_aa">Récupérer les artistes de l\'album depuis lastFM</string>
     <string name="pref_change_locale">Changer de langage</string>
     <string name="pref_misc">Divers.</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_export">Exportation</string>
     <string name="pref_import">Importation</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personnalisation</string>
@@ -275,7 +280,6 @@
     <string name="not_running">⚠ Le scrobbler a été tué par votre système</string>
     <string name="not_running_fix_action">Réparer</string>
     <string name="login_submit">Vérifier</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Hôte</string>
     <string name="acr_key">Clef d’Accès</string>
     <string name="add_acr_key">Ajouter une clé ACRCloud</string>

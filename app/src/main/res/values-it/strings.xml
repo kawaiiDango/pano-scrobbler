@@ -80,7 +80,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Brani più ascoltati</string>
     <string name="similar_tracks">Brani simili</string>
     <string name="similar" comment="Similar tracks but in short">Simili</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Scrobbling in corso…</string>
     <string name="state_scrobbled">Scrobbling effettuato</string>
     <string name="unscrobble">Annulla scrobbling</string>
@@ -298,7 +297,6 @@
     <string name="pref_login">Accedi</string>
     <string name="pref_about" comment="Info about this app">Informazioni</string>
     <string name="pref_privacy_policy">Informativa sulla privacy</string>
-    <string name="pref_search_title">App per la ricerca brani</string>
     <string name="pref_scrobble_only">(Solo scrobbling)</string>
     <string name="pref_user_label" comment="(Like username)">Utente</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token di autenticazione</string>
@@ -310,7 +308,6 @@
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
     <string name="pref_misc">Varie</string>
-    <string name="pref_gnufm_title">URL della nixtape GNU FM</string>
     <string name="pref_imexport">Importazione &amp; esportazione</string>
     <string name="pref_export">Esporta</string>
     <string name="pref_export_desc">Esegue il backup delle impostazioni, modifiche e metadati bloccati. Non salva i dati d’accesso per ragioni di sicurezza. Utile per cambiare dispositivo o condividere con amici.</string>
@@ -362,7 +359,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Movente dato dal sistema: %s</string>
     <string name="not_running_fix_action">Risolvi</string>
     <string name="login_submit">Verifica</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Host</string>
     <string name="acr_key">Chiave d\'accesso</string>
     <string name="acr_secret">Chiave segreta</string>

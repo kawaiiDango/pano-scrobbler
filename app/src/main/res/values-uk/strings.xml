@@ -94,7 +94,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Кращі композиції</string>
     <string name="similar_tracks">Схожі пісні</string>
     <string name="similar" comment="Similar tracks but in short">Схожі</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s – %2$s</string>
     <string name="state_scrobbling">Відбувається скроблінг…</string>
     <string name="state_scrobbled">Заскроблено</string>
     <string name="unscrobble">Нескроблено</string>
@@ -328,7 +327,6 @@
     <string name="pref_login">Увійти</string>
     <string name="pref_about" comment="Info about this app">Про застосунок</string>
     <string name="pref_privacy_policy">Політика конфіденційності</string>
-    <string name="pref_search_title">Додаток для пошуку пісні</string>
     <string name="pref_scrobble_only">(Тільки скроблінг)</string>
     <string name="pref_user_label" comment="(Like username)">Користувач</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентифікації</string>
@@ -340,7 +338,6 @@
     <string name="pref_change_locale">Змінити мову</string>
     <string name="pref_crashlytics_enabled">Автоматично повідомляти про помилки</string>
     <string name="pref_misc">Інше.</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Імпорт &amp; Експорт</string>
     <string name="pref_export">Експорт</string>
     <string name="pref_export_desc">Зберігає налаштування, правки та чорний список. Не зберігає логіни за міркувань безпеки. Корисно для переміщення між девайсами або обміну з друзями.</string>
@@ -392,7 +389,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Причина вбивства, надана системою: %s</string>
     <string name="not_running_fix_action">Виправити</string>
     <string name="login_submit">Підтвердити</string>
-    <string name="scrobble">Скробблінг</string>
     <string name="acr_host" comment="Web hostname">Хост</string>
     <string name="acr_key">Ключ доступу</string>
     <string name="acr_secret">Секрет</string>

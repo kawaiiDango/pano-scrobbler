@@ -80,7 +80,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Top nummers</string>
     <string name="similar_tracks">Vergelijkbare nummers</string>
     <string name="similar" comment="Similar tracks but in short">Vergelijkbaar</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s – %2$s</string>
     <string name="state_scrobbling">Nu aan het scrobbelen…</string>
     <string name="state_scrobbled">Gescrobbeld</string>
     <string name="unscrobble">Onscrobbel</string>
@@ -304,7 +303,6 @@
     <string name="pref_login">Log in</string>
     <string name="pref_about" comment="Info about this app">Over</string>
     <string name="pref_privacy_policy">Privacybeleid</string>
-    <string name="pref_search_title">Nummer zoek app</string>
     <string name="pref_scrobble_only">(Alleen scrobbelen)</string>
     <string name="pref_user_label" comment="(Like username)">Gebruiker</string>
     <string name="pref_token_label" comment="For Listenbrainz">Authenticatietoken</string>
@@ -316,7 +314,6 @@
     <string name="pref_change_locale">Taal wijzigen</string>
     <string name="pref_crashlytics_enabled">Rapporteer fouten automatisch</string>
     <string name="pref_misc">Diversen</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Importeren &amp; Exporteren</string>
     <string name="pref_export">Exporteren</string>
     <string name="pref_export_desc">Back-up van instellingen, bewerkingen en blokkeerlijsten. Slaat logins niet op voor veiligheidsredenen. Nuttig om te wisselen tussen apparaten of delen met vrienden.</string>
@@ -368,7 +365,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Reden voor sluiting gegeven door het systeem: %s</string>
     <string name="not_running_fix_action">Maak het</string>
     <string name="login_submit">Verifieer</string>
-    <string name="scrobble">Scrobble</string>
     <string name="acr_host" comment="Web hostname">Host</string>
     <string name="acr_key">Toegangssleutel</string>
     <string name="acr_secret">Geheim</string>

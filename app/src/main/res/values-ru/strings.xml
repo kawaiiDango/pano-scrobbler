@@ -118,7 +118,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Популярные треки</string>
     <string name="similar_tracks">Похожие треки</string>
     <string name="similar" comment="Similar tracks but in short">Похожие</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Сейчас скробблится…</string>
     <string name="state_scrobbled">Заскробблено</string>
     <string name="unscrobble">Удалить скроббл</string>
@@ -352,7 +351,6 @@
     <string name="pref_login">Войти</string>
     <string name="pref_about" comment="Info about this app">О программе</string>
     <string name="pref_privacy_policy">Политика конфиденциальности</string>
-    <string name="pref_search_title">Сервис поиска песен</string>
     <string name="pref_scrobble_only">(Только скробблинг)</string>
     <string name="pref_user_label" comment="(Like username)">Пользователь</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентификации</string>
@@ -364,7 +362,6 @@
     <string name="pref_change_locale">Изменить язык</string>
     <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>
     <string name="pref_misc">Разное</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Импорт и экспорт</string>
     <string name="pref_export">Экспорт</string>
     <string name="pref_export_desc">Сохраняет настройки, правки и черный список. Не сохраняет логины по соображениям безопасности. Полезно для перемещения между устройствами или обмена с друзьями.</string>
@@ -416,7 +413,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Причина закрытия, указанная системой: %s</string>
     <string name="not_running_fix_action">Исправить это</string>
     <string name="login_submit">Проверить</string>
-    <string name="scrobble">Скробблинг</string>
     <string name="acr_host" comment="Web hostname">Хост</string>
     <string name="acr_key">Ключ доступа</string>
     <string name="acr_secret">Секретный ключ</string>

@@ -61,7 +61,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">热门曲目</string>
     <string name="similar_tracks">相似的曲目</string>
     <string name="similar" comment="Similar tracks but in short">找相似</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">正在记录…</string>
     <string name="state_scrobbled">已记录</string>
     <string name="unscrobble">撤销记录</string>
@@ -241,7 +240,6 @@
     <string name="pref_login">登录</string>
     <string name="pref_about" comment="Info about this app">关于</string>
     <string name="pref_privacy_policy">隐私策略</string>
-    <string name="pref_search_title">歌曲搜索应用</string>
     <string name="pref_scrobble_only">(仅限记录)</string>
     <string name="pref_user_label" comment="(Like username)">用户名</string>
     <string name="pref_token_label" comment="For Listenbrainz">认证密钥</string>
@@ -251,7 +249,6 @@
     <string name="pref_fetch_aa_desc">针对不提供此数据的播放器。获取的数据可能和实际标签不同。last.fm 可能没有某些歌曲的专辑艺术家数据。</string>
     <string name="pref_change_locale">更改语言</string>
     <string name="pref_misc">杂项</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">导入 &amp; 导出</string>
     <string name="pref_export">导出</string>
     <string name="pref_export_desc">备份设置、编辑列表和黑名单。出于安全原因不保存登录信息。可用于设备间同步或与朋友共享。</string>
@@ -295,7 +292,6 @@
     <string name="not_running">⚠ 您的系统终止了记录器运行</string>
     <string name="not_running_fix_action">修复</string>
     <string name="login_submit">验证</string>
-    <string name="scrobble">记录</string>
     <string name="acr_host" comment="Web hostname">主机</string>
     <string name="acr_key">通行密钥</string>
     <string name="acr_secret">安全码</string>

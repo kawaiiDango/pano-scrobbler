@@ -100,7 +100,6 @@
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Nejlepší skladby</string>
     <string name="similar_tracks">Podobné skladby</string>
     <string name="similar" comment="Similar tracks but in short">Podobné</string>
-    <string name="artist_title" formatted="true" comment="$artist — $title">%1$s — %2$s</string>
     <string name="state_scrobbling">Nyní scrobbluji…</string>
     <string name="state_scrobbled">Scroblováno</string>
     <string name="unscrobble">Zrušit scrobble</string>
@@ -297,7 +296,6 @@
     <string name="pref_change_locale">Změnit jazyk</string>
     <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>
     <string name="pref_misc">Ostatní</string>
-    <string name="pref_gnufm_title">GNU FM nixtape URL</string>
     <string name="pref_imexport">Import a export</string>
     <string name="pref_export">Exportovat</string>
     <string name="pref_export_desc">Zálohuje nastavení, úpravy a seznam blokovaných. Z bezpečnostních důvodů neukládá přihlášení. Užitečné při přesouvání mezi zařízeními nebo sdílení s kamarády.</string>
@@ -326,7 +324,6 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Důvod vypnutí uvedený systémem: %s</string>
     <string name="not_running_fix_action">Opravit</string>
     <string name="login_submit">Ověřit</string>
-    <string name="scrobble">Scrobble</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d zbývajících</string>
     <string name="navigation_drawer_close">Zavřít navigační lištu</string>
     <string name="cleared_disabled_apps">Vymazány zakázané aplikace</string>

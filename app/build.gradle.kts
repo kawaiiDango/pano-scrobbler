@@ -14,7 +14,7 @@ plugins {
     id("kotlin-parcelize")
     id ("com.github.triplet.play")
     kotlin("plugin.serialization") version "1.7.20"
-    id("com.mikepenz.aboutlibraries.plugin") version "10.5.1"
+    id("com.mikepenz.aboutlibraries.plugin") version "10.5.2"
     id("com.github.breadmoirai.github-release") version "2.4.1"
 }
 
@@ -119,13 +119,13 @@ dependencies {
     implementation("androidx.core:core-remoteviews:1.0.0-beta03")
     kapt("androidx.room:room-compiler:2.4.3")
     implementation("androidx.room:room-runtime:2.4.3")
-    implementation("com.android.billingclient:billing:5.0.0")
+    implementation("com.android.billingclient:billing:5.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.8.0-alpha02")
+    implementation("com.google.android.material:material:1.8.0-alpha03")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:31.0.2"))
+    implementation(platform("com.google.firebase:firebase-bom:31.1.0"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -152,7 +152,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
 //    implementation("com.brandongogetap:stickyheaders:0.6.2")
-    implementation("com.mikepenz:aboutlibraries-core:10.5.1")
+    implementation("com.mikepenz:aboutlibraries-core:10.5.2")
     //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
 
     implementation(project(":lastfm"))

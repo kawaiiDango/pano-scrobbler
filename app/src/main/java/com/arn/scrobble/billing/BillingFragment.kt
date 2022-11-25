@@ -4,6 +4,7 @@ package com.arn.scrobble.billing
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentBillingBinding
 import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.popBackStackTill
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.color.MaterialColors
@@ -65,7 +67,7 @@ class BillingFragment : Fragment() {
 
         val bulletStrings = arrayOf(
             R.drawable.vd_palette to getString(R.string.pref_themes),
-            R.drawable.vd_apps to getString(R.string.pref_show_scrobble_sources),
+            R.drawable.vd_apps to getString(R.string.billing_scrobble_source),
             R.drawable.vd_ban to getString(R.string.billing_block),
             R.drawable.vd_pin to getString(R.string.billing_pin_friends, 10),
             R.drawable.vd_share to getString(R.string.billing_sharing),
@@ -110,7 +112,7 @@ class BillingFragment : Fragment() {
                 MaterialAlertDialogBuilder(context!!)
                     .setMessage(R.string.thank_you)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
-                        parentFragmentManager.popBackStack()
+                        parentFragmentManager.popBackStackTill(0)
                     }
                     .show()
             }
@@ -122,19 +124,22 @@ class BillingFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-/*
-        Picasso.get()
-            .load("https://i.imgur.com/DwRQl3l.png")
-            .into(binding.themesImg)
+        /*
+                Picasso.get()
+                    .load("https://i.imgur.com/DwRQl3l.png")
+                    .into(binding.themesImg)
 
-        Picasso.get()
-            .load("https://i.imgur.com/cYMoA6u.png")
-            .into(binding.shareImage)
-*/
+                Picasso.get()
+                    .load("https://i.imgur.com/cYMoA6u.png")
+                    .into(binding.shareImage)
+        */
         billingViewModel = (activity as MainActivity).billingViewModel
         billingViewModel.proProductDetails.observe(viewLifecycleOwner) {
             it?.let {
-                Stuff.log("price: " + it.oneTimePurchaseOfferDetails!!.priceCurrencyCode + it.oneTimePurchaseOfferDetails!!.formattedPrice)
+                binding.startBilling.text = Html.fromHtml(
+                    "<big>" + getString(R.string.get_pro) + "</big>" +
+                            "<br><small>" + it.oneTimePurchaseOfferDetails!!.formattedPrice + "</small>"
+                )
             }
         }
         billingViewModel.proPendingSince.observe(viewLifecycleOwner) {

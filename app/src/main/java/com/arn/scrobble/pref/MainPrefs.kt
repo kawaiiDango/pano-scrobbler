@@ -48,6 +48,7 @@ class MainPrefs(context: Context) : Krate {
     val delayPercent
         get() = _delayPercent.coerceIn(PREF_DELAY_PER_MIN, PREF_DELAY_PER_MAX)
 
+    var scrobbleSpotifyRemote by booleanPref(PREF_SCROBBLE_SPOTIFY_REMOTE).withDefault(false)
     var allowedArtists by stringSetPref(PREF_ALLOWED_ARTISTS).withDefault(setOf())
     var lastfmDisabled by booleanPref(PREF_LASTFM_DISABLE).withDefault(false)
     var submitNowPlaying by booleanPref(PREF_NOW_PLAYING).withDefault(true)
@@ -219,6 +220,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_TOUHOU_CIRCLES = "touhou_circles"
         const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
         const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"
+        const val PREF_SCROBBLE_SPOTIFY_REMOTE = "scrobble_spotify_remote"
 
         const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
         const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"

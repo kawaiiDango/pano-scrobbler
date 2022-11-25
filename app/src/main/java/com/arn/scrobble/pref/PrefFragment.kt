@@ -328,14 +328,18 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         fakeShowScrobbleSources.isVisible = !prefs.proStatus
         showScrobbleSources.isVisible = prefs.proStatus
-        searchInSource.isVisible = prefs.proStatus && prefs.showScrobbleSources
-        showScrobbleSources.onPreferenceChangeListener =
-            Preference.OnPreferenceChangeListener { _, newValue ->
-                if (newValue is Boolean) {
-                    searchInSource.isVisible = newValue
-                }
+        if (!prefs.proStatus) {
+            searchInSource.isPersistent = false
+            searchInSource.isChecked = false
+            searchInSource.setOnPreferenceClickListener {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.frame, BillingFragment())
+                    .addToBackStack(null)
+                    .commit()
                 true
             }
+
+        }
 
         if (prefs.checkForUpdates == null) {
             findPreference<SwitchPreference>("check_for_updates")!!

@@ -206,7 +206,6 @@ object Stuff {
 
         // radios
         "tunein.player",
-        "com.thehouseofcode.radio_nowy_swiat",
     )
 
     val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
@@ -490,7 +489,7 @@ object Stuff {
             }
             putExtra(SearchManager.QUERY, query)
 
-            if (pkgName != null && prefs.proStatus && prefs.showScrobbleSources && prefs.searchInSource)
+            if (pkgName != null && prefs.proStatus && prefs.searchInSource)
                 `package` = pkgName
         }
         try {

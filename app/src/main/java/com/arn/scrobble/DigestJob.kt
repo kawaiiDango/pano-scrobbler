@@ -38,6 +38,7 @@ class DigestJob : JobService() {
 
     private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
     private val prefs by lazy { MainPrefs(this) }
+    private val cal by lazy { Calendar.getInstance()}
 
     override fun onStartJob(jp: JobParameters): Boolean {
         scheduleAlarms(applicationContext)
@@ -60,6 +61,11 @@ class DigestJob : JobService() {
             }
             GlobalScope.launch(coExceptionHandler) {
                 fetchAndNotify(period, lastfmAccount)
+
+                // yearly digest
+                if (period == Period.ONE_MONTH && cal[Calendar.MONTH] == Calendar.DECEMBER) {
+                    fetchAndNotify(Period.TWELVE_MONTHS, lastfmAccount)
+                }
                 jobFinished(jp, false)
             }
 
@@ -105,10 +111,12 @@ class DigestJob : JobService() {
             }
 
             val title = getString(
-                if (period == Period.WEEK)
-                    R.string.digest_weekly
-                else
-                    R.string.digest_monthly
+                when (period) {
+                    Period.WEEK -> R.string.digest_weekly
+                    Period.ONE_MONTH -> R.string.digest_monthly
+                    Period.TWELVE_MONTHS -> R.string.graph_yearly
+                    else -> throw IllegalArgumentException("Invalid period")
+                }
             )
 
             if (notificationTextList.isEmpty()) {
@@ -137,7 +145,7 @@ class DigestJob : JobService() {
                 .putSingle(TimePeriod(this@DigestJob, period))
                 .putSingle(lastfmAccount.user)
             val collageIntent = PendingIntent.getActivity(
-                applicationContext, 19, intent,
+                applicationContext, 100 + period.ordinal, intent,
                 Stuff.updateCurrentOrImmutable
             )
 

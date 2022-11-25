@@ -170,8 +170,11 @@ class SessListener(
         private val syntheticStateHandler = Handler(scrobbleHandler.looper)
 
         fun scrobble() {
-//            if (BuildConfig.DEBUG && isRemotePlayback)
-//                return
+            if (!prefs.scrobbleSpotifyRemote &&
+                trackInfo.packageName == Stuff.PACKAGE_SPOTIFY &&
+                !audioManager.isMusicActive
+            )
+                return
 
             Stuff.log("playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}")
 
@@ -224,10 +227,12 @@ class SessListener(
                 Stuff.PACKAGE_XIAMI -> {
                     artist = artist.replace(";", "; ")
                 }
+
                 Stuff.PACKAGE_PANDORA -> {
                     artist = artist.replace("^Ofln - ".toRegex(), "")
                     albumArtist = ""
                 }
+
                 Stuff.PACKAGE_PODCAST_ADDICT -> {
                     if (albumArtist != "") {
                         artist = albumArtist
@@ -237,6 +242,7 @@ class SessListener(
                     if (idx != -1)
                         artist = artist.substring(0, idx)
                 }
+
                 Stuff.PACKAGE_SONOS,
                 Stuff.PACKAGE_SONOS2 -> {
                     metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)?.let {
@@ -244,6 +250,7 @@ class SessListener(
                         albumArtist = ""
                     }
                 }
+
                 Stuff.PACKAGE_DIFM -> {
                     val extra = " - $album"
                     if (artist.endsWith(extra))
@@ -252,6 +259,7 @@ class SessListener(
                     album = ""
                     albumArtist = ""
                 }
+
                 Stuff.PACKAGE_HUAWEI_MUSIC -> {
                     if (Build.MANUFACTURER.lowercase(Locale.ENGLISH) == Stuff.MANUFACTURER_HUAWEI) {
                         // Extra check for the manufacturer, because 'com.android.mediacenter' could match other music players.
@@ -261,9 +269,11 @@ class SessListener(
                         albumArtist = ""
                     }
                 }
+
                 Stuff.PACKAGE_NICOBOX -> {
                     artist = "Unknown"
                 }
+
                 Stuff.PACKAGE_SPOTIFY -> {
                     // ads look like these:
                     // e.g. GCTC () [] ~ Free Spring Tuition
@@ -363,6 +373,7 @@ class SessListener(
                     pause()
                     Stuff.log("paused timePlayed=${trackInfo.timePlayed}")
                 }
+
                 PlaybackState.STATE_PLAYING -> {
                     if (mutedHash != null && trackInfo.hash != mutedHash)
                         unmute(clearMutedHash = isMuted)
@@ -390,6 +401,7 @@ class SessListener(
                         }
                     }
                 }
+
                 else -> {
                     Stuff.log("other ($state) : ${trackInfo.title}")
                 }
@@ -501,6 +513,7 @@ class SessListener(
                 allowedPackages.clear()
                 allowedPackages.addAll(pref.getStringSet(key, setOf())!!)
             }
+
             MainPrefs.PREF_BLOCKED_PACKAGES -> synchronized(blockedPackages) {
                 blockedPackages.clear()
                 blockedPackages.addAll(pref.getStringSet(key, setOf())!!)

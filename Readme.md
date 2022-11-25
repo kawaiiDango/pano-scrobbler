@@ -41,7 +41,7 @@ Buttons in notifications don't work as expected. This is a WSA bug.
 - Add or remove personal tags
 - Mix and match themes, supports Material You
 - Broadcast Intents for automation apps like Tasker
-- Show scrobble sources beside each scrobble and directly search in the app you scrobbled from
+- Remember and see apps you scrobbled from and search directly in them
 - In-app update checker for devices without Play Store
 
 ### Building:

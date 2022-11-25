@@ -52,6 +52,7 @@ class ImExporter : Closeable {
         MainPrefs.PREF_THEME_DYNAMIC,
         MainPrefs.PREF_SEARCH_IN_SOURCE,
         MainPrefs.PREF_LOCALE,
+        MainPrefs.PREF_SCROBBLE_SPOTIFY_REMOTE,
 
         MainPrefs.PREF_ALLOWED_PACKAGES,
         MainPrefs.PREF_BLOCKED_PACKAGES,

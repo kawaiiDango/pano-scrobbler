@@ -22,17 +22,22 @@
         android:title="@string/pref_scrobble_from">
         <com.arn.scrobble.pref.AppIconsPref
             android:key="app_whitelist"/>
-        <Preference
-            android:selectable="false"
-            android:summary="@string/pref_enabled_apps_summary"
-            />
+<!--        <Preference-->
+<!--            android:selectable="false"-->
+<!--            android:summary="@string/pref_enabled_apps_summary"-->
+<!--            />-->
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="auto_detect"
             android:persistent="true"
-            android:summary="@string/pref_auto_detect_summary"
             android:title="@string/pref_auto_detect"/>
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="scrobble_spotify_remote"
+            android:persistent="true"
+            android:title="@string/pref_spotify_remote"/>
 
 
     </PreferenceCategory>

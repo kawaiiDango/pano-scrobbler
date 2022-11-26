@@ -276,7 +276,6 @@
     <string name="pref_enabled_apps_summary">ℹ️ Podporuje aplikace, které odhalují metadata hudby. Chcete-li zabránit dvojímu scrobblu ze Spotify, povolte jej pouze na jednom místě.</string>
     <string name="pref_enabled_apps_title">Vybrat aplikace</string>
     <string name="pref_auto_detect_summary">…stále vás požádáme o potvrzení/ignorování této aplikace</string>
-    <string name="pref_auto_detect">Automaticky detekovat nové hudební aplikace</string>
     <string name="pref_delay">Zpoždění Scrobble (podle toho, co nastane dříve)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minut</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>

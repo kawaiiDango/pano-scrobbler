@@ -342,7 +342,6 @@
     <string name="pref_enabled_apps_summary">ℹ️ Obsługuje aplikacje, które ujawniają metadane muzyki. Aby uniknąć podwójnych scrobbli ze Spotify, włącz je tylko w jednym miejscu.</string>
     <string name="pref_enabled_apps_title">Wybierz aplikacje</string>
     <string name="pref_auto_detect_summary">…nadal pytaj o potwierdzenie/ignorowanie tej aplikacji</string>
-    <string name="pref_auto_detect">Automatyczne wykrywanie nowych aplikacji muzycznych</string>
     <string name="pref_delay">Opóźnij scrobblowanie (w zależności od tego, co nastąpi wcześniej)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuty</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>

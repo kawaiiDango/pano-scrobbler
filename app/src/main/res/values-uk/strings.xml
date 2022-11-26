@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s скробл</item>
+        <item quantity="few">%1$s скроблів</item>
+        <item quantity="many">%1$s скроблів</item>
+        <item quantity="other">%1$s скроблів</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s слухач</item>
+        <item quantity="few">%1$s слухачів</item>
+        <item quantity="many">%1$s слухачів</item>
+        <item quantity="other">%1$s слухачів</item>
+    </plurals>
     <plurals name="num_days">
         <item quantity="one">%1$s день</item>
         <item quantity="few">%1$s днів</item>
@@ -11,6 +23,12 @@
         <item quantity="few">%1$s тижнів</item>
         <item quantity="many">%1$s тижнів</item>
         <item quantity="other">%1$s тижнів</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s на місяць</item>
+        <item quantity="few">%1$s місяців</item>
+        <item quantity="many">%1$s місяців</item>
+        <item quantity="other">%1$s місяців</item>
     </plurals>
     <plurals name="num_years">
         <item quantity="one">%1$s рік</item>
@@ -35,6 +53,12 @@
         <item quantity="few">%1$s пісень</item>
         <item quantity="many">%1$s пісні</item>
         <item quantity="other">%1$s пісні</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d збіг</item>
+        <item quantity="few">%1$d збігів</item>
+        <item quantity="many">%1$d збігів</item>
+        <item quantity="other">%1$d збігів</item>
     </plurals>
     <plurals name="num_simple_edits">
         <item quantity="one">%1$s Редагувати</item>
@@ -318,7 +342,6 @@
     <string name="pref_enabled_apps_summary">ℹ️ Підтримує додатки, відображаючі музикальні метаданні. Щоб уникнути подвійного скроблінгу з Spotify, увімкніть його тільки в одному місті.</string>
     <string name="pref_enabled_apps_title">Виберіть додатки</string>
     <string name="pref_auto_detect_summary">…ми все ще попросимо вас підтвердити/ігнорувати цю програму</string>
-    <string name="pref_auto_detect">Автоматично визначати нові музичні додатки</string>
     <string name="pref_delay">Затримка скроблінгу (яка є раніше)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Хвилини</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Відсотки</string>

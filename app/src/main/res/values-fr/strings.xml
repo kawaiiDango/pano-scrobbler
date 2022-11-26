@@ -238,7 +238,6 @@
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbler depuis</string>
     <string name="pref_enabled_apps_title">Choisir les applications</string>
     <string name="pref_auto_detect_summary">…nous vous demanderons toujours de confirmer/ignorer cette application</string>
-    <string name="pref_auto_detect">Détection automatique des nouvelles applications de musique</string>
     <string name="pref_logout">Se déconnecter</string>
     <string name="pref_confirm_logout">CONFIRMER LA DÉCONNEXION ? Appuyez à nouveau</string>
     <string name="pref_login">Se connecter</string>

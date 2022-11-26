@@ -276,7 +276,6 @@
     <string name="pref_enabled_apps_summary">ℹ️ Són compatibles les aplicacions que mostren metadades de música. Per a evitar scrobbles d\'Spotify duplicats, activa-ho només en un lloc.</string>
     <string name="pref_enabled_apps_title">Tria les aplicacions</string>
     <string name="pref_auto_detect_summary">Et preguntarem si vols confirmar o ignorar cada aplicació</string>
-    <string name="pref_auto_detect">Detecta automàticament les aplicacions de música</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuts</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentatge</string>
     <string name="pref_logout">Tanca la sessió</string>

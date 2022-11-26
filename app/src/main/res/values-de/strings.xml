@@ -290,7 +290,6 @@
     <string name="pref_enabled_apps_summary">ℹ️ Unterstützt Apps, die Musik-Metadaten anbieten. Um Mehrfachscrobbles von Spotify zu vermeiden, aktivieren Sie diese nur an einem Ort.</string>
     <string name="pref_enabled_apps_title">Apps auswählen</string>
     <string name="pref_auto_detect_summary">…wir werden Sie trotzdem bitten, diese App zu bestätigen/ignorieren</string>
-    <string name="pref_auto_detect">Automatisch neue Musik-Apps erkennen</string>
     <string name="pref_delay">Scrobble Verzögerung (je nachdem, was früher war)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuten</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Prozent</string>

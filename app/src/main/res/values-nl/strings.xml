@@ -294,7 +294,6 @@
     <string name="pref_enabled_apps_summary">ℹ️ Ondersteunt apps die muziek metadata onthullen. Om dubbele scrobbles van Spotify te voorkomen, schakel het alleen in op één plek.</string>
     <string name="pref_enabled_apps_title">Kies apps</string>
     <string name="pref_auto_detect_summary">…we zullen je nog steeds vragen om die app te bevestigen of te negeren</string>
-    <string name="pref_auto_detect">Detecteer nieuwe muziekachitge apps automatisch</string>
     <string name="pref_delay">Scrobble-vertraging (welke vroeger is)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuten</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>

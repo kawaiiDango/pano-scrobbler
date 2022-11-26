@@ -231,7 +231,6 @@
     <string name="pref_enabled_apps_summary">ℹ️ 支持能够提供音乐元数据的应用。为了避免出现重复的 Spotify 记录，请仅在一个地方进行启用。</string>
     <string name="pref_enabled_apps_title">选择应用</string>
     <string name="pref_auto_detect_summary">…我们仍将要求您确认是否选择该应用</string>
-    <string name="pref_auto_detect">自动检测音乐类应用</string>
     <string name="pref_delay">记录延迟（以较早者为准）</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分钟</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">百分比</string>

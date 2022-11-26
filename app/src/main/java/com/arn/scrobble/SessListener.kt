@@ -171,6 +171,7 @@ class SessListener(
 
         fun scrobble() {
             if (!prefs.scrobbleSpotifyRemote &&
+                !isRemotePlayback &&
                 trackInfo.packageName == Stuff.PACKAGE_SPOTIFY &&
                 !audioManager.isMusicActive
             )

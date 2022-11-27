@@ -267,6 +267,9 @@
     <string name="block">屏蔽</string>
     <string name="hidden_tags">隐藏标签</string>
     <string name="pin">钉选</string>
+    <string name="unpin">取消钉选</string>
+    <string name="pin_limit_reached" formatted="true">已达钉选上限（%1$d）</string>
+    <string name="pin_help">长按已钉选项目来重新排序</string>
     <string name="use_channel" comment="(Use youtube channel name)">使用频道名</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">您想启用 %1$s 这条编辑模板规则吗？</string>
     <string name="show_persistent_noti">显示一条常驻通知</string>
@@ -274,8 +277,16 @@
     <string name="persistent_noti_desc">长按以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
+    <string name="enable" comment="To enable the scrobbler">已启用</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">尺寸</string>
+    <string name="skip_missing_images">跳过缺失的图像</string>
+    <string name="create_collage">创建拼贴</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">图片标注</string>
+    <string name="username" comment="last.fm Username">用户名</string>
     <string name="pref_master">记录音乐</string>
     <string name="pref_master_qs_hint">也可通过快速设置开关触发</string>
+    <string name="pref_master_qs_add">添加快速设置开关</string>
+    <string name="pref_master_qs_already_addded">已经添加过快速设置开关</string>
     <string name="pref_noti_q">如果图标不显示，您可以手动提升通知优先级</string>
     <string name="pref_noti">通知</string>
     <string name="pref_noti_categories">通知类别</string>
@@ -286,6 +297,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ 支持能够提供音乐元数据的应用。为了避免出现重复的 Spotify 记录，请仅在一个地方进行启用。</string>
     <string name="pref_enabled_apps_title">选择应用</string>
     <string name="pref_auto_detect_summary">…我们仍将要求您确认是否选择该应用</string>
+    <string name="pref_auto_detect">为新应用自动开启记录</string>
+    <string name="pref_spotify_remote">记录其他设备上的 Spotify 播放</string>
     <string name="pref_delay">记录延迟（以较早者为准）</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分钟</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">百分比</string>
@@ -301,7 +314,9 @@
     <string name="pref_now_playing">提交当前播放的音乐</string>
     <string name="pref_fetch_aa">从 lastFM 获取专辑艺术家</string>
     <string name="pref_fetch_aa_desc">针对不提供此数据的播放器。获取的数据可能和实际标签不同。last.fm 可能没有某些歌曲的专辑艺术家数据。</string>
+    <string name="pref_locale">语言</string>
     <string name="pref_change_locale">更改语言</string>
+    <string name="pref_crashlytics_enabled">自动回报错误</string>
     <string name="pref_misc">杂项</string>
     <string name="pref_imexport">导入 &amp; 导出</string>
     <string name="pref_export">导出</string>
@@ -323,6 +338,12 @@
     <string name="pref_lastfm_disable">不向 lastFM 提交记录</string>
     <string name="pref_lastfm_disable_desc">您依然需要一个 lastFM 账户来保证应用中其它界面的正常工作</string>
     <string name="pref_translate">翻译本应用</string>
+    <string name="pref_translate_credits">翻译人员</string>
+    <string name="pref_oss_credits">开源许可</string>
+    <string name="pref_check_updates">检查更新</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">更新可用：%1$s</string>
+    <string name="download">下载</string>
+    <string name="changelog">更新日志</string>
     <string name="import_hey_wtf">此文件可能不是由 Pano Scrobbler 所导出</string>
     <string name="export_failed">导出失败</string>
     <string name="imported">已导入</string>
@@ -333,6 +354,7 @@
     <string name="import_lists_keep">合并但保留现有的编辑模板与屏蔽列表</string>
     <string name="import_settings">导入设置</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">广播 intents</string>
+    <string name="current_track">当前曲目：</string>
     <string name="pref_intents">可用于 Tasker 等应用的 Intents</string>
     <string name="copied">已复制！</string>
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
@@ -344,6 +366,7 @@
     <string name="no_browser">未安装浏览器</string>
     <string name="no_player">未安装音乐播放器</string>
     <string name="not_running">⚠ 您的系统终止了记录器运行</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">系统提供的终止原因：%s</string>
     <string name="not_running_fix_action">修复</string>
     <string name="login_submit">验证</string>
     <string name="acr_host" comment="Web hostname">主机</string>
@@ -369,6 +392,8 @@
     <string name="fix_it_startup_title">省电程序/启动管理器</string>
     <string name="fix_it_battery_title">禁用电池优化</string>
     <string name="fix_it_action" comment="(To open an app)">打开</string>
+    <string name="delete_account">删除您的账户</string>
+    <string name="delete_account_custom_servers">如果是自定义服务器，请查阅其对应的文档。</string>
     <!--  pro  -->
     <string name="get_pro">支持本应用</string>
     <string name="help">帮助</string>
@@ -386,5 +411,8 @@
 • 登录关联了购买记录的账户
 • 通过 Google Play 网页端直接安装应用
 "</string>
+    <string name="billing_block">屏蔽艺术家/曲目并自动跳过至下一曲或静音</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最多钉选 %1$d 位朋友并且支持手动排序</string>
     <string name="billing_sharing">分享时移除应用名称</string>
+    <string name="billing_scrobble_source">记住并查看提交记录的应用，并且可直接在这些应用中搜索</string>
 </resources>

@@ -48,6 +48,10 @@
         <item quantity="one">%1$s metadados bloqueados</item>
         <item quantity="other">%1$s metadados bloqueados</item>
     </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s amigo</item>
+        <item quantity="other">%1$s amigos</item>
+    </plurals>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="reset">Resetar</string>
@@ -57,6 +61,7 @@
     <string name="artist_image">Foto do artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar o título</string>
     <string name="network_error">Falha na rede</string>
+    <string name="disable_tls_verify">Ignorar erros de TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorado</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de salvar esta edição para futuros scrobbles em vez disso?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Faltam campos obrigatórios</string>
@@ -102,17 +107,24 @@
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share_this_song">Compartilhar esta música</string>
     <string name="share">Compartilhar</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Mudar tamanho da grade</string>
+    <string name="pinch_to_zoom">Pince para ampliar</string>
     <string name="more_info">Mais informações</string>
+    <string name="rank_change" comment="%1= delta change">Mudança de classificação: %s</string>
+    <string name="rank_change_no_change">Sem mudança</string>
     <string name="rank_change_new">Não há scrobbles no período anterior</string>
     <string name="search">Pesquisar</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Limpar todo o histórico</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Remover esse item do histórico?</string>
     <string name="library" comment="search within the library">Bibiloteca</string>
     <string name="global" comment="search globally across lastfm">Global</string>
+    <string name="reindex">Índice rápido</string>
+    <string name="full_index">Índice completo</string>
     <string name="take_long_time">Isso deve levar bastante tempo</string>
     <string name="full_index_desc">Use isso apenas se você tiver editado ou apagado scrobbles no site.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pesquisado o top %1$s em cada categoria.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Última indexação em %1$s.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opções para este item</string>
@@ -173,6 +185,7 @@
     <string name="saved_as_pending">Salvo como scrobble pendente</string>
     <string name="sort">Ordenar</string>
     <string name="past_scrobbles">Histórico de scrobbles</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto no tempo</string>
     <string name="my_scrobbles">Meus scrobbles</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de %1$s</string>
     <string name="listeners">Ouvintes</string>
@@ -183,6 +196,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles até %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">Não encontrado</string>
+    <string name="save" comment="saves a file">Salvar</string>
+    <string name="saved_to_gallery">Salvo na galeria</string>
     <string name="lastfm_reports">LastFM reports</string>
     <string name="weekly">Semanal</string>
     <string name="weeks">Semanas</string>
@@ -228,6 +243,7 @@
     <string name="dark">Escuro</string>
     <string name="system_colors">Cores do sistema</string>
     <string name="appwidget_alpha">Opacidade do fundo</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">O widget será atualizado a cada %1$s minutos</string>
     <string name="primary_color">Cor principal</string>
     <string name="secondary_color">Cor secundária</string>
     <string name="tint_background">Definir fundo</string>
@@ -269,6 +285,9 @@
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
     <string name="enable" comment="To enable the scrobbler">Ativar</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
+    <string name="skip_missing_images">Ignorar imagens ausentes</string>
+    <string name="create_collage">Criar colagem</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das configurações rápidas</string>
     <string name="pref_noti_q">Pode promover a notificação, caso o ícone não apareça</string>

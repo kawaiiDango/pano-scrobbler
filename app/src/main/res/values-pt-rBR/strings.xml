@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobble</item>
-        <item quantity="other">%1$s scrobbles</item>
+        <item quantity="one">%1$s rolagem</item>
+        <item quantity="other">%1$s rolagens</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s ouvinte</item>
         <item quantity="other">%1$s ouvintes</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s dia</item>
+        <item quantity="other">%1$s dias</item>
     </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s semana</item>
@@ -47,6 +51,10 @@
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s metadados bloqueados</item>
         <item quantity="other">%1$s metadados bloqueados</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minutos</item>
+        <item quantity="other">%1$d minutos</item>
     </plurals>
     <plurals name="num_friends">
         <item quantity="one">%1$s amigo</item>
@@ -288,8 +296,12 @@
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
     <string name="skip_missing_images">Ignorar imagens ausentes</string>
     <string name="create_collage">Criar colagem</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Legendas de imagem</string>
+    <string name="username" comment="last.fm Username">Nome de usuário</string>
     <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das configurações rápidas</string>
+    <string name="pref_master_qs_add">Adicionar o bloco de configurações rápidas</string>
+    <string name="pref_master_qs_already_addded">O bloco de configurações rápidas já existe</string>
     <string name="pref_noti_q">Pode promover a notificação, caso o ícone não apareça</string>
     <string name="pref_noti">Notificações</string>
     <string name="pref_noti_categories">Categorias de notificação</string>
@@ -300,6 +312,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ Suporta apps que revelam metadados de música. Para evitar scrobbles duplos do Spotify, ative-os apenas num lugar.</string>
     <string name="pref_enabled_apps_title">Escolher apps</string>
     <string name="pref_auto_detect_summary">…iremos pedir-lhe que confirme/ignore essa app</string>
+    <string name="pref_auto_detect">Rolagem automática de novos aplicativos</string>
+    <string name="pref_spotify_remote">Rolagem do Spotify tocando em outros dispositivos</string>
     <string name="pref_delay">Atraso de scrobble (o que for mais cedo)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutos</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentual</string>
@@ -344,6 +358,7 @@
     <string name="pref_check_updates">Buscar por atualizações</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Atualização disponível: %1$s</string>
     <string name="download">Download</string>
+    <string name="changelog">Mudanças</string>
     <string name="import_hey_wtf">Esse provavelmente não é um arquivo de exportação do Pano Scrobbler</string>
     <string name="export_failed">A exportação falhou</string>
     <string name="imported">Importado</string>
@@ -354,6 +369,7 @@
     <string name="import_lists_keep">Fundir, mantendo edições existentes e lista de bloqueio</string>
     <string name="import_settings">Importar configurações</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Propostas de difusão</string>
+    <string name="current_track">Faixa atual:</string>
     <string name="pref_intents">Intenções para o Tasker, etc</string>
     <string name="copied">Copiado!</string>
     <string name="lastfm_reauth">Precisa reautenticar-se para editar ou apagar scrobbles</string>
@@ -365,6 +381,7 @@
     <string name="no_browser">Nenhum browser instalado</string>
     <string name="no_player">Nenhum reprodutor de música instalado</string>
     <string name="not_running">⚠ O scrobbler foi terminado abruptamente pelo seu sistema</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo de morte dado pelo sistema: %s</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit">Verificar</string>
     <string name="acr_host" comment="Web hostname">Servidor</string>
@@ -390,6 +407,8 @@
     <string name="fix_it_startup_title">Economia de energia / gerentes de inicialização</string>
     <string name="fix_it_battery_title">Desativar otimização da bateria</string>
     <string name="fix_it_action" comment="(To open an app)">Abrir</string>
+    <string name="delete_account">Excluir sua conta</string>
+    <string name="delete_account_custom_servers">Para servidores personalizados, verifique suas respectivas documentações.</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar esta app</string>
     <string name="help">Ajuda</string>
@@ -407,5 +426,8 @@ As suas compras são geridas pelo Google Play. Elas estão vinculadas a uma cont
 • Inicie sessão com a conta que fez a compra.
 • Instale este aplicativo diretamente a partir da página da web do Google Play.
 "</string>
+    <string name="billing_block">Bloquear artistas/faixas e pular ou silenciar automaticamente</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fixar até %1$d amigos e reordená-los</string>
     <string name="billing_sharing">Remover nome da app ao partilhar</string>
+    <string name="billing_scrobble_source">Lembrar e ver aplicativos dos quais você rolou e pesquisar diretamente neles</string>
 </resources>

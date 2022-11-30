@@ -40,7 +40,8 @@ class InfoAdapter(
     private val viewModel: InfoVM,
     private val activityViewModel: MainNotifierViewModel,
     private val fragment: BottomSheetDialogFragment,
-    private val pkgName: String?
+    private val pkgName: String?,
+    private val disableFragmentNavigation: Boolean,
 ) : RecyclerView.Adapter<InfoAdapter.VHInfo>() {
 
     init {
@@ -164,7 +165,10 @@ class InfoAdapter(
             }
         }
 
-        fun setItemData(pair: Map.Entry<String, MusicEntry>, activityViewModel: MainNotifierViewModel) {
+        fun setItemData(
+            pair: Map.Entry<String, MusicEntry>,
+            activityViewModel: MainNotifierViewModel
+        ) {
             val (key, entry) = pair
             val entryBundle = entry.toBundle()
             var imgData: Any? = null
@@ -193,27 +197,36 @@ class InfoAdapter(
                                 binding.infoHeart.visibility = View.VISIBLE
                                 binding.infoHeart.setOnClickListener {
                                     itemView.context.toast(
-                                        itemView.context.getString(R.string.user_loved, activityViewModel.currentUser.name)
+                                        itemView.context.getString(
+                                            R.string.user_loved,
+                                            activityViewModel.currentUser.name
+                                        )
                                     )
                                 }
                             }
                         }
                     }
 
-                    binding.infoExtra.text = itemView.context.getString(R.string.similar)
-                    binding.infoExtra.setOnClickListener {
-                        InfoExtraFragment()
-                            .apply { arguments = entryBundle }
-                            .show(fragment.parentFragmentManager, null)
+                    if (!disableFragmentNavigation) {
+                        binding.infoExtra.visibility = View.VISIBLE
+                        binding.infoExtra.text = itemView.context.getString(R.string.similar)
+                        binding.infoExtra.setOnClickListener {
+                            InfoExtraFragment()
+                                .apply { arguments = entryBundle }
+                                .show(fragment.parentFragmentManager, null)
+                        }
+                    } else {
+                        binding.infoExtra.visibility = View.GONE
                     }
                 }
+
                 NLService.B_ALBUM -> {
                     binding.infoType.setImageResource(R.drawable.vd_album)
                     binding.infoType.contentDescription = itemView.context.getString(R.string.album)
 
                     val tracks = (entry as Album).tracks?.toList()
 
-                    if (!tracks.isNullOrEmpty()) {
+                    if (!tracks.isNullOrEmpty() && !disableFragmentNavigation) {
                         var totalDuration = 0
                         var plus = ""
                         tracks.forEach {
@@ -253,6 +266,7 @@ class InfoAdapter(
                         itemView.context.getString(R.string.album_art)
 
                 }
+
                 NLService.B_ARTIST, NLService.B_ALBUM_ARTIST -> {
                     when (key) {
                         NLService.B_ARTIST -> {
@@ -260,6 +274,7 @@ class InfoAdapter(
                             binding.infoType.contentDescription =
                                 itemView.context.getString(R.string.artist)
                         }
+
                         NLService.B_ALBUM_ARTIST -> {
                             binding.infoType.setImageResource(R.drawable.vd_album_artist)
                             binding.infoType.contentDescription =
@@ -274,11 +289,16 @@ class InfoAdapter(
 
                     imgData = entry
 
-                    binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
-                    binding.infoExtra.setOnClickListener {
-                        InfoExtraFragment()
-                            .apply { arguments = entryBundle }
-                            .show(fragment.parentFragmentManager, null)
+                    if (!disableFragmentNavigation) {
+                        binding.infoExtra.visibility = View.VISIBLE
+                        binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
+                        binding.infoExtra.setOnClickListener {
+                            InfoExtraFragment()
+                                .apply { arguments = entryBundle }
+                                .show(fragment.parentFragmentManager, null)
+                        }
+                    } else {
+                        binding.infoExtra.visibility = View.GONE
                     }
                 }
             }
@@ -335,7 +355,10 @@ class InfoAdapter(
 
             if (!activityViewModel.userIsSelf)
                 binding.infoUserScrobblesLabel.text =
-                    itemView.context.getString(R.string.user_scrobbles, activityViewModel.currentUser.name)
+                    itemView.context.getString(
+                        R.string.user_scrobbles,
+                        activityViewModel.currentUser.name
+                    )
             binding.infoUserScrobbles.text =
                 NumberFormat.getInstance().format(entry.userPlaycount)
             binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
@@ -352,8 +375,8 @@ class InfoAdapter(
 
                 binding.infoUserScrobblesContainer.setOnClickListener {
 
-                    when (entry) {
-                        is Track -> {
+                    when {
+                        entry is Track && !disableFragmentNavigation -> {
                             (fragment.activity as? MainActivity)?.enableGestures()
                             fragment.parentFragmentManager
                                 .beginTransaction()
@@ -368,8 +391,8 @@ class InfoAdapter(
                                 .commit()
                             fragment.parentFragmentManager.dismissAllDialogFragments()
                         }
-                        is Album,
-                        is Artist -> {
+
+                        else -> {
                             val _username = activityViewModel.currentUser.name
                             val libraryUrl =
                                 entry.url.replace("/music/", "/user/$_username/library/music/")

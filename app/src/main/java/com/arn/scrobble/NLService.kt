@@ -43,6 +43,8 @@ import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.ScrobblableEnum
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils.toast
 import de.umass.lastfm.Track
@@ -472,8 +474,12 @@ class NLService : NotificationListenerService() {
             )
         }
 
-        i = Intent(applicationContext, MainActivity::class.java)
-            .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_RECENTS)
+        i = Intent(applicationContext, MainDialogActivity::class.java)
+            .putExtra(B_ARTIST, trackInfo.artist)
+            .putExtra(B_ALBUM, trackInfo.album)
+            .putExtra(B_TRACK, trackInfo.title)
+            .putSingle(Scrobblables.byType(ScrobblableEnum.LASTFM)!!.user)
+            .putExtra(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, true)
         val launchIntent = PendingIntent.getActivity(
             applicationContext, 8, i,
             Stuff.updateCurrentOrImmutable

@@ -12,6 +12,7 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.edits.BlockedMetadataAddDialogFragment
 import com.arn.scrobble.edits.EditDialogFragment
+import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.themes.ColorPatchUtils
 
 class MainDialogActivity : AppCompatActivity() {
@@ -30,6 +31,10 @@ class MainDialogActivity : AppCompatActivity() {
             intent.getSingle<TimePeriod>() != null -> {
                 activityViewModel.pushUser(intent.getSingle()!!)
                 CollageGeneratorFragment()
+            }
+            intent.getBooleanExtra(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, false) -> {
+                activityViewModel.pushUser(intent.getSingle()!!)
+                InfoFragment()
             }
             else -> {
                 EditDialogFragment()

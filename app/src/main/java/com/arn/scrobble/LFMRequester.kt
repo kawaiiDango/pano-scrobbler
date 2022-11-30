@@ -1865,7 +1865,10 @@ class LFMRequester(
                 lastNpInfoCount = 0
             }
             val track = try {
-                Track.getInfo(artist, title, null, lastfmUsername, null, Stuff.LAST_KEY)
+                if (Stuff.FETCH_TRACK_INFO)
+                    Track.getInfo(artist, title, null, lastfmUsername, null, Stuff.LAST_KEY)
+                else
+                    null
             } catch (e: Exception) {
                 null
             }

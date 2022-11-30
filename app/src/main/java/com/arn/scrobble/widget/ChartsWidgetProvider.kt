@@ -8,7 +8,7 @@ import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.widget.RemoteViewsCompat
-import com.arn.scrobble.MainActivity
+import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -133,7 +133,8 @@ internal fun updateAppWidget(
     // cannot setup their own pending intents, instead, the collection as a whole can
     // setup a pending intent template, and the individual items can set a fillInIntent
     // to create unique before on an item to item basis.
-    val infoIntent = Intent(context, MainActivity::class.java)
+    val infoIntent = Intent(context, MainDialogActivity::class.java)
+
     val infoPendingIntent = PendingIntent.getActivity(
         context, 0, infoIntent,
         Stuff.updateCurrentOrMutable

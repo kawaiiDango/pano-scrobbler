@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 class MusicEntryImageInterceptor : Interceptor {
 
     private var nwReqCount = 0
-    private val delayMs = 50L
+    private val delayMs = 150L
     private val musicEntryCache by lazy { LruCache<String, Optional<MusicEntry>>(500) }
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {

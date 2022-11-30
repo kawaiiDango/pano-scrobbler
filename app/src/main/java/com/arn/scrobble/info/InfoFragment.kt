@@ -39,7 +39,13 @@ class InfoFragment : BottomSheetDialogFragment() {
         val username = activityViewModel.currentUser.name
         val pkgName = arguments!!.getString(Stuff.ARG_PKG)
 
-        val adapter = InfoAdapter(viewModel, activityViewModel, this, pkgName)
+        val adapter = InfoAdapter(
+            viewModel,
+            activityViewModel,
+            this,
+            pkgName,
+            arguments?.getBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, false) ?: false
+        )
         binding.infoList.layoutManager = LinearLayoutManager(context!!)
         binding.infoList.itemAnimator = null
 

@@ -184,6 +184,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
+            app:isPreferenceVisible="false"
             android:key="fetch_album_artist"
             android:persistent="true"
             android:title="@string/pref_fetch_aa"

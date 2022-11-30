@@ -82,6 +82,7 @@ object Stuff {
     const val ARG_PKG = "pkg"
     const val ARG_ACTION = "action"
     const val ARG_TLS_NO_VERIFY = "tls_no_verify"
+    const val ARG_DISABLE_FRAGMENT_NAVIGATION = "disable_fragment_navigation"
     const val ARG_ALLOWED_PACKAGES = MainPrefs.PREF_ALLOWED_PACKAGES
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
@@ -115,6 +116,7 @@ object Stuff {
 
     const val EXTRA_PINNED = "pinned"
     val DEMO_MODE = BuildConfig.DEBUG && false
+    const val FETCH_TRACK_INFO = false
 
     val SERVICE_BIT_POS = mapOf(
         R.string.lastfm to 0,
@@ -131,7 +133,7 @@ object Stuff {
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val OFFLINE_SCROBBLE_JOB_DELAY = 20 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
-    const val CHARTS_WIDGET_REFRESH_INTERVAL = 30 * 60 * 1000L
+    const val CHARTS_WIDGET_REFRESH_INTERVAL = 60 * 60 * 1000L
     const val LASTFM_JAVA_CACHE_SIZE = 30 * 1024 * 1024
     const val TRACK_INFO_VALIDITY = 5 * 1000L
     const val TRACK_INFO_WINDOW = 60 * 1000L

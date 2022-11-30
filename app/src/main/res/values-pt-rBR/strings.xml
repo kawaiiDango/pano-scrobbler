@@ -95,7 +95,7 @@
     <string name="state_unrecognised_artist">Artista não reconhecido</string>
     <string name="tap_to_edit">(Toque para editar)</string>
     <string name="recently_scrobbled">Scrobbles recentes</string>
-    <string name="recently_loved">♥ Faixas favoritadas recentes</string>
+    <string name="recently_loved">♥ Favoritadas recentemente</string>
     <string name="recents" comment="Short for recently scrobbled">Recentes</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primeiro scrobble em %1$s</string>
     <string name="auto" comment="automatic or default setting">Automático</string>

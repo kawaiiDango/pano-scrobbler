@@ -18,7 +18,12 @@ import de.umass.lastfm.Result
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.xml.sax.SAXException
 import timber.log.Timber
 
@@ -66,31 +71,33 @@ class PendingScrJob : JobService() {
         private suspend fun run(): Boolean {
             var done = submitLoves()
 
-            var scrobbles = dao.allEmptyAlbumORAlbumArtist(1000)
-            var count = scrobbles.size
-            if (!prefs.fetchAlbumArtist)
-                scrobbles = scrobbles.filter { it.album == "" }
-            scrobbles.forEach {
-                try {
-                    progressCb?.invoke(context.getString(R.string.pending_n_remaining, count--))
-                    val track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
-                    if (track != null) {
-                        if (it.album == "" && !track.album.isNullOrEmpty()) {
-                            it.album = track.album
-                            if (!track.albumArtist.isNullOrEmpty())
+            if (Stuff.FETCH_TRACK_INFO) {
+                var scrobbles = dao.allEmptyAlbumORAlbumArtist(1000)
+                var count = scrobbles.size
+                if (!prefs.fetchAlbumArtist)
+                    scrobbles = scrobbles.filter { it.album == "" }
+                scrobbles.forEach {
+                    try {
+                        progressCb?.invoke(context.getString(R.string.pending_n_remaining, count--))
+                        val track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
+                        if (track != null) {
+                            if (it.album == "" && !track.album.isNullOrEmpty()) {
+                                it.album = track.album
+                                if (!track.albumArtist.isNullOrEmpty())
+                                    it.albumArtist = track.albumArtist
+                            } else if (!track.albumArtist.isNullOrEmpty() &&
+                                prefs.fetchAlbumArtist &&
+                                it.album.equals(track.album, ignoreCase = true) &&
+                                (it.albumArtist == "" || it.artist == it.albumArtist)
+                            )
                                 it.albumArtist = track.albumArtist
-                        } else if (!track.albumArtist.isNullOrEmpty() &&
-                            prefs.fetchAlbumArtist &&
-                            it.album.equals(track.album, ignoreCase = true) &&
-                            (it.albumArtist == "" || it.artist == it.albumArtist)
-                        )
-                            it.albumArtist = track.albumArtist
-                        it.autoCorrected = 1
-                        dao.update(it)
+                            it.autoCorrected = 1
+                            dao.update(it)
+                        }
+                    } catch (e: Exception) {
                     }
-                } catch (e: Exception) {
+                    delay(DELAY)
                 }
-                delay(DELAY)
             }
 
             while (dao.count > 0) {

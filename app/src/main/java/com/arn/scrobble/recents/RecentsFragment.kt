@@ -238,11 +238,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         adapter.focusChangeListener = focusChangeListener
         adapter.setHeroListener = this
 
-        if (coordinatorBinding.sparkline.adapter == null) { // not inited
-            coordinatorBinding.sparkline.sparkAnimator = MorphSparkAnimator()
-            coordinatorBinding.sparkline.adapter = SparkLineAdapter()
-            sparklineGroup.forEach { it.visibility = View.VISIBLE }
-        }
+//        if (coordinatorBinding.sparkline.adapter == null) { // not inited
+//            coordinatorBinding.sparkline.sparkAnimator = MorphSparkAnimator()
+//            coordinatorBinding.sparkline.adapter = SparkLineAdapter()
+//            sparklineGroup.forEach { it.visibility = View.VISIBLE }
+//        }
         viewModel.tracksReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
             synchronized(viewModel.tracks) {
@@ -278,10 +278,10 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 }
             }
 
-        viewModel.listenerTrendReceiver.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            setGraph(it)
-        }
+//        viewModel.listenerTrendReceiver.observe(viewLifecycleOwner) {
+//            it ?: return@observe
+//            setGraph(it)
+//        }
 
         if (!isShowingLoves && username == null)
             viewModel.loadPending(2, !activity.pendingSubmitAttempted)
@@ -490,15 +490,15 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 }
             }
 
-            sparklineGroup.forEach {
-                val textView = it as? TextView ?: return@forEach
-                animSetList += ObjectAnimator.ofArgb(
-                    textView,
-                    "textColor",
-                    tintFrom,
-                    colors.foreground
-                )
-            }
+//            sparklineGroup.forEach {
+//                val textView = it as? TextView ?: return@forEach
+//                animSetList += ObjectAnimator.ofArgb(
+//                    textView,
+//                    "textColor",
+//                    tintFrom,
+//                    colors.foreground
+//                )
+//            }
 
             animSetList += ObjectAnimator.ofArgb(
                 coordinatorBinding.sparkline,
@@ -626,11 +626,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
         else
             track.getWebpImageURL(ImageSize.LARGE)
 
-        if (!fullSize &&
-            (oldTrack?.artist != track.artist || oldTrack?.album != track.album || oldTrack?.name != track.name)
-        ) {
-            viewModel.loadListenerTrend(track.url)
-        }
+//        if (!fullSize &&
+//            (oldTrack?.artist != track.artist || oldTrack?.album != track.album || oldTrack?.name != track.name)
+//        ) {
+//            viewModel.loadListenerTrend(track.url)
+//        }
 
         if (!imgUrl.isNullOrEmpty() && imgUrl == oldTrack?.getWebpImageURL(ImageSize.LARGE)) {
             return

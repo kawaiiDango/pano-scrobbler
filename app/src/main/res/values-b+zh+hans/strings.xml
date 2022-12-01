@@ -6,6 +6,9 @@
     <plurals name="num_listeners">
         <item quantity="other">%1$s 位听众</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="other">%1$s 天</item>
+    </plurals>
     <plurals name="num_weeks">
         <item quantity="other">%1$s 周</item>
     </plurals>
@@ -36,14 +39,23 @@
     <plurals name="num_blocked_metadata">
         <item quantity="other">%1$s 则已屏蔽的元数据条目</item>
     </plurals>
+    <plurals name="num_minutes">
+        <item quantity="other">%1$d 分钟</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="other">%1$s 位好友</item>
+    </plurals>
     <string name="yes">确定</string>
     <string name="no">取消</string>
     <string name="reset">重置</string>
     <string name="settings">设置</string>
     <string name="bug_report">Bug 报告</string>
     <string name="album_art">专辑封面</string>
+    <string name="artist_image">艺术家图像</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">无法解析标题</string>
     <string name="network_error">网络异常</string>
+    <string name="disable_tls_verify">忽略 TLS 错误</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">已忽略记录</string>
     <string name="scrobble_ignored_save_edit">可能由于本次记录太过陈旧，Last.fm忽略了此次编辑。你想保存此次编辑，以便可以为未来的歌曲记录所用吗？</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必填字段不能为空</string>
     <string name="artist">艺术家</string>
@@ -82,13 +94,30 @@
     <string name="offline">已离线。所展示的数据并不是最新的。</string>
     <string name="unavailable_offline">离线时不可用</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">服务</string>
+    <string name="others">其他</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">我最近在听 \n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s 最近在听 \n%1$s %2$s</string>
     <string name="share_sig">（发送自 Pano Scrobbler）</string>
     <string name="share_this_song">分享这首歌曲</string>
     <string name="share">分享</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">图注</string>
+    <string name="grid_size">更改网格尺寸</string>
+    <string name="pinch_to_zoom">双指缩放</string>
     <string name="more_info">更多信息</string>
+    <string name="rank_change" comment="%1= delta change">更改排序：%s</string>
+    <string name="rank_change_no_change">没有更改</string>
+    <string name="rank_change_new">未在上一周期内进行记录</string>
     <string name="search">搜索</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">清除所有历史</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">从历史中移除该项目？</string>
+    <string name="library" comment="search within the library">媒体库</string>
+    <string name="global" comment="search globally across lastfm">全局</string>
+    <string name="reindex">快速索引</string>
+    <string name="full_index">完整索引</string>
+    <string name="take_long_time">可能会花很长时间</string>
+    <string name="full_index_desc">仅在您从网站编辑或删除过记录条目时使用该选项。</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">在每个类别下搜索前 %1$s 个项目。</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">上次检索时间为 %1$s。</string>
     <string name="profile">主页</string>
     <string name="profile_pic">用户图片</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">该项目的选项</string>
@@ -115,6 +144,15 @@
     <string name="allow_background">允许后台抓取记录</string>
     <string name="grant_notification_access">授予通知访问权限</string>
     <string name="grant_notification_access_desc">借此获取音乐元数据信息，不会读取非音乐类通知</string>
+    <string name="send_notifications">允许通知</string>
+    <string name="notification_channel_blocked">需要开启通知权限</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- 检查记录状态和计数
+- 从通知中直接收藏或屏蔽记录
+- 记录出错或需要执行操作时收到提醒
+- 获取每周热门记录报告
+- 以及更多
+- 通知不会发出声音\"\""</string>
+    <string name="will_not_scrobble">跳过该步骤将禁用记录</string>
     <string name="authenticate_with_lastfm_desc">之后可以在设置中通过 LibreFM, GNUFM 和 Listenbrainz 进行验证 </string>
     <string name="swap" comment="(Swap title and artist)">切换</string>
     <string name="rate_msg">喜欢这个应用吗？</string>
@@ -140,6 +178,7 @@
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
     <string name="past_scrobbles">过去的音乐记录</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">时间定跳转</string>
     <string name="my_scrobbles">我的收听记录</string>
     <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s 的音乐记录</string>
     <string name="listeners">听众</string>
@@ -150,8 +189,14 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">截至 %1$s 的音乐记录</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">来自 %1$s</string>
     <string name="not_found" comment="Shown in search">找不到结果</string>
+    <string name="save" comment="saves a file">保存</string>
+    <string name="saved_to_gallery">已保存至媒体库</string>
+    <string name="lastfm_reports">LastFM 报告</string>
     <string name="weekly">每周</string>
+    <string name="weeks">周</string>
     <string name="monthly">每月</string>
+    <string name="months">月</string>
+    <string name="years">年</string>
     <string name="charts_overall">总览</string>
     <string name="charts_no_data">此期间没有数据</string>
     <string name="charts_custom" comment="Custom date range, but in short">自定义</string>
@@ -163,6 +208,7 @@
     <string name="random_not_found">未找到曲目</string>
     <string name="loved_track">喜爱的曲目</string>
     <string name="randomize">随机</string>
+    <string name="random_text">随机</string>
     <string name="graph_daily">每日记录计数</string>
     <string name="graph_weekly">每周记录计数</string>
     <string name="graph_monthly">每月记录计数</string>
@@ -188,7 +234,9 @@
     <string name="appwidget_show">显示</string>
     <string name="light">浅色</string>
     <string name="dark">深色</string>
+    <string name="system_colors">系统颜色</string>
     <string name="appwidget_alpha">背景不透明度</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">小组件将每 %1$s 刷新一次</string>
     <string name="primary_color">主要颜色</string>
     <string name="secondary_color">次要颜色</string>
     <string name="tint_background">背景色调</string>
@@ -196,6 +244,7 @@
     <string name="edit_name" comment="name for regex pattern">友善的昵称 (可选)</string>
     <string name="edit_regex">正则表达式模板</string>
     <string name="edit_regex_replacement">正则表达式替换</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">输入框</string>
     <string name="edit_replace">替换</string>
     <string name="edit_first" comment="First occurrence of a pattern">第一项</string>
     <string name="edit_all" comment="All occurrences of a pattern">全部</string>
@@ -211,7 +260,16 @@
     <string name="text" comment="text to test regex rules with">文本</string>
     <string name="edit_regex_warning">⚠ 请确保您在使用前了解 <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> 或直接从提供的 <b>预设</b> 中选择一个。正则表达式将从上往下逐一尝试匹配</string>
     <string name="blocked_metadata_info">ℹ️ 填写多个字段时将自动插入 AND 运算符</string>
+    <string name="blocked_metadata_noti">点击以屏蔽并跳过</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">播放器操作</string>
+    <string name="skip" comment="skip to next track">跳过</string>
+    <string name="mute">静音</string>
     <string name="block">屏蔽</string>
+    <string name="hidden_tags">隐藏标签</string>
+    <string name="pin">钉选</string>
+    <string name="unpin">取消钉选</string>
+    <string name="pin_limit_reached" formatted="true">已达钉选上限（%1$d）</string>
+    <string name="pin_help">长按已钉选项目来重新排序</string>
     <string name="use_channel" comment="(Use youtube channel name)">使用频道名</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">您想启用 %1$s 这条编辑模板规则吗？</string>
     <string name="show_persistent_noti">显示一条常驻通知</string>
@@ -219,8 +277,16 @@
     <string name="persistent_noti_desc">长按以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
+    <string name="enable" comment="To enable the scrobbler">已启用</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">尺寸</string>
+    <string name="skip_missing_images">跳过缺失的图像</string>
+    <string name="create_collage">创建拼贴</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">图片标注</string>
+    <string name="username" comment="last.fm Username">用户名</string>
     <string name="pref_master">记录音乐</string>
     <string name="pref_master_qs_hint">也可通过快速设置开关触发</string>
+    <string name="pref_master_qs_add">添加快速设置开关</string>
+    <string name="pref_master_qs_already_addded">已经添加过快速设置开关</string>
     <string name="pref_noti_q">如果图标不显示，您可以手动提升通知优先级</string>
     <string name="pref_noti">通知</string>
     <string name="pref_noti_categories">通知类别</string>
@@ -231,6 +297,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ 支持能够提供音乐元数据的应用。为了避免出现重复的 Spotify 记录，请仅在一个地方进行启用。</string>
     <string name="pref_enabled_apps_title">选择应用</string>
     <string name="pref_auto_detect_summary">…我们仍将要求您确认是否选择该应用</string>
+    <string name="pref_auto_detect">为新应用自动开启记录</string>
+    <string name="pref_spotify_remote">记录其他设备上的 Spotify 播放</string>
     <string name="pref_delay">记录延迟（以较早者为准）</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分钟</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">百分比</string>
@@ -246,7 +314,9 @@
     <string name="pref_now_playing">提交当前播放的音乐</string>
     <string name="pref_fetch_aa">从 lastFM 获取专辑艺术家</string>
     <string name="pref_fetch_aa_desc">针对不提供此数据的播放器。获取的数据可能和实际标签不同。last.fm 可能没有某些歌曲的专辑艺术家数据。</string>
+    <string name="pref_locale">语言</string>
     <string name="pref_change_locale">更改语言</string>
+    <string name="pref_crashlytics_enabled">自动回报错误</string>
     <string name="pref_misc">杂项</string>
     <string name="pref_imexport">导入 &amp; 导出</string>
     <string name="pref_export">导出</string>
@@ -268,6 +338,12 @@
     <string name="pref_lastfm_disable">不向 lastFM 提交记录</string>
     <string name="pref_lastfm_disable_desc">您依然需要一个 lastFM 账户来保证应用中其它界面的正常工作</string>
     <string name="pref_translate">翻译本应用</string>
+    <string name="pref_translate_credits">翻译人员</string>
+    <string name="pref_oss_credits">开源许可</string>
+    <string name="pref_check_updates">检查更新</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">更新可用：%1$s</string>
+    <string name="download">下载</string>
+    <string name="changelog">更新日志</string>
     <string name="import_hey_wtf">此文件可能不是由 Pano Scrobbler 所导出</string>
     <string name="export_failed">导出失败</string>
     <string name="imported">已导入</string>
@@ -278,6 +354,7 @@
     <string name="import_lists_keep">合并但保留现有的编辑模板与屏蔽列表</string>
     <string name="import_settings">导入设置</string>
     <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">广播 intents</string>
+    <string name="current_track">当前曲目：</string>
     <string name="pref_intents">可用于 Tasker 等应用的 Intents</string>
     <string name="copied">已复制！</string>
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
@@ -289,6 +366,7 @@
     <string name="no_browser">未安装浏览器</string>
     <string name="no_player">未安装音乐播放器</string>
     <string name="not_running">⚠ 您的系统终止了记录器运行</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">系统提供的终止原因：%s</string>
     <string name="not_running_fix_action">修复</string>
     <string name="login_submit">验证</string>
     <string name="acr_host" comment="Web hostname">主机</string>
@@ -314,6 +392,8 @@
     <string name="fix_it_startup_title">省电程序/启动管理器</string>
     <string name="fix_it_battery_title">禁用电池优化</string>
     <string name="fix_it_action" comment="(To open an app)">打开</string>
+    <string name="delete_account">删除您的账户</string>
+    <string name="delete_account_custom_servers">如果是自定义服务器，请查阅其对应的文档。</string>
     <!--  pro  -->
     <string name="get_pro">支持本应用</string>
     <string name="help">帮助</string>
@@ -331,5 +411,8 @@
 • 登录关联了购买记录的账户
 • 通过 Google Play 网页端直接安装应用
 "</string>
+    <string name="billing_block">屏蔽艺术家/曲目并自动跳过至下一曲或静音</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最多钉选 %1$d 位朋友并且支持手动排序</string>
     <string name="billing_sharing">分享时移除应用名称</string>
+    <string name="billing_scrobble_source">记住并查看提交记录的应用，并且可直接在这些应用中搜索</string>
 </resources>

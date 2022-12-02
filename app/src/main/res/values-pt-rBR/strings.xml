@@ -150,12 +150,12 @@
     <string name="delete">Excluir</string>
     <string name="love">Favoritar</string>
     <string name="unlove">Retirar das favoritas</string>
-    <string name="pending_scrobbles">Saques pendentes</string>
+    <string name="pending_scrobbles">Scrobbles pendentes</string>
     <string name="pending_scrobble">Saque pendente</string>
-    <string name="pending_scrobbles_noti">Processando saques pendentes</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s saques • %2$s hoje</string>
+    <string name="pending_scrobbles_noti">Processando scrobbles pendentes</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s hoje</string>
     <string name="friends">Amigos</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s saques, desde %2$s</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
     <string name="allow_background">Permitir scrobbling em segundo plano</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para recuperar metadados da música. Nenhum outro tipo notificação é lida</string>

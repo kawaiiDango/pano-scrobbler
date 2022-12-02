@@ -233,13 +233,13 @@
     <string name="corrected" comment="Corrected metadata after editing">Corrigido</string>
     <string name="tag" comment="last.fm tag">Marcação</string>
     <string name="taggers" comment="(number of) people who have tagged">Marcador</string>
-    <string name="taggings" comment="(total count of) a particular tag">Criação de tags</string>
+    <string name="taggings" comment="(total count of) a particular tag">Criação de etiquetas</string>
     <string name="digest_weekly">Meus principais saques da semana passada</string>
     <string name="digest_monthly">Meus principais saques do mês passado</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Principais saques da %1$s</string>
-    <string name="my_tags">Meus marcadores</string>
+    <string name="my_tags">Minhas etiquetas</string>
     <string name="close">Fechar</string>
-    <string name="user_tags_hint">Novo marcador</string>
+    <string name="user_tags_hint">Nova etiqueta</string>
     <string name="user_tags_empty">Não adicionou nenhuma etiqueta</string>
     <string name="info_long_press_hint">Pressione e segure em uma faixa para abrir isto</string>
     <string name="appwidget_loading">Carregando…</string>
@@ -280,13 +280,13 @@
     <string name="skip" comment="skip to next track">Pular</string>
     <string name="mute">Silenciar</string>
     <string name="block">Bloquear</string>
-    <string name="hidden_tags">Tags ocultas</string>
+    <string name="hidden_tags">Etiquetas ocultas</string>
     <string name="pin">Fixar</string>
     <string name="unpin">Desafixar</string>
-    <string name="pin_limit_reached" formatted="true">Limite de fixados atingido (%1$d)</string>
-    <string name="pin_help">Mantenha pressionado os itens fixados para reordená-los</string>
+    <string name="pin_limit_reached" formatted="true">Limite de fixagens atingido (%1$d)</string>
+    <string name="pin_help">Pressione e segure os itens fixados para reordená-los</string>
     <string name="use_channel" comment="(Use youtube channel name)">Usar nome do canal</string>
-    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Gostaria de habilitar a regra de edição do padrão: %1$s?</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Gostaria de habilitar a regra de edição de padrão: %1$s?</string>
     <string name="show_persistent_noti">Exibir uma notificação persistente</string>
     <string name="fix_it_desc">Estes podem ajudar a manter o saqueador rodando em segundo plano em alguns dispositivos</string>
     <string name="persistent_noti_desc">Pressione e segure para ocultar isso</string>
@@ -302,7 +302,7 @@
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das configurações rápidas</string>
     <string name="pref_master_qs_add">Adicionar o bloco de configurações rápidas</string>
     <string name="pref_master_qs_already_addded">O bloco de configurações rápidas já existe</string>
-    <string name="pref_noti_q">Pode promover a notificação, caso o ícone não apareça</string>
+    <string name="pref_noti_q">Você pode promover a notificação, caso o ícone não apareça</string>
     <string name="pref_noti">Notificações</string>
     <string name="pref_noti_categories">Categorias de notificação</string>
     <string name="pref_scrobble_noti">Notificações de saques</string>
@@ -310,8 +310,8 @@
     <string name="pref_offline_info">ℹ️ Saques sem rede &amp; faixas favoritadas serão salvas, e enviadas posteriormente.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Saquear a partir de</string>
     <string name="pref_enabled_apps_summary">ℹ️ Suporta aplicativos que revelam metadados de música. Para evitar saques duplos do Spotify, ative-os apenas em um lugar.</string>
-    <string name="pref_enabled_apps_title">Escolher apps</string>
-    <string name="pref_auto_detect_summary">…iremos pedir-lhe que confirme/ignore essa app</string>
+    <string name="pref_enabled_apps_title">Escolher aplicativos</string>
+    <string name="pref_auto_detect_summary">…iremos pedir-lhe que confirme/ignore esse aplicativo</string>
     <string name="pref_auto_detect">Saqueamento automático de novos aplicativos</string>
     <string name="pref_spotify_remote">Saqueamento do Spotify tocando em outros dispositivos</string>
     <string name="pref_delay">Atraso de saque (o que for mais cedo)</string>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s saque</item>
-        <item quantity="other">%1$s saques</item>
+        <item quantity="one">%1$s scrobble</item>
+        <item quantity="other">%1$s scrobbles</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s ouvinte</item>
@@ -70,8 +70,8 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível ler o título</string>
     <string name="network_error">Falha na rede</string>
     <string name="disable_tls_verify">Ignorar erros de TLS</string>
-    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Saque ignorado</string>
-    <string name="scrobble_ignored_save_edit">LastFM provavelmente ignorou a edição pelo saque ser antigo demais. Ao invés disso, você gostaria de salvar essa edição para saques futuros?</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorado</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de salvar esta edição para futuros scrobbles em vez disso?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Faltam campos obrigatórios</string>
     <string name="artist">Artista</string>
     <string name="artists">Artistas</string>
@@ -82,32 +82,32 @@
     <string name="album_optional">Álbum (opcional)</string>
     <string name="album">Álbum</string>
     <string name="albums">Álbuns</string>
-    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Álbuns mais escutados</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Principais álbuns</string>
     <string name="track">Faixa</string>
     <string name="tracks">Faixas</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Principais faixas</string>
     <string name="similar_tracks">Faixas semelhantes</string>
-    <string name="similar" comment="Similar tracks but in short">Parecidas</string>
-    <string name="state_scrobbling">Scrobbling agora…</string>
-    <string name="state_scrobbled">Saqueado</string>
-    <string name="unscrobble">Desfazer saque</string>
-    <string name="state_unscrobbled">Saque desfeito</string>
+    <string name="similar" comment="Similar tracks but in short">Semelhantes</string>
+    <string name="state_scrobbling">Fazendo scrobble agora…</string>
+    <string name="state_scrobbled">Scrobble feito</string>
+    <string name="unscrobble">Apagar scrobble</string>
+    <string name="state_unscrobbled">Scrobble apagado</string>
     <string name="state_unrecognised_artist">Artista não reconhecido</string>
     <string name="tap_to_edit">(Toque para editar)</string>
-    <string name="recently_scrobbled">Saques recentes</string>
+    <string name="recently_scrobbled">Scrobbles recentes</string>
     <string name="recently_loved">♥ Favoritadas recentemente</string>
     <string name="recents" comment="Short for recently scrobbled">Recentes</string>
-    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Saqueado pela primeira vez em %1$s</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primeiro scrobble em %1$s</string>
     <string name="auto" comment="automatic or default setting">Automático</string>
     <string name="graph_info">… últimos 5 meses</string>
-    <string name="enabled_apps">Apps ativados</string>
+    <string name="enabled_apps">Aplicativos ativos</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Quase lá…</string>
     <string name="music_players">Reprodutores de música</string>
-    <string name="video_players">Apps de Transmissão de Vídeo</string>
-    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Outros apps</string>
-    <string name="choose_apps">Escolha os aplicativos para saquear</string>
-    <string name="offline">Offline. Dados mostrados não são recentes</string>
-    <string name="unavailable_offline">Não disponível quando estiver offline</string>
+    <string name="video_players">Aplicativos de Transmissão de Vídeo</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Outros aplicativos</string>
+    <string name="choose_apps">Escolha os aplicativos para scrobble</string>
+    <string name="offline">Sem rede. Dados mostrados não são recentes</string>
+    <string name="unavailable_offline">Indisponível quando estiver sem rede</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
     <string name="others">Outros</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Eu estava escutando\n%1$s %2$s</string>
@@ -121,27 +121,27 @@
     <string name="more_info">Mais informações</string>
     <string name="rank_change" comment="%1= delta change">Mudança de classificação: %s</string>
     <string name="rank_change_no_change">Sem mudança</string>
-    <string name="rank_change_new">Não saqueado no período anterior</string>
+    <string name="rank_change_new">Não há scrobbles no período anterior</string>
     <string name="search">Pesquisar</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Limpar todo o histórico</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Remover esse item do histórico?</string>
-    <string name="library" comment="search within the library">Bibiloteca</string>
+    <string name="library" comment="search within the library">Biblioteca</string>
     <string name="global" comment="search globally across lastfm">Global</string>
     <string name="reindex">Índice rápido</string>
     <string name="full_index">Índice completo</string>
     <string name="take_long_time">Isso deve levar bastante tempo</string>
-    <string name="full_index_desc">Use isso apenas se você tiver editado ou apagado saques no site.</string>
+    <string name="full_index_desc">Use isso apenas se você tiver editado ou apagado scrobbles no site.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pesquisado o top %1$s em cada categoria.</string>
     <string name="last_indexed" formatted="true" comment="%1= date">Última indexação em %1$s.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opções para este item</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s detetado</string>
-    <string name="new_player_prompt">Continuar saqueando desse aplicativo?</string>
+    <string name="new_player_prompt">Continuar fazendo scrobble desse app?</string>
     <string name="no_track_url">Esta música não tem uma página no lastFM</string>
-    <string name="no_scrobbles">Sem músicas aqui, ainda…</string>
+    <string name="no_scrobbles">Nenhuma música aqui…</string>
     <string name="no_friends">Sem amigos no lastFM ainda…</string>
-    <string name="channel_err">Erros de saqueamento</string>
+    <string name="channel_err">Erro de Scrobble</string>
     <string name="new_app">Novo app</string>
     <string name="no_apps_enabled">Nenhum app está ativado</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d mais</string>
@@ -150,38 +150,38 @@
     <string name="delete">Excluir</string>
     <string name="love">Favoritar</string>
     <string name="unlove">Retirar das favoritas</string>
-    <string name="pending_scrobbles">Saques pendentes</string>
-    <string name="pending_scrobble">Saque pendente</string>
-    <string name="pending_scrobbles_noti">Processando saques pendentes</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s saques • %2$s hoje</string>
+    <string name="pending_scrobbles">Scrobbles pendentes</string>
+    <string name="pending_scrobble">Scrobble pendente</string>
+    <string name="pending_scrobbles_noti">Processando scrobbles pendentes</string>
+    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s hoje</string>
     <string name="friends">Amigos</string>
-    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s saques, desde %2$s</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
     <string name="allow_background">Permitir scrobbling em segundo plano</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para recuperar metadados da música. Nenhum outro tipo notificação é lida</string>
     <string name="send_notifications">Permitir notificações</string>
     <string name="notification_channel_blocked">Isto requer que as notificações sejam ativadas</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"''''— Verificar estado e contagem dos saques
-— Favoritar ou deletar diretamente da notificação
-— Receber notificações sobre erros nos saques e ações que você pode tomar
-— Receber seus principais saques toda semana
-— E mais
-— As notificações não emitem som\"\""</string>
-    <string name="will_not_scrobble">Pular esse passo irá desativar os saques</string>
-    <string name="authenticate_with_lastfm_desc">Pode depois iniciar sessão no LibreFM, GNUFM e Listenbrainz, a partir das configurações</string>
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"''''- Verificar status e contagem dos scrobbles
+- Favoritar ou deletar diretamente da notificação
+- Receber notificações sobre erros nos scrobbles e ações que você pode tomar
+- Receber seu top de scrobbles toda semana
+- E mais
+- As notificações não emitem som\"\""</string>
+    <string name="will_not_scrobble">Pular esse passo irá desativar os scrobbles</string>
+    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM e Listenbrainz podem ser autenticados depois disso a partir das configurações</string>
     <string name="swap" comment="(Swap title and artist)">Trocar</string>
     <string name="rate_msg">Gostando do aplicativo?</string>
     <string name="rate_action">Avalie</string>
     <string name="time_just_now">agora mesmo</string>
     <string name="no_mail_apps">Nenhum cliente de e-mail instalado</string>
     <string name="loved">Favoritas</string>
-    <string name="unloved">Retirada das favoritas</string>
+    <string name="unloved">Não favoritas</string>
     <string name="simple_edits">Edições</string>
-    <string name="force_remembered">Forçar saque (será lembrado)</string>
+    <string name="force_remembered">Forçar scrobble (será lembrado)</string>
     <string name="grant_rec_perm">Por favor, conceda permissão para usar o microfone</string>
-    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Paradas</string>
+    <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Dados</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuvem de Tags</string>
-    <string name="scrobble_from_mic">Saquear do microfone</string>
+    <string name="scrobble_from_mic">Scrobble do microfone</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Do microfone</string>
     <string name="add_to_hs">Adicionar à página inicial</string>
     <string name="listening">Ouvindo músicas tocando ao seu redor…</string>
@@ -190,32 +190,32 @@
     <string name="press_back">Pressione voltar quando terminar</string>
     <string name="powered_acr">Fornecido por <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalhes</string>
-    <string name="saved_as_pending">Salvo como saque pendente</string>
+    <string name="saved_as_pending">Salvo como scrobble pendente</string>
     <string name="sort">Ordenar</string>
-    <string name="past_scrobbles">Histórico de saques</string>
+    <string name="past_scrobbles">Histórico de scrobbles</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto no tempo</string>
-    <string name="my_scrobbles">Meus saques</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">Saques de %1$s</string>
+    <string name="my_scrobbles">Meus scrobbles</string>
+    <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de %1$s</string>
     <string name="listeners">Ouvintes</string>
-    <string name="scrobbles">Saques</string>
-    <string name="collapse" comment="(view only a few items)">Fechar</string>
+    <string name="scrobbles">Scrobbles</string>
+    <string name="collapse" comment="(view only a few items)">Retrair</string>
     <string name="expand" comment="(view all items)">Expandir</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s favoritou isto</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Saques até %1$s</string>
+    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles até %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="save" comment="saves a file">Salvar</string>
     <string name="saved_to_gallery">Salvo na galeria</string>
-    <string name="lastfm_reports">LastFM reports</string>
+    <string name="lastfm_reports">Relatórios do lastFM</string>
     <string name="weekly">Semanal</string>
     <string name="weeks">Semanas</string>
-    <string name="monthly">Mensalmente</string>
+    <string name="monthly">Mensal</string>
     <string name="months">Meses</string>
     <string name="years">Anos</string>
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">Sem dados para este período</string>
-    <string name="charts_custom" comment="Custom date range, but in short">Personalizar</string>
-    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continuar</string>
+    <string name="charts_custom" comment="Custom date range, but in short">Personalizado</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Contínuo</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Baseado em %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Dados insuficientes</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d %2$s</string>
@@ -224,22 +224,22 @@
     <string name="loved_track">Faixa favoritada</string>
     <string name="randomize">Aleatória</string>
     <string name="random_text">Aleatório</string>
-    <string name="graph_daily">Contagem diária de saques</string>
-    <string name="graph_weekly">Contagem semanal de saques</string>
-    <string name="graph_monthly">Contagem mensal de saques</string>
-    <string name="graph_yearly">Contagem anual de saques</string>
+    <string name="graph_daily">Contagem diária de scrobbles</string>
+    <string name="graph_weekly">Contagem semanal de scrobbles</string>
+    <string name="graph_monthly">Contagem mensal de scrobbles</string>
+    <string name="graph_yearly">Contagem anual de scrobbles</string>
     <string name="graph_scrub_msg">As horas estão no seu fuso horário\nPressione ou segure o gráfico para ver a contagem exata</string>
     <string name="original" comment="Original metadata before editing">Original</string>
     <string name="corrected" comment="Corrected metadata after editing">Corrigido</string>
     <string name="tag" comment="last.fm tag">Marcação</string>
     <string name="taggers" comment="(number of) people who have tagged">Marcador</string>
-    <string name="taggings" comment="(total count of) a particular tag">Criação de tags</string>
-    <string name="digest_weekly">Meus principais saques da semana passada</string>
-    <string name="digest_monthly">Meus principais saques do mês passado</string>
-    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Principais saques da %1$s</string>
-    <string name="my_tags">Meus marcadores</string>
+    <string name="taggings" comment="(total count of) a particular tag">Criação de etiquetas</string>
+    <string name="digest_weekly">Meus principais scrobbles da semana passada</string>
+    <string name="digest_monthly">Meus principais scrobbles do mês passado</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Top scrobbles de %1$s</string>
+    <string name="my_tags">Minhas etiquetas</string>
     <string name="close">Fechar</string>
-    <string name="user_tags_hint">Novo marcador</string>
+    <string name="user_tags_hint">Nova etiqueta</string>
     <string name="user_tags_empty">Não adicionou nenhuma etiqueta</string>
     <string name="info_long_press_hint">Pressione e segure em uma faixa para abrir isto</string>
     <string name="appwidget_loading">Carregando…</string>
@@ -254,17 +254,17 @@
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">O widget será atualizado a cada %1$s minutos</string>
     <string name="primary_color">Cor principal</string>
     <string name="secondary_color">Cor secundária</string>
-    <string name="tint_background">Definir fundo</string>
-    <string name="random_theme">Aleatório a cada inicialização</string>
+    <string name="tint_background">Matiz do fundo</string>
+    <string name="random_theme">Randomizar a cada inicialização</string>
     <string name="edit_name" comment="name for regex pattern">Nome amigável (opcional)</string>
     <string name="edit_regex">Padrão de regex</string>
-    <string name="edit_regex_replacement">Substituição de Regex</string>
+    <string name="edit_regex_replacement">Substituição de regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Campos</string>
     <string name="edit_replace">Substituir</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primeiro</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
-    <string name="edit_continue">Se encontrado, continuar a corresponder com outros regexes</string>
-    <string name="edit_case_sensitive">Maiúsculas e minúsculas</string>
+    <string name="edit_continue">Se encontrado, continuar correspondendo com outros regexes</string>
+    <string name="edit_case_sensitive">Distinção entre maiúsculas e minúsculas</string>
     <string name="edit_regex_test">Testar</string>
     <string name="edit_presets">Predefinições</string>
     <string name="edit_presets_available">Predefinições disponíveis</string>
@@ -273,48 +273,48 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite de padrões atingido (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Controle de arrastar</string>
     <string name="text" comment="text to test regex rules with">Texto</string>
-    <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> antes de usar esta função ou use uma das <b>predefinições</b> fornecidas. As correspondências Regex são tentadas de cima para baixo</string>
+    <string name="edit_regex_warning">⚠ Certifique-se de que entende <a href="https://www.google.com/search?q=regex+tutorial">regex do java</a> antes de usar esta função, ou use uma das <b>predefinições</b> fornecidas. As correspondências regex são tentadas de cima para baixo</string>
     <string name="blocked_metadata_info">ℹ️ Ao preencher mais de um desses campos, será aplicado um operador AND entre eles</string>
     <string name="blocked_metadata_noti">Toque para bloquear e pular</string>
-    <string name="player_actions" comment="music player actions such as skip/mute">Ações do player</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Ações do reprodutor</string>
     <string name="skip" comment="skip to next track">Pular</string>
-    <string name="mute">Mutar</string>
+    <string name="mute">Silenciar</string>
     <string name="block">Bloquear</string>
-    <string name="hidden_tags">Tags ocultas</string>
+    <string name="hidden_tags">Etiquetas ocultas</string>
     <string name="pin">Fixar</string>
     <string name="unpin">Desafixar</string>
-    <string name="pin_limit_reached" formatted="true">Limite de fixados atingido (%1$d)</string>
-    <string name="pin_help">Mantenha pressionado os itens fixados para reordená-los</string>
+    <string name="pin_limit_reached" formatted="true">Limite de fixagens atingido (%1$d)</string>
+    <string name="pin_help">Pressione e segure os itens fixados para reordená-los</string>
     <string name="use_channel" comment="(Use youtube channel name)">Usar nome do canal</string>
-    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Gostaria de habilitar a regra de edição do padrão: %1$s?</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Gostaria de habilitar a regra de edição de padrão: %1$s?</string>
     <string name="show_persistent_noti">Exibir uma notificação persistente</string>
-    <string name="fix_it_desc">Estes podem ajudar a manter o saqueador rodando em segundo plano em alguns dispositivos</string>
+    <string name="fix_it_desc">Estes podem ajudar a manter o scrobbler rodando em segundo plano em alguns dispositivos</string>
     <string name="persistent_noti_desc">Pressione e segure para ocultar isso</string>
-    <string name="scrobbler_off">Saqueador desativado</string>
-    <string name="scrobbler_on">Saqueador ativado</string>
+    <string name="scrobbler_off">Scrobbler desativado</string>
+    <string name="scrobbler_on">Scrobbler ativado</string>
     <string name="enable" comment="To enable the scrobbler">Ativar</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
     <string name="skip_missing_images">Ignorar imagens ausentes</string>
     <string name="create_collage">Criar colagem</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Legendas de imagem</string>
     <string name="username" comment="last.fm Username">Nome de usuário</string>
-    <string name="pref_master">Saquear música</string>
+    <string name="pref_master">Scrobble de música</string>
     <string name="pref_master_qs_hint">Também pode ser alternado a partir das configurações rápidas</string>
     <string name="pref_master_qs_add">Adicionar o bloco de configurações rápidas</string>
     <string name="pref_master_qs_already_addded">O bloco de configurações rápidas já existe</string>
-    <string name="pref_noti_q">Pode promover a notificação, caso o ícone não apareça</string>
+    <string name="pref_noti_q">Você pode promover a notificação, caso o ícone não apareça</string>
     <string name="pref_noti">Notificações</string>
     <string name="pref_noti_categories">Categorias de notificação</string>
-    <string name="pref_scrobble_noti">Notificações de saques</string>
+    <string name="pref_scrobble_noti">Notificações de scrobbles</string>
     <string name="pref_lockscreen_noti">Notificações na tela de bloqueio</string>
-    <string name="pref_offline_info">ℹ️ Saques sem rede &amp; faixas favoritadas serão salvas, e enviadas posteriormente.</string>
-    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Saquear a partir de</string>
-    <string name="pref_enabled_apps_summary">ℹ️ Suporta aplicativos que revelam metadados de música. Para evitar saques duplos do Spotify, ative-os apenas em um lugar.</string>
-    <string name="pref_enabled_apps_title">Escolher apps</string>
-    <string name="pref_auto_detect_summary">…iremos pedir-lhe que confirme/ignore essa app</string>
-    <string name="pref_auto_detect">Saqueamento automático de novos aplicativos</string>
-    <string name="pref_spotify_remote">Saqueamento do Spotify tocando em outros dispositivos</string>
-    <string name="pref_delay">Atraso de saque (o que for mais cedo)</string>
+    <string name="pref_offline_info">ℹ️ Scrobbles offline &amp; e favoritadas serão guardadas, para ser tudo enviado mais tarde.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble a partir de</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Suporta apps que revelam metadados de música. Para evitar scrobbles duplos do Spotify, ative-os apenas num lugar.</string>
+    <string name="pref_enabled_apps_title">Escolher aplicativos</string>
+    <string name="pref_auto_detect_summary">…iremos pedir-lhe que confirme/ignore esse aplicativo</string>
+    <string name="pref_auto_detect">Fazer scrobble automaticamente de novos aplicativos</string>
+    <string name="pref_spotify_remote">Scrobble do Spotify tocando em outros dispositivos</string>
+    <string name="pref_delay">Atraso de scrobble (o que for mais cedo)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutos</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentual</string>
     <string name="pref_logout">Sair</string>
@@ -322,7 +322,7 @@
     <string name="pref_login">Iniciar sessão</string>
     <string name="pref_about" comment="Info about this app">Acerca</string>
     <string name="pref_privacy_policy">Política de privacidade</string>
-    <string name="pref_scrobble_only">(Saquear apenas)</string>
+    <string name="pref_scrobble_only">(Scrobble apenas)</string>
     <string name="pref_user_label" comment="(Like username)">Utilizador</string>
     <string name="pref_token_label" comment="For Listenbrainz">Código de autenticação</string>
     <string name="api_url" comment="For Listenbrainz">URL da API</string>
@@ -342,10 +342,10 @@
     <string name="pref_themes_desc">Misturar e combinar\nAltera também a cor das notificações</string>
     <string name="pref_widget_charts">Widget na tela inicial - Charts</string>
     <string name="pref_show_albums">Mostrar nomes dos álbuns</string>
-    <string name="pref_show_albums_desc">…para saques</string>
-    <string name="pref_show_scrobble_sources">Mostrar ícones de aplicativos dos quais você saqueou</string>
-    <string name="pref_show_scrobble_sources_desc">…ao lado de cada saque. Esses dados permanecem no seu dispositivo</string>
-    <string name="pref_search_in_source">Pesquisar &amp; reproduzir na aplicação de origem do saque</string>
+    <string name="pref_show_albums_desc">…para scrobbles</string>
+    <string name="pref_show_scrobble_sources">Exibir ícones de aplicativos que você fez scrobble</string>
+    <string name="pref_show_scrobble_sources_desc">…ao lado de cada scrobble. Esses dados permanecem no seu dispositivo</string>
+    <string name="pref_search_in_source">Pesquisar &amp; reproduzir na aplicação de origem do scrobble</string>
     <string name="pref_search_in_source_desc">Para aplicativos compatíveis</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="pref_regex_edits">Edições por padrão</string>
@@ -372,7 +372,7 @@
     <string name="current_track">Faixa atual:</string>
     <string name="pref_intents">Intenções para o Tasker, etc</string>
     <string name="copied">Copiado!</string>
-    <string name="lastfm_reauth">Você precisa se reautenticar para editar ou apagar saques</string>
+    <string name="lastfm_reauth">Você precisa fazer login novamente para editar ou apagar scrobbles</string>
     <string name="custom_listenbrainz">Servidor Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Verificar %1$s</string>
@@ -380,7 +380,7 @@
     <string name="artist_extra">Faixas, álbuns &amp; semelhantes</string>
     <string name="no_browser">Nenhum browser instalado</string>
     <string name="no_player">Nenhum reprodutor de música instalado</string>
-    <string name="not_running">⚠ O saqueador foi interrompido pelo seu sistema</string>
+    <string name="not_running">⚠ O scrobbler foi terminado abruptamente pelo seu sistema</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo de morte dado pelo sistema: %s</string>
     <string name="not_running_fix_action">Corrigir</string>
     <string name="login_submit">Verificar</string>
@@ -394,7 +394,7 @@
     <string name="add_acr_key_info">"• Registe-se em https://console.acrcloud.com
 • Navegue em Projects &gt; Audio &amp; video recognition
 • Crie um novo projeto, selecione Recorded Audio e repositório ACRCloud Music"</string>
-    <string name="shazam_scrobbling">Para saquear continuamente, abra o <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> ao invés disso e inicie o Auto Shazam. Certifique-se também de que o Shazam está com saqueamento ativado.</string>
+    <string name="shazam_scrobbling">Para fazer scrobbles continuamente, abra o <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> em vez disso e inicie o Auto Shazam. Certifique-se também de que o Shazam o scrobble ativado.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restantes</string>
     <string name="submitting_loves" formatted="true">Submetendo favoritadas, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">Enviar um lote</string>
@@ -429,5 +429,5 @@ As suas compras são geridas pelo Google Play. Elas estão vinculadas a uma cont
     <string name="billing_block">Bloquear artistas/faixas e pular ou silenciar automaticamente</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fixar até %1$d amigos e reordená-los</string>
     <string name="billing_sharing">Remover nome do aplicativo ao compartilhar</string>
-    <string name="billing_scrobble_source">Lembrar e ver aplicativos dos quais você saqueou e pesquisar diretamente neles</string>
+    <string name="billing_scrobble_source">Lembre e veja aplicativos dos quais você fez scrobble e pesquise diretamente neles</string>
 </resources>

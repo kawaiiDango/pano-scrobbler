@@ -298,7 +298,6 @@ class NLService : NotificationListenerService() {
         pkgName in prefs.allowedPackages || (prefs.autoDetectApps && pkgName !in prefs.blockedPackages)
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        Scrobblables.byType(ScrobblableEnum.LASTFM) ?: return
 
         scrobbleFromNoti(
             sbn,
@@ -368,6 +367,7 @@ class NLService : NotificationListenerService() {
         @StringRes format: Int = 0
     ) {
         if (prefs.scrobblerEnabled &&
+            Scrobblables.byType(ScrobblableEnum.LASTFM) != null &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
             sbn != null &&
             sbn.packageName in packageNames &&

@@ -66,11 +66,29 @@
         <item quantity="many">%1$s úprav</item>
         <item quantity="other">%1$s úprav</item>
     </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s vzor pro úpravu</item>
+        <item quantity="few">%1$s vzory pro úpravu</item>
+        <item quantity="many">%1$s vzorů pro úpravu</item>
+        <item quantity="other">%1$s vzorů pro úpravu</item>
+    </plurals>
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s zablokované metadata</item>
         <item quantity="few">%1$s zablokovaná metadata</item>
         <item quantity="many">%1$s zablokovaných metadat</item>
         <item quantity="other">%1$s zablokovaných metadat</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minuta</item>
+        <item quantity="few">%1$d minuty</item>
+        <item quantity="many">%1$d minut</item>
+        <item quantity="other">%1$d minut</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s přítel</item>
+        <item quantity="few">%1$s přátelé</item>
+        <item quantity="many">%1$s přátel</item>
+        <item quantity="other">%1$s přátel</item>
     </plurals>
     <string name="yes">Ano</string>
     <string name="no">Ne</string>
@@ -131,7 +149,9 @@
     <string name="grid_size">Změnit velikost mřížky</string>
     <string name="pinch_to_zoom">Přetažením přiblížit</string>
     <string name="more_info">Více informací</string>
+    <string name="rank_change" comment="%1= delta change">Změna pořadí: %s</string>
     <string name="rank_change_no_change">Beze změn</string>
+    <string name="rank_change_new">Nebylo scrobblováno v předchozím období</string>
     <string name="search">Hledat</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Vymazat historii</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Odstranit tuto položku z historie?</string>
@@ -141,6 +161,7 @@
     <string name="full_index">Plný index</string>
     <string name="take_long_time">Tohle může zabrat dlouho</string>
     <string name="full_index_desc">Použijte pouze v případě, že jste upravili nebo odstranili scrobbly z webu.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Prohledáno top %1$s věcí v každé kategorii.</string>
     <string name="last_indexed" formatted="true" comment="%1= date">Naposledy indexováno dne %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profilový obrázek</string>
@@ -215,6 +236,7 @@
     <string name="not_found" comment="Shown in search">Nenalezeno</string>
     <string name="save" comment="saves a file">Uložit</string>
     <string name="saved_to_gallery">Uloženo do galerie</string>
+    <string name="lastfm_reports">LastFM hlášení</string>
     <string name="weekly">Týdenní</string>
     <string name="weeks">Týdny</string>
     <string name="monthly">Měsíční</string>
@@ -244,6 +266,7 @@
     <string name="taggings" comment="(total count of) a particular tag">Tagování</string>
     <string name="digest_weekly">Moje top scrobbly z minulého týdne</string>
     <string name="digest_monthly">Moje top scrobbly z minulého měsíce</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s top scrobbly</string>
     <string name="my_tags">Moje tagy</string>
     <string name="close">Zavřít</string>
     <string name="user_tags_hint">Nová značka</string>
@@ -261,6 +284,7 @@
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Widget bude obnoven každých %1$s</string>
     <string name="primary_color">Primární barva</string>
     <string name="secondary_color">Sekundární barva</string>
+    <string name="tint_background">Zvýraznit pozadí</string>
     <string name="random_theme">Náhodný při každém spuštění</string>
     <string name="edit_name" comment="name for regex pattern">Přátelský název (volitelné)</string>
     <string name="edit_regex">Regex vzor</string>
@@ -292,13 +316,22 @@
     <string name="pin_limit_reached" formatted="true">Limit připnutí dosažen (%1$d)</string>
     <string name="pin_help">Dlouhým stiskem na připnuté položky můžete měnit jejich pořadí</string>
     <string name="use_channel" comment="(Use youtube channel name)">Použít název kanálu</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Chcete povolit pravidlo pro úpravu podle vzoru: %1$s?</string>
     <string name="show_persistent_noti">Zobrazovat trvalé oznámení</string>
     <string name="fix_it_desc">To může u některých zařízení pomoct scrobbleru běžet na pozadí</string>
     <string name="persistent_noti_desc">Dlouhým stiskem skryjete</string>
     <string name="scrobbler_off">Scrobbler zakázán</string>
     <string name="scrobbler_on">Scrobbler je aktivní</string>
+    <string name="enable" comment="To enable the scrobbler">Povolit</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Velikost</string>
+    <string name="skip_missing_images">Přeskočit chybějící obrázky</string>
+    <string name="create_collage">Vytvořit koláž</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Popisky obrázků</string>
+    <string name="username" comment="last.fm Username">Uživatelské jméno</string>
     <string name="pref_master">Scrobblovat hudbu</string>
     <string name="pref_master_qs_hint">Lze také přepnout z dlaždice rychlého nastavení</string>
+    <string name="pref_master_qs_add">Přidat dlaždici rychlého nastavení</string>
+    <string name="pref_master_qs_already_addded">Dlaždice rychlého nastavení je již přidána</string>
     <string name="pref_noti_q">Pokud se ikona nezobrazuje, můžete propagovat oznámení</string>
     <string name="pref_noti">Oznámení</string>
     <string name="pref_noti_categories">Kategorie oznámení</string>
@@ -309,6 +342,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ Podporuje aplikace, které odhalují metadata hudby. Chcete-li zabránit dvojímu scrobblu ze Spotify, povolte jej pouze na jednom místě.</string>
     <string name="pref_enabled_apps_title">Vybrat aplikace</string>
     <string name="pref_auto_detect_summary">…stále vás požádáme o potvrzení/ignorování této aplikace</string>
+    <string name="pref_auto_detect">Automaticky scrobblovat z nových aplikací</string>
+    <string name="pref_spotify_remote">Scrobblovat ze Spotify hrajícího na jiných zařízeních</string>
     <string name="pref_delay">Zpoždění Scrobble (podle toho, co nastane dříve)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minut</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
@@ -324,6 +359,7 @@
     <string name="pref_now_playing">Odeslat právě přehrávané</string>
     <string name="pref_fetch_aa">Načítat interprety alba z lastFM</string>
     <string name="pref_fetch_aa_desc">Pro přehrávače, které tato data neposkytují. Načtená data se mohou lišit od vašich tagů. lastFM nemusí mít data pro některé skladby.</string>
+    <string name="pref_fetch_album">Načíst chybějící data alba z lastFM</string>
     <string name="pref_locale">Jazyky</string>
     <string name="pref_change_locale">Změnit jazyk</string>
     <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>
@@ -334,8 +370,23 @@
     <string name="pref_import">Importovat</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Přizpůsobení</string>
     <string name="pref_themes">Motivy</string>
+    <string name="pref_themes_desc">Zamíchat\nTaké mění barvu oznámení</string>
+    <string name="pref_widget_charts">Widgety domovské obrazovky - Grafy</string>
+    <string name="pref_show_albums">Zobrazovat názvy alb</string>
+    <string name="pref_show_albums_desc">…u scrobblů</string>
+    <string name="pref_show_scrobble_sources">Zobrazovat ikony aplikací, ze kterých se scrobblovalo</string>
+    <string name="pref_show_scrobble_sources_desc">…vedle každého scrobblu. Tento údaj není nikam odesílán</string>
+    <string name="pref_search_in_source">Hledat a přehrávat v aplikaci, ze které se skladba scrobblovala</string>
+    <string name="pref_search_in_source_desc">U podporovaných aplikací</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Seznamy</string>
+    <string name="pref_regex_edits">Vzory pro úpravy</string>
+    <string name="pref_blocked_metadata">Zablokovaná metadata</string>
     <string name="pref_lastfm_disable">Nescrobblovat na lastFM</string>
     <string name="pref_lastfm_disable_desc">Pro funkčnost zbytku uživatelského rozhraní stále potřebujete přihlášení na lastFM</string>
+    <string name="pref_translate">Přeložit tuto aplikaci</string>
+    <string name="pref_translate_credits">Poděkování Překladatelům</string>
+    <string name="pref_oss_credits">Licence open source</string>
+    <string name="pref_check_updates">Kontrolovat aktualizace</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Dostupná aktualizace: %1$s</string>
     <string name="download">Stáhnout</string>
     <string name="changelog">Seznam změn</string>
@@ -346,30 +397,68 @@
     <string name="import_lists_nope">Neimportovat úpravy a seznam blokovaných</string>
     <string name="import_lists_replace_all">Nahradit všechny úpravy a seznam blokovaných</string>
     <string name="import_lists_replace_existing">Sloučit a nahradit existující úpravy a seznamy blokovaných</string>
+    <string name="import_lists_keep">Sloučit, což zanechá existující úptavy a seznamy blokovaných</string>
+    <string name="import_settings">Importovat nastavení</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Vysílací intenty</string>
     <string name="current_track">Aktuální skladba:</string>
+    <string name="pref_intents">Pro Tasker apod.</string>
     <string name="copied">Zkopírováno!</string>
+    <string name="lastfm_reauth">Pro úpravu nebo smazání scrobblů je třeba se znovu ověřit</string>
     <string name="custom_listenbrainz">Vlastní Listenbrainz server</string>
     <string name="failed_encode_url">Kódování URL selhalo</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Zkontrolovat %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Aplikace se speciálním přístupem &gt; Oznámení v zařízeních a aplikacích &gt; %1$s</string>
+    <string name="artist_extra">Skladby, alba a podobné</string>
     <string name="no_browser">Není nainstalován žádný prohlížeč</string>
     <string name="no_player">Není nainstalován žádný hudební přehrávač</string>
     <string name="not_running">⚠ Skrobbler byl vypnut vaším systémem</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Důvod vypnutí uvedený systémem: %s</string>
     <string name="not_running_fix_action">Opravit</string>
     <string name="login_submit">Ověřit</string>
+    <string name="acr_host" comment="Web hostname">Host</string>
+    <string name="acr_key">Přístupový Klíč</string>
+    <string name="acr_secret">Tajný klíč</string>
+    <string name="add_acr_key">Přidat klíč ACRCloud</string>
+    <string name="remove_acr_key">Odebrat klíč ACRCloud</string>
+    <string name="add_acr_consider">Pro zabránění překročení limitů, zvažte přidání vlastního ACRCloud klíče</string>
+    <string name="add">Přidat</string>
+    <string name="add_acr_key_info">"• Zaregistrujte se na https://console.acrcloud.com
+• Přejděte do \"Projects\" &gt; \"Audio &amp; video recognition\"
+• Vytvořte nový projekt, vyberte \"Recorded Audio\" a \"ACRCloud Music bucket\""</string>
+    <string name="shazam_scrobbling">Pro neustálé scrobblování si otevřte <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> a zapněte Auto Shazam. Také se ujistěte, že je povoleno scrobblování ze Shazamu.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d zbývajících</string>
+    <string name="submitting_loves" formatted="true">Odesílám oblíbení, %1$d zbývá</string>
+    <string name="pending_batch" comment="For pending scrobbles">Odesílám várku</string>
+    <string name="webview_error">Stránku se nepodařilo načíst (funguje vám internet?)</string>
+    <string name="navigation_drawer_open">Otevřít navigační menu nebo přejít zpět</string>
     <string name="navigation_drawer_close">Zavřít navigační lištu</string>
+    <string name="graph">Spojnicový graf</string>
     <string name="cleared_disabled_apps">Vymazány zakázané aplikace</string>
     <string name="fix_it_title">Možné opravy</string>
     <string name="fix_it_startup_title">Spořiče napájení / správci spouštění</string>
     <string name="fix_it_battery_title">Zakázat optimalizace výdrže baterie</string>
     <string name="fix_it_action" comment="(To open an app)">Otevřít</string>
     <string name="delete_account">Smazat svůj účet</string>
+    <string name="delete_account_custom_servers">Pro vlastní servery se podívejte do jejich příslušné dokumentace.</string>
     <!--  pro  -->
     <string name="get_pro">Podpořit aplikaci</string>
     <string name="help">Pomoc</string>
+    <string name="pro_support">Tohle je jednoduchý a rychly způsob jak úžasní uživatelé, jako vy, mohou ukázat svou podporu, uznávajíc hodnotu, kterou tato aplikace má.</string>
     <string name="pro_also_get">Také získáte následující funkce:</string>
     <string name="thank_you">Díky!</string>
+    <string name="purchase_pending">Váš nákup zatím nebyl potvrzen vašim poskytovatelem platebních služeb. Zkontrolujte nákup za pár minut.</string>
     <string name="billing_troubleshoot_title">Obnovit nákup</string>
+    <string name="billing_troubleshoot">"Již jste někdy aplikaci podpořili?
+
+Vaše nákupy spravuje Google Play, jsou vázané na účet Google Play, který nákup provedl. Když aplikaci nainstalujete na nové zařízení s více účty, Google Play může zařízení spojit se špatným účtem. Nejlepší řešení je přímo vybrat účet, který provedl nákup, aby aplikaci nainstaloval na zařízení skrz webovou verzi Google Play na počítači:
+
+• Odinstalujte aplikace
+• Otevřte webovou stránku Google Play na svém počítači
+• Přihlaste se účtem, který provedl nákup
+• Nainstalujte aplikaci na zařízení přímo z webu.
+"</string>
+    <string name="billing_block">Blokování umělců/skladeb a automatické přeskakování nebo ztlumení</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Připněte až %1$d přátel a seřaďte si je</string>
     <string name="billing_sharing">Odstranit název aplikace při sdílení</string>
+    <string name="billing_scrobble_source">Zapamatování a zobrazení aplikací, ze kterých je scrobblováno, a mít možnost v nich hledat</string>
 </resources>

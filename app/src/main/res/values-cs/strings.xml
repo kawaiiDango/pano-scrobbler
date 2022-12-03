@@ -133,12 +133,15 @@
     <string name="more_info">Více informací</string>
     <string name="rank_change_no_change">Beze změn</string>
     <string name="search">Hledat</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Vymazat historii</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Odstranit tuto položku z historie?</string>
     <string name="library" comment="search within the library">Knihovna</string>
     <string name="global" comment="search globally across lastfm">Globálně</string>
     <string name="reindex">Rychlý index</string>
     <string name="full_index">Plný index</string>
     <string name="take_long_time">Tohle může zabrat dlouho</string>
     <string name="full_index_desc">Použijte pouze v případě, že jste upravili nebo odstranili scrobbly z webu.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Naposledy indexováno dne %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profilový obrázek</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Možnosti pro tuto položku</string>
@@ -166,12 +169,14 @@
     <string name="grant_notification_access">Udělit přístup k oznámením</string>
     <string name="grant_notification_access_desc">Nutné pro získání metadat skladeb. Nebudou přečtena žádná nehudební oznámení</string>
     <string name="send_notifications">Povolit oznámení</string>
+    <string name="notification_channel_blocked">Je nutné povolit oznámení</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Možnost kontrolovat stav a počet scrobblů
 - Přidávejte do oblíbených či zablokovaných přímo skrz oznámení
 - Buďte v obraze o chybách při scrobblování a co s nimi můžete dělat
 - Dostávejte top scrobbly každý týden
 - A mnoho dalšího
 - Oznámení nevydává zvuk\"\""</string>
+    <string name="will_not_scrobble">Přeskočení tohoto kroku zakáže scrobblování</string>
     <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM a Listenbrainz lze následně propojit skrze nastavení</string>
     <string name="swap" comment="(Swap title and artist)">Prohodit</string>
     <string name="rate_msg">Líbí se vám aplikace?</string>
@@ -208,10 +213,17 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbly do %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Z %1$s</string>
     <string name="not_found" comment="Shown in search">Nenalezeno</string>
+    <string name="save" comment="saves a file">Uložit</string>
+    <string name="saved_to_gallery">Uloženo do galerie</string>
     <string name="weekly">Týdenní</string>
+    <string name="weeks">Týdny</string>
     <string name="monthly">Měsíční</string>
+    <string name="months">Měsíce</string>
+    <string name="years">Roky</string>
+    <string name="charts_overall">Celkově</string>
     <string name="charts_no_data">Žádné údaje v tomto období</string>
     <string name="charts_custom" comment="Custom date range, but in short">Vlastní</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Průběžně</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Na základě %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Není k dispozici dostatek dat</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
@@ -219,13 +231,34 @@
     <string name="random_not_found">Žádná skladba nenalezena</string>
     <string name="loved_track">Oblíbená skladba</string>
     <string name="randomize">Náhodně</string>
+    <string name="random_text">Náhodně</string>
+    <string name="graph_daily">Počet scrobblů za den</string>
+    <string name="graph_weekly">Počet scrobblů za týden</string>
+    <string name="graph_monthly">Počet scrobblů za měsíc</string>
+    <string name="graph_yearly">Počet scrobblů za rok</string>
+    <string name="graph_scrub_msg">Časy jsou ve vašem časovém pásmu\nPodržte nebo táhněte v grafu pro zobrazení přesného počtu</string>
     <string name="original" comment="Original metadata before editing">Originál</string>
+    <string name="corrected" comment="Corrected metadata after editing">Opravená</string>
     <string name="tag" comment="last.fm tag">Tag</string>
+    <string name="taggers" comment="(number of) people who have tagged">Taggerů</string>
+    <string name="taggings" comment="(total count of) a particular tag">Tagování</string>
+    <string name="digest_weekly">Moje top scrobbly z minulého týdne</string>
+    <string name="digest_monthly">Moje top scrobbly z minulého měsíce</string>
+    <string name="my_tags">Moje tagy</string>
+    <string name="close">Zavřít</string>
     <string name="user_tags_hint">Nová značka</string>
     <string name="user_tags_empty">Nebyly přidány žádné značky</string>
+    <string name="info_long_press_hint">Otevřete dlouhým podržením skladby</string>
     <string name="appwidget_loading">Načítání…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Období</string>
+    <string name="appwidget_theme">Motiv</string>
+    <string name="appwidget_shadow">Stín</string>
     <string name="appwidget_show">Zobrazit</string>
+    <string name="light">Světlý</string>
+    <string name="dark">Tmavý</string>
+    <string name="system_colors">Systémové barvy</string>
+    <string name="appwidget_alpha">Průhlednost pozadí</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Widget bude obnoven každých %1$s</string>
     <string name="primary_color">Primární barva</string>
     <string name="secondary_color">Sekundární barva</string>
     <string name="random_theme">Náhodný při každém spuštění</string>

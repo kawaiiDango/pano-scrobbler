@@ -190,6 +190,13 @@
             android:title="@string/pref_fetch_aa"
             android:summary="@string/pref_fetch_aa_desc"/>
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="fetch_album"
+            android:persistent="true"
+            android:title="@string/pref_fetch_album"
+            android:summary="@string/pref_show_albums_desc"/>
+
         <Preference
             android:title="@string/pref_intents"
             android:key="intents" />

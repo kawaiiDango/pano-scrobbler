@@ -22,7 +22,7 @@
 
     <color name="img_border">#B3000000</color>
     <color name="overlay_center">#74FFFFFF</color>
-    <color name="overlay_end">#B3FFFFFF</color>
+    <color name="overlay_end">#99FFFFFF</color>
     <color name="background_pure">#FFF</color>
     <color name="foreground_pure">#000</color>
     <color name="background_gray">#dedede</color>

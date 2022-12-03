@@ -39,6 +39,7 @@ class ImExporter : Closeable {
         MainPrefs.PREF_DELAY_PER,
         MainPrefs.PREF_NOW_PLAYING,
         MainPrefs.PREF_FETCH_AA,
+        MainPrefs.PREF_FETCH_ALBUM,
         MainPrefs.PREF_LOCALE,
         MainPrefs.PREF_AUTO_DETECT,
         MainPrefs.PREF_SHOW_RECENTS_ALBUM,

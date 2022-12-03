@@ -139,6 +139,7 @@
         <activity
             android:name=".MainDialogActivity"
             android:configChanges="keyboard|keyboardHidden|navigation"
+            android:launchMode="singleInstancePerTask"
             android:excludeFromRecents="true"
             android:exported="false"
             android:label="@string/edit"

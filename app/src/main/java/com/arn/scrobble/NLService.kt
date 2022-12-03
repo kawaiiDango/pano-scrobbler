@@ -298,6 +298,8 @@ class NLService : NotificationListenerService() {
         pkgName in prefs.allowedPackages || (prefs.autoDetectApps && pkgName !in prefs.blockedPackages)
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        Scrobblables.byType(ScrobblableEnum.LASTFM) ?: return
+
         scrobbleFromNoti(
             sbn,
             removed = false,
@@ -522,7 +524,7 @@ class NLService : NotificationListenerService() {
                     resources.getQuantityString(
                         R.plurals.num_scrobbles_noti,
                         trackInfo.userPlayCount,
-                        NumberFormat.getInstance().format(trackInfo.userPlayCount)
+                        "~" + NumberFormat.getInstance().format(trackInfo.userPlayCount)
                     )
                 )
         else
@@ -633,11 +635,10 @@ class NLService : NotificationListenerService() {
             albumArtist = trackInfo.albumArtist,
             skip = true,
         )
-        val intent = Intent(this, MainDialogActivity::class.java).apply {
-            putSingle(blockedMetadata)
-            putExtra(B_IGNORED_ARTIST, trackInfo.origArtist)
-            putExtra(B_HASH, hash)
-        }
+        val intent = Intent(this, MainDialogActivity::class.java)
+            .putSingle(blockedMetadata)
+            .putExtra(B_IGNORED_ARTIST, trackInfo.origArtist)
+            .putExtra(B_HASH, hash)
 
         val pendingIntent = PendingIntent.getActivity(
             this,
@@ -821,7 +822,7 @@ class NLService : NotificationListenerService() {
                 }
 
                 iALLOWLIST, iBLOCKLIST -> {
-                    val pkgName = intent.getStringExtra(B_PACKAGE_NAME)!!
+                    val pkgName = intent.getStringExtra(B_PACKAGE_NAME) ?: return
                     //create copies
                     val aSet = prefs.allowedPackages.toMutableSet()
                     val bSet = prefs.blockedPackages.toMutableSet()

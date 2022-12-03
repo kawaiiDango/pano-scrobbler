@@ -336,6 +336,12 @@ object UiUtils {
         return darkness >= 0.5
     }
 
+    fun invertColor(color: Int) = Color.rgb(
+        255 - Color.red(color),
+        255 - Color.green(color),
+        255 - Color.blue(color),
+    )
+
     fun FragmentManager.dismissAllDialogFragments() {
         for (fragment in fragments) {
             if (fragment is DialogFragment) {

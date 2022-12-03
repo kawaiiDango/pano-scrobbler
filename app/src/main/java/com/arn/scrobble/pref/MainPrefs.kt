@@ -53,6 +53,7 @@ class MainPrefs(context: Context) : Krate {
     var lastfmDisabled by booleanPref(PREF_LASTFM_DISABLE).withDefault(false)
     var submitNowPlaying by booleanPref(PREF_NOW_PLAYING).withDefault(true)
     var fetchAlbumArtist by booleanPref(PREF_FETCH_AA).withDefault(false)
+    var fetchAlbum by booleanPref(PREF_FETCH_ALBUM).withDefault(false)
     var searchInSource by booleanPref(PREF_SEARCH_IN_SOURCE).withDefault(false)
     var crashlyticsEnabled by booleanPref(PREF_CRASHLYTICS_ENABLED).withDefault(true)
     var searchType by kotlinxPref<SearchResultsAdapter.SearchType>(PREF_SEARCH_TYPE).withDefault(
@@ -200,6 +201,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_EXPORT = "export"
         const val PREF_INTENTS = "intents"
         const val PREF_FETCH_AA = "fetch_album_artist"
+        const val PREF_FETCH_ALBUM = "fetch_album"
         const val PREF_SHOW_SCROBBLE_SOURCES = "show_scrobble_sources"
         const val PREF_SHOW_RECENTS_ALBUM = "show_album"
         const val PREF_THEME_PRIMARY = "theme_primary"

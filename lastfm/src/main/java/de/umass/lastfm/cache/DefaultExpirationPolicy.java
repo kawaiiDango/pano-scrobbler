@@ -84,10 +84,13 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
         ONE_WEEK_METHODS.add("user.getfriends");
 
         //track info without username
-        ONE_WEEK_METHODS.add("track.getinfo");
+        ONE_MONTH_METHODS.add("track.getinfo");
         //album info without username
-        ONE_WEEK_METHODS.add("album.getinfo");
+        ONE_MONTH_METHODS.add("album.getinfo");
+        //artist info without username
+        ONE_MONTH_METHODS.add("artist.getinfo");
 
+        // artist picture changes
         ONE_WEEK_METHODS.add("artist.getinfo.spotify");
 
         ONE_MONTH_METHODS.add("track.gettoptags");

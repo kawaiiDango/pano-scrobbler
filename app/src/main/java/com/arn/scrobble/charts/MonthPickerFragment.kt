@@ -3,6 +3,7 @@ package com.arn.scrobble.charts
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,8 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import io.michaelrocks.bimap.BiMap
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
@@ -79,7 +81,15 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             val startTime = cal.timeInMillis
             cal.add(Calendar.MONTH, 1)
             val endTime = cal.timeInMillis
-            val timePeriod = TimePeriod(startTime, endTime)
+            val timePeriod = TimePeriod(
+                startTime,
+                endTime,
+                DateUtils.formatDateTime(
+                    context!!,
+                    startTime,
+                    DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
+                )
+            )
 
             val idx = viewModel.timePeriods.inverse[timePeriod]
             viewModel.callback(viewModel.timePeriods[idx]!!)

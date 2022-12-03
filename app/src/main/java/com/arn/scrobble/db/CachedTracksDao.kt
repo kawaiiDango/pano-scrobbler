@@ -21,7 +21,7 @@ interface CachedTracksDao {
     @Query("SELECT * FROM $tableName WHERE (artistName like '%' || :term || '%' OR trackName like '%' || :term || '%') AND isLoved = 1 ORDER BY userPlayCount DESC LIMIT :limit")
     fun findLoved(term: String, limit: Int = 50): List<CachedTrack>
 
-    @Query("SELECT * FROM $tableName WHERE artistName = :artist AND trackName = :track LIMIT 1")
+    @Query("SELECT * FROM $tableName WHERE artistName like :artist AND trackName like :track LIMIT 1")
     fun findExact(artist: String, track: String): CachedTrack?
 
     @get:Query("SELECT count(1) FROM $tableName")

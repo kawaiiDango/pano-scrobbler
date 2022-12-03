@@ -500,6 +500,7 @@
     <string name="pref_now_playing">Submit now playing</string>
     <string name="pref_fetch_aa">Fetch album artists from lastFM</string>
     <string name="pref_fetch_aa_desc">For players that do not provide this data. The fetched data may differ from your tags. lastFM may not have the data for some songs.</string>
+    <string name="pref_fetch_album">Fetch missing album data from lastFM</string>
     <string name="pref_locale">Languages</string>
     <string name="pref_change_locale">Change language</string>
     <string name="pref_crashlytics_enabled">Report errors automatically</string>

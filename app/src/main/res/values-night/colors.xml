@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="img_border">#B3FFFFFF</color>
-    <color name="overlay_center">#8C000000</color>
-    <color name="overlay_end">#CC000000</color>
+    <color name="overlay_center">#80000000</color>
+    <color name="overlay_end">#A6000000</color>
     <color name="background_pure">#000</color>
     <color name="foreground_pure">#FFF</color>
     <color name="background_gray">#212121</color>

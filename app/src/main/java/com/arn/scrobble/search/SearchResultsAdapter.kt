@@ -5,6 +5,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -13,9 +14,14 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.ExpandableHeader
+import com.arn.scrobble.ui.MusicEntryImageReq
+import com.arn.scrobble.ui.MusicEntryItemClickListener
+import com.arn.scrobble.ui.SectionWithHeader
+import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.MusicEntry
@@ -47,6 +53,7 @@ class SearchResultsAdapter(
                     false
                 )
             )
+
             SectionedVirtualList.TYPE_ITEM_DEFAULT -> VHSearchResult(
                 ListItemRecentsBinding.inflate(
                     inflater,
@@ -54,6 +61,7 @@ class SearchResultsAdapter(
                     false
                 )
             )
+
             else -> throw RuntimeException("Invalid view type $viewType")
         }
     }
@@ -160,8 +168,8 @@ class SearchResultsAdapter(
                     header = ExpandableHeader(
                         R.drawable.vd_info,
                         lastIndexedInfo,
-                        context.getString(R.string.reindex),
-                        context.getString(R.string.reindex),
+                        "⋮",
+                        "⋮",
                     ),
                     showHeaderWhenEmpty = true
                 )
@@ -256,7 +264,37 @@ class SearchResultsAdapter(
                 }
 
                 binding.headerAction.setOnClickListener {
-                    viewModel.fullIndex()
+                    val prefs = MainPrefs(binding.root.context)
+                    val popup = PopupMenu(binding.headerAction.context, binding.headerAction)
+                    popup.inflate(R.menu.indexing_menu)
+
+                    if (prefs.lastMaxIndexTime == null)
+                        popup.menu.removeItem(R.id.menu_quick_index)
+
+                    if (prefs.lastFullIndexTime != null && System.currentTimeMillis() - prefs.lastFullIndexTime!! < Stuff.FULL_INDEX_ALLOWED_INTERVAL)
+                        popup.menu.removeItem(R.id.menu_full_index)
+
+                    popup.setOnMenuItemClickListener {
+                        when (it.itemId) {
+                            R.id.menu_quick_index -> {
+                                viewModel.deltaIndex()
+                            }
+
+                            R.id.menu_full_index -> {
+                                MaterialAlertDialogBuilder(binding.headerAction.context)
+                                    .setMessage("⚠ " + binding.root.context.getString(R.string.full_index_desc))
+                                    .setIcon(R.drawable.vd_error)
+                                    .setPositiveButton(R.string.full_index) { _, _ ->
+                                        viewModel.fullIndex()
+                                    }
+                                    .setNegativeButton(android.R.string.cancel, null)
+                                    .show()
+
+                            }
+                        }
+                        true
+                    }
+                    popup.show()
                 }
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

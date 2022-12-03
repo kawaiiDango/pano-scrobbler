@@ -357,7 +357,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                         putExtra(
                             Intent.EXTRA_TITLE, getString(
                                 R.string.export_file_name,
-                                "private_" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
+                                "private_" + cal[Calendar.YEAR] + "_" + (cal[Calendar.MONTH] + 1) + "_" + cal[Calendar.DATE]
                             )
                         )
                     }
@@ -371,7 +371,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                     putExtra(
                         Intent.EXTRA_TITLE, getString(
                             R.string.export_file_name,
-                            "" + cal[Calendar.YEAR] + "_" + cal[Calendar.MONTH] + "_" + cal[Calendar.DATE]
+                            "" + cal[Calendar.YEAR] + "_" + (cal[Calendar.MONTH] + 1) + "_" + cal[Calendar.DATE]
                         )
                     )
                 }

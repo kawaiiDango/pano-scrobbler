@@ -108,7 +108,7 @@ object Stuff {
     const val CROSSFADE_DURATION = 200
     const val MAX_PATTERNS = 30
     const val MAX_PINNED_FRIENDS = 10
-    const val MAX_INDEXED_ITEMS = 4000
+    const val MAX_INDEXED_ITEMS = 5000
     const val MAX_CHARTS_NUM_COLUMNS = 6
     const val MIN_CHARTS_NUM_COLUMNS = 1
     const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000
@@ -116,7 +116,6 @@ object Stuff {
 
     const val EXTRA_PINNED = "pinned"
     val DEMO_MODE = BuildConfig.DEBUG && false
-    const val FETCH_TRACK_INFO = false
 
     val SERVICE_BIT_POS = mapOf(
         R.string.lastfm to 0,
@@ -133,10 +132,10 @@ object Stuff {
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val OFFLINE_SCROBBLE_JOB_DELAY = 20 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
+    const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
     const val CHARTS_WIDGET_REFRESH_INTERVAL = 60 * 60 * 1000L
     const val LASTFM_JAVA_CACHE_SIZE = 30 * 1024 * 1024
-    const val TRACK_INFO_VALIDITY = 5 * 1000L
-    const val TRACK_INFO_WINDOW = 60 * 1000L
+    const val TRACK_INFO_WINDOW = 3 * 60 * 1000L
     const val TRACK_INFO_REQUESTS = 2
     const val META_WAIT = 400L
     const val START_POS_LIMIT = 1500L

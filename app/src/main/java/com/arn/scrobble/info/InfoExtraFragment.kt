@@ -12,9 +12,18 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.arn.scrobble.*
+import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.NLService
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.toBundle
-import com.arn.scrobble.charts.*
+import com.arn.scrobble.charts.ChartsOverviewAdapter
+import com.arn.scrobble.charts.ChartsVM
+import com.arn.scrobble.charts.FakeAlbumFragment
+import com.arn.scrobble.charts.FakeArtistFragment
+import com.arn.scrobble.charts.FakeTrackFragment
+import com.arn.scrobble.charts.ShittyArchitectureFragment
 import com.arn.scrobble.databinding.ContentInfoExtraBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.ui.MusicEntryItemClickListener
@@ -33,6 +42,10 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
     }
     private val artist by lazy {
         arguments!!.getString(NLService.B_ARTIST)!!
+    }
+
+    private val disableFragmentNavigation by lazy {
+        arguments!!.getBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, false)
     }
 
     override fun onCreateView(
@@ -153,6 +166,13 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                 ).getSimilarTracks(artist, track!!)
             }
         }
+
+        if (disableFragmentNavigation) {
+            binding.infoExtraHeader1.headerAction.visibility = View.GONE
+            binding.infoExtraHeader2.headerAction.visibility = View.GONE
+            binding.infoExtraHeader3.headerAction.visibility = View.GONE
+        }
+
         return binding.root
     }
 
@@ -207,7 +227,9 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
     override fun onItemClick(view: View, entry: MusicEntry) {
         val info = InfoFragment()
-        info.arguments = entry.toBundle()
+        info.arguments = entry.toBundle().apply {
+            putBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, disableFragmentNavigation)
+        }
         info.show(parentFragmentManager, null)
     }
 

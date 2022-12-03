@@ -125,6 +125,7 @@ class InfoAdapter(
                             putString(NLService.B_ARTIST, album.artist)
                             putString(NLService.B_ALBUM, album.name)
                             putString(NLService.B_TRACK, tracks[position].name)
+                            putBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, disableFragmentNavigation)
                         }
                         info.show(fragment.parentFragmentManager, null)
                     }
@@ -173,6 +174,8 @@ class InfoAdapter(
             val entryBundle = entry.toBundle()
             var imgData: Any? = null
 
+            entryBundle.putBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, disableFragmentNavigation)
+
             when (key) {
                 NLService.B_TRACK -> {
                     entry as Track
@@ -207,16 +210,12 @@ class InfoAdapter(
                         }
                     }
 
-                    if (!disableFragmentNavigation) {
-                        binding.infoExtra.visibility = View.VISIBLE
-                        binding.infoExtra.text = itemView.context.getString(R.string.similar)
-                        binding.infoExtra.setOnClickListener {
-                            InfoExtraFragment()
-                                .apply { arguments = entryBundle }
-                                .show(fragment.parentFragmentManager, null)
-                        }
-                    } else {
-                        binding.infoExtra.visibility = View.GONE
+                    binding.infoExtra.visibility = View.VISIBLE
+                    binding.infoExtra.text = itemView.context.getString(R.string.similar)
+                    binding.infoExtra.setOnClickListener {
+                        InfoExtraFragment()
+                            .apply { arguments = entryBundle }
+                            .show(fragment.parentFragmentManager, null)
                     }
                 }
 
@@ -226,7 +225,7 @@ class InfoAdapter(
 
                     val tracks = (entry as Album).tracks?.toList()
 
-                    if (!tracks.isNullOrEmpty() && !disableFragmentNavigation) {
+                    if (!tracks.isNullOrEmpty()) {
                         var totalDuration = 0
                         var plus = ""
                         tracks.forEach {
@@ -289,16 +288,12 @@ class InfoAdapter(
 
                     imgData = entry
 
-                    if (!disableFragmentNavigation) {
-                        binding.infoExtra.visibility = View.VISIBLE
-                        binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
-                        binding.infoExtra.setOnClickListener {
-                            InfoExtraFragment()
-                                .apply { arguments = entryBundle }
-                                .show(fragment.parentFragmentManager, null)
-                        }
-                    } else {
-                        binding.infoExtra.visibility = View.GONE
+                    binding.infoExtra.visibility = View.VISIBLE
+                    binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
+                    binding.infoExtra.setOnClickListener {
+                        InfoExtraFragment()
+                            .apply { arguments = entryBundle }
+                            .show(fragment.parentFragmentManager, null)
                     }
                 }
             }

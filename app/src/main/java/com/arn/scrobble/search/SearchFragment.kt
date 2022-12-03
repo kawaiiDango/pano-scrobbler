@@ -203,6 +203,7 @@ class SearchFragment : Fragment() {
             when (checkedChipId) {
                 R.id.search_library -> prefs.searchType =
                     SearchResultsAdapter.SearchType.LOCAL
+
                 R.id.search_global -> prefs.searchType =
                     SearchResultsAdapter.SearchType.GLOBAL
             }
@@ -239,6 +240,15 @@ class SearchFragment : Fragment() {
                 viewModel.loadSearches(binding.searchEdittext.text.toString(), prefs.searchType)
                 // prevent progress bar from showing
             }
+        }
+
+        viewModel.indexingError.observe(viewLifecycleOwner) { exception ->
+            exception ?: return@observe
+
+            MaterialAlertDialogBuilder(context!!)
+                .setTitle(exception.message)
+                .setIcon(R.drawable.vd_error)
+                .show()
         }
     }
 

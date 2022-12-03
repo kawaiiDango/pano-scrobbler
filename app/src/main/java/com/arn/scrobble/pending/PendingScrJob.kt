@@ -57,8 +57,8 @@ class PendingScrJob : JobService() {
         private val progressCb: ((str: String) -> Unit)? = null,
         private val doneCb: ((done: Boolean) -> Unit)? = null,
     ) {
-        private val dao by lazy { PanoDb.getDb(context).getScrobblesDao() }
-        private val lovesDao by lazy { PanoDb.getDb(context).getLovesDao() }
+        private val dao by lazy { PanoDb.getDb(context).getPendingScrobblesDao() }
+        private val lovesDao by lazy { PanoDb.getDb(context).getPendingLovesDao() }
         private val prefs by lazy { MainPrefs(context) }
 
         init {
@@ -70,35 +70,6 @@ class PendingScrJob : JobService() {
 
         private suspend fun run(): Boolean {
             var done = submitLoves()
-
-            if (Stuff.FETCH_TRACK_INFO) {
-                var scrobbles = dao.allEmptyAlbumORAlbumArtist(1000)
-                var count = scrobbles.size
-                if (!prefs.fetchAlbumArtist)
-                    scrobbles = scrobbles.filter { it.album == "" }
-                scrobbles.forEach {
-                    try {
-                        progressCb?.invoke(context.getString(R.string.pending_n_remaining, count--))
-                        val track: Track? = Track.getInfo(it.artist, it.track, Stuff.LAST_KEY)
-                        if (track != null) {
-                            if (it.album == "" && !track.album.isNullOrEmpty()) {
-                                it.album = track.album
-                                if (!track.albumArtist.isNullOrEmpty())
-                                    it.albumArtist = track.albumArtist
-                            } else if (!track.albumArtist.isNullOrEmpty() &&
-                                prefs.fetchAlbumArtist &&
-                                it.album.equals(track.album, ignoreCase = true) &&
-                                (it.albumArtist == "" || it.artist == it.albumArtist)
-                            )
-                                it.albumArtist = track.albumArtist
-                            it.autoCorrected = 1
-                            dao.update(it)
-                        }
-                    } catch (e: Exception) {
-                    }
-                    delay(DELAY)
-                }
-            }
 
             while (dao.count > 0) {
                 done = submitScrobbleBatch()

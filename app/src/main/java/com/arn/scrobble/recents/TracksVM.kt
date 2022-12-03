@@ -20,7 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.*
+import java.util.Date
 
 
 class TracksVM(application: Application) : AndroidViewModel(application) {
@@ -104,8 +104,8 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     fun loadPending(limit: Int, submit: Boolean): MutableLiveData<PendingListData> {
         viewModelScope.launch(Dispatchers.IO) {
             mutex.withLock {
-                val dao = PanoDb.getDb(getApplication()).getScrobblesDao()
-                val lovesDao = PanoDb.getDb(getApplication()).getLovesDao()
+                val dao = PanoDb.getDb(getApplication()).getPendingScrobblesDao()
+                val lovesDao = PanoDb.getDb(getApplication()).getPendingLovesDao()
                 val data = PendingListData()
                 data.plCount = lovesDao.count
                 data.psCount = dao.count

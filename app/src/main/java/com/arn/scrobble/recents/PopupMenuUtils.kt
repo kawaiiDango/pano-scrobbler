@@ -6,7 +6,12 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import com.arn.scrobble.*
+import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.LastfmUnscrobbler
+import com.arn.scrobble.NLService
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
+import com.arn.scrobble.WebViewFragment
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
@@ -123,9 +128,9 @@ object PopupMenuUtils {
                     scope.launch(Dispatchers.IO) {
                         try {
                             if (p is PendingScrobble)
-                                PanoDb.getDb(context).getScrobblesDao().delete(p)
+                                PanoDb.getDb(context).getPendingScrobblesDao().delete(p)
                             else if (p is PendingLove)
-                                PanoDb.getDb(context).getLovesDao().delete(p)
+                                PanoDb.getDb(context).getPendingLovesDao().delete(p)
                             withContext(Dispatchers.Main) {
                                 deleteAction.invoke()
                             }

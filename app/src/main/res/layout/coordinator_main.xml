@@ -26,7 +26,7 @@
             android:fitsSystemWindows="true"
             app:contentScrim="?android:colorBackground"
             app:expandedTitleMarginEnd="@dimen/title_margin_right"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed|snap"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed"
             app:statusBarScrim="@color/statusBarScrim"
             app:titleEnabled="false"
             tools:titleEnabled="false">
@@ -54,15 +54,14 @@
                     tools:srcCompat="@drawable/vd_wave" />
 
                 <View
+                    android:alpha="0.75"
                     android:id="@+id/hero_dark_overlay"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/hero_overlay_height"
                     android:background="@drawable/gradient_overlay_hero"
-                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:visibility="visible" />
+                    app:layout_constraintStart_toStartOf="parent"/>
 
                 <com.robinhood.spark.SparkView
                     android:id="@+id/sparkline"
@@ -119,7 +118,6 @@
                     style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.6"
                     android:contentDescription="@string/time_jump"
                     android:tooltipText="@string/time_jump"
                     android:visibility="invisible"
@@ -132,7 +130,6 @@
                     style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.6"
                     android:contentDescription="@string/share_this_song"
                     android:tooltipText="@string/share_this_song"
                     android:visibility="invisible"
@@ -145,7 +142,6 @@
                     style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.6"
                     android:contentDescription="@string/more_info"
                     android:tooltipText="@string/more_info"
                     android:visibility="invisible"
@@ -158,7 +154,6 @@
                     style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.6"
                     android:contentDescription="@string/more_info"
                     android:tooltipText="@string/random"
                     android:visibility="gone"
@@ -171,7 +166,6 @@
                     style="?materialIconButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.6"
                     android:contentDescription="@string/search"
                     android:tooltipText="@string/search"
                     android:visibility="invisible"

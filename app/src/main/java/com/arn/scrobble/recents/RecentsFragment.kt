@@ -11,8 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcel
-import android.transition.Fade
-import android.transition.TransitionManager
 import android.util.DisplayMetrics
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
@@ -22,11 +20,9 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -68,7 +64,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.robinhood.spark.animation.MorphSparkAnimator
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import java.net.URLEncoder
@@ -383,7 +378,11 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             coordinatorBinding.heroCalendar.setOnClickListener { view ->
                 val anchorTime = viewModel.toTime ?: System.currentTimeMillis()
                 val timePeriodsToIcons =
-                    TimePeriodsGenerator(activityViewModel.currentUser.registeredTime, anchorTime, context!!).recentsTimeJumps
+                    TimePeriodsGenerator(
+                        activityViewModel.currentUser.registeredTime,
+                        anchorTime,
+                        context!!
+                    ).recentsTimeJumps
 
                 val popupMenu = PopupMenu(context!!, view)
                 timePeriodsToIcons.forEachIndexed { index, (timePeriod, iconRes) ->
@@ -416,10 +415,12 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                         customId -> {
                             openCalendar()
                         }
+
                         resetId -> {
                             viewModel.toTime = null
                             viewModel.loadRecents(1)
                         }
+
                         else -> {
                             val timePeriod = timePeriodsToIcons[item.itemId].first
                             viewModel.toTime = timePeriod.end
@@ -476,12 +477,12 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
 
             val contentBgFrom = (binding.recentsSwipeRefresh.background as ColorDrawable).color
-            val tintFrom = coordinatorBinding.sparklineHorizontalLabel.textColors.defaultColor
+            val tintButtonsFrom = heroButtonsGroup.first().iconTint.defaultColor
             val animSetList = mutableListOf<Animator>()
 
             heroButtonsGroup.forEach { button ->
                 animSetList += ValueAnimator.ofArgb(
-                    tintFrom,
+                    tintButtonsFrom,
                     colors.foreground
                 ).apply {
                     addUpdateListener {
@@ -500,17 +501,18 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 //                )
 //            }
 
-            animSetList += ObjectAnimator.ofArgb(
-                coordinatorBinding.sparkline,
-                "lineColor",
-                tintFrom,
-                ColorUtils.setAlphaComponent(colors.foreground,
-                    if (context!!.resources.getBoolean(R.bool.is_dark))
-                        179 // 0.7
-                    else
-                        230 // 0.9
-                )
-            )
+//            animSetList += ObjectAnimator.ofArgb(
+//                coordinatorBinding.sparkline,
+//                "lineColor",
+//                tintFrom,
+//                ColorUtils.setAlphaComponent(
+//                    colors.foreground,
+//                    if (context!!.resources.getBoolean(R.bool.is_dark))
+//                        179 // 0.7
+//                    else
+//                        230 // 0.9
+//                )
+//            )
 
             if (activity.billingViewModel.proStatus.value != true ||
                 prefs.themeTintBackground
@@ -643,11 +645,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
         if (!imgUrl.isNullOrEmpty()) {
             coordinatorBinding.heroImg.load(imgUrl) {
-
-                if (coordinatorBinding.heroDarkOverlay.visibility == View.VISIBLE) {
-                    placeholderMemoryCacheKey(coordinatorBinding.heroImg.memoryCacheKey)
-                    placeholder(R.drawable.vd_wave)
-                }
+                placeholderMemoryCacheKey(coordinatorBinding.heroImg.memoryCacheKey)
+                placeholder(R.drawable.vd_wave)
                 error(errorDrawable)
                 allowHardware(false)
                 if (!fullSize)
@@ -676,10 +675,6 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
             coordinatorBinding.heroImg.load(errorDrawable)
             viewModel.paletteColors.value = PaletteColors(context!!, palette)
         }
-        if (coordinatorBinding.heroDarkOverlay.visibility != View.VISIBLE) {
-            TransitionManager.beginDelayedTransition(coordinatorBinding.ctl, Fade())
-            coordinatorBinding.heroDarkOverlay.visibility = View.VISIBLE
-        }
     }
 
     override fun onItemClick(view: View, position: Int) {
@@ -702,6 +697,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                 loveToggle(view, item)
                 view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             }
+
             else -> {
                 val lastClickedPos = viewModel.selectedPos
                 viewModel.selectedPos = position
@@ -759,6 +755,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     (anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay),
                     track
                 )
+
                 R.id.menu_edit -> PopupMenuUtils.editScrobble(activity!!, track)
                 R.id.menu_delete -> PopupMenuUtils.deleteScrobble(activity!!, track) { succ ->
                     if (succ)
@@ -766,6 +763,7 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
                     else
                         activity!!.toast(R.string.network_error)
                 }
+
                 R.id.menu_play -> coordinatorBinding.heroPlay.callOnClick()
                 R.id.menu_info -> coordinatorBinding.heroInfo.callOnClick()
                 R.id.menu_share -> coordinatorBinding.heroShare.callOnClick()
@@ -793,7 +791,8 @@ open class RecentsFragment : Fragment(), ItemClickListener, RecentsAdapter.SetHe
 
                         override fun writeToParcel(p0: Parcel, p1: Int) {}
 
-                        override fun isValid(date: Long) = date in activityViewModel.currentUser.registeredTime..endTime
+                        override fun isValid(date: Long) =
+                            date in activityViewModel.currentUser.registeredTime..endTime
                     })
                     .build()
             )

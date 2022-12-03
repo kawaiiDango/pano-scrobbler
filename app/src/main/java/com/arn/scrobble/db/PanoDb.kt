@@ -37,8 +37,8 @@ import androidx.room.RoomDatabase
     ],
 )
 abstract class PanoDb : RoomDatabase() {
-    abstract fun getScrobblesDao(): PendingScrobblesDao
-    abstract fun getLovesDao(): PendingLovesDao
+    abstract fun getPendingScrobblesDao(): PendingScrobblesDao
+    abstract fun getPendingLovesDao(): PendingLovesDao
     abstract fun getSimpleEditsDao(): SimpleEditsDao
     abstract fun getRegexEditsDao(): RegexEditsDao
     abstract fun getBlockedMetadataDao(): BlockedMetadataDao

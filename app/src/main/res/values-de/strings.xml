@@ -278,6 +278,7 @@
     <string name="scrobbler_off">Scrobbler deaktiviert</string>
     <string name="scrobbler_on">Scrobbler aktiv</string>
     <string name="enable" comment="To enable the scrobbler">Aktivieren</string>
+    <string name="skip_missing_images">Fehlende Bilder überspringen</string>
     <string name="pref_master">Musik scrobbeln</string>
     <string name="pref_master_qs_hint">Kann auch von den Schnelleinstellungen umgeschaltet werden</string>
     <string name="pref_noti_q">Wenn das Symbol nicht angezeigt wird, können Sie die Benachrichtigung höherstufen</string>

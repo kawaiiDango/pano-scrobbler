@@ -140,8 +140,9 @@ public class DefaultExpirationPolicy implements ExpirationPolicy {
 //			else
 //				return cacheRecentWeeklyCharts;
 //		}
-        if (method.equals("track.getinfo") || method.equals("album.getinfo"))
-            return username == null ? ONE_WEEK : -1;
+        if ((method.equals("track.getinfo") || method.equals("album.getinfo") || method.equals("artist.getinfo")) &&
+                username != null)
+            return -1;
 
         if (ONE_WEEK_METHODS.contains(method))
             return ONE_WEEK;

@@ -275,6 +275,10 @@ class SessListener(
                     artist = "Unknown"
                 }
 
+                Stuff.PACKAGE_YANDEX_MUSIC -> {
+                    albumArtist = ""
+                }
+
                 Stuff.PACKAGE_SPOTIFY -> {
                     // ads look like these:
                     // e.g. GCTC () [] ~ Free Spring Tuition

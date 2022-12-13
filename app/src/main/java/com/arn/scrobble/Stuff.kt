@@ -187,6 +187,7 @@ object Stuff {
     const val PACKAGE_YMUSIC = "com.kapp.youtube.final"
     const val PACKAGE_SOUNDCLOUD = "com.soundcloud.android"
     const val PACKAGE_NICOBOX = "jp.nicovideo.nicobox"
+    const val PACKAGE_YANDEX_MUSIC = "ru.yandex.music"
 
     const val MARKET_URL = "market://details?id=" + BuildConfig.APPLICATION_ID
 

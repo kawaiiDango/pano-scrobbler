@@ -8,6 +8,10 @@
         <item quantity="one">%1$s Zuhörer</item>
         <item quantity="other">%1$s Zuhörer</item>
     </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s Tag</item>
+        <item quantity="other">%1$s Tagen</item>
+    </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s Woche</item>
         <item quantity="other">%1$s Wochen</item>
@@ -47,6 +51,14 @@
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s blockierte Metadaten</item>
         <item quantity="other">%1$s blockierte Metadaten</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d Minute</item>
+        <item quantity="other">%1$d Minuten</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s Freund</item>
+        <item quantity="other">%1$s Freunde</item>
     </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
@@ -239,6 +251,7 @@
     <string name="dark">Dunkel</string>
     <string name="system_colors">Systemfarben</string>
     <string name="appwidget_alpha">Hintergrundtransparenz</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Widget wird alle %1$s aktualisiert</string>
     <string name="primary_color">Hauptfarbe</string>
     <string name="secondary_color">Sekundärfarbe</string>
     <string name="tint_background">Hintergrund einfärben</string>
@@ -287,6 +300,8 @@
     <string name="username" comment="last.fm Username">Benutzername</string>
     <string name="pref_master">Musik scrobbeln</string>
     <string name="pref_master_qs_hint">Kann auch von den Schnelleinstellungen umgeschaltet werden</string>
+    <string name="pref_master_qs_add">Schnelleinstellungs-Kachel hinzufügen</string>
+    <string name="pref_master_qs_already_addded">Schnelleinstellungs-Kachel ist bereits hinzugefügt</string>
     <string name="pref_noti_q">Wenn das Symbol nicht angezeigt wird, können Sie die Benachrichtigung höherstufen</string>
     <string name="pref_noti">Benachrichtigungen</string>
     <string name="pref_noti_categories">Benachrichtigungskategorien</string>
@@ -297,6 +312,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ Unterstützt Apps, die Musik-Metadaten anbieten. Um Mehrfachscrobbles von Spotify zu vermeiden, aktivieren Sie diese nur an einem Ort.</string>
     <string name="pref_enabled_apps_title">Apps auswählen</string>
     <string name="pref_auto_detect_summary">…wir werden Sie trotzdem bitten, diese App zu bestätigen/ignorieren</string>
+    <string name="pref_auto_detect">Automatisch von neuen Apps scrobbeln</string>
+    <string name="pref_spotify_remote">Spotify-Wiedergabe auf anderen Geräten scrobbeln</string>
     <string name="pref_delay">Scrobble Verzögerung (je nachdem, was früher war)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuten</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Prozent</string>
@@ -309,9 +326,10 @@
     <string name="pref_user_label" comment="(Like username)">Benutzer</string>
     <string name="pref_token_label" comment="For Listenbrainz">Authentifizierungstoken</string>
     <string name="api_url" comment="For Listenbrainz">API-URL</string>
-    <string name="pref_now_playing">\"Now Playing\" speichern</string>
+    <string name="pref_now_playing">\"Scrobbelt gerade\" senden</string>
     <string name="pref_fetch_aa">Album-Interpret von lastFM abrufen</string>
     <string name="pref_fetch_aa_desc">Für Musik-Apps die diese Daten nicht zur Verfügung stellen. Die abgerufenen Daten können sich von Ihren Tags unterscheiden. lastFM hat möglicherweise keine Daten für einige Songs.</string>
+    <string name="pref_fetch_album">Fehlende Albumdaten von lastFM abrufen</string>
     <string name="pref_locale">Sprachen</string>
     <string name="pref_change_locale">Sprache ändern</string>
     <string name="pref_crashlytics_enabled">Fehler automatisch melden</string>
@@ -412,4 +430,5 @@ Ihre Käufe werden von Google Play verwaltet. Sie sind mit einem Google Play-Kon
     <string name="billing_block">Blockieren von Künstlern/Titeln und automatisches Überspringen oder Stummschalten</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Bis zu %1$d Freunde anheften und neu anordnen</string>
     <string name="billing_sharing">Entfernen Sie den App-Namen beim Teilen</string>
+    <string name="billing_scrobble_source">Merke und sieh Apps, von denen gescrobbelt wurde und suche direkt in ihnen</string>
 </resources>

@@ -192,6 +192,8 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbelt bis %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Aus %1$s</string>
     <string name="not_found" comment="Shown in search">Nicht gefunden</string>
+    <string name="save" comment="saves a file">Speichern</string>
+    <string name="saved_to_gallery">In Galerie gespeichert</string>
     <string name="lastfm_reports">LastFM Berichte</string>
     <string name="weekly">Wöchentlich</string>
     <string name="weeks">Wochen</string>
@@ -278,7 +280,11 @@
     <string name="scrobbler_off">Scrobbler deaktiviert</string>
     <string name="scrobbler_on">Scrobbler aktiv</string>
     <string name="enable" comment="To enable the scrobbler">Aktivieren</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Größe</string>
     <string name="skip_missing_images">Fehlende Bilder überspringen</string>
+    <string name="create_collage">Collage erstellen</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Bildtitel</string>
+    <string name="username" comment="last.fm Username">Benutzername</string>
     <string name="pref_master">Musik scrobbeln</string>
     <string name="pref_master_qs_hint">Kann auch von den Schnelleinstellungen umgeschaltet werden</string>
     <string name="pref_noti_q">Wenn das Symbol nicht angezeigt wird, können Sie die Benachrichtigung höherstufen</string>
@@ -345,9 +351,9 @@
     <string name="import_lists_replace_existing">Zusammenführen, Ersetzen bestehender Änderungen und Sperrliste</string>
     <string name="import_lists_keep">Zusammenführen, bestehende Änderungen und Sperrlisten beibehalten</string>
     <string name="import_settings">Import-Einstellungen</string>
-    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Broadcast-Absichten</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Broadcast-Intents</string>
     <string name="current_track">Aktuelles Lied:</string>
-    <string name="pref_intents">Absichten für Tasker usw.</string>
+    <string name="pref_intents">Intents für Tasker usw.</string>
     <string name="copied">Kopiert!</string>
     <string name="lastfm_reauth">Du musst dich neu authentifizieren, um Scrobbles bearbeiten oder löschen zu können</string>
     <string name="custom_listenbrainz">Eigener Listenbrainz-Server</string>

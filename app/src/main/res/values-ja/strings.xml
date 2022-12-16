@@ -55,6 +55,7 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">タイトルを解析できませんでした</string>
     <string name="network_error">ネットワークエラー</string>
     <string name="disable_tls_verify">TSLのエラーを無視</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobbleは無視されました</string>
     <string name="scrobble_ignored_save_edit">LastFMは、このScrobbleが古すぎるためか、行った訂正を無視しました。今後扱える可能性もあるため、この訂正を保存しておきますか？</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必須項目が空欄です</string>
     <string name="artist">アーティスト</string>
@@ -99,10 +100,13 @@
     <string name="share_sig">(Pano Scrobblerより)</string>
     <string name="share_this_song">この曲を共有</string>
     <string name="share">共有</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">アイコン説明</string>
     <string name="grid_size">グリッドサイズを変更</string>
     <string name="pinch_to_zoom">ピンチ操作で拡大</string>
     <string name="more_info">詳細</string>
-    <string name="rank_change_new">前回期間にScrobbleされていません</string>
+    <string name="rank_change" comment="%1= delta change">順位の変更: %s</string>
+    <string name="rank_change_no_change">変更なし</string>
+    <string name="rank_change_new">前回期間でのScrobbleなし</string>
     <string name="search">検索</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">履歴を消去</string>
     <string name="clear_history_specific" comment="(talking about search history, tag history)">この項目を履歴から消去しますか？</string>
@@ -260,6 +264,7 @@
     <string name="skip" comment="skip to next track">スキップ</string>
     <string name="mute">ミュート</string>
     <string name="block">ブロック</string>
+    <string name="hidden_tags">非表示のタグ</string>
     <string name="pin">ピン留め</string>
     <string name="unpin">ピン留め解除</string>
     <string name="pin_limit_reached" formatted="true">ピン留め上限に達しました (%1$d)</string>
@@ -279,6 +284,8 @@
     <string name="username" comment="last.fm Username">ユーザー名</string>
     <string name="pref_master">音楽をScrobbleする</string>
     <string name="pref_master_qs_hint">クイック設定パネルのタイルから切り替えることも可能です</string>
+    <string name="pref_master_qs_add">クイック設定タイルを追加</string>
+    <string name="pref_master_qs_already_addded">クイック設定タイルはすでに追加されています</string>
     <string name="pref_noti_q">アイコンが表示されない場合、通知を促せます</string>
     <string name="pref_noti">通知</string>
     <string name="pref_noti_categories">通知のカテゴリ</string>
@@ -289,6 +296,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ 音楽のメタデータを表示するアプリに対応しています。Spotify利用時にScrobbleが重複する場合は、他の対象アプリを無効にしてみてください。</string>
     <string name="pref_enabled_apps_title">アプリを選択</string>
     <string name="pref_auto_detect_summary">…そのアプリの取捨選択をお願いすることになります</string>
+    <string name="pref_auto_detect">新規アプリから自動的にScrobbleする</string>
+    <string name="pref_spotify_remote">他のデバイスで再生中のSpotifyをScrobbleする</string>
     <string name="pref_delay">Scrobbleの遅延 (いずれかの早い方優先)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">パーセント</string>
@@ -304,6 +313,7 @@
     <string name="pref_now_playing">再生中の状態情報を送信する</string>
     <string name="pref_fetch_aa">LastFMからアルバムアーティストを取得する</string>
     <string name="pref_fetch_aa_desc">アルバムアーティストの表示が行われないプレーヤーの場合に行います。取得データがタグ付けされたものと異なっていたり、LastFMには一部曲が存在しない場合があります。</string>
+    <string name="pref_fetch_album">不足しているアルバムデータをLastFMから取得する</string>
     <string name="pref_locale">言語</string>
     <string name="pref_change_locale">言語を変更</string>
     <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>
@@ -403,4 +413,5 @@
     <string name="billing_block">アーティスト/トラックのブロック、オートスキップ/ミュート機能</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最大%1$d人のフレンドのピン留めおよび並び替え</string>
     <string name="billing_sharing">共有時にアプリ名を含まない</string>
+    <string name="billing_scrobble_source">Scrobble元のアプリの記憶や確認、そのアプリでの楽曲検索</string>
 </resources>

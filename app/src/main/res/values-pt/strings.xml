@@ -307,7 +307,7 @@
     <string name="pref_noti_categories">Categorias de notificação</string>
     <string name="pref_scrobble_noti">Notificações de scrobble</string>
     <string name="pref_lockscreen_noti">Notificações no ecrã de bloqueio</string>
-    <string name="pref_offline_info">ℹ️ Scrobbles offline &amp; e favoritas serão guardados, para ser tudo enviado mais tarde.</string>
+    <string name="pref_offline_info">ℹ️ Scrobbles offline &amp; favoritas serão guardadas, para ser tudo enviado mais tarde.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble a partir de</string>
     <string name="pref_enabled_apps_summary">ℹ️ Suporta aplicações que revelam metadados de música. Para evitar scrobbles duplos do Spotify, ative-os apenas num lugar.</string>
     <string name="pref_enabled_apps_title">Selecionar aplicações</string>
@@ -329,6 +329,7 @@
     <string name="pref_now_playing">Submeter em reprodução</string>
     <string name="pref_fetch_aa">Obter artistas dos álbuns do lastFM</string>
     <string name="pref_fetch_aa_desc">Para reprodutores que não fornecem esses dados. Os dados obtidos podem ser diferentes dos seus identificadores. O lastFM pode não ter dados para algumas músicas.</string>
+    <string name="pref_fetch_album">Obter dados em falta do álbum a partir da lastFM</string>
     <string name="pref_locale">Idiomas</string>
     <string name="pref_change_locale">Alterar Idioma</string>
     <string name="pref_crashlytics_enabled">Reportar erros automaticamente</string>

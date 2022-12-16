@@ -123,9 +123,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.8.0-alpha03")
+    implementation("com.google.android.material:material:1.8.0-beta01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:31.1.0"))
+    implementation(platform("com.google.firebase:firebase-bom:31.1.1"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -143,7 +143,7 @@ dependencies {
     implementation("com.github.hadilq:live-event:1.3.0")
     implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
 
-    val ktorVersion = "2.1.3"
+    val ktorVersion = "2.2.1"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
     implementation("io.ktor:ktor-client-android:$ktorVersion")

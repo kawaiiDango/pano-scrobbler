@@ -359,6 +359,7 @@
     <string name="pref_now_playing">Отправить сейчас играет</string>
     <string name="pref_fetch_aa">Получить исполнителей альбома с lastFM</string>
     <string name="pref_fetch_aa_desc">Для плееров, которые не предоставляют эти данные. Полученные данные могут отличаться от ваших тегов. lastFM может не иметь данных для некоторых песен.</string>
+    <string name="pref_fetch_album">Получить недостающие данные альбома с lastFM</string>
     <string name="pref_locale">Языки</string>
     <string name="pref_change_locale">Изменить язык</string>
     <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>

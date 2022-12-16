@@ -2,7 +2,6 @@ package com.arn.scrobble.pref
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.content.res.TypedArrayUtils
@@ -15,7 +14,6 @@ import com.arn.scrobble.databinding.PrefAppIconsBinding
 import com.arn.scrobble.ui.PackageName
 import com.arn.scrobble.ui.UiUtils.dp
 import com.google.android.material.imageview.ShapeableImageView
-import java.text.NumberFormat
 
 
 /**
@@ -47,7 +45,9 @@ class AppIconsPref(context: Context, attrs: AttributeSet?, defAttrs: Int, defSty
 //        widgetLayoutResource = R.layout.pref_app_icons_widget
     }
 
-    private val wPx = 48.dp
+    private val wPx = 24.dp
+    private val maxIcons = 14
+    private var prevPackageNames = setOf<String>()
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
@@ -56,42 +56,23 @@ class AppIconsPref(context: Context, attrs: AttributeSet?, defAttrs: Int, defSty
         val binding = PrefAppIconsBinding.bind(holder.itemView)
         val packageNames = sharedPreferences!!.getStringSet(key, setOf())!!
 
-        if (packageNames.isNotEmpty()) {
+        if (packageNames != prevPackageNames || binding.appIconsContainer.childCount == 0) {
             binding.appIconsContainer.removeAllViews()
-            binding.appListAdd.measure(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
 
-            var totalWidth = context.resources.displayMetrics.widthPixels -
-                    binding.root.paddingLeft - binding.root.paddingRight -
-                    binding.appListAdd.measuredWidth
-            if (isIconSpaceReserved)
-                totalWidth -= 32.dp
-
-            val nIcons = (totalWidth / wPx) - 1
-            for (i in 0 until minOf(nIcons, packageNames.size)) {
-                val icon = ShapeableImageView(context)
-                icon.scaleType = ImageView.ScaleType.FIT_CENTER
-                icon.layoutParams = LinearLayout.LayoutParams(wPx, wPx)
-                val padding = wPx / 8
-                icon.setPadding(padding, padding, padding, padding)
-                icon.load(PackageName(packageNames.elementAt(i))) {
-                    allowHardware(false)
-                    scale(Scale.FIT)
+            for (i in 0 until minOf(maxIcons, packageNames.size)) {
+                ShapeableImageView(context).apply {
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                    layoutParams = LinearLayout.LayoutParams(wPx, wPx)
+                    val padding = wPx / 8
+                    setPadding(padding, padding, padding, padding)
+                    load(PackageName(packageNames.elementAt(i))) {
+                        allowHardware(false)
+                        scale(Scale.FIT)
+                    }
+                    binding.appIconsContainer.addView(this)
                 }
-                binding.appIconsContainer.addView(icon)
             }
-
-            if (packageNames.size > nIcons) {
-                binding.appListNMore.visibility = View.VISIBLE
-                binding.appListNMore.text =
-                    "+" + NumberFormat.getInstance().format(packageNames.size - nIcons)
-            } else
-                binding.appListNMore.visibility = View.GONE
-        } else {
-            binding.appListNMore.visibility = View.VISIBLE
-            binding.appListNMore.text = context.getString(R.string.no_apps_enabled)
+            prevPackageNames = packageNames
         }
     }
 }

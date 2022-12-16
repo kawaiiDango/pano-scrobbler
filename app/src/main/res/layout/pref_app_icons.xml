@@ -22,21 +22,12 @@
         app:drawableTopCompat="@drawable/vd_add"
         app:drawableTint="?colorSecondary" />
 
-    <LinearLayout
+    <com.google.android.material.chip.ChipGroup
         android:id="@+id/app_icons_container"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal" />
-
-    <TextView
-        android:id="@+id/app_list_n_more"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAppearance="?textAppearanceTitleLarge"
-        android:visibility="gone"
-        android:paddingStart="8dp"
-        tools:text="+50"
-        tools:visibility="visible" />
+        android:gravity="center_vertical"
+        app:chipSpacing="0dp"
+        app:lineSpacing="0dp"
+        app:itemSpacing="0dp"/>
 </LinearLayout>

@@ -27,11 +27,11 @@
             android:summary="@string/pref_enabled_apps_summary"
             />
 
-<!--        <SwitchPreference-->
-<!--            android:defaultValue="false"-->
-<!--            android:key="scrobble_spotify_remote"-->
-<!--            android:persistent="true"-->
-<!--            android:title="@string/pref_spotify_remote"/>-->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="scrobble_spotify_remote"
+            android:persistent="true"
+            android:title="@string/pref_spotify_remote"/>
         
         <SwitchPreference
             android:defaultValue="true"

@@ -34,7 +34,7 @@
     </plurals>
     <plurals name="num_tracks">
         <item quantity="one">%1$s faixa</item>
-        <item quantity="other">%1$s faixas</item>
+        <item quantity="other">%1$s Músicas</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">%1$d correspondência</item>
@@ -72,7 +72,7 @@
     <string name="disable_tls_verify">Ignorar erros de TLS</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorado</string>
     <string name="scrobble_ignored_save_edit">Lastfm ignorou a edição provavelmente porque o scrobble é muito antigo. Gostaria de salvar esta edição para futuros scrobbles em vez disso?</string>
-    <string name="required_fields_empty" comment="Shown on filling a form">Faltam campos obrigatórios</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Arquivo(s) necessários estão vazios</string>
     <string name="artist">Artista</string>
     <string name="artists">Artistas</string>
     <string name="top_artists" comment="Top artists the user has listened to">Principais artistas</string>

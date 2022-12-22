@@ -10,7 +10,7 @@
 
 [![download][play-store]][play-store-link] [![translate][crowdin]][crowdin-link]
 
-<img src="https://i.imgur.com/XGmtOP5.jpg" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/m1lbrU6l.jpg" alt="friends" width="200"/> <img src="https://i.imgur.com/7kETocF.jpg" alt="charts" width="200"/>
+<img src="https://i.imgur.com/hveVQmd.png" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/uZEVKgA.png" alt="friends" width="200"/> <img src="https://i.imgur.com/bvSo8pk.png" alt="charts" width="200"/>
 
 ### PC app?
 Pano Scrobbler works on Windows 11 with WSA. It scrobbles from other Android apps.

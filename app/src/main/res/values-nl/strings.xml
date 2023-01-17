@@ -145,7 +145,6 @@
     <string name="pending_scrobbles">Wachtende scrobbels</string>
     <string name="pending_scrobble">Wachtende scrobbel</string>
     <string name="pending_scrobbles_noti">Wachtende scrobbels verwerken</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbels • %2$s vandaag</string>
     <string name="friends">Vrienden</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbels sinds %2$s</string>
     <string name="allow_background">Scrobbelen in de achtergrond toestaan</string>
@@ -160,7 +159,6 @@
 - En meer
 - De meldingen maken geen geluid\"\""</string>
     <string name="will_not_scrobble">Het overslaan van deze stap zal scrobbling uitschakelen</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM en Listenbrainz kunnen hierna worden geverifieerd vanuit instellingen</string>
     <string name="swap" comment="(Swap title and artist)">Wissel</string>
     <string name="rate_msg">Tevreden over de app?</string>
     <string name="rate_action">Beoordelen</string>
@@ -196,7 +194,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbels tot %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Uit %1$s</string>
     <string name="not_found" comment="Shown in search">Niet gevonden</string>
-    <string name="lastfm_reports">LastFM rapporten</string>
     <string name="weekly">Wekelijks</string>
     <string name="weeks">Weken</string>
     <string name="monthly">Maandelijks</string>
@@ -330,8 +327,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Lijsten</string>
     <string name="pref_regex_edits">Patroon bewerkingen</string>
     <string name="pref_blocked_metadata">Geblokkeerde metadata</string>
-    <string name="pref_lastfm_disable">Niet scrobbelen naar lastFM</string>
-    <string name="pref_lastfm_disable_desc">Je hebt nog steeds een lastFM-login nodig om de rest van het UI te laten werken</string>
     <string name="pref_translate">Deze app vertalen</string>
     <string name="pref_translate_credits">Vertalingscredits</string>
     <string name="pref_oss_credits">Open source credits</string>

@@ -183,7 +183,6 @@
     <string name="pending_scrobbles">Отложенные скробблы</string>
     <string name="pending_scrobble">Отложенный скроббл</string>
     <string name="pending_scrobbles_noti">Обработка отложенных скробблов</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s скробблов • %2$s сегодня</string>
     <string name="friends">Друзья</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скробблов с %2$s</string>
     <string name="allow_background">Разрешить скробблинг в фоновом режиме</string>
@@ -198,7 +197,6 @@
 - И более
 - Уведомления не издают звук\"\""</string>
     <string name="will_not_scrobble">Пропуск этого шага отключит скробблинг</string>
-    <string name="authenticate_with_lastfm_desc">Вы можете войти в LibreFM, GNUFM и Listenbrainz позже в настройках</string>
     <string name="swap" comment="(Swap title and artist)">Поменять</string>
     <string name="rate_msg">Нравится это приложение?</string>
     <string name="rate_action">Оцените его</string>
@@ -236,7 +234,6 @@
     <string name="not_found" comment="Shown in search">Не найдено</string>
     <string name="save" comment="saves a file">Сохранить</string>
     <string name="saved_to_gallery">Сохранено в галерею</string>
-    <string name="lastfm_reports">Отчеты LastFM</string>
     <string name="weekly">Еженедельно</string>
     <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
@@ -381,8 +378,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Шаблоны редактирования</string>
     <string name="pref_blocked_metadata">Заблокированные метаданные</string>
-    <string name="pref_lastfm_disable">Не скробблить в LastFM</string>
-    <string name="pref_lastfm_disable_desc">Для работы остальной части пользовательского интерфейса вам по-прежнему нужно войти в lastFM</string>
     <string name="pref_translate">Перевести это приложение</string>
     <string name="pref_translate_credits">Авторы переводов</string>
     <string name="pref_oss_credits">Лицензия открытого ПО</string>

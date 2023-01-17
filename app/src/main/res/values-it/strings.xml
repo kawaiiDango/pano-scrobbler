@@ -142,7 +142,6 @@
     <string name="pending_scrobbles">Scrobbling in attesa</string>
     <string name="pending_scrobble">Scrobbling in attesa</string>
     <string name="pending_scrobbles_noti">Elaborando gli scrobbling in attesa</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbling • %2$s odierni</string>
     <string name="friends">Amici</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbling eseguiti, dal %2$s</string>
     <string name="allow_background">Consenti lo scrobbling in background</string>
@@ -155,7 +154,6 @@
 - Ricevi la lista dei tuoi artisti, album e brani più ascoltati della settimana
 - E altro ancora
 - Le notifiche non sono sonore\"\""</string>
-    <string name="authenticate_with_lastfm_desc">Potrai accedere a LibreFM, GNUFM e Listenbrainz in seguito, dalle impostazioni</string>
     <string name="swap" comment="(Swap title and artist)">Scambia</string>
     <string name="rate_msg">Ti piace questa app?</string>
     <string name="rate_action">Valutala</string>
@@ -191,7 +189,6 @@
     <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbling fino al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
-    <string name="lastfm_reports">Report di LastFM</string>
     <string name="weekly">Settimanali</string>
     <string name="weeks">Settimane</string>
     <string name="monthly">Mensili</string>
@@ -324,8 +321,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Liste</string>
     <string name="pref_regex_edits">Modifiche del pattern</string>
     <string name="pref_blocked_metadata">Metadati bloccati</string>
-    <string name="pref_lastfm_disable">Non inviare scrobbling a lastFM</string>
-    <string name="pref_lastfm_disable_desc">È comunque necessario accedere a lastFM perché il resto dell’interfaccia funzioni</string>
     <string name="pref_translate">Traduci questa app</string>
     <string name="pref_translate_credits">Riconoscimenti traduzione</string>
     <string name="pref_oss_credits">Riconoscimenti open source</string>

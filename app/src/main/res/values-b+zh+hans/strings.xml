@@ -138,7 +138,6 @@
     <string name="pending_scrobbles">待记录的音乐</string>
     <string name="pending_scrobble">待记录的音乐</string>
     <string name="pending_scrobbles_noti">正在处理待记录的音乐条目</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">总记录：%1$s • 今日记录：%2$s</string>
     <string name="friends">好友</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s 项记录，始于 %2$s</string>
     <string name="allow_background">允许后台抓取记录</string>
@@ -153,7 +152,6 @@
 - 以及更多
 - 通知不会发出声音\"\""</string>
     <string name="will_not_scrobble">跳过该步骤将禁用记录</string>
-    <string name="authenticate_with_lastfm_desc">之后可以在设置中通过 LibreFM, GNUFM 和 Listenbrainz 进行验证 </string>
     <string name="swap" comment="(Swap title and artist)">切换</string>
     <string name="rate_msg">喜欢这个应用吗？</string>
     <string name="rate_action">去打分</string>
@@ -191,7 +189,6 @@
     <string name="not_found" comment="Shown in search">找不到结果</string>
     <string name="save" comment="saves a file">保存</string>
     <string name="saved_to_gallery">已保存至媒体库</string>
-    <string name="lastfm_reports">LastFM 报告</string>
     <string name="weekly">每周</string>
     <string name="weeks">周</string>
     <string name="monthly">每月</string>
@@ -335,8 +332,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">列表</string>
     <string name="pref_regex_edits">模板编辑</string>
     <string name="pref_blocked_metadata">已屏蔽的元数据条目</string>
-    <string name="pref_lastfm_disable">不向 lastFM 提交记录</string>
-    <string name="pref_lastfm_disable_desc">您依然需要一个 lastFM 账户来保证应用中其它界面的正常工作</string>
     <string name="pref_translate">翻译本应用</string>
     <string name="pref_translate_credits">翻译人员</string>
     <string name="pref_oss_credits">开源许可</string>

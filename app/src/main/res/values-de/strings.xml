@@ -153,7 +153,6 @@
     <string name="pending_scrobbles">Ausstehende Scrobbles</string>
     <string name="pending_scrobble">Ausstehender Scrobble</string>
     <string name="pending_scrobbles_noti">Bearbeite ausstehende Scrobbles</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s heute</string>
     <string name="friends">Freunde</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, seit %2$s</string>
     <string name="allow_background">Scrobbeln im Hintergrund erlauben</string>
@@ -168,7 +167,6 @@
 - Und mehr
 - Benachrichtigungen sind stumm\"\""</string>
     <string name="will_not_scrobble">Wenn Sie diesen Schritt überspringen, wird das Scrobbling deaktiviert</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM und Listenbrainz können später in den Einstellungen authentifiziert werden</string>
     <string name="swap" comment="(Swap title and artist)">Tauschen</string>
     <string name="rate_msg">Gefällt Ihnen diese App?</string>
     <string name="rate_action">Bewerten</string>
@@ -206,7 +204,6 @@
     <string name="not_found" comment="Shown in search">Nicht gefunden</string>
     <string name="save" comment="saves a file">Speichern</string>
     <string name="saved_to_gallery">In Galerie gespeichert</string>
-    <string name="lastfm_reports">LastFM Berichte</string>
     <string name="weekly">Wöchentlich</string>
     <string name="weeks">Wochen</string>
     <string name="monthly">Monatlich</string>
@@ -351,8 +348,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listen</string>
     <string name="pref_regex_edits">Musterbearbeitung</string>
     <string name="pref_blocked_metadata">Blockierte Metadaten</string>
-    <string name="pref_lastfm_disable">Nicht zu lastFM scrobbeln</string>
-    <string name="pref_lastfm_disable_desc">Sie benötigen eine lastFM-Anmeldung, damit der Rest funktioniert</string>
     <string name="pref_translate">Diese App übersetzen</string>
     <string name="pref_translate_credits">Danksagung an die Übersetzer</string>
     <string name="pref_oss_credits">Open-Source-Credits</string>

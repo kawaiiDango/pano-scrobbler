@@ -153,7 +153,6 @@
     <string name="pending_scrobbles">Εκκρεμούν Scrobbles</string>
     <string name="pending_scrobble">Εκκρεμεί Scrobble</string>
     <string name="pending_scrobbles_noti">Επεξεργασία εκκρεμών scrobbles</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s σήμερα</string>
     <string name="friends">Φίλοι</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, από %2$s</string>
     <string name="allow_background">Να επιτρέπεται το scrobbling στο παρασκήνιο</string>
@@ -168,7 +167,6 @@
 - Και περισσότερα
 - Οι ειδοποιήσεις δεν κάνουν ήχο\"\""</string>
     <string name="will_not_scrobble">Η παράλειψη αυτού του βήματος θα απενεργοποιήσει το scrobbling</string>
-    <string name="authenticate_with_lastfm_desc">Τα LibreFM, GNUFM και Listenbrainz μπορούν να ελεγχθούν μετά από αυτό, από τις ρυθμίσεις</string>
     <string name="swap" comment="(Swap title and artist)">Ανταλλαγή</string>
     <string name="rate_msg">Σας αρέσει η εφαρμογή;</string>
     <string name="rate_action">Βαθμολογήστε την</string>
@@ -206,7 +204,6 @@
     <string name="not_found" comment="Shown in search">Δε βρέθηκε</string>
     <string name="save" comment="saves a file">Αποθήκευση</string>
     <string name="saved_to_gallery">Αποθηκεύτηκε στη Συλλογή</string>
-    <string name="lastfm_reports">Αναφορές LastFM</string>
     <string name="weekly">Εβδομαδιαία</string>
     <string name="weeks">Εβδομάδες</string>
     <string name="monthly">Μηνιαία</string>
@@ -348,8 +345,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Λίστες</string>
     <string name="pref_regex_edits">Τροποποιήσεις μοτίβου</string>
     <string name="pref_blocked_metadata">Μπλοκαρισμένα μεταδεδομένα</string>
-    <string name="pref_lastfm_disable">Μην κάνεις scrobble για lastFM</string>
-    <string name="pref_lastfm_disable_desc">Χρειάζεστε ακόμα να συνδεθείτε στο lastFM για να λειτουργήσει το υπόλοιπο του UI</string>
     <string name="pref_translate">Μεταφράστε αυτήν την εφαρμογή</string>
     <string name="pref_translate_credits">Εύσημα μετάφρασης</string>
     <string name="pref_oss_credits">Αναφορές ανοικτού κώδικα</string>

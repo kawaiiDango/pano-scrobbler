@@ -138,7 +138,6 @@
     <string name="pending_scrobbles">Scrobbleの保留</string>
     <string name="pending_scrobble">保留中のScrobble</string>
     <string name="pending_scrobbles_noti">保留中のScrobbleを処理中</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s Scrobble • 本日%2$s件</string>
     <string name="friends">フレンド</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s Scrobble — %2$sより</string>
     <string name="allow_background">バックグラウンドでもScrobbleする</string>
@@ -153,7 +152,6 @@
 - などなど
 - 通知音は鳴りません\"\""</string>
     <string name="will_not_scrobble">この項目をスキップすると、Scrobbleが行われません</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM、GNUFM、ListenBrainzの認証は後ほど設定から行えます</string>
     <string name="swap" comment="(Swap title and artist)">入れ替え</string>
     <string name="rate_msg">アプリに満足していただいていますか？</string>
     <string name="rate_action">評価</string>
@@ -191,7 +189,6 @@
     <string name="not_found" comment="Shown in search">見つかりませんでした</string>
     <string name="save" comment="saves a file">保存</string>
     <string name="saved_to_gallery">ギャラリーに保存しました</string>
-    <string name="lastfm_reports">LastFM レポート</string>
     <string name="weekly">1週間</string>
     <string name="weeks">週</string>
     <string name="monthly">1ヶ月</string>
@@ -335,8 +332,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">リスト</string>
     <string name="pref_regex_edits">パターン訂正</string>
     <string name="pref_blocked_metadata">ブロックされたメタデータ</string>
-    <string name="pref_lastfm_disable">LastFMにScrobbleしない</string>
-    <string name="pref_lastfm_disable_desc">一部UIの操作には、LastFMへのログインが必要です</string>
     <string name="pref_translate">このアプリを翻訳</string>
     <string name="pref_translate_credits">翻訳協力者</string>
     <string name="pref_oss_credits">オープンソースクレジット</string>

@@ -165,7 +165,6 @@
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string name="pending_scrobble">Scrobble na čekanju</string>
     <string name="pending_scrobbles_noti">Procesiranje scrobbleova na čekanju</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">Scrobbleova: %1$s • Danas: %2$s</string>
     <string name="friends">Prijatelji</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">Scrobbleano %1$s puta od %2$s</string>
     <string name="allow_background">Dopusti scrobbleanje u pozadini</string>
@@ -180,7 +179,6 @@
 - i više toga
 - obavijesti su tihe\""</string>
     <string name="will_not_scrobble">Ako preskočite ovaj korak, scrobbleanje bit će onemogućeno</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM i Listenbrainz mogu se autentificirati nakon ovoga u postavkama</string>
     <string name="swap" comment="(Swap title and artist)">Zamijeni mjesta</string>
     <string name="rate_msg">Sviđa Vam se ova aplikacija?</string>
     <string name="rate_action">Ocijenite</string>
@@ -214,7 +212,6 @@
     <string name="not_found" comment="Shown in search">Nije pronađeno</string>
     <string name="save" comment="saves a file">Spremi</string>
     <string name="saved_to_gallery">Spremljeno u galeriju</string>
-    <string name="lastfm_reports">LastFM izvješća</string>
     <string name="weekly">Tjedni</string>
     <string name="weeks">Tjedni</string>
     <string name="monthly">Mjesečni</string>
@@ -343,8 +340,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Popisi</string>
     <string name="pref_regex_edits">Šablonska uređivanja</string>
     <string name="pref_blocked_metadata">Blokirani metapodatci</string>
-    <string name="pref_lastfm_disable">Ne scrobbleaj na lastFM</string>
-    <string name="pref_lastfm_disable_desc">I dalje trebate prijavu pomoću lastFM-a da bi ostatak sučelja funkcionirao</string>
     <string name="pref_translate">Prevedi ovu aplikaciju</string>
     <string name="pref_translate_credits">Popis prevoditelja</string>
     <string name="pref_oss_credits">Licence otvorenog koda</string>

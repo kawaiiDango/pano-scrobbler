@@ -152,7 +152,6 @@
     <string name="pending_scrobbles">Scrobbles pendents</string>
     <string name="pending_scrobble">Scrobble pendent</string>
     <string name="pending_scrobbles_noti">S\'estan processant els scrobbles pendents</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s avui</string>
     <string name="friends">Amics</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles des del %2$s</string>
     <string name="allow_background">Permet fer scrobbling en segon pla</string>
@@ -188,7 +187,6 @@
     <string name="not_found" comment="Shown in search">No s\'ha trobat</string>
     <string name="save" comment="saves a file">Desa</string>
     <string name="saved_to_gallery">S\'ha desat a la galeria</string>
-    <string name="lastfm_reports">Informes de Last.fm</string>
     <string name="weekly">Setmanal</string>
     <string name="weeks">Setmanes</string>
     <string name="monthly">Mensual</string>
@@ -308,8 +306,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Llistes</string>
     <string name="pref_regex_edits">Edicions de patró</string>
     <string name="pref_blocked_metadata">Metadades bloquejades</string>
-    <string name="pref_lastfm_disable">No faces scrobble a Last.fm</string>
-    <string name="pref_lastfm_disable_desc">Necessites iniciar la sessió a Last.fm perquè funcione la resta de la interfície</string>
     <string name="pref_translate">Tradueix l\'aplicació</string>
     <string name="pref_translate_credits">Agraïments de traducció</string>
     <string name="pref_oss_credits">Crèdits del codi obert</string>

@@ -183,7 +183,6 @@
     <string name="pending_scrobbles">Oczekujące Scrobble</string>
     <string name="pending_scrobble">Oczekujące scrobble</string>
     <string name="pending_scrobbles_noti">Przetwarzanie oczekujących scrobbli</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbli • %2$s dzisiaj</string>
     <string name="friends">Znajomi</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbli, od %2$s</string>
     <string name="allow_background">Pozwól na scrobblowanie w tle</string>
@@ -198,7 +197,6 @@
 - I więcej
 - Wyłącz dźwięki powiadomień\"\""</string>
     <string name="will_not_scrobble">Pominięcie tego kroku wyłączy scrobblowanie</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM i Listenbrainz mogą być uwierzytelnione później, w ustawieniach</string>
     <string name="swap" comment="(Swap title and artist)">Zamień</string>
     <string name="rate_msg">Podoba Ci się ta aplikacja?</string>
     <string name="rate_action">Oceń</string>
@@ -236,7 +234,6 @@
     <string name="not_found" comment="Shown in search">Nie znaleziono</string>
     <string name="save" comment="saves a file">Zapisz</string>
     <string name="saved_to_gallery">Zapisano w Galerii</string>
-    <string name="lastfm_reports">Raporty LastFM</string>
     <string name="weekly">Co tydzień</string>
     <string name="weeks">Tygodnie</string>
     <string name="monthly">Co miesiąc</string>
@@ -378,8 +375,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listy</string>
     <string name="pref_regex_edits">Edycje wzoru</string>
     <string name="pref_blocked_metadata">Zablokowane metadane</string>
-    <string name="pref_lastfm_disable">Nie scrobbluj do lastFM</string>
-    <string name="pref_lastfm_disable_desc">Nadal potrzebujemy logowania do lastFM, aby reszta interfejsu użytkownika działała</string>
     <string name="pref_translate">Przetłumacz tę aplikację</string>
     <string name="pref_translate_credits">Podziękowania dla tłumaczy</string>
     <string name="pref_oss_credits">Źródła otwartego oprogramowania</string>

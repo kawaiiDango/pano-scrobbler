@@ -183,7 +183,6 @@
     <string name="pending_scrobbles">Очікуючі Скробли</string>
     <string name="pending_scrobble">Очікуючі Скробли</string>
     <string name="pending_scrobbles_noti">Обробка очікуючих скроблів</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s скроблів • %2$s сьогодні</string>
     <string name="friends">Друзі</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s скроблів, з %2$s</string>
     <string name="allow_background">Дозволити скробблінг у фоновому режимі</string>
@@ -198,7 +197,6 @@
 -Та більше
 - Сповіщення беззвучні\"\""</string>
     <string name="will_not_scrobble">Пропуск цього кроку вимкне скробблінг</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM і Listenbrainz можна автентифікувати після цього через налаштування</string>
     <string name="swap" comment="(Swap title and artist)">Замінити</string>
     <string name="rate_msg">Подобається цей додаток?</string>
     <string name="rate_action">Оцінити програму</string>
@@ -236,7 +234,6 @@
     <string name="not_found" comment="Shown in search">Не знайдено</string>
     <string name="save" comment="saves a file">Зберегти</string>
     <string name="saved_to_gallery">Збережено до галереї</string>
-    <string name="lastfm_reports">Звіти LastFM</string>
     <string name="weekly">Щотижня</string>
     <string name="weeks">Тижні</string>
     <string name="monthly">Щомісяця</string>
@@ -381,8 +378,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Редагування шаблонів</string>
     <string name="pref_blocked_metadata">Заблоковані метадані</string>
-    <string name="pref_lastfm_disable">Не скроблити в lastFM</string>
-    <string name="pref_lastfm_disable_desc">Для роботи іншої частини UI, вам потрібно війти в lastFM</string>
     <string name="pref_translate">Допомогти з перекладом</string>
     <string name="pref_translate_credits">Подяка перекладачам</string>
     <string name="pref_oss_credits">Використано відкритий код</string>

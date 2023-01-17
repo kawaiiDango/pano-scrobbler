@@ -5,6 +5,10 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
+    <plurals name="num_scrobbles_today"
+        comment="n (scrobbles) today">
+        <item quantity="other">%1$s today</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s listener</item>
         <item quantity="other">%1$s listeners</item>
@@ -195,13 +199,14 @@
     <string name="new_player_prompt">Keep scrobbling this app?</string>
     <string name="no_track_url">This song doesn\'t have a page on lastFM</string>
     <string name="no_scrobbles">No songs here yet…</string>
-    <string name="no_friends">No lastFM friends yet…</string>
+    <string name="no_friends">Not following anyone yet…</string>
     <string name="channel_err">Scrobble errors</string>
     <string name="new_app">New app</string>
     <string name="no_apps_enabled">No apps are enabled</string>
     <string name="n_more" formatted="true"
         comment="n more( pending scrobbles)"
         >%1$d more</string>
+
     <string name="show_all">See all</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
@@ -210,9 +215,6 @@
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobble">Pending scrobble</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
-    <string name="num_scrobbles_nav" formatted="true"
-        comment="n scrobbles (total) • n (scrobbles) today"
-        >%1$s scrobbles • %2$s today</string>
 
     <string name="friends">Friends</string>
     <string name="num_scrobbles_since" formatted="true"
@@ -232,7 +234,6 @@
 - And more
 - The notifications do not make a sound"""</string>
     <string name="will_not_scrobble">Skipping this step will disable scrobbling</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM and Listenbrainz can be authenticated after this, from settings</string>
     <string name="swap"
         comment="(Swap title and artist)"
         >Swap</string>
@@ -297,7 +298,9 @@
         comment="saves a file"
         >Save</string>
     <string name="saved_to_gallery">Saved to gallery</string>
-    <string name="lastfm_reports">LastFM reports</string>
+    <string name="reports"
+        comment="Like last.week reports and stuff"
+        >Reports</string>
     <string name="weekly">Weekly</string>
     <string name="weeks">Weeks</string>
     <string name="monthly">Monthly</string>
@@ -440,6 +443,24 @@
 
     <string name="scrobbler_off">Scrobbler disabled</string>
     <string name="scrobbler_on">Scrobbler active</string>
+    <string name="acoustic"
+        comment="(Acoustic music)"
+        >Acoustic</string>
+    <string name="instrumental">Instrumental</string>
+    <string name="energetic"
+        comment="(Energetic music)"
+        >Energetic</string>
+    <string name="danceable">Danceable</string>
+    <string name="valence"
+        comment="(Musical positivity)"
+        >Positivity</string>
+    <string name="popularity"
+        formatted="true"
+        comment="popularity of a track"
+        >Popularity: %1$d%%</string>
+    <string name="analysis"
+        comment="musical analysis such as key, bpm, time signature, dancability etc"
+        >Analysis</string>
     <string name="enable"
         comment="To enable the scrobbler"
         >Enable</string>
@@ -526,8 +547,6 @@
         >Lists</string>
     <string name="pref_regex_edits">Pattern edits</string>
     <string name="pref_blocked_metadata">Blocked metadata</string>
-    <string name="pref_lastfm_disable">Don\'t scrobble to lastFM</string>
-    <string name="pref_lastfm_disable_desc">You still need a lastFM login for the rest of the UI to work</string>
     <string name="pref_translate">Translate this app</string>
     <string name="pref_translate_credits">Translation credits</string>
     <string name="pref_oss_credits">Open source credits</string>

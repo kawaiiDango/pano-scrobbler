@@ -153,7 +153,6 @@
     <string name="pending_scrobbles">Scrobbles pendentes</string>
     <string name="pending_scrobble">Scrobble pendente</string>
     <string name="pending_scrobbles_noti">Processando scrobbles pendentes</string>
-    <string name="num_scrobbles_nav" formatted="true" comment="n scrobbles (total) • n (scrobbles) today">%1$s scrobbles • %2$s hoje</string>
     <string name="friends">Amigos</string>
     <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, desde %2$s</string>
     <string name="allow_background">Permitir scrobbling em segundo plano</string>
@@ -168,7 +167,6 @@
 - E mais
 - As notificações não emitem som\"\""</string>
     <string name="will_not_scrobble">Pular esse passo irá desativar os scrobbles</string>
-    <string name="authenticate_with_lastfm_desc">LibreFM, GNUFM e Listenbrainz podem ser autenticados depois disso a partir das configurações</string>
     <string name="swap" comment="(Swap title and artist)">Trocar</string>
     <string name="rate_msg">Gostando do aplicativo?</string>
     <string name="rate_action">Avalie</string>
@@ -206,7 +204,6 @@
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="save" comment="saves a file">Salvar</string>
     <string name="saved_to_gallery">Salvo na galeria</string>
-    <string name="lastfm_reports">Relatórios do lastFM</string>
     <string name="weekly">Semanal</string>
     <string name="weeks">Semanas</string>
     <string name="monthly">Mensal</string>
@@ -351,8 +348,6 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listas</string>
     <string name="pref_regex_edits">Edições por padrão</string>
     <string name="pref_blocked_metadata">Metadados bloqueados</string>
-    <string name="pref_lastfm_disable">Não faça scrobble no lastFM</string>
-    <string name="pref_lastfm_disable_desc">Você ainda vai precisar fazer login no lastFM para o resto da interface funcionar</string>
     <string name="pref_translate">Traduzir esse app</string>
     <string name="pref_translate_credits">Créditos de tradução</string>
     <string name="pref_oss_credits">Licenças de código aberto</string>

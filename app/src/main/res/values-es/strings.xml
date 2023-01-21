@@ -140,7 +140,6 @@
     <string name="new_player_prompt">¿Mantener el scrobbling en está aplicación?</string>
     <string name="no_track_url">Esta canción no tiene una página en Lastfm</string>
     <string name="no_scrobbles">Aún no hay canciones aquí…</string>
-    <string name="no_friends">Aún no hay amigos en Lastfm…</string>
     <string name="channel_err">Error de Scrobble</string>
     <string name="new_app">Nueva aplicación</string>
     <string name="no_apps_enabled">No hay aplicaciones habilitadas</string>

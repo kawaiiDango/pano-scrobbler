@@ -170,7 +170,6 @@
     <string name="new_player_prompt">Чи скроблювати з цього додатку?</string>
     <string name="no_track_url">Ця пісня не має сторінки в lastFM</string>
     <string name="no_scrobbles">Тут ще немає пісень…</string>
-    <string name="no_friends">Друзів з lastFM ще не має…</string>
     <string name="channel_err">Помилки скроблінгу</string>
     <string name="new_app">Новий додаток</string>
     <string name="no_apps_enabled">Жодних програм не встановлено</string>

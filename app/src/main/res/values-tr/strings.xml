@@ -140,7 +140,6 @@
     <string name="new_player_prompt">Bu uygulama skroplanmaya devam edilsin mi?</string>
     <string name="no_track_url">Bu şarkının lastFM\'de sayfası bulunmamakta</string>
     <string name="no_scrobbles">Henüz hiç şarkı yok…</string>
-    <string name="no_friends">Henüz hiç lastFM arkadaşı yok…</string>
     <string name="channel_err">Skrop hatası</string>
     <string name="new_app">Yeni uygulama</string>
     <string name="no_apps_enabled">Etkin uygulama yok</string>

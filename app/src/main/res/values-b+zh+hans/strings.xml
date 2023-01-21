@@ -125,7 +125,6 @@
     <string name="new_player_prompt">继续为此应用启用音乐记录吗？</string>
     <string name="no_track_url">lastFM 上没有这首歌的对应页面</string>
     <string name="no_scrobbles">这里还没有歌曲…</string>
-    <string name="no_friends">还没有 lastFM 好友…</string>
     <string name="channel_err">音乐记录错误</string>
     <string name="new_app">新应用</string>
     <string name="no_apps_enabled">未在任何应用中启用</string>

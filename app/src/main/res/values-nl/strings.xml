@@ -132,7 +132,6 @@
     <string name="new_player_prompt">Deze app blijven scrobbelen?</string>
     <string name="no_track_url">Dit nummer heeft geen pagina op de lastFM</string>
     <string name="no_scrobbles">Nog geen nummers hier…</string>
-    <string name="no_friends">Nog geen lastFM vrienden…</string>
     <string name="channel_err">Scrobbel errors</string>
     <string name="new_app">Nieuwe App</string>
     <string name="no_apps_enabled">Er zijn geen apps ingeschakeld</string>

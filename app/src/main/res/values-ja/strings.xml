@@ -125,7 +125,6 @@
     <string name="new_player_prompt">このアプリをScrobbleしますか？</string>
     <string name="no_track_url">この曲はLastFMのページがありません</string>
     <string name="no_scrobbles">曲はまだありません…</string>
-    <string name="no_friends">LastFMのフレンドはまだいません…</string>
     <string name="channel_err">Scrobbleの障害</string>
     <string name="new_app">新しいアプリ</string>
     <string name="no_apps_enabled">有効化されたアプリはありません</string>

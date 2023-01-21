@@ -140,7 +140,6 @@
     <string name="new_player_prompt">Diese App weiter scrobbeln?</string>
     <string name="no_track_url">Dieser Titel hat keine Seite auf lastFM</string>
     <string name="no_scrobbles">Noch keine Titel vorhanden…</string>
-    <string name="no_friends">Noch keine LastFM-Freunde…</string>
     <string name="channel_err">Scrobble-Fehler</string>
     <string name="new_app">Neue App</string>
     <string name="no_apps_enabled">Keine Apps aktiviert</string>

@@ -170,7 +170,6 @@
     <string name="new_player_prompt">Scrobblować z tej aplikacji?</string>
     <string name="no_track_url">Ten utwór nie ma strony na lastFM</string>
     <string name="no_scrobbles">Jeszcze nie ma tutaj utworów…</string>
-    <string name="no_friends">Nie ma jeszcze znajomych z lastFM…</string>
     <string name="channel_err">Błąd scrobblowania</string>
     <string name="new_app">Nowa aplikacja</string>
     <string name="no_apps_enabled">Brak włączonych aplikacji</string>

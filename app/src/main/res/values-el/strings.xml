@@ -140,7 +140,6 @@
     <string name="new_player_prompt">Συνέχιση scrobbling αυτής της εφαρμογής;</string>
     <string name="no_track_url">Αυτό το τραγούδι δεν έχει σελίδα στο lastFM</string>
     <string name="no_scrobbles">Δεν υπάρχουν τραγούδια ακόμα εδώ…</string>
-    <string name="no_friends">Δεν υπάρχουν ακόμη φίλοι του lastFM…</string>
     <string name="channel_err">Σφάλματα Scrobble</string>
     <string name="new_app">Νέα εφαρμογή</string>
     <string name="no_apps_enabled">Δεν υπάρχουν ενεργοποιημένες εφαρμογές</string>

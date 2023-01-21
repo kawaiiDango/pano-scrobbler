@@ -170,7 +170,6 @@
     <string name="new_player_prompt">Продолжать скробблинг из этого приложения?</string>
     <string name="no_track_url">У этой песни нет страницы на lastFM</string>
     <string name="no_scrobbles">Здесь пока нет песен…</string>
-    <string name="no_friends">Друзей из lastFM еще нет…</string>
     <string name="channel_err">Ошибки скробблинга</string>
     <string name="new_app">Новое приложение</string>
     <string name="no_apps_enabled">Нет подключенных приложений</string>

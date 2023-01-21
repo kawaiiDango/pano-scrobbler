@@ -139,7 +139,6 @@
     <string name="new_player_prompt">Vols fer scrobble en aquesta aplicació?</string>
     <string name="no_track_url">Aquesta cançó no té una pàgina en Last.fm</string>
     <string name="no_scrobbles">Encara no hi ha cançons…</string>
-    <string name="no_friends">Encara no tens amics de Last.fm…</string>
     <string name="channel_err">Errors d\'scrobble</string>
     <string name="new_app">Aplicació nova</string>
     <string name="no_apps_enabled">No hi ha cap aplicació activada</string>

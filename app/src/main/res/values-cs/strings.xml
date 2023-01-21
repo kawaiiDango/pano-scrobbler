@@ -170,7 +170,6 @@
     <string name="new_player_prompt">Nadále scrobblovat tuto aplikaci?</string>
     <string name="no_track_url">Tato skladba nemá stránku na lastFM</string>
     <string name="no_scrobbles">Zatím zde nejsou žádné skladby…</string>
-    <string name="no_friends">Zatím žádní přátelé z lastFM…</string>
     <string name="channel_err">Chyby při scrobblování</string>
     <string name="new_app">Nová aplikace</string>
     <string name="no_apps_enabled">Nejsou povoleny žádné aplikace</string>

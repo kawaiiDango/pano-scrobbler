@@ -200,6 +200,7 @@
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
     <string name="save" comment="saves a file">Salva</string>
     <string name="saved_to_gallery">Salvato nella galleria</string>
+    <string name="reports" comment="Like last.week reports and stuff">Report</string>
     <string name="weekly">Settimanali</string>
     <string name="weeks">Settimane</string>
     <string name="monthly">Mensili</string>
@@ -244,6 +245,7 @@
     <string name="dark">Scuro</string>
     <string name="system_colors">Colori del sistema</string>
     <string name="appwidget_alpha">Opacità sfondo</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Il widget si aggiornerà ogni %1$s minuti</string>
     <string name="primary_color">Colore principale</string>
     <string name="secondary_color">Colore secondario</string>
     <string name="tint_background">Colore sfondo</string>
@@ -284,6 +286,9 @@
     <string name="persistent_noti_desc">Tieni premuto per nascondere</string>
     <string name="scrobbler_off">Scrobbler disattivato</string>
     <string name="scrobbler_on">Scrobbler attivato</string>
+    <string name="acoustic" comment="(Acoustic music)">Acustica</string>
+    <string name="instrumental">Strumentale</string>
+    <string name="energetic" comment="(Energetic music)">Energetica</string>
     <string name="pref_master">Scrobbling di musica</string>
     <string name="pref_master_qs_hint">Può essere attivato anche dalla barra di stato</string>
     <string name="pref_noti_q">Puoi dare priorità alla notifica in caso l\'icona non si vedesse</string>

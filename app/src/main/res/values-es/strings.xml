@@ -4,6 +4,10 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s hoy</item>
+        <item quantity="other">%1$s hoy</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s oyente</item>
         <item quantity="other">%1$s oyentes</item>

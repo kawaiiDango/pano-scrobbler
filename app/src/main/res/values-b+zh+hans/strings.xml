@@ -3,6 +3,9 @@
     <plurals name="num_scrobbles_noti">
         <item quantity="other">%1$s 条记录</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="other">今天记录 %1$s</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="other">%1$s 位听众</item>
     </plurals>
@@ -125,6 +128,7 @@
     <string name="new_player_prompt">继续为此应用启用音乐记录吗？</string>
     <string name="no_track_url">lastFM 上没有这首歌的对应页面</string>
     <string name="no_scrobbles">这里还没有歌曲…</string>
+    <string name="no_friends">还没有关注任何人…</string>
     <string name="channel_err">音乐记录错误</string>
     <string name="new_app">新应用</string>
     <string name="no_apps_enabled">未在任何应用中启用</string>
@@ -188,6 +192,7 @@
     <string name="not_found" comment="Shown in search">找不到结果</string>
     <string name="save" comment="saves a file">保存</string>
     <string name="saved_to_gallery">已保存至媒体库</string>
+    <string name="reports" comment="Like last.week reports and stuff">报告</string>
     <string name="weekly">每周</string>
     <string name="weeks">周</string>
     <string name="monthly">每月</string>
@@ -273,6 +278,11 @@
     <string name="persistent_noti_desc">长按以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
+    <string name="acoustic" comment="(Acoustic music)">原声</string>
+    <string name="energetic" comment="(Energetic music)">活跃</string>
+    <string name="danceable">舞曲</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">人气：%1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
     <string name="enable" comment="To enable the scrobbler">已启用</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">尺寸</string>
     <string name="skip_missing_images">跳过缺失的图像</string>
@@ -310,6 +320,7 @@
     <string name="pref_now_playing">提交当前播放的音乐</string>
     <string name="pref_fetch_aa">从 lastFM 获取专辑艺术家</string>
     <string name="pref_fetch_aa_desc">针对不提供此数据的播放器。获取的数据可能和实际标签不同。last.fm 可能没有某些歌曲的专辑艺术家数据。</string>
+    <string name="pref_fetch_album">从 lastFM 获取缺失的专辑数据</string>
     <string name="pref_locale">语言</string>
     <string name="pref_change_locale">更改语言</string>
     <string name="pref_crashlytics_enabled">自动回报错误</string>

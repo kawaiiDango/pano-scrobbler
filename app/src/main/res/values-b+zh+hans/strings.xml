@@ -323,7 +323,7 @@
     <string name="pref_fetch_album">从 lastFM 获取缺失的专辑数据</string>
     <string name="pref_locale">语言</string>
     <string name="pref_change_locale">更改语言</string>
-    <string name="pref_crashlytics_enabled">自动回报错误</string>
+    <string name="pref_crashlytics_enabled">自动上报错误</string>
     <string name="pref_misc">杂项</string>
     <string name="pref_imexport">导入 &amp; 导出</string>
     <string name="pref_export">导出</string>
@@ -405,7 +405,7 @@
     <string name="pro_support">下面向您这样的宝贵用户提供一种简单、直接的方式，如果您觉得这款应用有价值，不妨以此对其表示支持。</string>
     <string name="pro_also_get">您同时也将解锁以下功能：</string>
     <string name="thank_you">感谢！</string>
-    <string name="purchase_pending">您的购买尚未被付款提供商确认。请稍等几分钟后重试。</string>
+    <string name="purchase_pending">您的购买尚未被付款提供商确认，请稍后再试</string>
     <string name="billing_troubleshoot_title">恢复购买</string>
     <string name="billing_troubleshoot">"已经购买？
 

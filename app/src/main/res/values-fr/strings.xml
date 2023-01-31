@@ -132,6 +132,7 @@
     <string name="new_player_prompt">Continuer de scrobbler cette app ?</string>
     <string name="no_track_url">Cette musique ne possède pas de page sur lastFM</string>
     <string name="no_scrobbles">Aucunes chansons ici pour le moment…</string>
+    <string name="no_friends">Vous ne suivez personne pour le moment…</string>
     <string name="channel_err">Erreurs de scrobble</string>
     <string name="new_app">Nouvelle application</string>
     <string name="no_apps_enabled">Aucune application activée</string>

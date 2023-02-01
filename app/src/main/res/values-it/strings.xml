@@ -289,8 +289,20 @@
     <string name="acoustic" comment="(Acoustic music)">Acustica</string>
     <string name="instrumental">Strumentale</string>
     <string name="energetic" comment="(Energetic music)">Energetica</string>
+    <string name="danceable">Ballabile</string>
+    <string name="valence" comment="(Musical positivity)">Positività</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Popolarità: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analisi</string>
+    <string name="enable" comment="To enable the scrobbler">Abilita</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Dimensione</string>
+    <string name="skip_missing_images">Salta immagini mancanti</string>
+    <string name="create_collage">Crea collage</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Didascalie immagini</string>
+    <string name="username" comment="last.fm Username">Nome utente</string>
     <string name="pref_master">Scrobbling di musica</string>
     <string name="pref_master_qs_hint">Può essere attivato anche dalla barra di stato</string>
+    <string name="pref_master_qs_add">Aggiungi il tile impostazioni rapide</string>
+    <string name="pref_master_qs_already_addded">Tile impostazioni rapide già aggiunto</string>
     <string name="pref_noti_q">Puoi dare priorità alla notifica in caso l\'icona non si vedesse</string>
     <string name="pref_noti">Notifiche</string>
     <string name="pref_noti_categories">Categorie di notifiche</string>
@@ -301,6 +313,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ Supporta le app che mostrano metadati musicali. Per evitare gli scrobbling duplicati da Spotify, attiva lo scrobbling in un solo posto.</string>
     <string name="pref_enabled_apps_title">Scegli app</string>
     <string name="pref_auto_detect_summary">…ti chiederemo comunque di confermare/ignorare ogni app</string>
+    <string name="pref_auto_detect">Scrobble automatico da nuove app</string>
+    <string name="pref_spotify_remote">Scrobble di Spotify da altri dispositivi</string>
     <string name="pref_delay">Ritardo dello scrobbling (quello che viene prima)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuti</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentuale</string>
@@ -316,6 +330,7 @@
     <string name="pref_now_playing">Invia scrobbling in corso</string>
     <string name="pref_fetch_aa">Importa gli artisti dell\'album da lastFM</string>
     <string name="pref_fetch_aa_desc">Utile per lettori che non forniscono questo dato. I dati importati potrebbero essere diversi dalle tue tag. lastFM potrebbe non avere i dati per alcune canzoni.</string>
+    <string name="pref_fetch_album">Recupera i dati dell\'album mancanti da lastFM</string>
     <string name="pref_locale">Lingua</string>
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
@@ -414,4 +429,5 @@ I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google
     <string name="billing_block">Blocca artisti/brani e salta o silenzia automaticamente</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fissa in primo piano e riordina gli amici (fino a %1$d)</string>
     <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>
+    <string name="billing_scrobble_source">Ricorda e vedi le app da cui hai effettuato lo scrobble, e cerca direttamente in queste</string>
 </resources>

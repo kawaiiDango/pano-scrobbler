@@ -18,9 +18,9 @@ Buttons in notifications don't work as expected. This is a WSA bug.
 
 ### Features:
 - No ADs ever
-- Scrobbles to LastFM, LibreFM, GNU FM and Listenbrainz (A LastFM login is required for now)
+- Supports LastFM, LibreFM, GNU FM and Listenbrainz
 - Supports phones, TVs, tablets and Android desktops including Windows 11
-- Interactive notification: View scrobble counts, love, cancel or block tracks directly from the notification
+- Interactive notification: View track info, love, cancel or block tracks directly from the notification
 - View track, album, artist, album artist and tag details
 - View scrobbles from a specific time such as last year, last month etc.
 - Edit or delete existing scrobbles. Remembers edits

@@ -51,4 +51,4 @@ See [instructions.md](instructions.md)
 - Lastfm API wrapper: Based on https://github.com/jkovacs/lastfm-java
 - Icons: https://materialdesignicons.com and https://material.io
 
-Thanks to everyone who reported bugs and helped me with this project.
+Thanks to the amazing [translators](https://crowdin.com/project/pscrobbler/members) and everyone who reported bugs and helped me with this project.

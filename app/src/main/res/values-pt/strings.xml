@@ -4,6 +4,10 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s hoje</item>
+        <item quantity="other">%1$s hoje</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s ouvinte</item>
         <item quantity="other">%1$s ouvintes</item>
@@ -140,6 +144,7 @@
     <string name="new_player_prompt">Continuar a fazer scrobble desta app?</string>
     <string name="no_track_url">Esta música não tem uma página no lastFM</string>
     <string name="no_scrobbles">Sem músicas aqui ainda…</string>
+    <string name="no_friends">Ainda não segue ninguém…</string>
     <string name="channel_err">Erro de Scrobble</string>
     <string name="new_app">Nova aplicação</string>
     <string name="no_apps_enabled">Sem apps ativadas</string>
@@ -203,6 +208,7 @@
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="save" comment="saves a file">Guardar</string>
     <string name="saved_to_gallery">Guardada na galeria</string>
+    <string name="reports" comment="Like last.week reports and stuff">Relatórios</string>
     <string name="weekly">Semanal</string>
     <string name="weeks">Semanas</string>
     <string name="monthly">Mensal</string>
@@ -288,6 +294,13 @@
     <string name="persistent_noti_desc">Pressione e segure para ocultar isto</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
+    <string name="acoustic" comment="(Acoustic music)">Acústica</string>
+    <string name="instrumental">Instrumental</string>
+    <string name="energetic" comment="(Energetic music)">Enérgica</string>
+    <string name="danceable">Dançável</string>
+    <string name="valence" comment="(Musical positivity)">Positiva</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Popularidade: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Análise</string>
     <string name="enable" comment="To enable the scrobbler">Ativar</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
     <string name="skip_missing_images">Ignorar imagens em falta</string>

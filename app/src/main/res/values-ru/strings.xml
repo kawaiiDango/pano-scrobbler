@@ -6,6 +6,12 @@
         <item quantity="many">%1$s скробблов</item>
         <item quantity="other">%1$s скроббла</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s сегодня</item>
+        <item quantity="few">%1$s сегодня</item>
+        <item quantity="many">%1$s сегодня</item>
+        <item quantity="other">%1$s сегодня</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s слушатель</item>
         <item quantity="few">%1$s слушателя</item>
@@ -320,6 +326,11 @@
     <string name="persistent_noti_desc">Нажмите и удерживайте, чтобы скрыть это</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
+    <string name="acoustic" comment="(Acoustic music)">Акустическая</string>
+    <string name="instrumental">Инструментальная</string>
+    <string name="energetic" comment="(Energetic music)">Энергичная</string>
+    <string name="danceable">Танцевальная</string>
+    <string name="valence" comment="(Musical positivity)">Позитивная</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Популярность: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Анализ</string>
     <string name="enable" comment="To enable the scrobbler">Включить</string>

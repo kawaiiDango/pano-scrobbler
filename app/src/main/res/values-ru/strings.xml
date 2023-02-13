@@ -170,6 +170,7 @@
     <string name="new_player_prompt">Продолжать скробблинг из этого приложения?</string>
     <string name="no_track_url">У этой песни нет страницы на lastFM</string>
     <string name="no_scrobbles">Здесь пока нет песен…</string>
+    <string name="no_friends">Пока не подписаны ни на кого…</string>
     <string name="channel_err">Ошибки скробблинга</string>
     <string name="new_app">Новое приложение</string>
     <string name="no_apps_enabled">Нет подключенных приложений</string>
@@ -233,6 +234,7 @@
     <string name="not_found" comment="Shown in search">Не найдено</string>
     <string name="save" comment="saves a file">Сохранить</string>
     <string name="saved_to_gallery">Сохранено в галерею</string>
+    <string name="reports" comment="Like last.week reports and stuff">Отчёты</string>
     <string name="weekly">Еженедельно</string>
     <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
@@ -318,6 +320,8 @@
     <string name="persistent_noti_desc">Нажмите и удерживайте, чтобы скрыть это</string>
     <string name="scrobbler_off">Скробблер отключен</string>
     <string name="scrobbler_on">Скробблер включен</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Популярность: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Анализ</string>
     <string name="enable" comment="To enable the scrobbler">Включить</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Размер</string>
     <string name="skip_missing_images">Пропустить отсутствующие изображения</string>
@@ -372,7 +376,7 @@
     <string name="pref_show_albums_desc">…для скробблов</string>
     <string name="pref_show_scrobble_sources">Отображать иконки приложений, из которых вы скробблили</string>
     <string name="pref_show_scrobble_sources_desc">…рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
-    <string name="pref_search_in_source">Поиск &amp; воиспроизведение в приложении, из которого вы скробблили</string>
+    <string name="pref_search_in_source">Поиск &amp; воспроизведение в приложении, из которого вы скробблили</string>
     <string name="pref_search_in_source_desc">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Шаблоны редактирования</string>

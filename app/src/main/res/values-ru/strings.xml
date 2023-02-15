@@ -38,7 +38,7 @@
     </plurals>
     <plurals name="num_years">
         <item quantity="one">%1$s год</item>
-        <item quantity="few">%1$s лет</item>
+        <item quantity="few">%1$s года</item>
         <item quantity="many">%1$s лет</item>
         <item quantity="other">%1$s лет</item>
     </plurals>
@@ -245,7 +245,7 @@
     <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
     <string name="months">Месяцы</string>
-    <string name="years">Года</string>
+    <string name="years">Годы</string>
     <string name="charts_overall">За все время</string>
     <string name="charts_no_data">Нет данных за этот период</string>
     <string name="charts_custom" comment="Custom date range, but in short">Пользовательский</string>

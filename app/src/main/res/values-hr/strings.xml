@@ -110,11 +110,9 @@
     <string name="state_unrecognised_artist">Neprepoznati izvođač</string>
     <string name="tap_to_edit">(dodirni za uređivanje)</string>
     <string name="recently_scrobbled">Nedavno scrobbleano</string>
-    <string name="recently_loved">♥ Nedavno voljeno</string>
     <string name="recents" comment="Short for recently scrobbled">Nedavno</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Prvi puta scrobbleano %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="graph_info">… posljednjih 5 mjeseci</string>
     <string name="enabled_apps">Omogućene aplikacije</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Još malo…</string>
     <string name="music_players">Reproduktori glazbe</string>
@@ -197,16 +195,13 @@
     <string name="details">Detalji</string>
     <string name="saved_as_pending">Spremljeno kao scrobble na čekanju</string>
     <string name="sort">Sortiraj</string>
-    <string name="past_scrobbles">Prošli scrobbleovi</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Vremenski skok</string>
     <string name="my_scrobbles">Moji scrobbleovi</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbleovi korisnika %1$s</string>
     <string name="listeners">Slušatelji</string>
     <string name="scrobbles">Scrobbleovi</string>
     <string name="collapse" comment="(view only a few items)">Sažmi</string>
     <string name="expand" comment="(view all items)">Proširi</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s voli ovo</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbleovi do %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iz: %1$s</string>
     <string name="not_found" comment="Shown in search">Nije pronađeno</string>
     <string name="save" comment="saves a file">Spremi</string>
@@ -356,7 +351,6 @@
     <string name="current_track">Trenutna pjesma:</string>
     <string name="copied">Kopirano!</string>
     <string name="lastfm_reauth">Morate se ponovno autentificirati za uređivanje ili brisanje scrobbleova</string>
-    <string name="custom_listenbrainz">Prilagođeni poslužitelj za Listenbrainz</string>
     <string name="failed_encode_url">Kodiranje URL-a nije uspjelo</string>
     <string name="artist_extra">Pjesme, albumi i slično</string>
     <string name="no_browser">Nema instaliranih preglednika</string>
@@ -380,8 +374,6 @@
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Prenošenje više scrobbleova</string>
     <string name="webview_error">Učitavanje stranice nije uspjelo (radi li Vaš internet?)</string>
-    <string name="navigation_drawer_open">Otvori navigacijsku ladicu ili idi natrag</string>
-    <string name="navigation_drawer_close">Zatvori navigacijsku ladicu</string>
     <string name="graph">Linijski grafikon</string>
     <string name="cleared_disabled_apps">Očišćene onemogućene aplikacije</string>
     <string name="fix_it_title">Mogući ispravci</string>

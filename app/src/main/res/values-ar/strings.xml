@@ -35,8 +35,6 @@
     <string name="state_unrecognised_artist">فنان غير معروف</string>
     <string name="tap_to_edit">(اضغط للتعديل)</string>
     <string name="recently_scrobbled">تم الاسكروبلنج موخرا</string>
-    <string name="recently_loved">محبوب موخرا ❤️</string>
-    <string name="graph_info">… آخر 5 أشهر</string>
     <string name="enabled_apps">التطبيقات المفعلة</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">تقريبا هناك…</string>
     <string name="music_players">مشغلي الموسيقى</string>

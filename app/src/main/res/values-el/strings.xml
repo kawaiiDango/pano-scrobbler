@@ -95,11 +95,9 @@
     <string name="state_unrecognised_artist">Μη αναγνωρισμένος καλλιτέχνης</string>
     <string name="tap_to_edit">(πατήστε για επεξεργασία)</string>
     <string name="recently_scrobbled">Πρόσφατα Scrobbled</string>
-    <string name="recently_loved">♥ Πρόσφατα Αγαπήθηκε</string>
     <string name="recents" comment="Short for recently scrobbled">Πρόσφατα</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Έγινε πρώτη φορά scrobble στις %1$s</string>
     <string name="auto" comment="automatic or default setting">Αυτόματο</string>
-    <string name="graph_info">… τους τελευταίους 5 μήνες</string>
     <string name="enabled_apps">Ενεργοποιημένες Εφαρμογές</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Σχεδόν τελειώσαμε…</string>
     <string name="music_players">Προγραμμάματα αναπαραγωγής μουσικής</string>
@@ -140,7 +138,6 @@
     <string name="new_player_prompt">Συνέχιση scrobbling αυτής της εφαρμογής;</string>
     <string name="no_track_url">Αυτό το τραγούδι δεν έχει σελίδα στο lastFM</string>
     <string name="no_scrobbles">Δεν υπάρχουν τραγούδια ακόμα εδώ…</string>
-    <string name="no_friends">Δεν υπάρχουν ακόμη φίλοι του lastFM…</string>
     <string name="channel_err">Σφάλματα Scrobble</string>
     <string name="new_app">Νέα εφαρμογή</string>
     <string name="no_apps_enabled">Δεν υπάρχουν ενεργοποιημένες εφαρμογές</string>
@@ -190,16 +187,13 @@
     <string name="details">Λεπτομέρειες</string>
     <string name="saved_as_pending">Αποθηκεύτηκε ως scrobble που εκκρεμεί</string>
     <string name="sort">Ταξινόμηση</string>
-    <string name="past_scrobbles">Παλαιότερα scrobbles</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Αναδρομή</string>
     <string name="my_scrobbles">Παλαιότερα scrobbles</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">τα scrobble του %1$s </string>
     <string name="listeners">Ακροατές</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Κατάρρευση</string>
     <string name="expand" comment="(view all items)">Επέκταση</string>
     <string name="user_loved" formatted="true" comment="%1= username">ο %1$s το αγάπησε</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles μέχρι %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Από %1$s</string>
     <string name="not_found" comment="Shown in search">Δε βρέθηκε</string>
     <string name="save" comment="saves a file">Αποθήκευση</string>
@@ -225,7 +219,6 @@
     <string name="graph_weekly">Εβδομαδιαίες μετρήσεις scrobble</string>
     <string name="graph_monthly">Μηνιαίες μέτρησεις scrobble</string>
     <string name="graph_yearly">Ετήσιες μετρήσεις scrobble</string>
-    <string name="graph_scrub_msg">Οι ώρες είναι στη ζώνη ώρας σας\nΚρατήστε ή τρίψτε το γράφημα για να δείτε τις ακριβείς μετρήσεις</string>
     <string name="original" comment="Original metadata before editing">Αρχικό</string>
     <string name="corrected" comment="Corrected metadata after editing">Διορθωμένο</string>
     <string name="tag" comment="last.fm tag">Ετικέτα</string>
@@ -366,7 +359,6 @@
     <string name="pref_intents">Προτάσεις για Tasker κλπ</string>
     <string name="copied">Αντιγράφηκε!</string>
     <string name="lastfm_reauth">Πρέπει να επαληθεύσετε ξανά τον έλεγχο ταυτότητας για να επεξεργαστείτε ή να διαγράψετε scrobbles</string>
-    <string name="custom_listenbrainz">Προσαρμοσμένος διακομιστής Listenbrainz</string>
     <string name="failed_encode_url">Αποτυχία κωδικοποίησης URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Έλεγχος %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Ειδική πρόσβαση στην εφαρμογή &gt; Πρόσβαση στις ειδοποιήσεις &gt; %1$s</string>
@@ -392,8 +384,6 @@
     <string name="submitting_loves" formatted="true">Υποβολή loves, %1$d απομένουν</string>
     <string name="pending_batch" comment="For pending scrobbles">Υποβολή μιας παρτίδας</string>
     <string name="webview_error">Η σελίδα απέτυχε να φορτώσει (δουλεύει η σύνδεσή σας;)</string>
-    <string name="navigation_drawer_open">Άνοιγμα συρταριού πλοήγησης ή επιστροφή</string>
-    <string name="navigation_drawer_close">Κλείσιμο συρταριού πλοήγησης</string>
     <string name="graph">Γράφημα γραμμών</string>
     <string name="cleared_disabled_apps">Εκκαθάριση απενεργοποιημένων εφαρμογών</string>
     <string name="fix_it_title">Πιθανές διορθώσεις</string>

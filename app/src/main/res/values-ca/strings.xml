@@ -95,11 +95,9 @@
     <string name="state_unrecognised_artist">Artista no reconegut</string>
     <string name="tap_to_edit">(Toca per a editar)</string>
     <string name="recently_scrobbled">Scrobbles recents</string>
-    <string name="recently_loved">♥ Preferits recents</string>
     <string name="recents" comment="Short for recently scrobbled">Recents</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primer scrobble fet el %1$s</string>
     <string name="auto" comment="automatic or default setting">Automàtic</string>
-    <string name="graph_info">Últims 5 mesos</string>
     <string name="enabled_apps">Aplicacions activades</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ja falta poc…</string>
     <string name="music_players">Reproductors de música</string>
@@ -139,7 +137,6 @@
     <string name="new_player_prompt">Vols fer scrobble en aquesta aplicació?</string>
     <string name="no_track_url">Aquesta cançó no té una pàgina en Last.fm</string>
     <string name="no_scrobbles">Encara no hi ha cançons…</string>
-    <string name="no_friends">Encara no tens amics de Last.fm…</string>
     <string name="channel_err">Errors d\'scrobble</string>
     <string name="new_app">Aplicació nova</string>
     <string name="no_apps_enabled">No hi ha cap aplicació activada</string>
@@ -173,16 +170,13 @@
     <string name="uploading">S\'està pujant…</string>
     <string name="saved_as_pending">S\'ha desat com a scrobble pendent</string>
     <string name="sort">Ordena</string>
-    <string name="past_scrobbles">Scrobbles anteriors</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salt en el temps</string>
     <string name="my_scrobbles">Els meus scrobbles</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de: %1$s</string>
     <string name="listeners">Oients</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Replega</string>
     <string name="expand" comment="(view all items)">Expandeix</string>
     <string name="user_loved" formatted="true" comment="%1= username">A %1$s li agrada</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles fins al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">No s\'ha trobat</string>
     <string name="save" comment="saves a file">Desa</string>
@@ -321,7 +315,6 @@
     <string name="import_settings">Importa la configuració</string>
     <string name="current_track">Cançó actual:</string>
     <string name="copied">S\'ha copiat!</string>
-    <string name="custom_listenbrainz">Servidor de Listenbrainz personalitzat</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Comprova %1$s</string>
     <string name="artist_extra">Cançons, àlbums i similars</string>
     <string name="no_browser">No hi ha cap navegador instal·lat</string>

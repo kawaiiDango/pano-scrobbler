@@ -87,11 +87,9 @@
     <string name="state_unrecognised_artist">Niet-herkende artiest</string>
     <string name="tap_to_edit">(Klik om te bewerken)</string>
     <string name="recently_scrobbled">Recent gescrobbeld</string>
-    <string name="recently_loved">Recent geloved</string>
     <string name="recents" comment="Short for recently scrobbled">Recenten</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Voor het eerst gescrobbeld op %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatisch</string>
-    <string name="graph_info">… afgelopen 5 maanden</string>
     <string name="enabled_apps">Ingeschakelde apps</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Bijna klaar…</string>
     <string name="music_players">Muziekspelers</string>
@@ -132,7 +130,6 @@
     <string name="new_player_prompt">Deze app blijven scrobbelen?</string>
     <string name="no_track_url">Dit nummer heeft geen pagina op de lastFM</string>
     <string name="no_scrobbles">Nog geen nummers hier…</string>
-    <string name="no_friends">Nog geen lastFM vrienden…</string>
     <string name="channel_err">Scrobbel errors</string>
     <string name="new_app">Nieuwe App</string>
     <string name="no_apps_enabled">Er zijn geen apps ingeschakeld</string>
@@ -182,16 +179,13 @@
     <string name="details">Details</string>
     <string name="saved_as_pending">Opgeslagen als een wachtende scrobbel</string>
     <string name="sort">Sorteren</string>
-    <string name="past_scrobbles">Vorige scrobbels</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Tijd sprong</string>
     <string name="my_scrobbles">Mijn scrobbels</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s\'s scrobbels</string>
     <string name="listeners">Luisteraars</string>
     <string name="scrobbles">Scrobbels</string>
     <string name="collapse" comment="(view only a few items)">Inklappen</string>
     <string name="expand" comment="(view all items)">Uitvouwen</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s loved dit</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbels tot %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Uit %1$s</string>
     <string name="not_found" comment="Shown in search">Niet gevonden</string>
     <string name="weekly">Wekelijks</string>
@@ -215,7 +209,6 @@
     <string name="graph_weekly">Wekelijkse scrobbel aantallen</string>
     <string name="graph_monthly">Maandelijkse scrobbel aantallen</string>
     <string name="graph_yearly">Jaarlijkse scrobbel aantallen</string>
-    <string name="graph_scrub_msg">Tijden zijn in uw tijdzone\nHoud de grafiek ingedrukt om de exacte aantallen te zien</string>
     <string name="original" comment="Original metadata before editing">Orginele</string>
     <string name="corrected" comment="Corrected metadata after editing">Gecorrigeerde</string>
     <string name="tag" comment="last.fm tag">Tag</string>
@@ -348,7 +341,6 @@
     <string name="pref_intents">Intenties voor Tasker enz</string>
     <string name="copied">Gekopieerd!</string>
     <string name="lastfm_reauth">U moet opnieuw verifiëren om scrobbles te kunnen bewerken of verwijderen</string>
-    <string name="custom_listenbrainz">Aangepaste Listenbrainz-server</string>
     <string name="failed_encode_url">Kan URL niet coderen</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Controleer %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Speciale app-toegang voor &gt; Notificatie toegang voor &gt; %1$s</string>
@@ -374,8 +366,6 @@
     <string name="submitting_loves" formatted="true">Loves aan het indienen, %1$d resterend</string>
     <string name="pending_batch" comment="For pending scrobbles">Een batch indienen</string>
     <string name="webview_error">De pagina kon niet worden geladen (werkt je internet?)</string>
-    <string name="navigation_drawer_open">Open het navigatiemenu of ga terug</string>
-    <string name="navigation_drawer_close">Sluit navigatiemenu</string>
     <string name="graph">Lijngrafiek</string>
     <string name="cleared_disabled_apps">Uitgeschakelde apps gewist</string>
     <string name="fix_it_title">Mogelijke oplossingen</string>

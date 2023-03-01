@@ -95,11 +95,9 @@
     <string name="state_unrecognised_artist">Unbekannter Interpret</string>
     <string name="tap_to_edit">(Zum Bearbeiten tippen)</string>
     <string name="recently_scrobbled">Zuletzt gescrobbelt</string>
-    <string name="recently_loved">♥ Kürzlich favorisiert</string>
     <string name="recents" comment="Short for recently scrobbled">Zuletzt</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Zuerst gescrobbelt auf %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="graph_info">… letzte 5 Monate</string>
     <string name="enabled_apps">Aktivierte Apps</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Fast geschafft…</string>
     <string name="music_players">Musik-Player</string>
@@ -140,7 +138,6 @@
     <string name="new_player_prompt">Diese App weiter scrobbeln?</string>
     <string name="no_track_url">Dieser Titel hat keine Seite auf lastFM</string>
     <string name="no_scrobbles">Noch keine Titel vorhanden…</string>
-    <string name="no_friends">Noch keine LastFM-Freunde…</string>
     <string name="channel_err">Scrobble-Fehler</string>
     <string name="new_app">Neue App</string>
     <string name="no_apps_enabled">Keine Apps aktiviert</string>
@@ -190,16 +187,13 @@
     <string name="details">Details</string>
     <string name="saved_as_pending">Gespeichert als ausstehender Scrobble</string>
     <string name="sort">Sortieren</string>
-    <string name="past_scrobbles">Vorherige Scrobbles</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Zeitsprung</string>
     <string name="my_scrobbles">Meine Scrobbles</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$ss scrobbles</string>
     <string name="listeners">Zuhörer</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Zuklappen</string>
     <string name="expand" comment="(view all items)">Erweitern</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s favorisierte das</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbelt bis %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Aus %1$s</string>
     <string name="not_found" comment="Shown in search">Nicht gefunden</string>
     <string name="save" comment="saves a file">Speichern</string>
@@ -225,7 +219,6 @@
     <string name="graph_weekly">Wöchentliche Scrobble-Anzahl</string>
     <string name="graph_monthly">Monatliche Scrobble-Anzahl</string>
     <string name="graph_yearly">Jährliche Scrobble-Anzahl</string>
-    <string name="graph_scrub_msg">Die Zeiten befinden sich in deiner Zeitzone\nHalte den Graphen gedrückt oder verschiebe ihn um die exakte Anzahl zu sehen</string>
     <string name="original" comment="Original metadata before editing">Original</string>
     <string name="corrected" comment="Corrected metadata after editing">Korrigiert</string>
     <string name="tag" comment="last.fm tag">Tag</string>
@@ -369,7 +362,6 @@
     <string name="pref_intents">Intents für Tasker usw.</string>
     <string name="copied">Kopiert!</string>
     <string name="lastfm_reauth">Du musst dich neu authentifizieren, um Scrobbles bearbeiten oder löschen zu können</string>
-    <string name="custom_listenbrainz">Eigener Listenbrainz-Server</string>
     <string name="failed_encode_url">Fehler beim Kodieren der URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$s überprüfen</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Spezieller App-Zugriff &gt; Benachrichtigungszugriff &gt; %1$s</string>
@@ -395,8 +387,6 @@
     <string name="submitting_loves" formatted="true">Sende Favoriten, %1$d verbleibend</string>
     <string name="pending_batch" comment="For pending scrobbles">Übermittlung mehrerer</string>
     <string name="webview_error">Die Seite konnte nicht geladen werden (funktioniert Ihre Internetverbindung?)</string>
-    <string name="navigation_drawer_open">Navigationsleiste öffnen oder zurückgehen</string>
-    <string name="navigation_drawer_close">Navigationsleiste schließen</string>
     <string name="graph">Liniendiagramm</string>
     <string name="cleared_disabled_apps">Deaktivierte Apps entfernt</string>
     <string name="fix_it_title">Mögliche Korrekturen</string>

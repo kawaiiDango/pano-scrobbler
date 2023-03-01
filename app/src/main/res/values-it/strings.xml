@@ -4,6 +4,10 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobble</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s oggi</item>
+        <item quantity="other">%1$s oggi</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s ascoltatore</item>
         <item quantity="other">%1$s ascoltatori</item>
@@ -87,11 +91,9 @@
     <string name="state_unrecognised_artist">Artista non riconosciuto</string>
     <string name="tap_to_edit">(Tocca per modificare)</string>
     <string name="recently_scrobbled">Scrobbling recenti</string>
-    <string name="recently_loved">♥ Preferiti recenti</string>
     <string name="recents" comment="Short for recently scrobbled">Recenti</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobbling effettuato per la prima volta il %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatico</string>
-    <string name="graph_info">… negli ultimi 5 mesi</string>
     <string name="enabled_apps">App abilitate</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ci siamo quasi…</string>
     <string name="music_players">Lettori musicali</string>
@@ -101,6 +103,7 @@
     <string name="offline">Offline. I dati mostrati non sono aggiornati</string>
     <string name="unavailable_offline">Non disponibile offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servizi</string>
+    <string name="others">Altri</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Stavo ascoltando\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s stava ascoltando\n%1$s %2$s</string>
     <string name="share_sig">(tramite Pano Scrobbler)</string>
@@ -114,6 +117,8 @@
     <string name="rank_change_no_change">Nessuno spostamento</string>
     <string name="rank_change_new">Nessuno scrobbling nel periodo precedente</string>
     <string name="search">Cerca</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Cancella cronologia</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Rimuovere questo elemento dalla cronologia?</string>
     <string name="library" comment="search within the library">Libreria</string>
     <string name="global" comment="search globally across lastfm">Globale</string>
     <string name="reindex">Indice rapido</string>
@@ -129,7 +134,7 @@
     <string name="new_player_prompt">Vuoi continuare lo scrobbling su questa app?</string>
     <string name="no_track_url">Questa canzone non ha una pagina su lastFM</string>
     <string name="no_scrobbles">Nessuna canzone per ora…</string>
-    <string name="no_friends">Nessun amico su lastFM per ora…</string>
+    <string name="no_friends">Non segui ancora nessuno…</string>
     <string name="channel_err">Errori di scrobbling</string>
     <string name="new_app">Nuova app</string>
     <string name="no_apps_enabled">Nessuna app abilitata</string>
@@ -148,12 +153,14 @@
     <string name="grant_notification_access">Consenti accesso alle notifiche</string>
     <string name="grant_notification_access_desc">Necessario per individuare i metadati della musica. Non sarà letta alcuna notifica non-musicale</string>
     <string name="send_notifications">Consenti le notifiche</string>
+    <string name="notification_channel_blocked">Questo richiede che le notifiche siano abilitate</string>
     <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">"\"\"- Controlla il numero e lo stato di scrobbling
 - Blocca o aggiungi ai preferiti direttamente dalla notifica
 - Ricevi notifiche sugli errori di scrobbling e come risolverli
 - Ricevi la lista dei tuoi artisti, album e brani più ascoltati della settimana
 - E altro ancora
 - Le notifiche non sono sonore\"\""</string>
+    <string name="will_not_scrobble">Saltando questo passaggio, lo scrobbling sarà disabilitato</string>
     <string name="swap" comment="(Swap title and artist)">Scambia</string>
     <string name="rate_msg">Ti piace questa app?</string>
     <string name="rate_action">Valutala</string>
@@ -177,18 +184,18 @@
     <string name="details">Dettagli</string>
     <string name="saved_as_pending">Salvato come scrobbling in attesa</string>
     <string name="sort">Ordina</string>
-    <string name="past_scrobbles">Cronologia scrobbling</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto temporale</string>
     <string name="my_scrobbles">I miei scrobbling</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">Gli scrobbling di %1$s</string>
     <string name="listeners">Ascoltatori</string>
     <string name="scrobbles">Scrobbling</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
     <string name="expand" comment="(view all items)">Espandi</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s l\'ha aggiunto ai preferiti</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbling fino al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
+    <string name="save" comment="saves a file">Salva</string>
+    <string name="saved_to_gallery">Salvato nella galleria</string>
+    <string name="reports" comment="Like last.week reports and stuff">Report</string>
     <string name="weekly">Settimanali</string>
     <string name="weeks">Settimane</string>
     <string name="monthly">Mensili</string>
@@ -210,7 +217,6 @@
     <string name="graph_weekly">Numero di scrobbling settimanali</string>
     <string name="graph_monthly">Numero di scrobbling mensili</string>
     <string name="graph_yearly">Numero di scrobbling annuali</string>
-    <string name="graph_scrub_msg">Orari relativi al tuo fuso orario\nTieni premuto il grafico e scorri per vedere i numeri esatti</string>
     <string name="original" comment="Original metadata before editing">Originale</string>
     <string name="corrected" comment="Corrected metadata after editing">Corretto</string>
     <string name="tag" comment="last.fm tag">Tag</string>
@@ -233,6 +239,7 @@
     <string name="dark">Scuro</string>
     <string name="system_colors">Colori del sistema</string>
     <string name="appwidget_alpha">Opacità sfondo</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Il widget si aggiornerà ogni %1$s minuti</string>
     <string name="primary_color">Colore principale</string>
     <string name="secondary_color">Colore secondario</string>
     <string name="tint_background">Colore sfondo</string>
@@ -273,8 +280,23 @@
     <string name="persistent_noti_desc">Tieni premuto per nascondere</string>
     <string name="scrobbler_off">Scrobbler disattivato</string>
     <string name="scrobbler_on">Scrobbler attivato</string>
+    <string name="acoustic" comment="(Acoustic music)">Acustica</string>
+    <string name="instrumental">Strumentale</string>
+    <string name="energetic" comment="(Energetic music)">Energetica</string>
+    <string name="danceable">Ballabile</string>
+    <string name="valence" comment="(Musical positivity)">Positività</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Popolarità: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analisi</string>
+    <string name="enable" comment="To enable the scrobbler">Abilita</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Dimensione</string>
+    <string name="skip_missing_images">Salta immagini mancanti</string>
+    <string name="create_collage">Crea collage</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Didascalie immagini</string>
+    <string name="username" comment="last.fm Username">Nome utente</string>
     <string name="pref_master">Scrobbling di musica</string>
     <string name="pref_master_qs_hint">Può essere attivato anche dalla barra di stato</string>
+    <string name="pref_master_qs_add">Aggiungi il tile impostazioni rapide</string>
+    <string name="pref_master_qs_already_addded">Tile impostazioni rapide già aggiunto</string>
     <string name="pref_noti_q">Puoi dare priorità alla notifica in caso l\'icona non si vedesse</string>
     <string name="pref_noti">Notifiche</string>
     <string name="pref_noti_categories">Categorie di notifiche</string>
@@ -285,6 +307,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ Supporta le app che mostrano metadati musicali. Per evitare gli scrobbling duplicati da Spotify, attiva lo scrobbling in un solo posto.</string>
     <string name="pref_enabled_apps_title">Scegli app</string>
     <string name="pref_auto_detect_summary">…ti chiederemo comunque di confermare/ignorare ogni app</string>
+    <string name="pref_auto_detect">Scrobble automatico da nuove app</string>
+    <string name="pref_spotify_remote">Scrobble di Spotify da altri dispositivi</string>
     <string name="pref_delay">Ritardo dello scrobbling (quello che viene prima)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuti</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentuale</string>
@@ -300,6 +324,7 @@
     <string name="pref_now_playing">Invia scrobbling in corso</string>
     <string name="pref_fetch_aa">Importa gli artisti dell\'album da lastFM</string>
     <string name="pref_fetch_aa_desc">Utile per lettori che non forniscono questo dato. I dati importati potrebbero essere diversi dalle tue tag. lastFM potrebbe non avere i dati per alcune canzoni.</string>
+    <string name="pref_fetch_album">Recupera i dati dell\'album mancanti da lastFM</string>
     <string name="pref_locale">Lingua</string>
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
@@ -342,7 +367,6 @@
     <string name="pref_intents">Intenti per Tasker ecc.</string>
     <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
-    <string name="custom_listenbrainz">Server personale di Listenbrainz</string>
     <string name="failed_encode_url">Codificazione dell\'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Autorizzazioni speciali app &gt; Accesso alle notifiche &gt; %1$s</string>
@@ -368,8 +392,6 @@
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
     <string name="pending_batch" comment="For pending scrobbles">Inviando un insieme</string>
     <string name="webview_error">Impossibile caricare la pagina (hai controllato la tua connessione?)</string>
-    <string name="navigation_drawer_open">Apri il menù di navigazione o torna indietro</string>
-    <string name="navigation_drawer_close">Chiudi menù di navigazione</string>
     <string name="graph">Grafico</string>
     <string name="cleared_disabled_apps">App disabilitate cancellate</string>
     <string name="fix_it_title">Possibili soluzioni</string>
@@ -398,4 +420,5 @@ I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google
     <string name="billing_block">Blocca artisti/brani e salta o silenzia automaticamente</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fissa in primo piano e riordina gli amici (fino a %1$d)</string>
     <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>
+    <string name="billing_scrobble_source">Ricorda e vedi le app da cui hai effettuato lo scrobble, e cerca direttamente in queste</string>
 </resources>

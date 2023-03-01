@@ -4,6 +4,10 @@
         <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s hoje</item>
+        <item quantity="other">%1$s hoje</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s ouvinte</item>
         <item quantity="other">%1$s ouvintes</item>
@@ -95,11 +99,9 @@
     <string name="state_unrecognised_artist">Artista não-reconhecido</string>
     <string name="tap_to_edit">(Toque para editar)</string>
     <string name="recently_scrobbled">Scrobbles recentes</string>
-    <string name="recently_loved">♥ Favoritas recentes</string>
     <string name="recents" comment="Short for recently scrobbled">Recentes</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primeiro scrobble a %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto (Sistema)</string>
-    <string name="graph_info">… últimos 5 meses</string>
     <string name="enabled_apps">Aplicações ativadas</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Quase lá…</string>
     <string name="music_players">Reprodutores de música</string>
@@ -140,7 +142,7 @@
     <string name="new_player_prompt">Continuar a fazer scrobble desta app?</string>
     <string name="no_track_url">Esta música não tem uma página no lastFM</string>
     <string name="no_scrobbles">Sem músicas aqui ainda…</string>
-    <string name="no_friends">Sem amigos no lastFM ainda…</string>
+    <string name="no_friends">Ainda não segue ninguém…</string>
     <string name="channel_err">Erro de Scrobble</string>
     <string name="new_app">Nova aplicação</string>
     <string name="no_apps_enabled">Sem apps ativadas</string>
@@ -190,20 +192,18 @@
     <string name="details">Detalhes</string>
     <string name="saved_as_pending">Guardado como scrobble pendente</string>
     <string name="sort">Ordenar</string>
-    <string name="past_scrobbles">Histórico de scrobbles</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto temporal</string>
     <string name="my_scrobbles">Meus scrobbles</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbles de %1$s</string>
     <string name="listeners">Ouvintes</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Fechar</string>
     <string name="expand" comment="(view all items)">Expandir</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s adorou isto</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles até %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">Não encontrado</string>
     <string name="save" comment="saves a file">Guardar</string>
     <string name="saved_to_gallery">Guardada na galeria</string>
+    <string name="reports" comment="Like last.week reports and stuff">Relatórios</string>
     <string name="weekly">Semanal</string>
     <string name="weeks">Semanas</string>
     <string name="monthly">Mensal</string>
@@ -225,7 +225,6 @@
     <string name="graph_weekly">Contagem semanal de scrobbles</string>
     <string name="graph_monthly">Contagem mensal de scrobbles</string>
     <string name="graph_yearly">Contagem anual de scrobbles</string>
-    <string name="graph_scrub_msg">Os horários estão no seu fuso horário\nMantenha pressionado ou solte o gráfico para ver as contagens exatas</string>
     <string name="original" comment="Original metadata before editing">Original</string>
     <string name="corrected" comment="Corrected metadata after editing">Corrigido</string>
     <string name="tag" comment="last.fm tag">Etiqueta</string>
@@ -289,6 +288,13 @@
     <string name="persistent_noti_desc">Pressione e segure para ocultar isto</string>
     <string name="scrobbler_off">Scrobbler desativado</string>
     <string name="scrobbler_on">Scrobbler ativado</string>
+    <string name="acoustic" comment="(Acoustic music)">Acústica</string>
+    <string name="instrumental">Instrumental</string>
+    <string name="energetic" comment="(Energetic music)">Enérgica</string>
+    <string name="danceable">Dançável</string>
+    <string name="valence" comment="(Musical positivity)">Positiva</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Popularidade: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Análise</string>
     <string name="enable" comment="To enable the scrobbler">Ativar</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Tamanho</string>
     <string name="skip_missing_images">Ignorar imagens em falta</string>
@@ -369,7 +375,6 @@
     <string name="pref_intents">Intenções para Tasker, etc</string>
     <string name="copied">Copiado!</string>
     <string name="lastfm_reauth">Precisa de reiniciar sessão para editar ou apagar scrobbles</string>
-    <string name="custom_listenbrainz">Servidor Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Verificar %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Acesso especial à aplicação &gt; Acesso às Notificações &gt; %1$s</string>
@@ -395,8 +400,6 @@
     <string name="submitting_loves" formatted="true">A submeter favoritas, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">Submeter lote</string>
     <string name="webview_error">Falha ao carregar a página (está ligado à Internet?)</string>
-    <string name="navigation_drawer_open">Abrir painel de navegação ou voltar</string>
-    <string name="navigation_drawer_close">Fechar painel de navegação</string>
     <string name="graph">Gráfico</string>
     <string name="cleared_disabled_apps">Lista de apps desativadas limpa</string>
     <string name="fix_it_title">Possíveis correções</string>

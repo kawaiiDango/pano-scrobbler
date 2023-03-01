@@ -3,6 +3,9 @@
     <plurals name="num_scrobbles_noti">
         <item quantity="other">%1$s 条记录</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="other">今天记录 %1$s</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="other">%1$s 位听众</item>
     </plurals>
@@ -80,11 +83,9 @@
     <string name="state_unrecognised_artist">无法识别的艺术家</string>
     <string name="tap_to_edit">（点击以编辑）</string>
     <string name="recently_scrobbled">最近的记录</string>
-    <string name="recently_loved">♥ 最近喜爱的</string>
     <string name="recents" comment="Short for recently scrobbled">最近的</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">首次记录于 %1$s</string>
     <string name="auto" comment="automatic or default setting">自动</string>
-    <string name="graph_info">… 过去 5 个月</string>
     <string name="enabled_apps">已启用的应用</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">即将完成……</string>
     <string name="music_players">音乐播放器</string>
@@ -125,7 +126,7 @@
     <string name="new_player_prompt">继续为此应用启用音乐记录吗？</string>
     <string name="no_track_url">lastFM 上没有这首歌的对应页面</string>
     <string name="no_scrobbles">这里还没有歌曲…</string>
-    <string name="no_friends">还没有 lastFM 好友…</string>
+    <string name="no_friends">还没有关注任何人…</string>
     <string name="channel_err">音乐记录错误</string>
     <string name="new_app">新应用</string>
     <string name="no_apps_enabled">未在任何应用中启用</string>
@@ -175,20 +176,18 @@
     <string name="details">详细资料</string>
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
-    <string name="past_scrobbles">过去的音乐记录</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">时间定跳转</string>
     <string name="my_scrobbles">我的收听记录</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s 的音乐记录</string>
     <string name="listeners">听众</string>
     <string name="scrobbles">收听记录</string>
     <string name="collapse" comment="(view only a few items)">折叠</string>
     <string name="expand" comment="(view all items)">展开</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s 喜欢这个</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">截至 %1$s 的音乐记录</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">来自 %1$s</string>
     <string name="not_found" comment="Shown in search">找不到结果</string>
     <string name="save" comment="saves a file">保存</string>
     <string name="saved_to_gallery">已保存至媒体库</string>
+    <string name="reports" comment="Like last.week reports and stuff">报告</string>
     <string name="weekly">每周</string>
     <string name="weeks">周</string>
     <string name="monthly">每月</string>
@@ -210,7 +209,6 @@
     <string name="graph_weekly">每周记录计数</string>
     <string name="graph_monthly">每月记录计数</string>
     <string name="graph_yearly">每年记录计数</string>
-    <string name="graph_scrub_msg">以您的时区为准进行统计\n按住或在图表上滑动来查看准确计数</string>
     <string name="original" comment="Original metadata before editing">原始版本</string>
     <string name="corrected" comment="Corrected metadata after editing">校正版本</string>
     <string name="tag" comment="last.fm tag">last.fm 标记</string>
@@ -274,6 +272,11 @@
     <string name="persistent_noti_desc">长按以隐藏</string>
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
+    <string name="acoustic" comment="(Acoustic music)">原声</string>
+    <string name="energetic" comment="(Energetic music)">活跃</string>
+    <string name="danceable">舞曲</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">人气：%1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
     <string name="enable" comment="To enable the scrobbler">已启用</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">尺寸</string>
     <string name="skip_missing_images">跳过缺失的图像</string>
@@ -311,9 +314,10 @@
     <string name="pref_now_playing">提交当前播放的音乐</string>
     <string name="pref_fetch_aa">从 lastFM 获取专辑艺术家</string>
     <string name="pref_fetch_aa_desc">针对不提供此数据的播放器。获取的数据可能和实际标签不同。last.fm 可能没有某些歌曲的专辑艺术家数据。</string>
+    <string name="pref_fetch_album">从 lastFM 获取缺失的专辑数据</string>
     <string name="pref_locale">语言</string>
     <string name="pref_change_locale">更改语言</string>
-    <string name="pref_crashlytics_enabled">自动回报错误</string>
+    <string name="pref_crashlytics_enabled">自动上报错误</string>
     <string name="pref_misc">杂项</string>
     <string name="pref_imexport">导入 &amp; 导出</string>
     <string name="pref_export">导出</string>
@@ -353,7 +357,6 @@
     <string name="pref_intents">可用于 Tasker 等应用的 Intents</string>
     <string name="copied">已复制！</string>
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
-    <string name="custom_listenbrainz">自定义 Listenbrainz 服务器</string>
     <string name="failed_encode_url">无法对 URL 进行编码</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">勾选 %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特殊应用访问 &gt; 通知访问 &gt; %1$s</string>
@@ -379,8 +382,6 @@
     <string name="submitting_loves" formatted="true">正在提交喜爱曲目，还剩 %1$d 条</string>
     <string name="pending_batch" comment="For pending scrobbles">正在提交批量记录</string>
     <string name="webview_error">页面加载失败（您的网络是否正常？）</string>
-    <string name="navigation_drawer_open">打开导航抽屉或返回</string>
-    <string name="navigation_drawer_close">关闭导航抽屉</string>
     <string name="graph">折线图</string>
     <string name="cleared_disabled_apps">已清除禁用应用</string>
     <string name="fix_it_title">可能的解决方案</string>
@@ -395,7 +396,7 @@
     <string name="pro_support">下面向您这样的宝贵用户提供一种简单、直接的方式，如果您觉得这款应用有价值，不妨以此对其表示支持。</string>
     <string name="pro_also_get">您同时也将解锁以下功能：</string>
     <string name="thank_you">感谢！</string>
-    <string name="purchase_pending">您的购买尚未被付款提供商确认。请稍等几分钟后重试。</string>
+    <string name="purchase_pending">您的购买尚未被付款提供商确认，请稍后再试</string>
     <string name="billing_troubleshoot_title">恢复购买</string>
     <string name="billing_troubleshoot">"已经购买？
 

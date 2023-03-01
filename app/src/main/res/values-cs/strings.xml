@@ -125,11 +125,9 @@
     <string name="state_unrecognised_artist">Neznámý interpret</string>
     <string name="tap_to_edit">(Klepněte pro upravení)</string>
     <string name="recently_scrobbled">Nedávno Scrobblováno</string>
-    <string name="recently_loved">♥ Nedávno Oblíbené</string>
     <string name="recents" comment="Short for recently scrobbled">Nedávné</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Poprvé scrobblováno dne %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="graph_info">… posledních 5 měsíců</string>
     <string name="enabled_apps">Povolené Aplikace</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Skoro hotovo…</string>
     <string name="music_players">Hudební Přehrávače</string>
@@ -219,16 +217,13 @@
     <string name="details">Detaily</string>
     <string name="saved_as_pending">Uloženo jako čekající scrobble</string>
     <string name="sort">Seřadit</string>
-    <string name="past_scrobbles">Předchozí scrobbly</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Skočit v čase</string>
     <string name="my_scrobbles">Moje scrobbly</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">Scrobbly uživatele %1$s</string>
     <string name="listeners">Posluchači</string>
     <string name="scrobbles">Scrobbly</string>
     <string name="collapse" comment="(view only a few items)">Sbalit</string>
     <string name="expand" comment="(view all items)">Rozbalit</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s má v oblíbených</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbly do %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Z %1$s</string>
     <string name="not_found" comment="Shown in search">Nenalezeno</string>
     <string name="save" comment="saves a file">Uložit</string>
@@ -254,7 +249,6 @@
     <string name="graph_weekly">Počet scrobblů za týden</string>
     <string name="graph_monthly">Počet scrobblů za měsíc</string>
     <string name="graph_yearly">Počet scrobblů za rok</string>
-    <string name="graph_scrub_msg">Časy jsou ve vašem časovém pásmu\nPodržte nebo táhněte v grafu pro zobrazení přesného počtu</string>
     <string name="original" comment="Original metadata before editing">Originál</string>
     <string name="corrected" comment="Corrected metadata after editing">Opravená</string>
     <string name="tag" comment="last.fm tag">Tag</string>
@@ -398,7 +392,6 @@
     <string name="pref_intents">Pro Tasker apod.</string>
     <string name="copied">Zkopírováno!</string>
     <string name="lastfm_reauth">Pro úpravu nebo smazání scrobblů je třeba se znovu ověřit</string>
-    <string name="custom_listenbrainz">Vlastní Listenbrainz server</string>
     <string name="failed_encode_url">Kódování URL selhalo</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Zkontrolovat %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Aplikace se speciálním přístupem &gt; Oznámení v zařízeních a aplikacích &gt; %1$s</string>
@@ -424,8 +417,6 @@
     <string name="submitting_loves" formatted="true">Odesílám oblíbení, %1$d zbývá</string>
     <string name="pending_batch" comment="For pending scrobbles">Odesílám várku</string>
     <string name="webview_error">Stránku se nepodařilo načíst (funguje vám internet?)</string>
-    <string name="navigation_drawer_open">Otevřít navigační menu nebo přejít zpět</string>
-    <string name="navigation_drawer_close">Zavřít navigační lištu</string>
     <string name="graph">Spojnicový graf</string>
     <string name="cleared_disabled_apps">Vymazány zakázané aplikace</string>
     <string name="fix_it_title">Možné opravy</string>

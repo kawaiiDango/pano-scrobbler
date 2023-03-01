@@ -80,11 +80,9 @@
     <string name="state_unrecognised_artist">認識できないアーティスト</string>
     <string name="tap_to_edit">(タップで編集)</string>
     <string name="recently_scrobbled">最近のScrobble</string>
-    <string name="recently_loved">♥ 最近のLoveトラック</string>
     <string name="recents" comment="Short for recently scrobbled">履歴</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">初Scrobble: %1$s</string>
     <string name="auto" comment="automatic or default setting">自動</string>
-    <string name="graph_info">… 過去5ヶ月</string>
     <string name="enabled_apps">有効化済みアプリ</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">もう少しで完了です…</string>
     <string name="music_players">音楽プレーヤー</string>
@@ -174,16 +172,13 @@
     <string name="details">詳細</string>
     <string name="saved_as_pending">保留中のScrobbleとして保存しました</string>
     <string name="sort">並べ替え</string>
-    <string name="past_scrobbles">過去のScrobble</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">日付の選択</string>
     <string name="my_scrobbles">My Scrobble</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$sのScrobble</string>
     <string name="listeners">リスナー</string>
     <string name="scrobbles">Scrobble</string>
     <string name="collapse" comment="(view only a few items)">閉じる</string>
     <string name="expand" comment="(view all items)">開く</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$sのLoveトラックです</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">%1$sまでのScrobble</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">見つかりませんでした</string>
     <string name="save" comment="saves a file">保存</string>
@@ -208,7 +203,6 @@
     <string name="graph_weekly">1週間あたりのScrobble件数</string>
     <string name="graph_monthly">1ヶ月あたりのScrobble件数</string>
     <string name="graph_yearly">1年あたりのScrobble件数</string>
-    <string name="graph_scrub_msg">時間はあなたのタイムゾーンで表示されます\nグラフを長押やスライドしたりすると、正確な数がわかります</string>
     <string name="original" comment="Original metadata before editing">元のメタデータ</string>
     <string name="corrected" comment="Corrected metadata after editing">訂正内容</string>
     <string name="tag" comment="last.fm tag">タグ</string>
@@ -352,7 +346,6 @@
     <string name="pref_intents">Tasker等用のインテント</string>
     <string name="copied">コピーしました</string>
     <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>
-    <string name="custom_listenbrainz">ListenBrainzのサーバー</string>
     <string name="failed_encode_url">URLのエンコードに失敗しました</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$sを確認</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特別なアプリアクセス &gt; 通知へのアクセス &gt; %1$s</string>
@@ -378,8 +371,6 @@
     <string name="submitting_loves" formatted="true">Loveを送信中、残り%1$d件</string>
     <string name="pending_batch" comment="For pending scrobbles">バッチを送信中</string>
     <string name="webview_error">ページの読み込みに失敗しました (インターネットに接続されているか確認してください)</string>
-    <string name="navigation_drawer_open">ナビゲーションドロワーを開くか、戻る</string>
-    <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
     <string name="graph">折れ線グラフ</string>
     <string name="cleared_disabled_apps">無効化されたアプリを消去しました</string>
     <string name="fix_it_title">修正可能な項目</string>

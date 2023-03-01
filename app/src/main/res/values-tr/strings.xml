@@ -95,11 +95,9 @@
     <string name="state_unrecognised_artist">Bilinmeyen sanatçı</string>
     <string name="tap_to_edit">(Düzenlemek için dokunun)</string>
     <string name="recently_scrobbled">En Son Skroplananlar</string>
-    <string name="recently_loved">♥ En Son Beğenilenler</string>
     <string name="recents" comment="Short for recently scrobbled">Son dinlemeler</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">İlk %1$s tarihinde skroplandı</string>
     <string name="auto" comment="automatic or default setting">Otomatik</string>
-    <string name="graph_info">… son 5 ay</string>
     <string name="enabled_apps">Etkin Uygulamalar</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Neredeyse tamam…</string>
     <string name="music_players">Müzik Oynatıcılar</string>
@@ -189,16 +187,13 @@
     <string name="details">Ayrıntılar</string>
     <string name="saved_as_pending">Askıda skrop olarak kaydedildi</string>
     <string name="sort">Tür</string>
-    <string name="past_scrobbles">Geçmiş skroplar</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Geçmiş skroplar</string>
     <string name="my_scrobbles">Skroplarım</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s adlı kullanıcının skropları</string>
     <string name="listeners">Dinleyiciler</string>
     <string name="scrobbles">Skroplar</string>
     <string name="collapse" comment="(view only a few items)">Daralt</string>
     <string name="expand" comment="(view all items)">Genişlet</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s bunu beğendi</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">%1$s tarihine kadar skroplar</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s</string>
     <string name="not_found" comment="Shown in search">Bulunamadı</string>
     <string name="save" comment="saves a file">Kaydet</string>
@@ -224,7 +219,6 @@
     <string name="graph_weekly">Haftalık skrop sayısı</string>
     <string name="graph_monthly">Aylık skrop sayısı</string>
     <string name="graph_yearly">Yıllık skrop sayısı</string>
-    <string name="graph_scrub_msg">Saatler, saat diliminize göre ayarlanmıştır\nTam sayıyı görmek için grafiğin üzerine basılı tutun ve kaydırın</string>
     <string name="original" comment="Original metadata before editing">Orijinal</string>
     <string name="corrected" comment="Corrected metadata after editing">Düzeltildi</string>
     <string name="tag" comment="last.fm tag">Etiket</string>
@@ -367,7 +361,6 @@
     <string name="pref_intents">Tasker vb. için intentler</string>
     <string name="copied">Kopyalandı!</string>
     <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>
-    <string name="custom_listenbrainz">Özel Listenbrainz sunucusu</string>
     <string name="failed_encode_url">URL şifreleme başarısız</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$s uygulamasını kontrol et</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Özel uygulama erişimi &gt; Bildirim Erişimi &gt; %1$s</string>
@@ -393,8 +386,6 @@
     <string name="submitting_loves" formatted="true">Beğeniler gönderiliyor, %1$d kaldı</string>
     <string name="pending_batch" comment="For pending scrobbles">Skroplar gönderiliyor</string>
     <string name="webview_error">Sayfa yüklenirken bir hata oluştu (internet bağlantınız var mı?)</string>
-    <string name="navigation_drawer_open">Yan gezinti çubuğunu aç veya geriye dön</string>
-    <string name="navigation_drawer_close">Yan gezinti çubuğunu kapat</string>
     <string name="graph">Grafik</string>
     <string name="cleared_disabled_apps">Devre dışı uygulamalar temizlendi</string>
     <string name="fix_it_title">Muhtemel düzeltmeler</string>

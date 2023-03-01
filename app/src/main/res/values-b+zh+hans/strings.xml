@@ -83,11 +83,9 @@
     <string name="state_unrecognised_artist">无法识别的艺术家</string>
     <string name="tap_to_edit">（点击以编辑）</string>
     <string name="recently_scrobbled">最近的记录</string>
-    <string name="recently_loved">♥ 最近喜爱的</string>
     <string name="recents" comment="Short for recently scrobbled">最近的</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">首次记录于 %1$s</string>
     <string name="auto" comment="automatic or default setting">自动</string>
-    <string name="graph_info">… 过去 5 个月</string>
     <string name="enabled_apps">已启用的应用</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">即将完成……</string>
     <string name="music_players">音乐播放器</string>
@@ -178,16 +176,13 @@
     <string name="details">详细资料</string>
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
-    <string name="past_scrobbles">过去的音乐记录</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">时间定跳转</string>
     <string name="my_scrobbles">我的收听记录</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s 的音乐记录</string>
     <string name="listeners">听众</string>
     <string name="scrobbles">收听记录</string>
     <string name="collapse" comment="(view only a few items)">折叠</string>
     <string name="expand" comment="(view all items)">展开</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s 喜欢这个</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">截至 %1$s 的音乐记录</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">来自 %1$s</string>
     <string name="not_found" comment="Shown in search">找不到结果</string>
     <string name="save" comment="saves a file">保存</string>
@@ -214,7 +209,6 @@
     <string name="graph_weekly">每周记录计数</string>
     <string name="graph_monthly">每月记录计数</string>
     <string name="graph_yearly">每年记录计数</string>
-    <string name="graph_scrub_msg">以您的时区为准进行统计\n按住或在图表上滑动来查看准确计数</string>
     <string name="original" comment="Original metadata before editing">原始版本</string>
     <string name="corrected" comment="Corrected metadata after editing">校正版本</string>
     <string name="tag" comment="last.fm tag">last.fm 标记</string>
@@ -363,7 +357,6 @@
     <string name="pref_intents">可用于 Tasker 等应用的 Intents</string>
     <string name="copied">已复制！</string>
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
-    <string name="custom_listenbrainz">自定义 Listenbrainz 服务器</string>
     <string name="failed_encode_url">无法对 URL 进行编码</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">勾选 %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特殊应用访问 &gt; 通知访问 &gt; %1$s</string>
@@ -389,8 +382,6 @@
     <string name="submitting_loves" formatted="true">正在提交喜爱曲目，还剩 %1$d 条</string>
     <string name="pending_batch" comment="For pending scrobbles">正在提交批量记录</string>
     <string name="webview_error">页面加载失败（您的网络是否正常？）</string>
-    <string name="navigation_drawer_open">打开导航抽屉或返回</string>
-    <string name="navigation_drawer_close">关闭导航抽屉</string>
     <string name="graph">折线图</string>
     <string name="cleared_disabled_apps">已清除禁用应用</string>
     <string name="fix_it_title">可能的解决方案</string>

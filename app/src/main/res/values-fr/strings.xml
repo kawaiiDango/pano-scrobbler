@@ -87,11 +87,9 @@
     <string name="state_unrecognised_artist">Artiste non reconnu</string>
     <string name="tap_to_edit">(Appuyez pour modifier)</string>
     <string name="recently_scrobbled">Récemment Scrobbled</string>
-    <string name="recently_loved">♥ Récemment aimé</string>
     <string name="recents" comment="Short for recently scrobbled">Récents</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Première fois scrobbled le %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="graph_info">… les 5 derniers mois</string>
     <string name="enabled_apps">Applications activées</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Presque prêt…</string>
     <string name="music_players">Lecteurs de musique</string>
@@ -171,14 +169,12 @@
     <string name="press_back">Appuyer sur retour une fois terminé</string>
     <string name="details">Détails</string>
     <string name="sort">Filtrer</string>
-    <string name="past_scrobbles">Scrobbles précédents</string>
     <string name="my_scrobbles">Mes scrobbles</string>
     <string name="listeners">Auditeurs</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Réduire</string>
     <string name="expand" comment="(view all items)">Agrandir</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s a aimé cela</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles jusqu\'à %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De : %1$s</string>
     <string name="not_found" comment="Shown in search">Introuvable</string>
     <string name="weekly">Hebdomadaire</string>
@@ -266,7 +262,6 @@
     <string name="import_settings">Importer les paramètres</string>
     <string name="copied">Copié !</string>
     <string name="lastfm_reauth">Vous devez vous authentifier à nouveau pour éditer ou supprimer des scrobbles</string>
-    <string name="custom_listenbrainz">Serveur personnalisé Listenbrainz</string>
     <string name="failed_encode_url">L\'encodage de l\'URL a échoué</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Vérifier %1$s</string>
     <string name="artist_extra">Morceaux, albums &amp; similaires</string>
@@ -282,8 +277,6 @@
     <string name="add">Ajouter</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>
     <string name="webview_error">La page n\'a pas pu être chargée (votre connexion fonctionne-t-elle ?)</string>
-    <string name="navigation_drawer_open">Ouvrir le panneau de navigation ou revenir en arrière</string>
-    <string name="navigation_drawer_close">Fermer le panneau de navigation</string>
     <string name="graph">Graphique en courbes</string>
     <string name="cleared_disabled_apps">Applications désactivées effacées</string>
     <string name="fix_it_title">Corrections possibles</string>

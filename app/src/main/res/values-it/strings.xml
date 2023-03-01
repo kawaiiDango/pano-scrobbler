@@ -91,11 +91,9 @@
     <string name="state_unrecognised_artist">Artista non riconosciuto</string>
     <string name="tap_to_edit">(Tocca per modificare)</string>
     <string name="recently_scrobbled">Scrobbling recenti</string>
-    <string name="recently_loved">♥ Preferiti recenti</string>
     <string name="recents" comment="Short for recently scrobbled">Recenti</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobbling effettuato per la prima volta il %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatico</string>
-    <string name="graph_info">… negli ultimi 5 mesi</string>
     <string name="enabled_apps">App abilitate</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ci siamo quasi…</string>
     <string name="music_players">Lettori musicali</string>
@@ -186,16 +184,13 @@
     <string name="details">Dettagli</string>
     <string name="saved_as_pending">Salvato come scrobbling in attesa</string>
     <string name="sort">Ordina</string>
-    <string name="past_scrobbles">Cronologia scrobbling</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto temporale</string>
     <string name="my_scrobbles">I miei scrobbling</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">Gli scrobbling di %1$s</string>
     <string name="listeners">Ascoltatori</string>
     <string name="scrobbles">Scrobbling</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
     <string name="expand" comment="(view all items)">Espandi</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s l\'ha aggiunto ai preferiti</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbling fino al %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
     <string name="save" comment="saves a file">Salva</string>
@@ -222,7 +217,6 @@
     <string name="graph_weekly">Numero di scrobbling settimanali</string>
     <string name="graph_monthly">Numero di scrobbling mensili</string>
     <string name="graph_yearly">Numero di scrobbling annuali</string>
-    <string name="graph_scrub_msg">Orari relativi al tuo fuso orario\nTieni premuto il grafico e scorri per vedere i numeri esatti</string>
     <string name="original" comment="Original metadata before editing">Originale</string>
     <string name="corrected" comment="Corrected metadata after editing">Corretto</string>
     <string name="tag" comment="last.fm tag">Tag</string>
@@ -373,7 +367,6 @@
     <string name="pref_intents">Intenti per Tasker ecc.</string>
     <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
-    <string name="custom_listenbrainz">Server personale di Listenbrainz</string>
     <string name="failed_encode_url">Codificazione dell\'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Autorizzazioni speciali app &gt; Accesso alle notifiche &gt; %1$s</string>
@@ -399,8 +392,6 @@
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
     <string name="pending_batch" comment="For pending scrobbles">Inviando un insieme</string>
     <string name="webview_error">Impossibile caricare la pagina (hai controllato la tua connessione?)</string>
-    <string name="navigation_drawer_open">Apri il menù di navigazione o torna indietro</string>
-    <string name="navigation_drawer_close">Chiudi menù di navigazione</string>
     <string name="graph">Grafico</string>
     <string name="cleared_disabled_apps">App disabilitate cancellate</string>
     <string name="fix_it_title">Possibili soluzioni</string>

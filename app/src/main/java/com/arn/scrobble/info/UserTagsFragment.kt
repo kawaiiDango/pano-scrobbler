@@ -32,14 +32,14 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val viewModel by viewModels<UserTagsVM>()
     private val historyPref by lazy {
         HistoryPref(
-            MainPrefs(context!!).sharedPreferences,
+            MainPrefs(requireContext()).sharedPreferences,
             MainPrefs.PREF_ACTIVITY_TAG_HISTORY,
             20
         )
     }
     private val historyAdapter by lazy {
         object : ArrayAdapter<String>(
-            context!!,
+            requireContext(),
             R.layout.list_item_history,
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -88,8 +88,7 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     override fun onShow(p0: DialogInterface?) {
         viewModel.tags.observe(viewLifecycleOwner, object : Observer<MutableSet<String>> {
-            override fun onChanged(it: MutableSet<String>?) {
-                it ?: return
+            override fun onChanged(it: MutableSet<String>) {
                 binding.userTagsProgress.hide()
                 if (it.isEmpty())
                     binding.userTagsStatus.visibility = View.VISIBLE
@@ -133,7 +132,7 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val entry: MusicEntry
         @DrawableRes val icon: Int
-        val b = arguments!!
+        val b = requireArguments()
         val track = b.getString(NLService.B_TRACK)
         val album = b.getString(NLService.B_ALBUM)
         val artist = b.getString(NLService.B_ARTIST)
@@ -157,8 +156,8 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         viewModel.historyPref = historyPref
         _binding = DialogUserTagsBinding.inflate(layoutInflater)
 
-        return MaterialAlertDialogBuilder(context!!)
-            .setTitle(UiUtils.getColoredTitle(context!!, entry.name))
+        return MaterialAlertDialogBuilder(requireContext())
+            .setTitle(UiUtils.getColoredTitle(requireContext(), entry.name))
             .setIcon(icon)
             .setView(binding.root)
             .setPositiveButton(R.string.add, null)
@@ -175,7 +174,7 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     private fun addChip(tag: String) {
-        val chip = Chip(context!!).apply {
+        val chip = Chip(requireContext()).apply {
             text = tag
             isCloseIconVisible = true
             setOnCloseIconClickListener {

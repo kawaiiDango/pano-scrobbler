@@ -32,4 +32,10 @@
         android:title="!set"
         app:iconTint="?android:colorForeground" />
 
+    <item
+        android:id="@+id/menu_listenbrainz"
+        android:icon="@drawable/vd_circle"
+        android:title="!set"
+        android:visible="false"
+        app:iconTint="?android:colorForeground" />
 </menu>

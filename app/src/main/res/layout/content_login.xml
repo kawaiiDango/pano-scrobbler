@@ -1,149 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="8dp"
     android:paddingHorizontal="8dp"
-    android:orientation="vertical">
+    android:paddingTop="8dp"
+    android:scrollbarAlwaysDrawVerticalTrack="true">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbarAlwaysDrawVerticalTrack="true">
+        android:layout_height="wrap_content"
+        android:isScrollContainer="true"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/login_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:isScrollContainer="true"
-            android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingTop="20dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="0dp">
-
-            <TextView
-                android:id="@+id/login_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone"
-                tools:text="info" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/login_textfield1"
-                android:layout_marginVertical="@dimen/text_input_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:hint="User"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/login_textfield1_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/login_textfield2"
-                android:layout_marginVertical="@dimen/text_input_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:endIconTint="?colorSecondary"
-                tools:hint="@string/album_optional"
-                tools:visibility="visible">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/login_textfield2_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    tools:text="@string/album_optional" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/login_textfield_last"
-                android:layout_marginVertical="@dimen/text_input_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:endIconTint="?colorSecondary"
-                tools:hint="@string/pref_token_label">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/login_textfield_last_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/login_textfield_last2"
-                android:layout_marginVertical="@dimen/text_input_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/login_textfield_last2_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <CheckBox
-                android:id="@+id/login_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:text="@string/force_remembered" />
-        </LinearLayout>
-    </ScrollView>
-
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_gravity="end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:animateLayoutChanges="true">
-
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/login_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
             android:visibility="gone"
-            tools:visibility="visible" />
+            tools:text="info" />
 
-        <ImageView
-            android:id="@+id/login_status"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:visibility="gone"
-            app:tint="?colorPrimary"
-            tools:alpha="0.5"
-            tools:src="@drawable/vd_check"
-            tools:visibility="visible" />
-
-        <Button
-            android:id="@+id/login_submit"
-            style="@style/Widget.Material3.Button.TextButton.Dialog"
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_textfield1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/login_submit" />
-    </FrameLayout>
+            android:layout_marginVertical="@dimen/text_input_margin"
+            android:visibility="gone"
+            tools:hint="User"
+            tools:visibility="visible">
 
-</LinearLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_textfield1_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_textfield2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/text_input_margin"
+            android:visibility="gone"
+            app:endIconTint="?colorSecondary"
+            tools:hint="@string/album_optional"
+            tools:visibility="visible">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_textfield2_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                tools:text="@string/album_optional" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_textfield_last"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/text_input_margin"
+            app:endIconTint="?colorSecondary"
+            tools:hint="@string/pref_token_label">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_textfield_last_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_textfield_last2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/text_input_margin"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_textfield_last2_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/login_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:text="@string/force_remembered" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:animateLayoutChanges="true">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/login_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/login_status"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                app:tint="?colorPrimary"
+                tools:alpha="0.5"
+                tools:src="@drawable/vd_check"
+                tools:visibility="visible" />
+
+            <Button
+                android:id="@+id/login_submit"
+                style="@style/Widget.Material3.Button.TextButton.Dialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/login_submit" />
+        </FrameLayout>
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

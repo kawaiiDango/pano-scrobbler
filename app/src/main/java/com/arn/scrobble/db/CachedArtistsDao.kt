@@ -25,16 +25,39 @@ interface CachedArtistsDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(entry: CachedArtist)
 
-    fun deltaUpdate(artist: CachedArtist, deltaCount: Int) {
-        val foundArtist = findExact(artist.artistName)
+    fun deltaUpdate(artist: CachedArtist, deltaCount: Int, dirty: DirtyUpdate = DirtyUpdate.CLEAN) {
+        val foundArtist = findExact(artist.artistName) ?: artist
 
-        if (foundArtist != null) {
-            foundArtist.userPlayCount = (foundArtist.userPlayCount + deltaCount).coerceAtLeast(0)
-            update(foundArtist)
-        } else if (deltaCount > 0) {
-            artist.userPlayCount = 1
-            insert(listOf(artist))
+        if (dirty == DirtyUpdate.DIRTY_ABSOLUTE && foundArtist.userPlayCount == artist.userPlayCount) return
+
+        val userPlayCount =
+            (foundArtist.userPlayCount.coerceAtLeast(0) + deltaCount).coerceAtLeast(0)
+        val userPlayCountDirty = (
+                (if (foundArtist.userPlayCountDirty == -1) foundArtist.userPlayCount else foundArtist.userPlayCountDirty)
+                    .coerceAtLeast(0)
+                        + deltaCount
+                ).coerceAtLeast(0)
+
+        when (dirty) {
+            DirtyUpdate.BOTH -> {
+                foundArtist.userPlayCountDirty = userPlayCount
+                foundArtist.userPlayCount = userPlayCountDirty
+            }
+
+            DirtyUpdate.DIRTY -> {
+                foundArtist.userPlayCountDirty = userPlayCountDirty
+            }
+
+            DirtyUpdate.DIRTY_ABSOLUTE -> {
+                foundArtist.userPlayCountDirty = artist.userPlayCount
+            }
+
+            DirtyUpdate.CLEAN -> {
+                foundArtist.userPlayCount = userPlayCount
+                foundArtist.userPlayCountDirty = -1
+            }
         }
+        insert(listOf(foundArtist))
     }
 
     @Delete

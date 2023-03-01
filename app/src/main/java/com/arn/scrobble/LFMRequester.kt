@@ -1,14 +1,11 @@
 package com.arn.scrobble
 
-import android.content.Context
 import android.content.Intent
 import android.util.LruCache
 import android.webkit.URLUtil
-import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.Stuff.putSingle
-import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.db.CachedAlbum
@@ -21,18 +18,21 @@ import com.arn.scrobble.db.CachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toTrack
 import com.arn.scrobble.db.CachedTracksDao
+import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.friends.UserAccountSerializable
+import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.scrobbleable.Lastfm
+import com.arn.scrobble.scrobbleable.AccountType
+import com.arn.scrobble.scrobbleable.GnuFm
 import com.arn.scrobble.scrobbleable.Scrobblable
-import com.arn.scrobble.scrobbleable.ScrobblableEnum
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.search.SearchResultsAdapter
 import com.arn.scrobble.search.SearchVM
 import com.arn.scrobble.ui.UiUtils.toast
@@ -41,8 +41,6 @@ import de.umass.lastfm.Artist
 import de.umass.lastfm.Authenticator
 import de.umass.lastfm.CallException
 import de.umass.lastfm.Caller
-import de.umass.lastfm.ImageSize
-import de.umass.lastfm.Library
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Period
@@ -60,7 +58,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -75,9 +72,8 @@ import okhttp3.Request
 import timber.log.Timber
 import java.io.IOException
 import java.io.InterruptedIOException
-import java.lang.ref.WeakReference
-import java.util.Calendar
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import kotlin.math.log10
 import kotlin.math.min
 import kotlin.math.pow
@@ -88,40 +84,14 @@ import kotlin.math.pow
  */
 
 class LFMRequester(
-    context: Context,
     private val scope: CoroutineScope,
     private val liveData: MutableLiveData<*>? = null,
     private val errorLiveData: MutableLiveData<Throwable>? = null,
 ) {
-    private var contextWr = WeakReference(context.applicationContext)
-    private val context
-        get() = contextWr.get()!!
-    private val prefs by lazy { MainPrefs(this.context) }
+    private val context = App.context
+    private val prefs by lazy { MainPrefs(context) }
     private lateinit var job: Job
     private var launchExecOnSet = true
-
-    private val coExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        when (throwable) {
-            is CancellationException,
-            is InterruptedIOException,
-            is InterruptedException -> {
-
-            }
-
-            else -> {
-                if (errorLiveData != null)
-                    errorLiveData.postValue(throwable)
-                else {
-                    Timber.tag(Stuff.TAG).e(throwable)
-                    if (contextWr.get() != null && BuildConfig.DEBUG) {
-                        scope.launch(Dispatchers.Main) {
-                            context.toast("err: " + throwable.message)
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     private var toExec: (suspend () -> Any?) = {}
         set(fn) {
@@ -130,7 +100,7 @@ class LFMRequester(
             if (!launchExecOnSet)
                 return
 
-            job = scope.launch(coExceptionHandler) {
+            job = scope.launch(ExceptionNotifier(errorLiveData)) {
                 val res = withContext(Dispatchers.IO) {
                     fn()
                 }
@@ -139,114 +109,27 @@ class LFMRequester(
                 }
             }
         }
-    private val lastfmSessKey by lazy { prefs.lastfmSessKey }
-    val lastfmSession by lazy {
-        Session.createSession(
-            Stuff.LAST_KEY,
-            Stuff.LAST_SECRET,
-            lastfmSessKey
-        )!!
+
+    private val currentScrobblable by lazy {
+        Scrobblables.current as? GnuFm
     }
 
-    private val lastfmUsername by lazy { prefs.lastfmUsername }
+    // copy
+    val session: Session by lazy {
+        currentScrobblable!!.sessionCopy()
+    }
+
+    private val gnufmAccount get() = currentScrobblable?.userAccount
 
     private fun checkSession(usernamep: String? = null) {
-        if (usernamep == null && lastfmSessKey == null)
+        if (usernamep == null && gnufmAccount == null)
             throw Exception("Login required")
-    }
-
-    fun getRecents(
-        page: Int,
-        usernamep: String?,
-        cached: Boolean = false,
-        from: Long = -1,
-        to: Long = -1,
-        includeNowPlaying: Boolean = false,
-        doDeltaIndex: Boolean = false,
-        limit: Int = if (usernamep == null) 300 else 50,
-    ) {
-        toExec = {
-            checkSession(usernamep)
-            lastfmSession.cacheStrategy =
-                if (!Stuff.isOnline && cached)
-                    Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-                else if (cached)
-                    Caller.CacheStrategy.CACHE_FIRST
-                else
-                    Caller.CacheStrategy.NETWORK_ONLY
-
-            val _from = if (to > 0L && from <= 0L) 1000L else from
-            val _to = if (from > 0L && to <= 0L) System.currentTimeMillis() else to
-
-            val pr = User.getRecentTracks(
-                usernamep, page, limit, true, _from / 1000, _to / 1000,
-                lastfmSession
-            )
-
-            // remove np
-            pr?.pageResults?.firstOrNull()?.let {
-                if (!includeNowPlaying && it.isNowPlaying)
-                    pr.pageResults.remove(it)
-            }
-
-            if (doDeltaIndex && !lastfmSession.result.isFromCache && page == 1 && usernamep == null) {
-                val firstTrack = pr?.pageResults?.find { it.playedWhen != null }
-                val indexedScrobbleTime = prefs.lastMaxIndexedScrobbleTime
-                if (firstTrack != null && indexedScrobbleTime != null && firstTrack.playedWhen.time > indexedScrobbleTime)
-                    LFMRequester(context, scope).runDeltaIndex(pr)
-            }
-
-            // load uncached version
-            if (lastfmSession.result.isFromCache && lastfmSession.cacheStrategy == Caller.CacheStrategy.CACHE_FIRST) {
-                LFMRequester(context, scope, liveData).getRecents(
-                    page,
-                    usernamep,
-                    false,
-                    from,
-                    to,
-                    includeNowPlaying,
-                    doDeltaIndex,
-                    limit
-                )
-            }
-            pr
-        }
-    }
-
-    fun getLoves(page: Int, usernamep: String?, cached: Boolean = false, limit: Int = 50) {
-        toExec = {
-            checkSession(usernamep)
-            lastfmSession.cacheStrategy =
-                if (!Stuff.isOnline && cached)
-                    Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-                else if (cached)
-                    Caller.CacheStrategy.CACHE_FIRST
-                else
-                    Caller.CacheStrategy.NETWORK_ONLY
-
-            Stuff.log(this::getLoves.name + " " + page)
-            val pr = User.getLovedTracks(
-                usernamep,
-                limit,
-                page,
-                lastfmSession
-            )
-            pr.pageResults.forEach {
-                it.isLoved = true
-                it.imageUrlsMap = null
-            }
-            // load uncached version
-            if (lastfmSession.result.isFromCache && lastfmSession.cacheStrategy == Caller.CacheStrategy.CACHE_FIRST) {
-                LFMRequester(context, scope, liveData).getLoves(page, usernamep, false, limit)
-            }
-            pr
-        }
     }
 
     fun getTrackScrobbles(track: Track, page: Int, usernamep: String?, limit: Int = 50) {
         toExec = {
             checkSession(usernamep)
-            User.getTrackScrobbles(track.artist, track.name, usernamep, page, limit, lastfmSession)
+            User.getTrackScrobbles(track.artist, track.name, usernamep, page, limit, session)
         }
     }
 
@@ -263,7 +146,7 @@ class LFMRequester(
                         usernamep,
                         pr.total,
                         1,
-                        lastfmSession
+                        session
                     )
                         .pageResults.firstOrNull()?.playedWhen
                 else
@@ -294,191 +177,6 @@ class LFMRequester(
     fun getArtistTopAlbums(artist: String) {
         toExec = {
             Artist.getTopAlbums(artist, 100, Stuff.LAST_KEY)
-        }
-    }
-
-    fun getFriendsRecents(username: String) {
-        toExec = {
-            lastfmSession.cacheStrategy =
-                if (Stuff.isOnline) Caller.CacheStrategy.NETWORK_ONLY else Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-            Pair(
-                username,
-                User.getRecentTracks(
-                    username,
-                    1,
-                    1,
-                    false,
-                    -1,
-                    -1,
-                    lastfmSession
-                )
-            )
-        }
-    }
-
-    fun getDrawerInfo() {
-        toExec = {
-            checkSession()
-            Stuff.log(this::getDrawerInfo.name)
-            val profile = User.getInfo(lastfmSession)
-            val cal = Calendar.getInstance()
-            cal.setMidnight()
-            val recents = User.getRecentTracks(
-                null, 1, 1,
-                cal.timeInMillis / 1000, System.currentTimeMillis() / 1000, lastfmSession
-            )
-
-            if (profile != null && recents != null) {
-                DrawerData(
-                    scrobblesToday = recents.totalPages,
-                    scrobblesTotal = profile.playcount,
-                    registeredDate = profile.registeredDate?.time ?: 0,
-                    profilePicUrl = profile.getWebpImageURL(ImageSize.EXTRALARGE) ?: "",
-                ).apply { saveToPref(context) }
-            } else {
-                DrawerData.loadFromPref(context)
-            }
-        }
-    }
-
-    fun getFriends(page: Int, usernamep: String?) {
-        toExec = {
-            Stuff.log(this::getFriends.name + " " + page)
-            checkSession(usernamep)
-            lastfmSession.cacheStrategy = if (Stuff.isOnline)
-                Caller.CacheStrategy.NETWORK_ONLY
-            else
-                Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
-
-            val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
-            var pr: PaginatedResult<User>
-            try {
-                pr = User.getFriends(
-                    username,
-                    page,
-                    30,
-                    lastfmSession
-                )
-            } catch (e: NullPointerException) {
-                val request =
-                    Request("https://www.last.fm/user/$username/following?page=$page".toHttpUrl())
-                val users = mutableListOf<User>()
-                try {
-                    okHttpClient.newCall(request).execute()
-                        .use { response ->
-                            if (!response.isSuccessful)
-                                throw IOException("Response code ${response.code}")
-                            val body = response.body.string()
-                            if (body.isEmpty())
-                                throw IOException("Empty body")
-
-                            var idx = body.indexOf("<ul class=\"user-list\">", 50000)
-                            var idx2: Int
-                            if (idx > -1) {
-                                do {
-                                    idx = body.indexOf("  link-block-target", idx)
-                                    if (idx > -1)
-                                        idx = body.indexOf(">", idx + 1)
-                                    if (idx > -1) {
-                                        idx += 1
-                                        idx2 = body.indexOf("<", idx)
-                                        val uname = body.substring(idx, idx2)
-                                        idx = body.indexOf("<img", idx2)
-                                        idx = body.indexOf("\"", idx)
-                                        idx2 = body.indexOf("\"", idx + 1)
-                                        val imageUrl = body.substring(idx + 1, idx2)
-                                        val user = User(uname, "https://www.last.fm/user/$uname")
-                                        user.imageURL = imageUrl
-                                        users.add(user)
-                                        idx = idx2
-                                    }
-                                } while (idx > -1)
-                            }
-                        }
-                } catch (e: Exception) {
-                }
-                val totalPages = if (users.isEmpty())
-                    page
-                else
-                    10
-                pr = PaginatedResult(page, totalPages, users.size, users)
-            }
-            pr
-        }
-    }
-
-    fun getCharts(
-        type: Int,
-        timePeriod: TimePeriod,
-        page: Int,
-        usernamep: String?,
-        cacheStrategy: Caller.CacheStrategy = Caller.CacheStrategy.CACHE_FIRST,
-        limit: Int = if (timePeriod.period != null) 50 else -1
-    ) {
-        toExec = {
-            val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
-            lastfmSession.cacheStrategy = cacheStrategy
-
-            val pr: PaginatedResult<out MusicEntry>
-
-            if (timePeriod.period != null) {
-                pr = when (type) {
-                    Stuff.TYPE_ARTISTS -> User.getTopArtists(
-                        username,
-                        timePeriod.period,
-                        limit,
-                        page,
-                        lastfmSession
-                    )
-
-                    Stuff.TYPE_ALBUMS -> User.getTopAlbums(
-                        username,
-                        timePeriod.period,
-                        limit,
-                        page,
-                        lastfmSession
-                    )
-
-                    else -> User.getTopTracks(
-                        username,
-                        timePeriod.period,
-                        limit,
-                        page,
-                        lastfmSession
-                    )
-                }
-            } else {
-                val fromStr = (timePeriod.start / 1000).toString()
-                val toStr = (timePeriod.end / 1000).toString()
-
-                val chart = when (type) {
-                    Stuff.TYPE_ARTISTS -> User.getWeeklyArtistChart(
-                        username,
-                        fromStr,
-                        toStr,
-                        limit,
-                        lastfmSession
-                    )
-
-                    Stuff.TYPE_ALBUMS -> User.getWeeklyAlbumChart(
-                        username,
-                        fromStr,
-                        toStr,
-                        limit,
-                        lastfmSession
-                    )
-
-                    else -> User.getWeeklyTrackChart(
-                        username,
-                        fromStr,
-                        toStr,
-                        limit,
-                        lastfmSession
-                    )
-                }
-                pr = PaginatedResult(1, 1, chart.entries.size, chart.entries)
-            }
-            pr
         }
     }
 
@@ -519,9 +217,9 @@ class LFMRequester(
         }
 
         toExec = {
-            val prevCharts = if (prevTimePeriod != null)
-                execHere<PaginatedResult<out MusicEntry>> {
-                    getCharts(
+            val prevCharts =
+                if (prevTimePeriod != null && gnufmAccount?.type == AccountType.LASTFM)
+                    currentScrobblable!!.getCharts(
                         type,
                         prevTimePeriod,
                         1,
@@ -529,9 +227,8 @@ class LFMRequester(
                         Caller.CacheStrategy.CACHE_FIRST_ONE_DAY,
                         -1
                     )
-                }
-            else
-                null
+                else
+                    null
 
             val prevChartsMap = prevCharts?.pageResults?.associate {
                 toHashableEntry(it) to it.rank
@@ -544,9 +241,8 @@ class LFMRequester(
             else
                 Caller.CacheStrategy.CACHE_FIRST
 
-            val currentCharts = execHere<PaginatedResult<out MusicEntry>> {
-                getCharts(type, timePeriod, page, usernamep, cacheStrategy, limit)
-            }
+            val currentCharts = Scrobblables.current
+                ?.getCharts(type, timePeriod, page, usernamep, cacheStrategy, limit)
 
             val doStonks =
                 (limit == -1 || page * limit < (0.7 * prevChartsMap.size)) && (prevChartsMap.isNotEmpty())
@@ -695,7 +391,7 @@ class LFMRequester(
     fun getUserInfo(username: String) {
         toExec = {
             Stuff.log(this::getUserInfo.name)
-            val user = User.getInfo(username, lastfmSession)
+            val user = User.getInfo(username, session)
             user
         }
     }
@@ -712,8 +408,9 @@ class LFMRequester(
                 val _entry: MusicEntry?
                 val _total: Int
 
-                when (type) {
-                    Stuff.TYPE_TRACKS -> {
+                when {
+                    type == Stuff.TYPE_TRACKS &&
+                            Scrobblables.current!!.userAccount.type == AccountType.LASTFM -> {
                         var to = -1L
                         var from = -1L
 
@@ -726,50 +423,43 @@ class LFMRequester(
                             to = approxTimePeriod.end
                         }
 
-                        execHere<PaginatedResult<out MusicEntry>> {
-                            getRecents(
-                                page,
-                                usernamep,
-                                from = from,
-                                to = to,
-                                limit = 1
-                            )
-                        }.let {
-                            _entry = it?.pageResults?.firstOrNull()
-                            _total = it?.totalPages ?: 0
+                        Scrobblables.current!!.getRecents(
+                            page,
+                            usernamep,
+                            from = from,
+                            to = to,
+                            limit = 1,
+                        ).let {
+                            _entry = it.pageResults?.firstOrNull()
+                            _total = it.totalPages
                         }
                     }
 
-                    Stuff.TYPE_LOVES -> {
-                        execHere<PaginatedResult<out MusicEntry>> {
-                            getLoves(
-                                page,
-                                usernamep,
-                                limit = 1
-                            )
-                        }.let {
-                            _entry = it?.pageResults?.firstOrNull()
-                            (_entry as Track?)?.isLoved = true
-                            _total = it?.totalPages ?: 0
+                    type == Stuff.TYPE_LOVES -> {
+                        Scrobblables.current!!.getLoves(
+                            page,
+                            usernamep,
+                            limit = 1,
+                        ).let {
+                            _entry = it.pageResults?.firstOrNull()
+                            _total = it.totalPages
                         }
                     }
 
                     else -> {
-                        execHere<PaginatedResult<out MusicEntry>> {
-                            getCharts(
-                                type,
-                                timePeriod,
-                                page,
-                                usernamep,
-                                limit = if (timePeriod.period != null) 1 else -1
-                            )
-                        }.let {
+                        Scrobblables.current!!.getCharts(
+                            type,
+                            timePeriod,
+                            page,
+                            usernamep,
+                            limit = if (timePeriod.period != null) 1 else -1
+                        ).let {
                             if (timePeriod.period != null) {
-                                _entry = it?.pageResults?.firstOrNull()
-                                _total = it?.totalPages ?: 0
+                                _entry = it.pageResults?.firstOrNull()
+                                _total = it.totalPages ?: 0
                             } else {
-                                _entry = it?.pageResults?.randomOrNull()
-                                _total = it?.pageResults?.size ?: 0
+                                _entry = it.pageResults?.randomOrNull()
+                                _total = it.pageResults?.size ?: 0
                             }
                         }
                     }
@@ -777,8 +467,6 @@ class LFMRequester(
 
                 return RandomVM.RandomMusicData(_total, _entry, type)
             }
-
-            checkSession()
 
             coroutineScope {
                 var total = totalp
@@ -805,7 +493,7 @@ class LFMRequester(
                             track.artist,
                             track.name,
                             null,
-                            lastfmUsername,
+                            usernamep,
                             null,
                             Stuff.LAST_KEY
                         )?.let {
@@ -854,7 +542,7 @@ class LFMRequester(
     fun getLocalSearches(term: String) {
         toExec = {
             supervisorScope {
-                val db = PanoDb.getDb(context)
+                val db = PanoDb.db
 
                 val artists = async {
                     kotlin.runCatching {
@@ -892,9 +580,10 @@ class LFMRequester(
         toExec = {
             indexingMutex.withLock {
                 Stuff.log(this::runFullIndex.name)
+                if (gnufmAccount?.type != AccountType.LASTFM) return@withLock null
 
 
-                val db = PanoDb.getDb(context)
+                val db = PanoDb.db
                 val limitPerPage = 1000
                 val numPages = Stuff.MAX_INDEXED_ITEMS / limitPerPage
                 val maxCalls = numPages * 4
@@ -922,17 +611,17 @@ class LFMRequester(
                     null,
                     1,
                     1,
-                    lastfmSession
+                    session
                 ).pageResults.find { it.playedWhen != null }
                     ?: throw IllegalStateException("No scrobbled tracks found")
 
                 for (i in 1..numPages) {
                     val artists = User.getTopArtists(
-                        lastfmUsername,
+                        gnufmAccount!!.user.name,
                         Period.OVERALL,
                         limitPerPage,
                         i,
-                        lastfmSession
+                        session
                     )
                     postProgress()
                     list.addAll(artists.pageResults)
@@ -949,11 +638,11 @@ class LFMRequester(
 
                 for (i in 1..numPages) {
                     val albums = User.getTopAlbums(
-                        lastfmUsername,
+                        gnufmAccount!!.user.name,
                         Period.OVERALL,
                         limitPerPage,
                         i,
-                        lastfmSession
+                        session
                     )
                     postProgress()
                     list.addAll(albums.pageResults)
@@ -969,11 +658,11 @@ class LFMRequester(
 
                 for (i in 1..numPages) {
                     val tracks = User.getTopTracks(
-                        lastfmUsername,
+                        gnufmAccount!!.user.name,
                         Period.OVERALL,
                         limitPerPage,
                         i,
-                        lastfmSession
+                        session
                     )
                     postProgress()
                     list.addAll(tracks.pageResults)
@@ -985,7 +674,12 @@ class LFMRequester(
 
                 for (i in 1..numPages) {
                     val lovedTracks =
-                        User.getLovedTracks(lastfmUsername, limitPerPage, i, lastfmSession)
+                        User.getLovedTracks(
+                            gnufmAccount!!.user.name,
+                            limitPerPage,
+                            i,
+                            session
+                        )
                     postProgress()
                     lovedTracksList.addAll(lovedTracks.pageResults)
                     if (i >= lovedTracks.totalPages)
@@ -1035,7 +729,9 @@ class LFMRequester(
 
                 Stuff.log(this::runDeltaIndex.name)
 
-                val db = PanoDb.getDb(context)
+                if (gnufmAccount?.type != AccountType.LASTFM) return@withLock null
+
+                val db = PanoDb.db
                 val from = prefs.lastMaxIndexedScrobbleTime
                     ?: throw IllegalStateException("Full index never run")
                 val to = System.currentTimeMillis()
@@ -1053,17 +749,18 @@ class LFMRequester(
                 }
 
                 if (prFromRecents == null) {
-                    val recentsCall: LFMRequester.() -> Unit = {
-                        getRecents(
-                            currentPage,
-                            null,
-                            from = from,
-                            to = to,
-                            limit = limitPerPage,
-                        )
+                    val recentsCall = suspend {
+                        currentScrobblable!!
+                            .getRecents(
+                                currentPage,
+                                null,
+                                from = from,
+                                to = to,
+                                limit = limitPerPage,
+                            )
                     }
 
-                    val firstPage = execHere<PaginatedResult<Track>>(recentsCall)!!
+                    val firstPage = recentsCall()
 
                     if (firstPage.totalPages > maxCalls)
                         throw IllegalStateException("Too many pages, run full index instead")
@@ -1072,7 +769,7 @@ class LFMRequester(
 
                     for (i in 2..firstPage.totalPages) {
                         currentPage = i
-                        val pr = execHere<PaginatedResult<Track>>(recentsCall)!!
+                        val pr = recentsCall()
                         tracks += pr.pageResults
                     }
                 } else {
@@ -1082,7 +779,7 @@ class LFMRequester(
                         if (lastTrack.playedWhen.time > from)
                             throw IllegalStateException("More than one page, run indexing manually")
 
-                        //todo handle pending scrobbles submitted at an earlier time
+                        // todo handle pending scrobbles submitted at an earlier time
 
                         for (track in prFromRecents.pageResults) {
                             if (!track.isNowPlaying && track.playedWhen != null && track.playedWhen.time > from)
@@ -1143,36 +840,6 @@ class LFMRequester(
         }
     }
 
-    fun getScrobbleCounts(periods: List<TimePeriod>, usernamep: String?) {
-        toExec = {
-            Stuff.log(this::getScrobbleCounts.name)
-            lastfmSession.cacheStrategy = Caller.CacheStrategy.NETWORK_ONLY
-
-            val periodCountsMap = mutableMapOf<TimePeriod, Int>()
-            periods.forEach { periodCountsMap[it] = 0 }
-
-            supervisorScope {
-                periods.mapConcurrently(5) {
-                    if (it.start < System.currentTimeMillis()) {
-                        kotlin.runCatching {
-                            val pr = User.getRecentTracks(
-                                usernamep,
-                                1,
-                                1,
-                                false,
-                                it.start / 1000,
-                                it.end / 1000,
-                                lastfmSession
-                            )
-                            periodCountsMap[it] = pr.total
-                        }
-                    }
-                }
-            }
-            periodCountsMap
-        }
-    }
-
     fun getTagInfo(tag: String) {
         toExec = {
             Tag.getInfo(tag, Stuff.LAST_KEY) to
@@ -1186,7 +853,7 @@ class LFMRequester(
 
             // populate tag suggestions from User.getTopTags
             if (!prefs.userTopTagsFetched) {
-                val topUserTags = User.getTopTags(null, 20, lastfmSession)
+                val topUserTags = User.getTopTags(null, 20, session)
                 topUserTags
                     ?.reversed()
                     ?.forEach {
@@ -1197,9 +864,9 @@ class LFMRequester(
             }
 
             val list = when (entry) {
-                is Artist -> Artist.getTags(entry.name, lastfmSession)
-                is Album -> Album.getTags(entry.artist, entry.name, lastfmSession)
-                is Track -> Track.getTags(entry.artist, entry.name, lastfmSession)
+                is Artist -> Artist.getTags(entry.name, session)
+                is Album -> Album.getTags(entry.artist, entry.name, session)
+                is Track -> Track.getTags(entry.artist, entry.name, session)
                 else -> throw RuntimeException("invalid type")
             }
             list.toMutableSet()
@@ -1209,9 +876,9 @@ class LFMRequester(
     fun addUserTagsForEntry(entry: MusicEntry, tags: String) {
         toExec = {
             when (entry) {
-                is Artist -> Artist.addTags(entry.name, tags, lastfmSession)
-                is Album -> Album.addTags(entry.artist, entry.name, tags, lastfmSession)
-                is Track -> Track.addTags(entry.artist, entry.name, tags, lastfmSession)
+                is Artist -> Artist.addTags(entry.name, tags, session)
+                is Album -> Album.addTags(entry.artist, entry.name, tags, session)
+                is Track -> Track.addTags(entry.artist, entry.name, tags, session)
                 else -> throw RuntimeException("invalid type")
             }
         }
@@ -1220,9 +887,9 @@ class LFMRequester(
     fun deleteUserTagsForEntry(entry: MusicEntry, tag: String) {
         toExec = {
             when (entry) {
-                is Artist -> Artist.removeTag(entry.name, tag, lastfmSession)
-                is Album -> Album.removeTag(entry.artist, tag, entry.name, lastfmSession)
-                is Track -> Track.removeTag(entry.artist, tag, entry.name, lastfmSession)
+                is Artist -> Artist.removeTag(entry.name, tag, session)
+                is Album -> Album.removeTag(entry.artist, tag, entry.name, session)
+                is Track -> Track.removeTag(entry.artist, tag, entry.name, session)
                 else -> throw RuntimeException("invalid type")
             }
         }
@@ -1231,11 +898,58 @@ class LFMRequester(
     fun getInfos(artist: String, album: String?, track: String?, usernamep: String?) {
         toExec = {
             supervisorScope {
+
                 Stuff.log(this@LFMRequester::getInfos.name)
-                val username = usernamep ?: lastfmUsername ?: throw Exception("Login required")
+                val username = if (gnufmAccount?.type == AccountType.LASTFM)
+                    usernamep ?: gnufmAccount?.user?.name ?: throw Exception("Login required")
+                else
+                    null
 
                 val infoMap = mutableMapOf<String, MusicEntry>()
+                val db = PanoDb.db
 
+                fun doDirtyDeltaUpdates(
+                    artist: Artist?,
+                    album: Album?,
+                    track: Track?,
+                    albumArtist: Artist?
+                ) {
+                    if (gnufmAccount?.type != AccountType.LASTFM)
+                        return
+
+                    track?.let {
+                        db.getCachedTracksDao()
+                            .deltaUpdate(
+                                it.toCachedTrack()
+                                    .apply { userPlayCount = it.userPlaycount },
+                                0,
+                                DirtyUpdate.DIRTY_ABSOLUTE
+                            )
+                    }
+                    album?.let {
+                        db.getCachedAlbumsDao()
+                            .deltaUpdate(
+                                it.toCachedAlbum().apply { userPlayCount = it.userPlaycount },
+                                0, DirtyUpdate.DIRTY_ABSOLUTE
+                            )
+                    }
+                    artist?.let {
+                        db.getCachedArtistsDao()
+                            .deltaUpdate(
+                                it.toCachedArtist().apply { userPlayCount = it.userPlaycount },
+                                0,
+                                DirtyUpdate.DIRTY_ABSOLUTE
+                            )
+                    }
+                    albumArtist?.let {
+                        db.getCachedArtistsDao()
+                            .deltaUpdate(
+                                it.toCachedArtist().apply { userPlayCount = it.userPlaycount },
+                                0,
+                                DirtyUpdate.DIRTY_ABSOLUTE
+                            )
+                    }
+                }
                 // put old values as a fallback
                 (liveData!!.value as? Map<String, MusicEntry>)
                     ?.let { infoMap.putAll(it) }
@@ -1251,8 +965,9 @@ class LFMRequester(
 
                 if (!track.isNullOrEmpty()) {
                     val trackInfo = trackDef.await()
-                    if (trackInfo != null)
+                    if (trackInfo != null) {
                         infoMap[NLService.B_TRACK] = trackInfo
+                    }
 
                     if (album == null)
                         albumName = trackInfo?.album
@@ -1286,21 +1001,32 @@ class LFMRequester(
                     }.getOrNull()
                 }
 
-                val (artistInfo, albumArtistInfo, albumInfo) = awaitAll(
-                    artistDef,
-                    albumArtistDef,
-                    albumDef
-                )
+                artistDef.await()?.let {
+                    infoMap[NLService.B_ARTIST] = it
+                }
+                albumArtistDef.await()?.let {
+                    infoMap[NLService.B_ALBUM_ARTIST] = it
+                }
+                albumDef.await()?.let {
+                    infoMap[NLService.B_ALBUM] = it
+                }
 
-                if (artistInfo != null)
-                    infoMap[NLService.B_ARTIST] = artistInfo
-                if (albumArtistInfo != null)
-                    infoMap[NLService.B_ALBUM_ARTIST] = albumArtistInfo
-                if (albumInfo != null)
-                    infoMap[NLService.B_ALBUM] = albumInfo
+                doDirtyDeltaUpdates(
+                    artistDef.await(),
+                    albumDef.await(),
+                    trackDef.await(),
+                    albumArtistDef.await()
+                )
 
                 infoMap
             }
+        }
+    }
+
+    fun getTrackFeatures(artist: String, track: String) {
+        toExec = {
+            SpotifyRequester.getSpotifyTrack(Track(track, null, artist))
+                ?.also { it.features = SpotifyRequester.getTrackFeatures(it.id) }
         }
     }
 
@@ -1363,25 +1089,24 @@ class LFMRequester(
             )
 
             coroutineScope {
-                checkSession()
+                Scrobblables.current ?: return@coroutineScope
 
-                val scrobbleResults = mutableMapOf</*@StringRes */Int, ScrobbleResult>()
+                var scrobbleResults = mapOf<Scrobblable, ScrobbleResult>()
                 var savedAsPending = false
                 val forceable = unparsedData == null
 
                 val scrobbleData = trackInfo.toScrobbleData()
-
-                val scrobblablesMap by lazy { Scrobblable.getScrobblablesMap(prefs) }
 
                 fun doFallbackScrobble(): Boolean {
                     if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && unparsedData != null) {
 
                         val newTrackInfo = trackInfo.updateMetaFrom(unparsedData)
                         val i = Intent(NLService.iMETA_UPDATE_S)
+                            .setPackage(context.packageName)
                             .putSingle(newTrackInfo)
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
 
-                        LFMRequester(context, scope, liveData)
+                        LFMRequester(scope, liveData)
                             .scrobble(nowPlaying, newTrackInfo)
                         return true
                     }
@@ -1390,17 +1115,19 @@ class LFMRequester(
 
                 fun shouldBlockScrobble(otherArtist: String?): Boolean {
                     if (prefs.proStatus) {
-                        val blockedMetadata = PanoDb.getDb(context)
+                        val blockedMetadata = PanoDb.db
                             .getBlockedMetadataDao()
                             .getBlockedEntry(scrobbleData, otherArtist)
                         if (blockedMetadata != null) {
                             val i = Intent(NLService.iCANCEL).apply {
+                                `package` = context.packageName
                                 putExtra(NLService.B_HASH, trackInfo.hash)
                             }
                             context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
 
                             if (blockedMetadata.skip || blockedMetadata.mute) {
                                 val i2 = Intent(NLService.iBLOCK_ACTION_S).apply {
+                                    `package` = context.packageName
                                     putSingle(blockedMetadata)
                                     putExtra(NLService.B_HASH, trackInfo.hash)
                                 }
@@ -1420,13 +1147,13 @@ class LFMRequester(
                     var track: Track? = null
                     var correctedArtist: String? = null
 
-                    val editsDao = PanoDb.getDb(context).getSimpleEditsDao()
+                    val editsDao = PanoDb.db.getSimpleEditsDao()
                     var edit = editsDao.performEdit(scrobbleData)
 
                     val oldArtist = scrobbleData.artist
                     val oldTrack = scrobbleData.track
 
-                    val regexEdits = PanoDb.getDb(context)
+                    val regexEdits = PanoDb.db
                         .getRegexEditsDao()
                         .performRegexReplace(scrobbleData)
 
@@ -1445,6 +1172,7 @@ class LFMRequester(
                     if (scrobbleData.artist.isNullOrBlank() || scrobbleData.track.isNullOrBlank()) {
                         if (!doFallbackScrobble()) {
                             val i = Intent(NLService.iBAD_META_S)
+                                .setPackage(context.packageName)
                                 .putSingle(
                                     trackInfo.updateMetaFrom(scrobbleData)
                                 )
@@ -1459,6 +1187,7 @@ class LFMRequester(
                         return@coroutineScope
                     } else if (edit != null || regexEdits.values.sum() > 0) {
                         val i = Intent(NLService.iMETA_UPDATE_S)
+                            .setPackage(context.packageName)
                             .putSingle(trackInfo.updateMetaFrom(scrobbleData))
 
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
@@ -1510,7 +1239,7 @@ class LFMRequester(
                         if (scrobbleDataBeforeAutocorrect != scrobbleData) {
                             edit = editsDao.performEdit(scrobbleData, false)
 
-                            PanoDb.getDb(context)
+                            PanoDb.db
                                 .getRegexEditsDao()
                                 .performRegexReplace(scrobbleData)
 
@@ -1524,18 +1253,19 @@ class LFMRequester(
 
                     val cachedTrack: CachedTrack? =
                         if (prefs.lastMaxIndexTime != null)
-                            PanoDb.getDb(context).getCachedTracksDao()
+                            PanoDb.db.getCachedTracksDao()
                                 .findExact(scrobbleData.artist, scrobbleData.track)
                         else
                             null
                     if (edit != null || cachedTrack != null) {
                         trackInfo.updateMetaFrom(scrobbleData).apply {
                             cachedTrack?.let {
-                                userPlayCount = it.userPlayCount
+                                userPlayCount = it.plays
                                 userLoved = it.isLoved
                             }
                         }
                         val i = Intent(NLService.iMETA_UPDATE_S)
+                            .setPackage(context.packageName)
                             .putSingle(trackInfo)
 
                         context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
@@ -1543,19 +1273,15 @@ class LFMRequester(
                     if (Stuff.isOnline) {
                         if (correctedArtist != null || edit != null) {
                             if (prefs.submitNowPlaying) {
-                                scrobblablesMap.forEach { (stringId, scrobblable) ->
-                                    if (scrobblable != null) {
-                                        if (!isActive)
-                                            throw CancellationException()
-                                        scrobbleResults[stringId] =
-                                            scrobblable.updateNowPlaying(scrobbleData)
-                                    }
-                                }
+                                scrobbleResults = Scrobblables.all.mapConcurrently(5) {
+                                    it to it.updateNowPlaying(scrobbleData)
+                                }.toMap()
                             }
                         } else {
                             // unrecognized artist
                             if (!doFallbackScrobble()) {
                                 val i = Intent(NLService.iBAD_META_S)
+                                    .setPackage(context.packageName)
                                     .putSingle(trackInfo.updateMetaFrom(scrobbleData))
                                     .putSingle(
                                         ScrobbleError(
@@ -1574,21 +1300,21 @@ class LFMRequester(
                         timeMillis = scrobbleData.timestamp * 1000L,
                         pkg = trackInfo.packageName
                     )
-                    PanoDb.getDb(context)
+                    PanoDb.db
                         .getScrobbleSourcesDao()
                         .insert(scrobbleSource)
 
                     if (Stuff.isOnline) {
-                        scrobblablesMap.forEach { (stringId, scrobblable) ->
-                            if (scrobblable != null) {
-                                scrobbleResults[stringId] = scrobblable.scrobble(scrobbleData)
-                            }
-                        }
+                        scrobbleResults = Scrobblables.all.mapConcurrently(5) {
+                            it to it.scrobble(scrobbleData)
+                        }.toMap()
                     }
+
                     if (scrobbleResults.isEmpty() ||
                         scrobbleResults.values.any { !it.isSuccessful }
                     ) {
-                        val dao = PanoDb.getDb(context).getPendingScrobblesDao()
+                        // failed
+                        val dao = PanoDb.db.getPendingScrobblesDao()
                         val entry = PendingScrobble().apply {
                             artist = scrobbleData.artist
                             album = scrobbleData.album
@@ -1600,16 +1326,15 @@ class LFMRequester(
                         }
 
                         if (scrobbleResults.isEmpty())
-                            scrobblablesMap.forEach { (key, scrobblable) ->
-                                if (scrobblable != null)
-                                    entry.state =
-                                        entry.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
+                            Scrobblables.all.forEach {
+                                entry.state =
+                                    entry.state or (1 shl it.userAccount.type.ordinal)
                             }
                         else
-                            scrobbleResults.forEach { (key, result) ->
+                            scrobbleResults.forEach { (scrobblable, result) ->
                                 if (!result.isSuccessful) {
                                     entry.state =
-                                        entry.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
+                                        entry.state or (1 shl scrobblable.userAccount.type.ordinal)
                                 }
                             }
                         if (scrobbleResults.isNotEmpty())
@@ -1617,19 +1342,31 @@ class LFMRequester(
                         dao.insert(entry)
                         savedAsPending = true
                         PendingScrJob.checkAndSchedule(context)
+                    } else {
+                        // successful
+                        CachedTracksDao.deltaUpdateAll(
+                            Track(
+                                scrobbleData.track,
+                                null,
+                                scrobbleData.album,
+                                scrobbleData.artist,
+                            ).apply { playedWhen = Date(scrobbleData.timestamp * 1000L) },
+                            1,
+                            DirtyUpdate.DIRTY
+                        )
                     }
                 }
 
                 try {
                     val failedTextLines = mutableListOf<String>()
                     var ignored = false
-                    scrobbleResults.forEach { (key, result) ->
+                    scrobbleResults.forEach { (scrobblable, result) ->
                         if (!result.isSuccessful) {
-                            val errMsg = scrobbleResults[key]?.errorMessage
+                            val errMsg = scrobbleResults[scrobblable]?.errorMessage
                                 ?: context.getString(R.string.network_error)
-                            failedTextLines += "<b>" + context.getString(key) + ":</b> $errMsg"
+                            failedTextLines += "<b>" + scrobblable.userAccount.type + ":</b> $errMsg"
                         } else if (result.isSuccessful && result.isIgnored) {
-                            failedTextLines += "<b>" + context.getString(key) + ":</b> " +
+                            failedTextLines += "<b>" + scrobblable.userAccount.type + ":</b> " +
                                     context.getString(R.string.scrobble_ignored)
                             ignored = true
                         }
@@ -1639,6 +1376,7 @@ class LFMRequester(
                         Stuff.log("failedText= $failedText")
                         val i = if (ignored) {
                             Intent(NLService.iBAD_META_S)
+                                .setPackage(context.packageName)
                                 .putSingle(trackInfo.updateMetaFrom(scrobbleData))
                                 .putSingle(
                                     ScrobbleError(
@@ -1649,6 +1387,7 @@ class LFMRequester(
                                 )
                         } else {
                             Intent(NLService.iOTHER_ERR_S)
+                                .setPackage(context.packageName)
                                 .putSingle(
                                     ScrobbleError(
                                         if (savedAsPending)
@@ -1670,56 +1409,45 @@ class LFMRequester(
 
     fun loveOrUnlove(track: Track, love: Boolean, callback: ((Boolean) -> Unit)? = null) {
         toExec = toExec@{
-            checkSession()
             Stuff.log(this::loveOrUnlove.name + " " + love)
 
             if (track.artist.isNullOrEmpty() || track.name.isNullOrEmpty())
                 return@toExec null
 
             var submittedAll = true
-            val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs, supportsLove = true)
 
             // update the cache
-            PanoDb.getDb(context).getCachedTracksDao().apply {
-                val tr = findExact(track.artist, track.name)
-                if (tr == null) {
-                    track.isLoved = love
-                    insert(listOf(track.toCachedTrack()))
-                } else {
-                    tr.isLoved = love
-                    update(tr)
-                }
+            PanoDb.db.getCachedTracksDao().apply {
+                val tr = findExact(track.artist, track.name) ?: track.toCachedTrack()
+                tr.isLoved = love
+                insert(listOf(tr))
             }
 
-            val dao = PanoDb.getDb(context).getPendingLovesDao()
+            val dao = PanoDb.db.getPendingLovesDao()
             val pl = dao.find(track.artist, track.name)
             if (pl != null) {
                 if (pl.shouldLove == !love) {
                     pl.shouldLove = love
-                    scrobblablesMap.forEach { (key, scrobblable) ->
-                        if (scrobblable != null)
-                            pl.state = pl.state or (1 shl Stuff.SERVICE_BIT_POS[key]!!)
+                    Scrobblables.all.forEach {
+                        pl.state = pl.state or (1 shl it.userAccount.type.ordinal)
                     }
                     dao.update(pl)
                 }
                 submittedAll = false
             } else {
-                val results = mutableMapOf</*@StringRes */Int, Result>()
+                val successes = Scrobblables.all.mapConcurrently(5) {
+                    it to it.loveOrUnlove(track, love)
+                }.toMap()
 
-                scrobblablesMap.forEach { (stringId, scrobblable) ->
-                    if (scrobblable != null) {
-                        results[stringId] = scrobblable.loveOrUnlove(track, love)
-                    }
-                }
-
-                if (results.values.any { !it.isSuccessful }) {
+                if (successes.values.any { !it }) {
                     val entry = PendingLove()
                     entry.artist = track.artist
                     entry.track = track.name
                     entry.shouldLove = love
-                    results.forEach { (id, result) ->
-                        if (!result.isSuccessful && result.errorCode != 7)
-                            entry.state = entry.state or (1 shl Stuff.SERVICE_BIT_POS[id]!!)
+                    successes.forEach { (scrobblable, success) ->
+                        if (!success)
+                            entry.state =
+                                entry.state or (1 shl scrobblable.userAccount.type.ordinal)
                     }
                     if (entry.state != 0) {
                         dao.insert(entry)
@@ -1737,93 +1465,91 @@ class LFMRequester(
 
     fun delete(track: Track, callback: (suspend (Boolean) -> Unit)?) {
         toExec = {
-            val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs, supportsLove = true)
-            val unscrobbler = LastfmUnscrobbler(context)
-            val success = unscrobbler.haveCsrfCookie() &&
-                    unscrobbler.unscrobble(track.artist, track.name, track.playedWhen.time)
+            val results = Scrobblables.all.mapConcurrently(5) {
+                runCatching {
+                    val succ = it.delete(track)
+                    if (!succ)
+                        Stuff.log("Delete failed for " + it::class.java.name)
+                    assert(succ)
+                }
+            }
+
+            val success = results.all { it.isSuccess }
 
             withContext(Dispatchers.Main) {
                 callback!!.invoke(success)
             }
 
-            arrayOf(scrobblablesMap[R.string.librefm], scrobblablesMap[R.string.gnufm])
-                .forEach {
-                    if (it is Lastfm) {
-                        Library.removeScrobble(
-                            track.artist,
-                            track.name,
-                            track.playedWhen.time / 1000,
-                            it.session
-                        )
-                    }
-                }
-
-            CachedTracksDao.deltaUpdateAll(context, track, -1)
+            if (success)
+                CachedTracksDao.deltaUpdateAll(track, -1, DirtyUpdate.BOTH)
 
             null
         }
     }
 
-    fun doAuth(@StringRes type: Int, token: String?) {
+    fun doAuth(userAccountTemp: UserAccountTemp) {
         toExec = {
-            if (!token.isNullOrEmpty()) {
-                when (type) {
-                    R.string.lastfm -> {
+            if (userAccountTemp.authKey.isNotEmpty()) {
+                when (userAccountTemp.type) {
+                    AccountType.LASTFM -> {
                         val session =
-                            Authenticator.getSession(null, token, Stuff.LAST_KEY, Stuff.LAST_SECRET)
+                            Authenticator.getSession(
+                                null,
+                                userAccountTemp.authKey,
+                                Stuff.LAST_KEY,
+                                Stuff.LAST_SECRET
+                            )
 
                         if (session != null) {
                             UserAccountSerializable(
-                                ScrobblableEnum.LASTFM,
+                                AccountType.LASTFM,
                                 User.getInfo(session).toUserSerializable(),
                                 session.key,
                             ).let {
-                                prefs.currentUser = it
-                                prefs.scrobbleAccounts += it
+                                Scrobblables.add(it)
                             }
-
-                            prefs.lastfmUsername = session.username
-                            prefs.lastfmSessKey = session.key
-                            getDrawerInfo()
                         }
                     }
 
-                    R.string.librefm -> {
+                    AccountType.LIBREFM -> {
                         val session = Authenticator.getSession(
                             Stuff.LIBREFM_API_ROOT,
-                            token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY
+                            userAccountTemp.authKey, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY
                         )
 
                         if (session != null) {
-                            prefs.scrobbleAccounts += UserAccountSerializable(
-                                ScrobblableEnum.LIBREFM,
-                                User.getInfo(session.username, session).toUserSerializable(),
-                                session.key,
+                            Scrobblables.add(
+                                UserAccountSerializable(
+                                    AccountType.LIBREFM,
+                                    User.getInfo(session.username, session).toUserSerializable(),
+                                    session.key,
+                                    Stuff.LIBREFM_API_ROOT
+                                )
                             )
-
-                            prefs.librefmUsername = session.username
-                            prefs.librefmSessKey = session.key
                         }
                     }
 
-                    R.string.gnufm -> {
+                    AccountType.GNUFM -> {
                         val session = Authenticator.getSession(
-                            prefs.gnufmRoot + "2.0/",
-                            token, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY
+                            userAccountTemp.apiRoot + "2.0/",
+                            userAccountTemp.authKey, Stuff.LIBREFM_KEY, Stuff.LIBREFM_KEY
                         )
 
                         if (session != null) {
-                            prefs.scrobbleAccounts += UserAccountSerializable(
-                                ScrobblableEnum.GNUFM,
-                                User.getInfo(session.username, session).toUserSerializable(),
-                                session.key,
-                                session.apiRootUrl.substringBeforeLast("2.0/"),
-                                session.isTlsNoVerify
+                            Scrobblables.add(
+                                UserAccountSerializable(
+                                    AccountType.GNUFM,
+                                    User.getInfo(session.username, session).toUserSerializable(),
+                                    session.key,
+                                    session.apiRootUrl.substringBeforeLast("2.0/"),
+                                    session.isTlsNoVerify
+                                )
                             )
-
-                            prefs.gnufmUsername = session.username
-                            prefs.gnufmSessKey = session.key
                         }
+                    }
+
+                    AccountType.LISTENBRAINZ, AccountType.CUSTOM_LISTENBRAINZ -> {
+                        TODO("NOT IMPLEMENTED")
                     }
                 }
             }
@@ -1857,6 +1583,7 @@ class LFMRequester(
         val okHttpClient by lazy {
             OkHttpClient.Builder()
                 .followRedirects(false)
+                .readTimeout(Stuff.READ_TIMEOUT_SECS, TimeUnit.SECONDS)
                 .build()
             // default timeouts are 10 seconds for each step and none for call
         }
@@ -1960,5 +1687,32 @@ class LFMRequester(
                 Pair(cArtist, cTrack)
             }
         }
+
+        public fun ExceptionNotifier(
+            errorLiveData: MutableLiveData<Throwable>? = null,
+            timberLog: Boolean = true
+        ) =
+            CoroutineExceptionHandler { coroutineContext, throwable ->
+                when (throwable) {
+                    is CancellationException,
+                    is InterruptedIOException,
+                    is InterruptedException -> {
+
+                    }
+
+                    else -> {
+                        if (errorLiveData != null)
+                            errorLiveData.postValue(throwable)
+                        else {
+                            if (timberLog)
+                                Timber.tag(Stuff.TAG).e(throwable)
+                            if (BuildConfig.DEBUG) {
+                                App.context.toast("err: " + throwable.message)
+                            }
+                        }
+                    }
+                }
+            }
+
     }
 }

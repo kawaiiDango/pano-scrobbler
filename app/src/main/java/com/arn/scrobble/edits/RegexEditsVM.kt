@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class RegexEditsVM(app: Application) : AndroidViewModel(app) {
-    val dao = PanoDb.getDb(getApplication()).getRegexEditsDao()
+    val dao = PanoDb.db.getRegexEditsDao()
     val regexes = mutableListOf<RegexEdit>()
     val regexesReceiver = dao.allLd
     val countReceiver = dao.countLd

@@ -1,10 +1,10 @@
 package com.arn.scrobble.db
 
-import android.content.Context
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.arn.scrobble.App
 
 
 /**
@@ -23,7 +23,7 @@ import androidx.room.RoomDatabase
         CachedAlbum::class,
         CachedArtist::class,
     ],
-    version = 11,
+    version = 12,
     autoMigrations = [
         AutoMigration(
             from = 9,
@@ -33,6 +33,10 @@ import androidx.room.RoomDatabase
             from = 10,
             to = 11,
             spec = Spec_10_11::class
+        ),
+        AutoMigration(
+            from = 11,
+            to = 12,
         ),
     ],
 )
@@ -53,14 +57,12 @@ abstract class PanoDb : RoomDatabase() {
         @Volatile
         private var INSTANCE: PanoDb? = null
 
-        fun getDb(context: Context): PanoDb {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(context.applicationContext, PanoDb::class.java, fileName)
-                    .addMigrations(*ManualMigrations.all)
-                    .enableMultiInstanceInvalidation()
-                    .build()
-                    .also { INSTANCE = it }
-            }
+        val db get(): PanoDb = INSTANCE ?: synchronized(this) {
+            Room.databaseBuilder(App.context, PanoDb::class.java, fileName)
+                .addMigrations(*ManualMigrations.all)
+                .enableMultiInstanceInvalidation()
+                .build()
+                .also { INSTANCE = it }
         }
 
         fun destroyInstance() {

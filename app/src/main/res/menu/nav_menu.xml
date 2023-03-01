@@ -5,19 +5,19 @@
 
     <group android:id="@+id/nav_group_3">
         <item
-            android:id="@+id/nav_random"
-            android:icon="@drawable/vd_die"
-            android:title="@string/random"/>
-        <item
             android:id="@+id/nav_rec"
             android:icon="@drawable/vd_mic"
-            android:title="@string/scrobble_from_mic"/>
+            android:title="@string/from_mic"/>
         <item
             android:id="@+id/nav_search"
             android:icon="@drawable/vd_search"
             android:title="@string/search"/>
     </group>
     <group android:id="@+id/nav_group_4">
+        <item
+            android:id="@+id/nav_report"
+            android:icon="@drawable/vd_bug"
+            android:title="@string/bug_report"/>
         <item
             android:id="@+id/nav_pro"
             android:icon="@drawable/vd_medal"
@@ -26,10 +26,6 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/vd_settings"
             android:title="@string/settings"/>
-        <item
-            android:id="@+id/nav_report"
-            android:icon="@drawable/vd_bug"
-            android:title="@string/bug_report"/>
     </group>
 
 </menu>

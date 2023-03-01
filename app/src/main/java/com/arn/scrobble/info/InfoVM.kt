@@ -35,7 +35,7 @@ class InfoVM(app: Application) : AndroidViewModel(app) {
         if (albumFirst)
             infoMap[NLService.B_ARTIST] = Artist(artist, null)
 
-        LFMRequester(getApplication(), viewModelScope, infoMapReceiver).apply {
+        LFMRequester(viewModelScope, infoMapReceiver).apply {
             getInfos(artist, album, track, username)
         }
     }

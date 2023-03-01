@@ -41,6 +41,7 @@ public class PaginatedResult<T> implements Iterable<T> {
 	private int page;
 	private int totalPages;
 	private int total;
+	private boolean fromCache = false;
 	private Collection<T> pageResults;
 
 	public PaginatedResult(int page, int totalPages, int total, Collection<T> pageResults) {
@@ -94,4 +95,12 @@ public class PaginatedResult<T> implements Iterable<T> {
 	public Iterator<T> iterator() {
 		return getPageResults().iterator();
 	}
+
+    public boolean isStale() {
+        return fromCache;
+    }
+
+    public void setStale(boolean fromCache) {
+        this.fromCache = fromCache;
+    }
 }

@@ -7,18 +7,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentBlockedMetadataBinding
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setTitle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -32,6 +35,7 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
     private val viewModel by viewModels<BlockedMetadataVM>()
     private val mutex = Mutex()
     private lateinit var adapter: BlockedMetadataAdapter
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,25 +52,22 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.pref_blocked_metadata)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.blockAdd.setOnClickListener {
-            showAddEditDialog(null)
-        }
+        mainNotifierViewModel.fabData.value = FabData(
+            viewLifecycleOwner,
+            R.string.add,
+            R.drawable.vd_add_borderless,
+            {
+                showAddEditDialog(null)
+            }
+        )
 
         adapter = BlockedMetadataAdapter(
             viewModel,
             this
         )
         binding.blockList.adapter = adapter
-        binding.blockList.layoutManager = LinearLayoutManager(context!!)
-
-        if (!binding.root.isInTouchMode)
-            binding.blockAdd.requestFocus()
+        binding.blockList.layoutManager = LinearLayoutManager(requireContext())
         binding.empty.text = resources.getQuantityString(R.plurals.num_blocked_metadata, 0, 0)
 
         viewModel.blockedMetadataReceiver.observe(viewLifecycleOwner) {
@@ -131,11 +132,10 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
     }
 
     private fun showAddEditDialog(blockedMetadata: BlockedMetadata?) {
-        val df = BlockedMetadataAddDialogFragment()
-        df.arguments = Bundle().apply {
+        val args = Bundle().apply {
             putSingle(blockedMetadata ?: return@apply)
         }
-        df.show(childFragmentManager, null)
+        findNavController().navigate(R.id.blockedMetadataAddDialogFragment, args)
     }
 
     override fun onItemClick(view: View, position: Int) {

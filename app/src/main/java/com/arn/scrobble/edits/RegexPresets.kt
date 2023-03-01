@@ -1,6 +1,6 @@
 package com.arn.scrobble.edits
 
-import android.content.Context
+import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.db.RegexEdit
@@ -35,8 +35,8 @@ object RegexPresets {
 
     val presetKeys = presets.keys
 
-    fun getString(context: Context, key: String): String {
-        return context.getString(presets[key]?.first ?: R.string.not_found)
+    fun getString(key: String): String {
+        return App.context.getString(presets[key]?.first ?: R.string.not_found)
     }
 
     fun getPossiblePreset(regexEdit: RegexEdit) = presets[regexEdit.preset]?.second

@@ -8,7 +8,6 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arn.scrobble.R
 import com.arn.scrobble.ui.UiUtils.dp
 import com.google.android.material.color.MaterialColors
 
@@ -28,7 +27,7 @@ class SimpleHeaderDecoration(
     private var paintInited = false
 
     private fun initPaint(context: Context) {
-        paint.color = MaterialColors.getColor(context, R.attr.colorOnBackground, null)
+        paint.color = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnBackground, null)
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 3.dp.toFloat()
 

@@ -124,7 +124,7 @@ class Updater(
                         it.printStackTrace()
                 },
                 onUpdateAvailable = { versionName, changelog, downloadUrl ->
-                    val coordinatorLayout = mainActivity.findViewById<View>(R.id.frame)
+                    val coordinatorLayout = mainActivity.findViewById<View>(R.id.coordinator)
                     Snackbar.make(
                         coordinatorLayout,
                         mainActivity.getString(R.string.update_available, versionName),

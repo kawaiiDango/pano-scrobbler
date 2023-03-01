@@ -1,7 +1,6 @@
 package com.arn.scrobble.onboarding
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,16 +9,15 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.view.GravityCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import com.arn.scrobble.MainActivity
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.MainNotifierViewModel
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentOnboardingBinding
-import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.scrobbleable.Scrobblables
 import ernestoyaquello.com.verticalstepperform.Step
 import ernestoyaquello.com.verticalstepperform.listener.StepperFormListener
 
@@ -29,12 +27,12 @@ class OnboardingFragment : Fragment(), StepperFormListener {
         get() = _binding!!
     private lateinit var notificationPermRequest: ActivityResultLauncher<String>
     private lateinit var onboardingSteps: OnboardingSteps
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         notificationPermRequest =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-
             }
     }
 
@@ -48,22 +46,12 @@ class OnboardingFragment : Fragment(), StepperFormListener {
     }
 
     override fun onDestroyView() {
-        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         _binding = null
         super.onDestroyView()
     }
 
     override fun onStart() {
         super.onStart()
-        setTitle(0)
-        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-
-        // a library bug?
-        (activity as MainActivity).binding.coordinatorMain.appBar.setExpanded(
-            expanded = false,
-            animate = false
-        )
-
         fixFocusBug()
     }
 
@@ -112,10 +100,14 @@ class OnboardingFragment : Fragment(), StepperFormListener {
     }
 
     override fun onCompletedForm() {
-        val activity = activity!! as MainActivity
-        activity.showHomePager()
-        if (activity.coordinatorPadding == 0)
-            activity.binding.drawerLayout.openDrawer(GravityCompat.START)
+        if (mainNotifierViewModel.userStackDepth == 0)
+            mainNotifierViewModel.pushUser(Scrobblables.current!!.userAccount.user)
+        findNavController().apply {
+            if (graph.startDestinationId != R.id.myHomePagerFragment)
+                setGraph(R.navigation.nav_graph) // reset
+            else
+                navigate(R.id.myHomePagerFragment)
+        }
     }
 
     override fun onCancelledForm() {
@@ -127,14 +119,4 @@ class OnboardingFragment : Fragment(), StepperFormListener {
     override fun onStepRemoved(index: Int) {
     }
 
-    companion object {
-        fun isNotificationListenerEnabled(c: Context): Boolean {
-            val packages = NotificationManagerCompat.getEnabledListenerPackages(c)
-            return packages.any { it == c.packageName }
-        }
-
-        fun isLoggedIn(prefs: MainPrefs): Boolean {
-            return !(prefs.lastfmSessKey == null || prefs.lastfmUsername == null)
-        }
-    }
 }

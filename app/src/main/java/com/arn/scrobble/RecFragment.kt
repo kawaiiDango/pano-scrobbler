@@ -2,10 +2,7 @@ package com.arn.scrobble
 
 import android.Manifest.permission.RECORD_AUDIO
 import android.animation.ObjectAnimator
-import android.app.PendingIntent
 import android.content.pm.PackageManager
-import android.content.pm.ShortcutInfo
-import android.content.pm.ShortcutManager
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
@@ -13,9 +10,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
@@ -25,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.acrcloud.rec.ACRCloudClient
 import com.acrcloud.rec.ACRCloudConfig
 import com.acrcloud.rec.ACRCloudResult
@@ -32,9 +27,10 @@ import com.acrcloud.rec.IACRCloudListener
 import com.acrcloud.rec.IACRCloudRadioMetadataListener
 import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.LoginFlows
 import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.setTextAndAnimate
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
@@ -57,7 +53,7 @@ class RecFragment : Fragment(),
     private var fadeAnimator: ObjectAnimator? = null
     private var progressAnimator: ObjectAnimator? = null
     private val DURATION = 10000L
-    private val prefs by lazy { MainPrefs(context!!) }
+    private val prefs by lazy { MainPrefs(requireContext()) }
     private lateinit var micPermRequest: ActivityResultLauncher<String>
     private var _binding: ContentRecBinding? = null
     private val binding
@@ -74,7 +70,7 @@ class RecFragment : Fragment(),
                 if (isGranted)
                     startOrCancel()
                 else
-                    context!!.toast(R.string.grant_rec_perm)
+                    requireContext().toast(R.string.grant_rec_perm)
             }
     }
 
@@ -84,6 +80,7 @@ class RecFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentRecBinding.inflate(inflater, container, false)
+        binding.root.setupInsets()
         if (!Stuff.isTv)
             setHasOptionsMenu(true)
         return binding.root
@@ -102,7 +99,7 @@ class RecFragment : Fragment(),
 
         acrConfig = ACRCloudConfig().apply {
             acrcloudListener = this@RecFragment
-            context = this@RecFragment.context!!
+            context = this@RecFragment.requireContext()
             host = prefs.acrcloudHost ?: Tokens.ACR_HOST
             accessKey = prefs.acrcloudKey ?: Tokens.ACR_KEY
             accessSecret = prefs.acrcloudSecret ?: Tokens.ACR_SECRET
@@ -116,19 +113,13 @@ class RecFragment : Fragment(),
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.scrobble_from_mic)
-//        showSnackbar()
-    }
-
     override fun onDestroyView() {
         if (started)
             startOrCancel()
         _binding = null
         super.onDestroyView()
     }
-
+/*
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.rec_menu, menu)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -139,7 +130,7 @@ class RecFragment : Fragment(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_add_to_hs && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val shortcutManager = activity!!.getSystemService(ShortcutManager::class.java)
+            val shortcutManager = requireActivity().getSystemService(ShortcutManager::class.java)
             if (shortcutManager!!.isRequestPinShortcutSupported) {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val pinShortcutInfo = ShortcutInfo.Builder(context, "rec").build()
@@ -167,21 +158,7 @@ class RecFragment : Fragment(),
         }
         return super.onOptionsItemSelected(item)
     }
-
-    private fun openAddKey() {
-        val loginFragment = LoginFragment()
-        loginFragment.arguments = Bundle().apply {
-            putString(LoginFragment.HEADING, getString(R.string.add_acr_key))
-            putString(LoginFragment.INFO, getString(R.string.add_acr_key_info))
-            putString(LoginFragment.TEXTF1, getString(R.string.acr_host))
-            putString(LoginFragment.TEXTF2, getString(R.string.acr_key))
-            putString(LoginFragment.TEXTFL, getString(R.string.acr_secret))
-        }
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.frame, loginFragment)
-            .addToBackStack(null)
-            .commit()
-    }
+*/
 
     private fun removeKey() {
         prefs.acrcloudHost = null
@@ -191,9 +168,9 @@ class RecFragment : Fragment(),
 
     private fun showSnackbar() {
         Snackbar
-            .make(view!!, R.string.add_acr_consider, 8 * 1000)
+            .make(requireView(), R.string.add_acr_consider, 8 * 1000)
             .setAction(R.string.add) {
-                openAddKey()
+                LoginFlows(findNavController()).acrCloud()
             }
             .focusOnTv()
             .show()
@@ -203,7 +180,7 @@ class RecFragment : Fragment(),
         context ?: return
 
         if (ContextCompat.checkSelfPermission(
-                context!!,
+                requireContext(),
                 RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -347,13 +324,13 @@ class RecFragment : Fragment(),
                             getString(R.string.artist_title, artist, title)
                 )
                 val trackInfo = PlayingTrackInfo(
-                    context!!.packageName,
+                    requireContext().packageName,
                     playStartTime = System.currentTimeMillis()
                 )
 
                 trackInfo.putOriginals(artist, title, album, "")
 
-                LFMRequester(context!!, CoroutineScope(Dispatchers.IO + Job()))
+                LFMRequester(CoroutineScope(Dispatchers.IO + Job()))
                     .scrobble(false, trackInfo)
             }
 

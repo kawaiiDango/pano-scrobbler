@@ -1,25 +1,21 @@
 package com.arn.scrobble.recents
 
 import android.app.Application
-import android.content.Intent
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
-import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.pending.PendingListData
-import com.arn.scrobble.pending.PendingScrJob
-import com.arn.scrobble.pending.PendingScrService
+import com.arn.scrobble.scrobbleable.ListenBrainz
+import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.ui.SectionedVirtualList
 import com.hadilq.liveevent.LiveEvent
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import java.util.Date
 
 
@@ -27,48 +23,84 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     val tracksReceiver by lazy { LiveEvent<PaginatedResult<Track>>() }
     val firstScrobbledDate by lazy { MutableLiveData<Date>() }
     val tracks by lazy { mutableListOf<Track>() }
+    val virtualList = SectionedVirtualList()
+    val pendingScrobblesLd by lazy { PanoDb.db.getPendingScrobblesDao().allLd(10000) }
+    val pendingLovesLd by lazy { PanoDb.db.getPendingLovesDao().allLd(10000) }
+    var isShowingLoves = false
+
     val deletedTracksStringSet by lazy { mutableSetOf<String>() }
-    val listenerTrendReceiver by lazy { LiveEvent<List<Int>>() }
-    private var lastHeroInfoTask: Job? = null
     val pkgMap = mutableMapOf<Long, String>()
-    private val urlToListenerTrendMap = mutableMapOf<String, List<Int>?>()
     val paletteColors by lazy { MutableLiveData<PaletteColors>() }
 
-    private val pendingTracks by lazy { MutableLiveData<PendingListData>() }
-    private val mutex = Mutex()
+    private val errorNotifier = LFMRequester.ExceptionNotifier()
 
     var username: String? = null
     var page = 1
     var totalPages = 1
-    private var loadedCached = false
-    var selectedPos = 1
+    var loadedCached = false
+    var selectedPos = 0
     var toTime: Long? = null
+    private var lastLoadJob: Job? = null
 
 
     fun loadRecents(page: Int) {
         this.page = page
-        LFMRequester(getApplication(), viewModelScope, tracksReceiver)
-            .getRecents(
-                page,
-                username,
-                cached = !loadedCached,
-                to = toTime ?: -1L,
-                includeNowPlaying = toTime == null,
-                doDeltaIndex = page == 1 && toTime == null && username == null // todo: && theres no unsubmitted pending scrobbles
-            )
-        loadedCached = true
+
+        val isListenbrainz = Scrobblables.current is ListenBrainz
+        val _to = if (isListenbrainz && page > 1)
+            tracks.lastOrNull()?.playedWhen?.time ?: -1
+        else
+            toTime ?: -1L
+
+        val limit = if (!isListenbrainz && username == null)
+            300
+        else
+            50
+        lastLoadJob?.cancel()
+        lastLoadJob = viewModelScope.launch(errorNotifier) {
+            val pr = withContext(Dispatchers.IO) {
+                Scrobblables.current!!.getRecents(
+                    page,
+                    username,
+                    cached = !loadedCached,
+                    to = _to,
+                    limit = limit,
+                    includeNowPlaying = toTime == null,
+                )
+            }
+            val _loadedCached = loadedCached
+            loadedCached = true
+            tracksReceiver.value = pr
+
+            if (pr.isStale && !_loadedCached) {
+                loadRecents(page)
+            }
+        }
     }
 
     fun loadLoves(page: Int) {
         this.page = page
-        LFMRequester(getApplication(), viewModelScope, tracksReceiver)
-            .getLoves(page, username, cached = !loadedCached)
+
+        lastLoadJob?.cancel()
+        lastLoadJob = viewModelScope.launch(errorNotifier) {
+            val pr = withContext(Dispatchers.IO) {
+                Scrobblables.current!!.getLoves(
+                    page,
+                    username,
+                    cached = !loadedCached,
+                )
+            }
+            tracksReceiver.value = pr
+            if (pr.isStale) {
+                loadLoves(page)
+            }
+        }
         loadedCached = true
     }
 
     fun loadTrackScrobbles(track: Track, page: Int) {
         this.page = page
-        LFMRequester(getApplication(), viewModelScope, tracksReceiver).getTrackScrobbles(
+        LFMRequester(viewModelScope, tracksReceiver).getTrackScrobbles(
             track,
             page,
             username
@@ -76,66 +108,10 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadFirstScrobbleDate(pr: PaginatedResult<Track>) {
-        LFMRequester(getApplication(), viewModelScope, firstScrobbledDate).getTrackFirstScrobble(
+        LFMRequester(viewModelScope, firstScrobbledDate).getTrackFirstScrobble(
             pr,
             username
         )
-    }
-
-    fun loadListenerTrend(url: String?) {
-        lastHeroInfoTask?.cancel()
-        if (url != null) {
-            if (url in urlToListenerTrendMap) {
-                listenerTrendReceiver.value = urlToListenerTrendMap[url]
-                return
-            }
-
-            lastHeroInfoTask = viewModelScope.launch(Dispatchers.IO) {
-                val trend = LFMRequester(getApplication(), viewModelScope)
-                    .execHere<List<Int>> {
-                        getListenerTrend(url)
-                    }
-                urlToListenerTrendMap[url] = trend
-                listenerTrendReceiver.postValue(trend)
-            }
-        }
-    }
-
-    fun loadPending(limit: Int, submit: Boolean): MutableLiveData<PendingListData> {
-        viewModelScope.launch(Dispatchers.IO) {
-            mutex.withLock {
-                val dao = PanoDb.getDb(getApplication()).getPendingScrobblesDao()
-                val lovesDao = PanoDb.getDb(getApplication()).getPendingLovesDao()
-                val data = PendingListData()
-                data.plCount = lovesDao.count
-                data.psCount = dao.count
-                var limit2: Int
-                if (data.plCount > 0) {
-                    limit2 = limit
-                    if (data.psCount > 0)
-                        limit2--
-                    data.plList = lovesDao.all(limit2)
-                }
-                if (data.psCount > 0) {
-                    limit2 = limit
-                    if (data.plCount > 0)
-                        limit2--
-                    data.psList = dao.all(limit2)
-                }
-
-                pendingTracks.postValue(data)
-                if (submit && (data.plCount > 0 || data.psCount > 0)
-                    && Stuff.isOnline && !PendingScrService.mightBeRunning && !PendingScrJob.mightBeRunning
-                ) {
-                    val intent = Intent(
-                        getApplication<Application>().applicationContext,
-                        PendingScrService::class.java
-                    )
-                    ContextCompat.startForegroundService(getApplication<Application>(), intent)
-                }
-            }
-        }
-        return pendingTracks
     }
 
     fun reemitColors() {

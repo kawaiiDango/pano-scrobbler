@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="spark_line_color">#000000</color>
-    <color name="spark_fill_color">#a0000000</color>
-    <color name="spark_base_line_color">#757577</color>
-    <color name="spark_scrub_line_color">#757577</color>
-</resources>

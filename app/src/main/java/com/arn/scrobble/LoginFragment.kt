@@ -10,27 +10,36 @@ import android.view.inputmethod.EditorInfo
 import android.webkit.URLUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentLoginBinding
+import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
-import kotlinx.coroutines.*
-import org.json.JSONObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 /**
  * Created by arn on 06/09/2017.
  */
 open class LoginFragment : DialogFragment() {
-    protected val prefs by lazy { MainPrefs(context!!) }
+    protected val prefs by lazy { MainPrefs(requireContext()) }
     protected open val checksLogin = true
     protected val isStandalone by lazy { activity is MainDialogActivity }
     private var _binding: ContentLoginBinding? = null
     protected val binding
         get() = _binding!!
+    private val args by navArgs<LoginFragmentArgs>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,23 +54,22 @@ open class LoginFragment : DialogFragment() {
     ): View? {
         showsDialog = false
         _binding = ContentLoginBinding.inflate(inflater, container, false)
-        val args = arguments
-        args?.getString(INFO)?.let {
+        args.infoText?.let {
             binding.loginInfo.autoLinkMask = Linkify.WEB_URLS
             binding.loginInfo.text = it
             binding.loginInfo.visibility = View.VISIBLE
         }
-        args?.getString(TEXTF1)?.let {
+        args.textField1?.let {
             binding.loginTextfield1.hint = it
             if (!binding.root.isInTouchMode)
                 binding.loginTextfield1.requestFocus()
             binding.loginTextfield1.visibility = View.VISIBLE
         }
-        args?.getString(TEXTF2)?.let {
+        args.textField2?.let {
             binding.loginTextfield2.hint = it
             binding.loginTextfield2.visibility = View.VISIBLE
         }
-        args?.getString(TEXTFL)?.let {
+        args.textFieldLast?.let {
             binding.loginTextfieldLast.hint = it
             binding.loginTextfieldLast.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
@@ -73,7 +81,7 @@ open class LoginFragment : DialogFragment() {
                     false
             }
         }
-        args?.getString(TEXT_CHECKBOX)?.let {
+        args.textCheckbox?.let {
             binding.loginCheckbox.text = it
             binding.loginCheckbox.visibility = View.VISIBLE
         }
@@ -83,6 +91,7 @@ open class LoginFragment : DialogFragment() {
             binding.loginProgress.show()
             validate()
         }
+        binding.root.setupInsets()
 
         return binding.root
     }
@@ -117,7 +126,7 @@ open class LoginFragment : DialogFragment() {
         if (context == null || isStateSaved)
             return
         if (errMsg.isNotEmpty())
-            context!!.toast(errMsg)
+            requireContext().toast(errMsg)
         binding.loginProgress.hide()
         binding.loginStatus.setImageResource(R.drawable.vd_ban)
         binding.loginStatus.visibility = View.VISIBLE
@@ -157,7 +166,6 @@ open class LoginFragment : DialogFragment() {
     }
 
     protected open suspend fun validateAsync(): Boolean {
-        val title = arguments?.getString(HEADING)
         val t1 = binding.loginTextfield1.editText!!.text.toString()
         val t2 = binding.loginTextfield2.editText!!.text.toString()
         val tlast = binding.loginTextfieldLast.editText!!.text.toString()
@@ -165,17 +173,22 @@ open class LoginFragment : DialogFragment() {
 
         var success = false
 
-        when (title) {
+        when (args.title) {
             getString(R.string.listenbrainz) -> {
                 if (tlast.isNotBlank()) {
-                    val username = (ListenBrainz().setToken(tlast) as? ListenBrainz)?.validateAndGetUsername()
+                    val userAccount = UserAccountTemp(
+                        AccountType.LISTENBRAINZ,
+                        tlast,
+                        Stuff.LISTENBRAINZ_API_ROOT,
+                        false
+                    )
+                    val username = ListenBrainz.validateAndGetUsername(userAccount)
                     if (username != null) {
-                        prefs.listenbrainzUsername = username
-                        prefs.listenbrainzToken = tlast
                         success = true
                     }
                 }
             }
+
             getString(R.string.custom_listenbrainz) -> {
                 if (t1.isNotBlank() && tlast.isNotBlank()) {
                     if (URLUtil.isValidUrl(t1)) {
@@ -183,16 +196,16 @@ open class LoginFragment : DialogFragment() {
                             "$t1/"
                         else
                             t1
-                        val username = (ListenBrainz().setToken(tlast)
-                            ?.setTlsNoVerify(tlsNoVerify)
-                            ?.setApiRoot(url) as? ListenBrainz)
-                            ?.validateAndGetUsername()
+
+                        val userAccount = UserAccountTemp(
+                            AccountType.CUSTOM_LISTENBRAINZ,
+                            tlast,
+                            url,
+                            tlsNoVerify
+                        )
+                        val username = ListenBrainz.validateAndGetUsername(userAccount)
 
                         if (username != null) {
-                            prefs.customListenbrainzRoot = url
-                            prefs.customListenbrainzUsername = username
-                            prefs.customListenbrainzToken = tlast
-                            prefs.customListenbrainzTlsNoVerify = tlsNoVerify
                             success = true
                         }
                     } else {
@@ -200,14 +213,13 @@ open class LoginFragment : DialogFragment() {
                     }
                 }
             }
+
             getString(R.string.gnufm) -> {
                 var url = tlast
                 if (url.isNotBlank()) {
                     if (URLUtil.isValidUrl(url)) {
                         if (!url.endsWith('/'))
                             url += '/'
-                        prefs.gnufmRoot = url
-                        prefs.gnufmTlsNoVerify = tlsNoVerify
                         val wf = WebViewFragment()
                         wf.arguments = Bundle().apply {
                             putString(
@@ -215,13 +227,24 @@ open class LoginFragment : DialogFragment() {
                                 url + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/gnufm"
                             )
                             putBoolean(Stuff.ARG_TLS_NO_VERIFY, tlsNoVerify)
+                            putSingle(
+                                UserAccountTemp(
+                                    AccountType.GNUFM,
+                                    "",
+                                    url,
+                                    tlsNoVerify
+                                )
+                            )
                         }
                         withContext(Dispatchers.Main) {
-                            parentFragmentManager.popBackStackImmediate()
-                            parentFragmentManager.beginTransaction()
-                                .replace(R.id.frame, wf)
-                                .addToBackStack(null)
-                                .commit()
+                            findNavController().popBackStack()
+                            findNavController().navigate(R.id.webViewFragment, Bundle().apply {
+                                putString(
+                                    Stuff.ARG_URL,
+                                    url + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/gnufm"
+                                )
+                                putBoolean(Stuff.ARG_TLS_NO_VERIFY, tlsNoVerify)
+                            })
                         }
                         return true
                     } else {
@@ -229,54 +252,38 @@ open class LoginFragment : DialogFragment() {
                     }
                 }
             }
+
             getString(R.string.add_acr_key) -> {
                 if (t1.isNotBlank() && t2.isNotBlank() && tlast.isNotBlank()) {
-                    val i = IdentifyProtocolV1()
-                    var url = t1
-                    if (!url.startsWith("http"))
-                        url = "https://$url"
-                    if (!URLUtil.isValidUrl(url)) {
-                        withContext(Dispatchers.Main) {
-                            activity!!.toast(R.string.failed_encode_url)
-                        }
-                        throw IllegalArgumentException(getString(R.string.failed_encode_url))
-                    }
-                    val res = i.recognize(t1, t2, tlast, null, "audio", 10000)
-                    val j = JSONObject(res)
-                    val statusCode = j.getJSONObject("status").getInt("code")
 
-                    if (statusCode == 2004) {
-                        // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
-                        prefs.acrcloudHost = t1
-                        prefs.acrcloudKey = t2
-                        prefs.acrcloudSecret = tlast
-                        success = true
-                    }
+//                    val i = IdentifyProtocolV1()
+//                    var url = t1
+//                    if (!url.startsWith("http"))
+//                        url = "https://$url"
+//                    if (!URLUtil.isValidUrl(url)) {
+//                        withContext(Dispatchers.Main) {
+//                            requireActivity().toast(R.string.failed_encode_url)
+//                        }
+//                        throw IllegalArgumentException(getString(R.string.failed_encode_url))
+//                    }
+//                    val res = i.recognize(t1, t2, tlast, null, "audio", 10000)
+//                    val j = JSONObject(res)
+//                    val statusCode = j.getJSONObject("status").getInt("code")
+//
+//                    if (statusCode == 2004) {
+                    // {"status":{"msg":"Can't generate fingerprint","version":"1.0","code":2004}}
+                    prefs.acrcloudHost = t1
+                    prefs.acrcloudKey = t2
+                    prefs.acrcloudSecret = tlast
+                    success = true
+//                    }
                 }
             }
+
             else -> withContext(Dispatchers.Main) {
-                activity!!.toast("service not implemented")
+                requireActivity().toast("service not implemented")
             }
         }
         return success
     }
-
-    override fun onStart() {
-        super.onStart()
-
-        if (checksLogin) {
-            setTitle(arguments?.getString(HEADING))
-        }
-
-    }
-
-    companion object {
-        const val HEADING = "head"
-        const val INFO = "info"
-        const val TEXTF1 = "t1"
-        const val TEXTF2 = "t2"
-        const val TEXTFL = "tl"
-        const val TEXT_CHECKBOX = "cb"
-    }
-
 }

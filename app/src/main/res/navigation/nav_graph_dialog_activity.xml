@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_dialog_activity.xml"
+    app:startDestination="@id/emptyFragment">
+
+    <dialog
+        android:id="@+id/editDialogFragment"
+        android:name="com.arn.scrobble.edits.EditDialogFragment"
+        android:label="@string/edit"
+        tools:layout="@layout/dialog_edit_edits" />
+    <dialog
+        android:id="@+id/infoFragment"
+        android:name="com.arn.scrobble.info.InfoFragment"
+        android:label="@string/more_info"
+        tools:layout="@layout/content_info" >
+        <action
+            android:id="@+id/action_infoFragment_to_infoExtraFragment"
+            app:destination="@id/infoExtraFragment" />
+        <action
+            android:id="@+id/action_infoFragment_to_tagInfoFragment"
+            app:destination="@id/tagInfoFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/infoExtraFullFragment"
+        android:name="com.arn.scrobble.info.InfoExtraFullFragment"
+        android:label="@string/more_info"
+        tools:layout="@layout/content_info_extra_full" />
+    <dialog
+        android:id="@+id/infoExtraFragment"
+        android:name="com.arn.scrobble.info.InfoExtraFragment"
+        android:label="InfoExtraFragment"
+        tools:layout="@layout/content_info_extra" >
+        <action
+            android:id="@+id/action_infoExtraFragment_to_infoExtraFullFragment"
+            app:destination="@id/infoExtraFullFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/blockedMetadataAddDialogFragment"
+        android:name="com.arn.scrobble.edits.BlockedMetadataAddDialogFragment"
+        android:label="BlockedMetadataAddDialogFragment"
+        tools:layout="@layout/dialog_blocked_metadata" />
+    <dialog
+        android:id="@+id/collageGeneratorFragment"
+        android:name="com.arn.scrobble.charts.CollageGeneratorFragment"
+        android:label="CollageGeneratorFragment"
+        tools:layout="@layout/dialog_collage_generator" />
+    <dialog
+        android:id="@+id/tagInfoFragment"
+        android:name="com.arn.scrobble.info.TagInfoFragment"
+        android:label="TagInfoFragment"
+        tools:layout="@layout/content_tag_info" />
+    <fragment
+        android:id="@+id/emptyFragment"
+        android:name="com.arn.scrobble.EmptyFragment" >
+        <action
+            android:id="@+id/action_emptyFragment_to_editDialogFragment"
+            app:destination="@id/editDialogFragment" />
+        <action
+            android:id="@+id/action_emptyFragment_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_emptyFragment_to_blockedMetadataAddDialogFragment"
+            app:destination="@id/blockedMetadataAddDialogFragment" />
+        <action
+            android:id="@+id/action_emptyFragment_to_collageGeneratorFragment"
+            app:destination="@id/collageGeneratorFragment" />
+    </fragment>
+</navigation>

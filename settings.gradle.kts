@@ -17,4 +17,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "pScrobbler"
-include(":app", ":lastfm", ":sparkline")
+include(":app", ":lastfm")

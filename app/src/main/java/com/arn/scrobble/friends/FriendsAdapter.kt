@@ -49,8 +49,8 @@ class FriendsAdapter(
     private val shapeAppearanceModel by lazy {
         ShapeAppearanceModel.builder(
             fragmentBinding.root.context,
-            R.style.roundedCorners,
-            R.style.roundedCorners
+            R.style.roundedCornersBig,
+            R.style.roundedCornersBig
         )
             .build()
     }
@@ -122,7 +122,7 @@ class FriendsAdapter(
             isPinned = viewModel.isPinned(userSerializable.name)
 
             binding.friendsName.text =
-                (if (userSerializable.realname.isEmpty()) userSerializable.name else userSerializable.realname) +
+                (userSerializable.realname.ifEmpty { userSerializable.name }) +
                         (if (isPinned) " 📍" else "")
 
             if (Stuff.DEMO_MODE)
@@ -167,7 +167,8 @@ class FriendsAdapter(
                 }
             }
 
-            val userImgUrl = userSerializable.getWebpImageURL(ImageSize.EXTRALARGE)
+            val userImgUrl = userSerializable.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
+
             if (userImgUrl != binding.friendsPic.tag) {
                 binding.friendsPic.tag = userImgUrl
                 val bgGray = ContextCompat.getColor(itemView.context, R.color.background_gray)
@@ -190,7 +191,7 @@ class FriendsAdapter(
 
 //                if (userImg != null) {
                 binding.friendsPic
-                    .load(userImgUrl ?: "") {
+                    .load(userImgUrl) {
                         placeholder(R.drawable.vd_placeholder_user)
                         error(InitialsDrawable(itemView.context, userSerializable))
                         allowHardware(false)

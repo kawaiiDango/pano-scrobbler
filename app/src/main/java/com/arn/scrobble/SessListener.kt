@@ -36,7 +36,7 @@ class SessListener(
     private val blockedPackages = mutableSetOf<String>()
     private val allowedPackages = mutableSetOf<String>()
     private val loggedIn
-        get() = prefs.lastfmSessKey != null
+        get() = Stuff.isLoggedIn()
     val packageTrackMap = mutableMapOf<String, PlayingTrackInfo>()
     private var mutedHash: Int? = null
 
@@ -170,13 +170,6 @@ class SessListener(
         private val syntheticStateHandler = Handler(scrobbleHandler.looper)
 
         fun scrobble() {
-            if (!prefs.scrobbleSpotifyRemote &&
-                !isRemotePlayback &&
-                trackInfo.packageName == Stuff.PACKAGE_SPOTIFY &&
-                !audioManager.isMusicActive
-            )
-                return
-
             Stuff.log("playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}")
 
             scheduleSyntheticStateIfNeeded()
@@ -235,9 +228,9 @@ class SessListener(
                 }
 
                 Stuff.PACKAGE_PODCAST_ADDICT -> {
-                    if (albumArtist != "") {
-                        artist = albumArtist
-                        albumArtist = ""
+                    if (album != "") {
+                        artist = album
+                        album = ""
                     }
                     val idx = artist.lastIndexOf(" • ")
                     if (idx != -1)
@@ -277,6 +270,14 @@ class SessListener(
 
                 Stuff.PACKAGE_YANDEX_MUSIC -> {
                     albumArtist = ""
+                }
+
+                Stuff.PACKAGE_YAMAHA_MUSIC_CAST -> {
+                    if (artist.contains(" - ")) {
+                        val (first, second) = artist.split(" - ", limit = 2)
+                        artist = first
+                        album = second
+                    }
                 }
 
                 Stuff.PACKAGE_SPOTIFY -> {

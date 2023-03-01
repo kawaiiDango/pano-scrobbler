@@ -101,12 +101,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data
-                    android:host="screen"
-                    android:scheme="pscrobbler" />
-                <data
-                    android:host="test"
-                    android:scheme="pscrobbler" />
+                <data android:scheme="pscrobbler"/>
+                <data android:host="screen"/>
+                <data android:host="test"/>
             </intent-filter>
 
             <meta-data
@@ -125,14 +122,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data
-                    android:host="last.fm"
-                    android:pathPrefix="/user/"
-                    android:scheme="https" />
-                <data
-                    android:host="www.last.fm"
-                    android:pathPrefix="/user/"
-                    android:scheme="https" />
+                <data android:scheme="https"/>
+                <data android:host="last.fm"/>
+                <data android:host="www.last.fm"/>
+                <data android:pathPrefix="/user/"/>
             </intent-filter>
         </activity-alias>
 
@@ -183,9 +176,11 @@
         <service
             android:name=".DigestJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".pending.PendingScrService" />
+        <service android:name=".pending.PendingScrService"
+            android:foregroundServiceType="dataSync"/>
         <service
             android:name=".PersistentNotificationService"
+            android:foregroundServiceType="mediaPlayback"
             android:process=":bgScrobbler" />
         <service
             android:name=".MasterSwitchQS"
@@ -203,6 +198,7 @@
         </service>
         <service
             android:name="com.arn.scrobble.ListenAlongService"
+            android:foregroundServiceType="mediaPlayback"
             android:process=":bgScrobbler" />
 
         <provider

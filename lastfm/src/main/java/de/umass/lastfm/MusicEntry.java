@@ -52,6 +52,7 @@ public abstract class MusicEntry extends ImageHolder {
 	protected String name;
 	protected String url;
 	protected String mbid;
+	protected String msid;
 	protected int playcount;
 	protected int userPlaycount;
 	protected int listeners;
@@ -248,10 +249,12 @@ public abstract class MusicEntry extends ImageHolder {
 		// copy
 		entry.name = element.getChildText("name");
 		entry.url = element.getChildText("url");
-		entry.mbid = element.getChildText("mbid");
+        String mbid = element.getChildText("mbid");
+        if (mbid != null && mbid.length() != 0)
+		    entry.mbid = mbid;
         if (rank != null)
 		    entry.rank = rank;
-		entry.playcount = playcount;
+        entry.playcount = playcount;
 		entry.userPlaycount = userPlaycount;
 		entry.listeners = listeners;
 		entry.streamable = streamable;
@@ -288,4 +291,12 @@ public abstract class MusicEntry extends ImageHolder {
 		// images
 		ImageHolder.loadImages(entry, element);
 	}
+
+    public String getMsid() {
+        return msid;
+    }
+
+    public void setMsid(String msid) {
+        this.msid = msid;
+    }
 }

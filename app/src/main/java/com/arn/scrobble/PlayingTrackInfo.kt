@@ -63,14 +63,6 @@ data class PlayingTrackInfo(
         if (durationSecs >= 30) it.duration = durationSecs
     }
 
-    fun toMultiFieldBundle() = Bundle().apply {
-        putString(NLService.B_ARTIST, artist)
-        putString(NLService.B_ALBUM, album)
-        putString(NLService.B_TRACK, title)
-        putString(NLService.B_ALBUM_ARTIST, albumArtist)
-        putLong(NLService.B_TIME, playStartTime)
-    }
-
     fun updateMetaFrom(p: PlayingTrackInfo): PlayingTrackInfo {
         title = p.title
         album = p.album

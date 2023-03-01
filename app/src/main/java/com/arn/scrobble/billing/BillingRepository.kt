@@ -135,7 +135,7 @@ class BillingRepository private constructor(private val application: Application
         val validPurchases = HashSet<Purchase>(purchasesResult.size)
         purchasesResult.forEach { purchase ->
             if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                if (Security.verifyPurchase(application, purchase)) {
+                if (Security.verifyPurchase(purchase)) {
                     validPurchases.add(purchase)
                 }
             } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
@@ -210,7 +210,8 @@ class BillingRepository private constructor(private val application: Application
             if (proStatusLd.value != true) {
                 proStatusLd.postValue(true)
                 application.sendBroadcast(
-                    Intent(NLService.iTHEME_CHANGED_S),
+                    Intent(NLService.iTHEME_CHANGED_S)
+                        .setPackage(application.packageName),
                     NLService.BROADCAST_PERMISSION
                 )
             }

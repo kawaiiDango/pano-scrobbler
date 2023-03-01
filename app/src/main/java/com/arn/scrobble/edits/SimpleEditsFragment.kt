@@ -10,18 +10,21 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentSimpleEditsBinding
 import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +43,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
     private val mutex = Mutex()
     private val adapter by lazy { SimpleEditsAdapter(viewModel, this) }
     private val viewModel by viewModels<SimpleEditsVM>()
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +51,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentSimpleEditsBinding.inflate(inflater, container, false)
-
+        binding.editsList.setupInsets()
         return binding.root
     }
 
@@ -59,7 +63,8 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.editsList.layoutManager = LinearLayoutManager(context!!)
+
+        binding.editsList.layoutManager = LinearLayoutManager(requireContext())
         binding.editsList.adapter = adapter
 
         binding.searchTerm.editText?.addTextChangedListener(object : TextWatcher {
@@ -77,9 +82,14 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
 
         })
 
-        binding.editAdd.setOnClickListener {
-            showEditDialog(-1)
-        }
+        mainNotifierViewModel.fabData.value = FabData(
+            viewLifecycleOwner,
+            R.string.add,
+            R.drawable.vd_add_borderless,
+            {
+                showEditDialog(-1)
+            }
+        )
 
         binding.searchTerm.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -142,11 +152,6 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.simple_edits)
-    }
-
     private fun showEditDialog(position: Int) {
         val isNew = position == -1
 
@@ -171,7 +176,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
             editArtist.edittext.setText(edit.artist)
             editAlbumArtist.edittext.setText(edit.albumArtist)
         }
-        val dialog = MaterialAlertDialogBuilder(context!!)
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok, null)
             .setNegativeButton(android.R.string.cancel, null)
@@ -194,7 +199,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
                 newEdit.artist.isEmpty() ||
                 newEdit.track.isEmpty()
             ) {
-                context!!.toast(R.string.required_fields_empty)
+                requireContext().toast(R.string.required_fields_empty)
                 return@setOnClickListener
             }
             if (edit != newEdit) {

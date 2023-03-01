@@ -12,6 +12,6 @@ class TagInfoVM(app: Application) : AndroidViewModel(app) {
     val info = MutableLiveData<Pair<Tag?, List<Tag>?>>()
 
     fun loadInfo(tag: String) {
-        LFMRequester(getApplication(), viewModelScope, info).getTagInfo(tag)
+        LFMRequester(viewModelScope, info).getTagInfo(tag)
     }
 }

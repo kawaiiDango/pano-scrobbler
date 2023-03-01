@@ -1,28 +1,14 @@
 package com.arn.scrobble
 
 
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import com.arn.scrobble.charts.ChartsOverviewFragment
 import com.arn.scrobble.friends.FriendsFragment
-import com.arn.scrobble.recents.LovesFragment
-import com.arn.scrobble.recents.RecentsFragment
+import com.arn.scrobble.recents.ScrobblesFragment
 
-class HomePagerAdapter(fm: FragmentManager) :
-    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-    private val tabCount = 4
-
-    //Overriding method getItem
-    override fun getItem(position: Int): Fragment {
-        //Returning the current tabs
-        return when (position) {
-            0 -> RecentsFragment()
-            1 -> LovesFragment()
-            2 -> FriendsFragment()
-            else -> ChartsOverviewFragment()
-        }
-    }
-
-    override fun getCount() = tabCount
+class HomePagerAdapter(fragment: BasePagerFragment) : BasePagerAdapter(fragment) {
+    override val tabMetadata = listOf(
+        TabMetadata(R.string.scrobbles, R.drawable.vd_history) { ScrobblesFragment() },
+        TabMetadata(R.string.friends, R.drawable.vd_friends) { FriendsFragment() },
+        TabMetadata(R.string.charts, R.drawable.vd_charts) { ChartsOverviewFragment() },
+    )
 }

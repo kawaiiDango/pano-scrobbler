@@ -17,8 +17,9 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/charts_overview_scrollview"
+            android:clipToPadding="false"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -55,88 +56,36 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/charts_create_collage"
                     style="?materialButtonOutlinedStyle"
-                    android:layout_margin="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    app:icon="@drawable/vd_mosaic"
-                    android:text="@string/create_collage"/>
+                    android:layout_margin="8dp"
+                    android:text="@string/create_collage"
+                    app:icon="@drawable/vd_mosaic" />
 
                 <include
-                    android:id="@+id/charts_sparkline_header"
+                    android:id="@+id/charts_scrobble_frequencies_header"
                     layout="@layout/header_with_action" />
 
                 <FrameLayout
-                    android:id="@+id/charts_sparkline_frame"
+                    android:id="@+id/charts_scrobble_frequencies_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="20dp">
+                    android:paddingHorizontal="8dp">
 
-                    <com.robinhood.spark.SparkView
-                        android:id="@+id/charts_sparkline"
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/charts_scrobble_frequencies"
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:paddingStart="40dp"
-                        android:contentDescription="@string/graph"
-                        app:spark_animateChanges="true"
-                        app:spark_lineColor="?colorSecondary"
-                        app:spark_lineWidth="6dp"
-                        app:spark_scrubEnabled="true" />
-
-                    <TextView
-                        android:id="@+id/charts_sparkline_tick_top"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top|start"
-                        tools:text="10000" />
-
-                    <TextView
-                        android:id="@+id/charts_sparkline_tick_bottom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|start"
-                        tools:text="000" />
-
-                    <TextView
-                        android:id="@+id/charts_sparkline_scrub_info"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:alpha="0.80"
-                        android:background="@drawable/shape_scrub_rounded_bg"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:textAppearance="?textAppearanceTitleSmall"
-                        android:textColor="?colorOnPrimaryContainer"
-                        android:visibility="gone"
-                        tools:text="000 scrobbles" />
+                        android:layout_height="200dp" />
 
                     <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/charts_sparkline_progress"
+                        android:id="@+id/charts_scrobble_frequencies_progress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         app:showAnimationBehavior="none" />
 
                 </FrameLayout>
-
-                <com.uncopt.android.widget.text.justify.JustifiedTextView
-                    android:id="@+id/charts_sparkline_labels"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="60dp"
-                    android:layout_marginEnd="20dp" />
-
-                <TextView
-                    android:id="@+id/charts_scrub_message"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="60dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:text="@string/graph_scrub_msg"
-                    android:visibility="gone" />
-
 
                 <include
                     android:id="@+id/charts_tag_cloud_header"
@@ -182,6 +131,6 @@
 
             </LinearLayout>
 
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
     </com.arn.scrobble.ui.OnlyVerticalSwipeRefreshLayout>
 </LinearLayout>

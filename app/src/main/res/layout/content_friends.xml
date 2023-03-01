@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:nestedScrollingEnabled="false"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:touchscreenBlocksFocus="false"
-        app:elevation="0dp"
-        app:liftOnScroll="false">
-
-        <include
-            android:id="@+id/friends_header"
-            layout="@layout/header_default"
-            android:visibility="gone"
-            app:layout_scrollFlags="enterAlways|scroll|snap"
-            tools:visibility="visible" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_gravity="center"
+        android:text="@string/no_friends"
+        android:textAppearance="?textAppearanceHeadlineSmall"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/friends_swipe_refresh"
@@ -35,20 +31,9 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:layoutAnimation="@anim/layout_animation_slide_up"
+
             android:paddingStart="8dp"
             android:paddingTop="8dp"
             tools:listitem="@layout/grid_item_friend" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/friends_sort"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:contentDescription="@string/sort"
-        android:visibility="gone"
-        app:srcCompat="@drawable/vd_sort_clock"
-        tools:visibility="visible" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

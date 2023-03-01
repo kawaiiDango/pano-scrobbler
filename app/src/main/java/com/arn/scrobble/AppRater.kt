@@ -43,7 +43,7 @@ class AppRater(
     }
 
     fun showRateSnackbar() {
-        val coordinatorLayout = (context as Activity).findViewById<View>(R.id.frame)
+        val coordinatorLayout = (context as Activity).findViewById<View>(R.id.coordinator)
         Snackbar.make(coordinatorLayout, R.string.rate_msg, Snackbar.LENGTH_INDEFINITE)
             .setAction("\uD83C\uDF1F " + context.getString(R.string.rate_action)) {
                 rateNow()

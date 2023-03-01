@@ -1,68 +1,77 @@
 package com.arn.scrobble.scrobbleable
 
+import com.arn.scrobble.LastfmUnscrobbler
 import com.arn.scrobble.Stuff
-import de.umass.lastfm.CallException
-import de.umass.lastfm.Result
-import de.umass.lastfm.Session
+import com.arn.scrobble.Stuff.mapConcurrently
+import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.charts.TimePeriodsGenerator
+import com.arn.scrobble.friends.UserAccountSerializable
+import com.arn.scrobble.friends.UserSerializable
+import de.umass.lastfm.Caller
+import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
-import de.umass.lastfm.scrobble.ScrobbleData
-import de.umass.lastfm.scrobble.ScrobbleResult
+import de.umass.lastfm.User
+import kotlinx.coroutines.supervisorScope
 
-open class Lastfm : Scrobblable() {
-    override var apiRoot = Stuff.LASTFM_API_ROOT
+class Lastfm(userAccount: UserAccountSerializable) : GnuFm(userAccount) {
+    override val apiKey: String = Stuff.LAST_KEY
+    override val secret: String = Stuff.LAST_SECRET
 
-    protected open val apiKey = Stuff.LAST_KEY
-    protected open val secret = Stuff.LAST_SECRET
-
-    val session: Session by lazy {
-        Session.createCustomRootSession(
-            apiRoot,
-            apiKey,
-            secret,
-            token
-        ).also { it.isTlsNoVerify = tlsNoVerify }
+    override suspend fun delete(track: Track): Boolean {
+        val unscrobbler = LastfmUnscrobbler()
+        val success = unscrobbler.haveCsrfCookie() &&
+                unscrobbler.unscrobble(track.artist, track.name, track.playedWhen.time)
+        return success
     }
 
-    override fun updateNowPlaying(scrobbleData: ScrobbleData): ScrobbleResult {
-        return try {
-            Track.updateNowPlaying(scrobbleData, session)
-        } catch (e: CallException) {
-//     SocketTimeoutException extends InterruptedIOException
-            e.printStackTrace()
-            ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
-        }
+    override suspend fun getFriends(page: Int, usernamep: String?): PaginatedResult<User> {
+        val _session = sessionCopy()
+        _session.cacheStrategy = if (Stuff.isOnline)
+            Caller.CacheStrategy.NETWORK_ONLY
+        else
+            Caller.CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED
+
+        val username = usernamep ?: userAccount.user.name
+        return User.getFriends(username, page, 30, _session)
     }
 
-    override fun scrobble(scrobbleData: ScrobbleData): ScrobbleResult {
-        return try {
-            Track.scrobble(scrobbleData, session)
-        } catch (e: CallException) {
-            e.printStackTrace()
-            ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
-        }
-    }
+    override suspend fun getListeningActivity(
+        timePeriod: TimePeriod,
+        user: UserSerializable?,
+        cacheStrategy: Caller.CacheStrategy
+    ): Map<TimePeriod, Int> {
+        val _session = sessionCopy()
+        _session.cacheStrategy = cacheStrategy
 
-    override fun scrobble(scrobbleDatas: MutableList<ScrobbleData>): ScrobbleResult {
-        return try {
-            Track.scrobble(scrobbleDatas, session).first()
-        } catch (e: CallException) {
-            e.printStackTrace()
-            ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
-        } catch (e: NoSuchElementException) {
-            e.printStackTrace()
-            ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
-        }
-    }
+        val username = user?.name ?: userAccount.user.name
+        val registeredTime = user?.registeredTime ?: userAccount.user.registeredTime
 
-    override fun loveOrUnlove(track: Track, love: Boolean): Result {
-        return try {
-            if (love)
-                Track.love(track.artist, track.name, session)
-            else
-                Track.unlove(track.artist, track.name, session)
-        } catch (e: CallException) {
-            e.printStackTrace()
-            ScrobbleResult.createHttp200OKResult(0, e.cause?.message, "")
+        val timePeriods = TimePeriodsGenerator.getScrobblingActivityPeriods(
+            timePeriod,
+            registeredTime
+        )
+
+        val periodCountsMap = mutableMapOf<TimePeriod, Int>()
+        timePeriods.forEach { periodCountsMap[it] = 0 }
+
+        supervisorScope {
+            timePeriods.mapConcurrently(5) {
+                if (it.start < System.currentTimeMillis()) {
+                    kotlin.runCatching {
+                        val pr = User.getRecentTracks(
+                            username,
+                            1,
+                            1,
+                            false,
+                            it.start / 1000,
+                            it.end / 1000,
+                            _session
+                        )
+                        periodCountsMap[it] = pr.total
+                    }
+                }
+            }
         }
+        return periodCountsMap
     }
 }

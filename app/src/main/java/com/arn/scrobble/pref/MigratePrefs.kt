@@ -2,7 +2,7 @@ package com.arn.scrobble.pref
 
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.scrobbleable.ScrobblableEnum
+import com.arn.scrobble.scrobbleable.AccountType
 import de.umass.lastfm.ImageSize
 
 object MigratePrefs {
@@ -56,11 +56,10 @@ object MigratePrefs {
                 )
             )
             var userAccountSerializable = UserAccountSerializable(
-                ScrobblableEnum.LASTFM,
+                AccountType.LASTFM,
                 user,
                 lastfmSessKey,
             )
-            prefs.currentUser = userAccountSerializable
             scrobbleAccounts += userAccountSerializable
 
 
@@ -75,7 +74,7 @@ object MigratePrefs {
                     mapOf()
                 )
                 userAccountSerializable = UserAccountSerializable(
-                    ScrobblableEnum.LIBREFM,
+                    AccountType.LIBREFM,
                     user,
                     librefmSessKey,
                 )
@@ -94,7 +93,7 @@ object MigratePrefs {
                     mapOf()
                 )
                 userAccountSerializable = UserAccountSerializable(
-                    ScrobblableEnum.GNUFM,
+                    AccountType.GNUFM,
                     user,
                     gnufmSessKey,
                     gnufmRoot,
@@ -115,7 +114,7 @@ object MigratePrefs {
                     mapOf()
                 )
                 userAccountSerializable = UserAccountSerializable(
-                    ScrobblableEnum.LISTENBRAINZ,
+                    AccountType.LISTENBRAINZ,
                     user,
                     listenbrainzToken,
                 )
@@ -134,7 +133,7 @@ object MigratePrefs {
                     mapOf()
                 )
                 userAccountSerializable = UserAccountSerializable(
-                    ScrobblableEnum.CUSTOM_LISTENBRAINZ,
+                    AccountType.CUSTOM_LISTENBRAINZ,
                     user,
                     customListenbrainzToken,
                     customListenbrainzRoot,
@@ -144,7 +143,6 @@ object MigratePrefs {
             }
 
             prefs.scrobbleAccounts = scrobbleAccounts
-
         }
         prefs.prefVersion = 2
     }

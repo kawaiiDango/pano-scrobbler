@@ -31,14 +31,14 @@ class TestFragment : Fragment(R.layout.content_avd_test) {
             avd.start()
         }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            val file = File(activity!!.filesDir.path, "ic_launcher.png")
+            val file = File(requireActivity().filesDir.path, "ic_launcher.png")
             FileOutputStream(file).use {
-                ContextCompat.getDrawable(context!!, R.drawable.ic_launcher_for_export)!!
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_launcher_for_export)!!
                     .toBitmap(width = 512, height = 512)
                     .compress(Bitmap.CompressFormat.PNG, 100, it)
             }
             withContext(Dispatchers.Main) {
-                context!!.toast("Saved to ${file.absolutePath}")
+                requireContext().toast("Saved to ${file.absolutePath}")
             }
         }
     }

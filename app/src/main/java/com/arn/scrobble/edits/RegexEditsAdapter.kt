@@ -72,7 +72,7 @@ class RegexEditsAdapter(
             } else {
                 binding.editPattern.text = itemView.context.getString(
                     R.string.edit_preset_name,
-                    RegexPresets.getString(itemView.context, e.preset!!)
+                    RegexPresets.getString(e.preset!!)
                 )
             }
             if (e.replacement.isEmpty()) {
@@ -146,7 +146,7 @@ class RegexEditsAdapter(
                             drawable.setTint(
                                 MaterialColors.getColor(
                                     itemView.context,
-                                    R.attr.colorPrimary,
+                                    com.google.android.material.R.attr.colorPrimary,
                                     null
                                 )
                             )

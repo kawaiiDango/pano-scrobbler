@@ -17,17 +17,19 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.MainActivity
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.firstOrNull
-import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.ContentThemesBinding
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
+import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.UiUtils.dp
-import com.arn.scrobble.ui.UiUtils.setArrowColors
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.DynamicColors
@@ -42,7 +44,7 @@ class ThemesFragment : Fragment() {
 
     private lateinit var primarySwatchIds: List<Int>
     private lateinit var secondarySwatchIds: List<Int>
-    private val prefs by lazy { MainPrefs(context!!) }
+    private val prefs by lazy { MainPrefs(requireContext()) }
     private val dayNightIdsMap by lazy {
         HashBiMap.create(
             mapOf(
@@ -52,6 +54,7 @@ class ThemesFragment : Fragment() {
             )
         )
     }
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     private lateinit var themedContext: ContextThemeWrapper
 
@@ -65,7 +68,7 @@ class ThemesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding.root.setupInsets()
 
         var primaryPref = prefs.themePrimary
         if (ColorPatchMap.primaryStyles[primaryPref] == null)
@@ -85,18 +88,18 @@ class ThemesFragment : Fragment() {
 
         binding.themeDayNight.check(dayNightSelectedId)
 
-        themedContext = ContextThemeWrapper(context!!, R.style.AppTheme)
+        themedContext = ContextThemeWrapper(requireContext(), R.style.AppTheme)
 
         primarySwatchIds = createSwatches(
             styles = ColorPatchMap.primaryStyles,
             group = binding.themePrimarySwatches,
-            attr = R.attr.colorPrimary,
+            attr = com.google.android.material.R.attr.colorPrimary,
             selectedName = primaryPref,
         )
         secondarySwatchIds = createSwatches(
             styles = ColorPatchMap.secondaryStyles,
             group = binding.themeSecondarySwatches,
-            attr = R.attr.colorSecondary,
+            attr = com.google.android.material.R.attr.colorSecondary,
             selectedName = secondaryPref,
         )
 
@@ -115,29 +118,31 @@ class ThemesFragment : Fragment() {
             setSwatchesEnabled(!checked)
         }
 
-        binding.themeDone.setOnClickListener {
+        mainNotifierViewModel.fabData.value = FabData(
+            viewLifecycleOwner,
+            com.google.android.material.R.string.abc_action_mode_done,
+            R.drawable.vd_check_simple,
+            {
             if ((activity as MainActivity).billingViewModel.proStatus.value == true) {
 
                 val prevDayNightId = prefs.themeDayNight
                 saveTheme()
                 if (!binding.themeRandom.isChecked)
-                    context!!.sendBroadcast(
-                        Intent(NLService.iTHEME_CHANGED_S),
+                    requireContext().sendBroadcast(
+                        Intent(NLService.iTHEME_CHANGED_S)
+                            .setPackage(requireContext().packageName),
                         NLService.BROADCAST_PERMISSION
                     )
-                parentFragmentManager.popBackStack()
+                findNavController().popBackStack()
 
                 if (prefs.themeDayNight != prevDayNightId)
-                    ColorPatchUtils.setDarkMode(context!!, true) // recreates
+                    ColorPatchUtils.setDarkMode(requireContext(), true) // recreates
                 else
-                    activity!!.recreate()
+                    requireActivity().recreate()
             } else {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, BillingFragment())
-                    .addToBackStack(null)
-                    .commit()
+                findNavController().navigate(R.id.billingFragment)
             }
-        }
+        })
 
         if (DynamicColors.isDynamicColorAvailable()) {
             binding.themeDynamic.visibility = View.VISIBLE
@@ -166,26 +171,19 @@ class ThemesFragment : Fragment() {
 
     override fun onDestroyView() {
         val act = activity as MainActivity
-        act.binding.coordinatorMain.ctl.contentScrim =
-            ColorDrawable(MaterialColors.getColor(context!!, android.R.attr.colorBackground, null))
-        act.binding.coordinatorMain.toolbar.setTitleTextColor(
-            MaterialColors.getColor(context!!, R.attr.colorPrimary, null)
+        act.binding.ctl.background = ColorDrawable(Color.TRANSPARENT)
+        act.binding.ctl.setExpandedTitleColor(
+            MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary, null)
         )
-        act.binding.coordinatorMain.toolbar.setArrowColors(
-            MaterialColors.getColor(activity, R.attr.colorPrimary, null),
-            Color.TRANSPARENT
+        act.binding.ctl.setCollapsedTitleTextColor(
+            MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary, null)
         )
         _binding = null
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.pref_themes)
-    }
-
     private fun updateThemedContext() {
-        themedContext = ContextThemeWrapper(context!!, R.style.AppTheme)
+        themedContext = ContextThemeWrapper(requireContext(), R.style.AppTheme)
         themedContext.applyOverrideConfiguration(
             Configuration().apply {
                 setToDefaults()
@@ -232,19 +230,16 @@ class ThemesFragment : Fragment() {
 
     private fun previewPrimary(name: String) {
         val styleId = ColorPatchMap.primaryStyles[name]!!
-        val colorPrimary = themedContext.getStyledColor(styleId, R.attr.colorPrimary)
+        val colorPrimary = themedContext.getStyledColor(styleId, com.google.android.material.R.attr.colorPrimary)
         val colorPrimaryContainer =
-            themedContext.getStyledColor(styleId, R.attr.colorPrimaryContainer)
+            themedContext.getStyledColor(styleId, com.google.android.material.R.attr.colorPrimaryContainer)
         val colorOnPrimaryContainer =
-            themedContext.getStyledColor(styleId, R.attr.colorOnPrimaryContainer)
-        binding.themeDone.backgroundTintList = ColorStateList.valueOf(colorPrimaryContainer)
-        binding.themeDone.supportImageTintList = ColorStateList.valueOf(colorOnPrimaryContainer)
+            themedContext.getStyledColor(styleId, com.google.android.material.R.attr.colorOnPrimaryContainer)
+//        binding.themeDone.backgroundTintList = ColorStateList.valueOf(colorPrimaryContainer)
+//        binding.themeDone.supportImageTintList = ColorStateList.valueOf(colorOnPrimaryContainer)
         val act = activity as MainActivity
-        act.binding.coordinatorMain.toolbar.setTitleTextColor(colorPrimary)
-        act.binding.coordinatorMain.toolbar.setArrowColors(
-            colorPrimary,
-            Color.TRANSPARENT
-        )
+        act.binding.ctl.setExpandedTitleColor(colorPrimary)
+        act.binding.ctl.setCollapsedTitleTextColor(colorPrimary)
         if (binding.themeTintBg.isChecked)
             previewBackground(name)
         else
@@ -255,7 +250,7 @@ class ThemesFragment : Fragment() {
 
     private fun previewSecondary(name: String) {
         val styleId = ColorPatchMap.secondaryStyles[name]!!
-        val color = themedContext.getStyledColor(styleId, R.attr.colorSecondary)
+        val color = themedContext.getStyledColor(styleId, com.google.android.material.R.attr.colorSecondary)
         binding.themePrimaryHeader.setTextColor(color)
         binding.themeSecondaryHeader.setTextColor(color)
         binding.themeRandom.buttonTintList = ColorStateList.valueOf(color)
@@ -272,9 +267,9 @@ class ThemesFragment : Fragment() {
         val primaryStyleId = ColorPatchMap.primaryStyles[primary]!!
         val secondaryStyleId = ColorPatchMap.secondaryStyles[secondary]!!
 
-        val primaryColor = themedContext.getStyledColor(primaryStyleId, R.attr.colorSurface)
+        val primaryColor = themedContext.getStyledColor(primaryStyleId, com.google.android.material.R.attr.colorSurface)
         val secondaryColor =
-            themedContext.getStyledColor(secondaryStyleId, R.attr.colorSecondaryContainer)
+            themedContext.getStyledColor(secondaryStyleId, com.google.android.material.R.attr.colorSecondaryContainer)
 
         val states = arrayOf(
             intArrayOf(-android.R.attr.state_checked), // unchecked
@@ -282,8 +277,8 @@ class ThemesFragment : Fragment() {
         )
         val colors = intArrayOf(primaryColor, secondaryColor)
 
-        val textColor = MaterialColors.getColor(themedContext, R.attr.colorOnPrimarySurface, null)
-        val outlineColor = themedContext.getStyledColor(secondaryStyleId, R.attr.colorOutline)
+        val textColor = MaterialColors.getColor(themedContext, com.google.android.material.R.attr.colorOnPrimarySurface, null)
+        val outlineColor = themedContext.getStyledColor(secondaryStyleId, com.google.android.material.R.attr.colorOutline)
 
         binding.themeDayNight.children.forEach {
             it as Chip
@@ -302,12 +297,12 @@ class ThemesFragment : Fragment() {
         val color = themedContext.getStyledColor(styleId, android.R.attr.colorBackground)
         binding.root.background = ColorDrawable(color)
         val act = activity as MainActivity
-        act.window.navigationBarColor = color
-        act.binding.coordinatorMain.ctl.contentScrim = ColorDrawable(color)
+//        act.binding.ctl.contentScrim = ColorDrawable(color)
+        act.binding.ctl.background = ColorDrawable(color)
     }
 
     private fun previewTextColors() {
-        val color = MaterialColors.getColor(themedContext, R.attr.colorOnPrimarySurface, null)
+        val color = MaterialColors.getColor(themedContext, com.google.android.material.R.attr.colorOnPrimarySurface, null)
         arrayOf(
             binding.themeRandom,
             binding.themeDynamic,
@@ -351,7 +346,7 @@ class ThemesFragment : Fragment() {
                 it.chipBackgroundColor = ColorStateList.valueOf(
                     themedContext.getStyledColor(
                         ColorPatchMap.primaryStyles[it.contentDescription]!!,
-                        R.attr.colorPrimary
+                        com.google.android.material.R.attr.colorPrimary
                     )
                 )
             }

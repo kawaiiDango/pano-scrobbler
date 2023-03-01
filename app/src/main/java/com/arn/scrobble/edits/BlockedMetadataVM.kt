@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BlockedMetadataVM(app: Application) : AndroidViewModel(app) {
-    private val dao = PanoDb.getDb(getApplication()).getBlockedMetadataDao()
+    private val dao = PanoDb.db.getBlockedMetadataDao()
     val blockedMetadata = mutableListOf<BlockedMetadata>()
     val blockedMetadataReceiver = dao.allLd
 

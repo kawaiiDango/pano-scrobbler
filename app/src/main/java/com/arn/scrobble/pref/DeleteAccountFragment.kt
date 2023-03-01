@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentDeleteAccountBinding
-import com.arn.scrobble.ui.UiUtils.setTitle
 import com.google.android.material.transition.MaterialSharedAxis
 
 class DeleteAccountFragment : Fragment() {
@@ -32,11 +30,6 @@ class DeleteAccountFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.delete_account)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

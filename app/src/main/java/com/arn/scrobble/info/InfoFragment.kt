@@ -33,26 +33,25 @@ class InfoFragment : BottomSheetDialogFragment() {
     ): View {
         val binding = ContentInfoBinding.inflate(inflater, container, false)
 
-        val artist = arguments!!.getString(NLService.B_ARTIST)!!
-        val album = arguments!!.getString(NLService.B_ALBUM)
-        val track = arguments!!.getString(NLService.B_TRACK)
+        val artist = requireArguments().getString(NLService.B_ARTIST)!!
+        val album = requireArguments().getString(NLService.B_ALBUM)
+        val track = requireArguments().getString(NLService.B_TRACK)
         val username = activityViewModel.currentUser.name
-        val pkgName = arguments!!.getString(Stuff.ARG_PKG)
+        val pkgName = requireArguments().getString(Stuff.ARG_PKG)
 
         val adapter = InfoAdapter(
             viewModel,
             activityViewModel,
             this,
             pkgName,
-            arguments?.getBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, false) ?: false
         )
-        binding.infoList.layoutManager = LinearLayoutManager(context!!)
+        binding.infoList.layoutManager = LinearLayoutManager(requireContext())
         binding.infoList.itemAnimator = null
 
         val itemDecor =
-            MaterialDividerItemDecoration(context!!, DividerItemDecoration.VERTICAL).apply {
-                setDividerInsetStartResource(context!!, R.dimen.divider_inset)
-                setDividerInsetEndResource(context!!, R.dimen.divider_inset)
+            MaterialDividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL).apply {
+                setDividerInsetStartResource(requireContext(), R.dimen.divider_inset)
+                setDividerInsetEndResource(requireContext(), R.dimen.divider_inset)
                 isLastItemDecorated = false
             }
 
@@ -65,7 +64,6 @@ class InfoFragment : BottomSheetDialogFragment() {
         }
 
         viewModel.infoMapReceiver.observe(viewLifecycleOwner) {
-            it ?: return@observe
             viewModel.infoMap.putAll(it)
             binding.root.clearAnimation()
             scheduleTransition()

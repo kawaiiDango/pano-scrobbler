@@ -1,10 +1,11 @@
 package com.arn.scrobble.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import de.umass.lastfm.Track
-import java.util.*
+import java.util.Date
 
 @Entity(
     tableName = CachedTracksDao.tableName,
@@ -28,18 +29,25 @@ data class CachedTrack(
     // optional
     var durationSecs: Int = -1,
     var userPlayCount: Int = -1,
+
+    @ColumnInfo(defaultValue = "-1")
+    var userPlayCountDirty: Int = -1,
     var isLoved: Boolean = false,
     var lastPlayed: Long = -1,
 ) {
+    val plays get() = if (userPlayCountDirty != -1) userPlayCountDirty else userPlayCount
+
     companion object {
         fun CachedTrack.toTrack() = Track(
             _id,
             trackName,
             trackUrl,
             trackMbid,
+            null,
             0,
             userPlayCount,
             isLoved,
+            0,
             0,
             durationSecs,
             false,

@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:focusable="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/selector_list_rounded"
-    android:orientation="horizontal"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    android:focusable="true"
+    android:orientation="horizontal">
 
     <FrameLayout
         android:layout_width="78dp"
@@ -16,14 +16,14 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/recents_img"
-            app:shapeAppearance="@style/roundedCorners"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginVertical="4dp"
             android:contentDescription="@string/album_art"
             android:duplicateParentState="true"
             android:foreground="@drawable/selector_recents_img"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginVertical="4dp"
+            app:shapeAppearance="@style/roundedCorners"
             tools:srcCompat="@tools:sample/avatars" />
 
         <View
@@ -45,11 +45,11 @@
     <LinearLayout
         android:id="@+id/recents_track_ll"
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center_vertical"
         android:layout_marginVertical="8dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
         android:paddingVertical="0dp">
 
         <TextView
@@ -91,12 +91,12 @@
             android:gravity="center_vertical"
             android:maxLines="1"
             android:visibility="gone"
-            tools:visibility="visible"
             app:autoSizeMaxTextSize="20sp"
             app:autoSizeMinTextSize="12sp"
             app:autoSizeStepGranularity="1sp"
             app:autoSizeTextType="uniform"
-            tools:text="album album" />
+            tools:text="album album"
+            tools:visibility="visible" />
     </LinearLayout>
 
     <FrameLayout
@@ -109,14 +109,27 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical|end">
+            android:layout_gravity="center_vertical|end"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/divider_circle"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
+                android:alpha="0.5"
+                android:importantForAccessibility="no"
+                android:visibility="gone"
+                app:srcCompat="@drawable/vd_circle_filled_big"
+                app:tint="@color/foreground_pure"
+                tools:visibility="visible" />
 
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
                 android:layout_gravity="end"
+                android:layout_marginStart="4dp"
                 android:layout_marginEnd="8dp">
 
                 <TextView
@@ -138,8 +151,8 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="end">
+                android:layout_gravity="end"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/player_icon"

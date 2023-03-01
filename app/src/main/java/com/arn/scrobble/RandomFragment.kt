@@ -8,15 +8,16 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import coil.load
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.charts.ChartsPeriodFragment
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentRandomBinding
-import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.ui.MusicEntryImageReq
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dp
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import de.umass.lastfm.Album
@@ -76,23 +77,21 @@ class RandomFragment : ChartsPeriodFragment() {
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.random)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding.root.setupInsets()
 
         postInit()
 
         viewModel.username = activityViewModel.currentUser.name
         randomViewModel.username = activityViewModel.currentUser.name
 
-        binding.randomizeText.text = if (!activityViewModel.userIsSelf) {
-            getString(R.string.random_text) + " • " + activityViewModel.currentUser.name
-        } else {
-            getString(R.string.random_text)
+        if (!activityViewModel.userIsSelf) {
+            UiUtils.loadSmallUserPic(
+                binding.randomizeText.context,
+                activityViewModel.currentUser
+            ) {
+                binding.randomizeText.setCompoundDrawablesRelativeWithIntrinsicBounds(it, null, null, null)
+            }
         }
 
         if (!BuildConfig.DEBUG)
@@ -140,6 +139,7 @@ class RandomFragment : ChartsPeriodFragment() {
 
         randomViewModel.error.observe(viewLifecycleOwner) {
             it ?: return@observe
+            it.printStackTrace()
             doneLoading(R.string.network_error)
         }
 
@@ -217,6 +217,7 @@ class RandomFragment : ChartsPeriodFragment() {
                 else
                     R.drawable.vd_note
             }
+
             is Album -> R.drawable.vd_album
             is Artist -> R.drawable.vd_mic
             else -> throw IllegalArgumentException("Unknown music entry type")
@@ -236,16 +237,22 @@ class RandomFragment : ChartsPeriodFragment() {
                 binding.itemArtist.visibility = View.VISIBLE
                 binding.itemArtist.text = musicEntry.artist
 
-                binding.trackDate.visibility = View.VISIBLE
-                binding.trackDate.text =
-                    Stuff.myRelativeTime(context!!, musicEntry.playedWhen?.time ?: 0)
+                val playedWhenTime = musicEntry.playedWhen?.time
+                if (playedWhenTime != null && playedWhenTime > 0) {
+                    binding.trackDate.visibility = View.VISIBLE
+                    binding.trackDate.text = Stuff.myRelativeTime(requireContext(), playedWhenTime)
+                } else {
+                    binding.trackDate.visibility = View.GONE
+                }
             }
+
             is Album -> {
                 binding.itemArtist.visibility = View.VISIBLE
                 binding.itemArtist.text = musicEntry.artist
 
                 binding.trackDate.visibility = View.GONE
             }
+
             is Artist -> {
                 binding.itemArtist.visibility = View.GONE
                 binding.trackDate.visibility = View.GONE
@@ -254,9 +261,8 @@ class RandomFragment : ChartsPeriodFragment() {
 
         binding.randomItem.setOnClickListener {
             if (musicEntry.url != null) {
-                val info = InfoFragment()
-                info.arguments = musicEntry.toBundle()
-                info.show(parentFragmentManager, null)
+                val args = musicEntry.toBundle()
+                findNavController().navigate(R.id.infoFragment, args)
             }
         }
 

@@ -15,7 +15,7 @@ class InitialsDrawable(context: Context, name: String, colorFromHash: Boolean = 
     private val bgColor by lazy {
         if (!colorFromHash)
 //            Color.TRANSPARENT
-            MaterialColors.getColor(context, R.attr.colorSurface, null)
+            MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, null)
         else
             UiUtils.getMatColor(
                 context, name.hashCode(),
@@ -28,7 +28,7 @@ class InitialsDrawable(context: Context, name: String, colorFromHash: Boolean = 
 
     private val fgColor by lazy {
         if (!colorFromHash)
-            MaterialColors.getColor(context, R.attr.colorPrimary, null)
+            MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, null)
         else
             UiUtils.getMatColor(
                 context, name.hashCode(),

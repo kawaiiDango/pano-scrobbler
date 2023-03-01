@@ -1,28 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_list"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/app_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/list_item_app"
-        android:layoutAnimation="@anim/layout_animation_slide_up" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/app_list_done"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:clickable="true"
-        android:contentDescription="@android:string/ok"
-        android:focusable="true"
-        android:visibility="invisible"
-        app:srcCompat="@drawable/vd_check_simple" />
-
-</FrameLayout>
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:layoutAnimation="@anim/layout_animation_slide_up"
+    android:nestedScrollingEnabled="true"
+    tools:listitem="@layout/list_item_app" />

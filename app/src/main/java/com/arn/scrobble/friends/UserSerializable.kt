@@ -1,7 +1,7 @@
 package com.arn.scrobble.friends
 
 import android.os.Parcelable
-import com.arn.scrobble.scrobbleable.ScrobblableEnum
+import com.arn.scrobble.scrobbleable.AccountType
 import de.umass.lastfm.ImageHolder
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.User
@@ -64,9 +64,17 @@ data class UserSerializable(
 
 @Serializable
 data class UserAccountSerializable(
-    val type: ScrobblableEnum,
+    val type: AccountType,
     val user: UserSerializable,
     val authKey: String,
     val apiRoot: String? = null,
     val tlsNoVerify: Boolean = false,
 )
+
+@Parcelize
+data class UserAccountTemp(
+    val type: AccountType,
+    var authKey: String,
+    val apiRoot: String? = null,
+    val tlsNoVerify: Boolean = false,
+) : Parcelable

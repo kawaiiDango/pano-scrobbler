@@ -1,5 +1,7 @@
 package com.arn.scrobble.info
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -13,25 +15,34 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.doOnNextLayout
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavDeepLinkBuilder
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.result
-import com.arn.scrobble.*
+import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.MainDialogActivity
+import com.arn.scrobble.MainNotifierViewModel
+import com.arn.scrobble.NLService
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ListItemInfoBinding
-import com.arn.scrobble.recents.TrackHistoryFragment
 import com.arn.scrobble.ui.ItemClickListener
-import com.arn.scrobble.ui.UiUtils.dismissAllDialogFragments
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
-import de.umass.lastfm.*
+import de.umass.lastfm.Album
+import de.umass.lastfm.ImageSize
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.Track
 import java.text.NumberFormat
 import kotlin.math.max
 
@@ -41,7 +52,6 @@ class InfoAdapter(
     private val activityViewModel: MainNotifierViewModel,
     private val fragment: BottomSheetDialogFragment,
     private val pkgName: String?,
-    private val disableFragmentNavigation: Boolean,
 ) : RecyclerView.Adapter<InfoAdapter.VHInfo>() {
 
     init {
@@ -63,20 +73,13 @@ class InfoAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            // workaround for library bug where the bg color depends on when the chip was added
-            // the resulting bg color was still very bright #262626 vs #1a1a1a
-            // that is offset by setting chip.backgroundDrawable!!.alpha lmao
-            // edit: this doesn't work anymore in material 3
             for (i in 1..8) {
                 val chip = Chip(itemView.context)
                 chip.id = View.generateViewId()
-//                chip.chipBackgroundColor = null
-//                chip.backgroundDrawable!!.alpha = (0.68 * 255).toInt()
                 chip.setOnClickListener {
-                    val tif = TagInfoFragment()
-                    tif.arguments =
+                    val args =
                         Bundle().apply { putString(Stuff.ARG_TAG, chip.text.toString()) }
-                    tif.show(fragment.parentFragmentManager, null)
+                    fragment.findNavController().navigate(R.id.tagInfoFragment, args)
                 }
                 chip.visibility = View.GONE
                 binding.infoTags.addView(chip)
@@ -120,14 +123,12 @@ class InfoAdapter(
                 }
                 albumTracksAdapter.itemClickListener = object : ItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
-                        val info = InfoFragment()
-                        info.arguments = Bundle().apply {
+                        val args = Bundle().apply {
                             putString(NLService.B_ARTIST, album.artist)
                             putString(NLService.B_ALBUM, album.name)
                             putString(NLService.B_TRACK, tracks[position].name)
-                            putBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, disableFragmentNavigation)
                         }
-                        info.show(fragment.parentFragmentManager, null)
+                        fragment.findNavController().navigate(R.id.infoFragment, args)
                     }
                 }
                 val albumTracksRecyclerView = RecyclerView(itemView.context).apply {
@@ -138,6 +139,7 @@ class InfoAdapter(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT
                     )
+                    // todo set max height in constraintLayout
                 }
                 linearLayout.addView(albumTracksRecyclerView)
                 albumTracksRecyclerView.doOnNextLayout {
@@ -174,8 +176,6 @@ class InfoAdapter(
             val entryBundle = entry.toBundle()
             var imgData: Any? = null
 
-            entryBundle.putBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, disableFragmentNavigation)
-
             when (key) {
                 NLService.B_TRACK -> {
                     entry as Track
@@ -187,10 +187,10 @@ class InfoAdapter(
                             binding.infoHeart.visibility = View.VISIBLE
                             binding.infoHeart.setOnClickListener {
                                 entry.isLoved = !entry.isLoved
-                                LFMRequester(
-                                    itemView.context,
-                                    viewModel.viewModelScope
-                                ).loveOrUnlove(entry, entry.isLoved)
+                                LFMRequester(viewModel.viewModelScope).loveOrUnlove(
+                                    entry,
+                                    entry.isLoved
+                                )
                                 setLoved(entry)
                             }
                         } else {
@@ -211,11 +211,11 @@ class InfoAdapter(
                     }
 
                     binding.infoExtra.visibility = View.VISIBLE
-                    binding.infoExtra.text = itemView.context.getString(R.string.similar)
+                    binding.infoExtra.text = itemView.context.getString(R.string.analysis) + " • " +
+                            itemView.context.getString(R.string.similar)
+
                     binding.infoExtra.setOnClickListener {
-                        InfoExtraFragment()
-                            .apply { arguments = entryBundle }
-                            .show(fragment.parentFragmentManager, null)
+                        fragment.findNavController().navigate(R.id.infoExtraFragment, entryBundle)
                     }
                 }
 
@@ -291,9 +291,7 @@ class InfoAdapter(
                     binding.infoExtra.visibility = View.VISIBLE
                     binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
                     binding.infoExtra.setOnClickListener {
-                        InfoExtraFragment()
-                            .apply { arguments = entryBundle }
-                            .show(fragment.parentFragmentManager, null)
+                        fragment.findNavController().navigate(R.id.infoExtraFragment, entryBundle)
                     }
                 }
             }
@@ -306,9 +304,7 @@ class InfoAdapter(
             entry.url ?: return
             binding.infoUserTags.visibility = View.VISIBLE
             binding.infoUserTags.setOnClickListener {
-                UserTagsFragment()
-                    .apply { arguments = entryBundle }
-                    .show(fragment.childFragmentManager, null)
+                fragment.findNavController().navigate(R.id.userTagsFragment, entryBundle)
             }
 
             binding.infoTitleBar.setOnClickListener {
@@ -348,19 +344,40 @@ class InfoAdapter(
 
             binding.infoContent.visibility = View.VISIBLE
 
-            if (!activityViewModel.userIsSelf)
-                binding.infoUserScrobblesLabel.text =
-                    itemView.context.getString(
-                        R.string.user_scrobbles,
-                        activityViewModel.currentUser.name
-                    )
-            binding.infoUserScrobbles.text =
-                NumberFormat.getInstance().format(entry.userPlaycount)
+            if (entry.userPlaycount > -1) {
+                if (!activityViewModel.userIsSelf) {
+                    UiUtils.loadSmallUserPic(
+                        binding.infoUserScrobblesLabel.context,
+                        activityViewModel.currentUser
+                    ) {
+                        binding.infoUserScrobblesLabel
+                            .setCompoundDrawablesRelativeWithIntrinsicBounds(it, null, null, null)
+                        binding.infoUserScrobbles
+                            .setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                ColorDrawable(Color.TRANSPARENT),
+                                null,
+                                null,
+                                null
+                            )
+                    }
+
+                    binding.infoUserScrobblesLabel.text =
+                        itemView.context.getString(R.string.their_scrobbles)
+                }
+                binding.infoUserScrobbles.text =
+                    NumberFormat.getInstance().format(entry.userPlaycount)
+            } else {
+                binding.infoUserScrobblesContainer.visibility = View.GONE
+            }
             binding.infoListeners.text = NumberFormat.getInstance().format(entry.listeners)
             binding.infoScrobbles.text = NumberFormat.getInstance().format(entry.playcount)
 
             val secondaryColor =
-                MaterialColors.getColor(itemView.context, R.attr.colorSecondary, null)
+                MaterialColors.getColor(
+                    itemView.context,
+                    com.google.android.material.R.attr.colorSecondary,
+                    null
+                )
             if (entry.userPlaycount > 0) {
                 binding.infoUserScrobbles.setTextColor(secondaryColor)
                 binding.infoUserScrobblesLabel.setTextColor(secondaryColor)
@@ -370,21 +387,24 @@ class InfoAdapter(
 
                 binding.infoUserScrobblesContainer.setOnClickListener {
 
-                    when {
-                        entry is Track && !disableFragmentNavigation -> {
-                            (fragment.activity as? MainActivity)?.enableGestures()
-                            fragment.parentFragmentManager
-                                .beginTransaction()
-                                .replace(R.id.frame,
-                                    TrackHistoryFragment().apply {
-                                        arguments = entryBundle.apply {
-                                            putInt(Stuff.ARG_COUNT, entry.userPlaycount)
-                                        }
-                                    }
-                                )
-                                .addToBackStack(null)
-                                .commit()
-                            fragment.parentFragmentManager.dismissAllDialogFragments()
+                    when (entry) {
+                        is Track -> {
+                            val args = entryBundle.apply {
+                                putInt(Stuff.ARG_COUNT, entry.userPlaycount)
+                            }
+
+                            if (fragment.requireActivity() is MainDialogActivity) {
+                                NavDeepLinkBuilder(itemView.context)
+                                    .setComponentName(MainActivity::class.java)
+                                    .setGraph(R.navigation.nav_graph)
+                                    .setDestination(R.id.trackHistoryFragment)
+                                    .setArguments(args)
+                                    .createPendingIntent()
+                                    .send()
+                            } else {
+                                fragment.findNavController()
+                                    .navigate(R.id.trackHistoryFragment, args)
+                            }
                         }
 
                         else -> {
@@ -418,7 +438,7 @@ class InfoAdapter(
                     idx = wikiText.indexOf("<a href=\"https://www.last.fm")
                 if (idx != -1)
                     wikiText = wikiText.substring(0, idx).trim()
-                if (!wikiText.isNullOrBlank()) {
+                if (wikiText.isNotBlank()) {
                     wikiText = wikiText.replace("\n", "<br>")
 //                        if (entry.wikiLastChanged != null && entry.wikiLastChanged.time != 0L)
 //                            wikiText += "<br><br><i>" + itemView.context.getString(R.string.last_updated,

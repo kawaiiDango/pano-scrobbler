@@ -6,15 +6,14 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
-import androidx.annotation.StringRes
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.Scrobblable
-import de.umass.lastfm.Result
+import com.arn.scrobble.scrobbleable.Scrobblables
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
@@ -57,9 +56,8 @@ class PendingScrJob : JobService() {
         private val progressCb: ((str: String) -> Unit)? = null,
         private val doneCb: ((done: Boolean) -> Unit)? = null,
     ) {
-        private val dao by lazy { PanoDb.getDb(context).getPendingScrobblesDao() }
-        private val lovesDao by lazy { PanoDb.getDb(context).getPendingLovesDao() }
-        private val prefs by lazy { MainPrefs(context) }
+        private val dao by lazy { PanoDb.db.getPendingScrobblesDao() }
+        private val lovesDao by lazy { PanoDb.db.getPendingLovesDao() }
 
         init {
             scope.launch {
@@ -80,10 +78,9 @@ class PendingScrJob : JobService() {
             return done
         }
 
-        private fun submitScrobbleBatch(): Boolean {
+        private suspend fun submitScrobbleBatch(): Boolean {
             var done = true
             val entries = dao.all(BATCH_SIZE)
-            val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs)
 
             progressCb?.invoke(context.getString(R.string.pending_batch))
 
@@ -101,13 +98,13 @@ class PendingScrJob : JobService() {
             }
             if (scrobbleDataToEntry.isNotEmpty()) {
                 try {
-                    val scrobbleResults = mutableMapOf</*@StringRes */Int, ScrobbleResult>()
+                    val scrobbleResults = mutableMapOf<Scrobblable, ScrobbleResult>()
                     //if an error occurs, there will be only one result
 
-                    scrobblablesMap.forEach { (stringId, scrobblable) ->
-                        val filteredData by lazy { filterForService(stringId, scrobbleDataToEntry) }
-                        if (scrobblable != null && filteredData.isNotEmpty()) {
-                            scrobbleResults[stringId] = scrobblable.scrobble(filteredData)
+                    Scrobblables.all.forEach {
+                        val filteredData by lazy { filterForService(it, scrobbleDataToEntry) }
+                        if (filteredData.isNotEmpty()) {
+                            scrobbleResults[it] = it.scrobble(filteredData)
                         }
                     }
 
@@ -115,13 +112,14 @@ class PendingScrJob : JobService() {
                     scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->
                         var state = pendingScrobble.state
 
-                        Stuff.SERVICE_BIT_POS.forEach { (id, pos) ->
-                            val enabled = state and (1 shl pos) != 0
-                            if (enabled && (!scrobbleResults.containsKey(id) /* logged out */ ||
-                                        scrobbleResults[id]!!.errorCode == 7 ||
-                                        scrobbleResults[id]!!.isSuccessful)
-                            )
-                                state = state and (1 shl pos).inv()
+                        scrobbleResults.forEach { (scrobblable, result) ->
+                            if (result.errorCode == 6 ||
+                                result.errorCode == 7 ||
+                                result.isSuccessful
+                            ) {
+                                state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
+
+                            }
                         }
 
                         if (state == 0)
@@ -135,10 +133,10 @@ class PendingScrJob : JobService() {
                     if (!MOCK && idsToDelete.isNotEmpty())
                         dao.delete(idsToDelete)
 
-                    scrobbleResults.forEach { (id, result) ->
+                    scrobbleResults.forEach { (scrobblable, result) ->
                         if (!result.isSuccessful) {
                             Stuff.log(
-                                "OfflineScrobble: err for " + context.getString(id) +
+                                "OfflineScrobble: err for " + scrobblable.userAccount.type.ordinal +
                                         ": " + result
                             )
                             done = false
@@ -164,19 +162,17 @@ class PendingScrJob : JobService() {
         }
 
         private suspend fun submitLoves(): Boolean {
-            val scrobblablesMap = Scrobblable.getScrobblablesMap(prefs, supportsLove = true)
-
             try {
                 val entries = lovesDao.all(100)
                 var remaining = entries.size
                 for (entry in entries) {
                     progressCb?.invoke(context.getString(R.string.submitting_loves, remaining--))
-                    val results = mutableMapOf</*@StringRes */Int, Result>()
+                    val results = mutableMapOf<Scrobblable, Boolean>()
 
-                    scrobblablesMap.forEach { (stringId, scrobblable) ->
-                        val shouldSubmit by lazy { filterOneForService(stringId, entry) }
-                        if (scrobblable != null && shouldSubmit) {
-                            results[stringId] = scrobblable.loveOrUnlove(
+                    Scrobblables.all.forEach {
+                        val shouldSubmit by lazy { filterOneForService(it, entry) }
+                        if (shouldSubmit) {
+                            results[it] = it.loveOrUnlove(
                                 Track(entry.track, null, entry.artist),
                                 entry.shouldLove
                             )
@@ -184,16 +180,10 @@ class PendingScrJob : JobService() {
                     }
 
                     var state = entry.state
-                    Stuff.SERVICE_BIT_POS.forEach { (id, pos) ->
-                        val enabled = state and (1 shl pos) != 0
-                        if (enabled && (!results.containsKey(id) /* logged out or is lbz */ ||
-                                    results[id]!!.errorCode == 6 ||
-                                    results[id]!!.errorCode == 7 ||
-                                    results[id]!!.isSuccessful).also {
-                                Stuff.log("love err: " + results[id])
-                            }
-                        )
-                            state = state and (1 shl pos).inv()
+
+                    results.forEach { (scrobblable, success) ->
+                        if (success)
+                            state = state and (1 shl scrobblable.userAccount.type.ordinal).inv()
                     }
 
                     if (state == 0 && !MOCK)
@@ -211,17 +201,17 @@ class PendingScrJob : JobService() {
             }
         }
 
-        private fun filterOneForService(@StringRes id: Int, pl: PendingLove): Boolean {
-            return (pl.state and (1 shl Stuff.SERVICE_BIT_POS[id]!!)) != 0
+        private fun filterOneForService(scrobblable: Scrobblable, pl: PendingLove): Boolean {
+            return (pl.state and (1 shl scrobblable.userAccount.type.ordinal)) != 0
         }
 
         private fun filterForService(
-            @StringRes id: Int,
+            scrobblable: Scrobblable,
             scrobbleDataToEntry: MutableMap<ScrobbleData, PendingScrobble>
         ): MutableList<ScrobbleData> {
             val filtered = mutableListOf<ScrobbleData>()
             scrobbleDataToEntry.forEach { (scrobbleData, pendingScrobble) ->
-                if (pendingScrobble.state and (1 shl Stuff.SERVICE_BIT_POS[id]!!) != 0)
+                if (pendingScrobble.state and (1 shl scrobblable.userAccount.type.ordinal) != 0)
                     filtered += scrobbleData
             }
             return filtered
@@ -230,7 +220,7 @@ class PendingScrJob : JobService() {
 
     companion object {
         const val JOB_ID = 10
-        private const val MOCK = false
+        private val MOCK = BuildConfig.DEBUG && false // todo set false
         var mightBeRunning = false // this may not be false when the job is force stopped
         private var BATCH_SIZE = 40 //max 50
         private const val DELAY = 400L

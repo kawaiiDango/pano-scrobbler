@@ -17,8 +17,6 @@ import android.graphics.drawable.Icon
 import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.text.SpannableString
 import android.text.Spanned
@@ -31,37 +29,32 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.edit
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.ForceLogException
-import com.arn.scrobble.LastfmUnscrobbler
 import com.arn.scrobble.LocaleUtils
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
-import com.arn.scrobble.LoginFragment
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.Stuff.isChannelEnabled
-import com.arn.scrobble.WebViewFragment
-import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.DialogImportBinding
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.edits.BlockedMetadataFragment
-import com.arn.scrobble.edits.RegexEditsFragment
-import com.arn.scrobble.edits.SimpleEditsFragment
-import com.arn.scrobble.onboarding.OnboardingFragment
-import com.arn.scrobble.themes.ThemesFragment
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.scrobbleable.AccountType
+import com.arn.scrobble.scrobbleable.LoginFlows
+import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.widget.ChartsWidgetActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
@@ -71,6 +64,7 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.transition.MaterialSharedAxis
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -85,11 +79,11 @@ import java.util.Locale
 
 class PrefFragment : PreferenceFragmentCompat() {
 
-    private val restoreHandler by lazy { Handler(Looper.getMainLooper()) }
     private lateinit var exportRequest: ActivityResultLauncher<Intent>
     private lateinit var exportPrivateDataRequest: ActivityResultLauncher<Intent>
     private lateinit var importRequest: ActivityResultLauncher<Intent>
-    private val prefs by lazy { MainPrefs(context!!) }
+    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,7 +171,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             notiCategories.setOnPreferenceClickListener {
                 val intent = Intent().apply {
                     action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
-                    putExtra(Settings.EXTRA_APP_PACKAGE, activity!!.packageName)
+                    putExtra(Settings.EXTRA_APP_PACKAGE, requireActivity().packageName)
                 }
                 startActivity(intent)
                 true
@@ -186,7 +180,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             notiCategories.isVisible = false
         }
 
-        val nlsEnabled = OnboardingFragment.isNotificationListenerEnabled(context!!)
+        val nlsEnabled = Stuff.isNotificationListenerEnabled()
         if (!nlsEnabled) {
             findPreference<Preference>(MainPrefs.PREF_MASTER)!!
                 .isEnabled = false
@@ -218,7 +212,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         var currentLocale = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
             prefs.locale
         else {
-            val ll = context!!.getSystemService(LocaleManager::class.java).applicationLocales
+            val ll = requireContext().getSystemService(LocaleManager::class.java).applicationLocales
             if (ll.size() == 0)
                 null
             else
@@ -237,14 +231,14 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
         changeLocalePref.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
-                MaterialAlertDialogBuilder(context!!)
+                MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.pref_change_locale)
                     .setSingleChoiceItems(entries, checkedIndex) { dialogInterface, idx ->
                         dialogInterface.dismiss()
                         val newLocale = entryValues[idx]
                         if (currentLocale != newLocale) {
                             prefs.locale = newLocale
-                            context!!.setLocaleCompat(force = true)
+                            requireContext().setLocaleCompat(force = true)
                         }
                     }
                     .setNegativeButton(android.R.string.cancel, null)
@@ -254,16 +248,13 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val appList = findPreference<Preference>(MainPrefs.PREF_ALLOWED_PACKAGES)!!
         appList.setOnPreferenceClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.frame, AppListFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.appListFragment)
             true
         }
 
         val autoDetect = findPreference<SwitchPreference>(MainPrefs.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
-        val nm = getSystemService(context!!, NotificationManager::class.java)!!
+        val nm = getSystemService(requireContext(), NotificationManager::class.java)!!
         if (!nm.isChannelEnabled(prefs.sharedPreferences, MainPrefs.CHANNEL_NOTI_NEW_APP)) {
             autoDetect.apply {
                 summary = getString(R.string.notification_channel_blocked)
@@ -284,7 +275,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     val appWidgetManager =
                         getSystemService(
-                            context!!,
+                            requireContext(),
                             AppWidgetManager::class.java
                         ) as AppWidgetManager
                     if (appWidgetManager.isRequestPinAppWidgetSupported) {
@@ -296,7 +287,8 @@ class PrefFragment : PreferenceFragmentCompat() {
                             Stuff.updateCurrentOrMutable
                         )
 
-                        val myProvider = ComponentName(context!!, ChartsWidgetProvider::class.java)
+                        val myProvider =
+                            ComponentName(requireContext(), ChartsWidgetProvider::class.java)
                         appWidgetManager.requestPinAppWidget(myProvider, null, pi)
                     }
                 }
@@ -305,10 +297,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("themes")!!
             .setOnPreferenceClickListener {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, ThemesFragment())
-                    .addToBackStack(null)
-                    .commit()
+                findNavController().navigate(R.id.themesFragment)
                 true
             }
 
@@ -332,10 +321,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             searchInSource.isPersistent = false
             searchInSource.isChecked = false
             searchInSource.setOnPreferenceClickListener {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, BillingFragment())
-                    .addToBackStack(null)
-                    .commit()
+                findNavController().navigate(R.id.billingFragment)
                 true
             }
 
@@ -396,92 +382,15 @@ class PrefFragment : PreferenceFragmentCompat() {
         hideOnTV.add(findPreference("imexport")!!)
 
 
-        initAuthConfirmation("lastfm", {
-            val wf = WebViewFragment()
-            wf.arguments = Bundle().apply {
-                putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
-                putBoolean(Stuff.ARG_SAVE_COOKIES, true)
-            }
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.frame, wf)
-                .addToBackStack(null)
-                .commit()
-        },
-            MainPrefs.PREF_LASTFM_USERNAME, MainPrefs.PREF_LASTFM_SESS_KEY,
-            logout = { LastfmUnscrobbler(context!!).clearCookies() }
-        )
+        initAuthConfirmation("lastfm", AccountType.LASTFM)
 
-        initAuthConfirmation(
-            "librefm", {
-                val wf = WebViewFragment()
-                wf.arguments = Bundle().apply {
-                    putString(Stuff.ARG_URL, Stuff.LIBREFM_AUTH_CB_URL)
-                }
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, wf)
-                    .addToBackStack(null)
-                    .commit()
-            },
-            MainPrefs.PREF_LIBREFM_USERNAME, MainPrefs.PREF_LIBREFM_SESS_KEY
-        )
+        initAuthConfirmation("librefm", AccountType.LIBREFM)
 
-        initAuthConfirmation(
-            "gnufm", {
-                val b = Bundle().apply {
-                    putString(LoginFragment.HEADING, getString(R.string.gnufm))
-                    putString(LoginFragment.TEXTFL, getString(R.string.api_url))
-                    putString(LoginFragment.TEXT_CHECKBOX, getString(R.string.disable_tls_verify))
-                }
+        initAuthConfirmation("gnufm", AccountType.GNUFM)
 
-                val loginFragment = LoginFragment()
-                loginFragment.arguments = b
-                activity!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.frame, loginFragment)
-                    .addToBackStack(null)
-                    .commit()
-            },
-            MainPrefs.PREF_GNUFM_USERNAME, MainPrefs.PREF_GNUFM_SESS_KEY, MainPrefs.PREF_GNUFM_ROOT
-        )
+        initAuthConfirmation("listenbrainz", AccountType.LISTENBRAINZ)
 
-
-        initAuthConfirmation(
-            "listenbrainz", {
-                val b = Bundle().apply {
-                    putString(LoginFragment.HEADING, getString(R.string.listenbrainz))
-                    putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
-                }
-
-                val loginFragment = LoginFragment()
-                loginFragment.arguments = b
-                activity!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.frame, loginFragment)
-                    .addToBackStack(null)
-                    .commit()
-            },
-            MainPrefs.PREF_LISTENBRAINZ_USERNAME, MainPrefs.PREF_LISTENBRAINZ_TOKEN
-        )
-
-        initAuthConfirmation(
-            "lb",
-            {
-                val b = Bundle().apply {
-                    putString(LoginFragment.HEADING, getString(R.string.custom_listenbrainz))
-                    putString(LoginFragment.TEXTF1, getString(R.string.api_url))
-                    putString(LoginFragment.TEXTFL, getString(R.string.pref_token_label))
-                    putString(LoginFragment.TEXT_CHECKBOX, getString(R.string.disable_tls_verify))
-                }
-
-                val loginFragment = LoginFragment()
-                loginFragment.arguments = b
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, loginFragment)
-                    .addToBackStack(null)
-                    .commit()
-            },
-            MainPrefs.PREF_LB_CUSTOM_USERNAME,
-            MainPrefs.PREF_LB_CUSTOM_TOKEN,
-            MainPrefs.PREF_LB_CUSTOM_ROOT
-        )
+        initAuthConfirmation("lb", AccountType.CUSTOM_LISTENBRAINZ)
 
         findPreference<Preference>(MainPrefs.PREF_INTENTS)!!
             .setOnPreferenceClickListener {
@@ -502,7 +411,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                         "\t\t$it"
                 }.toTypedArray()
 
-                val dialog = MaterialAlertDialogBuilder(context!!)
+                val dialog = MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.pref_intents_dialog_title)
                     .setItems(itemsDisplay, null)
                     .setPositiveButton(android.R.string.ok, null)
@@ -510,7 +419,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
                 dialog.listView.setOnItemClickListener { _, _, selectedIdx, _ ->
                     val item = itemsRaw[selectedIdx]
-                    context!!.copyToClipboard(item ?: return@setOnItemClickListener)
+                    requireContext().copyToClipboard(item ?: return@setOnItemClickListener)
                 }
 
                 true
@@ -518,11 +427,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("delete_account")!!
             .setOnPreferenceClickListener {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, DeleteAccountFragment())
-                    .addToBackStack(null)
-                    .commit()
-
+                findNavController().navigate(R.id.deleteAccountFragment)
                 true
             }
 
@@ -606,11 +511,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val libraries = findPreference<Preference>("libraries")!!
         libraries.setOnPreferenceClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.frame, LicensesFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.licensesFragment)
             true
         }
 
@@ -621,15 +522,19 @@ class PrefFragment : PreferenceFragmentCompat() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val rv = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
-        rv.layoutAnimation =
-            AnimationUtils.loadLayoutAnimation(context!!, R.anim.layout_animation_slide_up)
-        rv.scheduleLayoutAnimation()
+        listView.clipToPadding = false
+        listView.setupInsets()
 
-        val decoration = MaterialDividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
-        decoration.setDividerInsetStartResource(context!!, R.dimen.divider_inset)
-        decoration.setDividerInsetEndResource(context!!, R.dimen.divider_inset)
+        listView.layoutAnimation =
+            AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_slide_up)
+        listView.scheduleLayoutAnimation()
+
+        super.onViewCreated(view, savedInstanceState)
+
+        val decoration =
+            MaterialDividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        decoration.setDividerInsetStartResource(requireContext(), R.dimen.divider_inset)
+        decoration.setDividerInsetEndResource(requireContext(), R.dimen.divider_inset)
         val colorDrawable = ColorDrawable(decoration.dividerColor)
         val insetDrawable = InsetDrawable(
             colorDrawable,
@@ -641,10 +546,10 @@ class PrefFragment : PreferenceFragmentCompat() {
         setDivider(insetDrawable)
     }
 
-    private fun setAuthLabel(elem: Preference) {
-        val username =
-            preferenceManager.sharedPreferences?.getString(elem.key + "_username", null)
-        elem.extras.putInt("state", 1)
+    private fun setAuthLabel(elem: Preference, type: AccountType) {
+
+        val username = Scrobblables.byType(type)?.userAccount?.user?.name
+        elem.extras.putInt("state", STATE_CONFIRM)
         if (username != null) {
             elem.summary = getString(R.string.pref_logout) + ": [$username]"
             elem.extras.putInt("state", STATE_LOGOUT)
@@ -654,32 +559,30 @@ class PrefFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun setAuthLabel(elemKey: String) = setAuthLabel(findPreference(elemKey)!!)
+    private fun setAuthLabel(elemKey: String, type: AccountType) =
+        setAuthLabel(findPreference(elemKey)!!, type)
 
     private fun initAuthConfirmation(
         key: String,
-        login: () -> Unit,
-        vararg keysToClear: String,
-        logout: (() -> Unit)? = null
+        type: AccountType
     ) {
         val elem = findPreference<Preference>(key)!!
-        setAuthLabel(elem)
-        if (elem.key == "listenbrainz" || elem.key == "lb")
-            elem.title = elem.title.toString() + " " + getString(R.string.pref_scrobble_only)
+        setAuthLabel(elem, type)
         elem.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 val state = it.extras.getInt("state", STATE_LOGIN)
                 when (state) {
                     STATE_LOGOUT -> {
-                        restoreHandler.postDelayed({
-                            setAuthLabel(it)
-                        }, CONFIRM_TIME)
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            delay(CONFIRM_TIME)
+                            setAuthLabel(it, type)
+                        }
                         val span = SpannableString(getString(R.string.pref_confirm_logout))
                         span.setSpan(
                             ForegroundColorSpan(
                                 MaterialColors.getColor(
-                                    context!!,
-                                    R.attr.colorPrimary,
+                                    requireContext(),
+                                    com.google.android.material.R.attr.colorPrimary,
                                     null
                                 )
                             ),
@@ -697,27 +600,23 @@ class PrefFragment : PreferenceFragmentCompat() {
                     }
 
                     STATE_CONFIRM -> {
+                        val prevAccount = Scrobblables.current?.userAccount
+                        Scrobblables.deleteAllByType(type)
+                        Scrobblables.updateScrobblables()
 
-                        val authKey =
-                            preferenceManager.sharedPreferences!!.getString("${key}_sesskey", null)
-                                ?: preferenceManager.sharedPreferences!!.getString(
-                                    "${key}_token",
-                                    null
-                                )
+                        val currentAccount = Scrobblables.current?.userAccount
 
-                        preferenceManager.sharedPreferences!!.edit {
-                            keysToClear.forEach { remove(it) }
+                        setAuthLabel(it, type)
+
+                        if (currentAccount != prevAccount && currentAccount != null) {
+                            mainNotifierViewModel.popUser()
+                            mainNotifierViewModel.pushUser(Scrobblables.current!!.userAccount.user)
+                            findNavController().popBackStack(R.id.myHomePagerFragment, true)
+                            findNavController().navigate(R.id.myHomePagerFragment)
                         }
-
-                        if (authKey != null)
-                            prefs.scrobbleAccounts.find { it.authKey == authKey }
-                                ?.let { prefs.scrobbleAccounts -= it }
-
-                        logout?.invoke()
-                        setAuthLabel(it)
                     }
 
-                    STATE_LOGIN -> login()
+                    STATE_LOGIN -> LoginFlows(findNavController()).go(type)
                 }
                 true
             }
@@ -727,7 +626,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         val currentUri = data.data ?: return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val exported = ImExporter().use {
-                it.setOutputUri(context!!, currentUri)
+                it.setOutputUri(requireContext(), currentUri)
                 if (privateData)
                     it.exportPrivateData()
                 else
@@ -735,7 +634,7 @@ class PrefFragment : PreferenceFragmentCompat() {
             }
             if (!exported)
                 withContext(Dispatchers.Main) {
-                    context!!.toast(R.string.export_failed, Toast.LENGTH_LONG)
+                    requireContext().toast(R.string.export_failed, Toast.LENGTH_LONG)
                 }
             else
                 Stuff.log("Exported")
@@ -745,7 +644,7 @@ class PrefFragment : PreferenceFragmentCompat() {
     private fun import(data: Intent) {
         val currentUri = data.data ?: return
         val binding = DialogImportBinding.inflate(layoutInflater)
-        MaterialAlertDialogBuilder(context!!)
+        MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
             .setTitle(R.string.import_options)
             .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -761,14 +660,14 @@ class PrefFragment : PreferenceFragmentCompat() {
                     return@setPositiveButton
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val imported = ImExporter().use {
-                        it.setInputUri(context!!, currentUri)
+                        it.setInputUri(requireContext(), currentUri)
                         it.import(editsMode, settingsMode)
                     }
                     withContext(Dispatchers.Main) {
                         if (!imported)
-                            context!!.toast(R.string.import_hey_wtf, Toast.LENGTH_LONG)
+                            requireContext().toast(R.string.import_hey_wtf, Toast.LENGTH_LONG)
                         else {
-                            context!!.toast(R.string.imported)
+                            requireContext().toast(R.string.imported)
                             parentFragmentManager
                                 .beginTransaction()
                                 .detach(this@PrefFragment)
@@ -786,25 +685,21 @@ class PrefFragment : PreferenceFragmentCompat() {
 
     override fun onStart() {
         super.onStart()
-        setTitle(R.string.settings)
 
-        listView.isNestedScrollingEnabled = false
+//        listView.isNestedScrollingEnabled = false
 
-        setAuthLabel("listenbrainz")
-        setAuthLabel("lb")
+        setAuthLabel("listenbrainz", AccountType.LISTENBRAINZ)
+        setAuthLabel("lb", AccountType.CUSTOM_LISTENBRAINZ)
 
         val simpleEdits = findPreference<Preference>("simple_edits")!!
         simpleEdits.setOnPreferenceClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.frame, SimpleEditsFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.simpleEditsFragment)
             true
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.getDb(context!!).getSimpleEditsDao().count
+                PanoDb.db.getSimpleEditsDao().count
             }
             withContext(Dispatchers.Main) {
                 simpleEdits.title =
@@ -818,16 +713,13 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val regexEdits = findPreference<Preference>("regex_edits")!!
         regexEdits.setOnPreferenceClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.frame, RegexEditsFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.regexEditsFragment)
             true
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.getDb(context!!).getRegexEditsDao().count
+                PanoDb.db.getRegexEditsDao().count
             }
             withContext(Dispatchers.Main) {
                 regexEdits.title =
@@ -841,16 +733,13 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val blockedMetadata = findPreference<Preference>("blocked_metadata")!!
         blockedMetadata.setOnPreferenceClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.frame, BlockedMetadataFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.blockedMetadataFragment)
             true
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.getDb(context!!).getBlockedMetadataDao().count
+                PanoDb.db.getBlockedMetadataDao().count
             }
             withContext(Dispatchers.Main) {
                 blockedMetadata.title =
@@ -871,22 +760,16 @@ class PrefFragment : PreferenceFragmentCompat() {
                 findPreference<SwitchPreference>("fake_show_scrobble_sources")!!
             fakeShowScrobbleSources.isChecked = false
             fakeShowScrobbleSources.setOnPreferenceClickListener {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, BillingFragment())
-                    .addToBackStack(null)
-                    .commit()
+                findNavController().navigate(R.id.billingFragment)
                 true
             }
         }
     }
 
-    override fun onStop() {
-        restoreHandler.removeCallbacksAndMessages(null)
-        super.onStop()
+    companion object {
+        private const val STATE_LOGIN = 0
+        private const val STATE_CONFIRM = 1
+        private const val STATE_LOGOUT = 2
+        private const val CONFIRM_TIME = 3000L
     }
 }
-
-private const val STATE_LOGIN = 0
-private const val STATE_LOGOUT = 2
-private const val STATE_CONFIRM = 1
-private const val CONFIRM_TIME = 3000L

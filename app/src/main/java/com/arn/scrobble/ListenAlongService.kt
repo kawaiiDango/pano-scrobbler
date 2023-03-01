@@ -1,6 +1,10 @@
 package com.arn.scrobble
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -10,10 +14,15 @@ import androidx.core.app.NotificationCompat
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
-import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListenAlongService : Service() {
 
@@ -50,34 +59,31 @@ class ListenAlongService : Service() {
     }
 
     private suspend fun fetchTrackLoop() {
-//        coroutineScope {
         while (true) {
-            val pair = withContext(Dispatchers.IO) {
-                LFMRequester(
-                    this@ListenAlongService,
-                    coroutineScope!!
-                ).execHere<Pair<String, PaginatedResult<Track>>> {
-                    getFriendsRecents(currentUsername ?: "nobody")
-                }
-            }
-            val track = pair?.second?.pageResults?.firstOrNull()
+            val track = withContext(Dispatchers.IO) {
+                Scrobblables.current!!.getRecents(
+                    1,
+                    currentUsername ?: "nobody",
+                    limit = 1,
+                )
+            }.pageResults?.firstOrNull()
             if (track != null && (track.artist != currentTrack?.artist || track.name != currentTrack?.name)) {
                 currentTrack = track
 
-                val spotifyLink = withContext(Dispatchers.IO) {
-                    SpotifyRequester.getSpotifyLink(track)
+                val spotifyId = withContext(Dispatchers.IO) {
+                    SpotifyRequester.getSpotifyTrack(track, 0.7f)?.id
                 } ?: continue
+
+                val spotifyLink = "https://open.spotify.com/track/$spotifyId"
 
                 val spotifyIntent = Intent(Intent.ACTION_VIEW, Uri.parse(spotifyLink))
                     .setPackage(Stuff.PACKAGE_SPOTIFY)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(spotifyIntent)
-
             }
 
-            delay(5000)
+            delay(10000)
         }
-//        }
     }
 
     override fun onDestroy() {

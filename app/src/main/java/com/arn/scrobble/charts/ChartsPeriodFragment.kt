@@ -3,10 +3,12 @@ package com.arn.scrobble.charts
 import android.os.Parcel
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
@@ -16,8 +18,11 @@ import com.arn.scrobble.Stuff.lastOrNull
 import com.arn.scrobble.Stuff.toBimap
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
-import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.AccountType
+import com.arn.scrobble.scrobbleable.Lastfm
+import com.arn.scrobble.scrobbleable.ListenBrainz
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.UiUtils.mySmoothScrollToPosition
 import com.arn.scrobble.ui.UiUtils.showWithIcons
@@ -37,12 +42,16 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     protected val activityViewModel by activityViewModels<MainNotifierViewModel>()
 
 
-    protected val prefs by lazy { MainPrefs(context!!) }
+    protected val prefs by lazy { MainPrefs(requireContext()) }
 
     abstract fun loadFirstPage(networkOnly: Boolean = false)
 
     protected open fun postInit() {
         context ?: return
+
+        periodChipsBinding.root.visibility = View.VISIBLE
+
+        var firstLoad = viewModel.selectedPeriod.value == null
 
         periodChipsAdapter = PeriodChipsAdapter(viewModel) { pos ->
             periodChipsBinding.chartsPeriodsList.mySmoothScrollToPosition(pos)
@@ -69,26 +78,30 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                 )
 
             viewModel.timePeriods.value = when (periodType) {
-                TimePeriodType.CONTINUOUS -> TimePeriodsGenerator.getContinuousPeriods(context!!)
+                TimePeriodType.CONTINUOUS -> TimePeriodsGenerator.getContinuousPeriods()
                     .toBimap()
 
                 TimePeriodType.CUSTOM -> {
-                    val selectedPeriod = viewModel.selectedPeriod.value ?: TimePeriod(
-                        context!!,
-                        0,
-                        System.currentTimeMillis()
-                    )
+                    val selectedPeriod = if (firstLoad) {
+                        prefs.lastChartsPeriodSelectedJson
+                    } else {
+                        viewModel.selectedPeriod.value ?: TimePeriod(
+                            0,
+                            System.currentTimeMillis(),
+                        )
+                    }
                     val start =
                         max(selectedPeriod.start, activityViewModel.currentUser.registeredTime)
                     val end = selectedPeriod.end
                     listOf(
-                        TimePeriod(context!!, start, end)
+                        TimePeriod(start, end)
                     ).toBimap()
                 }
 
                 TimePeriodType.WEEK -> timePeriodsGenerator.weeks.toBimap()
                 TimePeriodType.MONTH -> timePeriodsGenerator.months.toBimap()
                 TimePeriodType.YEAR -> timePeriodsGenerator.years.toBimap()
+                TimePeriodType.LISTENBRAINZ -> timePeriodsGenerator.listenBrainzPeriods.toBimap()
                 else -> throw IllegalArgumentException("Unknown period type: $periodType")
             }
 
@@ -100,8 +113,16 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         }
 
-        var firstLoad = viewModel.selectedPeriod.value == null
-        prevSelectedPeriod = prefs.lastChartsPeriodSelectedJson
+        prefs.lastChartsPeriodSelectedJson.let {
+            prevSelectedPeriod =
+                if (it.period == null && Scrobblables.current !is Lastfm &&
+                    Scrobblables.current !is ListenBrainz ||
+                    it.tag == null && Scrobblables.current is ListenBrainz
+                )
+                    TimePeriod(Period.OVERALL)
+                else
+                    it
+        }
 
         viewModel.selectedPeriod.observe(viewLifecycleOwner) { timePeriod ->
             timePeriod ?: return@observe
@@ -133,13 +154,17 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
         viewModel.chartsType = chartsType
 
         viewModel.periodType.value = try {
+            require(Scrobblables.current?.userAccount?.type == AccountType.LASTFM)
             TimePeriodType.valueOf(prefs.lastChartsPeriodType)
         } catch (e: IllegalArgumentException) {
-            TimePeriodType.CONTINUOUS
+            if (Scrobblables.current is ListenBrainz)
+                TimePeriodType.LISTENBRAINZ
+            else
+                TimePeriodType.CONTINUOUS
         }
 
         if (viewModel.periodType.value == TimePeriodType.CONTINUOUS && prevSelectedPeriod.period == null) {
-            viewModel.selectedPeriod.value = TimePeriod(context!!, Period.ONE_MONTH)
+            viewModel.selectedPeriod.value = TimePeriod(Period.ONE_MONTH)
         } else if (viewModel.timePeriods.value != null && prevSelectedPeriod !in viewModel.timePeriods.value!!.inverse) {
             val firstPeriod = viewModel.timePeriods.value!!.firstOrNull()!!
             val lastPeriod = viewModel.timePeriods.value!!.lastOrNull()!!
@@ -166,12 +191,16 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                 showWeekPicker()
         }
 
+
+        if (Scrobblables.current is Lastfm) {
+            periodChipsBinding.chartsPeriodType.visibility = View.VISIBLE
+        } else {
+            periodChipsBinding.chartsPeriodType.visibility = View.GONE
+        }
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {
-        val info = InfoFragment()
-        info.arguments = entry.toBundle()
-        info.show(activity!!.supportFragmentManager, null)
+        findNavController().navigate(R.id.infoFragment, entry.toBundle())
     }
 
     private fun findSelectedAndScroll(animate: Boolean) {
@@ -187,7 +216,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     private fun showWeekPicker() {
-        val startTime = Stuff.timeToUTC(viewModel.timePeriods.value?.lastOrNull()?.start ?: return)
+        val startTime =
+            Stuff.timeToUTC(viewModel.timePeriods.value?.lastOrNull()?.start ?: return)
         val endTime = Stuff.timeToUTC(viewModel.timePeriods.value?.firstOrNull()?.end ?: return)
         var openAtTime = Stuff.timeToUTC(
             viewModel.selectedPeriod.value?.start
@@ -203,7 +233,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         val dpd = MaterialDatePicker.Builder.datePicker()
             .setTitleText(periodChipsBinding.chartsPeriodType.text)
-//            .setTheme(context!!.attrToThemeId(R.attr.materialCalendarFullscreenTheme))
+//            .setTheme(requireContext().attrToThemeId(R.attr.materialCalendarFullscreenTheme))
             .setCalendarConstraints(
                 CalendarConstraints.Builder()
                     .setStart(startTime)
@@ -241,7 +271,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         val dpd = MaterialDatePicker.Builder.dateRangePicker()
             .setTitleText(periodChipsBinding.chartsPeriodType.text)
-//            .setTheme(context!!.attrToThemeId(R.attr.materialCalendarFullscreenTheme))
+//            .setTheme(requireContext().attrToThemeId(R.attr.materialCalendarFullscreenTheme))
             .setCalendarConstraints(
                 CalendarConstraints.Builder()
                     .setStart(activityViewModel.currentUser.registeredTime)
@@ -262,9 +292,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
         dpd.addOnPositiveButtonClickListener {
             viewModel.selectedPeriod.value =
                 TimePeriod(
-                    context!!,
                     Stuff.timeToLocal(it.first),
-                    Stuff.timeToLocal(it.second + 24 * 60 * 60 * 1000)
+                    Stuff.timeToLocal(it.second + 24 * 60 * 60 * 1000),
                 )
             Stuff.log("selectedPeriod: ${viewModel.selectedPeriod.value}")
         }
@@ -284,8 +313,26 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     private fun showPeriodTypeSelector() {
-        val popup = PopupMenu(context!!, periodChipsBinding.chartsPeriodType)
+        val popup = PopupMenu(requireContext(), periodChipsBinding.chartsPeriodType)
         popup.menuInflater.inflate(R.menu.period_type_menu, popup.menu)
+
+        val idToKeep = when (Scrobblables.current) {
+            is ListenBrainz -> R.id.menu_listenbrainz
+            !is Lastfm -> R.id.menu_continuous
+            else -> 0
+        }
+
+        if (Scrobblables.current !is Lastfm) {
+//            val idsToRemove = mutableListOf<Int>()
+            popup.menu.forEach {
+                if (idToKeep != 0 && it.itemId != idToKeep) {
+                    it.isVisible = false
+                    it.isEnabled = false
+                }
+//                    idsToRemove += it.itemId
+            }
+//            idsToRemove.forEach { popup.menu.removeItem(it) }
+        }
 
         val menuIds = mutableListOf<Int>()
         popup.menu.forEachIndexed { index, menuItem ->
@@ -319,6 +366,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
             TimePeriodType.WEEK -> getString(R.string.weeks)
             TimePeriodType.MONTH -> getString(R.string.months)
             TimePeriodType.YEAR -> getString(R.string.years)
+            TimePeriodType.LISTENBRAINZ -> getString(R.string.listenbrainz)
             else -> throw IllegalArgumentException("Unknown period type: $this")
         }
 

@@ -62,7 +62,7 @@ class SearchResultsAdapter(
                 )
             )
 
-            else -> throw RuntimeException("Invalid view type $viewType")
+            else -> throw IllegalArgumentException("Invalid view type $viewType")
         }
     }
 
@@ -74,9 +74,7 @@ class SearchResultsAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return data.getItemType(position)
-    }
+    override fun getItemViewType(position: Int) = data.getItemType(position)
 
     override fun getItemCount() = data.size
 
@@ -260,7 +258,7 @@ class SearchResultsAdapter(
 
             if (headerData.section.sectionId == Section.REINDEX) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    binding.headerText.setTextAppearance(R.style.TextAppearance_Material3_BodyMedium)
+                    binding.headerText.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
                 }
 
                 binding.headerAction.setOnClickListener {
@@ -298,7 +296,7 @@ class SearchResultsAdapter(
                 }
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    binding.headerText.setTextAppearance(R.style.TextAppearance_Material3_TitleMedium)
+                    binding.headerText.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleMedium)
                 }
 
                 binding.headerAction.setOnClickListener {
@@ -317,7 +315,7 @@ class SearchResultsAdapter(
         }
     }
 
-    enum class Section {
+    private enum class Section {
         ARTISTS,
         ALBUMS,
         TRACKS,

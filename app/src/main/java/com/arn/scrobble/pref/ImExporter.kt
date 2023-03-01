@@ -53,7 +53,7 @@ class ImExporter : Closeable {
         MainPrefs.PREF_THEME_DYNAMIC,
         MainPrefs.PREF_SEARCH_IN_SOURCE,
         MainPrefs.PREF_LOCALE,
-//        MainPrefs.PREF_SCROBBLE_SPOTIFY_REMOTE,
+        MainPrefs.PREF_SCROBBLE_SPOTIFY_REMOTE,
 
         MainPrefs.PREF_ALLOWED_PACKAGES,
         MainPrefs.PREF_BLOCKED_PACKAGES,
@@ -95,7 +95,7 @@ class ImExporter : Closeable {
                     beginObject()
                     name("pano_version").value(BuildConfig.VERSION_CODE)
                     name("simple_edits").beginArray()
-                    PanoDb.getDb(context)
+                    PanoDb.db
                         .getSimpleEditsDao()
                         .all
                         .asReversed()
@@ -104,7 +104,7 @@ class ImExporter : Closeable {
                         }
                     endArray()
                     name("regex_edits").beginArray()
-                    PanoDb.getDb(context)
+                    PanoDb.db
                         .getRegexEditsDao()
                         .all
                         .forEach {
@@ -112,7 +112,7 @@ class ImExporter : Closeable {
                         }
                     endArray()
                     name("blocked_metadata").beginArray()
-                    PanoDb.getDb(context)
+                    PanoDb.db
                         .getBlockedMetadataDao()
                         .all
                         .asReversed()
@@ -168,7 +168,7 @@ class ImExporter : Closeable {
                     beginObject()
                     name("pano_version").value(BuildConfig.VERSION_CODE)
                     name("scrobble_sources").beginArray()
-                    PanoDb.getDb(context).getScrobbleSourcesDao().all.forEach { scrobbleSource ->
+                    PanoDb.db.getScrobbleSourcesDao().all.forEach { scrobbleSource ->
                         scrobbleSource.writeJson(this)
                     }
                     endArray()
@@ -214,7 +214,7 @@ class ImExporter : Closeable {
                             when (name) {
                                 "simple_edits",
                                 "edits" -> {
-                                    val dao = PanoDb.getDb(context).getSimpleEditsDao()
+                                    val dao = PanoDb.db.getSimpleEditsDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
                                     val edits = mutableListOf<SimpleEdit>()
@@ -231,7 +231,7 @@ class ImExporter : Closeable {
                                 }
 
                                 "regex_edits" -> {
-                                    val dao = PanoDb.getDb(context).getRegexEditsDao()
+                                    val dao = PanoDb.db.getRegexEditsDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
                                     val edits = mutableListOf<RegexEdit>()
@@ -257,7 +257,7 @@ class ImExporter : Closeable {
                                 }
 
                                 "blocked_metadata" -> {
-                                    val dao = PanoDb.getDb(context).getBlockedMetadataDao()
+                                    val dao = PanoDb.db.getBlockedMetadataDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
                                     val blockedMetadata = mutableListOf<BlockedMetadata>()
@@ -274,7 +274,7 @@ class ImExporter : Closeable {
                                 }
 
                                 "scrobble_sources" -> {
-                                    val dao = PanoDb.getDb(context).getScrobbleSourcesDao()
+                                    val dao = PanoDb.db.getScrobbleSourcesDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
                                     val scrobbleSources = mutableListOf<ScrobbleSource>()

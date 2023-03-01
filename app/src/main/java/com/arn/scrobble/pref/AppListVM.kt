@@ -25,6 +25,7 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
     private val packageManager = application.packageManager
     val selectedPackages = mutableSetOf<String>()
     val isLoading = MutableLiveData(true)
+    var backPressEnabled = true
 
     fun load(checkDefaultApps: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {

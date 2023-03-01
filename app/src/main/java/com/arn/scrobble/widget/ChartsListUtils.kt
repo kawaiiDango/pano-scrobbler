@@ -11,7 +11,6 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.pref.WidgetPrefs
-import com.arn.scrobble.scrobbleable.ScrobblableEnum
 import com.arn.scrobble.scrobbleable.Scrobblables
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -65,8 +64,8 @@ object ChartsListUtils {
                     putExtra(NLService.B_TRACK, item.title)
                 }
             }
-            putSingle(Scrobblables.byType(ScrobblableEnum.LASTFM)!!.user)
-            putExtra(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, true)
+            putSingle(Scrobblables.current?.userAccount?.user ?: return@apply)
+            putExtra(Stuff.ARG_INFO, true)
         }
         rv.setOnClickFillInIntent(R.id.appwidget_charts_item, fillInIntent)
         return rv

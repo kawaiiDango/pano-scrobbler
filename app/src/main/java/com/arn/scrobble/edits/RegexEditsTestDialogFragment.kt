@@ -24,7 +24,7 @@ class RegexEditsTestDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DialogRegexTestBinding.inflate(layoutInflater)
         val mutex = Mutex()
-        val dao = PanoDb.getDb(context!!).getRegexEditsDao()
+        val dao = PanoDb.db.getRegexEditsDao()
         binding.matches.text = resources.getQuantityString(R.plurals.num_matches, 0, 0)
         binding.text.addTextChangedListener(object : TextWatcher {
 
@@ -35,7 +35,7 @@ class RegexEditsTestDialogFragment : DialogFragment() {
             }
 
             override fun afterTextChanged(editable: Editable) {
-                activity!!.lifecycleScope.launch(Dispatchers.IO) {
+                requireActivity().lifecycleScope.launch(Dispatchers.IO) {
                     mutex.withLock {
                         val text = editable.toString()
                         val sd = ScrobbleData()
@@ -80,7 +80,7 @@ class RegexEditsTestDialogFragment : DialogFragment() {
 
         })
 
-        return MaterialAlertDialogBuilder(context!!)
+        return MaterialAlertDialogBuilder(requireContext())
             .setNegativeButton(R.string.close, null)
             .setView(binding.root)
             .create()

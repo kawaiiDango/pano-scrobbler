@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SimpleEditsVM(app: Application) : AndroidViewModel(app) {
-    val dao = PanoDb.getDb(getApplication()).getSimpleEditsDao()
+    val dao = PanoDb.db.getSimpleEditsDao()
     val edits = mutableListOf<SimpleEdit>()
     val editsReceiver = dao.allLd
 

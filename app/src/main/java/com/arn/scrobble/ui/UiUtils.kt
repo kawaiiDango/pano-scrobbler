@@ -1,8 +1,9 @@
 package com.arn.scrobble.ui
 
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.Animatable2
@@ -21,6 +22,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.WindowInsets
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
@@ -28,8 +30,8 @@ import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.AttrRes
@@ -38,35 +40,49 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
-import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnNextLayout
-import androidx.fragment.app.DialogFragment
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import coil.imageLoader
+import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.result
+import coil.transform.CircleCropTransformation
+import com.arn.scrobble.BasePagerFragment
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.friends.UserSerializable
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
+import de.umass.lastfm.ImageSize
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+
 object UiUtils {
 
+    var isTabletUi = false
     val Int.dp
         get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
@@ -168,6 +184,26 @@ object UiUtils {
         )
     }
 
+    fun BottomNavigationView.slide(up: Boolean = true) {
+        if (layoutParams is CoordinatorLayout.LayoutParams) {
+            val behavior =
+                (layoutParams as CoordinatorLayout.LayoutParams).behavior as? HideBottomViewOnScrollBehavior
+            if (behavior is HideBottomViewOnScrollBehavior) {
+                if (up)
+                    behavior.slideUp(this)
+                else
+                    behavior.slideDown(this)
+            }
+        }
+    }
+
+    fun Context.getDimenFromAttr(@AttrRes dimenAttr: Int): Int {
+        val ta = obtainStyledAttributes(intArrayOf(dimenAttr))
+        val dimen = ta.getDimensionPixelSize(0, -1)
+        ta.recycle()
+        return dimen
+    }
+
     fun Snackbar.focusOnTv(): Snackbar {
         if (Stuff.isTv) {
             addCallback(object : Snackbar.Callback() {
@@ -179,6 +215,7 @@ object UiUtils {
                 }
             })
         }
+        setAnchorView(R.id.bottom_nav)
         return this
     }
 
@@ -211,7 +248,7 @@ object UiUtils {
         // Add our button
         val button = LayoutInflater.from(view.context).inflate(aLayoutId, null) as Button
         // Using our special knowledge of the snackbar action button id we can hook our extra button next to it
-        view.findViewById<Button>(R.id.snackbar_action).let {
+        view.findViewById<Button>(com.google.android.material.R.id.snackbar_action).let {
             // Copy layout
             button.layoutParams = it.layoutParams
             // Copy colors
@@ -332,7 +369,9 @@ object UiUtils {
 
     fun isDark(color: Int): Boolean {
         val darkness =
-            1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
+            1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(
+                color
+            )) / 255
         return darkness >= 0.5
     }
 
@@ -341,21 +380,6 @@ object UiUtils {
         255 - Color.green(color),
         255 - Color.blue(color),
     )
-
-    fun FragmentManager.dismissAllDialogFragments() {
-        for (fragment in fragments) {
-            if (fragment is DialogFragment) {
-                fragment.dismissAllowingStateLoss()
-            }
-            fragment.childFragmentManager.dismissAllDialogFragments()
-        }
-    }
-
-    fun FragmentManager.popBackStackTill(n: Int) {
-        while (backStackEntryCount > n) {
-            popBackStackImmediate()
-        }
-    }
 
     fun nowPlayingAnim(np: ImageView, isNowPlaying: Boolean) {
         if (isNowPlaying) {
@@ -392,21 +416,45 @@ object UiUtils {
 
     fun SwipeRefreshLayout.setProgressCircleColors() {
         setColorSchemeColors(
-            MaterialColors.getColor(this, R.attr.colorPrimary),
-            MaterialColors.getColor(this, R.attr.colorSecondary)
+            MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary),
+            MaterialColors.getColor(this, com.google.android.material.R.attr.colorSecondary)
         )
         setProgressBackgroundColorSchemeColor(
             MaterialColors.getColor(
                 this,
-                R.attr.colorPrimaryContainer
+                com.google.android.material.R.attr.colorPrimaryContainer
             )
         )
+    }
+
+    fun loadSmallUserPic(
+        context: Context,
+        userSerializable: UserSerializable,
+        onResult: (Drawable) -> Unit
+    ) {
+        val initialsDrawable = InitialsDrawable(context, userSerializable)
+        val request = ImageRequest.Builder(context)
+            .data(userSerializable
+                .getWebpImageURL(ImageSize.EXTRALARGE)
+                ?.ifEmpty { null }
+                ?: initialsDrawable
+            )
+            .error(initialsDrawable) // does not apply transformation to error drawable
+            .allowHardware(false)
+            .transformations(CircleCropTransformation())
+            .target(
+                onSuccess = onResult,
+                onStart = { onResult(ContextCompat.getDrawable(context, R.drawable.vd_user)!!) },
+                onError = { onResult(it!!) }
+            )
+            .build()
+        context.imageLoader.enqueue(request)
     }
 
     fun getColoredTitle(
         context: Context,
         title: String,
-        @AttrRes colorAttr: Int = R.attr.colorPrimary
+        @AttrRes colorAttr: Int = com.google.android.material.R.attr.colorPrimary
     ) =
         SpannableString(title)
             .apply {
@@ -432,15 +480,68 @@ object UiUtils {
         val colorName = colorNamesArray[index]
 
         val colorId =
-            c.resources.getIdentifier("mdcolor_${colorName}_$colorWeight", "color", c.packageName)
+            c.resources.getIdentifier(
+                "mdcolor_${colorName}_$colorWeight",
+                "color",
+                c.packageName
+            )
         return ContextCompat.getColor(c, colorId)
+    }
+
+    // https://stackoverflow.com/a/32973351/1067596
+    private fun Context.getActivity(): Activity? {
+        var context: Context? = this
+        while (context is ContextWrapper) {
+            if (context is Activity) {
+                return context
+            }
+            context = context.baseContext
+        }
+        return null
+    }
+
+    fun View.setupInsets(
+        marginMode: Boolean = this !is RecyclerView &&
+                this !is ScrollView && this !is NestedScrollView,
+        addBottomNavHeight: Boolean = true,
+        additionalSpace: Int = 0,
+    ) {
+        ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val bottomInset = if (addBottomNavHeight)
+                view.context.resources.getDimension(R.dimen.bottom_nav_height)
+                    .toInt() + insets.bottom + insets.top
+            else
+                insets.bottom + insets.top
+
+            if (marginMode) {
+                view.updateLayoutParams {
+                    if (this is MarginLayoutParams) {
+                        leftMargin = insets.left
+                        bottomMargin = bottomInset + additionalSpace
+                        rightMargin = insets.right + additionalSpace
+                    }
+                }
+            } else {
+                view.updatePadding(
+                    left = insets.left,
+                    bottom = bottomInset + additionalSpace,
+                    right = insets.right + additionalSpace,
+                )
+            }
+
+
+            // Return CONSUMED if you don't want want the window insets to keep being
+            // passed down to descendant views.
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     fun Fragment.setTitle(@StringRes strId: Int) {
         val title = if (strId == 0)
             null
         else
-            context!!.getString(strId)
+            requireContext().getString(strId)
         setTitle(title)
     }
 
@@ -448,47 +549,27 @@ object UiUtils {
         if (isDetached || isRemoving)
             return
 
-        val activity = activity as MainActivity
-        if (str == null) { // = clear title
-            activity.binding.coordinatorMain.toolbar.title = null
-//            activity.window.navigationBarColor = lastColorMutedBlack
-        } else {
-            activity.binding.coordinatorMain.toolbar.title = str
-            activity.binding.coordinatorMain.appBar.setExpanded(expanded = false, animate = true)
+        val activity = activity as? MainActivity ?: return
+        val title = str ?: " "
+        val f = if (parentFragment is BasePagerFragment)
+            parentFragment!!
+        else
+            this
 
-            val navbarBgAnimator = ValueAnimator.ofArgb(activity.window.navigationBarColor, 0)
-            navbarBgAnimator.duration *= 2
-            navbarBgAnimator.addUpdateListener {
-                activity.window.navigationBarColor = it.animatedValue as Int
-            }
-            navbarBgAnimator.start()
-        }
-        activity.window.navigationBarColor =
-            MaterialColors.getColor(activity, android.R.attr.colorBackground, null)
-        activity.binding.coordinatorMain.ctl.setContentScrimColor(
+        if (f.arguments == null)
+            f.arguments = bundleOf(Stuff.ARG_TITLE to title)
+        else
+            f.requireArguments().putString(Stuff.ARG_TITLE, title)
+
+        activity.binding.ctl.title = title
+
+        activity.binding.ctl.setStatusBarScrimColor(
             MaterialColors.getColor(
                 activity,
                 android.R.attr.colorBackground,
                 null
             )
         )
-        activity.binding.coordinatorMain.toolbar.setArrowColors(
-            MaterialColors.getColor(
-                activity,
-                R.attr.colorPrimary,
-                null
-            ), Color.TRANSPARENT
-        )
-    }
-
-    fun Toolbar.setArrowColors(fg: Int, bg: Int) {
-        for (i in 0..childCount) {
-            val child = getChildAt(i)
-            if (child is ImageButton) {
-                (child.drawable as ShadowDrawerArrowDrawable).setColors(fg, bg)
-                break
-            }
-        }
     }
 
     fun BottomSheetDialogFragment.expandIfNeeded() {
@@ -514,7 +595,7 @@ object UiUtils {
 
         val abHeightPx = activity.resources.getDimension(R.dimen.app_bar_height)
         val targetAbHeight: Int
-        val lp = activity.binding.coordinatorMain.ctl.layoutParams
+        val lp = activity.binding.ctl.layoutParams
         val margin = 65.dp
 
         targetAbHeight = if (sHeightPx < abHeightPx + additionalHeight + margin)
@@ -522,20 +603,20 @@ object UiUtils {
         else
             activity.resources.getDimensionPixelSize(R.dimen.app_bar_height)
         if (targetAbHeight != lp.height) {
-            if (!activity.binding.coordinatorMain.appBar.isExpanded) {
-                lp.height = targetAbHeight
+//            if (!activity.binding.appBar.isExpanded) {
+            lp.height = targetAbHeight
 //                activity.app_bar.setExpanded(false, false)
-            } else {
-                val start = lp.height
-                val anim = ValueAnimator.ofInt(start, targetAbHeight)
-                anim.addUpdateListener { valueAnimator ->
-                    lp.height = valueAnimator.animatedValue as Int
-                    activity.binding.coordinatorMain.ctl.layoutParams = lp
-                }
-                anim.interpolator = DecelerateInterpolator()
-                anim.duration = 300
-                anim.start()
-            }
+//            } else {
+//                val start = lp.height
+//                val anim = ValueAnimator.ofInt(start, targetAbHeight)
+//                anim.addUpdateListener { valueAnimator ->
+//                    lp.height = valueAnimator.animatedValue as Int
+//                    activity.binding.ctl.layoutParams = lp
+//                }
+//                anim.interpolator = DecelerateInterpolator()
+//                anim.duration = 300
+//                anim.start()
+//            }
         }
     }
 

@@ -66,6 +66,11 @@
         <item quantity="one">%1$s friend</item>
         <item quantity="other">%1$s friends</item>
     </plurals>
+    <plurals name="num_pending"
+        comment="Used for pending loves, pending scrobbles"
+        >
+        <item quantity="other">%1$s pending</item>
+    </plurals>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -118,7 +123,6 @@
     <string name="state_unrecognised_artist">Unrecognised artist</string>
     <string name="tap_to_edit">(Tap to edit)</string>
     <string name="recently_scrobbled">Recently Scrobbled</string>
-    <string name="recently_loved">♥ Recently Loved</string>
     <string name="recents"
         comment="Short for recently scrobbled"
         >Recents</string>
@@ -128,7 +132,6 @@
     <string name="auto"
         comment="automatic or default setting"
         >Auto</string>
-    <string name="graph_info">… last 5 months</string>
     <string name="enabled_apps">Enabled Apps</string>
     <string name="almost_there"
         comment="Shown on the first screen after install, asking the user to complete the setup"
@@ -160,6 +163,13 @@
     <string name="grid_size">Change grid size</string>
     <string name="pinch_to_zoom">Pinch to zoom</string>
     <string name="more_info">More info</string>
+    <string name="more"
+        comment="More options menu in short"
+        >More</string>
+    <string name="learn"
+        comment="(Learn java regex syntax)"
+        >Learn</string>
+    <string name="hide">Hide</string>
     <string name="rank_change"
         comment="%1= delta change"
         >Rank change: %s</string>
@@ -265,15 +275,12 @@
     <string name="details">Details</string>
     <string name="saved_as_pending">Saved as a pending scrobble</string>
     <string name="sort">Sort</string>
-    <string name="past_scrobbles">Past scrobbles</string>
     <string name="time_jump"
         comment="Button shows scrobbles from a specific time"
         >Time jump</string>
 
     <string name="my_scrobbles">My scrobbles</string>
-    <string name="user_scrobbles" formatted="true"
-        comment="%1= username"
-        >%1$s\'s scrobbles</string>
+    <string name="their_scrobbles">Their scrobbles</string>
     <string name="listeners">Listeners</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse"
@@ -285,9 +292,6 @@
     <string name="user_loved" formatted="true"
         comment="%1= username"
         >%1$s loved this</string>
-    <string name="scrobbles_till" formatted="true"
-        comment="%1= date"
-        >Scrobbles till %1$s</string>
     <string name="from" formatted="true"
         comment="%1= country (displayed in friends popup)"
         >From %1$s</string>
@@ -307,6 +311,7 @@
     <string name="months">Months</string>
     <string name="years">Years</string>
     <string name="charts_overall">Overall</string>
+    <string name="listening_activity">Listening activity</string>
     <string name="charts_no_data">No data for this period</string>
     <string name="charts_custom"
         comment="Custom date range, but in short"
@@ -334,7 +339,6 @@
     <string name="graph_weekly">Weekly scrobble counts</string>
     <string name="graph_monthly">Monthly scrobble counts</string>
     <string name="graph_yearly">Yearly scrobble counts</string>
-    <string name="graph_scrub_msg">Times are in your timezone\nHold or scrub the graph to see the exact counts</string>
     <string name="original"
         comment="Original metadata before editing"
         >Original</string>
@@ -574,7 +578,7 @@
 
     <string name="copied">Copied!</string>
     <string name="lastfm_reauth">You need to reauthenticate in order to edit or delete scrobbles</string>
-    <string name="custom_listenbrainz">Custom Listenbrainz server</string>
+    <string name="custom_listenbrainz">Custom Listenbrainz</string>
     <string name="failed_encode_url">Failed to encode URL</string>
     <string name="check_nls" formatted="true"
         comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings"
@@ -612,8 +616,6 @@
         comment="For pending scrobbles"
         >Submitting a batch</string>
     <string name="webview_error">The page failed to load (is your internet working?)</string>
-    <string name="navigation_drawer_open">Open navigation drawer or go back</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="graph">Line chart</string>
     <string name="cleared_disabled_apps">Cleared disabled apps</string>
 

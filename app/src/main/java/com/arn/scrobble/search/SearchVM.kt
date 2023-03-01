@@ -21,7 +21,7 @@ class SearchVM(app: Application) : AndroidViewModel(app) {
 
     fun loadSearches(term: String, searchType: SearchResultsAdapter.SearchType) {
         searchJob?.cancel()
-        searchJob = LFMRequester(getApplication(), viewModelScope, searchResults).apply {
+        searchJob = LFMRequester(viewModelScope, searchResults).apply {
             when (searchType) {
                 SearchResultsAdapter.SearchType.GLOBAL -> getSearches(term)
                 SearchResultsAdapter.SearchType.LOCAL -> getLocalSearches(term)
@@ -32,7 +32,7 @@ class SearchVM(app: Application) : AndroidViewModel(app) {
     fun fullIndex() {
         if (indexingProgress.value == null) {
             indexingProgress.value = 0.0
-            LFMRequester(getApplication(), viewModelScope, indexingProgress, indexingError)
+            LFMRequester(viewModelScope, indexingProgress, indexingError)
                 .runFullIndex()
         }
     }
@@ -40,7 +40,7 @@ class SearchVM(app: Application) : AndroidViewModel(app) {
     fun deltaIndex() {
         if (indexingProgress.value == null) {
             indexingProgress.value = 0.0
-            LFMRequester(getApplication(), viewModelScope, indexingProgress, indexingError)
+            LFMRequester(viewModelScope, indexingProgress, indexingError)
                 .runDeltaIndex()
         }
     }

@@ -17,9 +17,4 @@
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_share"
         android:title="@string/share_this_song"/>
-    <item
-        android:id="@+id/menu_calendar"
-        app:iconTint="?android:colorForeground"
-        android:icon="@drawable/vd_calendar"
-        android:title="@string/past_scrobbles"/>
 </menu>

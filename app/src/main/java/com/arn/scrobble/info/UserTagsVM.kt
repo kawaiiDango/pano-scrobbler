@@ -15,12 +15,12 @@ class UserTagsVM(app: Application) : AndroidViewModel(app) {
     val tags = MutableLiveData<MutableSet<String>>()
 
     fun loadTags() {
-        LFMRequester(getApplication(), viewModelScope, tags).getUserTagsForEntry(entry, historyPref)
+        LFMRequester(viewModelScope, tags).getUserTagsForEntry(entry, historyPref)
     }
 
     fun deleteTag(tag: String) {
         tags.value = tags.value?.filter { it != tag }?.toMutableSet()
-        LFMRequester(getApplication(), viewModelScope).deleteUserTagsForEntry(entry, tag)
+        LFMRequester(viewModelScope).deleteUserTagsForEntry(entry, tag)
     }
 
     fun addTag(newTags: String) {
@@ -29,7 +29,7 @@ class UserTagsVM(app: Application) : AndroidViewModel(app) {
         // ignore play store test string
         if (newTags == "text") return
 
-        LFMRequester(getApplication(), viewModelScope).addUserTagsForEntry(entry, newTags)
+        LFMRequester(viewModelScope).addUserTagsForEntry(entry, newTags)
     }
 
     fun splitTags(tags: String) = tags.split(",").map { it.trim() }

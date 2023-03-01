@@ -8,12 +8,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.SslErrorHandler
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.databinding.ContentWebviewBinding
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.ui.UiUtils.startFadeLoop
 import com.arn.scrobble.ui.UiUtils.toast
 import okhttp3.Cookie
@@ -63,9 +69,9 @@ class WebViewFragment : Fragment() {
                 binding.webview.clearAnimation()
 
                 try {
-                    parentFragmentManager.popBackStack()
+                    findNavController().popBackStack()
                 } catch (e: IllegalStateException) {
-                    view.context!!.toast(R.string.press_back)
+                    view.context.toast(R.string.press_back)
                 }
             }
         }
@@ -80,10 +86,6 @@ class WebViewFragment : Fragment() {
             }
         }
         */
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.loading)
-    }
 
     override fun onDestroyView() {
         binding.webview.clearCache(true)
@@ -127,21 +129,20 @@ class WebViewFragment : Fragment() {
                                 cookies.add(okCookie)
                             }
                         }
-                    val unscrobbler = LastfmUnscrobbler(context)
+                    val unscrobbler = LastfmUnscrobbler()
                     unscrobbler.putCookies(httpUrl, cookies)
                 }
 
-                LFMRequester(context!!, viewModel.viewModelScope, viewModel.callbackProcessedLd)
-                    .doAuth(R.string.lastfm, token)
+                LFMRequester(viewModel.viewModelScope, viewModel.callbackProcessedLd)
+                    .doAuth(requireArguments().getSingle<UserAccountTemp>()!!.apply { authKey = token })
             }
-            "/librefm" -> {
-                LFMRequester(context!!, viewModel.viewModelScope, viewModel.callbackProcessedLd)
-                    .doAuth(R.string.librefm, token)
-            }
+
+            "/librefm",
             "/gnufm" -> {
-                LFMRequester(context!!, viewModel.viewModelScope, viewModel.callbackProcessedLd)
-                    .doAuth(R.string.gnufm, token)
+                LFMRequester(viewModel.viewModelScope, viewModel.callbackProcessedLd)
+                    .doAuth(requireArguments().getSingle<UserAccountTemp>()!!.apply { authKey = token })
             }
+
             else -> {
                 return false
             }
@@ -165,9 +166,9 @@ class WebViewFragment : Fragment() {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 view.context.startActivity(intent)
                 try {
-                    parentFragmentManager.popBackStack()
+                    findNavController().popBackStack()
                 } catch (e: IllegalStateException) {
-                    view.context!!.toast(R.string.press_back)
+                    view.context.toast(R.string.press_back)
                 }
                 return true
             }
@@ -205,7 +206,7 @@ class WebViewFragment : Fragment() {
         }
 
         override fun onPageFinished(view: WebView, url: String?) {
-            (activity as? MainActivity)?.binding?.coordinatorMain?.toolbar?.title = view.title
+            (activity as? MainActivity)?.binding?.toolbar?.title = view.title
         }
 
         private fun showErrorMessage(text: String) {

@@ -18,7 +18,7 @@ class RandomVM(app: Application) : AndroidViewModel(app) {
     private var totalArtists = -1
     private var totalAlbums = -1
     var isLoading = false
-    var timePeriod: TimePeriod = TimePeriod(app, Period.OVERALL)
+    var timePeriod: TimePeriod = TimePeriod(Period.OVERALL)
         set(value) {
             field = value
             resetTotals()
@@ -45,12 +45,13 @@ class RandomVM(app: Application) : AndroidViewModel(app) {
     }
 
     fun loadRandom(type: Int) {
-        LFMRequester(getApplication(), viewModelScope, liveData = data, errorLiveData = error).getRandom(
-            type,
-            getTotal(type),
-            username,
-            timePeriod
-        )
+        LFMRequester(viewModelScope, liveData = data, errorLiveData = error)
+            .getRandom(
+                type,
+                getTotal(type),
+                username,
+                timePeriod
+            )
     }
 
     private fun resetTotals() {

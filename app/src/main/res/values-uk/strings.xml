@@ -125,11 +125,9 @@
     <string name="state_unrecognised_artist">Нерозпізнаний виконавець</string>
     <string name="tap_to_edit">(Натисніть для редагування)</string>
     <string name="recently_scrobbled">Нещодавно Заскроблені</string>
-    <string name="recently_loved">♥ Нещодавно Вподобані</string>
     <string name="recents" comment="Short for recently scrobbled">Останні</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Вперше заскорблено %1$s</string>
     <string name="auto" comment="automatic or default setting">Автоматично</string>
-    <string name="graph_info">… Останні 5 місяців</string>
     <string name="enabled_apps">Увімкнені додатки</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Майже тут…</string>
     <string name="music_players">Музичні програвачі</string>
@@ -219,16 +217,13 @@
     <string name="details">Деталі</string>
     <string name="saved_as_pending">Збережено як відкладений скробл</string>
     <string name="sort">Сортувати</string>
-    <string name="past_scrobbles">Останні скробли</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Стрибок у часі</string>
     <string name="my_scrobbles">Мої скробли</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s\'s скробли</string>
     <string name="listeners">Слухачі</string>
     <string name="scrobbles">Скробли</string>
     <string name="collapse" comment="(view only a few items)">Згорнути</string>
     <string name="expand" comment="(view all items)">Розгорнути</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s вподобав це</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Скроблів по %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">З %1$s</string>
     <string name="not_found" comment="Shown in search">Не знайдено</string>
     <string name="save" comment="saves a file">Зберегти</string>
@@ -254,7 +249,6 @@
     <string name="graph_weekly">Щотижневі скробли</string>
     <string name="graph_monthly">Щомісячні скробли</string>
     <string name="graph_yearly">Щорічні скробли</string>
-    <string name="graph_scrub_msg">Час у вашому часовому поясі\nУтримуйте або прокрутіть графік, щоб побачити точну кількість</string>
     <string name="original" comment="Original metadata before editing">Оригінал</string>
     <string name="corrected" comment="Corrected metadata after editing">Виправлено</string>
     <string name="tag" comment="last.fm tag">Мітка</string>
@@ -398,7 +392,6 @@
     <string name="pref_intents">Інтенти для Tasker та інших додатків</string>
     <string name="copied">Скопійовано!</string>
     <string name="lastfm_reauth">Вам потрібно перезапустити автентифікацію для редагування або видалення скробблів</string>
-    <string name="custom_listenbrainz">Власний сервер Listenbrainz</string>
     <string name="failed_encode_url">Не вдалося застосувати URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Перевірити %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Спеціальний доступ до програми &gt; Повідомлень &gt; %1$s</string>
@@ -424,8 +417,6 @@
     <string name="submitting_loves" formatted="true">Відправка вподобайок, %1$d залишилось</string>
     <string name="pending_batch" comment="For pending scrobbles">Відправка пакета</string>
     <string name="webview_error">Не вдалося завантажити сторінку (ваш інтернет працює?)</string>
-    <string name="navigation_drawer_open">Відкрити панель навігації або повернутися назад</string>
-    <string name="navigation_drawer_close">Закрити меню навігації</string>
     <string name="graph">Лінійний графік</string>
     <string name="cleared_disabled_apps">Видалені вимкнені програми</string>
     <string name="fix_it_title">Можливі виправлення</string>

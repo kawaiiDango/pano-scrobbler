@@ -99,11 +99,9 @@
     <string name="state_unrecognised_artist">Artista no reconocido</string>
     <string name="tap_to_edit">(Toca para editar)</string>
     <string name="recently_scrobbled">Recientemente Scrobbled</string>
-    <string name="recently_loved">♥ Favoritos recientes</string>
     <string name="recents" comment="Short for recently scrobbled">Recientes</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primer scrobble el %1$s</string>
     <string name="auto" comment="automatic or default setting">Automático</string>
-    <string name="graph_info">… últimos 5 meses</string>
     <string name="enabled_apps">Aplicaciones habilitadas</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Casi listos…</string>
     <string name="music_players">Reproductores de música</string>
@@ -194,16 +192,13 @@
     <string name="details">Detalles</string>
     <string name="saved_as_pending">Guardado como scrobble pendiente</string>
     <string name="sort">Ordenar</string>
-    <string name="past_scrobbles">Scrobbles pasados</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto en el tiempo</string>
     <string name="my_scrobbles">Mis scrobbles</string>
-    <string name="user_scrobbles" formatted="true" comment="%1= username">%1$s scrobbles</string>
     <string name="listeners">Oyentes</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Colapso</string>
     <string name="expand" comment="(view all items)">Expandir</string>
     <string name="user_loved" formatted="true" comment="%1= username">A %1$s le gustó esto</string>
-    <string name="scrobbles_till" formatted="true" comment="%1= date">Scrobbles hasta %1$s</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De %1$s</string>
     <string name="not_found" comment="Shown in search">No encontrado</string>
     <string name="save" comment="saves a file">Guardar</string>
@@ -230,7 +225,6 @@
     <string name="graph_weekly">Conteo semanal de scrobble</string>
     <string name="graph_monthly">Conteo mensual de scrobbles</string>
     <string name="graph_yearly">Conteo anual de scrobble</string>
-    <string name="graph_scrub_msg">Las horas están en su zona horaria \nMantenga presionado o suelte la gráfica para ver las cuentas exactas</string>
     <string name="original" comment="Original metadata before editing">Original</string>
     <string name="corrected" comment="Corrected metadata after editing">Corregido</string>
     <string name="tag" comment="last.fm tag">Etiqueta</string>
@@ -381,7 +375,6 @@
     <string name="pref_intents">Intentos para Tasker etc</string>
     <string name="copied">¡Copiado!</string>
     <string name="lastfm_reauth">Necesitas volver a autenticarte para editar o eliminar scrobbles</string>
-    <string name="custom_listenbrainz">Servidor personalizado de Listenbrainz</string>
     <string name="failed_encode_url">Fallo al codificar URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Comprobar %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Acceso especial a la aplicación &gt; Acceso a notificaciones &gt; %1$s</string>
@@ -407,8 +400,6 @@
     <string name="submitting_loves" formatted="true">Enviando favoritos, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">Enviar un lote</string>
     <string name="webview_error">No se pudo cargar la página (¿Está funcionando tu internet?)</string>
-    <string name="navigation_drawer_open">Abrir el cajón de navegación o volver</string>
-    <string name="navigation_drawer_close">Cerrar el cajón de navegación</string>
     <string name="graph">Gráfico de líneas</string>
     <string name="cleared_disabled_apps">Limpiar aplicaciones desactivadas</string>
     <string name="fix_it_title">Posibles soluciones</string>

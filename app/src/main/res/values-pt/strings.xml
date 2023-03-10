@@ -64,6 +64,10 @@
         <item quantity="one">%1$s amigo</item>
         <item quantity="other">%1$s amigos</item>
     </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s pendente</item>
+        <item quantity="other">%1$s pendentes</item>
+    </plurals>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="reset">Redefinir</string>
@@ -121,6 +125,9 @@
     <string name="grid_size">Alterar tamanho da grade</string>
     <string name="pinch_to_zoom">Aperte para ampliar</string>
     <string name="more_info">Mais informação</string>
+    <string name="more" comment="More options menu in short">Mais</string>
+    <string name="learn" comment="(Learn java regex syntax)">Saber mais</string>
+    <string name="hide">Ocultar</string>
     <string name="rank_change" comment="%1= delta change">Alteração na classificação: %s</string>
     <string name="rank_change_no_change">Sem alteração</string>
     <string name="rank_change_new">Sem registo de scrobbles no período anterior</string>
@@ -375,6 +382,7 @@
     <string name="pref_intents">Intenções para Tasker, etc</string>
     <string name="copied">Copiado!</string>
     <string name="lastfm_reauth">Precisa de reiniciar sessão para editar ou apagar scrobbles</string>
+    <string name="custom_listenbrainz">Listenbrainz personalizado</string>
     <string name="failed_encode_url">Falha na codificação de URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Verificar %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Acesso especial à aplicação &gt; Acesso às Notificações &gt; %1$s</string>

@@ -37,7 +37,7 @@
 
     <application
         android:name=".App"
-        android:allowBackup="false"
+        android:allowBackup="true"
         android:banner="@drawable/tv_banner"
         android:enableOnBackInvokedCallback="true"
         android:icon="@drawable/ic_launcher"
@@ -135,7 +135,6 @@
             android:launchMode="singleInstancePerTask"
             android:excludeFromRecents="true"
             android:exported="false"
-            android:label="@string/edit"
             android:theme="@style/AppThemeDialog"
             android:windowSoftInputMode="adjustPan" />
 

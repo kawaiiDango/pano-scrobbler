@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:constraint_referenced_ids="features_popularity_container, features_release_date,features_duration, features_loudness, features_key, features_bpm, "
+        app:constraint_referenced_ids="features_popularity_container, features_release_date, features_loudness, features_key, features_bpm, "
         app:flow_verticalGap="8dp"
         app:flow_wrapMode="chain2"
         app:flow_firstHorizontalBias="1"
@@ -92,17 +92,6 @@
         app:drawableStartCompat="@drawable/vd_metronome"
         app:drawableTint="?colorSecondary"
         tools:text="120 bpm • 4/4" />
-
-    <TextView
-        android:id="@+id/features_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawablePadding="8dp"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="8dp"
-        app:drawableStartCompat="@drawable/vd_timer"
-        app:drawableTint="?colorSecondary"
-        tools:text="3:50" />
 
     <TextView
         android:id="@+id/features_loudness"

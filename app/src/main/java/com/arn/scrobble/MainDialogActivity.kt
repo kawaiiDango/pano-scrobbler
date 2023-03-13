@@ -1,17 +1,20 @@
 package com.arn.scrobble
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
+import com.arn.scrobble.Stuff.myHash
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
+import java.util.Objects
 
 class MainDialogActivity : AppCompatActivity() {
     private val billingViewModel by viewModels<BillingViewModel>()
@@ -28,23 +31,22 @@ class MainDialogActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
-        activityViewModel.pushUser(Scrobblables.current?.userAccount?.user ?: return)
-
-        val graph =
-            navHostFragment.navController.navInflater.inflate(R.navigation.nav_graph_dialog_activity)
-        navHostFragment.navController.setGraph(graph, null)
+        activityViewModel.currentUser = Scrobblables.currentScrobblableUser ?: return
 
         navHostFragment.navController.addOnDestinationChangedListener { navController, navDestination, args ->
-            if (activityViewModel.prevDestinationId != null && navDestination.id == R.id.emptyFragment)
+            if (activityViewModel.prevDestinationId != null && navDestination.id == R.id.emptyDialogFragment)
                 finish()
             activityViewModel.prevDestinationId = navDestination.id
         }
 
-        // from widget
-        if (intent.getBooleanExtra(Stuff.ARG_INFO, false)
-            && navHostFragment.navController.currentDestination?.id != R.id.infoFragment
-        )
-            navHostFragment.navController.navigate(R.id.infoFragment, intent.extras)
+        // navigate
+        val destinationId = intent.getIntExtra(ARG_DESTINATION, 0)
+        if (destinationId != 0) {
+            navHostFragment.navController.navigate(
+                destinationId,
+                intent.getBundleExtra(ARG_NAV_ARGS)
+            )
+        }
     }
 
     override fun attachBaseContext(newBase: Context?) {
@@ -52,9 +54,30 @@ class MainDialogActivity : AppCompatActivity() {
         setLocaleCompat()
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        findNavController(R.id.nav_host_fragment).handleDeepLink(intent)
+    companion object {
+        const val ARG_DESTINATION = "@destination"
+        const val ARG_NAV_ARGS = "@nav_args"
+
+        private fun createDestinationIntent(@IdRes destinationId: Int, args: Bundle) =
+            Intent(App.context, MainDialogActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                putExtra(ARG_DESTINATION, destinationId)
+                putExtra(ARG_NAV_ARGS, args)
+            }
+
+        // use this instead of NavDeepLinkBuilder to avoid clearing the current task and appear floating
+        fun createDestinationPendingIntent(
+            @IdRes destinationId: Int,
+            args: Bundle,
+            mutable: Boolean = false
+        ) =
+            PendingIntent.getActivity(
+                App.context,
+                Objects.hash(args.myHash(), destinationId),
+                createDestinationIntent(destinationId, args),
+                if (mutable) Stuff.updateCurrentOrMutable else Stuff.updateCurrentOrImmutable
+            )!!
+
     }
 
 }

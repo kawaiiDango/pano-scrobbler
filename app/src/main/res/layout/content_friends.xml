@@ -31,9 +31,10 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:layoutAnimation="@anim/layout_animation_slide_up"
-
             android:paddingStart="8dp"
             android:paddingTop="8dp"
-            tools:listitem="@layout/grid_item_friend" />
+            android:visibility="invisible"
+            tools:listitem="@layout/grid_item_friend"
+            tools:visibility="visible" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

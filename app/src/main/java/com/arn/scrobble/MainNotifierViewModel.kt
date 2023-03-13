@@ -21,7 +21,6 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
 
     private val prefs = MainPrefs(application)
     var prevDestinationId: Int? = null
-    var prevBackQueueSize = 0
     private var lastDrawerDataRefreshTime = 0L
 
     val drawerData by lazy {
@@ -37,9 +36,16 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
 
     val editData by lazy { LiveEvent<Track>() }
 
+    lateinit var currentUser: UserSerializable
+
+    private var prevDrawerUser: UserSerializable? = null
+
     fun loadCurrentUserDrawerData() {
-        if (System.currentTimeMillis() - lastDrawerDataRefreshTime > Stuff.RECENTS_REFRESH_INTERVAL)
-            viewModelScope.launch(LFMRequester.ExceptionNotifier(timberLog = false)) {
+        if (
+            prevDrawerUser != currentUser ||
+            System.currentTimeMillis() - lastDrawerDataRefreshTime > Stuff.RECENTS_REFRESH_INTERVAL
+        )
+            viewModelScope.launch(LFMRequester.ExceptionNotifier()) {
                 drawerData.value = withContext(Dispatchers.IO) {
                     Scrobblables.current?.loadDrawerData(currentUser.name)
                 }
@@ -47,34 +53,13 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
             }
     }
 
-    private val userStack by lazy {
-        ArrayDeque<UserSerializable>().also { deq ->
-            Scrobblables.current?.userAccount
-                ?.user
-                ?.let { deq.addFirst(it) }
-        }
-    }
-
     override fun onCleared() {
         if (!PendingScrService.mightBeRunning)
             PanoDb.destroyInstance()
     }
 
-    var lastNavHeaderRefreshTime = 0L
-
-    fun pushUser(user: UserSerializable) {
-        userStack.addFirst(user)
-    }
-
-    fun popUser() = userStack.removeFirst()
-
-    val currentUser get() = userStack.first()
-
     val userIsSelf
-        get() = userStack.firstOrNull() == Scrobblables.current?.userAccount?.user
-
-    val userStackDepth
-        get() = userStack.size
+        get() = ::currentUser.isInitialized && currentUser == Scrobblables.currentScrobblableUser
 
     val destroyEventPending = Semaphore(1)
 }

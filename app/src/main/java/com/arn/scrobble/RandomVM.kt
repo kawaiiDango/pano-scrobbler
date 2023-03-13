@@ -1,15 +1,14 @@
 package com.arn.scrobble
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.charts.TimePeriod
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Period
 
 
-class RandomVM(app: Application) : AndroidViewModel(app) {
+class RandomVM : ViewModel() {
     val data = MutableLiveData<RandomMusicData>()
     val error = MutableLiveData<Throwable>()
     var username: String? = null

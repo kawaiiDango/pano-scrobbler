@@ -2,11 +2,9 @@ package com.arn.scrobble.scrobbleable
 
 import com.arn.scrobble.App
 import com.arn.scrobble.DrawerData
-import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
@@ -133,24 +131,6 @@ open class GnuFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount
                     pr.pageResults.remove(it)
             }
 
-            val hasPendingScrobbles by lazy {
-                val db = PanoDb.db
-                db.getPendingScrobblesDao().count > 0 || db.getPendingLovesDao().count > 0
-            }
-
-            // do deltaindex
-            if (!_session.result.isFromCache && to != -1L &&
-                page == 1 &&
-                usernamep == null &&
-                userAccount.type == AccountType.LASTFM &&
-                !hasPendingScrobbles
-            ) {
-                val firstTrack = pr?.pageResults?.find { it.playedWhen != null }
-                val indexedScrobbleTime = MainPrefs(App.context).lastMaxIndexedScrobbleTime
-                if (firstTrack != null && indexedScrobbleTime != null && firstTrack.playedWhen.time > indexedScrobbleTime)
-                    LFMRequester(this).runDeltaIndex(pr)
-            }
-
             pr.isStale =
                 _session.result.isFromCache && _session.cacheStrategy == Caller.CacheStrategy.CACHE_FIRST
             return@coroutineScope pr
@@ -193,12 +173,11 @@ open class GnuFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount
         return PaginatedResult<User>(1, 1, 0, listOf())
     }
 
-    override suspend fun loadDrawerData(usernamep: String?): DrawerData? {
+    override suspend fun loadDrawerData(username: String): DrawerData? {
         Stuff.log(this::loadDrawerData.name)
 
-        val username = usernamep ?: userAccount.user.name
         val user = User.getInfo(username, session)
-        val isSelf = usernamep == null
+        val isSelf = username == userAccount.user.name
         val prefs = MainPrefs(App.context)
 
         val cal = Calendar.getInstance()

@@ -3,7 +3,9 @@ package com.arn.scrobble.db
 import androidx.room.*
 import com.arn.scrobble.App
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
+import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
+import com.arn.scrobble.db.CachedArtistsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.Track
@@ -33,47 +35,6 @@ interface CachedTracksDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(entry: CachedTrack)
 
-    fun deltaUpdate(track: CachedTrack, deltaCount: Int, dirty: DirtyUpdate = DirtyUpdate.CLEAN) {
-        val foundTrack = findExact(track.artistName, track.trackName) ?: track
-
-        if (dirty == DirtyUpdate.DIRTY_ABSOLUTE && foundTrack.userPlayCount == track.userPlayCount && foundTrack.isLoved == track.isLoved)
-            return
-
-        val userPlayCount =
-            (foundTrack.userPlayCount.coerceAtLeast(0) + deltaCount).coerceAtLeast(0)
-        val userPlayCountDirty = (
-                (if (foundTrack.userPlayCountDirty == -1) foundTrack.userPlayCount else foundTrack.userPlayCountDirty)
-                    .coerceAtLeast(0)
-                        + deltaCount
-                ).coerceAtLeast(0)
-
-        when (dirty) {
-            DirtyUpdate.BOTH -> {
-                foundTrack.userPlayCountDirty = userPlayCount
-                foundTrack.userPlayCount = userPlayCountDirty
-            }
-
-            DirtyUpdate.DIRTY -> {
-                foundTrack.userPlayCountDirty = userPlayCountDirty
-            }
-
-            DirtyUpdate.DIRTY_ABSOLUTE -> {
-                foundTrack.userPlayCountDirty = track.userPlayCount
-            }
-
-            DirtyUpdate.CLEAN -> {
-                foundTrack.userPlayCount = userPlayCount
-                foundTrack.userPlayCountDirty = -1
-            }
-        }
-
-        if (track.lastPlayed > -1) {
-            foundTrack.lastPlayed = track.lastPlayed
-            foundTrack.isLoved = track.isLoved
-        }
-
-        insert(listOf(foundTrack))
-    }
 
     @Delete
     fun delete(entry: CachedTrack)
@@ -82,6 +43,52 @@ interface CachedTracksDao {
     fun nuke()
 
     companion object {
+
+        fun CachedTracksDao.deltaUpdate(
+            track: CachedTrack,
+            deltaCount: Int,
+            dirty: DirtyUpdate = DirtyUpdate.CLEAN
+        ) {
+            val foundTrack = findExact(track.artistName, track.trackName) ?: track
+
+            if (dirty == DirtyUpdate.DIRTY_ABSOLUTE && foundTrack.userPlayCount == track.userPlayCount && foundTrack.isLoved == track.isLoved)
+                return
+
+            val userPlayCount =
+                (foundTrack.userPlayCount.coerceAtLeast(0) + deltaCount).coerceAtLeast(0)
+            val userPlayCountDirty = (
+                    (if (foundTrack.userPlayCountDirty == -1) foundTrack.userPlayCount else foundTrack.userPlayCountDirty)
+                        .coerceAtLeast(0)
+                            + deltaCount
+                    ).coerceAtLeast(0)
+
+            when (dirty) {
+                DirtyUpdate.BOTH -> {
+                    foundTrack.userPlayCountDirty = userPlayCount
+                    foundTrack.userPlayCount = userPlayCountDirty
+                }
+
+                DirtyUpdate.DIRTY -> {
+                    foundTrack.userPlayCountDirty = userPlayCountDirty
+                }
+
+                DirtyUpdate.DIRTY_ABSOLUTE -> {
+                    foundTrack.userPlayCountDirty = track.userPlayCount
+                }
+
+                DirtyUpdate.CLEAN -> {
+                    foundTrack.userPlayCount = userPlayCount
+                    foundTrack.userPlayCountDirty = -1
+                }
+            }
+
+            if (track.lastPlayed > -1) {
+                foundTrack.lastPlayed = track.lastPlayed
+                foundTrack.isLoved = track.isLoved
+            }
+
+            insert(listOf(foundTrack))
+        }
 
         suspend fun deltaUpdateAll(
             track: Track,

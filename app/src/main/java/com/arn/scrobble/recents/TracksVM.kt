@@ -1,11 +1,13 @@
 package com.arn.scrobble.recents
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.App
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.SectionedVirtualList
@@ -19,7 +21,7 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 
 
-class TracksVM(application: Application) : AndroidViewModel(application) {
+class TracksVM : ViewModel() {
     val tracksReceiver by lazy { LiveEvent<PaginatedResult<Track>>() }
     val firstScrobbledDate by lazy { MutableLiveData<Date>() }
     val tracks by lazy { mutableListOf<Track>() }
@@ -69,11 +71,41 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
                 )
             }
             val _loadedCached = loadedCached
-            loadedCached = true
+            if (!loadedCached) {
+                selectedPos = 0
+                loadedCached = true
+            }
+
+            // time jump pg 1 always resets selection
+            if (toTime != null && page == 1)
+                selectedPos = 0
+
             tracksReceiver.value = pr
 
             if (pr.isStale && !_loadedCached) {
                 loadRecents(page)
+            } else {
+                // do deltaindex for lastfm
+
+
+                if (toTime == null &&
+                    page == 1 &&
+                    username == null &&
+                    Scrobblables.current is Lastfm
+                ) {
+                    val firstTrack = pr.pageResults?.find { it.playedWhen != null }
+                    val indexedScrobbleTime = MainPrefs(App.context).lastMaxIndexedScrobbleTime
+                    val hasPendingScrobbles =
+                        pendingScrobblesLd.value!!.isNotEmpty() || pendingLovesLd.value!!.isNotEmpty()
+                    if (firstTrack != null &&
+                        indexedScrobbleTime != null &&
+                        firstTrack.playedWhen.time > indexedScrobbleTime &&
+                        !hasPendingScrobbles
+                    ) {
+                        LFMRequester(this).runDeltaIndex(pr)
+                    }
+                }
+
             }
         }
     }
@@ -90,12 +122,18 @@ class TracksVM(application: Application) : AndroidViewModel(application) {
                     cached = !loadedCached,
                 )
             }
+
+            val _loadedCached = loadedCached
+
+            if (!loadedCached) {
+                selectedPos = 0
+                loadedCached = true
+            }
             tracksReceiver.value = pr
-            if (pr.isStale) {
+            if (pr.isStale && !_loadedCached) {
                 loadLoves(page)
             }
         }
-        loadedCached = true
     }
 
     fun loadTrackScrobbles(track: Track, page: Int) {

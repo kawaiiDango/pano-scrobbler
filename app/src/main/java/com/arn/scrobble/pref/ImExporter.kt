@@ -1,15 +1,16 @@
 package com.arn.scrobble.pref
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.util.JsonReader
 import android.util.JsonToken
 import android.util.JsonWriter
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.ScrobbleSource
@@ -26,7 +27,7 @@ class ImExporter : Closeable {
     private var writer: OutputStreamWriter? = null
     private var reader: InputStreamReader? = null
     private var pfd: ParcelFileDescriptor? = null
-    private var context: Context? = null
+    private val context = App.context
 
     // DO not store longs, as they cannot be determined by JsonToken
     private val prefsToConsider = setOf(
@@ -59,7 +60,7 @@ class ImExporter : Closeable {
         MainPrefs.PREF_BLOCKED_PACKAGES,
     )
 
-    fun setOutputUri(context: Context, uri: Uri) {
+    fun setOutputUri(uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "w")
         if (pfd == null) {
             Stuff.log("pfd was null")
@@ -67,10 +68,9 @@ class ImExporter : Closeable {
         }
         val fos = FileOutputStream(pfd!!.fileDescriptor)
         writer = OutputStreamWriter(fos, "UTF-8")
-        this.context = context
     }
 
-    fun setInputUri(context: Context, uri: Uri) {
+    fun setInputUri(uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "r")
         if (pfd == null) {
             Stuff.log("pfd was null")
@@ -78,14 +78,12 @@ class ImExporter : Closeable {
         }
         val fis = FileInputStream(pfd!!.fileDescriptor)
         reader = InputStreamReader(fis, "UTF-8")
-        this.context = context
     }
 
     fun export(): Boolean {
-        if (context == null || writer == null) {
+        if (writer == null) {
             throw IllegalArgumentException("ImExporter not inited")
         }
-        val context = context!!
         var written = false
         try {
             JsonWriter(writer!!).use {
@@ -155,10 +153,9 @@ class ImExporter : Closeable {
     }
 
     fun exportPrivateData(): Boolean {
-        if (context == null || writer == null) {
+        if (writer == null) {
             throw IllegalArgumentException("ImExporter not inited")
         }
-        val context = context!!
         var written = false
         try {
             JsonWriter(writer!!).use {
@@ -183,10 +180,9 @@ class ImExporter : Closeable {
     }
 
     fun import(editsMode: Int, settings: Boolean): Boolean {
-        if (context == null || reader == null) {
+        if (reader == null) {
             throw IllegalArgumentException("ImExporter not inited")
         }
-        val context = context!!
         try {
             JsonReader(reader).use {
                 it.apply {
@@ -376,7 +372,6 @@ class ImExporter : Closeable {
     }
 
     override fun close() {
-        context = null
         try {
             writer?.close()
         } catch (e: Exception) {

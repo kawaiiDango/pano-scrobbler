@@ -1,8 +1,7 @@
 package com.arn.scrobble.search
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.ui.SectionedVirtualList
@@ -12,7 +11,7 @@ import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
 
 
-class SearchVM(app: Application) : AndroidViewModel(app) {
+class SearchVM : ViewModel() {
     val searchResults by lazy { MutableLiveData<SearchResults>() }
     val virtualList = SectionedVirtualList()
     val indexingProgress by lazy { MutableLiveData<Double>(null) }

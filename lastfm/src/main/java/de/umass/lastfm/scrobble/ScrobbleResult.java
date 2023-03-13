@@ -65,7 +65,7 @@ public class ScrobbleResult extends Result {
             sr.status = Status.OK;
         else {
             sr.status = Status.FAILED;
-            if (body.equals(""))
+            if (body == null || body.isEmpty())
                 sr.errorMessage = statusMsg;
             else
                 sr.errorMessage = body;

@@ -77,7 +77,9 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
     fun updateHeight(large: Boolean) {
         val ctl = getChildAt(0) as CollapsingToolbarLayout
         val ctlHeight = if (large) {
-            if (UiUtils.isTabletUi)
+            if (UiUtils.isTabletUi && (parent as CoordinatorLayout).height <
+                1.5 * context.resources.getDimensionPixelSize(R.dimen.app_bar_height)
+            )
                 context.getDimenFromAttr(com.google.android.material.R.attr.collapsingToolbarLayoutMediumSize)
             else
                 context.resources.getDimensionPixelSize(R.dimen.app_bar_height)

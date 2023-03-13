@@ -608,11 +608,16 @@ class PrefFragment : PreferenceFragmentCompat() {
 
                         setAuthLabel(it, type)
 
-                        if (currentAccount != prevAccount && currentAccount != null) {
-                            mainNotifierViewModel.popUser()
-                            mainNotifierViewModel.pushUser(Scrobblables.current!!.userAccount.user)
-                            findNavController().popBackStack(R.id.myHomePagerFragment, true)
-                            findNavController().navigate(R.id.myHomePagerFragment)
+                        if (currentAccount == null) {
+                            findNavController().apply {
+                                popBackStack(R.id.myHomePagerFragment, true)
+                                navigate(R.id.onboardingFragment)
+                            }
+                        } else if(currentAccount != prevAccount) {
+                            findNavController().apply {
+                                popBackStack(R.id.myHomePagerFragment, true)
+                                navigate(R.id.myHomePagerFragment)
+                            }
                         }
                     }
 
@@ -626,7 +631,7 @@ class PrefFragment : PreferenceFragmentCompat() {
         val currentUri = data.data ?: return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val exported = ImExporter().use {
-                it.setOutputUri(requireContext(), currentUri)
+                it.setOutputUri(currentUri)
                 if (privateData)
                     it.exportPrivateData()
                 else
@@ -660,7 +665,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                     return@setPositiveButton
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val imported = ImExporter().use {
-                        it.setInputUri(requireContext(), currentUri)
+                        it.setInputUri(currentUri)
                         it.import(editsMode, settingsMode)
                     }
                     withContext(Dispatchers.Main) {
@@ -685,8 +690,6 @@ class PrefFragment : PreferenceFragmentCompat() {
 
     override fun onStart() {
         super.onStart()
-
-//        listView.isNestedScrollingEnabled = false
 
         setAuthLabel("listenbrainz", AccountType.LISTENBRAINZ)
         setAuthLabel("lb", AccountType.CUSTOM_LISTENBRAINZ)

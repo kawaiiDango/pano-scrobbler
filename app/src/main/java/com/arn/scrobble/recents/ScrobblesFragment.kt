@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Parcel
@@ -46,6 +45,7 @@ import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
@@ -64,7 +64,6 @@ import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -93,16 +92,10 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         get() = _binding!!
     private var lastRefreshTime = System.currentTimeMillis()
     private val viewModel by viewModels<TracksVM>()
+    private val billingViewModel by activityViewModels<BillingViewModel>()
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var animSet: AnimatorSet? = null
     private val cal by lazy { Calendar.getInstance() }
-    private val username: String?
-        get() {
-            return if (activityViewModel.userIsSelf)
-                null
-            else
-                activityViewModel.currentUser.name
-        }
 
     private val focusChangeListener by lazy {
         object : FocusChangeListener {
@@ -174,7 +167,14 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             coordinatorBinding.ctl,
             Fade().addTarget(coordinatorBinding.heroFrame)
         )
-        coordinatorBinding.heroFrame.visibility = View.INVISIBLE
+        coordinatorBinding.heroFrame.isVisible = false
+        val bgColor = MaterialColors.getColor(
+            activity,
+            android.R.attr.colorBackground,
+            null
+        )
+        coordinatorBinding.sidebarNav.setBackgroundColor(bgColor)
+        coordinatorBinding.ctl.setStatusBarScrimColor(bgColor)
         animSet?.end()
     }
 
@@ -184,7 +184,10 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         val llm = LinearLayoutManager(requireContext())
         binding.scrobblesList.layoutManager = llm
 
-        viewModel.username = username
+        viewModel.username = if (activityViewModel.userIsSelf)
+            null
+        else
+            activityViewModel.currentUser.name
         adapter = ScrobblesAdapter(
             fragmentBinding = binding,
             itemClickListener = this,
@@ -228,12 +231,16 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         viewModel.tracksReceiver.observe(viewLifecycleOwner) {
             synchronized(viewModel.tracks) {
                 viewModel.totalPages = max(1, it.totalPages) //dont let totalpages be 0
-                if (it.page == 1)
+                if (it.page == 1) {
                     viewModel.tracks.clear()
+                    cal.timeInMillis =
+                        it.firstOrNull()?.playedWhen?.time ?: System.currentTimeMillis()
+                } else if (viewModel.tracks.isNotEmpty())
+                    cal.timeInMillis =
+                        viewModel.tracks.last().playedWhen?.time ?: System.currentTimeMillis()
 
                 // mark first scrobble of the day
 
-                cal.timeInMillis = it.firstOrNull()?.playedWhen?.time ?: System.currentTimeMillis()
                 var prevDate = cal[Calendar.DAY_OF_YEAR]
                 it.forEach { track ->
                     if (it.toString() in viewModel.deletedTracksStringSet)
@@ -261,7 +268,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         }
 
 
-        activity.mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
+        activityViewModel.editData.observe(viewLifecycleOwner) {
             adapter.editTrack(it)
         }
 
@@ -298,9 +305,9 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                         R.string.recents_share_username,
                         heart + getString(R.string.artist_title, track.artist, track.name),
                         Stuff.myRelativeTime(requireContext(), track.playedWhen, true),
-                        username
+                        viewModel.username
                     )
-                if (activity.billingViewModel.proStatus.value != true)
+                if (billingViewModel.proStatus.value != true)
                     shareText += "\n\n" + getString(R.string.share_sig)
                 val i = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
@@ -455,7 +462,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 }
             }
 
-            if (activity.billingViewModel.proStatus.value != true ||
+            if (billingViewModel.proStatus.value != true ||
                 prefs.themeTintBackground
             ) {
                 if (UiUtils.isTabletUi)
@@ -471,33 +478,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                     contentBgFrom,
                     colors.background
                 )
-
-                val states = arrayOf(
-                    intArrayOf(-android.R.attr.state_checked), // unchecked
-                    intArrayOf(android.R.attr.state_checked), // unchecked
-                )
-                val uncheckedColor = binding.recentsChip.chipBackgroundColor!!.getColorForState(
-                    intArrayOf(-android.R.attr.state_checked), Color.TRANSPARENT
-                )
-                val checkedColor = binding.recentsChip.chipBackgroundColor!!.getColorForState(
-                    intArrayOf(android.R.attr.state_checked), Color.TRANSPARENT
-                )
-
-                binding.scrobblesChipGroup.children.forEach { chip ->
-                    chip as Chip
-                    animSetList += ValueAnimator.ofArgb(
-                        checkedColor,
-                        colors.background
-                    ).apply {
-                        addUpdateListener {
-                            chip.chipBackgroundColor =
-                                ColorStateList(
-                                    states,
-                                    intArrayOf(it.animatedValue as Int, uncheckedColor)
-                                )
-                        }
-                    }
-                }
 
                 binding.scrobblesList.children.forEach {
                     val titleTextView = it.findViewById<TextView>(R.id.recents_title)
@@ -591,7 +571,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
 
         coordinatorBinding.heroImg.load(imgUrl ?: "") {
             placeholderMemoryCacheKey(cacheKey ?: coordinatorBinding.heroImg.memoryCacheKey)
-//            placeholder(errDrawable)
+            placeholder(errDrawable)
             error(errDrawable)
             allowHardware(false)
             transitionFactory(PaletteTransition.Factory { palette ->

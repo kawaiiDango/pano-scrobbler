@@ -9,9 +9,9 @@
     android:paddingVertical="6dp">
 
     <FrameLayout
-        android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
 
         <ImageView
             android:id="@+id/appwidget_charts_stonks_icon_shadow"
@@ -34,12 +34,13 @@
         android:layout_width="36dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical">
-    <TextView
-        android:id="@+id/appwidget_charts_serial"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        tools:text="11." />
+
+        <TextView
+            android:id="@+id/appwidget_charts_serial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            tools:text="11." />
     </FrameLayout>
 
     <LinearLayout
@@ -50,17 +51,21 @@
 
         <TextView
             android:id="@+id/appwidget_charts_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textSize="16sp"
             android:textStyle="bold"
             tools:text="@string/appwidget_loading" />
 
         <TextView
             android:id="@+id/appwidget_charts_subtitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="14dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingStart="8dp"
             android:textSize="14sp"
             tools:text="@string/appwidget_loading" />
     </LinearLayout>

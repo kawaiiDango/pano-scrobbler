@@ -160,9 +160,13 @@
         <action
             android:id="@+id/action_onboardingFragment_to_homePagerFragment"
             app:destination="@id/myHomePagerFragment" />
+        <argument
+            android:name="nopass"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <deepLink
             android:id="@+id/deepLink6"
-            app:uri="pscrobbler://screen/onboarding" />
+            app:uri="pscrobbler://screen/onboarding?nopass={nopass}" />
     </fragment>
     <dialog
         android:id="@+id/blockedMetadataAddDialogFragment"
@@ -319,11 +323,15 @@
             android:name="timeMillis"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="nowPlaying"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
     <dialog
         android:id="@+id/infoFragment"
         android:name="com.arn.scrobble.info.InfoFragment"
-        android:label="@string/more_info"
+        android:label="@string/details"
         tools:layout="@layout/content_info" />
     <fragment
         android:id="@+id/infoExtraFullFragment"
@@ -334,7 +342,7 @@
         android:id="@+id/infoExtraFragment"
         android:name="com.arn.scrobble.info.InfoExtraFragment"
         android:label="InfoExtraFragment"
-        tools:layout="@layout/content_info_extra" />
+        tools:layout="@layout/content_info_track" />
     <dialog
         android:id="@+id/regexEditsTestDialogFragment"
         android:name="com.arn.scrobble.edits.RegexEditsTestDialogFragment"
@@ -359,7 +367,7 @@
         android:id="@+id/trackExtraFragment"
         android:name="com.arn.scrobble.info.TrackExtraFragment"
         android:label="TrackExtraFragment"
-        tools:layout="@layout/content_info_extra" />
+        tools:layout="@layout/content_info_track" />
     <dialog
         android:id="@+id/optionsMenuDialogFragment"
         android:name="com.arn.scrobble.OptionsMenuDialogFragment"

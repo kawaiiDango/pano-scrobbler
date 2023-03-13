@@ -35,7 +35,6 @@ import kotlinx.coroutines.withContext
 open class LoginFragment : DialogFragment() {
     protected val prefs by lazy { MainPrefs(requireContext()) }
     protected open val checksLogin = true
-    protected val isStandalone by lazy { activity is MainDialogActivity }
     private var _binding: ContentLoginBinding? = null
     protected val binding
         get() = _binding!!

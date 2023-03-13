@@ -11,13 +11,11 @@ import android.text.style.URLSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.result
@@ -31,12 +29,9 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.copyToClipboard
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ListItemInfoBinding
-import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils
-import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.arn.scrobble.ui.UiUtils.toast
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.Album
@@ -44,13 +39,12 @@ import de.umass.lastfm.ImageSize
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 import java.text.NumberFormat
-import kotlin.math.max
 
 
 class InfoAdapter(
     private val viewModel: InfoVM,
     private val activityViewModel: MainNotifierViewModel,
-    private val fragment: BottomSheetDialogFragment,
+    private val fragment: InfoFragment,
     private val pkgName: String?,
 ) : RecyclerView.Adapter<InfoAdapter.VHInfo>() {
 
@@ -111,63 +105,6 @@ class InfoAdapter(
             }
         }
 
-        private fun toggleAlbumTracks(album: Album, linearLayout: LinearLayout) {
-//            scheduleTransition()
-
-            val viewCount = linearLayout.childCount
-            val recyclerView = linearLayout.getChildAt(viewCount - 1) as? RecyclerView
-            if (recyclerView == null) {
-                val tracks = album.tracks.toList()
-                val albumTracksAdapter = AlbumTracksAdapter(tracks).apply {
-                    stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
-                }
-                albumTracksAdapter.itemClickListener = object : ItemClickListener {
-                    override fun onItemClick(view: View, position: Int) {
-                        val args = Bundle().apply {
-                            putString(NLService.B_ARTIST, album.artist)
-                            putString(NLService.B_ALBUM, album.name)
-                            putString(NLService.B_TRACK, tracks[position].name)
-                        }
-                        fragment.findNavController().navigate(R.id.infoFragment, args)
-                    }
-                }
-                val albumTracksRecyclerView = RecyclerView(itemView.context).apply {
-                    layoutManager = LinearLayoutManager(itemView.context)
-                    adapter = albumTracksAdapter
-                    isNestedScrollingEnabled = false
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT
-                    )
-                    // todo set max height in constraintLayout
-                }
-                linearLayout.addView(albumTracksRecyclerView)
-                albumTracksRecyclerView.doOnNextLayout {
-                    val parentRecyclerView = (binding.root.parent as RecyclerView)
-                    parentRecyclerView.smoothScrollBy(
-                        0,
-                        max(parentRecyclerView.height - 300.dp, 300.dp)
-                    )
-                }
-                binding.infoExtra.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.vd_arrow_up,
-                    0
-                )
-                viewModel.albumTracksShown = true
-            } else {
-                linearLayout.removeView(recyclerView)
-                binding.infoExtra.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.vd_arrow_right,
-                    0
-                )
-                viewModel.albumTracksShown = false
-            }
-        }
-
         fun setItemData(
             pair: Map.Entry<String, MusicEntry>,
             activityViewModel: MainNotifierViewModel
@@ -210,11 +147,17 @@ class InfoAdapter(
                         }
                     }
 
-                    binding.infoExtra.visibility = View.VISIBLE
-                    binding.infoExtra.text = itemView.context.getString(R.string.analysis) + " • " +
-                            itemView.context.getString(R.string.similar)
+                    if (entry.duration > 0) {
+                        binding.infoTrackDuration.isVisible = true
+                        binding.infoTrackDuration.text = Stuff.humanReadableDuration(entry.duration)
+                    }
 
-                    binding.infoExtra.setOnClickListener {
+                    binding.infoExtraButton.visibility = View.VISIBLE
+                    binding.infoExtraButton.text =
+                        itemView.context.getString(R.string.analysis) + " • " +
+                                itemView.context.getString(R.string.similar)
+
+                    binding.infoExtraButton.setOnClickListener {
                         fragment.findNavController().navigate(R.id.infoExtraFragment, entryBundle)
                     }
                 }
@@ -236,8 +179,8 @@ class InfoAdapter(
                                 plus = "+"
                         }
 
-                        binding.infoExtra.visibility = View.VISIBLE
-                        binding.infoExtra.text = itemView.context.resources.getQuantityString(
+                        binding.infoExtraButton.visibility = View.VISIBLE
+                        binding.infoExtraButton.text = itemView.context.resources.getQuantityString(
                             R.plurals.num_tracks,
                             tracks.size,
                             NumberFormat.getInstance().format(tracks.size)
@@ -247,15 +190,16 @@ class InfoAdapter(
                                 else
                                     ""
 
-                        binding.infoExtra.setOnClickListener {
-                            toggleAlbumTracks(entry, binding.root)
+                        binding.infoExtraButton.setOnClickListener {
+                            fragment.toggleAlbumTracks(
+                                entry,
+                                binding.infoExtraContent,
+                                binding.infoExtraButton
+                            )
                         }
 
-                        if (viewModel.albumTracksShown) {
-                            toggleAlbumTracks(entry, binding.root)
-                        }
                     } else
-                        binding.infoExtra.visibility = View.GONE
+                        binding.infoExtraButton.visibility = View.GONE
 
                     imgData = entry.getWebpImageURL(ImageSize.EXTRALARGE)?.ifEmpty { null }
 
@@ -288,9 +232,9 @@ class InfoAdapter(
 
                     imgData = entry
 
-                    binding.infoExtra.visibility = View.VISIBLE
-                    binding.infoExtra.text = itemView.context.getString(R.string.artist_extra)
-                    binding.infoExtra.setOnClickListener {
+                    binding.infoExtraButton.visibility = View.VISIBLE
+                    binding.infoExtraButton.text = itemView.context.getString(R.string.artist_extra)
+                    binding.infoExtraButton.setOnClickListener {
                         fragment.findNavController().navigate(R.id.infoExtraFragment, entryBundle)
                     }
                 }
@@ -320,6 +264,10 @@ class InfoAdapter(
                     binding.infoPicExpanded.load(binding.infoPic.result?.request?.data)
                     viewModel.picExpandedMap[key] = true
                 }
+            }
+
+            if (viewModel.infoExtraExpandedMap[key] == true) {
+                binding.infoExtraButton.callOnClick()
             }
 
             if (imgData != null) {

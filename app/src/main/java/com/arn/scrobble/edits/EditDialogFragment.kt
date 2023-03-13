@@ -11,13 +11,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.arn.scrobble.App
 import com.arn.scrobble.LoginFragment
 import com.arn.scrobble.LoginFragmentArgs
 import com.arn.scrobble.MainActivity
+import com.arn.scrobble.MainDialogActivity
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -25,8 +30,10 @@ import com.arn.scrobble.db.CachedTracksDao
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.ListenBrainz
@@ -46,6 +53,7 @@ class EditDialogFragment : LoginFragment() {
 
     override val checksLogin = false
     private val args by navArgs<EditDialogFragmentArgs>()
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -155,7 +163,7 @@ class EditDialogFragment : LoginFragment() {
         val timeMillis = args.timeMillis
 //        val forceScrobble = binding.loginCheckbox.isChecked
         val fetchAlbumAndAlbumArtist = album.isBlank() && origAlbum.isBlank() && prefs.fetchAlbum
-        val rescrobbleRequired = !isStandalone && (fetchAlbumAndAlbumArtist ||
+        val rescrobbleRequired = !args.nowPlaying && (fetchAlbumAndAlbumArtist ||
                 (track.equals(origTrack, ignoreCase = true) &&
                         artist.equals(origArtist, ignoreCase = true)
                         && (album != origAlbum || albumArtist.isNotBlank())))
@@ -190,7 +198,7 @@ class EditDialogFragment : LoginFragment() {
             throw IllegalArgumentException(getString(R.string.required_fields_empty))
         }
 
-        if (!isStandalone && track == origTrack &&
+        if (!args.nowPlaying && track == origTrack &&
             artist == origArtist && album == origAlbum && albumArtist == "" &&
             !(album == "" && prefs.fetchAlbum)
         ) {
@@ -253,16 +261,17 @@ class EditDialogFragment : LoginFragment() {
                     }
                 }
             } else {
-                if (!isStandalone) {
-                    val deleteSucc = lastfmScrobblable.delete(origTrackObj)
-                    if (deleteSucc)
-                        CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
+//                if (!args.nowPlaying) {
+                // The user might submit the edit after it has been scrobbled, so delete anyways
+                val deleteSucc = lastfmScrobblable.delete(origTrackObj)
+                if (deleteSucc)
+                    CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
 
-                    if (rescrobbleRequired)
-                        lastfmScrobblable.scrobble(scrobbleData)
-                }
+                if (rescrobbleRequired)
+                    lastfmScrobblable.scrobble(scrobbleData)
+//                }
 
-                if (args.timeMillis == 0L)
+                if (args.nowPlaying)
                     lastfmScrobblable.updateNowPlaying(scrobbleData)
             }
 
@@ -279,8 +288,8 @@ class EditDialogFragment : LoginFragment() {
         Scrobblables.all
             .filter { it !is Lastfm }
             .forEach {
-                if (!isStandalone)
-                    it.delete(origTrackObj)
+//                if (!args.nowPlaying)
+                it.delete(origTrackObj)
                 // ListenBrainz cannot have two scrobbles with the same timestamp and delete is not immediate
                 // so add 1 sec
                 if (it is ListenBrainz)
@@ -302,7 +311,7 @@ class EditDialogFragment : LoginFragment() {
 
         // suggest regex edit
         if (lastfmScrobbleResult == null || !lastfmScrobbleResult.isIgnored &&
-            !prefs.regexEditsLearnt && !isStandalone
+            !prefs.regexEditsLearnt
         ) {
             val originalScrobbleData = ScrobbleData().apply {
                 this.artist = origArtist
@@ -340,10 +349,19 @@ class EditDialogFragment : LoginFragment() {
                             )
                             .setPositiveButton(R.string.yes) { _, _ ->
                                 dismiss()
-                                val args = Bundle().apply {
-                                    putBoolean(Stuff.ARG_SHOW_DIALOG, true)
+                                val args = bundleOf(Stuff.ARG_SHOW_DIALOG to true)
+
+                                if (activity is MainActivity)
+                                    findNavController().navigate(R.id.regexEditsFragment, args)
+                                else if (activity is MainDialogActivity) {
+                                    NavDeepLinkBuilder(requireContext())
+                                        .setComponentName(MainActivity::class.java)
+                                        .setGraph(R.navigation.nav_graph)
+                                        .setDestination(R.id.regexEditsFragment)
+                                        .setArguments(args)
+                                        .createPendingIntent()
+                                        .send()
                                 }
-                                findNavController().navigate(R.id.regexEditsFragment, args)
                             }
                             .setNegativeButton(R.string.no) { _, _ ->
                                 prefs.regexEditsLearnt = true
@@ -357,14 +375,14 @@ class EditDialogFragment : LoginFragment() {
         if (success) {
             // notify the edit
             (activity as? MainActivity)?.let {
-                it.mainNotifierViewModel.editData.postValue(
+                mainNotifierViewModel.editData.postValue(
                     Track(track, null, album, artist).apply {
                         if (args.timeMillis != 0L)
                             playedWhen = Date(timeMillis)
                     }
                 )
             }
-            if (args.timeMillis == 0L /* now playing */) {
+            if (args.nowPlaying) {
                 context?.sendBroadcast(
                     Intent(NLService.iCANCEL).setPackage(requireContext().packageName),
                     NLService.BROADCAST_PERMISSION

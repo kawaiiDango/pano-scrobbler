@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.activityViewModels
 import com.arn.scrobble.NavUtils.setupWithNavUi
 import com.arn.scrobble.databinding.ContentPagerBinding
@@ -64,7 +64,10 @@ open class BasePagerFragment : Fragment() {
     }
 }
 
-abstract class BasePagerAdapter(fragment: BasePagerFragment) : FragmentStatePagerAdapter(fragment.childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+abstract class BasePagerAdapter(fragment: BasePagerFragment) : FragmentPagerAdapter(
+    fragment.childFragmentManager,
+    BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+) {
     abstract val tabMetadata: List<TabMetadata>
     override fun getItem(position: Int) = tabMetadata[position].fragment()
     override fun getCount() = tabMetadata.size

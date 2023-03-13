@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentLoadingBinding
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
 
@@ -18,7 +18,6 @@ class LoadingFragment : Fragment() {
 
     private val viewModel by viewModels<UserLoaderVM>()
     private val args by navArgs<LoadingFragmentArgs>()
-    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,8 +36,7 @@ class LoadingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         viewModel.userInfo.observe(viewLifecycleOwner) { user ->
-            activityViewModel.pushUser(user.toUserSerializable())
-            findNavController().navigate(R.id.action_loadingFragment_to_othersHomePagerFragment)
+            findNavController().navigate(R.id.action_loadingFragment_to_othersHomePagerFragment, Bundle().putSingle(user.toUserSerializable()))
         }
 
         if (args.lastfmUsername != null) {
@@ -46,8 +44,5 @@ class LoadingFragment : Fragment() {
             binding.loadingUsername.text = args.lastfmUsername
             viewModel.fetchUserInfo(args.lastfmUsername!!)
         }
-
-        // todo fix, this is cyclic
     }
-
 }

@@ -3,4 +3,6 @@
     <item type="id" name="main_fab" />
     <item type="id" name="main_extended_fab" />
     <item type="id" name="time" />
+    <item type="id" name="should_show_user" />
+    <item type="id" name="more_menu" />
 </resources>

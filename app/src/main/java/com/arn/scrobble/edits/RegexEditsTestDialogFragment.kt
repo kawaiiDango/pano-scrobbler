@@ -11,6 +11,7 @@ import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogRegexTestBinding
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.coroutines.Dispatchers

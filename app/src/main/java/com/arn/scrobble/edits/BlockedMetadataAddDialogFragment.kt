@@ -17,6 +17,7 @@ import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.DialogBlockedMetadataBinding
 import com.arn.scrobble.databinding.TextInputEditBinding
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

@@ -35,6 +35,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     val urlToPaletteMap = mutableMapOf<String, PaletteColors>()
     val friendsReceiver = LiveEvent<PaginatedResult<User>?>()
     val tracksReceiver = LiveEvent<Pair<String, PaginatedResult<Track>>>()
+    val privateUsers = mutableSetOf<String>() // todo this is a hack
     private val errorNotifier = LFMRequester.ExceptionNotifier()
     var showsPins = false
     var page = 1
@@ -77,14 +78,18 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
 
     fun loadFriendsRecents(username: String) {
         viewModelScope.launch(errorNotifier) {
-            tracksReceiver.value = username to
-                    withContext(Dispatchers.IO) {
-                        Scrobblables.current!!.getRecents(
-                            1,
-                            username,
-                            limit = 1,
-                        )
-                    }
+            val pr = withContext(Dispatchers.IO) {
+                Scrobblables.current!!.getRecents(
+                    1,
+                    username,
+                    limit = 1,
+                )
+            }
+
+            if (pr.pageResults != null && pr.pageResults.isNotEmpty())
+                tracksReceiver.value = username to pr
+            else
+                privateUsers += username
         }
     }
 

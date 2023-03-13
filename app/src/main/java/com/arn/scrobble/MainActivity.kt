@@ -34,6 +34,7 @@ import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dp
@@ -53,8 +54,8 @@ class MainActivity : AppCompatActivity(),
 
     private val prefs by lazy { MainPrefs(this) }
     lateinit var binding: ContentMainBinding
-    val billingViewModel by viewModels<BillingViewModel>()
-    val mainNotifierViewModel by viewModels<MainNotifierViewModel>()
+    private val billingViewModel by viewModels<BillingViewModel>()
+    private val mainNotifierViewModel by viewModels<MainNotifierViewModel>()
     private lateinit var navController: NavController
     private var navHeaderbinding: HeaderNavBinding? = null
     private lateinit var mainFab: View
@@ -76,7 +77,9 @@ class MainActivity : AppCompatActivity(),
             mainFab = ExtendedFloatingActionButton(this).apply {
                 id = R.id.main_extended_fab
                 val lp = CoordinatorLayout.LayoutParams(
-                    resources.getDimensionPixelSize(R.dimen.sidebar_width) - 2* resources.getDimensionPixelSize(R.dimen.fab_margin),
+                    resources.getDimensionPixelSize(R.dimen.sidebar_width) - 2 * resources.getDimensionPixelSize(
+                        R.dimen.fab_margin
+                    ),
                     CoordinatorLayout.LayoutParams.WRAP_CONTENT
                 )
                 lp.insetEdge = Gravity.TOP
@@ -101,7 +104,8 @@ class MainActivity : AppCompatActivity(),
                 lp.anchorGravity = Gravity.BOTTOM or Gravity.END
                 lp.anchorId = R.id.nav_host_fragment
                 setupInsets(
-                    additionalSpace = 12.dp,
+                    additionalSpaceBottom = 8.dp,
+                    additionalSpaceSides = 16.dp,
                     addBottomNavHeight = false
                 )
                 visibility = View.INVISIBLE
@@ -123,10 +127,6 @@ class MainActivity : AppCompatActivity(),
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-//        binding.appBar.onStateChangeListener = { state ->
-//
-//        }
-
         if (Stuff.isTv) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 binding.toolbar.children
@@ -139,9 +139,11 @@ class MainActivity : AppCompatActivity(),
 
         navController.navInflater.inflate(R.navigation.nav_graph).let {
             val startArguments = bundleOf(Stuff.ARG_TAB to prefs.lastHomePagerTab)
+
             if (savedInstanceState == null) {
                 if (Stuff.isLoggedIn()) {
                     canShowNotices = true
+                    mainNotifierViewModel.currentUser = Scrobblables.currentScrobblableUser!!
                 } else {
                     it.setStartDestination(R.id.onboardingFragment)
                 }
@@ -153,14 +155,7 @@ class MainActivity : AppCompatActivity(),
         binding.ctl.setupWithNavController(binding.toolbar, navController, appBarConfiguration)
 
         navHeaderbinding?.let {
-            NavHeaderUtils.setProfileSwitcher(it, navController, mainNotifierViewModel)
-        }
-
-        mainNotifierViewModel.drawerData.observe(this) {
-            NavHeaderUtils.updateHeaderWithDrawerData(
-                navHeaderbinding ?: return@observe,
-                mainNotifierViewModel
-            )
+            NavUtils.setProfileSwitcher(it, navController, mainNotifierViewModel)
         }
 
         navController.addOnDestinationChangedListener(this)
@@ -213,8 +208,7 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        billingViewModel.proStatus.observe(this)
-        {
+        billingViewModel.proStatus.observe(this) {
             if (it == true) {
                 binding.sidebarNav.menu.removeItem(R.id.nav_pro)
             }
@@ -226,6 +220,13 @@ class MainActivity : AppCompatActivity(),
                 showSnackbarIfNeeded()
             }
         }
+
+        mainNotifierViewModel.drawerData.observe(this) {
+            NavUtils.updateHeaderWithDrawerData(
+                navHeaderbinding ?: return@observe,
+                mainNotifierViewModel
+            )
+        }
 //        showSnackbarIfNeeded()
     }
 
@@ -234,17 +235,6 @@ class MainActivity : AppCompatActivity(),
         destination: NavDestination,
         arguments: Bundle?
     ) {
-
-        // home pager was popped
-        if (mainNotifierViewModel.prevDestinationId in arrayOf(
-                R.id.myHomePagerFragment,
-                R.id.othersHomePagerFragment,
-            ) && mainNotifierViewModel.prevBackQueueSize > controller.backQueue.size
-            && mainNotifierViewModel.userStackDepth > 1
-        ) {
-            mainNotifierViewModel.popUser()
-        }
-
         val showBottomNavOn = setOf(
             R.id.myHomePagerFragment,
             R.id.othersHomePagerFragment,
@@ -256,7 +246,6 @@ class MainActivity : AppCompatActivity(),
             binding.appBar.expandTillToolbar()
         }
 
-        mainNotifierViewModel.prevBackQueueSize = navController.backQueue.size
         mainNotifierViewModel.prevDestinationId = destination.id
     }
 
@@ -329,10 +318,10 @@ class MainActivity : AppCompatActivity(),
         return super.dispatchTouchEvent(event)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
+//    override fun onSaveInstanceState(outState: Bundle) {
 //        if (binding.drawerLayout.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
 //            binding.drawerLayout.isSaveEnabled = false
 //        outState.putInt("tab_bar_visible", binding.tabBar.visibility)
-        super.onSaveInstanceState(outState)
-    }
+//        super.onSaveInstanceState(outState)
+//    }
 }

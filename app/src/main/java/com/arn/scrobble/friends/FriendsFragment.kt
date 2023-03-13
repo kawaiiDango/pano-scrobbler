@@ -183,6 +183,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
         loadMoreListener.currentPage = viewModel.page
         adapter.loadMoreListener = loadMoreListener
+        binding.friendsGrid.isVisible = true
 
         viewModel.friendsReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
@@ -228,8 +229,10 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 adapter.notifyItemChanged(idxChanged, 0)
             }
 
-            if (!Stuff.isTv && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.sectionedList.size > 1 &&
-                viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size
+            if (!Stuff.isTv && !viewModel.sorted &&
+                loadMoreListener.isAllPagesLoaded &&
+                viewModel.sectionedList.size > 1 &&
+                viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size - viewModel.privateUsers.size
             ) {
                 fabData = FabData(
                     viewLifecycleOwner,
@@ -410,8 +413,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
             contentBinding.friendsLinksGroup.isVisible = true
             contentBinding.friendsScrobbles.setOnClickListener {
-                activityViewModel.pushUser(userSerializable)
-                findNavController().navigate(R.id.othersHomePagerFragment)
+//                activityViewModel.pushUser(userSerializable)
+                findNavController().navigate(R.id.othersHomePagerFragment, Bundle().putSingle(userSerializable))
             }
             contentBinding.friendsProfile.setOnClickListener {
                 Stuff.openInBrowser(userSerializable.url)
@@ -471,7 +474,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun getNumColumns(): Int {
-        val cols = (activity as MainActivity).binding.coordinator.width /
+        val cols = (activity as MainActivity).binding.ctl.width /
                 resources.getDimension(R.dimen.grid_size).roundToInt()
         return cols.coerceIn(2, 5)
     }

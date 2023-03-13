@@ -32,7 +32,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textDirection="firstStrong"
-        tools:text="nav_num_scrobbles" />
+        android:visibility="gone"
+        tools:text="nav_num_scrobbles"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/nav_num_scrobbles_total"
@@ -41,8 +43,12 @@
         android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textDirection="firstStrong"
+        android:visibility="gone"
         app:drawableEndCompat="@drawable/vd_play"
-        tools:text="nav_num_scrobbles" />
+        tools:layout_editor_absoluteX="214dp"
+        tools:layout_editor_absoluteY="459dp"
+        tools:text="nav_num_scrobbles"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/nav_num_artists"
@@ -51,8 +57,12 @@
         android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textDirection="firstStrong"
+        android:visibility="gone"
         app:drawableEndCompat="@drawable/vd_mic"
-        tools:text="nav_num_entries" />
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="483dp"
+        tools:text="nav_num_entries"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/nav_num_albums"
@@ -61,8 +71,12 @@
         android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textDirection="firstStrong"
+        android:visibility="gone"
         app:drawableEndCompat="@drawable/vd_album"
-        tools:text="nav_num_entries" />
+        tools:layout_editor_absoluteX="51dp"
+        tools:layout_editor_absoluteY="75dp"
+        tools:text="nav_num_entries"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/nav_num_tracks"
@@ -71,8 +85,12 @@
         android:drawablePadding="4dp"
         android:gravity="center_vertical"
         android:textDirection="firstStrong"
+        android:visibility="gone"
         app:drawableEndCompat="@drawable/vd_note"
-        tools:text="nav_num_entries" />
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="507dp"
+        tools:text="nav_num_entries"
+        tools:visibility="visible" />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/nav_num_flow"
@@ -81,10 +99,10 @@
         android:orientation="horizontal"
         android:padding="8dp"
         android:paddingBottom="16dp"
-        app:constraint_referenced_ids="nav_num_scrobbles_today, nav_num_scrobbles_total, nav_num_artists, nav_num_albums, nav_num_tracks"
+        app:constraint_referenced_ids=" nav_num_scrobbles_total, nav_num_artists, nav_num_albums, nav_num_tracks,nav_num_scrobbles_today"
         app:flow_horizontalAlign="end"
         app:flow_maxElementsWrap="2"
-        app:flow_wrapMode="aligned"
+        app:flow_wrapMode="chain2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

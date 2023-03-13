@@ -47,7 +47,7 @@ abstract class Scrobblable(val userAccount: UserAccountSerializable) {
 
     abstract suspend fun getFriends(page: Int, usernamep: String?): PaginatedResult<User>
 
-    abstract suspend fun loadDrawerData(usernamep: String?): DrawerData?
+    abstract suspend fun loadDrawerData(username: String): DrawerData?
 
     abstract suspend fun getCharts(
         type: Int,
@@ -102,6 +102,10 @@ object Scrobblables {
     val current
         get() =
             all.getOrNull(MainPrefs(App.context).currentAccountIdx)
+
+    val currentScrobblableUser
+        get() =
+            current?.userAccount?.user
 
     fun setCurrent(userAccount: UserAccountSerializable) {
         val idx = all.indexOfFirst { it.userAccount == userAccount }

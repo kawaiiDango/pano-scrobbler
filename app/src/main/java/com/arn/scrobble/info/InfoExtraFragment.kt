@@ -174,10 +174,6 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
                 spotifyFeaturesBinding.featuresKey.text = features.getKeyString()
                 spotifyFeaturesBinding.featuresBpm.text =
                     "${features.tempo.roundToInt()} bpm • ${features.time_signature}/4"
-                val durationMs =
-                    requireArguments().getLong(NLService.B_DURATION, spotifyTrack.durationMs)
-                spotifyFeaturesBinding.featuresDuration.text =
-                    Stuff.humanReadableDuration((durationMs / 1000).toInt())
                 spotifyFeaturesBinding.featuresLoudness.text =
                     String.format("%.2f dB", features.loudness)
 

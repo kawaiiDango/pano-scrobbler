@@ -57,6 +57,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import timber.log.Timber
 import java.text.NumberFormat
+import java.util.Date
 import java.util.Objects
 import java.util.PriorityQueue
 import kotlin.math.min
@@ -496,12 +497,8 @@ class NLService : NotificationListenerService() {
             B_ALBUM to trackInfo.album,
             B_TRACK to trackInfo.title,
         )
-        val launchPi = NavDeepLinkBuilder(this)
-            .setComponentName(MainDialogActivity::class.java)
-            .setGraph(R.navigation.nav_graph_dialog_activity)
-            .setDestination(R.id.infoFragment)
-            .setArguments(infoArgs)
-            .createPendingIntent()
+        val launchPi =
+            MainDialogActivity.createDestinationPendingIntent(R.id.infoFragment, infoArgs)
 
         i = Intent(iCANCEL)
             .setPackage(packageName)
@@ -511,6 +508,31 @@ class NLService : NotificationListenerService() {
         val cancelToastIntent = PendingIntent.getBroadcast(
             applicationContext, 5, i,
             Stuff.updateCurrentOrImmutable
+        )
+        val editArgs = EditDialogFragmentArgs(
+            track = trackInfo.title,
+            album = trackInfo.album,
+            artist = trackInfo.artist,
+            albumArtist = trackInfo.albumArtist,
+            timeMillis = trackInfo.playStartTime,
+            nowPlaying = nowPlaying
+        ).toBundle()
+
+        val editPi =
+            MainDialogActivity.createDestinationPendingIntent(R.id.editDialogFragment, editArgs)
+
+        val editAction = Stuff.getNotificationAction(
+            R.drawable.vd_edit,
+            "✏️",
+            getString(R.string.edit),
+            editPi
+        )
+
+        val unscrobbleAction = Stuff.getNotificationAction(
+            R.drawable.vd_remove,
+            "⛔️",
+            getString(R.string.unscrobble),
+            cancelToastIntent
         )
 
         val state =
@@ -529,6 +551,7 @@ class NLService : NotificationListenerService() {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setStyleCompat(style)
             .addAction(loveAction)
+
         if (trackInfo.userPlayCount > 0)
             nb.setContentTitle(
                 state + getString(
@@ -549,21 +572,13 @@ class NLService : NotificationListenerService() {
                 .setContentText(trackInfo.artist)
 
         if (nowPlaying) {
-//                nb.setSubText(getString(R.string.state_scrobbling))
-            nb.addAction(
-                Stuff.getNotificationAction(
-                    R.drawable.vd_remove,
-                    "⛔️",
-                    getString(R.string.unscrobble),
-                    cancelToastIntent
-                )
-            )
+            nb.addAction(editAction)
+            nb.addAction(unscrobbleAction)
             if (resources.getBoolean(R.bool.is_rtl))
-                style.setShowActionsInCompactView(1, 0)
+                style.setShowActionsInCompactView(2, 1, 0)
             else
-                style.setShowActionsInCompactView(0, 1)
+                style.setShowActionsInCompactView(0, 1, 2)
         } else {
-//                nb.setSubText(getString(R.string.state_scrobbled))
             style.setShowActionsInCompactView(0)
         }
 
@@ -583,15 +598,12 @@ class NLService : NotificationListenerService() {
             album = trackInfo.album,
             artist = trackInfo.artist,
             albumArtist = trackInfo.albumArtist,
-            timeMillis = trackInfo.playStartTime
+            timeMillis = trackInfo.playStartTime,
+            nowPlaying = true
         ).toBundle()
 
-        val editPi = NavDeepLinkBuilder(this)
-            .setComponentName(MainDialogActivity::class.java)
-            .setGraph(R.navigation.nav_graph_dialog_activity)
-            .setDestination(R.id.editDialogFragment)
-            .setArguments(editArgs)
-            .createPendingIntent()
+        val editPi =
+            MainDialogActivity.createDestinationPendingIntent(R.id.editDialogFragment, editArgs)
 
         val subtitleSpanned = if (scrobbleError.description != null)
             Html.fromHtml(scrobbleError.description)
@@ -666,12 +678,10 @@ class NLService : NotificationListenerService() {
             putInt(B_HASH, hash)
         }
 
-        val blockPi = NavDeepLinkBuilder(this)
-            .setComponentName(MainDialogActivity::class.java)
-            .setGraph(R.navigation.nav_graph_dialog_activity)
-            .setDestination(R.id.blockedMetadataAddDialogFragment)
-            .setArguments(args)
-            .createPendingIntent()
+        val blockPi = MainDialogActivity.createDestinationPendingIntent(
+            R.id.blockedMetadataAddDialogFragment,
+            args
+        )
 
         val nb = buildNotification()
             .setChannelId(MainPrefs.CHANNEL_NOTI_SCROBBLING)
@@ -795,9 +805,22 @@ class NLService : NotificationListenerService() {
                         trackInfo.markAsScrobbled()
                     } else {
                         hash = intent.getIntExtra(B_HASH, 0)
-                        sessListener?.findTrackInfoByHash(hash)?.markAsScrobbled()
+                        val trackInfo = sessListener?.findTrackInfoByHash(hash)
+                        if (scrobbleHandler.has(hash)) {
+                            trackInfo?.markAsScrobbled()
+                        } else if (trackInfo != null) {
+                            if (!Stuff.isOnline) {
+                                toast(R.string.unavailable_offline)
+                                return
+                            }
+                            val track = Track(trackInfo.title, null, trackInfo.artist).apply {
+                                playedWhen = Date(trackInfo.playStartTime)
+                            }
+                            LFMRequester(coroutineScope).delete(track)
+                        }
                         notifyUnscrobbled(hash)
                     }
+
                     scrobbleHandler.remove(hash, false)
                 }
 

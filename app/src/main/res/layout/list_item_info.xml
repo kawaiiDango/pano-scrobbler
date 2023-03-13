@@ -45,6 +45,15 @@
             tools:text="@string/track" />
         <!-- Selectable text causes issues with animation -->
 
+        <TextView
+            android:id="@+id/info_track_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_marginHorizontal="4dp"
+            tools:text="05:30"
+            tools:visibility="visible" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/info_link"
             style="?materialIconButtonStyle"
@@ -56,6 +65,7 @@
             app:icon="@drawable/vd_open_in_new"
             app:iconTint="?colorSecondary"
             tools:visibility="visible" />
+
     </LinearLayout>
 
     <com.arn.scrobble.ui.SquareFrameLayout
@@ -72,7 +82,7 @@
             android:id="@+id/info_pic_expanded"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:shapeAppearance="@style/ShapeAppearance.Material3.MediumComponent"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
             tools:srcCompat="@tools:sample/avatars" />
     </com.arn.scrobble.ui.SquareFrameLayout>
 
@@ -261,7 +271,7 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/info_extra"
+                android:id="@+id/info_extra_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
@@ -275,5 +285,12 @@
                 app:drawableTint="?colorSecondary"
                 tools:text="n tracks" />
         </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/info_extra_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
 </LinearLayout>

@@ -19,9 +19,9 @@
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/charts_overview_scrollview"
-            android:clipToPadding="false"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -129,6 +129,13 @@
 
                 </com.arn.scrobble.ui.SquareFrameLayout>
 
+                <TextView
+                    android:id="@+id/charts_tag_cloud_notice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="16dp"
+                    tools:text="@string/based_on" />
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>

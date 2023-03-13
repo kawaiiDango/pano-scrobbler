@@ -160,7 +160,9 @@ class FriendsAdapter(
                 )
                     binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
 
-                if (!handler.hasMessages(userSerializable.name.hashCode()) && bindingAdapterPosition > -1) {
+                if (userSerializable.name !in viewModel.privateUsers &&
+                    !handler.hasMessages(userSerializable.name.hashCode()) &&
+                    bindingAdapterPosition > -1) {
                     val msg = handler.obtainMessage(userSerializable.name.hashCode())
                     msg.arg1 = bindingAdapterPosition
                     handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)

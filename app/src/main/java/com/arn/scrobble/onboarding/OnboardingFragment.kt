@@ -100,13 +100,14 @@ class OnboardingFragment : Fragment(), StepperFormListener {
     }
 
     override fun onCompletedForm() {
-        if (mainNotifierViewModel.userStackDepth == 0)
-            mainNotifierViewModel.pushUser(Scrobblables.current!!.userAccount.user)
+        mainNotifierViewModel.currentUser = Scrobblables.currentScrobblableUser!!
         findNavController().apply {
-            if (graph.startDestinationId != R.id.myHomePagerFragment)
+            if (graph.startDestinationId != R.id.myHomePagerFragment) {
                 setGraph(R.navigation.nav_graph) // reset
-            else
+            } else {
+                popBackStack(R.id.myHomePagerFragment, true)
                 navigate(R.id.myHomePagerFragment)
+            }
         }
     }
 

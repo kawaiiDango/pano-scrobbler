@@ -148,12 +148,10 @@ class DigestJob : JobService() {
             val collageArgs = bundleOf(Stuff.ARG_TYPE to Stuff.TYPE_ALL)
                 .putSingle(timePeriod)
 
-            val collagePi = NavDeepLinkBuilder(this@DigestJob)
-                .setComponentName(MainDialogActivity::class.java)
-                .setGraph(R.navigation.nav_graph_dialog_activity)
-                .setDestination(R.id.collageGeneratorFragment)
-                .setArguments(collageArgs)
-                .createPendingIntent()
+            val collagePi = MainDialogActivity.createDestinationPendingIntent(
+                R.id.collageGeneratorFragment,
+                collageArgs
+            )
 
             val nb = NotificationCompat.Builder(applicationContext, channelId)
                 .apply {

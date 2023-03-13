@@ -96,7 +96,7 @@ class RegexEditsAddDialogFragment : DialogFragment() {
                         if (regexEdit.preset != null)
                             regexEdit.preset = null
 
-                        dao.insert(regexEdit)
+                        dao.insert(listOf(regexEdit))
                     }
 
                     dialog.dismiss()

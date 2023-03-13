@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import androidx.core.view.drawToBitmap
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -71,9 +72,10 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                 if (result.resultCode == Activity.RESULT_OK && result.data != null) {
                     requireContext().contentResolver.openOutputStream(result.data!!.data!!)
                         ?.use { ostream ->
-                            requireContext().contentResolver.openInputStream(lastUri!!)?.use { istream ->
-                                istream.copyTo(ostream)
-                            }
+                            requireContext().contentResolver.openInputStream(lastUri!!)
+                                ?.use { istream ->
+                                    istream.copyTo(ostream)
+                                }
                         }
                 }
             }
@@ -134,7 +136,8 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     private fun onCreateCollageButtonClick(save: Boolean) {
 
         binding.collageGenerateProgress.show()
-        binding.collageGenerateButtons.visibility = View.INVISIBLE
+        binding.collageShareButton.visibility = View.INVISIBLE
+        binding.collageSaveButton.visibility = View.INVISIBLE
 
         prefs.collageSkipMissing = binding.collageSkipMissingImages.isChecked
         prefs.collageCaptions = binding.collageIncludeCaptions.isChecked
@@ -216,7 +219,11 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         val textScaler = collageSize / 5f
         val isDigest = type == Stuff.TYPE_ALL
 
-        val collageRoot = LinearLayout(context, null, com.google.android.material.R.style.Theme_Material3_Dark).apply {
+        val collageRoot = LinearLayout(
+            context,
+            null,
+            com.google.android.material.R.style.Theme_Material3_Dark
+        ).apply {
             orientation = LinearLayout.VERTICAL
         }
 
@@ -322,6 +329,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             height = (width / aspectRatio).toInt()
         }
         binding.collagePreview.setImageBitmap(bitmap)
+        binding.collagePreview.isVisible = true
 
         return uri to text
     }
@@ -367,7 +375,11 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         }
 
         return bitmap to
-                FileProvider.getUriForFile(requireContext(), "com.arn.scrobble.fileprovider", collageFile)
+                FileProvider.getUriForFile(
+                    requireContext(),
+                    "com.arn.scrobble.fileprovider",
+                    collageFile
+                )
     }
 
     private fun createAddFooter(collageRoot: LinearLayout, type: Int, textScaler: Float) {
@@ -541,7 +553,8 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     private fun resetProgress() {
         binding.collageGenerateProgress.hide()
         binding.collageGenerateProgress.isIndeterminate = true
-        binding.collageGenerateButtons.visibility = View.VISIBLE
+        binding.collageShareButton.visibility = View.VISIBLE
+        binding.collageSaveButton.visibility = View.VISIBLE
     }
 
     override fun onStart() {

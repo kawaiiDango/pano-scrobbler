@@ -1,9 +1,8 @@
 package com.arn.scrobble
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 
-class WebViewVM(app: Application) : AndroidViewModel(app) {
+class WebViewVM : ViewModel() {
     val callbackProcessedLd = MutableLiveData<Boolean>()
 }

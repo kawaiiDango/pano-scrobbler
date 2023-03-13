@@ -504,7 +504,8 @@ object UiUtils {
         marginMode: Boolean = this !is RecyclerView &&
                 this !is ScrollView && this !is NestedScrollView,
         addBottomNavHeight: Boolean = true,
-        additionalSpace: Int = 0,
+        additionalSpaceBottom: Int = 0,
+        additionalSpaceSides: Int = 0,
     ) {
         ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -517,16 +518,16 @@ object UiUtils {
             if (marginMode) {
                 view.updateLayoutParams {
                     if (this is MarginLayoutParams) {
-                        leftMargin = insets.left
-                        bottomMargin = bottomInset + additionalSpace
-                        rightMargin = insets.right + additionalSpace
+                        leftMargin = insets.left + additionalSpaceSides
+                        bottomMargin = bottomInset + additionalSpaceBottom
+                        rightMargin = insets.right + additionalSpaceSides
                     }
                 }
             } else {
                 view.updatePadding(
                     left = insets.left,
-                    bottom = bottomInset + additionalSpace,
-                    right = insets.right + additionalSpace,
+                    bottom = bottomInset + additionalSpaceBottom,
+                    right = insets.right + additionalSpaceBottom,
                 )
             }
 
@@ -546,7 +547,7 @@ object UiUtils {
     }
 
     fun Fragment.setTitle(str: String?) {
-        if (isDetached || isRemoving)
+        if (isDetached || isRemoving || !isResumed)
             return
 
         val activity = activity as? MainActivity ?: return
@@ -563,13 +564,13 @@ object UiUtils {
 
         activity.binding.ctl.title = title
 
-        activity.binding.ctl.setStatusBarScrimColor(
-            MaterialColors.getColor(
-                activity,
-                android.R.attr.colorBackground,
-                null
-            )
-        )
+//        val bgColor = MaterialColors.getColor(
+//            activity,
+//            android.R.attr.colorBackground,
+//            null
+//        )
+//        activity.binding.ctl.setStatusBarScrimColor(bgColor)
+//        activity.binding.sidebarNav.setBackgroundColor(bgColor)
     }
 
     fun BottomSheetDialogFragment.expandIfNeeded() {

@@ -11,15 +11,16 @@ buildscript {
     dependencies {
         classpath("com.github.triplet.gradle:play-publisher:4.0.0-SNAPSHOT")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.5.3")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.6.0-alpha06")
     }
 }
 
 plugins {
-    id("com.android.application") version "8.1.0-alpha06" apply false
+    id("com.android.application") version "8.1.0-alpha08" apply false
     kotlin("android") version "1.8.0" apply false
     id("com.google.firebase.crashlytics") version "2.9.2" apply false
     id("com.google.gms.google-services") version "4.3.15" apply false
+    id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
 }
 
 tasks.register<Delete>("clean").configure {

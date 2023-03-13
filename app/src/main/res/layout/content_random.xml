@@ -86,7 +86,7 @@
                 android:id="@+id/item_artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textAppearance="?textAppearanceBodyLarge"
@@ -96,7 +96,7 @@
                 android:id="@+id/track_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:maxLines="1"
                 android:textAppearance="?textAppearanceBodySmall"
                 tools:text="6969 scrobbles" />
@@ -105,7 +105,7 @@
                 android:id="@+id/track_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:maxLines="1"
                 tools:text="date date" />
         </LinearLayout>

@@ -1,4 +1,3 @@
-
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
@@ -8,14 +7,14 @@ import java.util.Date
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("kapt")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
-    id ("com.github.triplet.play")
+    id("com.github.triplet.play")
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.devtools.ksp")
     kotlin("plugin.serialization") version "1.8.10"
-    id("com.mikepenz.aboutlibraries.plugin") version "10.5.2"
+    id("com.mikepenz.aboutlibraries.plugin") version "10.6.1"
     id("com.github.breadmoirai.github-release") version "2.4.1"
 }
 
@@ -50,12 +49,10 @@ android {
         }"
         setProperty("archivesBaseName", "pScrobbler")
         vectorDrawables.useSupportLibrary = true
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf("room.schemaLocation" to "$projectDir/schemas")
-            }
-        }
 
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
     buildFeatures {
         viewBinding = true
@@ -65,7 +62,12 @@ android {
         release {
             isShrinkResources = true
             isMinifyEnabled = true
-            setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
+            setProguardFiles(
+                listOf(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
+            )
         }
 
         debug {
@@ -83,7 +85,7 @@ android {
     kotlinOptions {
         freeCompilerArgs += "-Xjvm-default=all"
     }
-    
+
     kotlin {
         jvmToolchain(17)
     }
@@ -94,7 +96,15 @@ aboutLibraries {
     offlineMode = true
     fetchRemoteLicense = false
     fetchRemoteFunding = false
-    excludeFields = arrayOf("developers", "funding", "description", "organization", "content", "connection", "developerConnection")
+    excludeFields = arrayOf(
+        "developers",
+        "funding",
+        "description",
+        "organization",
+        "content",
+        "connection",
+        "developerConnection"
+    )
     strictMode = StrictMode.FAIL
     duplicationMode = DuplicateMode.MERGE
 }
@@ -102,33 +112,29 @@ aboutLibraries {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.0-rc01")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.media:media:1.6.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.recyclerview:recyclerview:1.3.0")
+//    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha08")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0-alpha07")
+    implementation("androidx.navigation:navigation-ui-ktx:2.6.0-alpha07")
     implementation("androidx.core:core-remoteviews:1.0.0-beta03")
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    kapt("androidx.room:room-compiler:2.5.0")
+    ksp("androidx.room:room-compiler:2.5.0")
     implementation("androidx.room:room-runtime:2.5.0")
     implementation("com.android.billingclient:billing:5.1.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.9.0-alpha01")
+    implementation("com.google.android.material:material:1.9.0-alpha02")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
+    implementation(platform("com.google.firebase:firebase-bom:31.2.3"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -148,7 +154,7 @@ dependencies {
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-gif:$coilVersion")
 
-    val ktorVersion = "2.2.3"
+    val ktorVersion = "2.2.4"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
     implementation("io.ktor:ktor-client-android:$ktorVersion")
@@ -156,9 +162,8 @@ dependencies {
     implementation("io.ktor:ktor-client-auth:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
-//    implementation("com.brandongogetap:stickyheaders:0.6.2")
-    implementation("com.mikepenz:aboutlibraries-core:10.5.2")
-    //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
+    implementation("com.mikepenz:aboutlibraries-core:10.6.1")
+//    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
     implementation(project(":lastfm"))
 

@@ -23,8 +23,10 @@
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
         <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+<!--        <item name="android:enforceStatusBarContrast">true</item>-->
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLightStatusBar">?isLightTheme</item>
 
         <!--   For android tv     -->
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
@@ -98,6 +100,7 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowMinWidthMajor">60%</item>
         <item name="android:windowMinWidthMinor">95%</item>
         <item name="android:windowEnterTransition">@android:transition/fade</item>
@@ -116,7 +119,7 @@
         <item name="textInputOutlinedExposedDropdownMenuStyle">@style/Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
 
         <!--<item name="android:windowNoTitle">true</item>-->
-        <!--<item name="android:windowIsFloating">false</item>-->
+        <item name="android:windowIsFloating">true</item>
         <!--<item name="android:backgroundDimEnabled">true</item>-->
     </style>
 
@@ -167,8 +170,8 @@
     </style>
 
     <style name="topRoundedCorners">
-        <item name="cornerSizeTopLeft">@dimen/corner_radius</item>
-        <item name="cornerSizeTopRight">@dimen/corner_radius</item>
+        <item name="cornerSizeTopLeft">@dimen/corner_radius_big</item>
+        <item name="cornerSizeTopRight">@dimen/corner_radius_big</item>
         <item name="cornerFamily">rounded</item>
     </style>
 

@@ -278,7 +278,8 @@ class ScrobblesAdapter(
         if (oldVirtualList.isEmpty() && viewModel.virtualList.isNotEmpty() || fragmentBinding.scrobblesSwipeRefresh.isRefreshing) {
             fragmentBinding.scrobblesList.scheduleLayoutAnimation()
             notifyItemChanged(0, 0) //animation gets delayed otherwise
-        }
+        } else if (oldVirtualList.size < viewModel.virtualList.size) // remove the loading gap from the last item
+            notifyItemChanged(itemCount - 1, 0)
         val recyclerViewState = fragmentBinding.scrobblesList.layoutManager!!.onSaveInstanceState()
         notify(oldVirtualList, prevSelectedItem)
         fragmentBinding.scrobblesList.layoutManager!!.onRestoreInstanceState(recyclerViewState)
@@ -484,6 +485,11 @@ class ScrobblesAdapter(
                     })
                 }
             }
+
+            viewModel.paletteColors.value?.foreground?.let {
+                binding.recentsTitle.setTextColor(it)
+            }
+
             setSelected(bindingAdapterPosition == viewModel.selectedPos, track)
         }
     }

@@ -1,14 +1,14 @@
 package com.arn.scrobble.edits
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.SimpleEdit
+import com.arn.scrobble.db.SimpleEditsDao.Companion.insertReplaceLowerCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SimpleEditsVM(app: Application) : AndroidViewModel(app) {
+class SimpleEditsVM : ViewModel() {
     val dao = PanoDb.db.getSimpleEditsDao()
     val edits = mutableListOf<SimpleEdit>()
     val editsReceiver = dao.allLd

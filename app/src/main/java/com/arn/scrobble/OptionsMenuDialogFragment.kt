@@ -14,6 +14,7 @@ import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentOptionsMenuBinding
 import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
+import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.parcelize.Parcelize
 
@@ -43,10 +44,11 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
             binding.headerNav.root.isVisible = true
             mainNotifierViewModel.drawerData.observe(viewLifecycleOwner) {
                 it ?: return@observe
-                NavHeaderUtils.updateHeaderWithDrawerData(binding.headerNav, mainNotifierViewModel)
+                scheduleTransition()
+                NavUtils.updateHeaderWithDrawerData(binding.headerNav, mainNotifierViewModel)
             }
             mainNotifierViewModel.loadCurrentUserDrawerData()
-            NavHeaderUtils.setProfileSwitcher(
+            NavUtils.setProfileSwitcher(
                 binding.headerNav,
                 findNavController(),
                 mainNotifierViewModel
@@ -56,7 +58,7 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
 
         binding.optionsMenuNav.setNavigationItemSelectedListener { menuItem ->
             dismiss()
-            optionsMenuViewModel.emit(menuItem.itemId)
+            optionsMenuViewModel.menuEvent.value = menuItem.itemId
             true
         }
 

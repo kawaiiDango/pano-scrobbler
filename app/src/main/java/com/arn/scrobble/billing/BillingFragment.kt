@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.core.view.updatePaddingRelative
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
@@ -29,7 +30,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 
 class BillingFragment : Fragment() {
 
-    private lateinit var billingViewModel: BillingViewModel
+    private val billingViewModel by activityViewModels<BillingViewModel>()
     private var _binding: ContentBillingBinding? = null
     private val binding
         get() = _binding!!
@@ -117,7 +118,6 @@ class BillingFragment : Fragment() {
             findNavController().navigate(R.id.billingTroubleshootFragment)
         }
 
-        billingViewModel = (activity as MainActivity).billingViewModel
         billingViewModel.proProductDetails.observe(viewLifecycleOwner) {
             it?.let {
                 binding.startBilling.text = Html.fromHtml(

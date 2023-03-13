@@ -8,21 +8,27 @@ import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
+import com.arn.scrobble.db.BlockedMetadataDao.Companion.getBlockedEntry
 import com.arn.scrobble.db.CachedAlbum
 import com.arn.scrobble.db.CachedAlbum.Companion.toAlbum
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
+import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedArtist
 import com.arn.scrobble.db.CachedArtist.Companion.toArtist
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
+import com.arn.scrobble.db.CachedArtistsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.db.CachedTrack.Companion.toTrack
 import com.arn.scrobble.db.CachedTracksDao
+import com.arn.scrobble.db.CachedTracksDao.Companion.deltaUpdate
 import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.db.RegexEditsDao.Companion.performRegexReplace
 import com.arn.scrobble.db.ScrobbleSource
+import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
@@ -1463,7 +1469,7 @@ class LFMRequester(
         }
     }
 
-    fun delete(track: Track, callback: (suspend (Boolean) -> Unit)?) {
+    fun delete(track: Track, callback: (suspend (Boolean) -> Unit)? = null) {
         toExec = {
             val results = Scrobblables.all.mapConcurrently(5) {
                 runCatching {
@@ -1688,9 +1694,9 @@ class LFMRequester(
             }
         }
 
-        public fun ExceptionNotifier(
+        fun ExceptionNotifier(
             errorLiveData: MutableLiveData<Throwable>? = null,
-            timberLog: Boolean = true
+            timberLog: Boolean = false
         ) =
             CoroutineExceptionHandler { coroutineContext, throwable ->
                 when (throwable) {
@@ -1706,6 +1712,8 @@ class LFMRequester(
                         else {
                             if (timberLog)
                                 Timber.tag(Stuff.TAG).e(throwable)
+                            else
+                                throwable.printStackTrace()
                             if (BuildConfig.DEBUG) {
                                 App.context.toast("err: " + throwable.message)
                             }

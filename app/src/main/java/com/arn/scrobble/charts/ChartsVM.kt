@@ -1,10 +1,10 @@
 package com.arn.scrobble.charts
 
-import android.app.Application
 import android.graphics.Bitmap
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
-class ChartsVM(application: Application) : AndroidViewModel(application) {
+class ChartsVM : ViewModel() {
     val chartsData by lazy { mutableListOf<MusicEntry>() }
     val chartsReceiver by lazy { LiveEvent<PaginatedResult<MusicEntry>>() }
     val listReceiver by lazy { LiveEvent<List<MusicEntry>>() }
@@ -37,8 +37,8 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
     var periodCountRequested = false
     var tagCloudRequested = false
     val tagCloudProgressLd by lazy { MutableLiveData<Double>() }
-    val scrobbleCountHeader = MutableLiveData(application.getString(R.string.listening_activity))
-    var lastListeningActivityJob: Job? = null
+    val scrobbleCountHeader = MutableLiveData(App.context.getString(R.string.listening_activity))
+    private var lastListeningActivityJob: Job? = null
     private val lastChartsTasks = mutableMapOf<Int, LFMRequester>()
     val periodType = MutableLiveData<TimePeriodType>()
     val timePeriods = MutableLiveData<BiMap<Int, TimePeriod>>()

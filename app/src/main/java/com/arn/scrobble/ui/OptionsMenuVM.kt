@@ -5,8 +5,4 @@ import com.hadilq.liveevent.LiveEvent
 
 class OptionsMenuVM: ViewModel() {
     val menuEvent = LiveEvent<Int>()
-
-    fun emit(menuId: Int) {
-        menuEvent.value = menuId
-    }
 }

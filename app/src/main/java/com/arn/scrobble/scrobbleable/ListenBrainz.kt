@@ -2,6 +2,8 @@ package com.arn.scrobble.scrobbleable
 
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.CacheMarkerInterceptor
+import com.arn.scrobble.CacheMarkerInterceptor.Companion.isFromCache
 import com.arn.scrobble.DrawerData
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
@@ -74,6 +76,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     readTimeout(Stuff.READ_TIMEOUT_SECS, TimeUnit.SECONDS)
                 }
                 addNetworkInterceptor(CacheInterceptor(ListenbrainzExpirationPolicy()))
+                addInterceptor(CacheMarkerInterceptor())
             }
 
             install(ContentNegotiation) {
@@ -133,6 +136,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             )
         } catch (e: Exception) {
             if (e is CancellationException) throw e
+            e.printStackTrace()
             val statusCode = (e as? ResponseException)?.response?.status?.value
             return ScrobbleResult.createHttp200OKResult(
                 statusCode ?: 0,
@@ -245,7 +249,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             cacheStrategy(cacheStrategy)
         }
             .also {
-                fromCache = it.responseTime.timestamp - it.requestTime.timestamp < 500
+                fromCache = it.isFromCache
             }
             .body<ListenBrainzData<ListenBrainzListensPayload>>()
 
@@ -344,7 +348,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             parameter("offset", limit * (page - 1))
             cacheStrategy(cacheStrategy)
         }.also {
-            fromCache = it.responseTime.timestamp - it.requestTime.timestamp < 500
+            fromCache = it.isFromCache
         }.body<ListenBrainzFeedbacks>()
         val tracks = feedbacks.feedback.map {
             Track(
@@ -397,8 +401,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         return PaginatedResult(1, 1, users.size, users)
     }
 
-    override suspend fun loadDrawerData(usernamep: String?): DrawerData {
-        val username = usernamep ?: userAccount.user.name
+    override suspend fun loadDrawerData(username: String): DrawerData {
+        val isSelf = username == userAccount.user.name
 
         val totalCount = client.get("user/$username/listen-count")
             .also { if (it.status != HttpStatusCode.OK) return DrawerData(0) }
@@ -406,7 +410,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             .payload.count
 
         val dd = DrawerData(totalCount)
-        if (usernamep == null)
+        if (isSelf)
             MainPrefs(App.context).drawerDataCached = dd
 
         return dd
@@ -607,6 +611,7 @@ class ListenbrainzExpirationPolicy : ExpirationPolicy {
 
     override fun getExpirationTime(url: HttpUrl?): Long {
         return when (url?.pathSegments?.lastOrNull()) {
+            "playing-now",
             "listens",
             "following",
             "get-feedback",

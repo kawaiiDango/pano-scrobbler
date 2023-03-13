@@ -25,45 +25,6 @@ interface CachedAlbumsDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(entry: CachedAlbum)
 
-    fun deltaUpdate(album: CachedAlbum, deltaCount: Int, dirty: DirtyUpdate = DirtyUpdate.CLEAN) {
-        val foundAlbum = findExact(album.artistName, album.albumName) ?: album
-
-        if (dirty == DirtyUpdate.DIRTY_ABSOLUTE && foundAlbum.userPlayCount == album.userPlayCount) return
-
-        val userPlayCount =
-            (foundAlbum.userPlayCount.coerceAtLeast(0) + deltaCount).coerceAtLeast(0)
-        val userPlayCountDirty = (
-                (if (foundAlbum.userPlayCountDirty == -1) foundAlbum.userPlayCount else foundAlbum.userPlayCountDirty)
-                    .coerceAtLeast(0)
-                        + deltaCount
-                ).coerceAtLeast(0)
-
-        when (dirty) {
-            DirtyUpdate.BOTH -> {
-                foundAlbum.userPlayCountDirty = userPlayCount
-                foundAlbum.userPlayCount = userPlayCountDirty
-            }
-
-            DirtyUpdate.DIRTY -> {
-                foundAlbum.userPlayCountDirty = userPlayCountDirty
-            }
-
-            DirtyUpdate.DIRTY_ABSOLUTE -> {
-                foundAlbum.userPlayCountDirty = album.userPlayCount
-            }
-
-            DirtyUpdate.CLEAN -> {
-                foundAlbum.userPlayCount = userPlayCount
-                foundAlbum.userPlayCountDirty = -1
-            }
-        }
-
-        if (foundAlbum.largeImageUrl == null) {
-            foundAlbum.largeImageUrl = album.largeImageUrl
-        }
-        insert(listOf(foundAlbum))
-    }
-
     @Delete
     fun delete(entry: CachedAlbum)
 
@@ -72,5 +33,48 @@ interface CachedAlbumsDao {
 
     companion object {
         const val tableName = "cachedAlbums"
+
+        fun CachedAlbumsDao.deltaUpdate(
+            album: CachedAlbum,
+            deltaCount: Int,
+            dirty: DirtyUpdate = DirtyUpdate.CLEAN
+        ) {
+            val foundAlbum = findExact(album.artistName, album.albumName) ?: album
+
+            if (dirty == DirtyUpdate.DIRTY_ABSOLUTE && foundAlbum.userPlayCount == album.userPlayCount) return
+
+            val userPlayCount =
+                (foundAlbum.userPlayCount.coerceAtLeast(0) + deltaCount).coerceAtLeast(0)
+            val userPlayCountDirty = (
+                    (if (foundAlbum.userPlayCountDirty == -1) foundAlbum.userPlayCount else foundAlbum.userPlayCountDirty)
+                        .coerceAtLeast(0)
+                            + deltaCount
+                    ).coerceAtLeast(0)
+
+            when (dirty) {
+                DirtyUpdate.BOTH -> {
+                    foundAlbum.userPlayCountDirty = userPlayCount
+                    foundAlbum.userPlayCount = userPlayCountDirty
+                }
+
+                DirtyUpdate.DIRTY -> {
+                    foundAlbum.userPlayCountDirty = userPlayCountDirty
+                }
+
+                DirtyUpdate.DIRTY_ABSOLUTE -> {
+                    foundAlbum.userPlayCountDirty = album.userPlayCount
+                }
+
+                DirtyUpdate.CLEAN -> {
+                    foundAlbum.userPlayCount = userPlayCount
+                    foundAlbum.userPlayCountDirty = -1
+                }
+            }
+
+            if (foundAlbum.largeImageUrl == null) {
+                foundAlbum.largeImageUrl = album.largeImageUrl
+            }
+            insert(listOf(foundAlbum))
+        }
     }
 }

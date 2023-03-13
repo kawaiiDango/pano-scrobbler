@@ -322,6 +322,9 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                     delay(200)
 
                     binding.chartsTagCloud.visibility = View.VISIBLE
+                    binding.chartsTagCloudNotice.text =
+                        getString(R.string.based_on, getString(R.string.artists))
+                    binding.chartsTagCloudNotice.visibility = View.VISIBLE
                     crAnimator.start()
                 }
             }
@@ -670,6 +673,14 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             Bitmap.Config.ARGB_8888
         )
         Canvas(bitmap).apply {
+            // draw opaque bg
+            drawColor(
+                MaterialColors.getColor(
+                    requireContext(),
+                    android.R.attr.colorBackground,
+                    null
+                )
+            )
             drawBitmap(tagCloudBitmap, 0f, 0f, null)
             drawBitmap(footerBitmap, 0f, tagCloudBitmap.height.toFloat(), null)
         }

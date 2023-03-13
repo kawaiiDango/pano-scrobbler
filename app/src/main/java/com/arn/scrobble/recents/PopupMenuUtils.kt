@@ -51,6 +51,7 @@ object PopupMenuUtils {
                 track = track.name,
                 msid = track.msid,
                 timeMillis = track.playedWhen?.time ?: 0,
+                nowPlaying = track.isNowPlaying
             ).toBundle()
 
             navController.navigate(R.id.editDialogFragment, args)

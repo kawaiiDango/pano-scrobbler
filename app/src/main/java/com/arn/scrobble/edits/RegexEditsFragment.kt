@@ -178,7 +178,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
                         order = 0
                     )
                     dao.shiftDown()
-                    dao.insert(regexEdit)
+                    dao.insert(listOf(regexEdit))
                 }
             }
             .show()

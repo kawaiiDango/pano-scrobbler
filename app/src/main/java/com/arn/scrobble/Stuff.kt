@@ -92,7 +92,6 @@ object Stuff {
     const val ARG_PKG = "pkg"
     const val ARG_ACTION = "action"
     const val ARG_TLS_NO_VERIFY = "tls_no_verify"
-    const val ARG_INFO = "info"
     const val ARG_ALLOWED_PACKAGES = MainPrefs.PREF_ALLOWED_PACKAGES
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
@@ -699,6 +698,8 @@ object Stuff {
             }
         }
     }
+
+    fun Bundle.myHash() = keySet().map { get(it) }.hashCode()
 
     fun isScrobblerRunning(): Boolean {
         val serviceComponent = ComponentName(App.context, NLService::class.java)

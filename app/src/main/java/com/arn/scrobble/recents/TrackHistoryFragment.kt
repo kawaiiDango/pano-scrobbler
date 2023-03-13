@@ -73,8 +73,8 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         setTitleWithCount()
     }
 

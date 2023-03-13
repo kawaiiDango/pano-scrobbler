@@ -60,8 +60,8 @@ class AppRater(
     }
 
     companion object {
-        private const val MIN_DAYS = 6
-        private const val MIN_SCROBBLES = 20
+        private const val MIN_DAYS = 15
+        private const val MIN_SCROBBLES = 50
 
         fun incrementScrobbleCount(pref: MainPrefs) {
             if (pref.scrobbleCount < MIN_SCROBBLES)

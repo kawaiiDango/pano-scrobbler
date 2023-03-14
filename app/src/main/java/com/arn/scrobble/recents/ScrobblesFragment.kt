@@ -43,6 +43,7 @@ import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
+import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.billing.BillingViewModel
@@ -270,6 +271,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
 
         activityViewModel.editData.observe(viewLifecycleOwner) {
             adapter.editTrack(it)
+            ReviewPrompter(requireActivity()).showIfNeeded()
         }
 
         binding.scrobblesChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->

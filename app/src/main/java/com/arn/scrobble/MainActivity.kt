@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
@@ -83,8 +84,6 @@ class MainActivity : AppCompatActivity(),
                     CoordinatorLayout.LayoutParams.WRAP_CONTENT
                 )
                 lp.insetEdge = Gravity.TOP
-//                lp.anchorGravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-//                lp.anchorId = R.id.sidebar_nav
                 lp.gravity = Gravity.TOP or Gravity.START
                 lp.setMargins(resources.getDimensionPixelSize(R.dimen.fab_margin))
                 layoutParams = lp
@@ -162,10 +161,14 @@ class MainActivity : AppCompatActivity(),
 
         mainNotifierViewModel.fabData.observe(this) {
             if (it == null) {
-                if (UiUtils.isTabletUi)
+                if (UiUtils.isTabletUi) {
                     (mainFab as ExtendedFloatingActionButton).hide()
-                else
+                    binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
+                        topMargin = 0
+                    }
+                } else {
                     (mainFab as FloatingActionButton).hide()
+                }
 
                 return@observe
             }
@@ -196,6 +199,9 @@ class MainActivity : AppCompatActivity(),
                     setOnClickListener(it.clickListener)
                     setOnLongClickListener(it.longClickListener)
                     show()
+                    binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
+                        topMargin = resources.getDimensionPixelSize(R.dimen.fab_margin)
+                    }
                 }
             } else {
                 (mainFab as FloatingActionButton).apply {
@@ -279,9 +285,7 @@ class MainActivity : AppCompatActivity(),
                 }
                 .focusOnTv()
                 .show()
-        } else if (billingViewModel.proStatus.value != true)
-            AppRater(this, prefs).appLaunched()
-        else
+        } else
             Updater(this, prefs).withSnackbar()
     }
 

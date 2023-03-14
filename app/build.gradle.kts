@@ -129,6 +129,8 @@ dependencies {
     ksp("androidx.room:room-compiler:2.5.0")
     implementation("androidx.room:room-runtime:2.5.0")
     implementation("com.android.billingclient:billing:5.1.0")
+    implementation("com.google.android.play:review:2.0.1")
+    implementation("com.google.android.play:review-ktx:2.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 

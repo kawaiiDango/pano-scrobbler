@@ -25,6 +25,7 @@ import coil.request.ImageRequest
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
+import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.mapConcurrently
@@ -185,6 +186,8 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                         delay(2500)
                         binding.collageSaveButton.setText(R.string.save)
                         binding.collageSaveButton.isEnabled = true
+
+                        ReviewPrompter(requireActivity()).showIfNeeded()
                     } else {
                         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                             addCategory(Intent.CATEGORY_OPENABLE)

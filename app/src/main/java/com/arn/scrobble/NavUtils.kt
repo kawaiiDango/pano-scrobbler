@@ -24,7 +24,6 @@ import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.InitialsDrawable
 import com.arn.scrobble.ui.UiUtils
-import com.arn.scrobble.ui.UiUtils.memoryCacheKey
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.arn.scrobble.ui.UiUtils.slide
 import de.umass.lastfm.ImageSize
@@ -40,11 +39,11 @@ object NavUtils {
     ) {
         val accountType = Scrobblables.current?.userAccount?.type
 
-        if (accountType == null) {
-            headerNavBinding.root.isVisible = false
+        if (accountType == null || mainNotifierViewModel.drawerData.value == null) {
+            headerNavBinding.root.visibility = View.INVISIBLE
             return
         } else {
-            headerNavBinding.root.isVisible = true
+            headerNavBinding.root.visibility = View.VISIBLE
         }
 
         val currentUser = mainNotifierViewModel.currentUser
@@ -64,7 +63,7 @@ object NavUtils {
         headerNavBinding.navName.text = displayText
         val nf = NumberFormat.getInstance()
 
-        val drawerData = mainNotifierViewModel.drawerData.value ?: return
+        val drawerData = mainNotifierViewModel.drawerData.value!!
 
         if (drawerData.scrobblesToday >= 0) {
             headerNavBinding.navNumScrobblesToday.isVisible = true
@@ -95,10 +94,9 @@ object NavUtils {
         }
 
         val profilePicUrl = currentUser.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-        if (headerNavBinding.navProfilePic.tag != profilePicUrl + username) // prevent flash
+        if (headerNavBinding.navProfilePic.tag != profilePicUrl + username) // todo prevent flash
             headerNavBinding.navProfilePic.load(profilePicUrl) {
                 allowHardware(false)
-                placeholderMemoryCacheKey(headerNavBinding.navProfilePic.memoryCacheKey)
                 error(
                     InitialsDrawable(
                         headerNavBinding.root.context,

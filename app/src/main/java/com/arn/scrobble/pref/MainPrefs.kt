@@ -132,11 +132,9 @@ class MainPrefs(context: Context) : Krate {
 
     var proStatus by booleanPref(PREF_PRO_STATUS).withDefault(false)
     var digestSeconds by intPref(PREF_DIGEST_SECONDS)
-    var scrobbleCount by intPref(PREF_SCROBBLE_COUNT).withDefault(0)
-    var firstLaunchTime by longPref(PREF_FIRST_LAUNCHED)
+    var lastReviewPromptTime by longPref(PREF_FIRST_LAUNCHED)
     var lastUpdateCheckTime by longPref(PREF_LAST_UPDATE_CHECK_TIME)
     var checkForUpdates by booleanPref(PREF_CHECK_FOR_UPDATES)
-    var dontAskForRating by booleanPref(PREF_DONT_ASK_FOR_RATING).withDefault(false)
     var prefVersion by intPref(PREF_VERSION).withDefault(0)
     var lastfmLinksEnabled by booleanPref(PREF_ENABLE_LASTFM_LINKS).withDefault(false)
     var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(MetadataUtils.tagSpam)
@@ -255,11 +253,9 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_COLLAGE_TEXT = "collage_text"
         const val PREF_COLLAGE_USERNAME = "collage_username"
 
-        const val PREF_SCROBBLE_COUNT = "scrobble_count"
         const val PREF_FIRST_LAUNCHED = "date_firstlaunch"
         const val PREF_LAST_UPDATE_CHECK_TIME = "last_update_check_time"
         const val PREF_CHECK_FOR_UPDATES = "check_for_updates"
-        const val PREF_DONT_ASK_FOR_RATING = "dontshowagain"
         const val PREF_ENABLE_LASTFM_LINKS = "lastfm_links"
         const val PREF_VERSION = "version"
     }

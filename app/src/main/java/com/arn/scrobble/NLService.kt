@@ -1061,11 +1061,6 @@ class NLService : NotificationListenerService() {
             if (trackInfo.packageName !in prefs.allowedPackages) {
                 notifyAppDetected(trackInfo.packageName)
             }
-
-//            broadcastNowPlayingInfo()
-
-            //for rating
-            AppRater.incrementScrobbleCount(prefs)
         }
 
         private fun submitScrobble(trackInfoCopy: PlayingTrackInfo) {

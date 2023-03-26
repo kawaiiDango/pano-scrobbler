@@ -125,6 +125,7 @@
     <string name="grid_size">Cambia dimensione griglia</string>
     <string name="pinch_to_zoom">Pizzica per ingrandire</string>
     <string name="more_info">Altre info</string>
+    <string name="more" comment="More options menu in short">Altro</string>
     <string name="rank_change" comment="%1= delta change">Spostamento in classifica: %s</string>
     <string name="rank_change_no_change">Nessuno spostamento</string>
     <string name="rank_change_new">Nessuno scrobbling nel periodo precedente</string>

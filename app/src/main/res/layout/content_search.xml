@@ -1,87 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/search_term"
+        style="?textInputOutlinedExposedDropdownMenuStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:touchscreenBlocksFocus="false"
-        app:elevation="0dp"
-        app:liftOnScroll="false">
+        android:layout_marginHorizontal="10dp"
+        app:endIconMode="dropdown_menu"
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:startIconDrawable="@drawable/vd_search">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/search_term"
-            style="?textInputOutlinedExposedDropdownMenuStyle"
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/search_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            app:endIconMode="dropdown_menu"
-            app:hintEnabled="false"
-            app:layout_scrollFlags="enterAlways|scroll|snap"
-            app:startIconDrawable="@drawable/vd_search">
+            android:contentDescription="@string/search"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="actionSearch"
+            android:singleLine="true" />
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/search_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/search"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:imeOptions="actionSearch"
-                android:singleLine="true" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/search_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                app:checkedChip="@id/search_global"
-                app:selectionRequired="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/search_global"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/global" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/search_library"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/library" />
-            </com.google.android.material.chip.ChipGroup>
-
-        </com.google.android.material.textfield.TextInputLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/search_progress"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/search_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="invisible"
-            android:max="1000"
-            tools:visibility="visible" />
+            android:layout_gravity="center_horizontal"
+            app:checkedChip="@id/search_global"
+            app:selectionRequired="true"
+            app:singleSelection="true">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_results_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layoutAnimation="@anim/layout_animation_slide_up"
-            android:scrollbars="vertical"
-            android:visibility="gone" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/search_global"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/global" />
 
-    </FrameLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/search_library"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/library" />
+        </com.google.android.material.chip.ChipGroup>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/search_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:max="1000"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_results_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:layoutAnimation="@anim/layout_animation_slide_up"
+        android:scrollbars="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_term"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

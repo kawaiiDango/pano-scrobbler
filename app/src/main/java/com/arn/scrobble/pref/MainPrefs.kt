@@ -3,6 +3,7 @@ package com.arn.scrobble.pref
 import android.app.NotificationManager
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import com.arn.scrobble.DrawerData
 import com.arn.scrobble.MetadataUtils
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.isChannelEnabled
@@ -50,7 +51,6 @@ class MainPrefs(context: Context) : Krate {
 
     var scrobbleSpotifyRemote by booleanPref(PREF_SCROBBLE_SPOTIFY_REMOTE).withDefault(false)
     var allowedArtists by stringSetPref(PREF_ALLOWED_ARTISTS).withDefault(setOf())
-    var lastfmDisabled by booleanPref(PREF_LASTFM_DISABLE).withDefault(false)
     var submitNowPlaying by booleanPref(PREF_NOW_PLAYING).withDefault(true)
     var fetchAlbumArtist by booleanPref(PREF_FETCH_AA).withDefault(false)
     var fetchAlbum by booleanPref(PREF_FETCH_ALBUM).withDefault(false)
@@ -78,15 +78,16 @@ class MainPrefs(context: Context) : Krate {
     )
     var lastChartsPeriodSelectedJson by kotlinxPref<TimePeriod>(
         PREF_ACTIVITY_LAST_CHARTS_PERIOD_SELECTED
-    ).withDefault(TimePeriod(context, Period.ONE_MONTH))
-    var currentUser by kotlinxPref<UserAccountSerializable>(PREF_CURRENT_USER)
-    var scrobbleAccounts by kotlinxPref<List<UserAccountSerializable>>(PREF_SCROBBLE_ACCOUNTS).withDefault(listOf())
-    var scrobblesTodayCached by intPref(PREF_ACTIVITY_TODAY_SCROBBLES).withDefault(0)
-    var scrobblesTotalCached by intPref(PREF_ACTIVITY_TOTAL_SCROBBLES).withDefault(0)
-    var scrobblingSince by longPref(PREF_ACTIVITY_SCROBBLING_SINCE).withDefault(0)
+    ).withDefault(TimePeriod(Period.ONE_MONTH))
+    var currentAccountIdx by intPref(PREF_CURRENT_USER_IDX).withDefault(0)
+    var scrobbleAccounts by kotlinxPref<List<UserAccountSerializable>>(PREF_SCROBBLE_ACCOUNTS).withDefault(
+        listOf()
+    )
+    var drawerDataCached by kotlinxPref<DrawerData>(PREF_ACTIVITY_DRAWER_DATA_CACHED).withDefault(
+        DrawerData(0)
+    )
     var lastRandomType by intPref(PREF_ACTIVITY_LAST_RANDOM_TYPE).withDefault(Stuff.TYPE_TRACKS)
     var lastKillCheckTime by longPref(PREF_ACTIVITY_LAST_KILL_CHECK_TIME).withDefault(-1)
-    var profilePicUrlCached by stringPref(PREF_ACTIVITY_PROFILE_PIC)
     var userTopTagsFetched by booleanPref(PREF_ACTIVITY_USER_TAG_HISTORY_FETCHED).withDefault(
         false
     )
@@ -107,7 +108,7 @@ class MainPrefs(context: Context) : Krate {
 
     var gridColumnsToAdd by intPref(PREF_ACTIVITY_GRID_COLUMNS_TO_ADD).withDefault(0)
     var gridSingleColumn by booleanPref(PREF_ACTIVITY_GRID_SINGLE_COLUMN).withDefault(false)
-    var scrubLearnt by booleanPref(PREF_ACTIVITY_SCRUB_LEARNT).withDefault(false)
+    var regexLearnt by booleanPref(PREF_ACTIVITY_REGEX_LEARNT).withDefault(false)
     var longPressLearnt by booleanPref(PREF_ACTIVITY_LONG_PRESS_LEARNT).withDefault(false)
     var regexEditsLearnt by booleanPref(PREF_ACTIVITY_REGEX_EDITS_LEARNT).withDefault(false)
     var reorderFriendsLearnt by booleanPref(PREF_ACTIVITY_REORDER_FRIENDS_LEARNT).withDefault(false)
@@ -125,37 +126,22 @@ class MainPrefs(context: Context) : Krate {
     var notiNewApp by booleanPref(CHANNEL_NOTI_NEW_APP).withDefault(true)
     var notiPersistent by booleanPref(CHANNEL_NOTI_PERSISTENT).withDefault(Stuff.forcePersistentNoti)
 
-    var lastfmUsername by stringPref(PREF_LASTFM_USERNAME)
-    var lastfmSessKey by stringPref(PREF_LASTFM_SESS_KEY)
-    var librefmUsername by stringPref(PREF_LIBREFM_USERNAME)
-    var librefmSessKey by stringPref(PREF_LIBREFM_SESS_KEY)
-    var listenbrainzUsername by stringPref(PREF_LISTENBRAINZ_USERNAME)
-    var listenbrainzToken by stringPref(PREF_LISTENBRAINZ_TOKEN)
-    var customListenbrainzUsername by stringPref(PREF_LB_CUSTOM_USERNAME)
-    var customListenbrainzToken by stringPref(PREF_LB_CUSTOM_TOKEN)
-    var customListenbrainzRoot by stringPref(PREF_LB_CUSTOM_ROOT).withDefault(Stuff.LISTENBRAINZ_API_ROOT)
-    var customListenbrainzTlsNoVerify by booleanPref(PREF_LB_CUSTOM_TLS_NO_VERIFY).withDefault(false)
-    var gnufmUsername by stringPref(PREF_GNUFM_USERNAME)
-    var gnufmSessKey by stringPref(PREF_GNUFM_SESS_KEY)
-    var gnufmRoot by this.stringPref(PREF_GNUFM_ROOT).withDefault("https://")
-    var gnufmTlsNoVerify by booleanPref(PREF_GNUFM_TLS_NO_VERIFY).withDefault(false)
     var acrcloudHost by stringPref(PREF_ACR_HOST)
     var acrcloudKey by stringPref(PREF_ACR_KEY)
     var acrcloudSecret by stringPref(PREF_ACR_SECRET)
 
     var proStatus by booleanPref(PREF_PRO_STATUS).withDefault(false)
     var digestSeconds by intPref(PREF_DIGEST_SECONDS)
-    var scrobbleCount by intPref(PREF_SCROBBLE_COUNT).withDefault(0)
-    var firstLaunchTime by longPref(PREF_FIRST_LAUNCHED)
+    var lastReviewPromptTime by longPref(PREF_FIRST_LAUNCHED)
     var lastUpdateCheckTime by longPref(PREF_LAST_UPDATE_CHECK_TIME)
     var checkForUpdates by booleanPref(PREF_CHECK_FOR_UPDATES)
-    var dontAskForRating by booleanPref(PREF_DONT_ASK_FOR_RATING).withDefault(false)
     var prefVersion by intPref(PREF_VERSION).withDefault(0)
     var lastfmLinksEnabled by booleanPref(PREF_ENABLE_LASTFM_LINKS).withDefault(false)
     var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(MetadataUtils.tagSpam)
     var pinnedFriendsJson by kotlinxPref<List<UserSerializable>>(PREF_ACTIVITY_PINNED_FRIENDS)
         .withDefault(emptyList())
     var touhouCircles by stringPref(PREF_TOUHOU_CIRCLES).withDefault("")
+
     // we want 401 and not 400
     var spotifyAccessToken by stringPref(PREF_SPOTIFY_ACCESS_TOKEN).withDefault("qwertyuiopasdfghjklzxcvbnm")
     var spotifyAccessTokenExpires by longPref(PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES).withDefault(-1)
@@ -191,7 +177,6 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_GNUFM_ROOT = "gnufm_root"
         const val PREF_GNUFM_SESS_KEY = "gnufm_sesskey"
         const val PREF_GNUFM_TLS_NO_VERIFY = "gnufm_tls_no_verify"
-        const val PREF_LASTFM_DISABLE = "lastfm_disable"
         const val PREF_NOW_PLAYING = "now_playing"
         const val PREF_ACR_HOST = "acr_host"
         const val PREF_ACR_KEY = "acr_key"
@@ -217,7 +202,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_SEARCH_IN_SOURCE = "search_in_source"
         const val PREF_SEARCH_TYPE = "search_type"
         const val PREF_CRASHLYTICS_ENABLED = "crashlytics_enabled"
-        const val PREF_CURRENT_USER = "current_user"
+        const val PREF_CURRENT_USER_IDX = "current_user_idx"
         const val PREF_SCROBBLE_ACCOUNTS = "scrobble_accounts"
         const val PREF_TOUHOU_CIRCLES = "touhou_circles"
         const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
@@ -234,19 +219,16 @@ class MainPrefs(context: Context) : Krate {
         const val CHANNEL_NOTI_UPDATE = "noti_update"
         const val CHANNEL_TEST_SCROBBLE_FROM_NOTI = "test_scrobble_from_noti"
 
-        const val ACTIVITY_PREFS_NAME = "activity_preferences"
         const val PREF_ACTIVITY_APP_LIST_WAS_RUN = "app_list_run"
         const val PREF_ACTIVITY_LAST_TAB = "last_tab"
         const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_SELECTED = "last_charts_period_selected"
         const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_TYPE = "last_charts_period_type"
-        const val PREF_ACTIVITY_TODAY_SCROBBLES = "today_scrobbles_cached"
-        const val PREF_ACTIVITY_TOTAL_SCROBBLES = "total_scrobbles_cached"
+        const val PREF_ACTIVITY_DRAWER_DATA_CACHED = "drawer_data_cached"
         const val PREF_ACTIVITY_SCROBBLING_SINCE = "scrobbling_since"
         const val PREF_ACTIVITY_LAST_RANDOM_TYPE = "random_type"
         const val PREF_ACTIVITY_PROFILE_PIC = "profile_cached"
         const val PREF_ACTIVITY_SEARCH_HISTORY = "search_history"
         const val PREF_ACTIVITY_TAG_HISTORY = "tag_history"
-        const val PREF_ACTIVITY_SCRUB_LEARNT = "scrub_learnt"
         const val PREF_ACTIVITY_LONG_PRESS_LEARNT = "long_press_learnt"
         const val PREF_ACTIVITY_REGEX_EDITS_LEARNT = "regex_edits_learnt"
         const val PREF_ACTIVITY_REORDER_FRIENDS_LEARNT = "reorder_friends_learnt"
@@ -263,6 +245,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_ACTIVITY_GRID_SINGLE_COLUMN = "grid_single_column"
         const val PREF_ACTIVITY_GRID_PINCH_LEARNT = "grid_pinch_learnt"
         const val PREF_ACTIVITY_LAST_KILL_CHECK_TIME = "last_kill_checked"
+        const val PREF_ACTIVITY_REGEX_LEARNT = "regex_learnt"
 
         const val PREF_COLLAGE_SIZE = "collage_size"
         const val PREF_COLLAGE_CAPTIONS = "collage_captions"
@@ -270,11 +253,9 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_COLLAGE_TEXT = "collage_text"
         const val PREF_COLLAGE_USERNAME = "collage_username"
 
-        const val PREF_SCROBBLE_COUNT = "scrobble_count"
         const val PREF_FIRST_LAUNCHED = "date_firstlaunch"
         const val PREF_LAST_UPDATE_CHECK_TIME = "last_update_check_time"
         const val PREF_CHECK_FOR_UPDATES = "check_for_updates"
-        const val PREF_DONT_ASK_FOR_RATING = "dontshowagain"
         const val PREF_ENABLE_LASTFM_LINKS = "lastfm_links"
         const val PREF_VERSION = "version"
     }

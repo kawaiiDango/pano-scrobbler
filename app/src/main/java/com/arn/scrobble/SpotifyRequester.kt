@@ -19,6 +19,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.FormBody
 import okhttp3.Headers
@@ -28,12 +30,16 @@ import okhttp3.Request
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.collections.set
 import kotlin.coroutines.cancellation.CancellationException
 
 object SpotifyRequester {
     private val prefs by lazy { MainPrefs(App.context) }
     private val authMutex by lazy { Mutex() }
+    private val jsonSerializer by lazy { Json { ignoreUnknownKeys = true } }
     private val spotifyClient: HttpClient by lazy {
         HttpClient(OkHttp) {
             expectSuccess = true
@@ -47,9 +53,7 @@ object SpotifyRequester {
             }
 
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
+                json(jsonSerializer)
             }
 
             install(Auth) {
@@ -139,9 +143,7 @@ object SpotifyRequester {
     }
 
 
-    suspend fun getSpotifyLink(track: Track): String? {
-        val similarityThreshold = 0.7
-
+    suspend fun getSpotifyTrack(track: Track, similarityThreshold: Float = 1f): SpotifyTrack? {
         try {
             val response = spotifyClient.get {
                 url("https://api.spotify.com/v1/search")
@@ -156,38 +158,126 @@ object SpotifyRequester {
 
             val trackItem = tracks.getJSONArray("items").getJSONObject(0)
             val trackItemName = trackItem.getString("name")
+            val albumItem = trackItem.getJSONObject("album")
+            val albumItemName = albumItem.getString("name")
             val artistItem = trackItem.getJSONArray("artists").getJSONObject(0)
             val artistItemName = artistItem.getString("name")
+            val id = trackItem.getString("id")
+            val popularity = trackItem.getInt("popularity")
+            val releaseDate = albumItem.getString("release_date")
+            val releaseDatePrecision = albumItem.getString("release_date_precision")
+            val durationMs = trackItem.getLong("duration_ms")
 
             if (artistItemName.similarity(track.artist) >= similarityThreshold &&
                 trackItemName.similarity(track.name) >= similarityThreshold
             )
-                return trackItem.getJSONObject("external_urls").getString("spotify")
+                return SpotifyTrack(
+                    trackItemName,
+                    albumItemName,
+                    artistItemName,
+                    id,
+                    durationMs,
+                    popularity,
+                    releaseDate,
+                    releaseDatePrecision,
+                )
 
             return null
         } catch (e: CancellationException) {
             throw e
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Timber.tag(Stuff.TAG).w(e)
         }
 
         return null
+    }
+
+    suspend fun getTrackFeatures(trackId: String): TrackFeatures? {
+        try {
+            val response = spotifyClient.get {
+                url("https://api.spotify.com/v1/audio-features/$trackId")
+            }
+            return jsonSerializer.decodeFromString<TrackFeatures>(response.bodyAsText())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Timber.tag(Stuff.TAG).w(e)
+        }
+        return null
+    }
+}
+
+data class SpotifyTrack(
+    val track: String,
+    val album: String,
+    val artist: String,
+    val id: String,
+    val durationMs: Long,
+    val popularity: Int,
+    val releaseDate: String,
+    val releaseDatePrecision: String,
+    var features: TrackFeatures? = null,
+) {
+    fun getReleaseDateDate(): Date? {
+        val sdf = when(releaseDatePrecision) {
+            "year" -> SimpleDateFormat("yyyy", Locale.getDefault())
+            "month" -> SimpleDateFormat("yyyy-MM", Locale.getDefault())
+            "day" -> SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            else -> return null
+        }
+        return sdf.parse(releaseDate)
+    }
+}
+
+@Serializable
+data class TrackFeatures(
+    val acousticness: Float,
+    val danceability: Float,
+    val duration_ms: Int,
+    val energy: Float,
+    val id: String,
+    val instrumentalness: Float,
+    val key: Int,
+    val liveness: Float,
+    val loudness: Float,
+    val mode: Int,
+    val speechiness: Float,
+    val tempo: Float,
+    val time_signature: Int,
+    val valence: Float,
+) {
+    fun getKeyString(): String? {
+        var scale = when (key) {
+            0 -> "C"
+            1 -> "C♯"
+            2 -> "D"
+            3 -> "D♯"
+            4 -> "E"
+            5 -> "F"
+            6 -> "F♯"
+            7 -> "G"
+            8 -> "G♯"
+            9 -> "A"
+            10 -> "A♯"
+            11 -> "B"
+            else -> null
+        }
+
+        if (scale != null)
+            scale += (if (mode == 1) "" else "m")
+        return scale
     }
 }
 
 class SpotifyCacheExpirationPolicy : ExpirationPolicy {
 
     private val ONE_WEEK = 1000L * 60 * 60 * 24 * 7
+    private val ONE_YEAR = 1000L * 60 * 60 * 24 * 365
 
-    private val pathsToCache = setOf(
-        "search",
-    )
-
-    override fun getExpirationTime(url: HttpUrl): Long {
-        if (url.pathSegments.last() in pathsToCache)
-            return ONE_WEEK
-        return -1
+    override fun getExpirationTime(url: HttpUrl) = when {
+        url.pathSegments.last() == "search" -> ONE_WEEK
+        url.pathSegments[url.pathSegments.size - 2] == "audio-features" -> ONE_YEAR
+        else -> -1
     }
 
 }

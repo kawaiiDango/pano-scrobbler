@@ -133,10 +133,13 @@ internal fun updateAppWidget(
     // cannot setup their own pending intents, instead, the collection as a whole can
     // setup a pending intent template, and the individual items can set a fillInIntent
     // to create unique before on an item to item basis.
-    val infoIntent = Intent(context, MainDialogActivity::class.java)
+    val infoIntent = Intent(context, MainDialogActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        putExtra(MainDialogActivity.ARG_DESTINATION, R.id.infoFragment)
+    }
 
     val infoPendingIntent = PendingIntent.getActivity(
-        context, 0, infoIntent,
+        context, Objects.hash(appWidgetId, -10), infoIntent,
         Stuff.updateCurrentOrMutable
     )
     rv.setPendingIntentTemplate(R.id.appwidget_list, infoPendingIntent)

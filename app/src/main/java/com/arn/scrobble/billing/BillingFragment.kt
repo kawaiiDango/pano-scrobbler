@@ -12,14 +12,15 @@ import android.view.ViewGroup
 import androidx.core.view.updatePaddingRelative
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentBillingBinding
 import com.arn.scrobble.ui.UiUtils.dp
-import com.arn.scrobble.ui.UiUtils.popBackStackTill
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,7 +30,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 
 class BillingFragment : Fragment() {
 
-    private lateinit var billingViewModel: BillingViewModel
+    private val billingViewModel by activityViewModels<BillingViewModel>()
     private var _binding: ContentBillingBinding? = null
     private val binding
         get() = _binding!!
@@ -52,18 +53,13 @@ class BillingFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        setTitle("")
-    }
-
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding.root.setupInsets()
 
         val bulletStrings = arrayOf(
             R.drawable.vd_palette to getString(R.string.pref_themes),
@@ -74,14 +70,14 @@ class BillingFragment : Fragment() {
         )
 
         bulletStrings.forEach { (iconRes, string) ->
-            val textView = MaterialTextView(context!!).apply {
+            val textView = MaterialTextView(requireContext()).apply {
                 text = string
                 TextViewCompat.setCompoundDrawableTintList(
                     this,
                     ColorStateList.valueOf(
                         MaterialColors.getColor(
-                            context!!,
-                            R.attr.colorSecondary,
+                            requireContext(),
+                            com.google.android.material.R.attr.colorSecondary,
                             null
                         )
                     )
@@ -101,39 +97,27 @@ class BillingFragment : Fragment() {
                 }
                 updatePaddingRelative(bottom = 4.dp)
             }
-            binding.billingLl.addView(textView)
+            binding.billingLl.addView(textView, 3)
         }
 
         binding.startBilling.setOnClickListener {
             val productDetails = billingViewModel.proProductDetails.value
             if (productDetails != null)
-                billingViewModel.makePurchase(activity!!, productDetails)
+                billingViewModel.makePurchase(requireActivity(), productDetails)
             else {
-                MaterialAlertDialogBuilder(context!!)
+                MaterialAlertDialogBuilder(requireContext())
                     .setMessage(R.string.thank_you)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
-                        parentFragmentManager.popBackStackTill(0)
+                        findNavController().popBackStack(R.id.myHomePagerFragment, false)
                     }
                     .show()
             }
         }
 
         binding.billingTroubleshoot.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.frame, BillingTroubleshootFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.billingTroubleshootFragment)
         }
-        /*
-                Picasso.get()
-                    .load("https://i.imgur.com/DwRQl3l.png")
-                    .into(binding.themesImg)
 
-                Picasso.get()
-                    .load("https://i.imgur.com/cYMoA6u.png")
-                    .into(binding.shareImage)
-        */
-        billingViewModel = (activity as MainActivity).billingViewModel
         billingViewModel.proProductDetails.observe(viewLifecycleOwner) {
             it?.let {
                 binding.startBilling.text = Html.fromHtml(
@@ -146,16 +130,16 @@ class BillingFragment : Fragment() {
             it ?: return@observe
 //          This doesn't go away after the slow card gets declined. So, only notify recent purchases
             if (System.currentTimeMillis() - it < Stuff.PENDING_PURCHASE_NOTIFY_THRESHOLD)
-                MaterialAlertDialogBuilder(context!!)
+                MaterialAlertDialogBuilder(requireContext())
                     .setMessage(R.string.purchase_pending)
                     .setPositiveButton(android.R.string.ok, null)
                     .show()
         }
         billingViewModel.proStatus.observe(viewLifecycleOwner) {
             if (it == true) {
-                context!!.toast(R.string.thank_you)
+                requireContext().toast(R.string.thank_you)
                 if (!BuildConfig.DEBUG)
-                    parentFragmentManager.popBackStack()
+                    findNavController().popBackStack(R.id.myHomePagerFragment, false)
             }
         }
     }

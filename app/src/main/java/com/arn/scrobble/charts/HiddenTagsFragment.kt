@@ -23,7 +23,7 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     private var _binding: DialogUserTagsBinding? = null
     private val binding
         get() = _binding!!
-    private val prefs by lazy { MainPrefs(context!!) }
+    private val prefs by lazy { MainPrefs(requireContext()) }
 
     private val PREV_TAGS = "prev_tags"
 
@@ -73,8 +73,8 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         binding.userTagsInput.isEndIconVisible = false
 
 
-        return MaterialAlertDialogBuilder(context!!)
-            .setTitle(UiUtils.getColoredTitle(context!!, getString(R.string.hidden_tags)))
+        return MaterialAlertDialogBuilder(requireContext())
+            .setTitle(UiUtils.getColoredTitle(requireContext(), getString(R.string.hidden_tags)))
             .setIcon(R.drawable.vd_tag)
             .setView(binding.root)
             .setPositiveButton(R.string.add, null)
@@ -88,7 +88,7 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         super.onDismiss(dialog)
         val prevTags = arguments?.getStringArray(PREV_TAGS)?.toHashSet() ?: emptySet()
         if (prevTags != prefs.hiddenTags) {
-            val parentViewModel by viewModels<ChartsVM>({ parentFragment!! })
+            val parentViewModel by viewModels<ChartsVM>({ requireParentFragment() })
             parentViewModel.tagCloudRefresh.value = Unit
         }
     }
@@ -109,7 +109,7 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         if (save)
             prefs.hiddenTags = prefs.hiddenTags.toMutableSet().apply { add(tag) }
 
-        val chip = Chip(context!!).apply {
+        val chip = Chip(requireContext()).apply {
             text = tag
             isCloseIconVisible = true
             setOnCloseIconClickListener {

@@ -250,12 +250,6 @@
             android:title="@string/custom_listenbrainz"
             android:key="lb"
             />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:persistent="true"
-            android:key="lastfm_disable"
-            android:summary="@string/pref_lastfm_disable_desc"
-            android:title="@string/pref_lastfm_disable"/>
         <Preference
             android:title="@string/delete_account"
             android:key="delete_account"/>

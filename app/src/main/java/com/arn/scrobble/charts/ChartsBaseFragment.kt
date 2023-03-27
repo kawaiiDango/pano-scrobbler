@@ -3,13 +3,10 @@ package com.arn.scrobble.charts
 import android.os.Bundle
 import android.text.Html
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.R
@@ -19,15 +16,18 @@ import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsBinding
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.HtmlImageResGetter
+import com.arn.scrobble.ui.OptionsMenuVM
 import com.arn.scrobble.ui.ScalableGrid
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
-import com.arn.scrobble.ui.UiUtils.showIcons
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 open class ChartsBaseFragment : ChartsPeriodFragment() {
 
+    private val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
     private lateinit var adapter: ChartsAdapter
     private lateinit var scalableGrid: ScalableGrid
     private var _chartsBinding: ContentChartsBinding? = null
@@ -42,8 +42,8 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         val binding = ContentChartsBinding.inflate(inflater, container, false)
+        binding.frameChartsList.chartsList.setupInsets()
         _chartsBinding = binding
         _periodChipsBinding = binding.chipsChartsPeriod
         return binding.root
@@ -59,21 +59,16 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         super.onResume()
         if (chartsBinding.frameChartsList.chartsList.adapter == null)
             postInit()
+        updateTitle()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.charts_menu, menu)
-        inflater.inflate(R.menu.grid_size_menu, menu)
-        (menu as? MenuBuilder)?.showIcons()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+    private fun optionsMenuSelected(menuItemId: Int) {
+        when (menuItemId) {
             R.id.menu_collage -> {
                 CollageGeneratorFragment()
                     .apply {
                         arguments = Bundle().apply {
-                            putSingle(viewModel.selectedPeriod.value ?: return true)
+                            putSingle(viewModel.selectedPeriod.value ?: return)
                             putInt(Stuff.ARG_TYPE, chartsType)
                         }
                     }
@@ -105,9 +100,9 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
                 ) + "<br>"
                 text += "<img src='vd_stonks_new' /> " + getString(R.string.rank_change_new)
 
-                val spanned = Html.fromHtml(text, HtmlImageResGetter(context!!), null)
+                val spanned = Html.fromHtml(text, HtmlImageResGetter(requireContext()), null)
 
-                MaterialAlertDialogBuilder(context!!)
+                MaterialAlertDialogBuilder(requireContext())
                     .setMessage(spanned)
                     .setPositiveButton(android.R.string.ok, null)
                     .show()
@@ -117,7 +112,6 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
                 scalableGrid.resize(increase = true)
             }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun loadFirstPage(networkOnly: Boolean) {
@@ -137,19 +131,19 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         chartsBinding.frameChartsList.chartsList.adapter = adapter
         chartsBinding.frameChartsList.chartsList.addItemDecoration(SimpleHeaderDecoration())
 
-        var itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
+        var itemDecor = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(
             ContextCompat.getDrawable(
-                context!!,
+                requireContext(),
                 R.drawable.shape_divider_chart
             )!!
         )
         chartsBinding.frameChartsList.chartsList.addItemDecoration(itemDecor)
 
-        itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
+        itemDecor = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         itemDecor.setDrawable(
             ContextCompat.getDrawable(
-                context!!,
+                requireContext(),
                 R.drawable.shape_divider_chart
             )!!
         )
@@ -172,12 +166,8 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         }
 
         viewModel.chartsReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !Stuff.isOnline && viewModel.chartsData.size == 0)
-                adapter.populate()
-
             chartsBinding.chartsSwipeRefresh.isRefreshing = false
 
-            it ?: return@observe
             viewModel.totalCount = it.total
             if (it.page >= it.totalPages)
                 viewModel.reachedEnd = true
@@ -192,10 +182,42 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
             // sometimes does somersaults
 //            if (it.page == 1)
 //                chartsBinding.frameChartsList.chartsList.smoothScrollToPosition(0)
+            updateTitle()
         }
 
         if (viewModel.chartsData.isNotEmpty())
             adapter.populate()
+
+        optionsMenuViewModel.menuEvent.observe(viewLifecycleOwner) {
+            if (!isResumed)
+                return@observe
+
+            optionsMenuSelected(it)
+        }
+
+        updateTitle()
+
+    }
+
+    private fun updateTitle() {
+        setTitle(
+            Stuff.getMusicEntryQString(
+                when (chartsType) {
+                    Stuff.TYPE_TRACKS -> R.string.tracks
+                    Stuff.TYPE_ALBUMS -> R.string.albums
+                    Stuff.TYPE_ARTISTS -> R.string.artists
+                    else -> return
+                },
+                when (chartsType) {
+                    Stuff.TYPE_TRACKS -> R.plurals.num_tracks
+                    Stuff.TYPE_ALBUMS -> R.plurals.num_albums
+                    Stuff.TYPE_ARTISTS -> R.plurals.num_artists
+                    else -> return
+                },
+                viewModel.totalCount,
+                viewModel.periodType.value
+            )
+        )
     }
 
     private fun loadCharts(page: Int) {

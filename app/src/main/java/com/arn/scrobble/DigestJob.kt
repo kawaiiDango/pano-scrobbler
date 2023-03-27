@@ -13,19 +13,19 @@ import android.content.Intent
 import android.os.PersistableBundle
 import android.text.Html
 import androidx.core.app.NotificationCompat
+import androidx.core.os.bundleOf
+import androidx.navigation.NavDeepLinkBuilder
 import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.Stuff.scheduleExpeditedCompat
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.scrobbleable.ScrobblableEnum
+import com.arn.scrobble.scrobbleable.ListenbrainzRanges
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import de.umass.lastfm.Period
 import de.umass.lastfm.Session
-import de.umass.lastfm.User
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -38,12 +38,10 @@ class DigestJob : JobService() {
 
     private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
     private val prefs by lazy { MainPrefs(this) }
-    private val cal by lazy { Calendar.getInstance()}
+    private val cal by lazy { Calendar.getInstance() }
 
     override fun onStartJob(jp: JobParameters): Boolean {
         scheduleAlarms(applicationContext)
-
-        val lastfmAccount = Scrobblables.byType(ScrobblableEnum.LASTFM) ?: return false
 
         if (nm.isChannelEnabled(
                 prefs.sharedPreferences,
@@ -59,12 +57,13 @@ class DigestJob : JobService() {
                 NLService.iDIGEST_MONTHLY -> Period.ONE_MONTH
                 else -> throw IllegalArgumentException("Unknown action")
             }
+
             GlobalScope.launch(coExceptionHandler) {
-                fetchAndNotify(period, lastfmAccount)
+                fetchAndNotify(period)
 
                 // yearly digest
                 if (period == Period.ONE_MONTH && cal[Calendar.MONTH] == Calendar.DECEMBER) {
-                    fetchAndNotify(Period.TWELVE_MONTHS, lastfmAccount)
+                    fetchAndNotify(Period.TWELVE_MONTHS)
                 }
                 jobFinished(jp, false)
             }
@@ -75,23 +74,32 @@ class DigestJob : JobService() {
         return true
     }
 
-    private suspend fun fetchAndNotify(period: Period, lastfmAccount: UserAccountSerializable) {
+    private suspend fun fetchAndNotify(period: Period) {
         supervisorScope {
             val limit = 3
             val notificationTextList = mutableListOf<String>()
+            val scrobblable = Scrobblables.current ?: return@supervisorScope
+            val account = scrobblable.userAccount
             val lastfmSession =
-                Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, prefs.lastfmSessKey)
+                Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, account.authKey)
 
-            val lastfmUsername = lastfmAccount.user.name
+            val timePeriod = TimePeriod(period).apply {
+                tag = when (period) {
+                    Period.WEEK -> ListenbrainzRanges.week.name
+                    Period.ONE_MONTH -> ListenbrainzRanges.month.name
+                    Period.TWELVE_MONTHS -> ListenbrainzRanges.year.name
+                    else -> null
+                }
+            }
 
             val artists = async {
-                User.getTopArtists(lastfmUsername, period, limit, 1, lastfmSession)
+                scrobblable.getCharts(Stuff.TYPE_ARTISTS, timePeriod, 1, null, limit = limit)
             }
             val albums = async {
-                User.getTopAlbums(lastfmUsername, period, limit, 1, lastfmSession)
+                scrobblable.getCharts(Stuff.TYPE_ALBUMS, timePeriod, 1, null, limit = limit)
             }
             val tracks = async {
-                User.getTopTracks(lastfmUsername, period, limit, 1, lastfmSession)
+                scrobblable.getCharts(Stuff.TYPE_TRACKS, timePeriod, 1, null, limit = limit)
             }
 
             val resultsMap = mapOf(
@@ -130,23 +138,19 @@ class DigestJob : JobService() {
             else
                 MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY
 
-            var intent: Intent
+            val launchPi = NavDeepLinkBuilder(this@DigestJob)
+                .setComponentName(MainActivity::class.java)
+                .setGraph(R.navigation.nav_graph)
+                .setDestination(R.id.myHomePagerFragment)
+                .setArguments(bundleOf(Stuff.ARG_TAB to 2))
+                .createPendingIntent()
 
+            val collageArgs = bundleOf(Stuff.ARG_TYPE to Stuff.TYPE_ALL)
+                .putSingle(timePeriod)
 
-            intent = Intent(applicationContext, MainActivity::class.java)
-                .putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_CHARTS)
-            val launchIntent = PendingIntent.getActivity(
-                applicationContext, 10 + Period.values().size, intent,
-                Stuff.updateCurrentOrImmutable
-            )
-
-            intent = Intent(applicationContext, MainDialogActivity::class.java)
-                .putExtra(Stuff.ARG_TYPE, Stuff.TYPE_ALL)
-                .putSingle(TimePeriod(this@DigestJob, period))
-                .putSingle(lastfmAccount.user)
-            val collageIntent = PendingIntent.getActivity(
-                applicationContext, 100 + period.ordinal, intent,
-                Stuff.updateCurrentOrImmutable
+            val collagePi = MainDialogActivity.createDestinationPendingIntent(
+                R.id.collageGeneratorFragment,
+                collageArgs
             )
 
             val nb = NotificationCompat.Builder(applicationContext, channelId)
@@ -156,13 +160,13 @@ class DigestJob : JobService() {
                 .setSmallIcon(R.drawable.vd_charts)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentTitle(title)
-                .setContentIntent(launchIntent)
+                .setContentIntent(launchPi)
                 .addAction(
                     Stuff.getNotificationAction(
                         R.drawable.vd_mosaic,
                         "🖼️",
                         getString(R.string.create_collage),
-                        collageIntent
+                        collagePi
                     )
                 )
                 .setContentText(notificationText)
@@ -264,7 +268,7 @@ class DigestJob : JobService() {
             alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
 
 
-            val dailyTestDigests = false
+            val dailyTestDigests = true
             if (BuildConfig.DEBUG && dailyTestDigests) {
                 val dailyIntent = PendingIntent.getBroadcast(
                     context, 22,

@@ -9,6 +9,8 @@ import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.PaletteColors
+import com.arn.scrobble.scrobbleable.AccountType
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
 import com.hadilq.liveevent.LiveEvent
@@ -19,6 +21,7 @@ import de.umass.lastfm.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 
 
 class FriendsVM(app: Application) : AndroidViewModel(app) {
@@ -30,11 +33,14 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     val lastPlayedTracksMap = mutableMapOf<String, Track?>()
     val playCountsMap = mutableMapOf<String, Int>()
     val urlToPaletteMap = mutableMapOf<String, PaletteColors>()
-    val friendsReceiver = LiveEvent<PaginatedResult<User>>()
+    val friendsReceiver = LiveEvent<PaginatedResult<User>?>()
     val tracksReceiver = LiveEvent<Pair<String, PaginatedResult<Track>>>()
+    val privateUsers = mutableSetOf<String>() // todo this is a hack
+    private val errorNotifier = LFMRequester.ExceptionNotifier()
     var showsPins = false
     var page = 1
     var totalPages = 1
+    var total = 0
     var sorted = false
     var hasLoaded = false
 
@@ -63,11 +69,28 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
 
     fun loadFriendsList(page: Int, user: UserSerializable) {
         this.page = page
-        LFMRequester(getApplication(), viewModelScope, friendsReceiver).getFriends(page, user.name)
+        viewModelScope.launch(errorNotifier) {
+            friendsReceiver.value = withContext(Dispatchers.IO) {
+                Scrobblables.current!!.getFriends(page, user.name)
+            }
+        }
     }
 
-    fun loadFriendsRecents(user: String) {
-        LFMRequester(getApplication(), viewModelScope, tracksReceiver).getFriendsRecents(user)
+    fun loadFriendsRecents(username: String) {
+        viewModelScope.launch(errorNotifier) {
+            val pr = withContext(Dispatchers.IO) {
+                Scrobblables.current!!.getRecents(
+                    1,
+                    username,
+                    limit = 1,
+                )
+            }
+
+            if (pr.pageResults != null && pr.pageResults.isNotEmpty())
+                tracksReceiver.value = username to pr
+            else
+                privateUsers += username
+        }
     }
 
     fun putFriends(users: Collection<User>, replace: Boolean) {
@@ -119,7 +142,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
             Session.createSession(
                 Stuff.LAST_KEY,
                 Stuff.LAST_SECRET,
-                prefs.lastfmSessKey
+                Scrobblables.byType(AccountType.LASTFM)!!.userAccount.authKey
             )
         }
 

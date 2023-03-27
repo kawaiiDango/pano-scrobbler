@@ -51,7 +51,7 @@ class PaletteColors {
             dom = palette.getDarkVibrantColor(
                 MaterialColors.getColor(
                     context,
-                    R.attr.colorPrimary,
+                    com.google.android.material.R.attr.colorPrimary,
                     null
                 )
             )
@@ -60,7 +60,7 @@ class PaletteColors {
         lightWhite = palette.getLightMutedColor(
             MaterialColors.getColor(
                 context,
-                R.attr.colorOutline,
+                com.google.android.material.R.attr.colorOutline,
                 null
             ) or 0xFF000000.toInt()
         ).harmonize()
@@ -69,7 +69,7 @@ class PaletteColors {
             palette.getDarkMutedColor(
                 MaterialColors.getColor(
                     context,
-                    R.attr.colorPrimary,
+                    com.google.android.material.R.attr.colorPrimary,
                     null
                 )
             ).harmonize()
@@ -91,7 +91,7 @@ class PaletteColors {
             dom = palette.getLightVibrantColor(
                 MaterialColors.getColor(
                     context,
-                    R.attr.colorPrimary,
+                    com.google.android.material.R.attr.colorPrimary,
                     null
                 )
             )
@@ -100,7 +100,7 @@ class PaletteColors {
         darkBlack = palette.getDarkVibrantColor(
             MaterialColors.getColor(
                 context,
-                R.attr.colorPrimary,
+                com.google.android.material.R.attr.colorPrimary,
                 null
             ) or 0xFF000000.toInt()
         ).harmonize()
@@ -108,7 +108,7 @@ class PaletteColors {
             palette.getLightMutedColor(
                 MaterialColors.getColor(
                     context,
-                    R.attr.colorPrimary,
+                    com.google.android.material.R.attr.colorPrimary,
                     null
                 )
             ).harmonize()

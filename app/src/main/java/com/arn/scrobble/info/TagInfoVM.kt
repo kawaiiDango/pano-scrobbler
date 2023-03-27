@@ -1,17 +1,16 @@
 package com.arn.scrobble.info
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
 import de.umass.lastfm.Tag
 
 
-class TagInfoVM(app: Application) : AndroidViewModel(app) {
+class TagInfoVM : ViewModel() {
     val info = MutableLiveData<Pair<Tag?, List<Tag>?>>()
 
     fun loadInfo(tag: String) {
-        LFMRequester(getApplication(), viewModelScope, info).getTagInfo(tag)
+        LFMRequester(viewModelScope, info).getTagInfo(tag)
     }
 }

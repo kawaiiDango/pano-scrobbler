@@ -17,40 +17,96 @@
         app:shapeAppearance="@style/roundedCorners"
         tools:srcCompat="@drawable/vd_wave" />
 
-    <!--    <View-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        android:background="@drawable/selector_border_gentle_bottom_rounded"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/nav_profile_pic" />-->
-
     <TextView
         android:id="@+id/nav_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nav_profile_links"
         tools:text="nav_name" />
 
     <TextView
-        android:id="@+id/nav_num_scrobbles"
+        android:id="@+id/nav_num_scrobbles_today"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textDirection="firstStrong"
-        tools:text="nav_num_scrobbles" />
+        android:visibility="gone"
+        tools:text="nav_num_scrobbles"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/nav_num_scrobbles_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:textDirection="firstStrong"
+        android:visibility="gone"
+        app:drawableEndCompat="@drawable/vd_play"
+        tools:layout_editor_absoluteX="214dp"
+        tools:layout_editor_absoluteY="459dp"
+        tools:text="nav_num_scrobbles"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/nav_num_artists"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:textDirection="firstStrong"
+        android:visibility="gone"
+        app:drawableEndCompat="@drawable/vd_mic"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="483dp"
+        tools:text="nav_num_entries"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/nav_num_albums"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:textDirection="firstStrong"
+        android:visibility="gone"
+        app:drawableEndCompat="@drawable/vd_album"
+        tools:layout_editor_absoluteX="51dp"
+        tools:layout_editor_absoluteY="75dp"
+        tools:text="nav_num_entries"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/nav_num_tracks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:textDirection="firstStrong"
+        android:visibility="gone"
+        app:drawableEndCompat="@drawable/vd_note"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="507dp"
+        tools:text="nav_num_entries"
+        tools:visibility="visible" />
 
     <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/nav_num_flow"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="8dp"
         android:paddingBottom="16dp"
-        app:constraint_referenced_ids="nav_name, nav_num_scrobbles"
+        app:constraint_referenced_ids=" nav_num_scrobbles_total, nav_num_artists, nav_num_albums, nav_num_tracks,nav_num_scrobbles_today"
+        app:flow_horizontalAlign="end"
+        app:flow_maxElementsWrap="2"
+        app:flow_wrapMode="chain2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nav_profile_pic" />
+        app:layout_constraintTop_toBottomOf="@+id/nav_name" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/nav_profile_links"
@@ -59,17 +115,17 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:contentDescription="@string/profile"
-        android:nextFocusRight="@id/pager"
         android:tooltipText="@string/profile"
         app:backgroundTint="?android:colorBackground"
-        app:icon="@drawable/vd_open_in_new"
+        app:elevation="4dp"
+        app:icon="@drawable/vd_arrow_down"
         app:iconSize="24dp"
         app:layout_constraintBaseline_toBottomOf="@id/nav_profile_pic"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="382dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
     <!--sometimes focus doesn't work on borderless-->
 
     <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/nav_divider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:dividerInsetEnd="@dimen/divider_inset"

@@ -19,10 +19,10 @@ package com.arn.scrobble.billing
  * triangulation using Google Play, your secure server, and a local cache helps against non-techie
  * frauds.
  */
-import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Base64
 import com.android.billingclient.api.Purchase
+import com.arn.scrobble.App
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Tokens
 import timber.log.Timber
@@ -50,10 +50,9 @@ object Security {
      * is invalid
      */
     @Throws(IOException::class)
-    fun verifyPurchase(context: Context, purchase: Purchase): Boolean {
-        if (purchase.originalJson.isEmpty() || Tokens.BASE_64_ENCODED_PUBLIC_KEY.isEmpty() || purchase.signature.isEmpty() || !checkSignature(
-                context
-            )
+    fun verifyPurchase(purchase: Purchase): Boolean {
+        if (purchase.originalJson.isEmpty() || Tokens.BASE_64_ENCODED_PUBLIC_KEY.isEmpty() ||
+            purchase.signature.isEmpty() || signature() == null
         ) {
             Timber.tag(TAG).w("Purchase verification failed: missing data.")
             return false
@@ -122,18 +121,18 @@ object Security {
         return false
     }
 
-    private fun checkSignature(context: Context): Boolean {
+    fun signature(): String? {
         try {
-            val signatures = context.packageManager.getPackageInfo(
-                context.packageName,
+            val signatures = App.context.packageManager.getPackageInfo(
+                App.context.packageName,
                 PackageManager.GET_SIGNATURES
             ).signatures
             val signature = signatures[0].toCharsString()
             if (signature == Tokens.SIGNATURE)
-                return true
+                return signature
         } catch (ex: Exception) {
         }
         android.os.Process.killProcess(android.os.Process.myPid())
-        return false
+        return null
     }
 }

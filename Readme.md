@@ -10,7 +10,7 @@
 
 [![download][play-store]][play-store-link] [![translate][crowdin]][crowdin-link]
 
-<img src="https://i.imgur.com/XGmtOP5.jpg" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/m1lbrU6l.jpg" alt="friends" width="200"/> <img src="https://i.imgur.com/7kETocF.jpg" alt="charts" width="200"/>
+<img src="https://i.imgur.com/hveVQmd.png" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/uZEVKgA.png" alt="friends" width="200"/> <img src="https://i.imgur.com/bvSo8pk.png" alt="charts" width="200"/>
 
 ### PC app?
 Pano Scrobbler works on Windows 11 with WSA. It scrobbles from other Android apps.
@@ -18,9 +18,9 @@ Buttons in notifications don't work as expected. This is a WSA bug.
 
 ### Features:
 - No ADs ever
-- Scrobbles to LastFM, LibreFM, GNU FM and Listenbrainz (A LastFM login is required for now)
+- Supports LastFM, LibreFM, GNU FM and Listenbrainz
 - Supports phones, TVs, tablets and Android desktops including Windows 11
-- Interactive notification: View scrobble counts, love, cancel or block tracks directly from the notification
+- Interactive notification: View track info, love, cancel or block tracks directly from the notification
 - View track, album, artist, album artist and tag details
 - View scrobbles from a specific time such as last year, last month etc.
 - Edit or delete existing scrobbles. Remembers edits
@@ -51,4 +51,4 @@ See [instructions.md](instructions.md)
 - Lastfm API wrapper: Based on https://github.com/jkovacs/lastfm-java
 - Icons: https://materialdesignicons.com and https://material.io
 
-Thanks to everyone who reported bugs and helped me with this project.
+Thanks to the amazing [translators](https://crowdin.com/project/pscrobbler/members) and everyone who reported bugs and helped me with this project.

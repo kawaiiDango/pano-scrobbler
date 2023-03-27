@@ -1,5 +1,6 @@
 package com.arn.scrobble.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -20,6 +21,9 @@ data class CachedArtist(
     var artistMbid: String = "",
     var artistUrl: String = "",
     var userPlayCount: Int = -1,
+
+    @ColumnInfo(defaultValue = "-1")
+    var userPlayCountDirty: Int = -1,
 ) {
     companion object {
         fun CachedArtist.toArtist() = Artist(

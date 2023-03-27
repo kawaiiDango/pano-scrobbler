@@ -1,72 +1,71 @@
 package com.arn.scrobble.scrobbleable
 
 import com.arn.scrobble.App
+import com.arn.scrobble.DrawerData
+import com.arn.scrobble.LastfmUnscrobbler
 import com.arn.scrobble.R
+import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.friends.UserAccountSerializable
+import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
-import de.umass.lastfm.Result
+import de.umass.lastfm.Caller
+import de.umass.lastfm.MusicEntry
+import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
+import de.umass.lastfm.User
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
 
-abstract class Scrobblable {
-    protected abstract var apiRoot: String
-    protected var token = ""
-    protected var tlsNoVerify = false
+abstract class Scrobblable(val userAccount: UserAccountSerializable) {
 
-    fun setToken(token: String?): Scrobblable? {
-        token ?: return null
-        this.token = token
-        return this
-    }
+    abstract suspend fun updateNowPlaying(scrobbleData: ScrobbleData): ScrobbleResult
 
-    fun setApiRoot(apiRoot: String?): Scrobblable? {
-        apiRoot ?: return null
-        this.apiRoot = apiRoot
-        return this
-    }
+    abstract suspend fun scrobble(scrobbleData: ScrobbleData): ScrobbleResult
 
-    fun setTlsNoVerify(tlsNoVerify: Boolean): Scrobblable {
-        this.tlsNoVerify = tlsNoVerify
-        return this
-    }
+    abstract suspend fun scrobble(scrobbleDatas: MutableList<ScrobbleData>): ScrobbleResult
 
-    abstract fun updateNowPlaying(scrobbleData: ScrobbleData): ScrobbleResult
+    abstract suspend fun loveOrUnlove(track: Track, love: Boolean): Boolean
 
-    abstract fun scrobble(scrobbleData: ScrobbleData): ScrobbleResult
+    abstract suspend fun delete(track: Track): Boolean
 
-    abstract fun scrobble(scrobbleDatas: MutableList<ScrobbleData>): ScrobbleResult
+    abstract suspend fun getRecents(
+        page: Int,
+        usernamep: String?,
+        cached: Boolean = false,
+        from: Long = -1,
+        to: Long = -1,
+        includeNowPlaying: Boolean = false,
+        limit: Int = 50,
+    ): PaginatedResult<Track>
 
-    abstract fun loveOrUnlove(track: Track, love: Boolean): Result
+    abstract suspend fun getLoves(
+        page: Int,
+        usernamep: String?,
+        cached: Boolean = false,
+        limit: Int = 50,
+    ): PaginatedResult<Track>
 
-    companion object {
+    abstract suspend fun getFriends(page: Int, usernamep: String?): PaginatedResult<User>
 
-        fun getScrobblablesMap(
-            prefs: MainPrefs,
-            supportsLove: Boolean = false
-        ): Map<Int, Scrobblable?> {
-            val map = mutableMapOf<Int, Scrobblable?>()
-            if (!prefs.lastfmDisabled)
-                map[R.string.lastfm] = Lastfm().setToken(prefs.lastfmSessKey)
-            map[R.string.librefm] = Librefm().setToken(prefs.librefmSessKey)
-            map[R.string.gnufm] =
-                Librefm().setToken(prefs.gnufmSessKey)
-                    ?.setApiRoot(prefs.gnufmRoot + "2.0/")
-                    ?.setTlsNoVerify(prefs.gnufmTlsNoVerify)
+    abstract suspend fun loadDrawerData(username: String): DrawerData?
 
-            if (!supportsLove) {
-                map[R.string.listenbrainz] = ListenBrainz().setToken(prefs.listenbrainzToken)
-                map[R.string.custom_listenbrainz] =
-                    ListenBrainz().setToken(prefs.customListenbrainzToken)
-                        ?.setApiRoot(prefs.customListenbrainzRoot)
-                        ?.setTlsNoVerify(prefs.customListenbrainzTlsNoVerify)
-            }
-            return map
-        }
-    }
+    abstract suspend fun getCharts(
+        type: Int,
+        timePeriod: TimePeriod,
+        page: Int,
+        usernamep: String?,
+        cacheStrategy: Caller.CacheStrategy = Caller.CacheStrategy.CACHE_FIRST,
+        limit: Int = if (timePeriod.period != null || timePeriod.tag != null) 50 else -1
+    ): PaginatedResult<out MusicEntry>
 
+    abstract suspend fun getListeningActivity(
+        timePeriod: TimePeriod,
+        user: UserSerializable?,
+        cacheStrategy: Caller.CacheStrategy = Caller.CacheStrategy.NETWORK_ONLY,
+    ): Map<TimePeriod, Int>
 }
 
-enum class ScrobblableEnum {
+enum class AccountType {
     LASTFM,
     LIBREFM,
     GNUFM,
@@ -75,7 +74,84 @@ enum class ScrobblableEnum {
 }
 
 object Scrobblables {
-    private val prefs by lazy { MainPrefs(App.context) }
-    fun byType(type: ScrobblableEnum) = prefs.scrobbleAccounts.find { it.type == type }
-    fun allByType(type: ScrobblableEnum) = prefs.scrobbleAccounts.filter { it.type == type }.ifEmpty { null }
+    val all = mutableListOf<Scrobblable>()
+
+    fun updateScrobblables() {
+        val prefs = MainPrefs(App.context)
+        synchronized(all) {
+            all.clear()
+            all.addAll(
+                prefs.scrobbleAccounts.map {
+                    when (it.type) {
+                        AccountType.LASTFM -> Lastfm(it)
+                        AccountType.LIBREFM,
+                        AccountType.GNUFM -> GnuFm(it)
+
+                        AccountType.LISTENBRAINZ,
+                        AccountType.CUSTOM_LISTENBRAINZ -> ListenBrainz(it)
+                    }
+                }
+            )
+        }
+
+        if (current == null) {
+            prefs.currentAccountIdx = 0
+        }
+    }
+
+    val current
+        get() =
+            all.getOrNull(MainPrefs(App.context).currentAccountIdx)
+
+    val currentScrobblableUser
+        get() =
+            current?.userAccount?.user
+
+    fun setCurrent(userAccount: UserAccountSerializable) {
+        val idx = all.indexOfFirst { it.userAccount == userAccount }
+        if (idx != -1) {
+            MainPrefs(App.context).currentAccountIdx = idx
+        }
+    }
+
+    fun byType(type: AccountType) = all.find { it.userAccount.type == type }
+
+    fun allByType(type: AccountType) =
+        all.filter { it.userAccount.type == type }.ifEmpty { null }
+
+    fun deleteAllByType(type: AccountType) {
+        val prefs = MainPrefs(App.context)
+        prefs.scrobbleAccounts =
+            prefs.scrobbleAccounts.toMutableList().apply { removeAll { it.type == type } }
+        updateScrobblables()
+
+        if (type == AccountType.LASTFM) {
+            LastfmUnscrobbler().clearCookies()
+        }
+    }
+
+    fun delete(userAccount: UserAccountSerializable) {
+        val prefs = MainPrefs(App.context)
+        prefs.scrobbleAccounts =
+            prefs.scrobbleAccounts.toMutableList().apply { removeAll { it == userAccount } }
+        updateScrobblables()
+
+        if (userAccount.type == AccountType.LASTFM) {
+            LastfmUnscrobbler().clearCookies()
+        }
+    }
+
+    fun add(userAccount: UserAccountSerializable) {
+        val prefs = MainPrefs(App.context)
+        prefs.scrobbleAccounts += userAccount
+        updateScrobblables()
+    }
+
+    fun getString(accountType: AccountType) = when (accountType) {
+        AccountType.LASTFM -> App.context.getString(R.string.lastfm)
+        AccountType.LIBREFM -> App.context.getString(R.string.librefm)
+        AccountType.GNUFM -> App.context.getString(R.string.gnufm)
+        AccountType.LISTENBRAINZ -> App.context.getString(R.string.listenbrainz)
+        AccountType.CUSTOM_LISTENBRAINZ -> App.context.getString(R.string.custom_listenbrainz)
+    }
 }

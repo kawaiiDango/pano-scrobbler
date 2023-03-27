@@ -45,6 +45,15 @@
             tools:text="@string/track" />
         <!-- Selectable text causes issues with animation -->
 
+        <TextView
+            android:id="@+id/info_track_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_marginHorizontal="4dp"
+            tools:text="05:30"
+            tools:visibility="visible" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/info_link"
             style="?materialIconButtonStyle"
@@ -56,6 +65,7 @@
             app:icon="@drawable/vd_open_in_new"
             app:iconTint="?colorSecondary"
             tools:visibility="visible" />
+
     </LinearLayout>
 
     <com.arn.scrobble.ui.SquareFrameLayout
@@ -65,14 +75,14 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="8dp"
         android:visibility="gone"
-        tools:visibility="visible"
-        app:maxSize="300dp">
+        app:maxSize="300dp"
+        tools:visibility="visible">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/info_pic_expanded"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:shapeAppearance="@style/ShapeAppearance.Material3.MediumComponent"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
             tools:srcCompat="@tools:sample/avatars" />
     </com.arn.scrobble.ui.SquareFrameLayout>
 
@@ -107,22 +117,30 @@
                 android:orientation="vertical"
                 android:padding="@dimen/list_item_padding">
 
-                <TextView
+                <com.arn.scrobble.ui.ScalableDrawableTextView
                     android:id="@+id/info_user_scrobbles"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawablePadding="6dp"
+                    android:textAlignment="center"
                     android:textAppearance="?textAppearanceBodyLarge"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    app:compoundDrawableHeight="22dp"
+                    app:compoundDrawableWidth="22dp"
                     tools:text="1" />
 
-                <TextView
+                <com.arn.scrobble.ui.ScalableDrawableTextView
                     android:id="@+id/info_user_scrobbles_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawablePadding="6dp"
                     android:text="@string/my_scrobbles"
                     android:textAlignment="center"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    app:compoundDrawableHeight="22dp"
+                    app:compoundDrawableWidth="22dp"
+                    tools:drawableStart="@drawable/vd_circle_filled_big" />
 
             </LinearLayout>
 
@@ -253,7 +271,7 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/info_extra"
+                android:id="@+id/info_extra_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
@@ -267,5 +285,12 @@
                 app:drawableTint="?colorSecondary"
                 tools:text="n tracks" />
         </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/info_extra_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
 </LinearLayout>

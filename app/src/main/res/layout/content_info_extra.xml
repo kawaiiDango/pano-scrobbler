@@ -20,6 +20,12 @@
             android:textIsSelectable="true"
             tools:text="title" />
 
+        <ViewStub
+            android:id="@+id/info_spotify_features"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout="@layout/layout_spotify_track_features"/>
+
         <include
             android:id="@+id/info_extra_header1"
             layout="@layout/header_with_action" />

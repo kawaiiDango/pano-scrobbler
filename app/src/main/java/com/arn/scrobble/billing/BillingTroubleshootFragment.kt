@@ -6,9 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentBillingToubleshootBinding
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.transition.MaterialSharedAxis
 
 
@@ -31,13 +30,9 @@ class BillingTroubleshootFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentBillingToubleshootBinding.inflate(inflater, container, false)
+        binding.root.setupInsets()
+
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.billing_troubleshoot_title)
-
     }
 
     override fun onDestroyView() {

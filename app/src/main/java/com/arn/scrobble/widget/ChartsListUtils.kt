@@ -3,16 +3,15 @@ package com.arn.scrobble.widget
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import com.arn.scrobble.App
+import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.pref.WidgetPrefs
-import com.arn.scrobble.scrobbleable.ScrobblableEnum
-import com.arn.scrobble.scrobbleable.Scrobblables
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.text.NumberFormat
@@ -49,25 +48,24 @@ object ChartsListUtils {
         )
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
-        val fillInIntent = Intent().apply {
-            when (tab) {
-                Stuff.TYPE_ARTISTS -> {
-                    putExtra(NLService.B_ARTIST, item.title)
-                }
-
-                Stuff.TYPE_ALBUMS -> {
-                    putExtra(NLService.B_ARTIST, item.subtitle)
-                    putExtra(NLService.B_ALBUM, item.title)
-                }
-
-                Stuff.TYPE_TRACKS -> {
-                    putExtra(NLService.B_ARTIST, item.subtitle)
-                    putExtra(NLService.B_TRACK, item.title)
-                }
+        val navArgs = Bundle()
+        when (tab) {
+            Stuff.TYPE_ARTISTS -> {
+                navArgs.putString(NLService.B_ARTIST, item.title)
             }
-            putSingle(Scrobblables.byType(ScrobblableEnum.LASTFM)!!.user)
-            putExtra(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, true)
+
+            Stuff.TYPE_ALBUMS -> {
+                navArgs.putString(NLService.B_ARTIST, item.subtitle)
+                navArgs.putString(NLService.B_ALBUM, item.title)
+            }
+
+            Stuff.TYPE_TRACKS -> {
+                navArgs.putString(NLService.B_ARTIST, item.subtitle)
+                navArgs.putString(NLService.B_TRACK, item.title)
+            }
         }
+        val fillInIntent = Intent().putExtra(MainDialogActivity.ARG_NAV_ARGS, navArgs)
+
         rv.setOnClickFillInIntent(R.id.appwidget_charts_item, fillInIntent)
         return rv
     }

@@ -1,14 +1,16 @@
 package com.arn.scrobble.edits
 
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -16,10 +18,11 @@ import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentRegexEditBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +35,8 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         get() = _binding!!
     private val viewModel by viewModels<RegexEditsVM>()
     private lateinit var adapter: RegexEditsAdapter
+    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,17 +53,15 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.pref_regex_edits)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.editRegexWarning.movementMethod = LinkMovementMethod.getInstance()
-
-        binding.editAdd.setOnClickListener {
-            showAddDialog(-1)
-        }
+        mainNotifierViewModel.fabData.value = FabData(
+            viewLifecycleOwner,
+            R.string.add,
+            R.drawable.vd_add_borderless,
+            {
+                showAddDialog(-1)
+            }
+        )
 
         adapter = RegexEditsAdapter(viewModel, this)
         RegexItemTouchHelper(adapter, viewModel).apply {
@@ -66,24 +69,17 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
             adapter.itemTouchHelper = this
         }
         binding.editsList.adapter = adapter
-        binding.editsList.layoutManager = LinearLayoutManager(context!!)
+        binding.editsList.layoutManager = LinearLayoutManager(requireContext())
 
         binding.empty.text = resources.getQuantityString(R.plurals.num_regex_edits, 0, 0)
 
-        binding.editBottomAppBar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_test -> {
-                    RegexEditsTestDialogFragment()
-                        .show(childFragmentManager, null)
-                    true
-                }
-                R.id.menu_presets -> {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        showPresetsDialog()
-                    }
-                    true
-                }
-                else -> false
+        binding.regexEditsChipTest.setOnClickListener {
+            findNavController().navigate(R.id.regexEditsTestDialogFragment)
+        }
+
+        binding.regexEditsChipPresets.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                showPresetsDialog()
             }
         }
 
@@ -130,18 +126,33 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         else
             null
 
-        val df = RegexEditsAddDialogFragment()
-        df.arguments = Bundle().apply {
+        val args = Bundle().apply {
             putSingle(regexEdit ?: return@apply)
         }
-        df.show(childFragmentManager, null)
+
+        if (prefs.regexLearnt) {
+            findNavController().navigate(R.id.regexEditsAddDialogFragment, args)
+        } else {
+            MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.edit_regex_warning)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    findNavController().navigate(R.id.regexEditsAddDialogFragment, args)
+                }
+                .setNeutralButton(R.string.learn) { _, _ ->
+                    Stuff.openInBrowser("https://www.google.com/search?q=regex+tutorial")
+                }
+                .setNegativeButton(R.string.hide) { _, _ ->
+                    prefs.regexLearnt = true
+                }
+                .show()
+        }
     }
 
     private suspend fun showPresetsDialog() {
         if (hasReachedLimit())
             return
 
-        val dao = PanoDb.getDb(context!!).getRegexEditsDao()
+        val dao = PanoDb.db.getRegexEditsDao()
 
         val presetsAvailable = withContext(Dispatchers.IO) {
             (RegexPresets.presetKeys - dao.allPresets.map {
@@ -150,15 +161,15 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         }
 
         if (presetsAvailable.isEmpty()) {
-            context!!.toast(R.string.edit_no_presets_available)
+            requireContext().toast(R.string.edit_no_presets_available)
             return
         }
 
-        MaterialAlertDialogBuilder(context!!)
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.edit_presets_available)
             .setNegativeButton(android.R.string.cancel, null)
             .setItems(presetsAvailable
-                .map { RegexPresets.getString(context!!, it!!) }
+                .map { RegexPresets.getString(it!!) }
                 .toTypedArray()
             ) { dialogInterface, idx ->
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
@@ -167,7 +178,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
                         order = 0
                     )
                     dao.shiftDown()
-                    dao.insert(regexEdit)
+                    dao.insert(listOf(regexEdit))
                 }
             }
             .show()
@@ -176,7 +187,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
     private fun hasReachedLimit(): Boolean {
         viewModel.countReceiver.value?.let {
             if (it >= Stuff.MAX_PATTERNS) {
-                context!!.toast(getString(R.string.edit_max_patterns, Stuff.MAX_PATTERNS))
+                requireContext().toast(getString(R.string.edit_max_patterns, Stuff.MAX_PATTERNS))
                 return true
             }
         }

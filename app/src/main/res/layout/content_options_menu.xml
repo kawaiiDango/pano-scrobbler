@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <include
+        android:id="@+id/header_nav"
+        layout="@layout/header_nav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:layout_gravity="center_vertical"
+        tools:visibility="visible" />
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/options_menu_nav"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:itemMaxLines="2"
+        android:layout_weight="1" />
+</LinearLayout>

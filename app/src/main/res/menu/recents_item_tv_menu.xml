@@ -11,15 +11,10 @@
         android:id="@+id/menu_info"
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_info"
-        android:title="@string/more_info"/>
+        android:title="@string/details"/>
     <item
         android:id="@+id/menu_share"
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_share"
         android:title="@string/share_this_song"/>
-    <item
-        android:id="@+id/menu_calendar"
-        app:iconTint="?android:colorForeground"
-        android:icon="@drawable/vd_calendar"
-        android:title="@string/past_scrobbles"/>
 </menu>

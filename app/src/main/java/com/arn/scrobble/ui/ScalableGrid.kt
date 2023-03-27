@@ -109,7 +109,7 @@ class ScalableGrid(
 
 
         if (fromMenu && !prefs.gridPinchLearnt)
-            context!!.toast(R.string.pinch_to_zoom)
+            context.toast(R.string.pinch_to_zoom)
     }
 
     private fun updateColumnCounts() {
@@ -118,7 +118,7 @@ class ScalableGrid(
         val newColumnCount = if (isSingleColumn) 1 else numColumns
 
         if (glm == null) {
-            glm = GridLayoutManager(context!!, newColumnCount)
+            glm = GridLayoutManager(context, newColumnCount)
             recyclerView.layoutManager = glm
         } else {
             glm.spanCount = newColumnCount

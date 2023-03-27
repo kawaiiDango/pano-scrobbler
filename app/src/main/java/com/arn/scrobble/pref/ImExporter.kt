@@ -1,15 +1,16 @@
 package com.arn.scrobble.pref
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.util.JsonReader
 import android.util.JsonToken
 import android.util.JsonWriter
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.db.ScrobbleSource
@@ -26,7 +27,7 @@ class ImExporter : Closeable {
     private var writer: OutputStreamWriter? = null
     private var reader: InputStreamReader? = null
     private var pfd: ParcelFileDescriptor? = null
-    private var context: Context? = null
+    private val context = App.context
 
     // DO not store longs, as they cannot be determined by JsonToken
     private val prefsToConsider = setOf(
@@ -53,13 +54,13 @@ class ImExporter : Closeable {
         MainPrefs.PREF_THEME_DYNAMIC,
         MainPrefs.PREF_SEARCH_IN_SOURCE,
         MainPrefs.PREF_LOCALE,
-//        MainPrefs.PREF_SCROBBLE_SPOTIFY_REMOTE,
+        MainPrefs.PREF_SCROBBLE_SPOTIFY_REMOTE,
 
         MainPrefs.PREF_ALLOWED_PACKAGES,
         MainPrefs.PREF_BLOCKED_PACKAGES,
     )
 
-    fun setOutputUri(context: Context, uri: Uri) {
+    fun setOutputUri(uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "w")
         if (pfd == null) {
             Stuff.log("pfd was null")
@@ -67,10 +68,9 @@ class ImExporter : Closeable {
         }
         val fos = FileOutputStream(pfd!!.fileDescriptor)
         writer = OutputStreamWriter(fos, "UTF-8")
-        this.context = context
     }
 
-    fun setInputUri(context: Context, uri: Uri) {
+    fun setInputUri(uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "r")
         if (pfd == null) {
             Stuff.log("pfd was null")
@@ -78,14 +78,12 @@ class ImExporter : Closeable {
         }
         val fis = FileInputStream(pfd!!.fileDescriptor)
         reader = InputStreamReader(fis, "UTF-8")
-        this.context = context
     }
 
     fun export(): Boolean {
-        if (context == null || writer == null) {
+        if (writer == null) {
             throw IllegalArgumentException("ImExporter not inited")
         }
-        val context = context!!
         var written = false
         try {
             JsonWriter(writer!!).use {
@@ -95,7 +93,7 @@ class ImExporter : Closeable {
                     beginObject()
                     name("pano_version").value(BuildConfig.VERSION_CODE)
                     name("simple_edits").beginArray()
-                    PanoDb.getDb(context)
+                    PanoDb.db
                         .getSimpleEditsDao()
                         .all
                         .asReversed()
@@ -104,7 +102,7 @@ class ImExporter : Closeable {
                         }
                     endArray()
                     name("regex_edits").beginArray()
-                    PanoDb.getDb(context)
+                    PanoDb.db
                         .getRegexEditsDao()
                         .all
                         .forEach {
@@ -112,7 +110,7 @@ class ImExporter : Closeable {
                         }
                     endArray()
                     name("blocked_metadata").beginArray()
-                    PanoDb.getDb(context)
+                    PanoDb.db
                         .getBlockedMetadataDao()
                         .all
                         .asReversed()
@@ -155,10 +153,9 @@ class ImExporter : Closeable {
     }
 
     fun exportPrivateData(): Boolean {
-        if (context == null || writer == null) {
+        if (writer == null) {
             throw IllegalArgumentException("ImExporter not inited")
         }
-        val context = context!!
         var written = false
         try {
             JsonWriter(writer!!).use {
@@ -168,7 +165,7 @@ class ImExporter : Closeable {
                     beginObject()
                     name("pano_version").value(BuildConfig.VERSION_CODE)
                     name("scrobble_sources").beginArray()
-                    PanoDb.getDb(context).getScrobbleSourcesDao().all.forEach { scrobbleSource ->
+                    PanoDb.db.getScrobbleSourcesDao().all.forEach { scrobbleSource ->
                         scrobbleSource.writeJson(this)
                     }
                     endArray()
@@ -183,10 +180,9 @@ class ImExporter : Closeable {
     }
 
     fun import(editsMode: Int, settings: Boolean): Boolean {
-        if (context == null || reader == null) {
+        if (reader == null) {
             throw IllegalArgumentException("ImExporter not inited")
         }
-        val context = context!!
         try {
             JsonReader(reader).use {
                 it.apply {
@@ -214,7 +210,7 @@ class ImExporter : Closeable {
                             when (name) {
                                 "simple_edits",
                                 "edits" -> {
-                                    val dao = PanoDb.getDb(context).getSimpleEditsDao()
+                                    val dao = PanoDb.db.getSimpleEditsDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
                                     val edits = mutableListOf<SimpleEdit>()
@@ -231,7 +227,7 @@ class ImExporter : Closeable {
                                 }
 
                                 "regex_edits" -> {
-                                    val dao = PanoDb.getDb(context).getRegexEditsDao()
+                                    val dao = PanoDb.db.getRegexEditsDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
                                     val edits = mutableListOf<RegexEdit>()
@@ -257,7 +253,7 @@ class ImExporter : Closeable {
                                 }
 
                                 "blocked_metadata" -> {
-                                    val dao = PanoDb.getDb(context).getBlockedMetadataDao()
+                                    val dao = PanoDb.db.getBlockedMetadataDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
                                     val blockedMetadata = mutableListOf<BlockedMetadata>()
@@ -274,7 +270,7 @@ class ImExporter : Closeable {
                                 }
 
                                 "scrobble_sources" -> {
-                                    val dao = PanoDb.getDb(context).getScrobbleSourcesDao()
+                                    val dao = PanoDb.db.getScrobbleSourcesDao()
                                     if (editsMode == Stuff.EDITS_REPLACE_ALL)
                                         dao.nuke()
                                     val scrobbleSources = mutableListOf<ScrobbleSource>()
@@ -376,7 +372,6 @@ class ImExporter : Closeable {
     }
 
     override fun close() {
-        context = null
         try {
             writer?.close()
         } catch (e: Exception) {

@@ -1,22 +1,15 @@
 package com.arn.scrobble.charts
 
 
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
+import com.arn.scrobble.BasePagerAdapter
+import com.arn.scrobble.BasePagerFragment
+import com.arn.scrobble.R
+import com.arn.scrobble.TabMetadata
 
-class ChartsPagerAdapter(fm: FragmentManager) :
-    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-    private val tabCount = 3
-
-    override fun getItem(position: Int): Fragment {
-        return when (position) {
-            0 -> ArtistChartsFragment()
-            1 -> AlbumChartsFragment()
-            2 -> TrackChartsFragment()
-            else -> throw IllegalArgumentException("Invalid position")
-        }
-    }
-
-    override fun getCount() = tabCount
+class ChartsPagerAdapter(fragment: BasePagerFragment) : BasePagerAdapter(fragment) {
+    override val tabMetadata = listOf(
+        TabMetadata(R.string.artists, R.drawable.vd_mic) { ArtistChartsFragment() },
+        TabMetadata(R.string.albums, R.drawable.vd_album) { AlbumChartsFragment() },
+        TabMetadata(R.string.tracks, R.drawable.vd_note) { TrackChartsFragment() },
+    )
 }

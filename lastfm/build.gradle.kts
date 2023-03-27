@@ -10,10 +10,13 @@ android {
         minSdk = 21
     }
 
-    resourcePrefix = "lastfm_"
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.5.0")
+    implementation("androidx.annotation:annotation:1.6.0")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
 }

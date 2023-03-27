@@ -42,6 +42,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -100,6 +101,7 @@ public class Caller {
     private Result lastError;
 
     private OkHttpClient client = new OkHttpClient.Builder()
+            .readTimeout(20, TimeUnit.SECONDS)
             .build();
 
     private OkHttpClient okHttpClientTlsNoVerify = null;

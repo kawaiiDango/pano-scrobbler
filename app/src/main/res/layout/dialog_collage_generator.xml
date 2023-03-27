@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,125 +7,132 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/collage_type_text_input_layout"
+        style="?textInputOutlinedExposedDropdownMenuStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/collage_size_text_input_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/collage_size_text_input_layout">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="?textInputOutlinedExposedDropdownMenuStyle"
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/collage_type_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp">
+            android:inputType="none"
+            tools:text="@string/top_albums" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/collage_type_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                tools:text="@string/top_albums" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="?textInputOutlinedExposedDropdownMenuStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:hint="@string/size">
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/collage_size_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                tools:text="3x3" />
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-
-    <com.google.android.material.chip.ChipGroup
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/collage_size_text_input_layout"
+        style="?textInputOutlinedExposedDropdownMenuStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        app:singleLine="false">
+        android:layout_marginStart="16dp"
+        android:hint="@string/size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/collage_type_text_input_layout"
+        app:layout_constraintTop_toBottomOf="@id/collage_preview">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/collage_include_captions"
-            style="@style/Widget.Material3.Chip.Filter"
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/collage_size_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/captions" />
+            android:inputType="none"
+            tools:text="3x3" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/collage_skip_missing_images"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/skip_missing_images" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/collage_include_username"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/username" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/collage_include_text"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/text" />
-
-    </com.google.android.material.chip.ChipGroup>
-
-    <FrameLayout
+    <com.google.android.material.chip.Chip
+        android:id="@+id/collage_include_captions"
+        style="@style/Widget.Material3.Chip.Filter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:animateLayoutChanges="true">
+        android:checked="true"
+        android:text="@string/captions" />
 
-        <LinearLayout
-            android:id="@+id/collage_generate_buttons"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:orientation="horizontal">
+    <com.google.android.material.chip.Chip
+        android:id="@+id/collage_include_text"
+        style="@style/Widget.Material3.Chip.Filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/text" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/collage_save_button"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="@string/save"
-                app:icon="@drawable/vd_save" />
+    <com.google.android.material.chip.Chip
+        android:id="@+id/collage_skip_missing_images"
+        style="@style/Widget.Material3.Chip.Filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/skip_missing_images" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/collage_share_button"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/share"
-                app:icon="@drawable/vd_share" />
-        </LinearLayout>
+    <com.google.android.material.chip.Chip
+        android:id="@+id/collage_include_username"
+        style="@style/Widget.Material3.Chip.Filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/username" />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/collage_generate_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:visibility="invisible" />
-    </FrameLayout>
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        app:constraint_referenced_ids="collage_include_captions,collage_include_text, collage_skip_missing_images, collage_include_username"
+        app:flow_horizontalGap="16dp"
+        app:flow_wrapMode="aligned"
+        app:layout_constraintTop_toBottomOf="@id/collage_type_text_input_layout"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/collage_save_button"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:text="@string/save"
+        app:icon="@drawable/vd_save"
+        app:layout_constraintEnd_toStartOf="@+id/collage_share_button"
+        app:layout_constraintTop_toBottomOf="@+id/flow" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/collage_share_button"
+        style="?materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/share"
+        app:icon="@drawable/vd_share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flow" />
+
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/collage_generate_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/collage_share_button"
+        app:layout_constraintStart_toStartOf="@+id/collage_share_button"
+        app:layout_constraintTop_toBottomOf="@+id/flow" />
+
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/collage_preview"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_width="240dp"
+        android:layout_height="0dp"
         android:background="#000"
-        app:shapeAppearance="@style/roundedCorners" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/collage_type_text_input_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginBottom="16dp"
+        android:layout_marginBottom="16dp"
+        app:shapeAppearance="@style/roundedCorners"
+        tools:srcCompat="@drawable/widget_charts_preview"
+        tools:visibility="visible" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

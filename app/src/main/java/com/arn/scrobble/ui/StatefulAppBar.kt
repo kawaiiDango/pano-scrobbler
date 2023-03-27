@@ -1,10 +1,18 @@
 package com.arn.scrobble.ui
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
+import android.view.animation.DecelerateInterpolator
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.updateLayoutParams
+import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
+import com.arn.scrobble.ui.UiUtils.getDimenFromAttr
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import kotlin.math.abs
+
 
 /**
  * Created by arn on 03/01/2018.
@@ -26,14 +34,19 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     override fun setExpanded(expanded: Boolean, animate: Boolean) {
-        //don't call if state is gonna change anyways
-        val behaviour = (layoutParams as CoordinatorLayout.LayoutParams)
-            .behavior as DisableableAppBarLayoutBehavior
-        behaviour.isEnabled = expanded
+
+        updateHeight(expanded)
+
         if ((!expanded && isCollapsed) || (expanded && isExpanded))
             onStateChangeListener?.invoke(state)
-        else
-            super.setExpanded(expanded, animate)
+
+        super.setExpanded(expanded, animate)
+    }
+
+    private fun setScrollEnabled(enabled: Boolean) {
+        val behaviour = (layoutParams as CoordinatorLayout.LayoutParams)
+            .behavior as? DisableableAppBarLayoutBehavior
+        behaviour?.isEnabled = enabled
     }
 
     override fun onAttachedToWindow() {
@@ -50,6 +63,50 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
         }
         if (state != oldState)
             onStateChangeListener?.invoke(state)
+    }
+
+    fun expandTillToolbar(animate: Boolean = true) {
+        if (!Stuff.isTv) {
+            updateHeight(false)
+            super.setExpanded(true, animate)
+        } else {
+            super.setExpanded(false, animate)
+        }
+    }
+
+    fun updateHeight(large: Boolean) {
+        val ctl = getChildAt(0) as CollapsingToolbarLayout
+        val ctlHeight = if (large) {
+            if (UiUtils.isTabletUi && (parent as CoordinatorLayout).height <
+                1.5 * context.resources.getDimensionPixelSize(R.dimen.app_bar_height)
+            )
+                context.getDimenFromAttr(com.google.android.material.R.attr.collapsingToolbarLayoutMediumSize)
+            else
+                context.resources.getDimensionPixelSize(R.dimen.app_bar_height)
+        } else {
+            context.getDimenFromAttr(
+                if (UiUtils.isTabletUi)
+                    com.google.android.material.R.attr.collapsingToolbarLayoutMediumSize
+                else
+                    com.google.android.material.R.attr.collapsingToolbarLayoutLargeSize
+            )
+        }
+
+        val prevHeight = ctl.layoutParams.height
+
+        if (prevHeight != ctlHeight) {
+            ctl.animation?.cancel()
+            ValueAnimator.ofInt(prevHeight, ctlHeight).apply {
+                interpolator = DecelerateInterpolator()
+                addUpdateListener { value ->
+                    ctl.updateLayoutParams {
+                        height = value.animatedValue as Int
+                    }
+                }
+                start()
+            }
+
+        }
     }
 
     companion object {

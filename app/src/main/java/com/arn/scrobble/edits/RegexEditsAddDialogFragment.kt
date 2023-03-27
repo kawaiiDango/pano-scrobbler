@@ -32,11 +32,11 @@ class RegexEditsAddDialogFragment : DialogFragment() {
         val regexEditArg = arguments?.getSingle<RegexEdit>()?.copy()
         val isNew = regexEditArg == null
         val regexEdit = regexEditArg ?: RegexEdit()
-        val dao by lazy { PanoDb.getDb(context!!).getRegexEditsDao() }
+        val dao by lazy { PanoDb.db.getRegexEditsDao() }
         val fieldArgs = arguments?.getStringArray("fields")?.toMutableSet()
         usedFields = fieldArgs ?: mutableSetOf()
 
-        val dialog = MaterialAlertDialogBuilder(context!!)
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
             .setPositiveButton(android.R.string.ok, null)
             .setNegativeButton(android.R.string.cancel, null)
@@ -75,7 +75,7 @@ class RegexEditsAddDialogFragment : DialogFragment() {
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 if (validate()) {
-                    activity!!.lifecycleScope.launch(Dispatchers.IO) {
+                    requireActivity().lifecycleScope.launch(Dispatchers.IO) {
                         val prevRegexEdit = regexEdit.copy()
                         regexEdit.apply {
                             if (isNew)
@@ -96,7 +96,7 @@ class RegexEditsAddDialogFragment : DialogFragment() {
                         if (regexEdit.preset != null)
                             regexEdit.preset = null
 
-                        dao.insert(regexEdit)
+                        dao.insert(listOf(regexEdit))
                     }
 
                     dialog.dismiss()
@@ -140,7 +140,7 @@ class RegexEditsAddDialogFragment : DialogFragment() {
         val availableFields = RegexEditsFragment.localizedFieldsMap.keys - usedFields
 
         if (availableFields.isNotEmpty()) {
-            val popup = PopupMenu(context!!, binding.editFieldAdd)
+            val popup = PopupMenu(requireContext(), binding.editFieldAdd)
             RegexEditsFragment.localizedFieldsMap.forEach { (field, stringRes) ->
                 if (field in availableFields) {
                     popup.menu.add(Menu.NONE, stringRes, Menu.NONE, getString(stringRes)).apply {

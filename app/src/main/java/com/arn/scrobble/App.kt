@@ -18,6 +18,7 @@ import coil.decode.ImageDecoderDecoder
 import coil.size.Precision
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MigratePrefs
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.AppIconFetcher
 import com.arn.scrobble.ui.AppIconKeyer
@@ -52,6 +53,7 @@ class App : Application(), ImageLoaderFactory {
         // migrate prefs
         val prefs = MainPrefs(this)
         MigratePrefs.migrate(prefs)
+        Scrobblables.updateScrobblables()
 
         if (BuildConfig.DEBUG && !prefs.lastfmLinksEnabled) {
             enableOpeningLastfmLinks()

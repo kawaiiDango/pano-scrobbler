@@ -6,13 +6,18 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import com.arn.scrobble.*
+import androidx.navigation.NavDeepLinkBuilder
+import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.MainActivity
+import com.arn.scrobble.MainDialogActivity
+import com.arn.scrobble.NLService
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.putSingle
-import com.arn.scrobble.billing.BillingFragment
 import com.arn.scrobble.databinding.DialogBlockedMetadataBinding
 import com.arn.scrobble.databinding.TextInputEditBinding
 import com.arn.scrobble.db.BlockedMetadata
+import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -25,7 +30,7 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DialogBlockedMetadataBinding.inflate(layoutInflater)
-        val prefs = MainPrefs(context!!)
+        val prefs = MainPrefs(requireContext())
 
         val blockedMetadata =
             arguments?.getSingle<BlockedMetadata>()?.copy()
@@ -35,7 +40,7 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
 
         fun trimmedText(tib: TextInputEditBinding) = tib.edittext.text.toString().trim()
 
-        val dialog = MaterialAlertDialogBuilder(context!!)
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
             .setPositiveButton(R.string.block, null)
             .setNegativeButton(android.R.string.cancel, null)
@@ -79,16 +84,14 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                 if (!prefs.proStatus) {
                     dialog.dismiss()
                     if (activity is MainDialogActivity) {
-                        val intent = Intent(context, MainActivity::class.java).apply {
-                            putExtra(Stuff.DIRECT_OPEN_KEY, Stuff.DL_PRO)
-                        }
-                        context!!.startActivity(intent)
+                        NavDeepLinkBuilder(requireContext())
+                            .setComponentName(MainActivity::class.java)
+                            .setGraph(R.navigation.nav_graph)
+                            .setDestination(R.id.billingFragment)
+                            .createPendingIntent()
+                            .send()
                     } else if (parentFragment is BlockedMetadataFragment) {
-                        parentFragment!!.parentFragmentManager
-                            .beginTransaction()
-                            .replace(R.id.frame, BillingFragment())
-                            .addToBackStack(null)
-                            .commit()
+                        findNavController().navigate(R.id.billingFragment)
                     }
                     return@setOnClickListener
                 }
@@ -109,15 +112,16 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                 }
                 if (prevBlockedTag != blockedMetadata || activity is MainDialogActivity)
                     GlobalScope.launch(Dispatchers.IO) {
-                        PanoDb.getDb(activity!!.application).getBlockedMetadataDao()
+                        PanoDb.db.getBlockedMetadataDao()
                             .insertLowerCase(listOf(blockedMetadata), ignore = false)
                     }
                 if (activity is MainDialogActivity && blockedMetadata.skip) {
                     val i = Intent(NLService.iBLOCK_ACTION_S).apply {
+                        `package` = requireContext().packageName
                         putSingle(blockedMetadata)
-                        putExtra(NLService.B_HASH, arguments!!.getInt(NLService.B_HASH))
+                        putExtra(NLService.B_HASH, requireArguments().getInt(NLService.B_HASH))
                     }
-                    context!!.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
+                    requireContext().sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                 }
                 dialog.dismiss()
             }

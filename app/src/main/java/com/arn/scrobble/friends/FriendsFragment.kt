@@ -14,34 +14,39 @@ import android.view.WindowManager
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.HomePagerFragment
 import com.arn.scrobble.ListenAlongService
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.putSingle
-import com.arn.scrobble.billing.BillingFragment
-import com.arn.scrobble.databinding.ActionFriendsBinding
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.AccountType
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
+import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.platform.MaterialElevationScale
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
@@ -55,20 +60,15 @@ import kotlin.math.roundToInt
 
 class FriendsFragment : Fragment(), ItemClickListener {
 
+    private var timedRefreshJob: Job? = null
     private lateinit var adapter: FriendsAdapter
-    private var runnable = Runnable {
-        if (!viewModel.sorted)
-            loadFriends(1)
-        if (isResumed)
-            refreshFriendsRecents()
-        lastRefreshTime = System.currentTimeMillis()
-    }
     private var popupWr: WeakReference<PopupWindow>? = null
     private val viewModel by viewModels<FriendsVM>()
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var lastRefreshTime = System.currentTimeMillis()
-    private val prefs by lazy { MainPrefs(context!!) }
+    private val prefs by lazy { MainPrefs(requireContext()) }
     private var _binding: ContentFriendsBinding? = null
+    private var fabData: FabData? = null
     private val binding
         get() = _binding!!
 
@@ -79,6 +79,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentFriendsBinding.inflate(inflater, container, false)
+        binding.friendsGrid.setupInsets()
         return binding.root
     }
 
@@ -90,13 +91,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private fun loadFriends(page: Int): Boolean {
         _binding ?: return false
         binding.friendsGrid.layoutManager ?: return false
-
-        if (Stuff.isOnline) {
-            binding.friendsHeader.headerText.visibility = View.GONE
-        } else {
-            binding.friendsHeader.headerText.text = getString(R.string.offline)
-            binding.friendsHeader.headerText.visibility = View.VISIBLE
-        }
 
         return if (page <= viewModel.totalPages || viewModel.totalPages == 0) {
             if ((page == 1 && (binding.friendsGrid.layoutManager as GridLayoutManager).findFirstVisibleItemPosition() < 15) || page > 1) {
@@ -119,55 +113,64 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
     override fun onResume() {
         super.onResume()
+
+        if (viewModel.total == 0)
+            setTitle(R.string.friends)
+        else
+            setTitle(
+                resources.getQuantityString(
+                    R.plurals.num_friends,
+                    viewModel.total,
+                    viewModel.total
+                )
+            )
         if (binding.friendsGrid.adapter == null)
             postInit()
-        else if (System.currentTimeMillis() - lastRefreshTime >= Stuff.RECENTS_REFRESH_INTERVAL &&
-            (viewModel.page == 1 || viewModel.sorted)
-        )
-            runnable.run()
-        setTitle(0)
+        else
+            doNextTimedRefresh()
+        activityViewModel.fabData.value = fabData
+
     }
 
     override fun onPause() {
-        adapter.handler.removeCallbacks(runnable)
         super.onPause()
+        activityViewModel.fabData.value = null
     }
 
     private fun postInit() {
-        setTitle(0)
-
-        viewModel.showsPins = activityViewModel.userIsSelf
+        viewModel.showsPins =
+            activityViewModel.userIsSelf && Scrobblables.current?.userAccount?.type == AccountType.LASTFM
 
         binding.friendsSwipeRefresh.setProgressCircleColors()
         binding.friendsSwipeRefresh.setOnRefreshListener {
             viewModel.sorted = false
-            binding.friendsSort.hide()
+            activityViewModel.fabData.value = null
             loadFriends(1)
             if (isResumed)
                 refreshFriendsRecents()
             lastRefreshTime = System.currentTimeMillis()
         }
 
-        val glm = GridLayoutManager(context!!, getNumColumns())
+        val glm = GridLayoutManager(requireContext(), getNumColumns())
         binding.friendsGrid.layoutManager = glm
         (binding.friendsGrid.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
         adapter = FriendsAdapter(binding, viewModel)
         binding.friendsGrid.adapter = adapter
         binding.friendsGrid.addItemDecoration(SimpleHeaderDecoration())
 
-        var itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
+        var itemDecor = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(
             ContextCompat.getDrawable(
-                context!!,
+                requireContext(),
                 R.drawable.shape_divider_chart
             )!!
         )
         binding.friendsGrid.addItemDecoration(itemDecor)
 
-        itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
+        itemDecor = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         itemDecor.setDrawable(
             ContextCompat.getDrawable(
-                context!!,
+                requireContext(),
                 R.drawable.shape_divider_chart
             )!!
         )
@@ -180,52 +183,39 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
         loadMoreListener.currentPage = viewModel.page
         adapter.loadMoreListener = loadMoreListener
-
-        binding.friendsSort.setOnClickListener {
-            viewModel.friendsFiltered.sortByDescending {
-                if (viewModel.lastPlayedTracksMap[it.name] == null) //put users with no tracks at the end
-                    0L
-                else
-                    viewModel.lastPlayedTracksMap[it.name]!!.playedWhen?.time
-                        ?: System.currentTimeMillis()
-            }
-            viewModel.sorted = true
-            adapter.notifyDataSetChanged()
-            binding.friendsSort.hide()
-            binding.friendsGrid.smoothScrollToPosition(0)
-        }
+        binding.friendsGrid.isVisible = true
 
         viewModel.friendsReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
             viewModel.totalPages = it.totalPages
+            viewModel.total = it.total
             viewModel.hasLoaded = true
+
+            setTitle(
+                resources.getQuantityString(
+                    R.plurals.num_friends,
+                    viewModel.total,
+                    viewModel.total
+                )
+            )
 
             viewModel.putFriends(it.pageResults, replace = it.page == 1)
 
             loadMoreListener.currentPage = it.page
 
-            if (it.page == 1) {
-                adapter.handler.removeCallbacks(runnable)
-                adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL * 2)
-            }
+            doNextTimedRefresh()
 
             if (binding.friendsSwipeRefresh.isRefreshing) {
                 binding.friendsGrid.scheduleLayoutAnimation()
                 binding.friendsSwipeRefresh.isRefreshing = false
             }
             loadMoreListener.loading = false
-            val header = binding.friendsHeader.headerText
-            if (viewModel.sectionedList.isEmpty()) {
-                header.visibility = View.VISIBLE
-                header.text = header.context.getString(R.string.no_friends)
-            } else
-                header.visibility = View.GONE
+            binding.empty.isVisible = viewModel.sectionedList.isEmpty()
 
             adapter.notifyDataSetChanged()
         }
 
         viewModel.tracksReceiver.observe(viewLifecycleOwner) {
-            it ?: return@observe
             val (username, tracksPr) = it
             viewModel.lastPlayedTracksMap[username] = tracksPr.pageResults.firstOrNull()
             viewModel.playCountsMap[username] = tracksPr.totalPages
@@ -239,10 +229,31 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 adapter.notifyItemChanged(idxChanged, 0)
             }
 
-            if (!Stuff.isTv && !viewModel.sorted && loadMoreListener.isAllPagesLoaded && viewModel.sectionedList.size > 1 &&
-                viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size
+            if (!Stuff.isTv && !viewModel.sorted &&
+                loadMoreListener.isAllPagesLoaded &&
+                viewModel.sectionedList.size > 1 &&
+                viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size - viewModel.privateUsers.size
             ) {
-                binding.friendsSort.show()
+                fabData = FabData(
+                    viewLifecycleOwner,
+                    R.string.sort,
+                    R.drawable.vd_sort_clock,
+                    {
+                        viewModel.friendsFiltered.sortByDescending {
+                            if (viewModel.lastPlayedTracksMap[it.name] == null) //put users with no tracks at the end
+                                0L
+                            else
+                                viewModel.lastPlayedTracksMap[it.name]!!.playedWhen?.time
+                                    ?: System.currentTimeMillis()
+                        }
+                        viewModel.sorted = true
+                        adapter.notifyDataSetChanged()
+                        activityViewModel.fabData.value = null
+                        binding.friendsGrid.smoothScrollToPosition(0)
+                    }
+                )
+                if (isResumed)
+                    activityViewModel.fabData.value = fabData
             }
         }
 
@@ -269,13 +280,31 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 adapter.handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
             }
         }
-        adapter.handler.removeCallbacks(runnable)
-        adapter.handler.postDelayed(runnable, Stuff.RECENTS_REFRESH_INTERVAL * 2)
+    }
+
+    private fun doNextTimedRefresh() {
+        timedRefreshJob?.cancel()
+        timedRefreshJob = viewLifecycleOwner.lifecycleScope.launch {
+            if (!isResumed)
+                return@launch
+
+            if (System.currentTimeMillis() - lastRefreshTime < Stuff.RECENTS_REFRESH_INTERVAL * 2)
+                delay(Stuff.RECENTS_REFRESH_INTERVAL * 2)
+
+            if (!isResumed)
+                return@launch
+
+            if (!viewModel.sorted && viewModel.page == 1) {
+                loadFriends(1)
+                refreshFriendsRecents()
+            }
+            lastRefreshTime = System.currentTimeMillis()
+        }
     }
 
     override fun onItemClick(view: View, position: Int) {
         val user = viewModel.sectionedList[position] as UserSerializable
-        val gridItem = adapter.getViewBindingForPopup(context!!, position)
+        val gridItem = adapter.getViewBindingForPopup(requireContext(), position)
         showPopupWindow(gridItem, view, user)
     }
 
@@ -284,7 +313,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
         anchor: View,
         userSerializable: UserSerializable
     ) {
-        val userLink = userSerializable.url
         val popup =
             PopupWindow(contentBinding.root, anchor.measuredWidth, anchor.measuredHeight, true)
                 .apply {
@@ -296,13 +324,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 }
 
         fun postTransition() {
-//            TransitionManager.beginDelayedTransition(contentBinding.root, ChangeBounds().setDuration(150))
-            val actionsBinding =
-                ActionFriendsBinding.inflate(layoutInflater, contentBinding.root, false)
-            contentBinding.root.addView(actionsBinding.root, 4)
-
-            contentBinding.friendsPic.layoutParams.width = 130.dp
-            contentBinding.friendsPic.layoutParams.height = 130.dp
+            contentBinding.friendsPic.layoutParams.width = 150.dp
+            contentBinding.friendsPic.layoutParams.height = 150.dp
             val playCount = viewModel.playCountsMap[userSerializable.name] ?: 0
             if (playCount > 0) {
                 val since = if (userSerializable.registeredTime == 0L)
@@ -327,8 +350,13 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 contentBinding.friendsCountry.visibility = View.VISIBLE
             }
 
+            if (userSerializable.realname.isNotEmpty()) {
+                contentBinding.friendsUsername.text = userSerializable.name
+                contentBinding.friendsUsername.visibility = View.VISIBLE
+            }
+
             fun updatePinIndicator(isPinned: Boolean) {
-                if (!activityViewModel.userIsSelf)
+                if (!viewModel.showsPins)
                     return
                 contentBinding.friendsPin.visibility = View.VISIBLE
                 contentBinding.friendsPin.setImageResource(
@@ -366,17 +394,14 @@ class FriendsFragment : Fragment(), ItemClickListener {
                     }
 
                     if (viewModel.pinnedFriends.size > 1 && !prefs.reorderFriendsLearnt && !wasPinned) {
-                        context!!.toast(R.string.pin_help, Toast.LENGTH_LONG)
+                        requireContext().toast(R.string.pin_help, Toast.LENGTH_LONG)
                         prefs.reorderFriendsLearnt = true
                     }
                 } else {
                     if (!prefs.proStatus) {
-                        activity!!.supportFragmentManager.beginTransaction()
-                            .replace(R.id.frame, BillingFragment())
-                            .addToBackStack(null)
-                            .commit()
+                        findNavController().navigate(R.id.billingFragment)
                     } else {
-                        context!!.toast(
+                        requireContext().toast(
                             getString(
                                 R.string.pin_limit_reached,
                                 Stuff.MAX_PINNED_FRIENDS
@@ -386,26 +411,21 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 }
             }
 
-            actionsBinding.friendsProfile.setOnClickListener {
-                Stuff.openInBrowser(userLink)
+            contentBinding.friendsLinksGroup.isVisible = true
+            contentBinding.friendsScrobbles.setOnClickListener {
+//                activityViewModel.pushUser(userSerializable)
+                findNavController().navigate(R.id.othersHomePagerFragment, Bundle().putSingle(userSerializable))
             }
-            actionsBinding.friendsScrobbles.setOnClickListener {
-                (activity as MainActivity).enableGestures()
-                activityViewModel.pushUser(userSerializable)
-                val f = HomePagerFragment()
-                activity!!.supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
-                    .addToBackStack(null)
-                    .commit()
+            contentBinding.friendsProfile.setOnClickListener {
+                Stuff.openInBrowser(userSerializable.url)
             }
 
             if (BuildConfig.DEBUG) {
-                actionsBinding.friendsScrobbles.setOnLongClickListener {
+                contentBinding.friendsScrobbles.setOnLongClickListener {
                     lifecycleScope.launch {
                         ContextCompat.startForegroundService(
-                            context!!,
-                            Intent(context!!, ListenAlongService::class.java)
+                            requireContext(),
+                            Intent(requireContext(), ListenAlongService::class.java)
                                 .putSingle(userSerializable)
                         )
                     }
@@ -413,20 +433,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 }
             }
 
-            actionsBinding.friendsCharts.setOnClickListener {
-                (activity as MainActivity).enableGestures()
-                activityViewModel.pushUser(userSerializable)
-                val f = HomePagerFragment()
-                f.arguments = Bundle().apply {
-                    putInt(Stuff.ARG_TYPE, 3)
-                }
-                activity!!.supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.frame, f, Stuff.TAG_HOME_PAGER)
-                    .addToBackStack(null)
-                    .commit()
-            }
-            actionsBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
             contentBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
             val screenPoint = intArrayOf(0, 0)
@@ -468,9 +474,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
     }
 
     private fun getNumColumns(): Int {
-        val cols =
-            (resources.displayMetrics.widthPixels - (activity as MainActivity).coordinatorPadding) /
-                    resources.getDimension(R.dimen.grid_size).roundToInt()
+        val cols = (activity as MainActivity).binding.ctl.width /
+                resources.getDimension(R.dimen.grid_size).roundToInt()
         return cols.coerceIn(2, 5)
     }
 }

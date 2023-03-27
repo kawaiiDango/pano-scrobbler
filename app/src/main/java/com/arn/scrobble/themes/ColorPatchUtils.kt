@@ -72,7 +72,8 @@ object ColorPatchUtils {
             prefs.themePrimary = primaryStyle
             prefs.themeSecondary = secondaryStyle
             context.sendBroadcast(
-                Intent(NLService.iTHEME_CHANGED_S),
+                Intent(NLService.iTHEME_CHANGED_S)
+                    .setPackage(context.packageName),
                 NLService.BROADCAST_PERMISSION
             )
         } else {
@@ -110,7 +111,7 @@ object ColorPatchUtils {
             primaryDefault
         return context.getStyledColor(
             ColorPatchMap.primaryStyles
-                .getOrDefaultKey(primaryStyle, primaryDefault), R.attr.colorPrimary
+                .getOrDefaultKey(primaryStyle, primaryDefault), com.google.android.material.R.attr.colorPrimary
         )
     }
 

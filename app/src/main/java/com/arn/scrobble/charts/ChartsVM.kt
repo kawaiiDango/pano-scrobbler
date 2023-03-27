@@ -1,10 +1,10 @@
 package com.arn.scrobble.charts
 
-import android.app.Application
 import android.graphics.Bitmap
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
@@ -12,26 +12,33 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
+import com.arn.scrobble.friends.UserSerializable
+import com.arn.scrobble.scrobbleable.ListenBrainz
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.hadilq.liveevent.LiveEvent
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Period
 import io.michaelrocks.bimap.BiMap
-import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
-class ChartsVM(application: Application) : AndroidViewModel(application) {
+class ChartsVM : ViewModel() {
     val chartsData by lazy { mutableListOf<MusicEntry>() }
     val chartsReceiver by lazy { LiveEvent<PaginatedResult<MusicEntry>>() }
     val listReceiver by lazy { LiveEvent<List<MusicEntry>>() }
-    val periodCountReceiver by lazy { MutableLiveData<Map<TimePeriod, Int>>() }
-    val tagCloudReceiver by lazy { MutableLiveData<Map<String, Float>>() }
+    val listeningActivity by lazy { MutableLiveData<Map<TimePeriod, Int>>() }
+    val tagCloud by lazy { MutableLiveData<Map<String, Float>>() }
     val tagCloudError by lazy { LiveEvent<Throwable>() }
     val tagCloudRefresh by lazy { LiveEvent<Unit>() }
     var periodCountRequested = false
     var tagCloudRequested = false
     val tagCloudProgressLd by lazy { MutableLiveData<Double>() }
-    val scrobbleCountHeader = MutableLiveData(application.getString(R.string.charts))
+    val scrobbleCountHeader = MutableLiveData(App.context.getString(R.string.listening_activity))
+    private var lastListeningActivityJob: Job? = null
     private val lastChartsTasks = mutableMapOf<Int, LFMRequester>()
     val periodType = MutableLiveData<TimePeriodType>()
     val timePeriods = MutableLiveData<BiMap<Int, TimePeriod>>()
@@ -49,8 +56,10 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
         this.page = page
 
         if (periodType.value != TimePeriodType.CONTINUOUS) {
-            this.page = 1
-            reachedEnd = true
+            if (Scrobblables.current !is ListenBrainz) {
+                this.page = 1
+                reachedEnd = true
+            }
             timePeriods.value?.inverse?.get(selectedPeriodValue)?.let { idx ->
                 prevPeriod = timePeriods.value?.get(idx + 1)
             }
@@ -65,7 +74,7 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
         }
         lastChartsTasks[chartsType]?.cancel()
         lastChartsTasks[chartsType] =
-            LFMRequester(getApplication(), viewModelScope, chartsReceiver).apply {
+            LFMRequester(viewModelScope, chartsReceiver).apply {
                 getChartsWithStonks(
                     type = chartsType,
                     timePeriod = selectedPeriodValue,
@@ -77,11 +86,15 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
             }
     }
 
-    fun loadScrobbleCounts(periods: List<TimePeriod>) {
-        lastChartsTasks[Stuff.TYPE_SC]?.cancel()
-        lastChartsTasks[Stuff.TYPE_SC] =
-            LFMRequester(getApplication(), viewModelScope, periodCountReceiver).apply {
-                getScrobbleCounts(periods, username)
+    fun loadListeningActivity(user: UserSerializable) {
+        lastListeningActivityJob?.cancel()
+        lastListeningActivityJob =
+            viewModelScope.launch(Dispatchers.IO + LFMRequester.ExceptionNotifier(timberLog = false)) {
+                listeningActivity.postValue(
+                    Scrobblables.current?.getListeningActivity(
+                        selectedPeriod.value ?: return@launch, user
+                    )
+                )
             }
     }
 
@@ -92,7 +105,7 @@ class ChartsVM(application: Application) : AndroidViewModel(application) {
         lastChartsTasks[Stuff.TYPE_TAG_CLOUD]?.cancel()
         lastChartsTasks[Stuff.TYPE_TAG_CLOUD] =
             LFMRequester(
-                getApplication(), viewModelScope, liveData = tagCloudReceiver,
+                viewModelScope, liveData = tagCloud,
                 errorLiveData = tagCloudError
             ).apply {
                 getTagCloud(musicEntries, tagCloudProgressLd)

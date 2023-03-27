@@ -7,10 +7,10 @@
     <string name="github_link" translatable="false">https://github.com/kawaiiDango/pScrobbler</string>
     <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
     <string name="privacy_policy_link" translatable="false">https://telegra.ph/Pano-Scrobbler-Privacy-Policy-08-17</string>
-    <string name="lastfm" translatable="false">LastFM</string>
-    <string name="librefm" translatable="false">LibreFM</string>
+    <string name="lastfm" translatable="false">Last.fm</string>
+    <string name="librefm" translatable="false">Libre.fm</string>
     <string name="gnufm" translatable="false">GNU FM</string>
-    <string name="listenbrainz" translatable="false">ListenBrainz</string>
+    <string name="listenbrainz" translatable="false">Listenbrainz</string>
     <string name="pixel_np" translatable="false">Pixel Now Playing</string>
     <string name="loading" translatable="false">…</string>
 <!--    <string name="mtrl_picker_cancel" description="Button text to indicate that the widget will ignore the user's selection [CHAR_LIMIT=16]" translatable="false">Reset</string>-->
@@ -21,7 +21,7 @@
     <string name="preset_explicit" translatable="false">Explicit</string>
     <string name="preset_album_version" translatable="false">Album version</string>
     <string name="artist_title" formatted="true" translatable="false">%1$s — %2$s</string>
-
+    <string name="sidebar_visibility" translatable="false">gone</string>
 <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
     <string name="force_exception" translatable="false">Force log an exception</string>

@@ -21,7 +21,6 @@ import de.umass.lastfm.ImageSize
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Period
-import de.umass.lastfm.Session
 import de.umass.lastfm.Track
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -115,8 +114,7 @@ class ChartsWidgetUpdaterJob : JobService() {
                     Stuff.TYPE_ALBUMS,
                     Stuff.TYPE_TRACKS
                 ).map { type ->
-                    var session: Session? = null
-                    val pr = LFMRequester(this@ChartsWidgetUpdaterJob, this)
+                    val pr = LFMRequester(this)
                         .execHere<PaginatedResult<out MusicEntry>> {
                             getChartsWithStonks(
                                 type,
@@ -126,9 +124,8 @@ class ChartsWidgetUpdaterJob : JobService() {
                                 null,
                                 limit = 50
                             )
-                            session = lastfmSession
                         }
-                    if (session?.result?.isSuccessful != true) {
+                    if (pr == null || pr.pageResults == null) {// todo check if not 200
                         cancel()
                     }
                     pr!!.pageResults!!.map {

@@ -1,64 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:id="@+id/billing_ll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="24dp">
-
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center_horizontal"
-                android:contentDescription="@string/love"
-                app:srcCompat="@drawable/vd_heart"
-                app:tint="?colorPrimary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                android:justificationMode="inter_word"
-                android:text="@string/pro_support"
-                android:textAppearance="?textAppearanceBodyLarge" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:justificationMode="inter_word"
-                android:text="@string/pro_also_get"
-                android:textAppearance="?textAppearanceBodyLarge"
-                android:layout_marginBottom="16dp"/>
-        </LinearLayout>
-    </ScrollView>
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/billing_ll"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp">
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/start_billing"
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/love"
+            app:srcCompat="@drawable/vd_heart"
+            app:tint="?colorPrimary" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/get_pro"
-            android:maxLines="2"
-            app:icon="@drawable/vd_heart" />
+            android:layout_marginBottom="32dp"
+            android:justificationMode="inter_word"
+            android:text="@string/pro_support"
+            android:textAppearance="?textAppearanceBodyLarge" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:justificationMode="inter_word"
+            android:text="@string/pro_also_get"
+            android:textAppearance="?textAppearanceBodyLarge" />
         <Button
             android:id="@+id/billing_troubleshoot"
             style="@style/Widget.AppCompat.Button.Borderless"
@@ -68,10 +45,17 @@
             android:minWidth="0dp"
             android:minHeight="0dp"
             android:text="\?"
+            android:layout_gravity="center_horizontal"
             android:textAppearance="?textAppearanceHeadlineSmall"
             android:textColor="?colorPrimary"
             android:textStyle="bold" />
-
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/start_billing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/get_pro"
+            app:icon="@drawable/vd_heart" />
     </LinearLayout>
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

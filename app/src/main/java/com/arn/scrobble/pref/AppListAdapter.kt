@@ -13,7 +13,10 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemAppBinding
-import com.arn.scrobble.ui.*
+import com.arn.scrobble.ui.ExpandableHeader
+import com.arn.scrobble.ui.ItemClickListener
+import com.arn.scrobble.ui.PackageName
+import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.google.android.material.color.MaterialColors
 
@@ -126,7 +129,7 @@ class AppListAdapter(
             binding.headerText.setTextColor(
                 MaterialColors.getColor(
                     itemView,
-                    R.attr.colorSecondary
+                    com.google.android.material.R.attr.colorSecondary
                 )
             )
             binding.headerAction.visibility = View.GONE

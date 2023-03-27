@@ -70,8 +70,8 @@ class SectionedVirtualList : AbstractList<Any>() {
     }
 
     companion object {
-        const val TYPE_HEADER_DEFAULT = -1
-        const val TYPE_ITEM_DEFAULT = 0
+        const val TYPE_HEADER_DEFAULT = -11
+        const val TYPE_ITEM_DEFAULT = -10
     }
 
     fun copy(deep: Boolean = false): SectionedVirtualList {

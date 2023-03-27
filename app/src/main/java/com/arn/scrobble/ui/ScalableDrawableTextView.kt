@@ -1,6 +1,7 @@
 package com.arn.scrobble.ui
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import com.arn.scrobble.R
 import com.google.android.material.textview.MaterialTextView
@@ -83,6 +84,16 @@ class ScalableDrawableTextView(
         top: Int,
         end: Int,
         bottom: Int
+    ) {
+        super.setCompoundDrawablesRelativeWithIntrinsicBounds(start, top, end, bottom)
+        initCompoundDrawableSize()
+    }
+
+    override fun setCompoundDrawablesRelativeWithIntrinsicBounds(
+        start: Drawable?,
+        top: Drawable?,
+        end: Drawable?,
+        bottom: Drawable?
     ) {
         super.setCompoundDrawablesRelativeWithIntrinsicBounds(start, top, end, bottom)
         initCompoundDrawableSize()

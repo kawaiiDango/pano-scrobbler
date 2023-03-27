@@ -14,17 +14,17 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ContentSearchBinding
-import com.arn.scrobble.info.InfoFragment
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.MusicEntryItemClickListener
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showKeyboard
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -39,12 +39,12 @@ class SearchFragment : Fragment() {
     private val viewModel by viewModels<SearchVM>()
     private val historyPref by lazy {
         HistoryPref(
-            MainPrefs(context!!).sharedPreferences,
+            MainPrefs(requireContext()).sharedPreferences,
             MainPrefs.PREF_ACTIVITY_SEARCH_HISTORY,
             20
         )
     }
-    private val prefs by lazy { MainPrefs(context!!) }
+    private val prefs by lazy { MainPrefs(requireContext()) }
     private var _binding: ContentSearchBinding? = null
     private val binding
         get() = _binding!!
@@ -66,6 +66,7 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentSearchBinding.inflate(inflater, container, false)
+        binding.searchResultsList.setupInsets()
         return binding.root
     }
 
@@ -137,7 +138,7 @@ class SearchFragment : Fragment() {
         historyPref.load()
 
         val searchHistoryAdapter =
-            object : ArrayAdapter<String>(context!!, R.layout.list_item_history) {
+            object : ArrayAdapter<String>(requireContext(), R.layout.list_item_history) {
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val historyTextView = super.getView(position, convertView, parent)
                     if (convertView == null) {
@@ -180,13 +181,11 @@ class SearchFragment : Fragment() {
 
         val resultsItemClickListener = object : MusicEntryItemClickListener {
             override fun onItemClick(view: View, entry: MusicEntry) {
-                val info = InfoFragment()
-                info.arguments = entry.toBundle()
-                info.show(activity!!.supportFragmentManager, null)
+                findNavController().navigate(R.id.infoFragment, entry.toBundle())
             }
         }
         val resultsAdapter =
-            SearchResultsAdapter(context!!, viewModel, resultsItemClickListener)
+            SearchResultsAdapter(requireContext(), viewModel, resultsItemClickListener)
 
         binding.searchResultsList.adapter = resultsAdapter
         binding.searchResultsList.layoutManager = LinearLayoutManager(context)
@@ -243,9 +242,7 @@ class SearchFragment : Fragment() {
         }
 
         viewModel.indexingError.observe(viewLifecycleOwner) { exception ->
-            exception ?: return@observe
-
-            MaterialAlertDialogBuilder(context!!)
+            MaterialAlertDialogBuilder(requireContext())
                 .setTitle(exception.message)
                 .setIcon(R.drawable.vd_error)
                 .show()
@@ -257,11 +254,6 @@ class SearchFragment : Fragment() {
         if (term.isNotEmpty()) {
             historyPref.add(term)
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.search)
     }
 
     override fun onStop() {

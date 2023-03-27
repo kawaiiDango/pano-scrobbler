@@ -16,15 +16,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import androidx.core.view.drawToBitmap
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
+import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.mapConcurrently
@@ -33,6 +34,7 @@ import com.arn.scrobble.databinding.FooterCollageBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.arn.scrobble.ui.UiUtils.getSelectedItemPosition
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
@@ -42,7 +44,6 @@ import com.google.android.material.chip.ChipGroup
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.MusicEntry
-import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -58,8 +59,8 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     private var _binding: DialogCollageGeneratorBinding? = null
     private val binding get() = _binding!!
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
-    private val timePeriod get() = arguments!!.getSingle<TimePeriod>()!!
-    private val prefs by lazy { MainPrefs(context!!) }
+    private val timePeriod get() = requireArguments().getSingle<TimePeriod>()!!
+    private val prefs by lazy { MainPrefs(requireContext()) }
     private lateinit var saveBySafRequest: ActivityResultLauncher<Intent>
     private val minSize = 3
     private val maxSize = 6
@@ -70,11 +71,12 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         saveBySafRequest =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                    context!!.contentResolver.openOutputStream(result.data!!.data!!)
+                    requireContext().contentResolver.openOutputStream(result.data!!.data!!)
                         ?.use { ostream ->
-                            context!!.contentResolver.openInputStream(lastUri!!)?.use { istream ->
-                                istream.copyTo(ostream)
-                            }
+                            requireContext().contentResolver.openInputStream(lastUri!!)
+                                ?.use { istream ->
+                                    istream.copyTo(ostream)
+                                }
                         }
                 }
             }
@@ -103,7 +105,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         )
 
         binding.collageTypeText.setSimpleItems(types)
-        binding.collageTypeText.setText(types[arguments!!.getInt(Stuff.ARG_TYPE)], false)
+        binding.collageTypeText.setText(types[requireArguments().getInt(Stuff.ARG_TYPE)], false)
 
         binding.collageSizeText.setSimpleItems(sizes)
         val savedIndex = prefs.collageSize - minSize
@@ -135,7 +137,8 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     private fun onCreateCollageButtonClick(save: Boolean) {
 
         binding.collageGenerateProgress.show()
-        binding.collageGenerateButtons.visibility = View.INVISIBLE
+        binding.collageShareButton.visibility = View.INVISIBLE
+        binding.collageSaveButton.visibility = View.INVISIBLE
 
         prefs.collageSkipMissing = binding.collageSkipMissingImages.isChecked
         prefs.collageCaptions = binding.collageIncludeCaptions.isChecked
@@ -183,6 +186,8 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                         delay(2500)
                         binding.collageSaveButton.setText(R.string.save)
                         binding.collageSaveButton.isEnabled = true
+
+                        ReviewPrompter(requireActivity()).showIfNeeded()
                     } else {
                         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                             addCategory(Intent.CATEGORY_OPENABLE)
@@ -194,22 +199,19 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                 } else
                     shareImageUri(uri, text)
             } else {
-                context!!.toast(R.string.network_error)
+                requireContext().toast(R.string.network_error)
             }
         }
     }
 
     private suspend fun fetchCharts(type: Int, timePeriod: TimePeriod) =
         withContext(Dispatchers.IO) {
-            LFMRequester(context!!, viewLifecycleOwner.lifecycleScope)
-                .execHere<PaginatedResult<out MusicEntry>> {
-                    getCharts(
-                        type,
-                        timePeriod,
-                        1,
-                        activityViewModel.currentUser.name
-                    )
-                }
+            Scrobblables.current!!.getCharts(
+                type,
+                timePeriod,
+                1,
+                activityViewModel.currentUser.name
+            )
         }
 
     private suspend fun createCollage(
@@ -220,7 +222,11 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         val textScaler = collageSize / 5f
         val isDigest = type == Stuff.TYPE_ALL
 
-        val collageRoot = LinearLayout(context, null, R.style.Theme_Material3_Dark).apply {
+        val collageRoot = LinearLayout(
+            context,
+            null,
+            com.google.android.material.R.style.Theme_Material3_Dark
+        ).apply {
             orientation = LinearLayout.VERTICAL
         }
 
@@ -323,9 +329,10 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         lastUri = uri
         val aspectRatio = bitmap.width.toFloat() / bitmap.height
         binding.collagePreview.updateLayoutParams {
-            height = (width/aspectRatio).toInt()
+            height = (width / aspectRatio).toInt()
         }
         binding.collagePreview.setImageBitmap(bitmap)
+        binding.collagePreview.isVisible = true
 
         return uri to text
     }
@@ -352,7 +359,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         val totalWidth = imageDimensionPx * prefs.collageSize
         var bitmap: Bitmap
 
-        val collageFile = File(context!!.filesDir, "collage.jpg")
+        val collageFile = File(requireContext().filesDir, "collage.jpg")
         val specHeight = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         val specWidth = View.MeasureSpec.makeMeasureSpec(totalWidth, View.MeasureSpec.EXACTLY)
         collageRoot.measure(specWidth, specHeight)
@@ -371,7 +378,11 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
         }
 
         return bitmap to
-                FileProvider.getUriForFile(context!!, "com.arn.scrobble.fileprovider", collageFile)
+                FileProvider.getUriForFile(
+                    requireContext(),
+                    "com.arn.scrobble.fileprovider",
+                    collageFile
+                )
     }
 
     private fun createAddFooter(collageRoot: LinearLayout, type: Int, textScaler: Float) {
@@ -449,7 +460,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                 break
 
             var error = false
-            val request = ImageRequest.Builder(context!!).apply {
+            val request = ImageRequest.Builder(requireContext()).apply {
                 data(entry)
                 allowHardware(false)
                 crossfade(false)
@@ -459,7 +470,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
                     )
                 else
                     error(
-                        context!!.getTintedDrawable(
+                        requireContext().getTintedDrawable(
                             R.drawable.vd_wave_simple_filled, entry.name.hashCode()
                         )
                     )
@@ -467,7 +478,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             }.build()
 
             val artworkDrawable = withContext(Dispatchers.IO) {
-                context!!.imageLoader.execute(request).drawable
+                requireContext().imageLoader.execute(request).drawable
             }
             if (prefs.collageSkipMissing && (error || artworkDrawable == null))
                 continue
@@ -545,7 +556,8 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     private fun resetProgress() {
         binding.collageGenerateProgress.hide()
         binding.collageGenerateProgress.isIndeterminate = true
-        binding.collageGenerateButtons.visibility = View.VISIBLE
+        binding.collageShareButton.visibility = View.VISIBLE
+        binding.collageSaveButton.visibility = View.VISIBLE
     }
 
     override fun onStart() {

@@ -11,9 +11,10 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -27,6 +28,7 @@ import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.Track
@@ -37,15 +39,15 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
     private val binding
         get() = _binding!!
     private val scrobbleCount: Int
-        get() = arguments!!.getInt(Stuff.ARG_COUNT)
+        get() = requireArguments().getInt(Stuff.ARG_COUNT)
     private val viewModel by viewModels<TracksVM>()
-    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
+    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
     private lateinit var adapter: TrackHistoryAdapter
     private val argToTrack by lazy {
         Track(
-            arguments!!.getString(NLService.B_TRACK),
+            requireArguments().getString(NLService.B_TRACK),
             null,
-            arguments!!.getString(NLService.B_ARTIST)
+            requireArguments().getString(NLService.B_ARTIST)
         )
     }
 
@@ -62,6 +64,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentTrackHistoryBinding.inflate(inflater, container, false)
+        binding.tracksList.setupInsets()
         return binding.root
     }
 
@@ -70,28 +73,27 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         setTitleWithCount()
     }
 
     private fun setTitleWithCount() {
         val formattedCount = NumberFormat.getInstance().format(scrobbleCount)
-        val title = if (activityViewModel.userIsSelf) {
+        val title = if (mainNotifierViewModel.userIsSelf) {
             getString(R.string.my_scrobbles) + ": " + formattedCount
         } else {
-            val username = activityViewModel.currentUser.name
+            val username = mainNotifierViewModel.currentUser.name
             "$username: $formattedCount"
         }
         setTitle(title)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (!activityViewModel.userIsSelf)
-            viewModel.username = activityViewModel.currentUser.name
+        if (!mainNotifierViewModel.userIsSelf)
+            viewModel.username = mainNotifierViewModel.currentUser.name
 
         viewModel.tracksReceiver.observe(viewLifecycleOwner) {
-            it ?: return@observe
             viewModel.totalPages = it.totalPages
             if (it.page == 1) {
                 viewModel.tracks.clear()
@@ -112,7 +114,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
                     ).format(it)
                 else
                     Stuff.myRelativeTime(
-                        context!!,
+                        requireContext(),
                         it
                     ) // this might be grammatically wrong for < 24h
                 binding.firstScrobbledOn.visibility = View.VISIBLE
@@ -121,24 +123,23 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
         else
             binding.firstScrobbledOn.visibility = View.GONE
 
-        (activity as MainActivity).mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
-            it?.let {
-                adapter.editTrack(it)
-            }
+        mainNotifierViewModel.editData.observe(viewLifecycleOwner) {
+            adapter.editTrack(it)
         }
 
-        val prefs = MainPrefs(context!!)
-        val isShowingPlayers = activityViewModel.userIsSelf && prefs.proStatus && prefs.showScrobbleSources
+        val prefs = MainPrefs(requireContext())
+        val isShowingPlayers =
+            mainNotifierViewModel.userIsSelf && prefs.proStatus && prefs.showScrobbleSources
 
         adapter = TrackHistoryAdapter(
             viewModel,
             this,
             prefs.showAlbumInRecents,
             isShowingPlayers,
-            PanoDb.getDb(context!!).getScrobbleSourcesDao()
+            PanoDb.db.getScrobbleSourcesDao()
         )
 
-        val llm = LinearLayoutManager(context!!)
+        val llm = LinearLayoutManager(requireContext())
         binding.tracksList.layoutManager = llm
         binding.tracksList.adapter = adapter
         (binding.tracksList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
@@ -193,15 +194,19 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
     private fun openTrackPopupMenu(anchor: View, position: Int) {
         val track = adapter.getItem(position)
 
-        val popup = PopupMenu(context!!, anchor)
+        val popup = PopupMenu(requireContext(), anchor)
         popup.menuInflater.inflate(R.menu.recents_item_menu, popup.menu)
 
         popup.menu.removeItem(R.id.menu_love)
 
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.menu_edit -> PopupMenuUtils.editScrobble(activity!!, track)
-                R.id.menu_delete -> PopupMenuUtils.deleteScrobble(activity!!, track) { succ ->
+                R.id.menu_edit -> PopupMenuUtils.editScrobble(findNavController(), track)
+                R.id.menu_delete -> PopupMenuUtils.deleteScrobble(
+                    findNavController(),
+                    viewModel.viewModelScope,
+                    track
+                ) { succ ->
                     if (succ) {
                         val oldList = viewModel.tracks.toList()
                         val wasInList = viewModel.tracks.remove(track)
@@ -209,10 +214,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
                             adapter.autoNotify(oldList, viewModel.tracks) { o, n ->
                                 o.equalsExt(n)
                             }
-                            arguments!!.putInt(
-                                Stuff.ARG_COUNT,
-                                scrobbleCount - 1
-                            )
+                            requireArguments().putInt(Stuff.ARG_COUNT, scrobbleCount - 1)
                             setTitleWithCount()
                         }
                     }

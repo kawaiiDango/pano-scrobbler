@@ -4,20 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavDeepLinkBuilder
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainActivity
+import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.toBundle
+import com.arn.scrobble.TrackFeatures
 import com.arn.scrobble.charts.ChartsOverviewAdapter
 import com.arn.scrobble.charts.ChartsVM
 import com.arn.scrobble.charts.FakeAlbumFragment
@@ -26,26 +30,36 @@ import com.arn.scrobble.charts.FakeTrackFragment
 import com.arn.scrobble.charts.ShittyArchitectureFragment
 import com.arn.scrobble.databinding.ContentInfoExtraBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
+import com.arn.scrobble.databinding.LayoutSpotifyTrackFeaturesBinding
 import com.arn.scrobble.ui.MusicEntryItemClickListener
-import com.arn.scrobble.ui.UiUtils.dismissAllDialogFragments
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
+import com.arn.scrobble.ui.UiUtils.scheduleTransition
+import com.arn.scrobble.ui.UiUtils.startFadeLoop
+import com.github.mikephil.charting.charts.RadarChart
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.data.RadarData
+import com.github.mikephil.charting.data.RadarDataSet
+import com.github.mikephil.charting.data.RadarEntry
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.color.MaterialColors
 import de.umass.lastfm.MusicEntry
+import java.text.DateFormat
+import kotlin.math.roundToInt
 
 
 class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListener {
     private lateinit var artistsFragment: FakeArtistFragment
     private lateinit var albumsFragment: FakeAlbumFragment
     private lateinit var tracksFragment: FakeTrackFragment
+
+    private val trackFeaturesVM by viewModels<TrackFeaturesVM>()
+
     private val track by lazy {
-        arguments!!.getString(NLService.B_TRACK)
+        requireArguments().getString(NLService.B_TRACK)
     }
     private val artist by lazy {
-        arguments!!.getString(NLService.B_ARTIST)!!
-    }
-
-    private val disableFragmentNavigation by lazy {
-        arguments!!.getBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, false)
+        requireArguments().getString(NLService.B_ARTIST)!!
     }
 
     override fun onCreateView(
@@ -85,7 +99,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
             binding.infoExtraHeader3.headerText.text = getString(R.string.similar_artists)
             binding.infoExtraHeader3.headerAction.setOnClickListener {
-                showFullFragment(InfoPagerFragment(), Stuff.TYPE_ARTISTS)
+                showFullFragment(R.id.infoPagerFragment, Stuff.TYPE_ARTISTS)
             }
             binding.infoExtraHeader3.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 R.drawable.vd_mic,
@@ -95,7 +109,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             )
             binding.infoExtraHeader2.headerText.text = getString(R.string.top_albums)
             binding.infoExtraHeader2.headerAction.setOnClickListener {
-                showFullFragment(InfoPagerFragment(), Stuff.TYPE_ALBUMS)
+                showFullFragment(R.id.infoPagerFragment, Stuff.TYPE_ALBUMS)
             }
             binding.infoExtraHeader2.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 R.drawable.vd_album,
@@ -105,7 +119,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             )
             binding.infoExtraHeader1.headerText.text = getString(R.string.top_tracks)
             binding.infoExtraHeader1.headerAction.setOnClickListener {
-                showFullFragment(InfoPagerFragment(), Stuff.TYPE_TRACKS)
+                showFullFragment(R.id.infoPagerFragment, Stuff.TYPE_TRACKS)
             }
             binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 R.drawable.vd_note,
@@ -123,26 +137,56 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
                 LFMRequester(
-                    context!!,
                     artistsFragment.viewModel.viewModelScope,
                     artistsFragment.viewModel.listReceiver
                 ).getSimilarArtists(artist)
                 LFMRequester(
-                    context!!,
                     albumsFragment.viewModel.viewModelScope,
                     albumsFragment.viewModel.listReceiver
                 ).getArtistTopAlbums(artist)
                 LFMRequester(
-                    context!!,
                     tracksFragment.viewModel.viewModelScope,
                     tracksFragment.viewModel.listReceiver
                 ).getArtistTopTracks(artist)
             }
         } else {
+            // spotify info
+            trackFeaturesVM.spotifyTrackWithFeatures.observe(viewLifecycleOwner) { spotifyTrack ->
+                if (spotifyTrack?.features == null) {
+                    binding.root.clearAnimation()
+                    return@observe
+                }
+                val features = spotifyTrack.features!!
+
+                this@InfoExtraFragment.scheduleTransition()
+                val spotifyFeaturesBinding = LayoutSpotifyTrackFeaturesBinding.bind(
+                    binding.infoSpotifyFeatures.inflate()
+                )
+                drawRadarChart(spotifyFeaturesBinding.featuresRadarChart, features)
+
+                spotifyFeaturesBinding.featuresPopularityProgress.progress = spotifyTrack.popularity
+                spotifyFeaturesBinding.featuresPopularity.text =
+                    getString(R.string.popularity, spotifyTrack.popularity)
+
+                spotifyFeaturesBinding.featuresReleaseDate.text = DateFormat
+                    .getDateInstance(DateFormat.MEDIUM)
+                    .format(spotifyTrack.getReleaseDateDate()!!)
+                spotifyFeaturesBinding.featuresKey.text = features.getKeyString()
+                spotifyFeaturesBinding.featuresBpm.text =
+                    "${features.tempo.roundToInt()} bpm • ${features.time_signature}/4"
+                spotifyFeaturesBinding.featuresLoudness.text =
+                    String.format("%.2f dB", features.loudness)
+
+                binding.root.clearAnimation()
+            }
+
+            if (trackFeaturesVM.spotifyTrackWithFeatures.value == null)
+                trackFeaturesVM.loadTrackFeatures(artist, track!!)
+
             initFragment(tracksFragment, binding.infoExtraFrame1)
             binding.infoExtraHeader1.headerText.text = getString(R.string.similar_tracks)
             binding.infoExtraHeader1.headerAction.setOnClickListener {
-                showFullFragment(TrackExtraFragment(), Stuff.TYPE_TRACKS)
+                showFullFragment(R.id.trackExtraFragment, Stuff.TYPE_TRACKS)
             }
 
             binding.infoExtraHeader1.headerText.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -160,17 +204,11 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
             if (tracksFragment.viewModel.chartsData.isEmpty()) {
                 LFMRequester(
-                    context!!,
                     tracksFragment.viewModel.viewModelScope,
                     tracksFragment.viewModel.listReceiver
                 ).getSimilarTracks(artist, track!!)
             }
-        }
-
-        if (disableFragmentNavigation) {
-            binding.infoExtraHeader1.headerAction.visibility = View.GONE
-            binding.infoExtraHeader2.headerAction.visibility = View.GONE
-            binding.infoExtraHeader3.headerAction.visibility = View.GONE
+            binding.root.startFadeLoop()
         }
 
         return binding.root
@@ -190,25 +228,22 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             true //top tracks/albums are ordered by listeners and not by play count
         fragment.adapter = adapter
 
-        val itemDecor = DividerItemDecoration(context!!, DividerItemDecoration.HORIZONTAL)
+        val itemDecor = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(
             ContextCompat.getDrawable(
-                context!!,
+                requireContext(),
                 R.drawable.shape_divider_chart
             )!!
         )
         rootViewBinding.chartsList.addItemDecoration(itemDecor)
 
         rootViewBinding.chartsList.layoutManager =
-            LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+            LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
         (rootViewBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations =
             false
         rootViewBinding.chartsList.adapter = adapter
 
         fragment.viewModel.listReceiver.observe(viewLifecycleOwner) {
-            if (it == null && !Stuff.isOnline && fragment.viewModel.chartsData.size == 0)
-                adapter.populate()
-            it ?: return@observe
             fragment.viewModel.reachedEnd = true
             synchronized(fragment.viewModel.chartsData) {
                 fragment.viewModel.chartsData.addAll(it)
@@ -226,28 +261,81 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
     }
 
     override fun onItemClick(view: View, entry: MusicEntry) {
-        val info = InfoFragment()
-        info.arguments = entry.toBundle().apply {
-            putBoolean(Stuff.ARG_DISABLE_FRAGMENT_NAVIGATION, disableFragmentNavigation)
-        }
-        info.show(parentFragmentManager, null)
+        val args = entry.toBundle()
+        findNavController().navigate(R.id.infoFragment, args)
     }
 
-    private fun showFullFragment(fullFragment: Fragment, type: Int) {
-        (activity as? MainActivity)?.enableGestures()
-        parentFragmentManager.dismissAllDialogFragments()
-        fullFragment.arguments = arguments?.clone() as? Bundle
-        fullFragment.arguments?.putInt(Stuff.ARG_TYPE, type)
+    private fun showFullFragment(@IdRes fragmentId: Int, type: Int) {
+        val args = requireArguments().clone() as Bundle
+        args.putInt(Stuff.ARG_TYPE, type)
 
-        val tag = if (track == null)
-            Stuff.TAG_CHART_PAGER
-        else
-            null
+        if (activity is MainDialogActivity) {
+            NavDeepLinkBuilder(requireContext())
+                .setComponentName(MainActivity::class.java)
+                .setGraph(R.navigation.nav_graph)
+                .setDestination(R.id.infoPagerFragment)
+                .setArguments(args)
+                .createPendingIntent()
+                .send()
+        } else if (activity is MainActivity)
+            findNavController().navigate(fragmentId, args)
+    }
 
-        parentFragmentManager
-            .beginTransaction()
-            .replace(R.id.frame, fullFragment, tag)
-            .addToBackStack(null)
-            .commit()
+    private fun drawRadarChart(chart: RadarChart, features: TrackFeatures) {
+        chart.description.isEnabled = false
+        chart.webColor =
+            MaterialColors.getColor(chart, com.google.android.material.R.attr.colorControlNormal)
+        chart.webColorInner =
+            MaterialColors.getColor(chart, com.google.android.material.R.attr.colorControlNormal)
+        chart.webAlpha = 100
+        chart.legend.isEnabled = false
+        chart.setTouchEnabled(false)
+
+
+        val entries = listOf(
+            RadarEntry(features.acousticness, getString(R.string.acoustic)),
+            RadarEntry(features.danceability, getString(R.string.danceable)),
+            RadarEntry(features.energy, getString(R.string.energetic)),
+            RadarEntry(features.instrumentalness, getString(R.string.instrumental)),
+            RadarEntry(features.valence, getString(R.string.valence))
+        )
+
+        chart.yAxis.apply {
+            setLabelCount(entries.size, false)
+            setDrawLabels(false)
+        }
+
+        chart.xAxis.apply {
+            textSize = 11f
+            valueFormatter = object : ValueFormatter() {
+                override fun getAxisLabel(value: Float, axis: AxisBase?) =
+                    entries.getOrNull(value.toInt())?.data as? String ?: ""
+            }
+            textColor = MaterialColors.getColor(
+                chart,
+                com.google.android.material.R.attr.colorControlNormal
+            )
+        }
+
+        val set = RadarDataSet(entries, "").apply {
+            color = MaterialColors.getColor(chart, com.google.android.material.R.attr.colorPrimary)
+            fillColor =
+                MaterialColors.getColor(chart, com.google.android.material.R.attr.colorSecondary)
+            setDrawFilled(true)
+            fillAlpha = 180
+            lineWidth = 1.5f
+            isDrawHighlightCircleEnabled = false
+            setDrawHighlightIndicators(false)
+        }
+
+        chart.data = RadarData(set).apply {
+            setDrawValues(false)
+            setValueTextColor(
+                MaterialColors.getColor(
+                    chart,
+                    com.google.android.material.R.attr.colorControlNormal
+                )
+            )
+        }
     }
 }

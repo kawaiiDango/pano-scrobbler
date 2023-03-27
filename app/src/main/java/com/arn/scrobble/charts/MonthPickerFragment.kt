@@ -29,7 +29,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
-    private val viewModel by viewModels<MonthPickerVM>({ parentFragment!! })
+    private val viewModel by viewModels<MonthPickerVM>({ requireParentFragment() })
     private var _binding: DialogMonthPickerBinding? = null
     private val binding
         get() = _binding!!
@@ -37,7 +37,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     private val monthAdapter by lazy {
         ArrayAdapter(
-            context!!,
+            requireContext(),
             R.layout.list_item_month,
             R.id.text_item,
             months
@@ -46,7 +46,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     private val yearAdapter by lazy {
         ArrayAdapter(
-            context!!,
+            requireContext(),
             R.layout.list_item_month,
             R.id.text_item,
             years
@@ -84,8 +84,8 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             val timePeriod = TimePeriod(
                 startTime,
                 endTime,
-                DateUtils.formatDateTime(
-                    context!!,
+                name = DateUtils.formatDateTime(
+                    requireContext(),
                     startTime,
                     DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
                 )
@@ -141,7 +141,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
         scrollToSelected(monthsEditText, monthAdapter, viewModel.selectedMonth)
         scrollToSelected(yearsEditText, yearAdapter, viewModel.selectedYear)
 
-        return MaterialAlertDialogBuilder(context!!)
+        return MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
             .setPositiveButton(android.R.string.ok, null)
             .setNegativeButton(android.R.string.cancel, null)

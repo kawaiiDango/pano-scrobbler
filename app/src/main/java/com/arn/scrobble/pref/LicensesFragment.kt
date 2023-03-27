@@ -6,9 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.arn.scrobble.R
 import com.arn.scrobble.databinding.ContentLicensesBinding
-import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupInsets
 
 class LicensesFragment: Fragment() {
     private var _binding: ContentLicensesBinding? = null
@@ -20,6 +19,7 @@ class LicensesFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentLicensesBinding.inflate(inflater, container, false)
+        binding.list.setupInsets()
         return binding.root
     }
 
@@ -28,14 +28,9 @@ class LicensesFragment: Fragment() {
         _binding = null
     }
 
-    override fun onStart() {
-        super.onStart()
-        setTitle(R.string.pref_oss_credits)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.list.layoutManager = LinearLayoutManager(context)
-        binding.list.adapter = LicensesAdapter(context!!)
+        binding.list.adapter = LicensesAdapter(requireContext())
     }
 }

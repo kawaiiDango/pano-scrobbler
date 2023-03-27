@@ -49,6 +49,18 @@ import de.umass.xml.DomElement;
  */
 public class Track extends MusicEntry {
 
+    public int getScore() {
+        return score;
+    }
+
+    public boolean isLastScrobbleOfTheDay() {
+        return lastScrobbleOfTheDay;
+    }
+
+    public void setLastScrobbleOfTheDay(boolean lastScrobbleOfTheDay) {
+        this.lastScrobbleOfTheDay = lastScrobbleOfTheDay;
+    }
+
     private enum ScrobbleResultType {
 		NOW_PLAYING,
 		SINGLE_SCROBBLE,
@@ -69,10 +81,12 @@ public class Track extends MusicEntry {
 	private String albumMbid;
 	private String albumArtist;
 	private int position = -1;
+	private int score = 0;
 
 	private boolean fullTrackAvailable;
 	private boolean nowPlaying;
     private boolean loved = false;
+    private boolean lastScrobbleOfTheDay = false;
 
 	private Date playedWhen;
 	protected int duration;		// protected for use in Playlist.playlistFromElement
@@ -92,13 +106,15 @@ public class Track extends MusicEntry {
 		this.artist = artist;
 	}
 
-	public Track(int id, String name, String url, String mbid, int playcount, int userPlaycount, boolean isLoved,
+	public Track(int id, String name, String url, String mbid, String msid, int playcount,
+                 int userPlaycount, boolean isLoved, int score,
                  int listeners, int duration, boolean streamable,
                     String album, String albumMbid,
 					String artist, String artistUrl, String artistMbid, Date playedWhen,
                  boolean fullTrackAvailable, boolean nowPlaying) {
 		super(name, url, mbid, playcount, listeners, streamable);
         this.id = Integer.toString(id);
+        this.msid = msid;
 		this.artist = artist;
 		this.artistMbid = artistMbid;
         this.artistUrl = artistUrl;
@@ -110,6 +126,7 @@ public class Track extends MusicEntry {
         this.userPlaycount = userPlaycount;
         this.album = album;
         this.albumMbid = albumMbid;
+        this.score = score;
 	}
 
     public boolean isLoved() {

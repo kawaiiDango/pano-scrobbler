@@ -23,6 +23,10 @@
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
         <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+<!--        <item name="android:enforceStatusBarContrast">true</item>-->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLightStatusBar">?isLightTheme</item>
 
         <!--   For android tv     -->
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
@@ -96,6 +100,7 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowMinWidthMajor">60%</item>
         <item name="android:windowMinWidthMinor">95%</item>
         <item name="android:windowEnterTransition">@android:transition/fade</item>
@@ -114,7 +119,7 @@
         <item name="textInputOutlinedExposedDropdownMenuStyle">@style/Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu</item>
 
         <!--<item name="android:windowNoTitle">true</item>-->
-        <!--<item name="android:windowIsFloating">false</item>-->
+        <item name="android:windowIsFloating">true</item>
         <!--<item name="android:backgroundDimEnabled">true</item>-->
     </style>
 
@@ -130,8 +135,8 @@
 
     <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopRight">16dp</item>
-        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">@dimen/corner_radius_big</item>
+        <item name="cornerSizeTopLeft">@dimen/corner_radius_big</item>
         <item name="cornerSizeBottomRight">0dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
@@ -140,7 +145,6 @@
         <item name="iconTint">?colorSecondary</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="iconGravity">top</item>
         <item name="android:checkable">false</item>
         <item name="iconSize">24dp</item>
     </style>
@@ -160,9 +164,14 @@
         <item name="cornerSize">@dimen/corner_radius</item>
     </style>
 
+    <style name="roundedCornersBig">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_radius_big</item>
+    </style>
+
     <style name="topRoundedCorners">
-        <item name="cornerSizeTopLeft">@dimen/corner_radius</item>
-        <item name="cornerSizeTopRight">@dimen/corner_radius</item>
+        <item name="cornerSizeTopLeft">@dimen/corner_radius_big</item>
+        <item name="cornerSizeTopRight">@dimen/corner_radius_big</item>
         <item name="cornerFamily">rounded</item>
     </style>
 

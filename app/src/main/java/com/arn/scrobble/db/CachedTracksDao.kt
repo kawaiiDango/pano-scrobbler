@@ -1,9 +1,11 @@
 package com.arn.scrobble.db
 
-import android.content.Context
 import androidx.room.*
+import com.arn.scrobble.App
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
+import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
+import com.arn.scrobble.db.CachedArtistsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
 import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.Track
@@ -33,21 +35,6 @@ interface CachedTracksDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(entry: CachedTrack)
 
-    fun deltaUpdate(track: CachedTrack, deltaCount: Int) {
-        val foundTrack = findExact(track.artistName, track.trackName)
-
-        if (foundTrack != null) {
-            foundTrack.userPlayCount = (foundTrack.userPlayCount + deltaCount).coerceAtLeast(0)
-            if (track.lastPlayed > -1) {
-                foundTrack.lastPlayed = track.lastPlayed
-                foundTrack.isLoved = track.isLoved
-            }
-            update(foundTrack)
-        } else if (deltaCount > 0) {
-            track.userPlayCount = 1
-            insert(listOf(track))
-        }
-    }
 
     @Delete
     fun delete(entry: CachedTrack)
@@ -57,25 +44,83 @@ interface CachedTracksDao {
 
     companion object {
 
+        fun CachedTracksDao.deltaUpdate(
+            track: CachedTrack,
+            deltaCount: Int,
+            dirty: DirtyUpdate = DirtyUpdate.CLEAN
+        ) {
+            val foundTrack = findExact(track.artistName, track.trackName) ?: track
+
+            if (dirty == DirtyUpdate.DIRTY_ABSOLUTE && foundTrack.userPlayCount == track.userPlayCount && foundTrack.isLoved == track.isLoved)
+                return
+
+            val userPlayCount =
+                (foundTrack.userPlayCount.coerceAtLeast(0) + deltaCount).coerceAtLeast(0)
+            val userPlayCountDirty = (
+                    (if (foundTrack.userPlayCountDirty == -1) foundTrack.userPlayCount else foundTrack.userPlayCountDirty)
+                        .coerceAtLeast(0)
+                            + deltaCount
+                    ).coerceAtLeast(0)
+
+            when (dirty) {
+                DirtyUpdate.BOTH -> {
+                    foundTrack.userPlayCountDirty = userPlayCount
+                    foundTrack.userPlayCount = userPlayCountDirty
+                }
+
+                DirtyUpdate.DIRTY -> {
+                    foundTrack.userPlayCountDirty = userPlayCountDirty
+                }
+
+                DirtyUpdate.DIRTY_ABSOLUTE -> {
+                    foundTrack.userPlayCountDirty = track.userPlayCount
+                }
+
+                DirtyUpdate.CLEAN -> {
+                    foundTrack.userPlayCount = userPlayCount
+                    foundTrack.userPlayCountDirty = -1
+                }
+            }
+
+            if (track.lastPlayed > -1) {
+                foundTrack.lastPlayed = track.lastPlayed
+                foundTrack.isLoved = track.isLoved
+            }
+
+            insert(listOf(foundTrack))
+        }
+
         suspend fun deltaUpdateAll(
-            context: Context,
             track: Track,
             deltaCount: Int,
+            mode: DirtyUpdate = DirtyUpdate.CLEAN
         ) {
-            val prefs = MainPrefs(context)
+            val prefs = MainPrefs(App.context)
 
             val maxIndexedScrobbleTime = prefs.lastMaxIndexedScrobbleTime ?: -1
+            val wasIndexed =
+                track.playedWhen != null && track.playedWhen.time < maxIndexedScrobbleTime
 
-            if (maxIndexedScrobbleTime > 0 && track.playedWhen != null && track.playedWhen.time < maxIndexedScrobbleTime) {
-                val db = PanoDb.getDb(context)
-                db.getCachedTracksDao().deltaUpdate(track.toCachedTrack(), deltaCount)
+            val mode = if (mode == DirtyUpdate.BOTH && !wasIndexed)
+                DirtyUpdate.DIRTY
+            else
+                mode
+
+            if (maxIndexedScrobbleTime > 0 && (wasIndexed || mode == DirtyUpdate.DIRTY)) {
+                val db = PanoDb.db
+                db.getCachedTracksDao().deltaUpdate(track.toCachedTrack(), deltaCount, mode)
                 if (!track.album.isNullOrEmpty()) {
-                    db.getCachedAlbumsDao().deltaUpdate(track.toCachedAlbum(), deltaCount)
+                    db.getCachedAlbumsDao().deltaUpdate(track.toCachedAlbum(), deltaCount, mode)
                 }
-                db.getCachedArtistsDao().deltaUpdate(track.toCachedArtist(), deltaCount)
+                db.getCachedArtistsDao().deltaUpdate(track.toCachedArtist(), deltaCount, mode)
             }
         }
 
         const val tableName = "cachedTracks"
     }
+}
+
+
+enum class DirtyUpdate {
+    BOTH, DIRTY, DIRTY_ABSOLUTE, CLEAN
 }

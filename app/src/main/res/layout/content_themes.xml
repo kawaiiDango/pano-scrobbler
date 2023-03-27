@@ -1,150 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingHorizontal="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:layoutAnimation="@anim/layout_animation_slide_up"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/theme_primary_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingVertical="16dp"
-                android:text="@string/primary_color"
-                android:textAppearance="?textAppearanceTitleLarge"
-                android:textColor="?colorSecondary" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/theme_primary_swatches"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layoutAnimation="@anim/layout_animation_slide_up"
-                app:chipSpacingHorizontal="16dp"
-                app:chipSpacingVertical="16dp"
-                app:selectionRequired="true"
-                app:singleSelection="true" />
-
-            <TextView
-                android:id="@+id/theme_secondary_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingVertical="16dp"
-                android:text="@string/secondary_color"
-                android:textAppearance="?textAppearanceTitleLarge"
-                android:textColor="?colorSecondary" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/theme_secondary_swatches"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layoutAnimation="@anim/layout_animation_slide_up"
-                app:chipSpacingHorizontal="16dp"
-                app:chipSpacingVertical="16dp"
-                app:selectionRequired="true"
-                app:singleSelection="true" />
-        </LinearLayout>
-    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:clipToPadding="false"
+        android:layoutAnimation="@anim/layout_animation_slide_up"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/widget_period"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:selectionRequired="true"
-                app:singleLine="false"
-                app:singleSelection="true"/>
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/theme_day_night"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleSelection="true"
-                app:selectionRequired="true">
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:id="@+id/chip_dark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dark"
-                    android:tag="dark"
-                    app:checkedIconEnabled="false" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:id="@+id/chip_light"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/light"
-                    android:tag="light"
-                    app:checkedIconEnabled="false" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:id="@+id/chip_auto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/auto"
-                    android:tag="system"
-                    app:checkedIconEnabled="false" />
-            </com.google.android.material.chip.ChipGroup>
-
-            <CheckBox
-                android:id="@+id/theme_dynamic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/system_colors"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <CheckBox
-                android:id="@+id/theme_tint_bg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="64dp"
-                android:text="@string/tint_background" />
-
-            <CheckBox
-                android:id="@+id/theme_random"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/random_theme" />
-        </LinearLayout>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/theme_done"
+        <TextView
+            android:id="@+id/theme_primary_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="@dimen/fab_margin"
-            android:layout_marginBottom="@dimen/fab_margin"
-            android:contentDescription="@android:string/ok"
-            android:src="@drawable/vd_check_simple" />
-    </LinearLayout>
+            android:paddingVertical="16dp"
+            android:text="@string/primary_color"
+            android:textAppearance="?textAppearanceTitleLarge"
+            android:textColor="?colorSecondary" />
 
-</LinearLayout>
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/theme_primary_swatches"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutAnimation="@anim/layout_animation_slide_up"
+            app:chipSpacingHorizontal="16dp"
+            app:chipSpacingVertical="16dp"
+            app:selectionRequired="true"
+            app:singleSelection="true" />
+
+        <TextView
+            android:id="@+id/theme_secondary_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="16dp"
+            android:text="@string/secondary_color"
+            android:textAppearance="?textAppearanceTitleLarge"
+            android:textColor="?colorSecondary" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/theme_secondary_swatches"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutAnimation="@anim/layout_animation_slide_up"
+            app:chipSpacingHorizontal="16dp"
+            app:chipSpacingVertical="16dp"
+            app:selectionRequired="true"
+            app:singleSelection="true" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/widget_period"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:selectionRequired="true"
+            app:singleLine="false"
+            app:singleSelection="true" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/theme_day_night"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_dark"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="dark"
+                android:text="@string/dark"
+                app:checkedIconEnabled="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_light"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="light"
+                android:text="@string/light"
+                app:checkedIconEnabled="false" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_auto"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="system"
+                android:text="@string/auto"
+                app:checkedIconEnabled="false" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <CheckBox
+            android:id="@+id/theme_dynamic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/system_colors"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <CheckBox
+            android:id="@+id/theme_tint_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="64dp"
+            android:text="@string/tint_background" />
+
+        <CheckBox
+            android:id="@+id/theme_random"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/random_theme" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

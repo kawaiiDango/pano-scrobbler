@@ -12,7 +12,7 @@ import com.google.android.material.appbar.AppBarLayout
 @Keep
 class DisableableAppBarLayoutBehavior(context: Context, attrs: AttributeSet? = null) :
     AppBarLayout.Behavior(context, attrs) {
-    var isEnabled: Boolean = false
+    var isEnabled: Boolean = true
 
     override fun onStartNestedScroll(
         parent: CoordinatorLayout,

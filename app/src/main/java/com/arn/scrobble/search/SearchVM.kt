@@ -1,8 +1,7 @@
 package com.arn.scrobble.search
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.ui.SectionedVirtualList
@@ -12,7 +11,7 @@ import de.umass.lastfm.Artist
 import de.umass.lastfm.Track
 
 
-class SearchVM(app: Application) : AndroidViewModel(app) {
+class SearchVM : ViewModel() {
     val searchResults by lazy { MutableLiveData<SearchResults>() }
     val virtualList = SectionedVirtualList()
     val indexingProgress by lazy { MutableLiveData<Double>(null) }
@@ -21,7 +20,7 @@ class SearchVM(app: Application) : AndroidViewModel(app) {
 
     fun loadSearches(term: String, searchType: SearchResultsAdapter.SearchType) {
         searchJob?.cancel()
-        searchJob = LFMRequester(getApplication(), viewModelScope, searchResults).apply {
+        searchJob = LFMRequester(viewModelScope, searchResults).apply {
             when (searchType) {
                 SearchResultsAdapter.SearchType.GLOBAL -> getSearches(term)
                 SearchResultsAdapter.SearchType.LOCAL -> getLocalSearches(term)
@@ -32,7 +31,7 @@ class SearchVM(app: Application) : AndroidViewModel(app) {
     fun fullIndex() {
         if (indexingProgress.value == null) {
             indexingProgress.value = 0.0
-            LFMRequester(getApplication(), viewModelScope, indexingProgress, indexingError)
+            LFMRequester(viewModelScope, indexingProgress, indexingError)
                 .runFullIndex()
         }
     }
@@ -40,7 +39,7 @@ class SearchVM(app: Application) : AndroidViewModel(app) {
     fun deltaIndex() {
         if (indexingProgress.value == null) {
             indexingProgress.value = 0.0
-            LFMRequester(getApplication(), viewModelScope, indexingProgress, indexingError)
+            LFMRequester(viewModelScope, indexingProgress, indexingError)
                 .runDeltaIndex()
         }
     }

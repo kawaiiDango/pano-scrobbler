@@ -4,53 +4,79 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_pure"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/scrobbles_chip_group"
-        android:layout_width="0dp"
+    <HorizontalScrollView
+        android:id="@+id/scrobbles_chip_hsv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:checkedChip="@id/recents_chip"
+        android:clipToPadding="false"
+        android:paddingHorizontal="8dp"
+        android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:selectionRequired="true"
-        app:singleSelection="true">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/recents_chip"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/scrobbles_chip_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/recents"
-            app:chipIcon="@drawable/vd_history"
-            app:chipIconTint="?colorSecondary" />
+            android:layoutAnimation="@anim/layout_animation_slide_up"
+            android:visibility="invisible"
+            app:checkedChip="@id/recents_chip"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true"
+            tools:visibility="visible">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/loves_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/loved"
-            app:chipIcon="@drawable/vd_heart"
-            app:chipIconTint="?colorSecondary" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/recents_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/recents"
+                app:chipBackgroundColor="@color/csl_translucent_chip"
+                app:chipIcon="@drawable/vd_history"
+                app:chipIconTint="?colorControlNormal"
+                app:chipSurfaceColor="@android:color/transparent" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/time_jump_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/time_jump"
-            app:chipIcon="@drawable/vd_calendar"
-            app:chipIconTint="?colorSecondary"
-            app:closeIcon="@drawable/vd_arrow_down"
-            app:closeIconVisible="true" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/loves_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/loved"
+                app:chipBackgroundColor="@color/csl_translucent_chip"
+                app:chipIcon="@drawable/vd_heart"
+                app:chipIconTint="?colorControlNormal"
+                app:chipSurfaceColor="@android:color/transparent" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/random_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/random_text"
-            app:chipIcon="@drawable/vd_die"
-            app:chipIconTint="?colorSecondary" />
-    </com.google.android.material.chip.ChipGroup>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/time_jump_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="false"
+                android:text="@string/time_jump"
+                app:chipBackgroundColor="@color/csl_translucent_chip"
+                app:chipIcon="@drawable/vd_calendar"
+                app:chipIconTint="?colorControlNormal"
+                app:chipSurfaceColor="@android:color/transparent"
+                app:closeIcon="@drawable/vd_arrow_down"
+                app:closeIconVisible="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/random_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="false"
+                android:text="@string/random_text"
+                app:chipBackgroundColor="@color/csl_translucent_chip"
+                app:chipIcon="@drawable/vd_die"
+                app:chipIconTint="?colorControlNormal"
+                app:chipSurfaceColor="@android:color/transparent" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/scrobbles_swipe_refresh"
@@ -59,12 +85,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scrobbles_chip_group">
+        app:layout_constraintTop_toBottomOf="@id/scrobbles_chip_hsv">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/scrobbles_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
             android:layoutAnimation="@anim/layout_animation_slide_up"
             android:nestedScrollingEnabled="true"
             tools:listitem="@layout/list_item_recents" />

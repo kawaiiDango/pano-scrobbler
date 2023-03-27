@@ -62,8 +62,11 @@ public class User extends ImageHolder {
 	private int playcount;
 	private Date registeredDate;
 	private Track recentTrack;
+    private int artistCount = -1;
+    private int albumCount = -1;
+    private int trackCount = -1;
 
-	public User(String name, String url) {
+    public User(String name, String url) {
 		this.name = name;
 		this.url = url;
 	}
@@ -694,8 +697,20 @@ public class User extends ImageHolder {
         return ResponseBuilder.buildPaginatedResult(result, Track.class);
     }
 
+    public int getArtistCount() {
+        return artistCount;
+    }
 
-	private static class UserFactory implements ItemFactory<User> {
+    public int getAlbumCount() {
+        return albumCount;
+    }
+
+    public int getTrackCount() {
+        return trackCount;
+    }
+
+
+    private static class UserFactory implements ItemFactory<User> {
 		public User createItemFromElement(DomElement element) {
 			User user = new User(element.getChildText("name"), element.getChildText("url"));
 			user.id = element.getChildText("id");
@@ -733,6 +748,24 @@ public class User extends ImageHolder {
 					user.registeredDate = new Date(Long.parseLong(unixtime) * 1000);
 				} catch (NumberFormatException e) {
 					// no registered date
+				}
+			}
+			if (element.hasChild("artist_count")) {
+				try {
+				    user.artistCount = Integer.parseInt(element.getChildText("artist_count"));
+				} catch (NumberFormatException e) {
+				}
+			}
+			if (element.hasChild("album_count")) {
+				try {
+                    user.albumCount = Integer.parseInt(element.getChildText("album_count"));
+				} catch (NumberFormatException e) {
+				}
+			}
+			if (element.hasChild("track_count")) {
+				try {
+                    user.trackCount = Integer.parseInt(element.getChildText("track_count"));
+				} catch (NumberFormatException e) {
 				}
 			}
 			return user;

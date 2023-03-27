@@ -49,8 +49,8 @@ class FriendsAdapter(
     private val shapeAppearanceModel by lazy {
         ShapeAppearanceModel.builder(
             fragmentBinding.root.context,
-            R.style.roundedCorners,
-            R.style.roundedCorners
+            R.style.roundedCornersBig,
+            R.style.roundedCornersBig
         )
             .build()
     }
@@ -122,7 +122,7 @@ class FriendsAdapter(
             isPinned = viewModel.isPinned(userSerializable.name)
 
             binding.friendsName.text =
-                (if (userSerializable.realname.isEmpty()) userSerializable.name else userSerializable.realname) +
+                (userSerializable.realname.ifEmpty { userSerializable.name }) +
                         (if (isPinned) " 📍" else "")
 
             if (Stuff.DEMO_MODE)
@@ -160,14 +160,17 @@ class FriendsAdapter(
                 )
                     binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
 
-                if (!handler.hasMessages(userSerializable.name.hashCode()) && bindingAdapterPosition > -1) {
+                if (userSerializable.name !in viewModel.privateUsers &&
+                    !handler.hasMessages(userSerializable.name.hashCode()) &&
+                    bindingAdapterPosition > -1) {
                     val msg = handler.obtainMessage(userSerializable.name.hashCode())
                     msg.arg1 = bindingAdapterPosition
                     handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
                 }
             }
 
-            val userImgUrl = userSerializable.getWebpImageURL(ImageSize.EXTRALARGE)
+            val userImgUrl = userSerializable.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
+
             if (userImgUrl != binding.friendsPic.tag) {
                 binding.friendsPic.tag = userImgUrl
                 val bgGray = ContextCompat.getColor(itemView.context, R.color.background_gray)
@@ -190,7 +193,7 @@ class FriendsAdapter(
 
 //                if (userImg != null) {
                 binding.friendsPic
-                    .load(userImgUrl ?: "") {
+                    .load(userImgUrl) {
                         placeholder(R.drawable.vd_placeholder_user)
                         error(InitialsDrawable(itemView.context, userSerializable))
                         allowHardware(false)

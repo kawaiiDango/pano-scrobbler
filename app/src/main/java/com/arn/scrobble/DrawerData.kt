@@ -1,33 +1,13 @@
 package com.arn.scrobble
 
-import android.content.Context
-import com.arn.scrobble.pref.MainPrefs
+import kotlinx.serialization.Serializable
 
-class DrawerData(
-    val scrobblesToday: Int,
+@Serializable
+data class DrawerData(
     val scrobblesTotal: Int,
-    val registeredDate: Long,
-    val profilePicUrl: String,
-) {
-    fun saveToPref(context: Context) {
-        MainPrefs(context).apply {
-            scrobblesTodayCached = scrobblesToday
-            scrobblesTotalCached = scrobblesTotal
-            scrobblingSince = registeredDate
-            profilePicUrlCached = profilePicUrl
-        }
-    }
-
-    companion object {
-        fun loadFromPref(context: Context): DrawerData {
-            val prefs = MainPrefs(context)
-
-            return DrawerData(
-                prefs.scrobblesTodayCached,
-                prefs.scrobblesTotalCached,
-                prefs.scrobblingSince,
-                prefs.profilePicUrlCached ?: "",
-            )
-        }
-    }
-}
+    val scrobblesToday: Int = -1,
+    val artistCount: Int = -1,
+    val albumCount: Int = -1,
+    val trackCount: Int = -1,
+    val profilePicUrl: String? = null,
+)

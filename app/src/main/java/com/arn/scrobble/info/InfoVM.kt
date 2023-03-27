@@ -1,7 +1,6 @@
 package com.arn.scrobble.info
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.NLService
@@ -12,12 +11,17 @@ import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 
 
-class InfoVM(app: Application) : AndroidViewModel(app) {
+class InfoVM : ViewModel() {
 
     val infoMapReceiver = LiveEvent<Map<String, MusicEntry>>()
     val infoMap = mutableMapOf<String, MusicEntry>()
     val picExpandedMap = mutableMapOf<String, Boolean>()
-    var albumTracksShown = false
+    val infoExtraExpandedMap = mutableMapOf(
+        NLService.B_TRACK to false,
+        NLService.B_ARTIST to false,
+        NLService.B_ALBUM to false,
+        NLService.B_ALBUM_ARTIST to false,
+    )
 
     fun loadInfo(artist: String, album: String?, track: String?, username: String?) {
         val albumFirst = track == null && album != null
@@ -35,7 +39,7 @@ class InfoVM(app: Application) : AndroidViewModel(app) {
         if (albumFirst)
             infoMap[NLService.B_ARTIST] = Artist(artist, null)
 
-        LFMRequester(getApplication(), viewModelScope, infoMapReceiver).apply {
+        LFMRequester(viewModelScope, infoMapReceiver).apply {
             getInfos(artist, album, track, username)
         }
     }

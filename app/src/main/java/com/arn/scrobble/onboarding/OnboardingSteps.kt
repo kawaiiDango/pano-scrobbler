@@ -13,23 +13,28 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
-import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
-import com.arn.scrobble.WebViewFragment
 import com.arn.scrobble.databinding.ButtonStepperBinding
 import com.arn.scrobble.databinding.ButtonStepperForLoginBinding
+import com.arn.scrobble.friends.UserAccountSerializable
+import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.AppListFragment
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MigratePrefs
+import com.arn.scrobble.scrobbleable.AccountType
+import com.arn.scrobble.scrobbleable.LoginFlows
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.arn.scrobble.ui.UiUtils.postRequestFocus
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import de.umass.lastfm.ImageSize
 import ernestoyaquello.com.verticalstepperform.Step
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -82,57 +87,28 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
     inner class LoginStep : OnboardingStep(
         context.getString(R.string.pref_login),
     ) {
-        override fun getStepData() =
-            OnboardingFragment.isLoggedIn(prefs)
+        override fun getStepData() = Stuff.isLoggedIn()
 
         @SuppressLint("ClickableViewAccessibility")
         override fun createStepContentLayout(): View {
-
-            fun openLoginFor(@StringRes serviceId: Int) {
-                when (serviceId) {
-                    R.string.lastfm -> {
-                        val wf = WebViewFragment()
-                        wf.arguments = Bundle().apply {
-                            putString(Stuff.ARG_URL, Stuff.LASTFM_AUTH_CB_URL)
-                            putBoolean(Stuff.ARG_SAVE_COOKIES, true)
-                        }
-                        fragment.parentFragmentManager.beginTransaction()
-                            .replace(R.id.frame, wf)
-                            .addToBackStack(null)
-                            .commit()
-                    }
-                    R.string.others -> {
-                        MaterialAlertDialogBuilder(fragment.context!!)
-                            .setMessage(R.string.authenticate_with_lastfm_desc)
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show()
-                    }
-                    else -> {
-                        throw IllegalArgumentException("Service ID $serviceId is invalid")
-                    }
-                }
-            }
-
-            val serviceIds = listOf(
-                R.string.lastfm,
-                R.string.others
-            )
+            val serviceEnums = AccountType.values()
 
             val binding = ButtonStepperForLoginBinding.inflate(LayoutInflater.from(context))
 
             binding.buttonService.setOnClickListener {
-                openLoginFor(R.string.lastfm)
+                LoginFlows(fragment.findNavController()).go(AccountType.LASTFM)
             }
             binding.buttonService.postRequestFocus()
 
             binding.buttonServiceChooser.setOnClickListener {
                 val popup = PopupMenu(context, binding.buttonServiceChooser)
-                serviceIds.filter { it != R.string.lastfm }.forEach { strId ->
-                    popup.menu.add(0, strId, 0, strId)
+                serviceEnums.forEachIndexed { idx, it ->
+                    if (it != AccountType.LASTFM)
+                        popup.menu.add(0, idx, 0, Scrobblables.getString(it))
                 }
 
                 popup.setOnMenuItemClickListener { menuItem ->
-                    openLoginFor(menuItem.itemId)
+                    LoginFlows(fragment.findNavController()).go(serviceEnums[menuItem.itemId])
                     true
                 }
 
@@ -163,9 +139,28 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                     override fun afterTextChanged(editable: Editable) {
                         val splits = editable.split(',')
                         if (splits.size == 3) {
-                            prefs.lastfmUsername = splits[0]
-                            prefs.lastfmSessKey = splits[1]
+                            val username = splits[0]
+                            val authKey = splits[1]
                             MigratePrefs.migrateV2(prefs)
+
+                            Scrobblables.add(
+                                UserAccountSerializable(
+                                    AccountType.LASTFM,
+                                    UserSerializable(
+                                        username,
+                                        "https://last.fm/user/$username",
+                                        username,
+                                        "",
+                                        -1,
+                                        mapOf(
+                                            ImageSize.MEDIUM to (""),
+                                            ImageSize.LARGE to (""),
+                                            ImageSize.EXTRALARGE to (""),
+                                        ),
+                                    ),
+                                    authKey
+                                )
+                            )
                             fragment.hideKeyboard()
                             continueIfDataValid()
                         }
@@ -221,7 +216,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                 else
                     Intent(Stuff.NLS_SETTINGS)
 
-                if (context!!.packageManager.resolveActivity(
+                if (context.packageManager.resolveActivity(
                         intent,
                         PackageManager.MATCH_DEFAULT_ONLY
                     ) != null
@@ -230,28 +225,24 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                 ) {
                     context.startActivity(intent)
                     if (Stuff.isTv)
-                        context!!.toast(
+                        context.toast(
                             context.getString(
                                 R.string.check_nls_tv,
                                 context.getString(R.string.app_name)
                             )
                         )
                     else
-                        context!!.toast(
+                        context.toast(
                             context.getString(
                                 R.string.check_nls,
                                 context.getString(R.string.app_name)
                             )
                         )
                 } else {
-                    val wf = WebViewFragment()
-                    wf.arguments = Bundle().apply {
+                    val args = Bundle().apply {
                         putString(Stuff.ARG_URL, context.getString(R.string.tv_link))
                     }
-                    fragment.parentFragmentManager.beginTransaction()
-                        .replace(R.id.frame, wf)
-                        .addToBackStack(null)
-                        .commit()
+                    fragment.findNavController().navigate(R.id.webViewFragment, args)
                 }
 
             }
@@ -318,7 +309,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
         ) {
         override fun getStepData() =
             ActivityCompat.checkSelfPermission(
-                fragment.activity!!,
+                fragment.requireActivity(),
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
 
@@ -349,10 +340,8 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
         override fun createStepContentLayout(): View {
             val binding = ButtonStepperBinding.inflate(LayoutInflater.from(context))
             binding.openButton.setOnClickListener {
-                fragment.parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame, AppListFragment())
-                    .addToBackStack(null)
-                    .commit()
+                fragment.findNavController().navigate(R.id.appListFragment)
+
             }
             binding.openButton.postRequestFocus()
 

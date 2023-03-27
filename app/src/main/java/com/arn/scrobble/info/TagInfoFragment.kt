@@ -46,11 +46,11 @@ class TagInfoFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tag = arguments!!.getString(Stuff.ARG_TAG)!!
+        val tag = requireArguments().getString(Stuff.ARG_TAG)!!
         binding.tagInfoTitle.text = tag
 
         binding.tagInfoTitle.setOnLongClickListener {
-            context!!.copyToClipboard(binding.tagInfoTitle.text.toString())
+            requireContext().copyToClipboard(binding.tagInfoTitle.text.toString())
             true
         }
 
@@ -81,7 +81,7 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                     idx = wikiText.indexOf("<a href=\"https://www.last.fm")
                 if (idx != -1)
                     wikiText = wikiText.substring(0, idx).trim()
-                if (!wikiText.isBlank()) {
+                if (wikiText.isNotBlank()) {
                     wikiText = wikiText.replace("\n", "<br>")
                     binding.tagInfoWikiContainer.visibility = View.VISIBLE
                     binding.tagInfoWiki.text = Html.fromHtml(wikiText)
@@ -126,7 +126,7 @@ class TagInfoFragment : BottomSheetDialogFragment() {
                 binding.tagInfoSimilarTitle.visibility = View.VISIBLE
                 binding.tagInfoTags.removeAllViews()
                 similarTags.forEach {
-                    val chip = Chip(context!!)
+                    val chip = Chip(requireContext())
                     chip.text = it.name
                     chip.setOnClickListener { _ ->
                         val tif = TagInfoFragment()

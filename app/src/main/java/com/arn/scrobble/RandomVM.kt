@@ -1,15 +1,14 @@
 package com.arn.scrobble
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.charts.TimePeriod
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Period
 
 
-class RandomVM(app: Application) : AndroidViewModel(app) {
+class RandomVM : ViewModel() {
     val data = MutableLiveData<RandomMusicData>()
     val error = MutableLiveData<Throwable>()
     var username: String? = null
@@ -18,7 +17,7 @@ class RandomVM(app: Application) : AndroidViewModel(app) {
     private var totalArtists = -1
     private var totalAlbums = -1
     var isLoading = false
-    var timePeriod: TimePeriod = TimePeriod(app, Period.OVERALL)
+    var timePeriod: TimePeriod = TimePeriod(Period.OVERALL)
         set(value) {
             field = value
             resetTotals()
@@ -45,12 +44,13 @@ class RandomVM(app: Application) : AndroidViewModel(app) {
     }
 
     fun loadRandom(type: Int) {
-        LFMRequester(getApplication(), viewModelScope, liveData = data, errorLiveData = error).getRandom(
-            type,
-            getTotal(type),
-            username,
-            timePeriod
-        )
+        LFMRequester(viewModelScope, liveData = data, errorLiveData = error)
+            .getRandom(
+                type,
+                getTotal(type),
+                username,
+                timePeriod
+            )
     }
 
     private fun resetTotals() {

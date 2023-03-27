@@ -1,21 +1,28 @@
 package com.arn.scrobble
 
-import android.content.Context
-import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.AccountType
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.frybits.harmony.getHarmonySharedPreferences
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import okhttp3.*
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.FormBody
+import okhttp3.Headers
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.Interceptor
+import okhttp3.Request
+import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import org.json.JSONObject
 
 
-class LastfmUnscrobbler(context: Context?) {
+class LastfmUnscrobbler() {
 
     private val client by lazy {
         LFMRequester.okHttpClient.newBuilder()
@@ -26,7 +33,7 @@ class LastfmUnscrobbler(context: Context?) {
     }
     private val cookieCache = SetCookieCache()
     private val cookieJar: CookieJar
-    private val username by lazy { MainPrefs(context!!).lastfmUsername!! }
+    private val username by lazy { Scrobblables.byType(AccountType.LASTFM)!!.userAccount.user.name }
     private val csrfToken by lazy {
         cookieCache.find {
             it.name == COOKIE_CSRFTOKEN && it.expiresAt > System.currentTimeMillis()
@@ -69,20 +76,10 @@ class LastfmUnscrobbler(context: Context?) {
     }
 
     init {
-        cookieJar = if (context != null)
-            PersistentCookieJar(
-                cookieCache,
-                SharedPrefsCookiePersistor(context.getHarmonySharedPreferences("CookiePersistence"))
-            )
-        else { //for unit tests
-            object : CookieJar {
-                override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-                    cookieCache.addAll(cookies)
-                }
-
-                override fun loadForRequest(url: HttpUrl) = cookieCache.toList()
-            }
-        }
+        cookieJar = PersistentCookieJar(
+            cookieCache,
+            SharedPrefsCookiePersistor(App.context.getHarmonySharedPreferences("CookiePersistence"))
+        )
     }
 
     fun putCookies(url: HttpUrl, cookies: List<Cookie>) {

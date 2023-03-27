@@ -32,15 +32,25 @@ import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.format.DateUtils
 import android.view.InputDevice
 import androidx.annotation.Keep
+import androidx.annotation.PluralsRes
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils.toast
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
+import de.umass.lastfm.Caller.CacheStrategy
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
+import io.ktor.http.HttpHeaders
+import io.ktor.http.maxAge
 import io.michaelrocks.bimap.BiMap
 import io.michaelrocks.bimap.HashBiMap
 import kotlinx.coroutines.async
@@ -57,7 +67,9 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 import kotlin.math.ln
+import kotlin.math.min
 import kotlin.math.pow
 
 
@@ -68,21 +80,18 @@ import kotlin.math.pow
 object Stuff {
     const val SCROBBLER_PROCESS_NAME = "bgScrobbler"
     const val DEEPLINK_PROTOCOL_NAME = "pscrobbler"
-    const val TAG_HOME_PAGER = "home_pager"
-    const val TAG_CHART_PAGER = "chart_pager"
-    const val TAG_FIRST_THINGS = "first_things"
-    const val TAG_INFO_FROM_WIDGET = "info_widget"
     const val ARG_URL = "url"
     const val ARG_SAVE_COOKIES = "cookies"
     const val ARG_NOPASS = "nopass"
     const val ARG_TYPE = "type"
+    const val ARG_TAB = "tab"
     const val ARG_TAG = "tag"
+    const val ARG_TITLE = "title"
     const val ARG_SHOW_DIALOG = "dialog"
     const val ARG_COUNT = "count"
     const val ARG_PKG = "pkg"
     const val ARG_ACTION = "action"
     const val ARG_TLS_NO_VERIFY = "tls_no_verify"
-    const val ARG_DISABLE_FRAGMENT_NAVIGATION = "disable_fragment_navigation"
     const val ARG_ALLOWED_PACKAGES = MainPrefs.PREF_ALLOWED_PACKAGES
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
@@ -96,14 +105,6 @@ object Stuff {
     val LAST_KEY = Tokens.LAST_KEY
     val LAST_SECRET = Tokens.LAST_SECRET
     const val TAG = "scrobbler"
-    const val DL_SETTINGS = 31
-    const val DL_APP_LIST = 32
-    const val DL_RECENTS = 33
-    const val DL_MIC = 34
-    const val DL_SEARCH = 35
-    const val DL_CHARTS = 36
-    const val DL_PRO = 37
-    const val DIRECT_OPEN_KEY = "directopen"
     const val FRIENDS_RECENTS_DELAY = 800L
     const val CROSSFADE_DURATION = 200
     const val MAX_PATTERNS = 30
@@ -117,17 +118,10 @@ object Stuff {
     const val EXTRA_PINNED = "pinned"
     val DEMO_MODE = BuildConfig.DEBUG && false
 
-    val SERVICE_BIT_POS = mapOf(
-        R.string.lastfm to 0,
-        R.string.librefm to 1,
-        R.string.gnufm to 2,
-        R.string.listenbrainz to 3,
-        R.string.custom_listenbrainz to 4
-    )
-
     const val USER_AGENT =
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
 
+    const val READ_TIMEOUT_SECS = 20L
     const val RECENTS_REFRESH_INTERVAL = 15 * 1000L
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
     const val OFFLINE_SCROBBLE_JOB_DELAY = 20 * 1000L
@@ -188,6 +182,7 @@ object Stuff {
     const val PACKAGE_SOUNDCLOUD = "com.soundcloud.android"
     const val PACKAGE_NICOBOX = "jp.nicovideo.nicobox"
     const val PACKAGE_YANDEX_MUSIC = "ru.yandex.music"
+    const val PACKAGE_YAMAHA_MUSIC_CAST = "com.yamaha.av.musiccastcontroller"
 
     const val MARKET_URL = "market://details?id=" + BuildConfig.APPLICATION_ID
 
@@ -435,6 +430,24 @@ object Stuff {
             .map { it.activityInfo.applicationInfo.packageName }
             .toSet()
 
+    fun getMusicEntryQString(
+        @StringRes zeroStrRes: Int,
+        @PluralsRes pluralRes: Int,
+        count: Int,
+        periodType: TimePeriodType?
+    ): String {
+        val plus = if (count == 1000 && periodType != TimePeriodType.CONTINUOUS) "+" else ""
+
+        return if (count <= 0)
+            App.context.getString(zeroStrRes)
+        else
+            App.context.resources.getQuantityString(
+                pluralRes,
+                count,
+                NumberFormat.getInstance().format(count) + plus
+            )
+    }
+
     fun launchSearchIntent(musicEntry: MusicEntry, pkgName: String?) {
         var searchQueryFirst = ""
         var searchQuerySecond = ""
@@ -468,7 +481,7 @@ object Stuff {
 
         val prefs = MainPrefs(App.context)
 
-        if (BuildConfig.DEBUG && isWindows11 && prefs.songSearchUrl.isNotEmpty()) { // open song urls in windows browser for me
+        if (false && isWindows11 && prefs.songSearchUrl.isNotEmpty()) { // open song urls in windows browser for me
             val searchUrl = prefs.songSearchUrl
                 .replace("\$artist", artist)
                 .replace("\$title", track)
@@ -591,6 +604,8 @@ object Stuff {
                 if (!album.isNullOrEmpty())
                     it.putString(NLService.B_ALBUM, album)
                 it.putString(NLService.B_TRACK, name)
+                if (duration > 0)
+                    it.putLong(NLService.B_DURATION, duration * 1000L)
             }
 
             is Album -> {
@@ -646,6 +661,12 @@ object Stuff {
         return NotificationCompat.Action(icon, emojiText, pIntent)
     }
 
+    fun isNotificationListenerEnabled() =
+        NotificationManagerCompat.getEnabledListenerPackages(App.context)
+            .any { it == App.context.packageName }
+
+    fun isLoggedIn() = Scrobblables.current != null
+
     fun stonksIconForDelta(delta: Int?) = when {
         delta == null -> 0
         delta == Int.MAX_VALUE -> R.drawable.vd_stonks_new
@@ -677,6 +698,8 @@ object Stuff {
             }
         }
     }
+
+    fun Bundle.myHash() = keySet().map { get(it) }.hashCode()
 
     fun isScrobblerRunning(): Boolean {
         val serviceComponent = ComponentName(App.context, NLService::class.java)
@@ -745,6 +768,19 @@ object Stuff {
         return this
     }
 
+    fun HttpRequestBuilder.cacheStrategy(cacheStrategy: CacheStrategy) {
+        when (cacheStrategy) {
+            CacheStrategy.CACHE_FIRST -> {}
+            CacheStrategy.CACHE_ONLY_INCLUDE_EXPIRED -> header(
+                HttpHeaders.CacheControl, "only-if-cached, max-stale=${Int.MAX_VALUE}",
+            )
+
+            CacheStrategy.NETWORK_ONLY -> header(HttpHeaders.CacheControl, "no-cache")
+            CacheStrategy.CACHE_FIRST_ONE_DAY -> maxAge(TimeUnit.DAYS.toSeconds(1).toInt())
+            CacheStrategy.CACHE_FIRST_ONE_WEEK -> maxAge(TimeUnit.DAYS.toSeconds(7).toInt())
+        }
+    }
+
     inline fun <reified T : Parcelable> Intent.getSingle() =
         getParcelableExtra<T>(T::class.qualifiedName)
 
@@ -802,8 +838,8 @@ object Stuff {
                     if (j > 0) {
                         var newValue = costs[j - 1]
                         if (s1[i - 1] != s2[j - 1])
-                            newValue = Math.min(
-                                Math.min(newValue, lastValue),
+                            newValue = min(
+                                min(newValue, lastValue),
                                 costs[j]
                             ) + 1
                         costs[j - 1] = lastValue

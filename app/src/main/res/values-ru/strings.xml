@@ -96,6 +96,12 @@
         <item quantity="many">%1$s друзей</item>
         <item quantity="other">%1$s друзей</item>
     </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s ожидает</item>
+        <item quantity="few">%1$s ожидают</item>
+        <item quantity="many">%1$s ожидают</item>
+        <item quantity="other">%1$s ожидают</item>
+    </plurals>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="reset">Сбросить</string>
@@ -153,6 +159,9 @@
     <string name="grid_size">Изменить размер сетки</string>
     <string name="pinch_to_zoom">Ущипните для увеличения</string>
     <string name="more_info">Подробнее</string>
+    <string name="more" comment="More options menu in short">Ещё</string>
+    <string name="learn" comment="(Learn java regex syntax)">Узнать больше</string>
+    <string name="hide">Скрыть</string>
     <string name="rank_change" comment="%1= delta change">Изменение рейтинга: %s</string>
     <string name="rank_change_no_change">Без изменений</string>
     <string name="rank_change_new">Не заскробблено за предыдущий период</string>
@@ -226,6 +235,7 @@
     <string name="sort">Сортировка</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Временной прыжок</string>
     <string name="my_scrobbles">Мои скробблы</string>
+    <string name="their_scrobbles">Их скробблы</string>
     <string name="listeners">Слушатели</string>
     <string name="scrobbles">Скробблы</string>
     <string name="collapse" comment="(view only a few items)">Свернуть</string>
@@ -242,6 +252,7 @@
     <string name="months">Месяцы</string>
     <string name="years">Годы</string>
     <string name="charts_overall">За все время</string>
+    <string name="listening_activity">Активность прослушивания</string>
     <string name="charts_no_data">Нет данных за этот период</string>
     <string name="charts_custom" comment="Custom date range, but in short">Пользовательский</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Непрерывный</string>
@@ -407,6 +418,7 @@
     <string name="pref_intents">Интенты для Tasker и других приложений</string>
     <string name="copied">Скопировано!</string>
     <string name="lastfm_reauth">Вам необходимо повторно пройти аутентификацию, чтобы редактировать или удалять скробблы</string>
+    <string name="custom_listenbrainz">Персонализация Listenbrainz</string>
     <string name="failed_encode_url">Не удалось закодировать URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Проверьте %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Доступ к специальному приложению&gt; Доступ к уведомлениям&gt; %1$s</string>

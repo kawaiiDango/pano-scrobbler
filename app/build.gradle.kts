@@ -13,9 +13,9 @@ plugins {
     id("com.github.triplet.play")
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.devtools.ksp")
-    kotlin("plugin.serialization") version "1.8.10"
-    id("com.mikepenz.aboutlibraries.plugin") version "10.6.1"
-    id("com.github.breadmoirai.github-release") version "2.4.1"
+    kotlin("plugin.serialization")
+    id("com.mikepenz.aboutlibraries.plugin")
+    id("com.github.breadmoirai.github-release")
 }
 
 android {
@@ -134,9 +134,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.9.0-alpha02")
+    implementation("com.google.android.material:material:1.9.0-beta01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:31.2.3"))
+    implementation(platform("com.google.firebase:firebase-bom:31.3.0"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -152,7 +152,7 @@ dependencies {
     implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.telefonica:nestedscrollwebview:0.1.1")
-    val coilVersion = "2.2.2"
+    val coilVersion = "2.3.0"
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-gif:$coilVersion")
 

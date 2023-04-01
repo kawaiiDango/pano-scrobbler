@@ -109,6 +109,9 @@
     <string name="grid_size">Changer la taille de la grille</string>
     <string name="pinch_to_zoom">Pincer pour zoomer</string>
     <string name="more_info">Plus d\'informations</string>
+    <string name="more" comment="More options menu in short">Plus</string>
+    <string name="learn" comment="(Learn java regex syntax)">Apprendre</string>
+    <string name="hide">Masquer</string>
     <string name="rank_change" comment="%1= delta change">Changement en classement: %s</string>
     <string name="rank_change_no_change">Aucune modification</string>
     <string name="rank_change_new">Non scrobblé dans la période précédente</string>

@@ -99,7 +99,6 @@
     <string name="offline">Hors-ligne. Les données affichées ne sont pas rafraichies</string>
     <string name="unavailable_offline">Indisponible hors-ligne</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Services</string>
-    <string name="others">Autres</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">J\'écoutais\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s écoutait\n%1$s %2$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
@@ -195,7 +194,7 @@
     <string name="weeks">Semaines</string>
     <string name="monthly">Mensuel</string>
     <string name="months">Mois</string>
-    <string name="years">Années</string>
+    <string name="years" comment="For the charts menu which displays year by year">Années</string>
     <string name="charts_overall">Global</string>
     <string name="listening_activity">Activité d\'écoute</string>
     <string name="charts_no_data">Aucune donnée pour cette période</string>
@@ -240,8 +239,8 @@
     <string name="edit_all" comment="All occurrences of a pattern">Tous</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
     <string name="edit_case_sensitive">Sensible à la casse</string>
-    <string name="edit_regex_test">Test</string>
-    <string name="edit_presets">Préréglagles</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
+    <string name="edit_presets" comment="Regex presets">Préréglagles</string>
     <string name="edit_presets_available">Préréglages disponibles</string>
     <string name="edit_no_presets_available">Tous les préréglages sont utilisés</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Présélection %1$s</string>
@@ -311,11 +310,11 @@
     <string name="not_running_fix_action">Réparer</string>
     <string name="login_submit">Vérifier</string>
     <string name="acr_host" comment="Web hostname">Hôte</string>
-    <string name="acr_key">Clef d’Accès</string>
+    <string name="acr_key" comment="API key">Clef d’Accès</string>
     <string name="add_acr_key">Ajouter une clé ACRCloud</string>
     <string name="remove_acr_key">Supprimer la clé ACRCloud</string>
     <string name="add">Ajouter</string>
-    <string name="add_acr_key_info">"• Inscrivez-vous sur https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Inscrivez-vous sur https://console.acrcloud.com
 • Naviguer vers les projets &gt; Audio &amp; reconnaissance vidéo
 • Créer un nouveau projet, sélectionnez un enregistrement vocal et le seau de musique ACRCloud"</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>

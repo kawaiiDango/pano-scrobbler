@@ -44,7 +44,6 @@
     <string name="offline">دون اتصال بالإنترنت. البيانات المعروضة ليست جديدة</string>
     <string name="unavailable_offline">غير متوفر عند عدم الاتصال</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">الخدمات</string>
-    <string name="others">أخرى</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">كنت أستمع إلى\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s كان يستمع إلى\n%1$s %2$s</string>
     <string name="share_sig">(عبر بانو سكرببلر)</string>

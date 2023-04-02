@@ -147,7 +147,6 @@
     <string name="scrobble_services"
         comment="Services like lastfm, librefm, listenbrainz etc"
         >Services</string>
-    <string name="others">Others</string>
     <string name="recents_share" formatted="true"
         comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)"
         >I was listening to\n%1$s %2$s</string>
@@ -309,12 +308,14 @@
     <string name="weeks">Weeks</string>
     <string name="monthly">Monthly</string>
     <string name="months">Months</string>
-    <string name="years">Years</string>
+    <string name="years"
+        comment="For the charts menu which displays year by year"
+        >Years</string>
     <string name="charts_overall">Overall</string>
     <string name="listening_activity">Listening activity</string>
     <string name="charts_no_data">No data for this period</string>
     <string name="charts_custom"
-        comment="Custom date range, but in short"
+        comment="Custom date range, but in short, used in the charts menu"
         >Custom</string>
     <string name="charts_continuous"
         comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc"
@@ -402,8 +403,12 @@
         >All</string>
     <string name="edit_continue">If found, continue matching other regexes</string>
     <string name="edit_case_sensitive">Case sensitive</string>
-    <string name="edit_regex_test">Test</string>
-    <string name="edit_presets">Presets</string>
+    <string name="edit_regex_test"
+        comment="(Test regex rules)"
+        >Test</string>
+    <string name="edit_presets"
+        comment="Regex presets"
+        >Presets</string>
     <string name="edit_presets_available">Presets available</string>
     <string name="edit_no_presets_available">All presets are in use</string>
     <string name="edit_preset_name" formatted="true"
@@ -530,7 +535,9 @@
     <string name="pref_change_locale">Change language</string>
     <string name="pref_crashlytics_enabled">Report errors automatically</string>
     <string name="pref_misc">Misc.</string>
-    <string name="pref_imexport">Import &amp; export</string>
+    <string name="pref_imexport"
+        comment="As in backup or restore the settings"
+        >Import &amp; export</string>
     <string name="pref_export">Export</string>
     <string name="pref_export_desc">Backs up settings, edits and blocklist. Does not save logins for security reasons. Useful for moving between devices or sharing with friends.</string>
     <string name="pref_import">Import</string>
@@ -538,14 +545,22 @@
         comment="Such as themes, widgets and some appearance settings"
         >Personalization</string>
     <string name="pref_themes">Themes</string>
-    <string name="pref_themes_desc">Mix and match\nAlso changes the notification color</string>
+    <string name="pref_themes_desc"
+        comment="This is a continuation of the string: Themes"
+        >Mix and match\nAlso changes the notification color</string>
     <string name="pref_widget_charts">Homescreen widget - Charts</string>
     <string name="pref_show_albums">Show album names</string>
-    <string name="pref_show_albums_desc">…for scrobbles</string>
+    <string name="pref_show_albums_desc"
+        comment="This is a continuation of the string: Show album names"
+        >…for scrobbles</string>
     <string name="pref_show_scrobble_sources">Show icons of apps you scrobbled from</string>
-    <string name="pref_show_scrobble_sources_desc">…beside each scrobble. This data stays on your device</string>
+    <string name="pref_show_scrobble_sources_desc"
+        comment="This is a continuation of the string: Show icons of apps you scrobbled from"
+        >…beside each scrobble. This data stays on your device</string>
     <string name="pref_search_in_source">Search &amp; play on the app you scrobbled from</string>
-    <string name="pref_search_in_source_desc">For supported apps</string>
+    <string name="pref_search_in_source_desc"
+        comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from"
+        >For supported apps</string>
     <string name="pref_lists"
         comment="Such as edits list and block lists"
         >Lists</string>
@@ -598,13 +613,19 @@
     <string name="acr_host"
         comment="Web hostname"
         >Host</string>
-    <string name="acr_key">Access Key</string>
-    <string name="acr_secret">Secret</string>
+    <string name="acr_key"
+        comment="API key"
+        >Access Key</string>
+    <string name="acr_secret"
+        comment="API secret"
+        >Secret</string>
     <string name="add_acr_key">Add ACRCloud Key</string>
     <string name="remove_acr_key">Remove ACRCloud Key</string>
     <string name="add_acr_consider">To prevent hitting rate limits, consider adding your own ACRCloud Key</string>
     <string name="add">Add</string>
-    <string name="add_acr_key_info">"• Sign up at https://console.acrcloud.com
+    <string name="add_acr_key_info"
+        comment="Bucket as in a cloud storage bucket"
+        >"• Sign up at https://console.acrcloud.com
 • Navigate to Projects > Audio &amp; video recognition
 • Create a new project, select Recorded Audio and the ACRCloud Music bucket"</string>
     <string name="shazam_scrobbling">To continuously scrobble, open <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> instead and start Auto Shazam. Also make sure that Shazam is enabled for scrobbling.</string>

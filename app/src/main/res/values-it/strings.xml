@@ -115,7 +115,6 @@
     <string name="offline">Offline. I dati mostrati non sono aggiornati</string>
     <string name="unavailable_offline">Non disponibile offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servizi</string>
-    <string name="others">Altri</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Stavo ascoltando\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s stava ascoltando\n%1$s %2$s</string>
     <string name="share_sig">(tramite Pano Scrobbler)</string>
@@ -213,10 +212,10 @@
     <string name="weeks">Settimane</string>
     <string name="monthly">Mensili</string>
     <string name="months">Mesi</string>
-    <string name="years">Anni</string>
+    <string name="years" comment="For the charts menu which displays year by year">Anni</string>
     <string name="charts_overall">Generale</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>
-    <string name="charts_custom" comment="Custom date range, but in short">Personalizzato</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Personalizzato</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continuo</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Basato su %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Dati insufficienti</string>
@@ -266,8 +265,8 @@
     <string name="edit_all" comment="All occurrences of a pattern">Tutte</string>
     <string name="edit_continue">Se trovato, continua ad abbinare altri regex</string>
     <string name="edit_case_sensitive">Differenzia maiuscole/minuscole</string>
-    <string name="edit_regex_test">Prova</string>
-    <string name="edit_presets">Preset</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Prova</string>
+    <string name="edit_presets" comment="Regex presets">Preset</string>
     <string name="edit_presets_available">Preset disponibili</string>
     <string name="edit_no_presets_available">Tutti i preset sono in uso</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Preset: %1$s</string>
@@ -342,20 +341,20 @@
     <string name="pref_change_locale">Cambia lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
     <string name="pref_misc">Varie</string>
-    <string name="pref_imexport">Importazione &amp; esportazione</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Importazione &amp; esportazione</string>
     <string name="pref_export">Esporta</string>
     <string name="pref_export_desc">Esegue il backup delle impostazioni, modifiche e metadati bloccati. Non salva i dati d’accesso per ragioni di sicurezza. Utile per cambiare dispositivo o condividere con amici.</string>
     <string name="pref_import">Importa</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizzazione</string>
     <string name="pref_themes">Temi</string>
-    <string name="pref_themes_desc">Personalizza gli abbinamenti\nCambia anche il colore delle notifiche</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Personalizza gli abbinamenti\nCambia anche il colore delle notifiche</string>
     <string name="pref_widget_charts">Widget nella schermata home - Classifiche</string>
     <string name="pref_show_albums">Mostra nomi degli album</string>
-    <string name="pref_show_albums_desc">…per gli scrobbling</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…per gli scrobbling</string>
     <string name="pref_show_scrobble_sources">Mostra icone delle app di provenienza degli scrobbling</string>
-    <string name="pref_show_scrobble_sources_desc">…vicino a ogni scrobbling. Questi dati rimarranno sul tuo dispositivo</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…vicino a ogni scrobbling. Questi dati rimarranno sul tuo dispositivo</string>
     <string name="pref_search_in_source">Cerca &amp; riproduci sull’app di provenienza dei tuoi scrobbling</string>
-    <string name="pref_search_in_source_desc">Per app supportate</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Per app supportate</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Liste</string>
     <string name="pref_regex_edits">Modifiche del pattern</string>
     <string name="pref_blocked_metadata">Metadati bloccati</string>
@@ -391,13 +390,13 @@
     <string name="not_running_fix_action">Risolvi</string>
     <string name="login_submit">Verifica</string>
     <string name="acr_host" comment="Web hostname">Host</string>
-    <string name="acr_key">Chiave d\'accesso</string>
-    <string name="acr_secret">Chiave segreta</string>
+    <string name="acr_key" comment="API key">Chiave d\'accesso</string>
+    <string name="acr_secret" comment="API secret">Chiave segreta</string>
     <string name="add_acr_key">Aggiungi Chiave ACRCloud</string>
     <string name="remove_acr_key">Rimuovi Chiave ACRCloud</string>
     <string name="add_acr_consider">Per evitare di raggiungere i rate limit, considera di aggiungere la tua chiave ACRCloud</string>
     <string name="add">Aggiungi</string>
-    <string name="add_acr_key_info">"• Registrati su https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Registrati su https://console.acrcloud.com
 • Vai su Projects &gt; Audio &amp; video recognition
 • Crea un nuovo progetto, seleziona Recorded Audio e ACRCloud Music bucket"</string>
     <string name="shazam_scrobbling">Per effettuare scrobbling di continuo, apri invece <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> e attiva l\'opzione Auto Shazam. Assicurati anche che Shazam sia abilitata per lo scrobbling.</string>

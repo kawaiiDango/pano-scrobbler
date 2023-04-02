@@ -99,7 +99,6 @@
     <string name="offline">Offline. Getoonde data is niet nieuw</string>
     <string name="unavailable_offline">Niet offline beschikbaar</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Diensten</string>
-    <string name="others">Overigen</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Ik was aan het luisteren naar\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s luisterde naar\n%1$s %2$s</string>
     <string name="share_sig">(via Pano Scrobbeler)</string>
@@ -192,10 +191,10 @@
     <string name="weeks">Weken</string>
     <string name="monthly">Maandelijks</string>
     <string name="months">Maanden</string>
-    <string name="years">Jaren</string>
+    <string name="years" comment="For the charts menu which displays year by year">Jaren</string>
     <string name="charts_overall">In totaal</string>
     <string name="charts_no_data">Geen data voor deze periode</string>
-    <string name="charts_custom" comment="Custom date range, but in short">Aangepaste</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Aangepaste</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Doorlopende</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Gebaseerd op %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Niet genoeg gegevens</string>
@@ -244,8 +243,8 @@
     <string name="edit_all" comment="All occurrences of a pattern">Alle</string>
     <string name="edit_continue">Indien gevonden, ga door met andere regexes matchen</string>
     <string name="edit_case_sensitive">Hoofdlettergevoelig</string>
-    <string name="edit_regex_test">Test</string>
-    <string name="edit_presets">Voorinstellingen</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
+    <string name="edit_presets" comment="Regex presets">Voorinstellingen</string>
     <string name="edit_presets_available">Beschikbare voorinstellingen</string>
     <string name="edit_no_presets_available">Alle voorinstellingen zijn in gebruik</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Voorinstelling: %1$s</string>
@@ -303,20 +302,20 @@
     <string name="pref_change_locale">Taal wijzigen</string>
     <string name="pref_crashlytics_enabled">Rapporteer fouten automatisch</string>
     <string name="pref_misc">Diversen</string>
-    <string name="pref_imexport">Importeren &amp; Exporteren</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Importeren &amp; Exporteren</string>
     <string name="pref_export">Exporteren</string>
     <string name="pref_export_desc">Back-up van instellingen, bewerkingen en blokkeerlijsten. Slaat logins niet op voor veiligheidsredenen. Nuttig om te wisselen tussen apparaten of delen met vrienden.</string>
     <string name="pref_import">Importeren</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalisatie</string>
     <string name="pref_themes">Thema\'s</string>
-    <string name="pref_themes_desc">Mix en match\nverandert ook de kleur van de notificatie</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix en match\nverandert ook de kleur van de notificatie</string>
     <string name="pref_widget_charts">Homescherm widget - Lijsten</string>
     <string name="pref_show_albums">Toon albumtitels</string>
-    <string name="pref_show_albums_desc">…voor scrobbels</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…voor scrobbels</string>
     <string name="pref_show_scrobble_sources">Toon icoontjes van apps waar u heeft gescrobbeld</string>
-    <string name="pref_show_scrobble_sources_desc">…naast elke scrobbel. Deze gegevens verlaten je apparaat niet</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…naast elke scrobbel. Deze gegevens verlaten je apparaat niet</string>
     <string name="pref_search_in_source">Zoek &amp; speel op de app waarvan je gescrobbeld hebt</string>
-    <string name="pref_search_in_source_desc">Voor ondersteunde apps</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Voor ondersteunde apps</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Lijsten</string>
     <string name="pref_regex_edits">Patroon bewerkingen</string>
     <string name="pref_blocked_metadata">Geblokkeerde metadata</string>
@@ -352,13 +351,13 @@
     <string name="not_running_fix_action">Maak het</string>
     <string name="login_submit">Verifieer</string>
     <string name="acr_host" comment="Web hostname">Host</string>
-    <string name="acr_key">Toegangssleutel</string>
-    <string name="acr_secret">Geheim</string>
+    <string name="acr_key" comment="API key">Toegangssleutel</string>
+    <string name="acr_secret" comment="API secret">Geheim</string>
     <string name="add_acr_key">Voeg ACRCloud-sleutel toe</string>
     <string name="remove_acr_key">Verwijder ACRCloud-sleutel</string>
     <string name="add_acr_consider">Overweeg om uw eigen ACRCloud-sleutel toe te voegen om te voorkomen dat de rate-limits worden bereikt</string>
     <string name="add">Voeg toe</string>
-    <string name="add_acr_key_info">"• Meld u aan op https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Meld u aan op https://console.acrcloud.com
 • Navigeer naar Projecten &gt; Geluid &amp; videoherkenning
 • Maak een nieuw project, selecteer Opgenomen audio en de ACRCloud Muziek-bucket"</string>
     <string name="shazam_scrobbling">Als je continu wilt scrobbelen, open je <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> in plaats daarvan en start je Auto Shazam. Zorg er ook voor dat Shazam is ingeschakeld voor scrobbelen.</string>

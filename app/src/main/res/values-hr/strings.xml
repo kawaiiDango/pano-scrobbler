@@ -122,7 +122,6 @@
     <string name="offline">Izvan mreže. Prikazani podatci nisu osvježeni</string>
     <string name="unavailable_offline">Nije dostupno izvan mreže</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servisi</string>
-    <string name="others">Ostalo</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Slušao/la sam\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s je slušao/la\n%1$s %2$s</string>
     <string name="share_sig">(pomoću aplikacije Pano Scrobbler)</string>
@@ -210,10 +209,10 @@
     <string name="weeks">Tjedni</string>
     <string name="monthly">Mjesečni</string>
     <string name="months">Mjeseci</string>
-    <string name="years">Godine</string>
+    <string name="years" comment="For the charts menu which displays year by year">Godine</string>
     <string name="charts_overall">Sveukupno</string>
     <string name="charts_no_data">Nema podataka za ovo razdoblje</string>
-    <string name="charts_custom" comment="Custom date range, but in short">Prilagođeno</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Prilagođeno</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Kontinuirano</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Temeljeno na: %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nema dovoljno podataka</string>
@@ -261,7 +260,7 @@
     <string name="edit_all" comment="All occurrences of a pattern">Sve</string>
     <string name="edit_continue">Ako je pronađeno, nastavi provjeravati ostale regexe</string>
     <string name="edit_case_sensitive">Razlikuj velika i mala slova</string>
-    <string name="edit_regex_test">Testiraj</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Testiraj</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Dosegnuto ograničenje šablona (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Ručka za povlačenje</string>
     <string name="text" comment="text to test regex rules with">Tekst</string>
@@ -318,19 +317,19 @@
     <string name="pref_change_locale">Promijeni jezik</string>
     <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
     <string name="pref_misc">Razno</string>
-    <string name="pref_imexport">Uvoz i izvoz</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Uvoz i izvoz</string>
     <string name="pref_export">Izvezi</string>
     <string name="pref_export_desc">Sigurnosno kopira postavke, uređivanja i popise blokiranja. Iz sigurnosnih razloga ne sprema prijave. Korisno za premještanje na novi uređaj ili dijeljenje s prijateljima.</string>
     <string name="pref_import">Uvezi</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizacija</string>
     <string name="pref_themes">Teme</string>
-    <string name="pref_themes_desc">Promiješaj i kombiniraj\nMijenja i boju obavijesti</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Promiješaj i kombiniraj\nMijenja i boju obavijesti</string>
     <string name="pref_widget_charts">Widget na početnom zaslonu - ljestvice</string>
     <string name="pref_show_albums">Prikaži nazive albuma</string>
-    <string name="pref_show_albums_desc">…za scrobbleove</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…za scrobbleove</string>
     <string name="pref_show_scrobble_sources">Prikaz ikona aplikacija iz kojih je scrobbleano</string>
-    <string name="pref_show_scrobble_sources_desc">…za svaki scrobble. Ovi podatci ostaju na Vašem uređaju</string>
-    <string name="pref_search_in_source_desc">Za podržane aplikacije</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…za svaki scrobble. Ovi podatci ostaju na Vašem uređaju</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Za podržane aplikacije</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Popisi</string>
     <string name="pref_regex_edits">Šablonska uređivanja</string>
     <string name="pref_blocked_metadata">Blokirani metapodatci</string>
@@ -360,13 +359,13 @@
     <string name="not_running_fix_action">Popravi</string>
     <string name="login_submit">Potvrdi</string>
     <string name="acr_host" comment="Web hostname">Poslužitelj</string>
-    <string name="acr_key">Pristupni ključ</string>
-    <string name="acr_secret">Tajna</string>
+    <string name="acr_key" comment="API key">Pristupni ključ</string>
+    <string name="acr_secret" comment="API secret">Tajna</string>
     <string name="add_acr_key">Dodaj ključ za ACRCloud</string>
     <string name="remove_acr_key">Ukloni ključ za ACRCloud</string>
     <string name="add_acr_consider">Za sprječavanje prelaženja ograničenja stope pristupa, razmislite o dodavanju vlastitog ključa za ACRCloud</string>
     <string name="add">Dodaj</string>
-    <string name="add_acr_key_info">"• Registrirajte se na https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Registrirajte se na https://console.acrcloud.com
 • Navigirajte do \"Projects\" &gt; \"Audio &amp; video recognition\"
 • Stvorite novi projekt, odaberite \"Recorded Audio\" i \"ACRCloud Music bucket\""</string>
     <string name="shazam_scrobbling">Za kontinuirano scrobbleanje, umjesto ovoga otvorite <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> i pokrenite \"Auto Shazam\". Provjerite i je li omogućeno scrobbleanje iz Shazama.</string>

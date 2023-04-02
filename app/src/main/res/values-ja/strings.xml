@@ -92,7 +92,6 @@
     <string name="offline">現在オフラインです。表示中のデータは最新ではありません</string>
     <string name="unavailable_offline">オフライン時は利用できません</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">サービス</string>
-    <string name="others">その他</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">%1$s\nを%2$sに聴きました</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$sさんは%1$s\nを%2$sに聴きました</string>
     <string name="share_sig">(Pano Scrobblerより)</string>
@@ -187,10 +186,10 @@
     <string name="weeks">週</string>
     <string name="monthly">1ヶ月</string>
     <string name="months">月</string>
-    <string name="years">年</string>
+    <string name="years" comment="For the charts menu which displays year by year">年</string>
     <string name="charts_overall">全期間</string>
     <string name="charts_no_data">この期間のデータはありません</string>
-    <string name="charts_custom" comment="Custom date range, but in short">カスタム</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">カスタム</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">時系列</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">データが足りません</string>
     <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
@@ -239,8 +238,8 @@
     <string name="edit_all" comment="All occurrences of a pattern">すべて</string>
     <string name="edit_continue">これに一致した場合でも、他の正規表現を実行する</string>
     <string name="edit_case_sensitive">大文字と小文字を区別する</string>
-    <string name="edit_regex_test">テスト</string>
-    <string name="edit_presets">プリセット</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">テスト</string>
+    <string name="edit_presets" comment="Regex presets">プリセット</string>
     <string name="edit_presets_available">プリセット一覧</string>
     <string name="edit_no_presets_available">すべてのプリセットが使用されています</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">プリセット: %1$s</string>
@@ -308,20 +307,20 @@
     <string name="pref_change_locale">言語を変更</string>
     <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>
     <string name="pref_misc">その他</string>
-    <string name="pref_imexport">インポート &amp; エクスポート</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">インポート &amp; エクスポート</string>
     <string name="pref_export">エクスポート</string>
     <string name="pref_export_desc">設定や訂正内容、ブロックリストをバックアップします。ログイン情報は、セキュリティ上の観点から保存されません。デバイス間や友人との共有にご利用ください。</string>
     <string name="pref_import">インポート</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">個人設定</string>
     <string name="pref_themes">テーマ</string>
-    <string name="pref_themes_desc">Mix &amp; Match\n通知の色も変化します</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix &amp; Match\n通知の色も変化します</string>
     <string name="pref_widget_charts">ホーム画面ウィジェット - チャート</string>
     <string name="pref_show_albums">アルバム名を表示する</string>
-    <string name="pref_show_albums_desc">…Scrobbleの情報の一つとして</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…Scrobbleの情報の一つとして</string>
     <string name="pref_show_scrobble_sources">Scrobble元のアプリのアイコンを表示する</string>
-    <string name="pref_show_scrobble_sources_desc">…各Scrobbleの隣に表示されます。このデータは、デバイス内に保存されます</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…各Scrobbleの隣に表示されます。このデータは、デバイス内に保存されます</string>
     <string name="pref_search_in_source">Scrobbleしたアプリで検索および再生する</string>
-    <string name="pref_search_in_source_desc">対応アプリのみ</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">対応アプリのみ</string>
     <string name="pref_lists" comment="Such as edits list and block lists">リスト</string>
     <string name="pref_regex_edits">パターン訂正</string>
     <string name="pref_blocked_metadata">ブロックされたメタデータ</string>
@@ -357,13 +356,13 @@
     <string name="not_running_fix_action">修正</string>
     <string name="login_submit">認証</string>
     <string name="acr_host" comment="Web hostname">Host</string>
-    <string name="acr_key">Access Key</string>
-    <string name="acr_secret">Secret Key</string>
+    <string name="acr_key" comment="API key">Access Key</string>
+    <string name="acr_secret" comment="API secret">Secret Key</string>
     <string name="add_acr_key">ACRCloudキーを追加</string>
     <string name="remove_acr_key">ACRCloudキーを削除</string>
     <string name="add_acr_consider">個別のACRCloudキーを追加することで、レート制限を防ぐことができます</string>
     <string name="add">追加</string>
-    <string name="add_acr_key_info">"• https://console.acrcloud.com に登録
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• https://console.acrcloud.com に登録
 • Projects &gt; Audio &amp; video recognitionに移動
 • Create Projectからプロジェクトを新規作成し、Audio SourceをRecorded Audioに、BucketsをACRCloud Musicに選択"</string>
     <string name="shazam_scrobbling">連続してScrobbleする場合は、<a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a>を代わりに開き、Auto Shazamをオンにしてください。また、ShazamがScrobbleの対象アプリになっていることを確認してください。</string>

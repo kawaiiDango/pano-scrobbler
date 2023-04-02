@@ -116,6 +116,9 @@
     <string name="grid_size">Mudar tamanho da grade</string>
     <string name="pinch_to_zoom">Pince para ampliar</string>
     <string name="more_info">Mais informações</string>
+    <string name="more" comment="More options menu in short">Mais</string>
+    <string name="learn" comment="(Learn java regex syntax)">Aprenda sobre</string>
+    <string name="hide">Ocultar</string>
     <string name="rank_change" comment="%1= delta change">Mudança de classificação: %s</string>
     <string name="rank_change_no_change">Sem mudança</string>
     <string name="rank_change_new">Não há scrobbles no período anterior</string>
@@ -137,6 +140,7 @@
     <string name="new_player_prompt">Continuar fazendo scrobble desse app?</string>
     <string name="no_track_url">Esta música não tem uma página no lastFM</string>
     <string name="no_scrobbles">Nenhuma música aqui…</string>
+    <string name="no_friends">Ainda não segue ninguém…</string>
     <string name="channel_err">Erro de Scrobble</string>
     <string name="new_app">Novo app</string>
     <string name="no_apps_enabled">Nenhum app está ativado</string>
@@ -188,6 +192,7 @@
     <string name="sort">Ordenar</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto no tempo</string>
     <string name="my_scrobbles">Meus scrobbles</string>
+    <string name="their_scrobbles">Scrobbles dessa pessoa</string>
     <string name="listeners">Ouvintes</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Retrair</string>

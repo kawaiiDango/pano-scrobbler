@@ -149,7 +149,6 @@
     <string name="offline">Не в сети. Показанные данные не актуальны</string>
     <string name="unavailable_offline">Недоступно, когда не в сети</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервисы</string>
-    <string name="others">Прочие</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Я слушал\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s слушал\n%1$s %2$s</string>
     <string name="share_sig">(через Pano Scrobbler)</string>
@@ -250,11 +249,11 @@
     <string name="weeks">Недели</string>
     <string name="monthly">Ежемесячно</string>
     <string name="months">Месяцы</string>
-    <string name="years">Годы</string>
+    <string name="years" comment="For the charts menu which displays year by year">Годы</string>
     <string name="charts_overall">За все время</string>
     <string name="listening_activity">Активность прослушивания</string>
     <string name="charts_no_data">Нет данных за этот период</string>
-    <string name="charts_custom" comment="Custom date range, but in short">Пользовательский</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Пользовательский</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Непрерывный</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Основано на %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Недостаточно данных</string>
@@ -304,8 +303,8 @@
     <string name="edit_all" comment="All occurrences of a pattern">Все</string>
     <string name="edit_continue">Если найдено, продолжить сопоставление с другими регулярными выражениями</string>
     <string name="edit_case_sensitive">С учетом регистра</string>
-    <string name="edit_regex_test">Проверка</string>
-    <string name="edit_presets">Предустановки</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Проверка</string>
+    <string name="edit_presets" comment="Regex presets">Предустановки</string>
     <string name="edit_presets_available">Доступные предустановки</string>
     <string name="edit_no_presets_available">Все предустановки используются</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Предустановка: %1$s</string>
@@ -380,20 +379,20 @@
     <string name="pref_change_locale">Изменить язык</string>
     <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>
     <string name="pref_misc">Разное</string>
-    <string name="pref_imexport">Импорт и экспорт</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Импорт и экспорт</string>
     <string name="pref_export">Экспорт</string>
     <string name="pref_export_desc">Сохраняет настройки, правки и черный список. Не сохраняет логины по соображениям безопасности. Полезно для перемещения между устройствами или обмена с друзьями.</string>
     <string name="pref_import">Импорт</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Персонализация</string>
     <string name="pref_themes">Темы</string>
-    <string name="pref_themes_desc">Смешивайте и комбинируйте\nТакже изменяет цвет уведомлений</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Смешивайте и комбинируйте\nТакже изменяет цвет уведомлений</string>
     <string name="pref_widget_charts">Виджет на главном экране - Чарты</string>
     <string name="pref_show_albums">Отображать названия альбомов</string>
-    <string name="pref_show_albums_desc">…для скробблов</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…для скробблов</string>
     <string name="pref_show_scrobble_sources">Отображать иконки приложений, из которых вы скробблили</string>
-    <string name="pref_show_scrobble_sources_desc">…рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…рядом с каждым скробблом. Эти данные остаются на вашем устройстве</string>
     <string name="pref_search_in_source">Поиск &amp; воспроизведение в приложении, из которого вы скробблили</string>
-    <string name="pref_search_in_source_desc">Для поддерживаемых приложений</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
     <string name="pref_regex_edits">Шаблоны редактирования</string>
     <string name="pref_blocked_metadata">Заблокированные метаданные</string>
@@ -430,13 +429,13 @@
     <string name="not_running_fix_action">Исправить это</string>
     <string name="login_submit">Проверить</string>
     <string name="acr_host" comment="Web hostname">Хост</string>
-    <string name="acr_key">Ключ доступа</string>
-    <string name="acr_secret">Секретный ключ</string>
+    <string name="acr_key" comment="API key">Ключ доступа</string>
+    <string name="acr_secret" comment="API secret">Секретный ключ</string>
     <string name="add_acr_key">Добавить ключ ACRCloud</string>
     <string name="remove_acr_key">Удалить ключ ACRCloud</string>
     <string name="add_acr_consider">Чтобы предотвратить превышение лимитов скорости, подумайте о добавлении собственного ключа ACRCloud</string>
     <string name="add">Добавить</string>
-    <string name="add_acr_key_info">"• Зарегистрируйтесь на console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Зарегистрируйтесь на console.acrcloud.com
 • Перейдите в раздел Projects &gt; Audio &amp; video recognition
 • Создайте новый проект, выберите Recorded Audio и сегмент ACRCloud Music"</string>
     <string name="shazam_scrobbling">Чтобы скробблить непрерывно, вместо этого откройте <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> и запустите Автошазам. Также убедитесь, что Shazam включен для скробблинга.</string>

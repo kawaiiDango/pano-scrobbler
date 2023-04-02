@@ -137,7 +137,6 @@
     <string name="offline">Offline. Zobrazená data nejsou čerstvá</string>
     <string name="unavailable_offline">Není dostupné offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Služby</string>
-    <string name="others">Ostatní</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Poslouchal jsem \n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s poslouchal/a \n%1$s %2$s</string>
     <string name="share_sig">(pomocí Pano Scrobbler)</string>
@@ -232,10 +231,10 @@
     <string name="weeks">Týdny</string>
     <string name="monthly">Měsíční</string>
     <string name="months">Měsíce</string>
-    <string name="years">Roky</string>
+    <string name="years" comment="For the charts menu which displays year by year">Roky</string>
     <string name="charts_overall">Celkově</string>
     <string name="charts_no_data">Žádné údaje v tomto období</string>
-    <string name="charts_custom" comment="Custom date range, but in short">Vlastní</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Vlastní</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Průběžně</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Na základě %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Není k dispozici dostatek dat</string>
@@ -285,8 +284,8 @@
     <string name="edit_all" comment="All occurrences of a pattern">Všechny</string>
     <string name="edit_continue">Při nalezení pokračovat ve srovnávání ostatních regexů</string>
     <string name="edit_case_sensitive">Rozlišovat velká a malá písmena</string>
-    <string name="edit_regex_test">Test</string>
-    <string name="edit_presets">Předvolby</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
+    <string name="edit_presets" comment="Regex presets">Předvolby</string>
     <string name="edit_presets_available">Dostupné předvolby</string>
     <string name="edit_no_presets_available">Všechny předvolby se používají</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Předvolba: %1$s</string>
@@ -354,20 +353,20 @@
     <string name="pref_change_locale">Změnit jazyk</string>
     <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>
     <string name="pref_misc">Ostatní</string>
-    <string name="pref_imexport">Import a export</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Import a export</string>
     <string name="pref_export">Exportovat</string>
     <string name="pref_export_desc">Zálohuje nastavení, úpravy a seznam blokovaných. Z bezpečnostních důvodů neukládá přihlášení. Užitečné při přesouvání mezi zařízeními nebo sdílení s kamarády.</string>
     <string name="pref_import">Importovat</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Přizpůsobení</string>
     <string name="pref_themes">Motivy</string>
-    <string name="pref_themes_desc">Zamíchat\nTaké mění barvu oznámení</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Zamíchat\nTaké mění barvu oznámení</string>
     <string name="pref_widget_charts">Widgety domovské obrazovky - Grafy</string>
     <string name="pref_show_albums">Zobrazovat názvy alb</string>
-    <string name="pref_show_albums_desc">…u scrobblů</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…u scrobblů</string>
     <string name="pref_show_scrobble_sources">Zobrazovat ikony aplikací, ze kterých se scrobblovalo</string>
-    <string name="pref_show_scrobble_sources_desc">…vedle každého scrobblu. Tento údaj není nikam odesílán</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…vedle každého scrobblu. Tento údaj není nikam odesílán</string>
     <string name="pref_search_in_source">Hledat a přehrávat v aplikaci, ze které se skladba scrobblovala</string>
-    <string name="pref_search_in_source_desc">U podporovaných aplikací</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">U podporovaných aplikací</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Seznamy</string>
     <string name="pref_regex_edits">Vzory pro úpravy</string>
     <string name="pref_blocked_metadata">Zablokovaná metadata</string>
@@ -403,13 +402,13 @@
     <string name="not_running_fix_action">Opravit</string>
     <string name="login_submit">Ověřit</string>
     <string name="acr_host" comment="Web hostname">Host</string>
-    <string name="acr_key">Přístupový Klíč</string>
-    <string name="acr_secret">Tajný klíč</string>
+    <string name="acr_key" comment="API key">Přístupový Klíč</string>
+    <string name="acr_secret" comment="API secret">Tajný klíč</string>
     <string name="add_acr_key">Přidat klíč ACRCloud</string>
     <string name="remove_acr_key">Odebrat klíč ACRCloud</string>
     <string name="add_acr_consider">Pro zabránění překročení limitů, zvažte přidání vlastního ACRCloud klíče</string>
     <string name="add">Přidat</string>
-    <string name="add_acr_key_info">"• Zaregistrujte se na https://console.acrcloud.com
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Zaregistrujte se na https://console.acrcloud.com
 • Přejděte do \"Projects\" &gt; \"Audio &amp; video recognition\"
 • Vytvořte nový projekt, vyberte \"Recorded Audio\" a \"ACRCloud Music bucket\""</string>
     <string name="shazam_scrobbling">Pro neustálé scrobblování si otevřte <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> a zapněte Auto Shazam. Také se ujistěte, že je povoleno scrobblování ze Shazamu.</string>

@@ -107,7 +107,6 @@
     <string name="offline">Χωρίς σύνδεση. Τα δεδομένα που εμφανίζονται δεν είναι φρέσκα</string>
     <string name="unavailable_offline">Δεν είναι διαθέσιμο εκτός σύνδεσης</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Υπηρεσίες</string>
-    <string name="others">Άλλα</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Άκουσα\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">Ο %3$s άκουγε\n%1$s %2$s</string>
     <string name="share_sig">(μέσω Pano Scrobbler)</string>
@@ -202,10 +201,10 @@
     <string name="weeks">Εβδομάδες</string>
     <string name="monthly">Μηνιαία</string>
     <string name="months">Μήνες</string>
-    <string name="years">Χρόνια</string>
+    <string name="years" comment="For the charts menu which displays year by year">Χρόνια</string>
     <string name="charts_overall">Συνολικά</string>
     <string name="charts_no_data">Δεν υπάρχουν δεδομένα για την περίοδο αυτή</string>
-    <string name="charts_custom" comment="Custom date range, but in short">Προσαρμοσμένο</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Προσαρμοσμένο</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Συνεχής</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Βασισμένο σε %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Δεν υπάρχουν αρκετά δεδομένα</string>
@@ -255,8 +254,8 @@
     <string name="edit_all" comment="All occurrences of a pattern">Όλα</string>
     <string name="edit_continue">Αν βρεθεί, συνεχίστε να ταιριάζετε με άλλες regexes</string>
     <string name="edit_case_sensitive">Διάκριση πεζών-κεφαλαίων</string>
-    <string name="edit_regex_test">Δοκιμή</string>
-    <string name="edit_presets">Προεπιλογές</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Δοκιμή</string>
+    <string name="edit_presets" comment="Regex presets">Προεπιλογές</string>
     <string name="edit_presets_available">Διαθέσιμες προεπιλογές</string>
     <string name="edit_no_presets_available">Όλες οι προεπιλογές είναι σε χρήση</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Προεπιλογή: %1$s</string>
@@ -321,20 +320,20 @@
     <string name="pref_change_locale">Αλλαγή γλώσσας</string>
     <string name="pref_crashlytics_enabled">Αυτόματη αναφορά σφαλμάτων</string>
     <string name="pref_misc">Διάφορα.</string>
-    <string name="pref_imexport">Εισαγωγή &amp; εξαγωγή</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Εισαγωγή &amp; εξαγωγή</string>
     <string name="pref_export">Εξαγωγή</string>
     <string name="pref_export_desc">Δημιουργεί αντίγραφα ασφαλείας ρυθμίσεων, επεξεργασιών και blocklist. Δεν αποθηκεύει συνδέσεις για λόγους ασφαλείας. Χρήσιμο για μετακίνηση μεταξύ συσκευών ή κοινή χρήση με φίλους.</string>
     <string name="pref_import">Εισαγωγή</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Εξατομίκευση</string>
     <string name="pref_themes">Θέματα</string>
-    <string name="pref_themes_desc">Μείγμα και αντιστοιχία\nΑλλάζει επίσης το χρώμα ειδοποίησης</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Μείγμα και αντιστοιχία\nΑλλάζει επίσης το χρώμα ειδοποίησης</string>
     <string name="pref_widget_charts">Αρχικό widget - Διαγράμματα</string>
     <string name="pref_show_albums">Εμφάνιση εξωφύλλου άλμπουμ</string>
-    <string name="pref_show_albums_desc">…για scrobbles</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…για scrobbles</string>
     <string name="pref_show_scrobble_sources">Εμφάνιση εικονιδίων εφαρμογών από τις οποίες σαρώσατε</string>
-    <string name="pref_show_scrobble_sources_desc">…δίπλα σε κάθε scrobble. Αυτά τα δεδομένα παραμένουν στη συσκευή σας</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…δίπλα σε κάθε scrobble. Αυτά τα δεδομένα παραμένουν στη συσκευή σας</string>
     <string name="pref_search_in_source">Αναζητήστε &amp; παίξτε στην εφαρμογή που κάνατε scrobble από</string>
-    <string name="pref_search_in_source_desc">Για υποστηριζόμενες εφαρμογές</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Για υποστηριζόμενες εφαρμογές</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Λίστες</string>
     <string name="pref_regex_edits">Τροποποιήσεις μοτίβου</string>
     <string name="pref_blocked_metadata">Μπλοκαρισμένα μεταδεδομένα</string>
@@ -370,13 +369,13 @@
     <string name="not_running_fix_action">Διόρθωσέ το</string>
     <string name="login_submit">Επαλήθευση</string>
     <string name="acr_host" comment="Web hostname">Διακομιστής</string>
-    <string name="acr_key">Κλειδί Πρόσβασης</string>
-    <string name="acr_secret">Κρυφό</string>
+    <string name="acr_key" comment="API key">Κλειδί Πρόσβασης</string>
+    <string name="acr_secret" comment="API secret">Κρυφό</string>
     <string name="add_acr_key">Προσθήκη Κλειδιού ACRCloud</string>
     <string name="remove_acr_key">Αφαίρεση Κλειδιού ACRCloud</string>
     <string name="add_acr_consider">Για να αποτρέψετε το χτύπημα των ορίων ρυθμού, σκεφτείτε να προσθέσετε το δικό σας κλειδί ACRCloud</string>
     <string name="add">Προσθήκη</string>
-    <string name="add_acr_key_info">"• Εγγραφείτε στο https://console.acrcloud. om
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Εγγραφείτε στο https://console.acrcloud. om
 • Πλοηγηθείτε σε έργα &gt; Αναγνώριση ήχου &amp; βίντεο
 • Δημιουργήστε ένα νέο έργο, επιλέξτε Ηχογραφημένο Ήχο και τον κάδο μουσικής ACRCloud"</string>
     <string name="shazam_scrobbling">Για να κάνετε συνεχώς scrobble, ανοίξτε το <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> αντί αυτού και ξεκινήστε το Auto Shazam. Επίσης, βεβαιωθείτε ότι το Shazam είναι ενεργοποιημένο για scrobbling.</string>

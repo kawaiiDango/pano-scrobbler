@@ -107,7 +107,6 @@
     <string name="offline">Sense connexió. Les informació no està actualitzada</string>
     <string name="unavailable_offline">No disponible sense connexió</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serveis</string>
-    <string name="others">Altres</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava escoltant\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escoltant\n%1$s %2$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
@@ -185,10 +184,10 @@
     <string name="weeks">Setmanes</string>
     <string name="monthly">Mensual</string>
     <string name="months">Mesos</string>
-    <string name="years">Anys</string>
+    <string name="years" comment="For the charts menu which displays year by year">Anys</string>
     <string name="charts_overall">Total</string>
     <string name="charts_no_data">No hi ha dades d\'aquest període</string>
-    <string name="charts_custom" comment="Custom date range, but in short">Personalitzat</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Personalitzat</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continu</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Basat en %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">No hi ha prou dades</string>
@@ -234,8 +233,8 @@
     <string name="edit_field" comment="Fields like artist/album/track etc">Camps</string>
     <string name="edit_replace">Substitueix</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tot</string>
-    <string name="edit_regex_test">Prova</string>
-    <string name="edit_presets">Predefinits</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">Prova</string>
+    <string name="edit_presets" comment="Regex presets">Predefinits</string>
     <string name="edit_presets_available">Predefinits disponibles</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Botó de reordenació</string>
     <string name="text" comment="text to test regex rules with">Text</string>
@@ -285,18 +284,18 @@
     <string name="pref_change_locale">Canvia la llengua</string>
     <string name="pref_crashlytics_enabled">Notifica els errors automàticament</string>
     <string name="pref_misc">Altres</string>
-    <string name="pref_imexport">Importació i exportació</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Importació i exportació</string>
     <string name="pref_export">Exporta</string>
     <string name="pref_import">Importa</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalització</string>
     <string name="pref_themes">Temes</string>
     <string name="pref_widget_charts">Giny de la pantalla d\'inici – Gràfics</string>
     <string name="pref_show_albums">Mostra els noms dels àlbums</string>
-    <string name="pref_show_albums_desc">…als scrobbles</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…als scrobbles</string>
     <string name="pref_show_scrobble_sources">Mostra les icones de les aplicacions des d\'on es fa l\'scrobble</string>
-    <string name="pref_show_scrobble_sources_desc">…al costat de cada scrobble. Aquesta informació es queda al teu dispositiu</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…al costat de cada scrobble. Aquesta informació es queda al teu dispositiu</string>
     <string name="pref_search_in_source">Cerca i reprodueix en l\'aplicació des d\'on s\'ha fet l\'scrobble</string>
-    <string name="pref_search_in_source_desc">Per a les aplicacions compatibles</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Per a les aplicacions compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Llistes</string>
     <string name="pref_regex_edits">Edicions de patró</string>
     <string name="pref_blocked_metadata">Metadades bloquejades</string>
@@ -323,8 +322,8 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Raó del tancament: %s</string>
     <string name="not_running_fix_action">Arregla-ho</string>
     <string name="login_submit">Verifica</string>
-    <string name="acr_key">Clau d\'accés</string>
-    <string name="acr_secret">Secreta</string>
+    <string name="acr_key" comment="API key">Clau d\'accés</string>
+    <string name="acr_secret" comment="API secret">Secreta</string>
     <string name="add_acr_key">Afegeix una clau d\'ACRCloud</string>
     <string name="remove_acr_key">Elimina la clau d\'ACRCloud</string>
     <string name="add">Afegeix</string>

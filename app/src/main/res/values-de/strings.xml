@@ -116,6 +116,8 @@
     <string name="grid_size">Rastergröße ändern</string>
     <string name="pinch_to_zoom">Zum Zoomen auf- und zuziehen</string>
     <string name="more_info">Weitere Infos</string>
+    <string name="more" comment="More options menu in short">Mehr</string>
+    <string name="learn" comment="(Learn java regex syntax)">Mehr erfahren</string>
     <string name="hide">Ausblenden</string>
     <string name="rank_change" comment="%1= delta change">Rangänderung: %s</string>
     <string name="rank_change_no_change">Keine Änderung</string>
@@ -190,6 +192,7 @@
     <string name="sort">Sortieren</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Zeitsprung</string>
     <string name="my_scrobbles">Meine Scrobbles</string>
+    <string name="their_scrobbles">Deren scrobbles</string>
     <string name="listeners">Zuhörer</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Zuklappen</string>
@@ -199,12 +202,14 @@
     <string name="not_found" comment="Shown in search">Nicht gefunden</string>
     <string name="save" comment="saves a file">Speichern</string>
     <string name="saved_to_gallery">In Galerie gespeichert</string>
+    <string name="reports" comment="Like last.week reports and stuff">Berichte</string>
     <string name="weekly">Wöchentlich</string>
     <string name="weeks">Wochen</string>
     <string name="monthly">Monatlich</string>
     <string name="months">Monate</string>
     <string name="years" comment="For the charts menu which displays year by year">Jahre</string>
     <string name="charts_overall">Gesamtübersicht</string>
+    <string name="listening_activity">Höraktivität</string>
     <string name="charts_no_data">Keine Daten in diesem Zeitraum</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Benutzerdefiniert</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Kontinuierlich</string>
@@ -283,8 +288,11 @@
     <string name="persistent_noti_desc">Lange drücken, um dies zu verstecken</string>
     <string name="scrobbler_off">Scrobbler deaktiviert</string>
     <string name="scrobbler_on">Scrobbler aktiv</string>
+    <string name="acoustic" comment="(Acoustic music)">Akustisch</string>
+    <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Energetisch</string>
     <string name="danceable">Tanzbar</string>
+    <string name="valence" comment="(Musical positivity)">Positiv</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Beliebtheit: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable the scrobbler">Aktivieren</string>
@@ -367,6 +375,7 @@
     <string name="pref_intents">Intents für Tasker usw.</string>
     <string name="copied">Kopiert!</string>
     <string name="lastfm_reauth">Du musst dich neu authentifizieren, um Scrobbles bearbeiten oder löschen zu können</string>
+    <string name="custom_listenbrainz">Eigenes Listenbrainz</string>
     <string name="failed_encode_url">Fehler beim Kodieren der URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$s überprüfen</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Spezieller App-Zugriff &gt; Benachrichtigungszugriff &gt; %1$s</string>

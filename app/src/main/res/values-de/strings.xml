@@ -116,6 +116,7 @@
     <string name="grid_size">Rastergröße ändern</string>
     <string name="pinch_to_zoom">Zum Zoomen auf- und zuziehen</string>
     <string name="more_info">Weitere Infos</string>
+    <string name="hide">Ausblenden</string>
     <string name="rank_change" comment="%1= delta change">Rangänderung: %s</string>
     <string name="rank_change_no_change">Keine Änderung</string>
     <string name="rank_change_new">Nicht gescrobbelt innerhalb des vorherigen Zeitraums</string>
@@ -137,6 +138,7 @@
     <string name="new_player_prompt">Diese App weiter scrobbeln?</string>
     <string name="no_track_url">Dieser Titel hat keine Seite auf lastFM</string>
     <string name="no_scrobbles">Noch keine Titel vorhanden…</string>
+    <string name="no_friends">Du folgst noch niemandem…</string>
     <string name="channel_err">Scrobble-Fehler</string>
     <string name="new_app">Neue App</string>
     <string name="no_apps_enabled">Keine Apps aktiviert</string>
@@ -281,6 +283,10 @@
     <string name="persistent_noti_desc">Lange drücken, um dies zu verstecken</string>
     <string name="scrobbler_off">Scrobbler deaktiviert</string>
     <string name="scrobbler_on">Scrobbler aktiv</string>
+    <string name="energetic" comment="(Energetic music)">Energetisch</string>
+    <string name="danceable">Tanzbar</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Beliebtheit: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable the scrobbler">Aktivieren</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Größe</string>
     <string name="skip_missing_images">Fehlende Bilder überspringen</string>

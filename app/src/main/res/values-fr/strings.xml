@@ -201,11 +201,14 @@
     <string name="charts_no_data">Aucune donnée pour cette période</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Personnaliser</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Périodes</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">En fonction des %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Pas assez de données</string>
+    <string name="charts_num_text" formatted="true" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Je me sens chanceux</string>
     <string name="random_not_found">Aucun morceau trouvé</string>
     <string name="loved_track">Chanson aimée</string>
     <string name="randomize">Aléatoire</string>
+    <string name="random_text">Aléatoire</string>
     <string name="graph_daily">Nombre de scrobbles quotidiens</string>
     <string name="graph_weekly">Nombre de scrobbles hebdomadaires</string>
     <string name="graph_monthly">Nombre de scrobbles mensuels</string>
@@ -214,6 +217,7 @@
     <string name="corrected" comment="Corrected metadata after editing">Corrigé</string>
     <string name="tag" comment="last.fm tag">Tag</string>
     <string name="taggers" comment="(number of) people who have tagged">Taggeurs</string>
+    <string name="taggings" comment="(total count of) a particular tag">Tags</string>
     <string name="digest_weekly">Mes meilleurs scrobbles de la semaine dernière</string>
     <string name="digest_monthly">Mes meilleurs scrobbles du mois dernier</string>
     <string name="my_tags">Mes tags</string>
@@ -255,6 +259,7 @@
     <string name="pin">Épingler</string>
     <string name="unpin">Désépingler</string>
     <string name="pin_limit_reached" formatted="true">Limite d\'épingles atteinte (%1$d)</string>
+    <string name="pin_help">Appuyer longuement sur les éléments épinglés pour les classer</string>
     <string name="use_channel" comment="(Use youtube channel name)">Utiliser le nom de la chaîne</string>
     <string name="show_persistent_noti">Afficher une notification permanente</string>
     <string name="scrobbler_off">Scrobbler désactivé</string>
@@ -269,6 +274,8 @@
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Taille</string>
     <string name="skip_missing_images">Ignorer les images manquantes</string>
     <string name="create_collage">Créez un collage</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Légendes des images</string>
+    <string name="username" comment="last.fm Username">Nom d’utilisateur</string>
     <string name="pref_master">Scrobler la musique</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_noti_categories">Catégories de notification</string>
@@ -335,12 +342,14 @@
 • Naviguer vers les projets &gt; Audio &amp; reconnaissance vidéo
 • Créer un nouveau projet, sélectionnez un enregistrement vocal et le seau de musique ACRCloud"</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>
+    <string name="pending_batch" comment="For pending scrobbles">Soumission d\'un lot</string>
     <string name="webview_error">La page n\'a pas pu être chargée (votre connexion fonctionne-t-elle ?)</string>
     <string name="graph">Graphique en courbes</string>
     <string name="cleared_disabled_apps">Applications désactivées effacées</string>
     <string name="fix_it_title">Corrections possibles</string>
     <string name="fix_it_battery_title">Désactiver les optimisations de la batterie</string>
     <string name="fix_it_action" comment="(To open an app)">Ouvrir</string>
+    <string name="delete_account">Supprimer votre compte</string>
     <string name="delete_account_custom_servers">Pour les serveurs personnalisés, consultez leurs documentations respectives.</string>
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
@@ -358,6 +367,8 @@ Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qu
 • Connectez-vous avec un compte propriétaire de l'achat.
 • Installez cette application directement depuis la page Web de Google Play.
 "</string>
+    <string name="billing_block">Bloquer cet artiste/ce titre et automatiquement passer la chanson ou couper le son</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Épingler jusqu\'à %1$d amis et classer les</string>
     <string name="billing_sharing">Supprimer le nom de l\'application lors du partage</string>
     <string name="billing_scrobble_source">Enregistrer et montrer les applications depuis lesquelles vous avez scrobblé et recherchez directement depuis celles-ci</string>
 </resources>

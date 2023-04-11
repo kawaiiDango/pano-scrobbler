@@ -220,7 +220,7 @@ class PendingScrJob : JobService() {
 
     companion object {
         const val JOB_ID = 10
-        private val MOCK = BuildConfig.DEBUG && false // todo set false
+        private val MOCK = BuildConfig.DEBUG && false
         var mightBeRunning = false // this may not be false when the job is force stopped
         private var BATCH_SIZE = 40 //max 50
         private const val DELAY = 400L

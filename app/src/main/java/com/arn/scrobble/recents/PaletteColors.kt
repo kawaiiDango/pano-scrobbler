@@ -57,22 +57,25 @@ class PaletteColors {
             )
         primDark = dom.harmonize()
 
-        lightWhite = palette.getLightMutedColor(
+        var fg = palette.getLightMutedColor(
             MaterialColors.getColor(
                 context,
                 com.google.android.material.R.attr.colorOutline,
                 null
             ) or 0xFF000000.toInt()
-        ).harmonize()
+        )
 
-        mutedDark =
-            palette.getDarkMutedColor(
-                MaterialColors.getColor(
-                    context,
-                    com.google.android.material.R.attr.colorPrimary,
-                    null
-                )
-            ).harmonize()
+        lightWhite = UiUtils.capMinSatLum(fg, 0.45f, 0.7f, 0.85f).harmonize()
+
+        fg = palette.getDarkMutedColor(
+            MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorPrimary,
+                null
+            )
+        )
+
+        mutedDark = UiUtils.capMaxSatLum(fg, 0.2f, 0.2f).harmonize()
 
         var bg = palette.getDarkMutedColor(
             MaterialColors.getColor(

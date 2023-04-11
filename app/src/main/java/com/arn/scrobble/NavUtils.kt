@@ -94,7 +94,7 @@ object NavUtils {
         }
 
         val profilePicUrl = currentUser.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-        if (headerNavBinding.navProfilePic.tag != profilePicUrl + username) // todo prevent flash
+        if (headerNavBinding.navProfilePic.getTag(R.id.img_url)  != profilePicUrl + username) // todo prevent flash
             headerNavBinding.navProfilePic.load(profilePicUrl) {
                 allowHardware(false)
                 error(
@@ -106,10 +106,10 @@ object NavUtils {
                 )
                 listener(
                     onSuccess = { _, _ ->
-                        headerNavBinding.navProfilePic.tag = profilePicUrl + username
+                        headerNavBinding.navProfilePic.setTag(R.id.img_url, profilePicUrl + username)
                     },
                     onError = { _, _ ->
-                        headerNavBinding.navProfilePic.tag = profilePicUrl + username
+                        headerNavBinding.navProfilePic.setTag(R.id.img_url, profilePicUrl + username)
                     }
                 )
             }

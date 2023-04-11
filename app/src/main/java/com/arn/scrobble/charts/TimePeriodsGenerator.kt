@@ -348,6 +348,7 @@ class TimePeriodsGenerator(
             var timePeriod = timePeriodp.copy()
             if (timePeriodp.period != null) {
                 val cal = Calendar.getInstance()
+                cal.timeInMillis += TimeUnit.DAYS.toMillis(1) // include today
                 cal.setMidnight()
                 timePeriod = timePeriodp.period.toTimePeriod(registeredTime, cal.timeInMillis)
                 timePeriod.name = timePeriodp.name
@@ -364,9 +365,9 @@ class TimePeriodsGenerator(
 
             val timePeriods = when (type) {
                 TimePeriodType.YEAR -> generator.years
-                TimePeriodType.MONTH -> generator.months
+                TimePeriodType.MONTH -> generator.months.take(12)
                 TimePeriodType.WEEK -> generator.weeks
-                TimePeriodType.DAY -> generator.days
+                TimePeriodType.DAY -> generator.days.take(7)
                 else -> throw IllegalArgumentException("Invalid time period type")
             }
 

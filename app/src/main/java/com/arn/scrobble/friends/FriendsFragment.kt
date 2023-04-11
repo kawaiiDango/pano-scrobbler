@@ -191,13 +191,14 @@ class FriendsFragment : Fragment(), ItemClickListener {
             viewModel.total = it.total
             viewModel.hasLoaded = true
 
-            setTitle(
-                resources.getQuantityString(
-                    R.plurals.num_friends,
-                    viewModel.total,
-                    viewModel.total
+            if (viewModel.total > 0)
+                setTitle(
+                    resources.getQuantityString(
+                        R.plurals.num_friends,
+                        viewModel.total,
+                        viewModel.total
+                    )
                 )
-            )
 
             viewModel.putFriends(it.pageResults, replace = it.page == 1)
 
@@ -414,7 +415,10 @@ class FriendsFragment : Fragment(), ItemClickListener {
             contentBinding.friendsLinksGroup.isVisible = true
             contentBinding.friendsScrobbles.setOnClickListener {
 //                activityViewModel.pushUser(userSerializable)
-                findNavController().navigate(R.id.othersHomePagerFragment, Bundle().putSingle(userSerializable))
+                findNavController().navigate(
+                    R.id.othersHomePagerFragment,
+                    Bundle().putSingle(userSerializable)
+                )
             }
             contentBinding.friendsProfile.setOnClickListener {
                 Stuff.openInBrowser(userSerializable.url)

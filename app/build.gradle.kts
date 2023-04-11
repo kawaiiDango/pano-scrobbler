@@ -58,6 +58,12 @@ android {
         viewBinding = true
     }
 
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
     buildTypes {
         release {
             isShrinkResources = true
@@ -78,6 +84,7 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -111,23 +118,24 @@ aboutLibraries {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
-    implementation("androidx.core:core-ktx:1.10.0-rc01")
+    implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.media:media:1.6.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
 //    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha08")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha09")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0-alpha07")
-    implementation("androidx.navigation:navigation-ui-ktx:2.6.0-alpha07")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0-alpha08")
+    implementation("androidx.navigation:navigation-ui-ktx:2.6.0-alpha08")
     implementation("androidx.core:core-remoteviews:1.0.0-beta03")
-    ksp("androidx.room:room-compiler:2.5.0")
-    implementation("androidx.room:room-runtime:2.5.0")
+    ksp("androidx.room:room-compiler:2.5.1")
+    implementation("androidx.room:room-runtime:2.5.1")
     implementation("com.android.billingclient:billing:5.1.0")
     implementation("com.google.android.play:review:2.0.1")
     implementation("com.google.android.play:review-ktx:2.0.1")
@@ -136,7 +144,7 @@ dependencies {
 
     implementation("com.google.android.material:material:1.9.0-beta01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:31.3.0"))
+    implementation(platform("com.google.firebase:firebase-bom:31.4.0"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -151,7 +159,7 @@ dependencies {
     implementation("com.github.hadilq:live-event:1.3.0")
     implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation("com.telefonica:nestedscrollwebview:0.1.1")
+    implementation("com.telefonica:nestedscrollwebview:0.1.2")
     val coilVersion = "2.3.0"
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-gif:$coilVersion")
@@ -164,7 +172,7 @@ dependencies {
     implementation("io.ktor:ktor-client-auth:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
-    implementation("com.mikepenz:aboutlibraries-core:10.6.1")
+    implementation("com.mikepenz:aboutlibraries-core:10.6.2")
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
     implementation(project(":lastfm"))

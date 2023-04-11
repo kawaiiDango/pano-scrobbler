@@ -77,9 +77,6 @@ internal fun updateAppWidget(
     scrollToTop: Boolean = false
 ) {
 
-    // Here we setup the intent which points to the StackViewService which will
-    // provide the views for this collection.
-
     val tab = prefs.tab ?: Stuff.TYPE_ARTISTS
     val period = prefs.period
     val bgAlpha = prefs.bgAlpha

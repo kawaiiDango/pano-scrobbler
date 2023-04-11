@@ -8,6 +8,7 @@ import android.view.View
 import androidx.annotation.Keep
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.navigation.NavigationView
 
 @Keep
 class DisableableAppBarLayoutBehavior(context: Context, attrs: AttributeSet? = null) :
@@ -22,6 +23,9 @@ class DisableableAppBarLayoutBehavior(context: Context, attrs: AttributeSet? = n
         nestedScrollAxes: Int,
         type: Int
     ): Boolean {
+        if (directTargetChild is NavigationView)
+            return false
+
         return isEnabled && super.onStartNestedScroll(
             parent,
             child,

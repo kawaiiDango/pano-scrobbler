@@ -18,6 +18,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.core.view.setMargins
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
@@ -62,8 +63,6 @@ class MainActivity : AppCompatActivity(),
     private lateinit var mainFab: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Stuff.timeIt("onCreate start")
-
         var canShowNotices = false
 
         super.onCreate(savedInstanceState)
@@ -121,10 +120,13 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
+        if (Stuff.isEdgeToEdge) {
+            binding.root.fitsSystemWindows = true
+            binding.appBar.fitsSystemWindows = true
+            binding.heroDarkOverlayTop.isVisible = true
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+        }
         setContentView(binding.root)
-        Stuff.timeIt("onCreate setContentView")
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         if (Stuff.isTv) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -180,8 +182,6 @@ class MainActivity : AppCompatActivity(),
                             Lifecycle.Event.ON_DESTROY -> {
                                 it.lifecycleOwner.lifecycle.removeObserver(this)
                                 mainNotifierViewModel.fabData.value = null
-                                if (UiUtils.isTabletUi)
-                                    binding.sidebarNav.fitsSystemWindows = true
                             }
 
                             else -> {}
@@ -192,7 +192,6 @@ class MainActivity : AppCompatActivity(),
             )
 
             if (UiUtils.isTabletUi) {
-                binding.sidebarNav.fitsSystemWindows = false
                 (mainFab as ExtendedFloatingActionButton).apply {
                     setIconResource(it.iconRes)
                     setText(it.stringRes)

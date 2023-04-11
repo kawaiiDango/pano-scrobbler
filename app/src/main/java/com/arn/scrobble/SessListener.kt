@@ -264,6 +264,15 @@ class SessListener(
                     }
                 }
 
+                Stuff.PACKAGE_GOOGLE -> {
+                    // google podcasts
+                    if (artist == "") {
+                        artist =
+                            metadata.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)?.trim()
+                                ?: ""
+                    }
+                }
+
                 Stuff.PACKAGE_NICOBOX -> {
                     artist = "Unknown"
                 }
@@ -312,8 +321,8 @@ class SessListener(
                 "onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
                         "duration=$durationMillis lastState=$lastState, package=${trackInfo.packageName} isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
             )
-
-//            metadata.dump()
+            if (BuildConfig.DEBUG)
+                metadata.dump()
 
             if (artist == "" || title == "")
                 return

@@ -17,13 +17,11 @@ import android.text.style.ForegroundColorSpan
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.transition.TransitionSet
-import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.WindowInsets
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
@@ -52,6 +50,7 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -67,7 +66,6 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.friends.UserSerializable
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -510,8 +508,8 @@ object UiUtils {
         ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             val bottomInset = if (addBottomNavHeight)
-                view.context.resources.getDimension(R.dimen.bottom_nav_height)
-                    .toInt() + insets.bottom + insets.top
+                view.context.resources.getDimension(R.dimen.bottom_nav_height).toInt() +
+                        insets.bottom + insets.top
             else
                 insets.bottom + insets.top
 
@@ -525,9 +523,9 @@ object UiUtils {
                 }
             } else {
                 view.updatePadding(
-                    left = insets.left,
+                    left = insets.left + additionalSpaceSides,
                     bottom = bottomInset + additionalSpaceBottom,
-                    right = insets.right + additionalSpaceBottom,
+                    right = insets.right + additionalSpaceSides,
                 )
             }
 
@@ -580,47 +578,6 @@ object UiUtils {
             BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    fun CollapsingToolbarLayout.adjustHeight(additionalHeight: Int = 0) {
-        val activity = context as MainActivity
-
-        val sHeightPx = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowMetrics = activity.windowManager.currentWindowMetrics
-            val insets =
-                windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-            windowMetrics.bounds.height() - insets.top - insets.bottom
-        } else {
-            val dm = DisplayMetrics()
-            activity.windowManager.defaultDisplay.getMetrics(dm)
-            dm.heightPixels
-        }
-
-        val abHeightPx = activity.resources.getDimension(R.dimen.app_bar_height)
-        val targetAbHeight: Int
-        val lp = activity.binding.ctl.layoutParams
-        val margin = 65.dp
-
-        targetAbHeight = if (sHeightPx < abHeightPx + additionalHeight + margin)
-            ((sHeightPx - additionalHeight) * 0.6).toInt()
-        else
-            activity.resources.getDimensionPixelSize(R.dimen.app_bar_height)
-        if (targetAbHeight != lp.height) {
-//            if (!activity.binding.appBar.isExpanded) {
-            lp.height = targetAbHeight
-//                activity.app_bar.setExpanded(false, false)
-//            } else {
-//                val start = lp.height
-//                val anim = ValueAnimator.ofInt(start, targetAbHeight)
-//                anim.addUpdateListener { valueAnimator ->
-//                    lp.height = valueAnimator.animatedValue as Int
-//                    activity.binding.ctl.layoutParams = lp
-//                }
-//                anim.interpolator = DecelerateInterpolator()
-//                anim.duration = 300
-//                anim.start()
-//            }
-        }
-    }
-
     fun AutoCompleteTextView.getSelectedItemPosition(): Int {
         var pos = -1
         val displayedText = text.toString()
@@ -632,6 +589,18 @@ object UiUtils {
         }
 
         return pos
+    }
+
+    fun RecyclerView.scrollToTopOnInsertToTop() {
+        val llm = layoutManager as? LinearLayoutManager ?: return
+        adapter!!.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                val firstVisiblePosition = llm.findFirstCompletelyVisibleItemPosition()
+                if (firstVisiblePosition == 0)
+                    llm.scrollToPosition(0)
+            }
+        })
     }
 
     fun Context.toast(@StringRes strRes: Int, len: Int = Toast.LENGTH_SHORT) {

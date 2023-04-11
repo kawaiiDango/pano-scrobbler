@@ -95,6 +95,14 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
         val prevHeight = ctl.layoutParams.height
 
         if (prevHeight != ctlHeight) {
+            if (ctl.getTag(R.id.inited) == null) { // prevent visual jerk
+                ctl.updateLayoutParams {
+                    height = ctlHeight
+                }
+                ctl.setTag(R.id.inited, true)
+                return
+            }
+
             ctl.animation?.cancel()
             ValueAnimator.ofInt(prevHeight, ctlHeight).apply {
                 interpolator = DecelerateInterpolator()
@@ -105,7 +113,6 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
                 }
                 start()
             }
-
         }
     }
 

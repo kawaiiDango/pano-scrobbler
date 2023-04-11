@@ -100,7 +100,6 @@ object Stuff {
     const val TYPE_LOVES = 4
     const val TYPE_SC = 5
     const val TYPE_TAG_CLOUD = 6
-    const val NP_ID = -5
     const val LIBREFM_KEY = "panoScrobbler"
     val LAST_KEY = Tokens.LAST_KEY
     val LAST_SECRET = Tokens.LAST_SECRET
@@ -183,8 +182,7 @@ object Stuff {
     const val PACKAGE_NICOBOX = "jp.nicovideo.nicobox"
     const val PACKAGE_YANDEX_MUSIC = "ru.yandex.music"
     const val PACKAGE_YAMAHA_MUSIC_CAST = "com.yamaha.av.musiccastcontroller"
-
-    const val MARKET_URL = "market://details?id=" + BuildConfig.APPLICATION_ID
+    const val PACKAGE_GOOGLE = "com.google.android.googlequicksearchbox"
 
     val IGNORE_ARTIST_META = setOf(
         "com.google.android.youtube",
@@ -235,6 +233,9 @@ object Stuff {
         "com.samsung.android.lool" to "com.samsung.android.sm.battery.ui.setting.SleepingAppsActivity",
         "com.samsung.android.lool" to "com.samsung.android.sm.battery.ui.setting.AppPowerManagementActivity",
     )
+
+    // for buggy/complicated edge to edge on API < 30
+    val isEdgeToEdge = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
     var isOnline = true
 

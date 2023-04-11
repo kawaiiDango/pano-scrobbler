@@ -280,10 +280,7 @@ class ScrobblesAdapter(
             notifyItemChanged(0, 0) //animation gets delayed otherwise
         } else if (oldVirtualList.size < viewModel.virtualList.size) // remove the loading gap from the last item
             notifyItemChanged(itemCount - 1, 0)
-        val recyclerViewState = fragmentBinding.scrobblesList.layoutManager!!.onSaveInstanceState()
         notify(oldVirtualList, prevSelectedItem)
-        fragmentBinding.scrobblesList.layoutManager!!.onRestoreInstanceState(recyclerViewState)
-//        fragmentBinding.scrobblesList.scrollToPosition(viewModel.selectedPos)
 
         lastPopulateTime = System.currentTimeMillis()
         submitPendingIfNeeded()
@@ -487,6 +484,8 @@ class ScrobblesAdapter(
             }
 
             viewModel.paletteColors.value?.foreground?.let {
+                // todo this still does not fix the colors bug
+//                Stuff.log("Color for ${track.name} is $it")
                 binding.recentsTitle.setTextColor(it)
             }
 

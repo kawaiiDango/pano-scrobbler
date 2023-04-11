@@ -109,7 +109,7 @@ def gen_styles(is_dark: bool):
             colorSecondary = shades[secondary_shade]
             colorTertiary = cap_sat(shades[tertiary_shade], 0.45)
             colorOutline = add_transparency(
-                "66", cap_sat(shades[outline_shade], 0.35))
+                "CB", cap_sat(shades[outline_shade], 0.35))
             colorSecondaryContainer = shades[container_shade]
             colorOnSecondaryContainer = shades[outline_shade]
             colorOnSecondary = shades[on_shade]

@@ -544,8 +544,15 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 .body<ListenBrainzData<ListenBrainzActivityPayload>>()
                 .payload
 
+        val n = when (TimeUnit.MILLISECONDS.toDays(timePeriod.end - timePeriod.start)) {
+            in 367 until Long.MAX_VALUE -> 10
+            in 90 until 367 -> 12
+            in 10 until 90 -> 10
+            else -> 7
+        }
+
         return payload.listening_activity
-            .takeLast(12)
+            .takeLast(n)
             .associate {
                 TimePeriod(
                     it.from_ts.toLong(),

@@ -6,7 +6,6 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context="com.arn.scrobble.MainActivity">
 
     <com.google.android.material.navigation.NavigationView
@@ -25,7 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/sidebar_width"
-        android:fitsSystemWindows="true"
         app:layout_behavior=".ui.DisableableAppBarLayoutBehavior">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -68,6 +66,7 @@
                     android:layout_gravity="top"
                     android:alpha="0.75"
                     android:rotation="180"
+                    android:visibility="gone"
                     android:background="@drawable/gradient_overlay_hero" />
                 <View
                     android:id="@+id/hero_dark_overlay_bottom"
@@ -82,6 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
+                    android:visibility="invisible"
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton

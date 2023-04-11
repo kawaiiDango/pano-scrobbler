@@ -59,6 +59,7 @@ import com.arn.scrobble.ui.PaletteTransition
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
+import com.arn.scrobble.ui.UiUtils.scrollToTopOnInsertToTop
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
 import com.arn.scrobble.ui.UiUtils.setupInsets
@@ -210,6 +211,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         }
         binding.scrobblesSwipeRefresh.isRefreshing = false
         binding.scrobblesList.adapter = adapter
+        binding.scrobblesList.scrollToTopOnInsertToTop()
         (binding.scrobblesList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations =
             false
 
@@ -292,7 +294,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         }
 
         coordinatorBinding.heroShare.setOnClickListener {
-            val track = coordinatorBinding.heroImg.tag
+            val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
             if (track is Track) {
                 val heart = if (track.isLoved) "♥️" else ""
 
@@ -323,7 +325,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         }
 
         coordinatorBinding.heroInfo.setOnClickListener {
-            val track = coordinatorBinding.heroImg.tag
+            val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
             if (track is Track) {
                 showTrackInfo(track)
                 if (!prefs.longPressLearnt) {
@@ -348,7 +350,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
 
         if (BuildConfig.DEBUG)
             coordinatorBinding.heroPlay.setOnLongClickListener {
-                val track = coordinatorBinding.heroImg.tag
+                val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
                 if (track is Track) {
                     Stuff.openInBrowser(
                         "https://en.touhouwiki.net/index.php?search=" +
@@ -359,7 +361,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             }
 
         coordinatorBinding.heroPlay.setOnClickListener {
-            val track = coordinatorBinding.heroImg.tag
+            val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
             if (track is Track) {
                 val pkgName = if (track.playedWhen != null)
                     viewModel.pkgMap[track.playedWhen.time]
@@ -560,7 +562,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         _binding ?: return
 
         //TODO: check
-        coordinatorBinding.heroImg.tag = track
+        coordinatorBinding.heroImg.setTag(R.id.hero_track, track)
         val imgUrl = track.getWebpImageURL(ImageSize.EXTRALARGE)?.replace("300x300", "600x600")
 
         val errColor = UiUtils.getMatColor(
@@ -717,6 +719,10 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             viewModel.toTime = Stuff.timeToLocal(it) + (24 * 60 * 60 - 1) * 1000
 //                Stuff.log("time=" + Date(viewModel.toTime))
             loadRecents(1, true)
+
+            binding.timeJumpChip.isCheckable = true
+            binding.timeJumpChip.isChecked = true
+            binding.scrobblesList.scheduleLayoutAnimation()
         }
 
         dpd.addOnNegativeButtonClickListener {

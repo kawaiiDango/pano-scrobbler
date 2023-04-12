@@ -27,6 +27,7 @@ import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ExpandableHeader
 import com.arn.scrobble.ui.FocusChangeListener
@@ -69,6 +70,7 @@ class ScrobblesAdapter(
     private var pendingSubmitAttempted = false
     private var lastPopulateTime = System.currentTimeMillis()
     private val playerDao = PanoDb.db.getScrobbleSourcesDao()
+    private val prefs = MainPrefs(App.context)
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -483,11 +485,12 @@ class ScrobblesAdapter(
                 }
             }
 
-            viewModel.paletteColors.value?.foreground?.let {
-                // todo this still does not fix the colors bug
+            if (prefs.themeTintBackground)
+                viewModel.paletteColors.value?.foreground?.let {
+                    // todo this still does not fix the colors bug
 //                Stuff.log("Color for ${track.name} is $it")
-                binding.recentsTitle.setTextColor(it)
-            }
+                    binding.recentsTitle.setTextColor(it)
+                }
 
             setSelected(bindingAdapterPosition == viewModel.selectedPos, track)
         }

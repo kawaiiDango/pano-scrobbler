@@ -244,6 +244,8 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         binding.chartsSwipeRefresh.setOnRefreshListener {
             loadFirstPage(true)
         }
+        binding.chartsSwipeRefresh.isEnabled = false
+        // todo: actually fix this not loading the network version
 
         binding.chartsCreateCollage.setOnClickListener {
             val arguments = Bundle().apply {

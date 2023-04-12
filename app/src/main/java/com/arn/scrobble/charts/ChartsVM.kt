@@ -89,7 +89,7 @@ class ChartsVM : ViewModel() {
     fun loadListeningActivity(user: UserSerializable) {
         lastListeningActivityJob?.cancel()
         lastListeningActivityJob =
-            viewModelScope.launch(Dispatchers.IO + LFMRequester.ExceptionNotifier(timberLog = false)) {
+            viewModelScope.launch(Dispatchers.IO + LFMRequester.ExceptionNotifier()) {
                 listeningActivity.postValue(
                     Scrobblables.current?.getListeningActivity(
                         selectedPeriod.value ?: return@launch, user

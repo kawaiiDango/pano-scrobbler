@@ -152,6 +152,7 @@ class TrackHistoryAdapter(
 
             if (!imgUrl.isNullOrEmpty()) {
                 binding.recentsImg.load(imgUrl) {
+                    allowHardware(false)
                     placeholder(R.drawable.vd_wave_simple_filled)
                     error(errorDrawable)
                 }
@@ -167,6 +168,7 @@ class TrackHistoryAdapter(
             fun fetchIcon(pkgName: String) {
                 binding.playerIcon.load(PackageName(pkgName)) {
                     scale(Scale.FIT)
+                    allowHardware(false)
                     listener(onSuccess = { _, _ ->
                         binding.playerIcon.contentDescription = pkgName
                     })

@@ -41,7 +41,7 @@ class LoginFlows(private val navController: NavController) {
 
     private fun gnufm() {
         val arguments = LoginFragmentArgs(
-            title = App.context.getString(R.string.gnufm),
+            loginTitle = App.context.getString(R.string.gnufm),
             textFieldLast = App.context.getString(R.string.api_url),
             textCheckbox = App.context.getString(R.string.disable_tls_verify)
         ).toBundle()
@@ -50,7 +50,7 @@ class LoginFlows(private val navController: NavController) {
 
     private fun listenbrainz() {
         val arguments = LoginFragmentArgs(
-            title = App.context.getString(R.string.listenbrainz),
+            loginTitle = App.context.getString(R.string.listenbrainz),
             textFieldLast = App.context.getString(R.string.pref_token_label),
         ).toBundle()
         navController.navigate(R.id.loginFragment, arguments)
@@ -58,7 +58,7 @@ class LoginFlows(private val navController: NavController) {
 
     private fun customListenbrainz() {
         val arguments = LoginFragmentArgs(
-            title = App.context.getString(R.string.custom_listenbrainz),
+            loginTitle = App.context.getString(R.string.custom_listenbrainz),
             textField1 = App.context.getString(R.string.api_url),
             textFieldLast = App.context.getString(R.string.pref_token_label),
             textCheckbox = App.context.getString(R.string.disable_tls_verify)
@@ -68,7 +68,7 @@ class LoginFlows(private val navController: NavController) {
 
     fun acrCloud() {
         val arguments = LoginFragmentArgs(
-            title = App.context.getString(R.string.add_acr_key),
+            loginTitle = App.context.getString(R.string.add_acr_key),
             infoText = App.context.getString(R.string.add_acr_key_info),
             textField1 = App.context.getString(R.string.acr_host),
             textField2 = App.context.getString(R.string.acr_key),

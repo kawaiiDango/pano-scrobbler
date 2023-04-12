@@ -65,7 +65,7 @@ class EditDialogFragment : LoginFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val placeholderTextArgs = LoginFragmentArgs(
-            title = App.context.getString(R.string.edit),
+            loginTitle = App.context.getString(R.string.edit),
             textField1 = App.context.getString(R.string.track),
             textField2 = App.context.getString(R.string.album_optional),
             textFieldLast = App.context.getString(R.string.artist),

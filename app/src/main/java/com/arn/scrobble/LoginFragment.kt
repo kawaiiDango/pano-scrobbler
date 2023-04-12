@@ -68,7 +68,7 @@ open class LoginFragment : DialogFragment() {
             binding.loginTextfield2.hint = it
             binding.loginTextfield2.visibility = View.VISIBLE
         }
-        args.textFieldLast?.let {
+        args.textFieldLast.let {
             binding.loginTextfieldLast.hint = it
             binding.loginTextfieldLast.editText?.setOnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
@@ -172,7 +172,7 @@ open class LoginFragment : DialogFragment() {
 
         var success = false
 
-        when (args.title) {
+        when (args.loginTitle) {
             getString(R.string.listenbrainz) -> {
                 if (tlast.isNotBlank()) {
                     val userAccount = UserAccountTemp(

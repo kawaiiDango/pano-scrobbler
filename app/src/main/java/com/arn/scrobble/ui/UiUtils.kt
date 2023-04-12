@@ -41,7 +41,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
-import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnNextLayout
@@ -49,6 +48,8 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavArgumentBuilder
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -61,7 +62,6 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.result
 import coil.transform.CircleCropTransformation
-import com.arn.scrobble.BasePagerFragment
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -545,37 +545,27 @@ object UiUtils {
     }
 
     fun Fragment.setTitle(str: String?) {
-        if (isDetached || isRemoving || !isResumed)
-            return
+//        if (isDetached || isRemoving || !isResumed)
+//            return
 
         val activity = activity as? MainActivity ?: return
         val title = str ?: " "
-        val f = if (parentFragment is BasePagerFragment)
-            parentFragment!!
-        else
-            this
-
-        if (f.arguments == null)
-            f.arguments = bundleOf(Stuff.ARG_TITLE to title)
-        else
-            f.requireArguments().putString(Stuff.ARG_TITLE, title)
-
         activity.binding.ctl.title = title
-
-//        val bgColor = MaterialColors.getColor(
-//            activity,
-//            android.R.attr.colorBackground,
-//            null
-//        )
-//        activity.binding.ctl.setStatusBarScrimColor(bgColor)
-//        activity.binding.sidebarNav.setBackgroundColor(bgColor)
+        findNavController().currentDestination!!.addArgument(
+            Stuff.ARG_TITLE,
+            NavArgumentBuilder().apply {
+                defaultValue = title
+                nullable = true
+            }.build()
+        )
     }
 
     fun BottomSheetDialogFragment.expandIfNeeded() {
         val bottomSheetView =
             dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         if (view?.isInTouchMode == false || Stuff.hasMouse)
-            BottomSheetBehavior.from(bottomSheetView).state = BottomSheetBehavior.STATE_EXPANDED
+            BottomSheetBehavior.from(bottomSheetView).state =
+                BottomSheetBehavior.STATE_EXPANDED
     }
 
     fun AutoCompleteTextView.getSelectedItemPosition(): Int {

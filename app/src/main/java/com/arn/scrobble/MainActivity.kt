@@ -251,6 +251,10 @@ class MainActivity : AppCompatActivity(),
             binding.appBar.expandTillToolbar()
         }
 
+        destination.arguments[Stuff.ARG_TITLE]?.let {
+            binding.ctl.title = it.defaultValue as String
+        }
+
         mainNotifierViewModel.prevDestinationId = destination.id
     }
 

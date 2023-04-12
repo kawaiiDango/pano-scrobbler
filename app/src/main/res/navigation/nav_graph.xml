@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/myHomePagerFragment"
         android:name="com.arn.scrobble.HomePagerFragment"
-        android:label="{title}">
+        android:label=" ">
         <action
             android:id="@+id/action_homePagerFragment_to_prefFragment"
             app:destination="@id/prefFragment" />
@@ -30,25 +30,17 @@
         <action
             android:id="@+id/action_myHomePagerFragment_to_billingFragment"
             app:destination="@id/billingFragment" />
-        <argument
-            android:name="title"
-            android:defaultValue=" "
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/othersHomePagerFragment"
         android:name="com.arn.scrobble.HomePagerFragment"
-        android:label="{title}">
+        android:label=" ">
         <action
             android:id="@+id/action_homePagerFragment_to_chartsPagerFragment"
             app:destination="@id/chartsPagerFragment" />
         <action
             android:id="@+id/action_homePagerFragment_to_randomFragment"
             app:destination="@id/randomFragment" />
-        <argument
-            android:name="title"
-            android:defaultValue=" "
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/prefFragment"
@@ -128,21 +120,11 @@
     <fragment
         android:id="@+id/chartsPagerFragment"
         android:name="com.arn.scrobble.charts.ChartsPagerFragment"
-        android:label="{title}">
-        <argument
-            android:name="title"
-            android:defaultValue=" "
-            app:argType="string" />
-    </fragment>
+        android:label=" " />
     <fragment
         android:id="@+id/infoPagerFragment"
         android:name="com.arn.scrobble.info.InfoPagerFragment"
-        android:label="{title}">
-        <argument
-            android:name="title"
-            android:defaultValue=" "
-            app:argType="string" />
-    </fragment>
+        android:label=" " />
     <fragment
         android:id="@+id/blockedMetadataFragment"
         android:name="com.arn.scrobble.edits.BlockedMetadataFragment"
@@ -181,13 +163,8 @@
     <fragment
         android:id="@+id/webViewFragment"
         android:name="com.arn.scrobble.WebViewFragment"
-        android:label="{title}"
-        tools:layout="@layout/content_webview">
-        <argument
-            android:name="title"
-            android:defaultValue="Login"
-            app:argType="string" />
-    </fragment>
+        android:label=" "
+        tools:layout="@layout/content_webview" />
     <fragment
         android:id="@+id/testFragment"
         android:name="com.arn.scrobble.TestFragment"
@@ -243,10 +220,10 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.arn.scrobble.LoginFragment"
-        android:label="{title}"
+        android:label="{login_title}"
         tools:layout="@layout/content_login">
         <argument
-            android:name="title"
+            android:name="login_title"
             app:argType="string"
             app:nullable="false" />
         <argument
@@ -356,13 +333,8 @@
     <fragment
         android:id="@+id/trackHistoryFragment"
         android:name="com.arn.scrobble.recents.TrackHistoryFragment"
-        android:label="{title}"
-        tools:layout="@layout/content_track_history">
-        <argument
-            android:name="title"
-            android:defaultValue=" "
-            app:argType="string" />
-    </fragment>
+        android:label=" "
+        tools:layout="@layout/content_track_history" />
     <fragment
         android:id="@+id/trackExtraFragment"
         android:name="com.arn.scrobble.info.TrackExtraFragment"

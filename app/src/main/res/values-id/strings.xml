@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+    <string name="reset">Atur ulang</string>
+    <string name="settings">Konfigurasi</string>
+    <string name="album_art">Sampul album</string>
+    <string name="artist_image">Gambar artis</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Tidak dapat mengurai judul</string>
+    <string name="network_error">Kesalahan jaringan</string>
+    <string name="disable_tls_verify">Abaikan galat TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Abaikan scrobble</string>
     <!--  pro  -->
 </resources>

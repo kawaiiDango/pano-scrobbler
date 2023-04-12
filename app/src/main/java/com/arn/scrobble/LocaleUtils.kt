@@ -38,6 +38,7 @@ object LocaleUtils {
         "hr",
         "ca",
         "el",
+        "id",
     ).toSortedSet()
 
     val showScriptSet = setOf(

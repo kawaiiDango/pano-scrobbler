@@ -10,7 +10,7 @@
 
 [![download][play-store]][play-store-link] [![translate][crowdin]][crowdin-link]
 
-<img src="https://i.imgur.com/hveVQmd.png" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/uZEVKgA.png" alt="friends" width="200"/> <img src="https://i.imgur.com/bvSo8pk.png" alt="charts" width="200"/>
+<img src="https://i.imgur.com/HUgxLlo.png" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/eZAYGBC.png" alt="friends" width="200"/> <img src="https://i.imgur.com/iv2MsJn.png" alt="charts" width="200"/>
 
 ### PC app?
 Pano Scrobbler works on Windows 11 with WSA. It scrobbles from other Android apps.
@@ -20,7 +20,7 @@ Buttons in notifications don't work as expected. This is a WSA bug.
 - No ADs ever
 - Supports LastFM, LibreFM, GNU FM and Listenbrainz
 - Supports phones, TVs, tablets and Android desktops including Windows 11
-- Interactive notification: View track info, love, cancel or block tracks directly from the notification
+- Interactive notification: View track info, edit, love, cancel or block tracks directly from the notification
 - View track, album, artist, album artist and tag details
 - View scrobbles from a specific time such as last year, last month etc.
 - Edit or delete existing scrobbles. Remembers edits

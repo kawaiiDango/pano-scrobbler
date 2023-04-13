@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="other">%1$s件のScrobble</item>
+        <item quantity="other">%1$s回のScrobble</item>
+    </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="other">本日%1$s回</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="other">%1$s人のリスナー</item>
@@ -44,6 +47,9 @@
     </plurals>
     <plurals name="num_friends">
         <item quantity="other">%1$s人のフレンド</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="other">%1$s件が保留中</item>
     </plurals>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
@@ -101,6 +107,8 @@
     <string name="grid_size">グリッドサイズを変更</string>
     <string name="pinch_to_zoom">ピンチ操作で拡大</string>
     <string name="more_info">詳細</string>
+    <string name="learn" comment="(Learn java regex syntax)">正規表現を学ぶ</string>
+    <string name="hide">非表示</string>
     <string name="rank_change" comment="%1= delta change">順位の変更: %s</string>
     <string name="rank_change_no_change">変更なし</string>
     <string name="rank_change_new">前回期間でのScrobbleなし</string>
@@ -198,10 +206,10 @@
     <string name="loved_track">Loveトラック</string>
     <string name="randomize">ランダム表示</string>
     <string name="random_text">おまかせ表示</string>
-    <string name="graph_daily">1日あたりのScrobble件数</string>
-    <string name="graph_weekly">1週間あたりのScrobble件数</string>
-    <string name="graph_monthly">1ヶ月あたりのScrobble件数</string>
-    <string name="graph_yearly">1年あたりのScrobble件数</string>
+    <string name="graph_daily">1日あたりのScrobble回数</string>
+    <string name="graph_weekly">1週間あたりのScrobble回数</string>
+    <string name="graph_monthly">1ヶ月あたりのScrobble回数</string>
+    <string name="graph_yearly">1年あたりのScrobble回数</string>
     <string name="original" comment="Original metadata before editing">元のメタデータ</string>
     <string name="corrected" comment="Corrected metadata after editing">訂正内容</string>
     <string name="tag" comment="last.fm tag">タグ</string>

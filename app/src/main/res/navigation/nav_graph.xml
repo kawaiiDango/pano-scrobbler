@@ -304,6 +304,10 @@
             android:name="nowPlaying"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="hash"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </dialog>
     <dialog
         android:id="@+id/infoFragment"

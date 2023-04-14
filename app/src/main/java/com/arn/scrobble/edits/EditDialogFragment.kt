@@ -1,6 +1,7 @@
 package com.arn.scrobble.edits
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
@@ -64,6 +65,8 @@ class EditDialogFragment : LoginFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        lockScrobble(true)
+
         val placeholderTextArgs = LoginFragmentArgs(
             loginTitle = App.context.getString(R.string.edit),
             textField1 = App.context.getString(R.string.track),
@@ -151,6 +154,11 @@ class EditDialogFragment : LoginFragment() {
             .create()
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        lockScrobble(false)
+    }
+
     override suspend fun validateAsync(): Boolean {
         val track = binding.loginTextfield1.editText!!.text.toString().trim()
         val origTrack = args.track ?: ""
@@ -161,7 +169,6 @@ class EditDialogFragment : LoginFragment() {
         val origArtist = args.artist ?: ""
         val msid = args.msid
         val timeMillis = args.timeMillis
-//        val forceScrobble = binding.loginCheckbox.isChecked
         val fetchAlbumAndAlbumArtist = album.isBlank() && origAlbum.isBlank() && prefs.fetchAlbum
         val rescrobbleRequired = !args.nowPlaying && (fetchAlbumAndAlbumArtist ||
                 (track.equals(origTrack, ignoreCase = true) &&
@@ -261,12 +268,12 @@ class EditDialogFragment : LoginFragment() {
                     }
                 }
             } else {
-//                if (!args.nowPlaying) {
-                // The user might submit the edit after it has been scrobbled, so delete anyways
-                val deleteSucc = lastfmScrobblable.delete(origTrackObj)
-                if (deleteSucc)
-                    CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
-
+                if (!args.nowPlaying) {
+                    // The user might submit the edit after it has been scrobbled, so delete anyways
+                    val deleteSucc = lastfmScrobblable.delete(origTrackObj)
+                    if (deleteSucc)
+                        CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
+                }
                 if (rescrobbleRequired)
                     lastfmScrobblable.scrobble(scrobbleData)
 //                }
@@ -288,8 +295,8 @@ class EditDialogFragment : LoginFragment() {
         Scrobblables.all
             .filter { it !is Lastfm }
             .forEach {
-//                if (!args.nowPlaying)
-                it.delete(origTrackObj)
+                if (!args.nowPlaying)
+                    it.delete(origTrackObj)
                 // ListenBrainz cannot have two scrobbles with the same timestamp and delete is not immediate
                 // so add 1 sec
                 if (it is ListenBrainz)
@@ -383,13 +390,29 @@ class EditDialogFragment : LoginFragment() {
                 )
             }
             if (args.nowPlaying) {
+                lockScrobble(false)
                 context?.sendBroadcast(
-                    Intent(NLService.iCANCEL).setPackage(requireContext().packageName),
+                    Intent(NLService.iCANCEL)
+                        .putExtra(NLService.B_HASH, args.hash)
+                        .setPackage(requireContext().packageName),
                     NLService.BROADCAST_PERMISSION
                 )
             }
         }
 
         return success
+    }
+
+    private fun lockScrobble(lock: Boolean) {
+        if (args.hash == -1) return
+
+        // do not scrobble until the dialog is dismissed
+
+        val intent = Intent(NLService.iSCROBBLE_SUBMIT_LOCK_S)
+            .setPackage(requireContext().packageName)
+            .putExtra(NLService.B_LOCKED, lock)
+            .putExtra(NLService.B_HASH, args.hash)
+
+        requireContext().sendBroadcast(intent)
     }
 }

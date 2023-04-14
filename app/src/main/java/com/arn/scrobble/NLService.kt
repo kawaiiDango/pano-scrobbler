@@ -153,6 +153,7 @@ class NLService : NotificationListenerService() {
             addAction(iOTHER_ERR_S)
             addAction(iMETA_UPDATE_S)
             addAction(iBLOCK_ACTION_S)
+            addAction(iSCROBBLE_SUBMIT_LOCK_S)
         }
 
         ContextCompat.registerReceiver(
@@ -515,7 +516,8 @@ class NLService : NotificationListenerService() {
             artist = trackInfo.artist,
             albumArtist = trackInfo.albumArtist,
             timeMillis = trackInfo.playStartTime,
-            nowPlaying = nowPlaying
+            nowPlaying = nowPlaying,
+            hash = trackInfo.hash
         ).toBundle()
 
         val editPi =
@@ -599,7 +601,8 @@ class NLService : NotificationListenerService() {
             artist = trackInfo.artist,
             albumArtist = trackInfo.albumArtist,
             timeMillis = trackInfo.playStartTime,
-            nowPlaying = true
+            nowPlaying = true,
+            hash = trackInfo.hash
         ).toBundle()
 
         val editPi =
@@ -944,6 +947,19 @@ class NLService : NotificationListenerService() {
                 iTHEME_CHANGED_S -> {
                     notiColor = ColorPatchUtils.getNotiColor(applicationContext)
                 }
+
+                iSCROBBLE_SUBMIT_LOCK_S -> {
+                    val locked = intent.getBooleanExtra(B_LOCKED, false)
+                    val hash = intent.getIntExtra(B_HASH, -1)
+                    if (hash == -1) return
+
+                    if (locked) {
+                        scrobbleHandler.lockedHash = hash
+                    } else {
+                        scrobbleHandler.lockedHash = null
+                    }
+                }
+
             }
         }
     }
@@ -962,6 +978,9 @@ class NLService : NotificationListenerService() {
             (a.scrobbleElapsedRealtime - b.scrobbleElapsedRealtime).toInt()
         }
 
+        // delays scrobbling this hash until it becomes null again
+        var lockedHash: Int? = null
+
         constructor() : super()
         constructor(looper: Looper) : super(looper)
 
@@ -974,7 +993,9 @@ class NLService : NotificationListenerService() {
         // required because uptimeMillis pauses / slows down in deep sleep
         override fun handleMessage(m: Message) {
             val queuedMessage = tracksCopyPQ.peek()
-            if (queuedMessage != null && queuedMessage.scrobbleElapsedRealtime <= SystemClock.elapsedRealtime()) {
+            if (queuedMessage != null && queuedMessage.hash != lockedHash &&
+                queuedMessage.scrobbleElapsedRealtime <= SystemClock.elapsedRealtime()
+            ) {
                 tracksCopyPQ.remove(queuedMessage)
                 submitScrobble(queuedMessage)
             }
@@ -1085,6 +1106,8 @@ class NLService : NotificationListenerService() {
         }
 
         fun remove(hash: Int, removeNoti: Boolean = true) {
+            if (hash == lockedHash) return
+            
             Stuff.log("$hash cancelled")
             tracksCopyPQ.removeAll { it.hash == hash }
             sessListener?.findTrackInfoByHash(hash)?.isPlaying = false
@@ -1112,6 +1135,7 @@ class NLService : NotificationListenerService() {
         const val iBAD_META_S = "com.arn.scrobble.BAD_META"
         const val iTHEME_CHANGED_S = "com.arn.scrobble.THEME_CHANGED"
         const val iBLOCK_ACTION_S = "com.arn.scrobble.BLOCK_ACTION"
+        const val iSCROBBLE_SUBMIT_LOCK_S = "com.arn.scrobble.SCROBBLE_SUBMIT_LOCK"
 
         const val BROADCAST_PERMISSION = "com.arn.scrobble.MY_AWESOME_PERMISSION"
 
@@ -1123,5 +1147,7 @@ class NLService : NotificationListenerService() {
         const val B_HASH = "hash"
         const val B_PACKAGE_NAME = "package_name"
         const val B_IGNORED_ARTIST = "ignored_artist"
+        const val B_LOCKED = "locked"
+
     }
 }

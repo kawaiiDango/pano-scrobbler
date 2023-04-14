@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.toast
 import java.io.File
 
@@ -62,7 +61,7 @@ object BugReportUtils {
             text += "Last exit reason: $lastExitInfo\n"
         text += "Active Sessions: $activeSessions\n"
 
-        text += if (MainPrefs(App.context).proStatus)
+        text += if (App.prefs.proStatus)
             "~~~~~~~~~~~~~~~~~~~~~~~~"
         else
             "------------------------"

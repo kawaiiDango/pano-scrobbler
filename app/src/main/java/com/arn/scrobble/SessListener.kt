@@ -28,7 +28,7 @@ class SessListener(
 ) : OnActiveSessionsChangedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val prefs by lazy { MainPrefs(App.context) }
+    private val prefs = App.prefs
     private val controllersMap =
         mutableMapOf<MediaSession.Token, Pair<MediaController, ControllerCallback>>()
     private var controllers: List<MediaController>? = null

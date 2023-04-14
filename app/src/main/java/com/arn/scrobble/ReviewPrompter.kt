@@ -1,13 +1,12 @@
 package com.arn.scrobble
 
 import android.app.Activity
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.review.testing.FakeReviewManager
 
 class ReviewPrompter(private val activity: Activity) {
-    private val prefs by lazy { MainPrefs(activity) }
+    private val prefs = App.prefs
 
     fun showIfNeeded(): Boolean {
         if (prefs.lastReviewPromptTime == null) {

@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit
 class DigestJob : JobService() {
 
     private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
-    private val prefs by lazy { MainPrefs(this) }
+    private val prefs = App.prefs
     private val cal by lazy { Calendar.getInstance() }
 
     override fun onStartJob(jp: JobParameters): Boolean {
@@ -219,7 +219,7 @@ class DigestJob : JobService() {
         }
 
         fun scheduleAlarms(context: Context) {
-            val prefs = MainPrefs(context)
+            val prefs = App.prefs
 
             if (prefs.digestSeconds == null)
                 prefs.digestSeconds = (60..3600).random()
@@ -268,7 +268,7 @@ class DigestJob : JobService() {
             alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
 
 
-            val dailyTestDigests = true
+            val dailyTestDigests = false
             if (BuildConfig.DEBUG && dailyTestDigests) {
                 val dailyIntent = PendingIntent.getBroadcast(
                     context, 22,

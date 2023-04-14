@@ -7,7 +7,6 @@ import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
 import com.arn.scrobble.db.CachedArtistsDao.Companion.deltaUpdate
 import com.arn.scrobble.db.CachedTrack.Companion.toCachedTrack
-import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.Track
 
 
@@ -95,7 +94,7 @@ interface CachedTracksDao {
             deltaCount: Int,
             mode: DirtyUpdate = DirtyUpdate.CLEAN
         ) {
-            val prefs = MainPrefs(App.context)
+            val prefs = App.prefs
 
             val maxIndexedScrobbleTime = prefs.lastMaxIndexedScrobbleTime ?: -1
             val wasIndexed =

@@ -9,11 +9,11 @@ import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.ProductType
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
+import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Tokens
-import com.arn.scrobble.pref.MainPrefs
 import timber.log.Timber
 import java.util.*
 import kotlin.math.min
@@ -28,7 +28,7 @@ class BillingRepository private constructor(private val application: Application
     private var reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
 
     private lateinit var playStoreBillingClient: BillingClient
-    private val prefs by lazy { MainPrefs(application) }
+    private val prefs = App.prefs
     val proStatusLd by lazy { MutableLiveData(prefs.proStatus) }
     val proPendingSinceLd by lazy { MutableLiveData(0L) }
     val proProductDetailsLd by lazy { MutableLiveData<ProductDetails>() }
@@ -65,10 +65,12 @@ class BillingRepository private constructor(private val application: Application
                 fetchProductDetails(Tokens.PRO_PRODUCT_ID)
                 queryPurchasesAsync()
             }
+
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
                 Timber.tag(LOG_TAG).d("onBillingSetupFinished BILLING_UNAVAILABLE")
                 //Some apps may choose to make decisions based on this knowledge.
             }
+
             else -> {
                 //do nothing. Someone else will connect it through retry policy.
                 //May choose to send to server though
@@ -185,11 +187,13 @@ class BillingRepository private constructor(private val application: Application
                     BillingClient.BillingResponseCode.OK -> {
                         disburseNonConsumableEntitlement(purchase)
                     }
+
                     BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
                         if (Tokens.PRO_PRODUCT_ID in purchase.products) {
                             revokePro()
                         }
                     }
+
                     else -> {
                         Timber.tag(LOG_TAG)
                             .d("acknowledgeNonConsumablePurchasesAsync response is ${billingResult.debugMessage}")
@@ -263,6 +267,7 @@ class BillingRepository private constructor(private val application: Application
                         proProductDetailsLd.postValue(it)
                     }
                 }
+
                 else -> {
                     Timber.tag(LOG_TAG).e(billingResult.debugMessage)
                 }
@@ -313,13 +318,16 @@ class BillingRepository private constructor(private val application: Application
                 // will handle server verification, consumables, and updating the local cache
                 purchases?.apply { processPurchases(this.toSet()) }
             }
+
             BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
                 // item already owned? call queryPurchasesAsync to verify and process all such items
                 queryPurchasesAsync()
             }
+
             BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> {
                 retryBillingConnectionWithExponentialBackoff()
             }
+
             else -> {
                 Timber.tag(LOG_TAG).i(billingResult.debugMessage)
             }

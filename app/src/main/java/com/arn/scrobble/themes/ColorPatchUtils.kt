@@ -5,10 +5,10 @@ import android.content.Intent
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatDelegate
+import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.getOrDefaultKey
-import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.color.DynamicColors
 
 object ColorPatchUtils {
@@ -18,7 +18,7 @@ object ColorPatchUtils {
 
     // before Activity.onCreate
     fun setDarkMode(context: Context, proStatus: Boolean) {
-        val prefs = MainPrefs(context)
+        val prefs = App.prefs
 
         var dayNightConstant = prefs.themeDayNight
         if (dayNightConstant !in arrayOf(
@@ -34,7 +34,7 @@ object ColorPatchUtils {
 
     // after Activity.onCreate
     fun setTheme(context: Context, proStatus: Boolean) {
-        val prefs = MainPrefs(context)
+        val prefs = App.prefs
 
 //        var dayNightConstant = prefs.themeDayNight
 //        if (dayNightConstant !in arrayOf(
@@ -100,7 +100,7 @@ object ColorPatchUtils {
     }
 
     fun getNotiColor(context: Context): Int? {
-        val prefs = MainPrefs(context)
+        val prefs = App.prefs
 
         if (prefs.proStatus && prefs.themeDynamic && DynamicColors.isDynamicColorAvailable())
             return null

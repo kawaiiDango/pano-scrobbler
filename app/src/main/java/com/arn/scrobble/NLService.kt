@@ -64,7 +64,7 @@ import kotlin.math.min
 
 
 class NLService : NotificationListenerService() {
-    private val prefs by lazy { MainPrefs(applicationContext) }
+    private val prefs = App.prefs
     private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
     private var sessListener: SessListener? = null
     private lateinit var scrobbleHandler: ScrobbleHandler

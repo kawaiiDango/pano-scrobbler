@@ -28,9 +28,8 @@ import java.io.IOException
 
 class Updater(
     private val context: Context,
-    private val prefs: MainPrefs,
 ) {
-
+    private val prefs = App.prefs
     private val json = Json { ignoreUnknownKeys = true }
 
     // check if play store exists

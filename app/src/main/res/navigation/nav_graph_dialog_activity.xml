@@ -70,4 +70,9 @@
             app:popUpTo="@id/emptyDialogFragment"
             app:popUpToInclusive="true" />
     </dialog>
+    <dialog
+        android:id="@+id/userTagsFragment"
+        android:name="com.arn.scrobble.info.UserTagsFragment"
+        android:label="UserTagsFragment"
+        tools:layout="@layout/dialog_user_tags" />
 </navigation>

@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -22,7 +23,6 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.equalsExt
 import com.arn.scrobble.databinding.ContentTrackHistoryBinding
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
@@ -127,7 +127,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
             adapter.editTrack(it)
         }
 
-        val prefs = MainPrefs(requireContext())
+        val prefs = App.prefs
         val isShowingPlayers =
             mainNotifierViewModel.userIsSelf && prefs.proStatus && prefs.showScrobbleSources
 

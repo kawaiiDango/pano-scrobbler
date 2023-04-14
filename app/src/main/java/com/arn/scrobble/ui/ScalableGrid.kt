@@ -5,10 +5,10 @@ import android.os.Build
 import android.view.ScaleGestureDetector
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.wrappedGet
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.toast
 import kotlin.math.roundToInt
 
@@ -18,7 +18,7 @@ class ScalableGrid(
 
     private val context get() = recyclerView.context
 
-    private val prefs by lazy { MainPrefs(context) }
+    private val prefs = App.prefs
 
     private val numColumnsList = mutableListOf(0)
     private var defaultNumCols = 2

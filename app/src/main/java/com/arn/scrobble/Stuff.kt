@@ -480,7 +480,7 @@ object Stuff {
         if (artist.isEmpty() && track.isEmpty())
             return
 
-        val prefs = MainPrefs(App.context)
+        val prefs = App.prefs
 
         if (false && isWindows11 && prefs.songSearchUrl.isNotEmpty()) { // open song urls in windows browser for me
             val searchUrl = prefs.songSearchUrl
@@ -529,7 +529,7 @@ object Stuff {
             browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             // prevent infinite loop
-            if (MainPrefs(App.context).lastfmLinksEnabled) {
+            if (App.prefs.lastfmLinksEnabled) {
                 browserIntent.`package` = getDefaultBrowserPackage(App.context.packageManager)
             }
 

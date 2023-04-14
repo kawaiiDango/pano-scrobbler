@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.App
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainDialogActivity
 import com.arn.scrobble.NLService
@@ -19,7 +20,6 @@ import com.arn.scrobble.databinding.TextInputEditBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.pref.MainPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +30,7 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DialogBlockedMetadataBinding.inflate(layoutInflater)
-        val prefs = MainPrefs(requireContext())
+        val prefs = App.prefs
 
         val blockedMetadata =
             arguments?.getSingle<BlockedMetadata>()?.copy()

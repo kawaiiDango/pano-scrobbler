@@ -23,6 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.ListenAlongService
 import com.arn.scrobble.MainActivity
@@ -32,7 +33,6 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentFriendsBinding
 import com.arn.scrobble.databinding.GridItemFriendBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
@@ -66,7 +66,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private val viewModel by viewModels<FriendsVM>()
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var lastRefreshTime = System.currentTimeMillis()
-    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val prefs = App.prefs
     private var _binding: ContentFriendsBinding? = null
     private var fabData: FabData? = null
     private val binding

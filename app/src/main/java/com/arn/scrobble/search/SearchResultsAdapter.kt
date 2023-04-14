@@ -9,11 +9,11 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.databinding.ListItemRecentsBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.ExpandableHeader
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.MusicEntryItemClickListener
@@ -157,7 +157,7 @@ class SearchResultsAdapter(
             lastIndexedInfo += "\n" + context.getString(
                 R.string.last_indexed,
                 DateFormat.getDateInstance()
-                    .format(MainPrefs(context).lastMaxIndexTime ?: 0)
+                    .format(App.prefs.lastMaxIndexTime ?: 0)
             )
             data.addSection(
                 SectionWithHeader(
@@ -262,7 +262,7 @@ class SearchResultsAdapter(
                 }
 
                 binding.headerAction.setOnClickListener {
-                    val prefs = MainPrefs(binding.root.context)
+                    val prefs = App.prefs
                     val popup = PopupMenu(binding.headerAction.context, binding.headerAction)
                     popup.inflate(R.menu.indexing_menu)
 

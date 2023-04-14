@@ -3,11 +3,11 @@ package com.arn.scrobble.friends
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.App
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.recents.PaletteColors
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.Scrobblables
@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
 class FriendsVM(app: Application) : AndroidViewModel(app) {
     val friendsFiltered = mutableListOf<UserSerializable>()
     private val friendsOrig = mutableListOf<UserSerializable>()
-    private val prefs by lazy { MainPrefs(getApplication()) }
+    private val prefs = App.prefs
     val pinnedFriends = mutableListOf<UserSerializable>()
     private val pinnedUsernames = hashSetOf<String>()
     val lastPlayedTracksMap = mutableMapOf<String, Track?>()

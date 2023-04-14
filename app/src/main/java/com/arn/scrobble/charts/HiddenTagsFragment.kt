@@ -11,9 +11,9 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogUserTagsBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -23,7 +23,7 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     private var _binding: DialogUserTagsBinding? = null
     private val binding
         get() = _binding!!
-    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val prefs = App.prefs
 
     private val PREV_TAGS = "prev_tags"
 

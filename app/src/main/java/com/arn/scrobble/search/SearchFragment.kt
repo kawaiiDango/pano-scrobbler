@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.toBundle
@@ -39,12 +40,12 @@ class SearchFragment : Fragment() {
     private val viewModel by viewModels<SearchVM>()
     private val historyPref by lazy {
         HistoryPref(
-            MainPrefs(requireContext()).sharedPreferences,
+            App.prefs.sharedPreferences,
             MainPrefs.PREF_ACTIVITY_SEARCH_HISTORY,
             20
         )
     }
-    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val prefs = App.prefs
     private var _binding: ContentSearchBinding? = null
     private val binding
         get() = _binding!!

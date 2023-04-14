@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pending.PendingScrService
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.FabData
 import com.hadilq.liveevent.LiveEvent
@@ -19,7 +18,7 @@ import kotlinx.coroutines.withContext
 
 class MainNotifierViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val prefs = MainPrefs(application)
+    private val prefs = App.prefs
     var prevDestinationId: Int? = null
     private var lastDrawerDataRefreshTime = 0L
 
@@ -39,6 +38,11 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     lateinit var currentUser: UserSerializable
 
     private var prevDrawerUser: UserSerializable? = null
+
+    fun initializeCurrentUser(user: UserSerializable) {
+        if (!::currentUser.isInitialized)
+            currentUser = user
+    }
 
     fun loadCurrentUserDrawerData() {
         if (

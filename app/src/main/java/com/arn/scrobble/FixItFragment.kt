@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.arn.scrobble.databinding.DialogFixItBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -45,7 +44,7 @@ class FixItFragment : BottomSheetDialogFragment() {
         binding.fixItDkmaAction.setOnClickListener {
             Stuff.openInBrowser("https://dontkillmyapp.com")
         }
-        val prefs = MainPrefs(requireContext())
+        val prefs = App.prefs
         if (!prefs.notiPersistent) {
             binding.fixItPersistentNotiLayout.visibility = View.VISIBLE
             binding.fixItPersistentNotiAction.setOnClickListener { button ->

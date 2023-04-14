@@ -29,7 +29,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
@@ -38,11 +37,11 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.ForceLogException
 import com.arn.scrobble.LocaleUtils
 import com.arn.scrobble.LocaleUtils.setLocaleCompat
-import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -82,8 +81,7 @@ class PrefFragment : PreferenceFragmentCompat() {
     private lateinit var exportRequest: ActivityResultLauncher<Intent>
     private lateinit var exportPrivateDataRequest: ActivityResultLauncher<Intent>
     private lateinit var importRequest: ActivityResultLauncher<Intent>
-    private val prefs by lazy { MainPrefs(requireContext()) }
-    private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val prefs = App.prefs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

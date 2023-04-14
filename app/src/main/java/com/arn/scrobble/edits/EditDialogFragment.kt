@@ -413,6 +413,6 @@ class EditDialogFragment : LoginFragment() {
             .putExtra(NLService.B_LOCKED, lock)
             .putExtra(NLService.B_HASH, args.hash)
 
-        requireContext().sendBroadcast(intent)
+        requireContext().sendBroadcast(intent, NLService.BROADCAST_PERMISSION)
     }
 }

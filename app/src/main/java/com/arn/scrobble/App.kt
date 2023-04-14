@@ -51,7 +51,6 @@ class App : Application(), ImageLoaderFactory {
         Timber.plant(Timber.DebugTree())
 
         // migrate prefs
-        val prefs = MainPrefs(this)
         MigratePrefs.migrate(prefs)
         Scrobblables.updateScrobblables()
 
@@ -182,6 +181,6 @@ class App : Application(), ImageLoaderFactory {
     companion object {
         // not a leak
         lateinit var context: Context
+        val prefs by lazy { MainPrefs(context) }
     }
-
 }

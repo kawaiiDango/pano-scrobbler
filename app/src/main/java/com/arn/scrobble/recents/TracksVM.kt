@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.App
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.scrobbleable.Scrobblables
@@ -94,7 +93,7 @@ class TracksVM : ViewModel() {
                     Scrobblables.current is Lastfm
                 ) {
                     val firstTrack = pr.pageResults?.find { it.playedWhen != null }
-                    val indexedScrobbleTime = MainPrefs(App.context).lastMaxIndexedScrobbleTime
+                    val indexedScrobbleTime = App.prefs.lastMaxIndexedScrobbleTime
                     val hasPendingScrobbles =
                         pendingScrobblesLd.value!!.isNotEmpty() || pendingLovesLd.value!!.isNotEmpty()
                     if (firstTrack != null &&

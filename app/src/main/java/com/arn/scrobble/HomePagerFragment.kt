@@ -3,12 +3,11 @@ package com.arn.scrobble
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
-import com.arn.scrobble.pref.MainPrefs
 
 
 class HomePagerFragment : BasePagerFragment() {
 
-    val prefs by lazy { MainPrefs(requireContext()) }
+    val prefs = App.prefs
     override val optionsMenuRes = R.menu.nav_menu
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

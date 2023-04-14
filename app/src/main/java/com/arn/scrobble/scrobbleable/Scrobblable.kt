@@ -7,7 +7,6 @@ import com.arn.scrobble.R
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.Caller
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.PaginatedResult
@@ -77,7 +76,7 @@ object Scrobblables {
     val all = mutableListOf<Scrobblable>()
 
     fun updateScrobblables() {
-        val prefs = MainPrefs(App.context)
+        val prefs = App.prefs
         synchronized(all) {
             all.clear()
             all.addAll(
@@ -101,7 +100,7 @@ object Scrobblables {
 
     val current
         get() =
-            all.getOrNull(MainPrefs(App.context).currentAccountIdx)
+            all.getOrNull(App.prefs.currentAccountIdx)
 
     val currentScrobblableUser
         get() =
@@ -110,7 +109,7 @@ object Scrobblables {
     fun setCurrent(userAccount: UserAccountSerializable) {
         val idx = all.indexOfFirst { it.userAccount == userAccount }
         if (idx != -1) {
-            MainPrefs(App.context).currentAccountIdx = idx
+            App.prefs.currentAccountIdx = idx
         }
     }
 
@@ -120,7 +119,7 @@ object Scrobblables {
         all.filter { it.userAccount.type == type }.ifEmpty { null }
 
     fun deleteAllByType(type: AccountType) {
-        val prefs = MainPrefs(App.context)
+        val prefs = App.prefs
         prefs.scrobbleAccounts =
             prefs.scrobbleAccounts.toMutableList().apply { removeAll { it.type == type } }
         updateScrobblables()
@@ -131,7 +130,7 @@ object Scrobblables {
     }
 
     fun delete(userAccount: UserAccountSerializable) {
-        val prefs = MainPrefs(App.context)
+        val prefs = App.prefs
         prefs.scrobbleAccounts =
             prefs.scrobbleAccounts.toMutableList().apply { removeAll { it == userAccount } }
         updateScrobblables()
@@ -142,7 +141,7 @@ object Scrobblables {
     }
 
     fun add(userAccount: UserAccountSerializable) {
-        val prefs = MainPrefs(App.context)
+        val prefs = App.prefs
         prefs.scrobbleAccounts += userAccount
         updateScrobblables()
     }

@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -27,7 +28,7 @@ import com.google.android.material.transition.MaterialSharedAxis
  * Created by arn on 05/09/2017.
  */
 class AppListFragment : Fragment() {
-    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val prefs = App.prefs
     private val viewModel by viewModels<AppListVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
     private var _binding: ContentAppListBinding? = null

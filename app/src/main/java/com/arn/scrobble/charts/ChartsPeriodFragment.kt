@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -18,7 +19,6 @@ import com.arn.scrobble.Stuff.lastOrNull
 import com.arn.scrobble.Stuff.toBimap
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.ListenBrainz
@@ -42,7 +42,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     protected val activityViewModel by activityViewModels<MainNotifierViewModel>()
 
 
-    protected val prefs by lazy { MainPrefs(requireContext()) }
+    protected val prefs = App.prefs
 
     abstract fun loadFirstPage(networkOnly: Boolean = false)
 

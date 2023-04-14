@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -18,7 +19,6 @@ import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentRegexEditBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
@@ -35,7 +35,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         get() = _binding!!
     private val viewModel by viewModels<RegexEditsVM>()
     private lateinit var adapter: RegexEditsAdapter
-    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val prefs = App.prefs
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
 
     override fun onCreateView(

@@ -121,7 +121,7 @@ class ImExporter : Closeable {
 
                     name("settings").beginObject()
 
-                    MainPrefs(context).sharedPreferences.all.forEach { (prefKey, prefValue) ->
+                    App.prefs.sharedPreferences.all.forEach { (prefKey, prefValue) ->
                         if (prefValue == null || prefKey !in prefsToConsider)
                             return@forEach
 
@@ -291,7 +291,7 @@ class ImExporter : Closeable {
                                 continue
                             }
 
-                            val prefs = MainPrefs(context).sharedPreferences.edit()
+                            val prefs = App.prefs.sharedPreferences.edit()
                             val settingsNamesInJson = mutableSetOf<String>()
                             beginObject()
                             while (hasNext()) {

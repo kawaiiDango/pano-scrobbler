@@ -7,7 +7,6 @@ import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.Caller
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Library
@@ -178,7 +177,7 @@ open class GnuFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount
 
         val user = User.getInfo(username, session)
         val isSelf = username == userAccount.user.name
-        val prefs = MainPrefs(App.context)
+        val prefs = App.prefs
 
         val cal = Calendar.getInstance()
         cal.setMidnight()

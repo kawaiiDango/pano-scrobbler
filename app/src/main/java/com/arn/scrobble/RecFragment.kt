@@ -26,7 +26,6 @@ import com.acrcloud.rec.ACRCloudResult
 import com.acrcloud.rec.IACRCloudListener
 import com.acrcloud.rec.IACRCloudRadioMetadataListener
 import com.arn.scrobble.databinding.ContentRecBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.LoginFlows
 import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.setTextAndAnimate
@@ -53,7 +52,7 @@ class RecFragment : Fragment(),
     private var fadeAnimator: ObjectAnimator? = null
     private var progressAnimator: ObjectAnimator? = null
     private val DURATION = 10000L
-    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val prefs = App.prefs
     private lateinit var micPermRequest: ActivityResultLauncher<String>
     private var _binding: ContentRecBinding? = null
     private val binding

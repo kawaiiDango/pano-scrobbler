@@ -28,6 +28,8 @@ import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -44,6 +46,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
     private val adapter by lazy { SimpleEditsAdapter(viewModel, this) }
     private val viewModel by viewModels<SimpleEditsVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private var lastSearchJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -113,8 +116,11 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
     private fun update(simpleEdits: List<SimpleEdit>?) {
         simpleEdits ?: return
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        lastSearchJob?.cancel()
+        lastSearchJob=viewLifecycleOwner.lifecycleScope.launch {
             mutex.withLock {
+                delay(300)
+
                 val oldList = viewModel.edits.toList()
                 val searchTerm = binding.searchEdittext.text?.trim()?.toString()?.lowercase()
 

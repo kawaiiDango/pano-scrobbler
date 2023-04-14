@@ -22,6 +22,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import coil.imageLoader
 import coil.request.ImageRequest
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
@@ -33,7 +34,6 @@ import com.arn.scrobble.databinding.DialogCollageGeneratorBinding
 import com.arn.scrobble.databinding.FooterCollageBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.arn.scrobble.ui.UiUtils.getSelectedItemPosition
@@ -60,7 +60,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
     private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private val timePeriod get() = requireArguments().getSingle<TimePeriod>()!!
-    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val prefs = App.prefs
     private lateinit var saveBySafRequest: ActivityResultLauncher<Intent>
     private val minSize = 3
     private val maxSize = 6

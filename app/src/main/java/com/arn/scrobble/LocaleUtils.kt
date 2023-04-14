@@ -11,7 +11,6 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
-import com.arn.scrobble.pref.MainPrefs
 import java.lang.ref.WeakReference
 import java.util.Locale
 
@@ -49,7 +48,7 @@ object LocaleUtils {
 
     fun Context.setLocaleCompat(force: Boolean = false): Context {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || force) {
-            val prefs = MainPrefs(this)
+            val prefs = App.prefs
             var lang = prefs.locale
             val configuration = Configuration(resources.configuration)
 

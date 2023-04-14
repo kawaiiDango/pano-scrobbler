@@ -18,14 +18,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ButtonStepperBinding
 import com.arn.scrobble.databinding.ButtonStepperForLoginBinding
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.pref.AppListFragment
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.MigratePrefs
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.LoginFlows
@@ -42,7 +41,7 @@ import kotlinx.coroutines.launch
 class OnboardingSteps(private val fragment: OnboardingFragment) {
 
     private val context = fragment.requireContext()
-    private val prefs = MainPrefs(context)
+    private val prefs = App.prefs
     private val steps = mutableListOf<OnboardingStep>()
 
     val stepsList get() = steps as List<OnboardingStep>

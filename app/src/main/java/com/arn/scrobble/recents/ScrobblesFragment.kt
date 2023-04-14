@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import coil.load
 import coil.memory.MemoryCache
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainActivity
@@ -50,7 +51,6 @@ import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
@@ -86,7 +86,7 @@ import kotlin.math.max
 
 open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.SetHeroTrigger {
     private lateinit var adapter: ScrobblesAdapter
-    private val prefs by lazy { MainPrefs(requireContext()) }
+    private val prefs = App.prefs
     private var timedRefreshJob: Job? = null
     private lateinit var coordinatorBinding: ContentMainBinding
     private var _binding: ContentScrobblesBinding? = null

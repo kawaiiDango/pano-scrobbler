@@ -15,7 +15,6 @@ import androidx.navigation.fragment.navArgs
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentLoginBinding
 import com.arn.scrobble.friends.UserAccountTemp
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
@@ -33,7 +32,7 @@ import kotlinx.coroutines.withContext
  * Created by arn on 06/09/2017.
  */
 open class LoginFragment : DialogFragment() {
-    protected val prefs by lazy { MainPrefs(requireContext()) }
+    protected val prefs = App.prefs
     protected open val checksLogin = true
     private var _binding: ContentLoginBinding? = null
     protected val binding

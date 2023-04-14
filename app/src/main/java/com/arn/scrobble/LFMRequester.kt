@@ -34,7 +34,6 @@ import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
 import com.arn.scrobble.pending.PendingScrJob
 import com.arn.scrobble.pref.HistoryPref
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.GnuFm
 import com.arn.scrobble.scrobbleable.Scrobblable
@@ -95,7 +94,7 @@ class LFMRequester(
     private val errorLiveData: MutableLiveData<Throwable>? = null,
 ) {
     private val context = App.context
-    private val prefs by lazy { MainPrefs(context) }
+    private val prefs = App.prefs
     private lateinit var job: Job
     private var launchExecOnSet = true
 

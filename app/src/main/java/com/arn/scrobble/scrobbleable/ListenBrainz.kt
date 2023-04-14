@@ -13,7 +13,6 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.CacheInterceptor
@@ -411,7 +410,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
         val dd = DrawerData(totalCount)
         if (isSelf)
-            MainPrefs(App.context).drawerDataCached = dd
+            App.prefs.drawerDataCached = dd
 
         return dd
     }

@@ -1,7 +1,6 @@
 package com.arn.scrobble
 
 import com.arn.scrobble.Stuff.similarity
-import com.arn.scrobble.pref.MainPrefs
 import de.umass.lastfm.CacheInterceptor
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
@@ -37,7 +36,7 @@ import kotlin.collections.set
 import kotlin.coroutines.cancellation.CancellationException
 
 object SpotifyRequester {
-    private val prefs by lazy { MainPrefs(App.context) }
+    private val prefs = App.prefs
     private val authMutex by lazy { Mutex() }
     private val jsonSerializer by lazy { Json { ignoreUnknownKeys = true } }
     private val spotifyClient: HttpClient by lazy {

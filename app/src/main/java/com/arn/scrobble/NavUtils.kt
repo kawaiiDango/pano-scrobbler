@@ -19,7 +19,6 @@ import coil.load
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.HeaderNavBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.InitialsDrawable
@@ -124,7 +123,7 @@ object NavUtils {
             val currentAccount = Scrobblables.current?.userAccount ?: return@setOnClickListener
             val currentUser = mainNotifierViewModel.currentUser
 
-            val prefs = MainPrefs(App.context)
+            val prefs = App.prefs
             val popup = PopupMenu(headerNavBinding.root.context, anchor)
 
             popup.menu.add(1, -2, 0, R.string.profile)

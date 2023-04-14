@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.databinding.DialogUserTagsBinding
@@ -32,7 +33,7 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val viewModel by viewModels<UserTagsVM>()
     private val historyPref by lazy {
         HistoryPref(
-            MainPrefs(requireContext()).sharedPreferences,
+            App.prefs.sharedPreferences,
             MainPrefs.PREF_ACTIVITY_TAG_HISTORY,
             20
         )

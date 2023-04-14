@@ -35,7 +35,6 @@ import com.arn.scrobble.LocaleUtils.setLocaleCompat
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
-import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils
@@ -54,7 +53,7 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity(),
     NavController.OnDestinationChangedListener {
 
-    private val prefs by lazy { MainPrefs(this) }
+    private val prefs = App.prefs
     lateinit var binding: ContentMainBinding
     private val billingViewModel by viewModels<BillingViewModel>()
     private val mainNotifierViewModel by viewModels<MainNotifierViewModel>()
@@ -141,13 +140,11 @@ class MainActivity : AppCompatActivity(),
         navController.navInflater.inflate(R.navigation.nav_graph).let {
             val startArguments = bundleOf(Stuff.ARG_TAB to prefs.lastHomePagerTab)
 
-            if (savedInstanceState == null) {
-                if (Stuff.isLoggedIn()) {
-                    canShowNotices = true
-                    mainNotifierViewModel.currentUser = Scrobblables.currentScrobblableUser!!
-                } else {
-                    it.setStartDestination(R.id.onboardingFragment)
-                }
+            if (Stuff.isLoggedIn()) {
+                canShowNotices = true
+                mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
+            } else {
+                it.setStartDestination(R.id.onboardingFragment)
             }
             navController.setGraph(it, startArguments)
         }
@@ -289,7 +286,7 @@ class MainActivity : AppCompatActivity(),
                 .focusOnTv()
                 .show()
         } else
-            Updater(this, prefs).withSnackbar()
+            Updater(this).withSnackbar()
     }
 
     override fun onNewIntent(intent: Intent?) {

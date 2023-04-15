@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="other">%1$s件のScrobble</item>
+        <item quantity="other">%1$s回のScrobble</item>
+    </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="other">本日%1$s回</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="other">%1$s人のリスナー</item>
@@ -44,6 +47,9 @@
     </plurals>
     <plurals name="num_friends">
         <item quantity="other">%1$s人のフレンド</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="other">%1$s件が保留中</item>
     </plurals>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
@@ -101,6 +107,9 @@
     <string name="grid_size">グリッドサイズを変更</string>
     <string name="pinch_to_zoom">ピンチ操作で拡大</string>
     <string name="more_info">詳細</string>
+    <string name="more" comment="More options menu in short">詳細</string>
+    <string name="learn" comment="(Learn java regex syntax)">正規表現を学ぶ</string>
+    <string name="hide">非表示</string>
     <string name="rank_change" comment="%1= delta change">順位の変更: %s</string>
     <string name="rank_change_no_change">変更なし</string>
     <string name="rank_change_new">前回期間でのScrobbleなし</string>
@@ -122,6 +131,7 @@
     <string name="new_player_prompt">このアプリをScrobbleしますか？</string>
     <string name="no_track_url">この曲はLastFMのページがありません</string>
     <string name="no_scrobbles">曲はまだありません…</string>
+    <string name="no_friends">まだ誰もフォローしていません…</string>
     <string name="channel_err">Scrobbleの障害</string>
     <string name="new_app">新しいアプリ</string>
     <string name="no_apps_enabled">有効化されたアプリはありません</string>
@@ -173,6 +183,7 @@
     <string name="sort">並べ替え</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">日付の選択</string>
     <string name="my_scrobbles">My Scrobble</string>
+    <string name="their_scrobbles">この人のScrobble</string>
     <string name="listeners">リスナー</string>
     <string name="scrobbles">Scrobble</string>
     <string name="collapse" comment="(view only a few items)">閉じる</string>
@@ -182,12 +193,14 @@
     <string name="not_found" comment="Shown in search">見つかりませんでした</string>
     <string name="save" comment="saves a file">保存</string>
     <string name="saved_to_gallery">ギャラリーに保存しました</string>
+    <string name="reports" comment="Like last.week reports and stuff">レポート</string>
     <string name="weekly">1週間</string>
     <string name="weeks">週</string>
     <string name="monthly">1ヶ月</string>
     <string name="months">月</string>
     <string name="years" comment="For the charts menu which displays year by year">年</string>
     <string name="charts_overall">全期間</string>
+    <string name="listening_activity">Scrobbleアクティビティ</string>
     <string name="charts_no_data">この期間のデータはありません</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">カスタム</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">時系列</string>
@@ -198,10 +211,10 @@
     <string name="loved_track">Loveトラック</string>
     <string name="randomize">ランダム表示</string>
     <string name="random_text">おまかせ表示</string>
-    <string name="graph_daily">1日あたりのScrobble件数</string>
-    <string name="graph_weekly">1週間あたりのScrobble件数</string>
-    <string name="graph_monthly">1ヶ月あたりのScrobble件数</string>
-    <string name="graph_yearly">1年あたりのScrobble件数</string>
+    <string name="graph_daily">1日あたりのScrobble回数</string>
+    <string name="graph_weekly">1週間あたりのScrobble回数</string>
+    <string name="graph_monthly">1ヶ月あたりのScrobble回数</string>
+    <string name="graph_yearly">1年あたりのScrobble回数</string>
     <string name="original" comment="Original metadata before editing">元のメタデータ</string>
     <string name="corrected" comment="Corrected metadata after editing">訂正内容</string>
     <string name="tag" comment="last.fm tag">タグ</string>
@@ -265,6 +278,13 @@
     <string name="persistent_noti_desc">長押しで非表示</string>
     <string name="scrobbler_off">Scrobbler停止中</string>
     <string name="scrobbler_on">Scrobbler稼働中</string>
+    <string name="acoustic" comment="(Acoustic music)">アコースティックらしさ</string>
+    <string name="instrumental">インストらしさ</string>
+    <string name="energetic" comment="(Energetic music)">激しさ</string>
+    <string name="danceable">踊りやすさ</string>
+    <string name="valence" comment="(Musical positivity)">明るさ</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">人気度: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
     <string name="enable" comment="To enable the scrobbler">有効化</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">サイズ</string>
     <string name="skip_missing_images">画像があるもののみ</string>
@@ -345,6 +365,7 @@
     <string name="pref_intents">Tasker等用のインテント</string>
     <string name="copied">コピーしました</string>
     <string name="lastfm_reauth">Scrobbleを編集または削除するには再認証が必要です</string>
+    <string name="custom_listenbrainz">カスタムListenbrainz</string>
     <string name="failed_encode_url">URLのエンコードに失敗しました</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$sを確認</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特別なアプリアクセス &gt; 通知へのアクセス &gt; %1$s</string>
@@ -396,6 +417,6 @@
 • このアプリをストアページ上から直接インストール"</string>
     <string name="billing_block">アーティスト/トラックのブロック、オートスキップ/ミュート機能</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最大%1$d人のフレンドのピン留めおよび並び替え</string>
-    <string name="billing_sharing">共有時にアプリ名を含まない</string>
-    <string name="billing_scrobble_source">Scrobble元のアプリの記憶や確認、そのアプリでの楽曲検索</string>
+    <string name="billing_sharing">共有時にアプリ名を含めない</string>
+    <string name="billing_scrobble_source">Scrobble元のアプリの記録やそのアプリでの楽曲検索</string>
 </resources>

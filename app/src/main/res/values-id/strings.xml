@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+    <string name="reset">Atur ulang</string>
+    <string name="settings">Konfigurasi</string>
+    <string name="album_art">Sampul album</string>
+    <string name="artist_image">Gambar artis</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Tidak dapat mengurai judul</string>
+    <string name="network_error">Kesalahan jaringan</string>
+    <string name="disable_tls_verify">Abaikan galat TLS</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Abaikan scrobble</string>
+    <string name="scrobble_ignored_save_edit">Lastfm mengabaikan suntingan karena scrobble ini terlalu lama. Apakah Anda ingin menyimpan suntingan ini untuk scrobble berikutnya?</string>
+    <string name="artist">Artis</string>
+    <string name="artists">Artis</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Artis teratas</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Artis / kanal</string>
+    <string name="similar_artists">Artis serupa</string>
+    <string name="album_optional">Album (opsional)</string>
+    <string name="album">Album</string>
+    <string name="albums">Album</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album teratas</string>
+    <string name="track">Trek</string>
+    <string name="tracks">Trek</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Trek teratas</string>
+    <string name="similar_tracks">Trek serupa</string>
+    <string name="similar" comment="Similar tracks but in short">Serupa</string>
+    <string name="state_scrobbling">Sedang meng-scrobble…</string>
+    <string name="state_scrobbled">Ter-scrobble</string>
+    <string name="unscrobble">Batal scrobble</string>
+    <string name="state_unscrobbled">Scrobble dibatalkan</string>
+    <string name="state_unrecognised_artist">Artis tidak dikenal</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Hapus semua riwayat</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Hapus entri ini dari riwayat?</string>
+    <string name="library" comment="search within the library">Pustaka</string>
+    <string name="global" comment="search globally across lastfm">Global</string>
+    <string name="profile">Profil</string>
+    <string name="new_app">Aplikasi baru</string>
+    <!--  pro  -->
+</resources>

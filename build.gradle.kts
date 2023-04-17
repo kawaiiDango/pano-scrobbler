@@ -11,7 +11,7 @@ buildscript {
     dependencies {
         classpath("com.github.triplet.gradle:play-publisher:4.0.0-SNAPSHOT")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.6.0-alpha08")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.6.0-alpha09")
     }
 }
 

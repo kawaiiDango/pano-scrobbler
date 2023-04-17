@@ -83,6 +83,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
                     1,
                     username,
                     limit = 1,
+                    includeNowPlaying = true,
                 )
             }
 

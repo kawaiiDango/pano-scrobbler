@@ -50,7 +50,7 @@ object PopupMenuUtils {
                 album = track.album,
                 track = track.name,
                 msid = track.msid,
-                timeMillis = track.playedWhen?.time ?: 0,
+                timeMillis = track.playedWhen?.time ?: System.currentTimeMillis(),
                 nowPlaying = track.isNowPlaying,
             ).toBundle()
 

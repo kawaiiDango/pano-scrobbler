@@ -228,9 +228,9 @@ class SessListener(
                 }
 
                 Stuff.PACKAGE_PODCAST_ADDICT -> {
-                    if (album != "") {
-                        artist = album
-                        album = ""
+                    if (albumArtist != "") {
+                        artist = albumArtist
+                        albumArtist = ""
                     }
                     val idx = artist.lastIndexOf(" • ")
                     if (idx != -1)

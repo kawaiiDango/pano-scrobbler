@@ -29,5 +29,7 @@
     <string name="debug_menu" translatable="false">Shrine maiden\'s menu</string>
     <string name="listen_along" translatable="false">Listen along</string>
     <string name="test_scrobble_from_noti" translatable="false">Scrobble from noti</string>
-
+    <string name="charts_num_text" formatted="true" translatable="false"
+        comment="%1= number, %2= List text (e.g. 1. Text)"
+        >%1$d. %2$s</string>
 </resources>

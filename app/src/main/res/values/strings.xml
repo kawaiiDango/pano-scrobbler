@@ -326,9 +326,6 @@
     <string name="not_enough_data"
         comment="(not enough data to draw a chart etc)"
         >Not enough data</string>
-    <string name="charts_num_text" formatted="true"
-        comment="%1= number, %2= List text (e.g. 1. Text)"
-        >%1$d. %2$s</string>
     <string name="random"
         comment="Displays a random scrobble or a loved track of the user"
         >I\'m feeling lucky</string>

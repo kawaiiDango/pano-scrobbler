@@ -303,7 +303,7 @@ class EditDialogFragment : LoginFragment() {
                     it.scrobble(ScrobbleData(scrobbleData).also { it.timestamp += 1 })
                 else
                     it.scrobble(scrobbleData)
-                if (args.timeMillis == 0L)
+                if (args.nowPlaying)
                     it.updateNowPlaying(scrobbleData)
             }
 
@@ -384,7 +384,7 @@ class EditDialogFragment : LoginFragment() {
             (activity as? MainActivity)?.let {
                 mainNotifierViewModel.editData.postValue(
                     Track(track, null, album, artist).apply {
-                        if (args.timeMillis != 0L)
+                        if (!args.nowPlaying)
                             playedWhen = Date(timeMillis)
                     }
                 )

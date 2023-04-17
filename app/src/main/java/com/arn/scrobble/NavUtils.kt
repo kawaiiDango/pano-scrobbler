@@ -1,5 +1,7 @@
 package com.arn.scrobble
 
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
@@ -234,8 +236,9 @@ object NavUtils {
                                 if (shouldShowUser) {
                                     UiUtils.loadSmallUserPic(
                                         activityBinding.bottomNav.context,
-                                        mainNotifierViewModel.currentUser
+                                        mainNotifierViewModel.currentUser,
                                     ) {
+                                        it.colorFilter = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
                                         MenuItemCompat.setIconTintMode(
                                             moreMenu,
                                             PorterDuff.Mode.DST

@@ -48,6 +48,9 @@
     <plurals name="num_friends">
         <item quantity="other">%1$s 位好友</item>
     </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="other">%1$s 个待提交</item>
+    </plurals>
     <string name="yes">确定</string>
     <string name="no">取消</string>
     <string name="reset">重置</string>
@@ -104,6 +107,8 @@
     <string name="grid_size">更改网格尺寸</string>
     <string name="pinch_to_zoom">双指缩放</string>
     <string name="more_info">更多信息</string>
+    <string name="more" comment="More options menu in short">更多</string>
+    <string name="hide">隐藏</string>
     <string name="rank_change" comment="%1= delta change">更改排序：%s</string>
     <string name="rank_change_no_change">没有更改</string>
     <string name="rank_change_new">未在上一周期内进行记录</string>
@@ -175,8 +180,9 @@
     <string name="details">详细资料</string>
     <string name="saved_as_pending">保存为待记录条目</string>
     <string name="sort">排序</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">时间定跳转</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">时间点跳转</string>
     <string name="my_scrobbles">我的收听记录</string>
+    <string name="their_scrobbles">他们的记录</string>
     <string name="listeners">听众</string>
     <string name="scrobbles">收听记录</string>
     <string name="collapse" comment="(view only a few items)">折叠</string>
@@ -193,6 +199,7 @@
     <string name="months">月</string>
     <string name="years" comment="For the charts menu which displays year by year">年</string>
     <string name="charts_overall">总览</string>
+    <string name="listening_activity">听歌活动</string>
     <string name="charts_no_data">此期间没有数据</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">自定义</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">连续</string>
@@ -271,6 +278,7 @@
     <string name="scrobbler_off">已禁用记录器</string>
     <string name="scrobbler_on">已激活记录器</string>
     <string name="acoustic" comment="(Acoustic music)">原声</string>
+    <string name="instrumental">纯音乐</string>
     <string name="energetic" comment="(Energetic music)">活跃</string>
     <string name="danceable">舞曲</string>
     <string name="popularity" formatted="true" comment="popularity of a track">人气：%1$d%%</string>
@@ -355,6 +363,7 @@
     <string name="pref_intents">可用于 Tasker 等应用的 Intents</string>
     <string name="copied">已复制！</string>
     <string name="lastfm_reauth">您需要重新进行身份认证才能编辑或删除音乐记录</string>
+    <string name="custom_listenbrainz">自定义 Listenbrainz</string>
     <string name="failed_encode_url">无法对 URL 进行编码</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">勾选 %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">特殊应用访问 &gt; 通知访问 &gt; %1$s</string>

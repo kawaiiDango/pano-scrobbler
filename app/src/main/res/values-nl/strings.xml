@@ -4,6 +4,10 @@
         <item quantity="one">%1$s scrobbel</item>
         <item quantity="other">%1$s scrobbels</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s vandaag</item>
+        <item quantity="other">%1$s vandaag</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s luisteraar</item>
         <item quantity="other">%1$s luisteraars</item>
@@ -37,20 +41,20 @@
         <item quantity="other">%1$s nummers</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
-        <item quantity="one">%1$d match</item>
-        <item quantity="other">%1$d Matches</item>
+        <item quantity="one">%1$d overeenkomst</item>
+        <item quantity="other">%1$d overeenkomsten</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$s bewerking</item>
+        <item quantity="one">%1$s bewerk</item>
         <item quantity="other">%1$s bewerkingen</item>
     </plurals>
     <plurals name="num_regex_edits">
-        <item quantity="one">%1$s patroon bewerking</item>
-        <item quantity="other">%1$s patroon bewerkingen</item>
+        <item quantity="one">%1$s Bewerk patroon</item>
+        <item quantity="other">%1$s Bewerkte patronen</item>
     </plurals>
     <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$s geblokkeerd metadata</item>
-        <item quantity="other">%1$s geblokkeerd metadata</item>
+        <item quantity="one">%1$s Geblokkeerd metadata</item>
+        <item quantity="other">%1$s Geblokkeerde metadata</item>
     </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
@@ -108,6 +112,7 @@
     <string name="grid_size">Rastergrootte wijzigen</string>
     <string name="pinch_to_zoom">Knijpen om te zoomen</string>
     <string name="more_info">Meer informatie</string>
+    <string name="more" comment="More options menu in short">Meer</string>
     <string name="learn" comment="(Learn java regex syntax)">Leren</string>
     <string name="hide">Verbergen</string>
     <string name="rank_change" comment="%1= delta change">Rang verandering: %s</string>
@@ -293,6 +298,8 @@
     <string name="username" comment="last.fm Username">Gebruikersnaam</string>
     <string name="pref_master">Scrobbel muziek</string>
     <string name="pref_master_qs_hint">Kan ook via de snelle instellingen tegel worden aangezet.</string>
+    <string name="pref_master_qs_add">Voeg tegel snelle instellingen toe</string>
+    <string name="pref_master_qs_already_addded">Tegel snelle instellingen is al toegevoegd</string>
     <string name="pref_noti_q">Je kunt de melding promoten, als het pictogram niet wordt weergegeven</string>
     <string name="pref_noti">Meldingen</string>
     <string name="pref_noti_categories">Meldingscategorieën</string>
@@ -303,6 +310,8 @@
     <string name="pref_enabled_apps_summary">ℹ️ Ondersteunt apps die muziek metadata onthullen. Om dubbele scrobbles van Spotify te voorkomen, schakel het alleen in op één plek.</string>
     <string name="pref_enabled_apps_title">Kies apps</string>
     <string name="pref_auto_detect_summary">…we zullen je nog steeds vragen om die app te bevestigen of te negeren</string>
+    <string name="pref_auto_detect">Automatisch van nieuwe apps scroblen</string>
+    <string name="pref_spotify_remote">Scrobble Spotify terwijl deze op andere apparaten speelt</string>
     <string name="pref_delay">Scrobble-vertraging (welke vroeger is)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuten</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
@@ -318,6 +327,7 @@
     <string name="pref_now_playing">Nu aan het spelen doorgeven</string>
     <string name="pref_fetch_aa">Album artiesten ophalen van lastFM</string>
     <string name="pref_fetch_aa_desc">Voor spelers die deze gegevens niet verstrekken. De opgehaalde gegevens kunnen verschillen van je tags. lastFM heeft mogelijk geen gegevens voor sommige nummers.</string>
+    <string name="pref_fetch_album">Ontbrekende albumgegevens ophalen van lastFM</string>
     <string name="pref_locale">Talen</string>
     <string name="pref_change_locale">Taal wijzigen</string>
     <string name="pref_crashlytics_enabled">Rapporteer fouten automatisch</string>
@@ -360,6 +370,7 @@
     <string name="pref_intents">Intenties voor Tasker enz</string>
     <string name="copied">Gekopieerd!</string>
     <string name="lastfm_reauth">U moet opnieuw verifiëren om scrobbles te kunnen bewerken of verwijderen</string>
+    <string name="custom_listenbrainz">Aangepaste Listenbrainz</string>
     <string name="failed_encode_url">Kan URL niet coderen</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Controleer %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Speciale app-toegang voor &gt; Notificatie toegang voor &gt; %1$s</string>
@@ -413,4 +424,5 @@ Je aankopen worden beheerd door Google Play. Ze zijn gekoppeld met het Google Pl
     <string name="billing_block">Blokkeer artiesten/nummers en sla ze over of negeer ze automatisch</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Pin tot %1$d vrienden en sorteer ze opnieuw</string>
     <string name="billing_sharing">App-naam bij delen weg laten</string>
+    <string name="billing_scrobble_source">Onthou en laat apps zien waar scrobble van afkomstig is en zoek er rechtstreeks in</string>
 </resources>

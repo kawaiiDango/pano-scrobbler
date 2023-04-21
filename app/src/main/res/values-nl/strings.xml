@@ -108,6 +108,8 @@
     <string name="grid_size">Rastergrootte wijzigen</string>
     <string name="pinch_to_zoom">Knijpen om te zoomen</string>
     <string name="more_info">Meer informatie</string>
+    <string name="learn" comment="(Learn java regex syntax)">Leren</string>
+    <string name="hide">Verbergen</string>
     <string name="rank_change" comment="%1= delta change">Rang verandering: %s</string>
     <string name="rank_change_no_change">Geen verandering</string>
     <string name="rank_change_new">Niet gescrobbeld in de vorige periode</string>
@@ -129,6 +131,7 @@
     <string name="new_player_prompt">Deze app blijven scrobbelen?</string>
     <string name="no_track_url">Dit nummer heeft geen pagina op de lastFM</string>
     <string name="no_scrobbles">Nog geen nummers hier…</string>
+    <string name="no_friends">Volgt nog niemand…</string>
     <string name="channel_err">Scrobbel errors</string>
     <string name="new_app">Nieuwe App</string>
     <string name="no_apps_enabled">Er zijn geen apps ingeschakeld</string>
@@ -180,6 +183,7 @@
     <string name="sort">Sorteren</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Tijd sprong</string>
     <string name="my_scrobbles">Mijn scrobbels</string>
+    <string name="their_scrobbles">Hun scrobbles</string>
     <string name="listeners">Luisteraars</string>
     <string name="scrobbles">Scrobbels</string>
     <string name="collapse" comment="(view only a few items)">Inklappen</string>
@@ -187,12 +191,16 @@
     <string name="user_loved" formatted="true" comment="%1= username">%1$s loved dit</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Uit %1$s</string>
     <string name="not_found" comment="Shown in search">Niet gevonden</string>
+    <string name="save" comment="saves a file">Opslaan</string>
+    <string name="saved_to_gallery">Opgeslagen in galerij</string>
+    <string name="reports" comment="Like last.week reports and stuff">Rapporten</string>
     <string name="weekly">Wekelijks</string>
     <string name="weeks">Weken</string>
     <string name="monthly">Maandelijks</string>
     <string name="months">Maanden</string>
     <string name="years" comment="For the charts menu which displays year by year">Jaren</string>
     <string name="charts_overall">In totaal</string>
+    <string name="listening_activity">Luisteractiviteit</string>
     <string name="charts_no_data">Geen data voor deze periode</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Aangepaste</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Doorlopende</string>
@@ -229,6 +237,7 @@
     <string name="dark">Donker</string>
     <string name="system_colors">Systeemkleuren gebruiken</string>
     <string name="appwidget_alpha">Transparantie achtergrond</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Widget ververst elke %1$s</string>
     <string name="primary_color">Primaire kleur</string>
     <string name="secondary_color">Secundaire kleur</string>
     <string name="tint_background">Tint achtergrond</string>
@@ -269,7 +278,19 @@
     <string name="persistent_noti_desc">Lang ingedrukt houden om dit te verbergen</string>
     <string name="scrobbler_off">Scrobbler uitgeschakeld</string>
     <string name="scrobbler_on">Scrobbler actief</string>
+    <string name="acoustic" comment="(Acoustic music)">Akoestisch</string>
+    <string name="instrumental">Instrumentaal</string>
+    <string name="energetic" comment="(Energetic music)">Energiek</string>
+    <string name="danceable">Dansbaar</string>
+    <string name="valence" comment="(Musical positivity)">Positiviteit</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Populariteit: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable the scrobbler">Schakel in</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Formaat</string>
+    <string name="skip_missing_images">Ontbrekende afbeeldingen overslaan</string>
+    <string name="create_collage">Maak collage</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Afbeelding bijschriften</string>
+    <string name="username" comment="last.fm Username">Gebruikersnaam</string>
     <string name="pref_master">Scrobbel muziek</string>
     <string name="pref_master_qs_hint">Kan ook via de snelle instellingen tegel worden aangezet.</string>
     <string name="pref_noti_q">Je kunt de melding promoten, als het pictogram niet wordt weergegeven</string>

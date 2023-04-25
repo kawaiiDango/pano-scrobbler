@@ -108,6 +108,7 @@
     <string name="pinch_to_zoom">双指缩放</string>
     <string name="more_info">更多信息</string>
     <string name="more" comment="More options menu in short">更多</string>
+    <string name="learn" comment="(Learn java regex syntax)">了解</string>
     <string name="hide">隐藏</string>
     <string name="rank_change" comment="%1= delta change">更改排序：%s</string>
     <string name="rank_change_no_change">没有更改</string>
@@ -281,6 +282,7 @@
     <string name="instrumental">纯音乐</string>
     <string name="energetic" comment="(Energetic music)">活跃</string>
     <string name="danceable">舞曲</string>
+    <string name="valence" comment="(Musical positivity)">情绪性</string>
     <string name="popularity" formatted="true" comment="popularity of a track">人气：%1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">分析</string>
     <string name="enable" comment="To enable the scrobbler">已启用</string>

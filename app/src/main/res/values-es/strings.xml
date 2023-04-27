@@ -66,7 +66,7 @@
     </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s pendiente</item>
-        <item quantity="other">%1$s pendiente</item>
+        <item quantity="other">%1$s pendientes</item>
     </plurals>
     <string name="yes">Si</string>
     <string name="no">No</string>
@@ -98,8 +98,8 @@
     <string name="similar" comment="Similar tracks but in short">Similar</string>
     <string name="state_scrobbling">Ahora en scrobbling…</string>
     <string name="state_scrobbled">Scrobbled</string>
-    <string name="unscrobble">Unscrobble</string>
-    <string name="state_unscrobbled">Unscrobbled</string>
+    <string name="unscrobble">Remover scrobble</string>
+    <string name="state_unscrobbled">Scrobble removido</string>
     <string name="state_unrecognised_artist">Artista no reconocido</string>
     <string name="tap_to_edit">(Toca para editar)</string>
     <string name="recently_scrobbled">Recientemente Scrobbled</string>

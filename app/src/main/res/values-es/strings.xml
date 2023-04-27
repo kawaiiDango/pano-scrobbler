@@ -97,7 +97,7 @@
     <string name="similar_tracks">Canciones similares</string>
     <string name="similar" comment="Similar tracks but in short">Similar</string>
     <string name="state_scrobbling">Ahora en scrobbling…</string>
-    <string name="state_scrobbled">Scrobbled</string>
+    <string name="state_scrobbled">Scrobbleado</string>
     <string name="unscrobble">Remover scrobble</string>
     <string name="state_unscrobbled">Scrobble removido</string>
     <string name="state_unrecognised_artist">Artista no reconocido</string>

@@ -188,6 +188,9 @@
         comment="search globally across lastfm"
         >Global</string>
     <string name="reindex">Quick index</string>
+    <string name="do_index"
+        comment="downloads the top scrobbles and indexes them into a database"
+        >Index your scrobbles</string>
     <string name="full_index">Full index</string>
     <string name="take_long_time">This can take a long time</string>
     <string name="full_index_desc">Use this only if you have edited or deleted scrobbles from the website.</string>
@@ -220,6 +223,8 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="love">Love</string>
+    <string name="hate">Hate</string>
+    <string name="unhate">Unhate</string>
     <string name="unlove">Unlove</string>
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobble">Pending scrobble</string>
@@ -532,6 +537,9 @@
     <string name="pref_change_locale">Change language</string>
     <string name="pref_crashlytics_enabled">Report errors automatically</string>
     <string name="pref_misc">Misc.</string>
+    <string name="pref_first_day_of_week"
+        comment="Sunday, Monday etc"
+        >A week starts on</string>
     <string name="pref_imexport"
         comment="As in backup or restore the settings"
         >Import &amp; export</string>

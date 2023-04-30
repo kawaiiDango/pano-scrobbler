@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="16dp"
             android:justificationMode="inter_word"
             android:text="@string/pro_support"
             android:textAppearance="?textAppearanceBodyLarge" />
@@ -36,6 +36,16 @@
             android:justificationMode="inter_word"
             android:text="@string/pro_also_get"
             android:textAppearance="?textAppearanceBodyLarge" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/start_billing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:maxLines="2"
+            android:text="@string/get_pro"
+            app:icon="@drawable/vd_heart" />
+
         <Button
             android:id="@+id/billing_troubleshoot"
             style="@style/Widget.AppCompat.Button.Borderless"
@@ -49,13 +59,5 @@
             android:textAppearance="?textAppearanceHeadlineSmall"
             android:textColor="?colorPrimary"
             android:textStyle="bold" />
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/start_billing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="2"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/get_pro"
-            app:icon="@drawable/vd_heart" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

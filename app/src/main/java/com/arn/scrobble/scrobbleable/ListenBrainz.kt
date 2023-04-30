@@ -1,5 +1,6 @@
 package com.arn.scrobble.scrobbleable
 
+import androidx.annotation.IntRange
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.CacheMarkerInterceptor
@@ -173,7 +174,12 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             mapOf()
     }
 
-    override suspend fun loveOrUnlove(track: Track, love: Boolean): Boolean {
+    override suspend fun loveOrUnlove(track: Track, love: Boolean) =
+        feedback(track, if (love) 1 else 0)
+
+    suspend fun hate(track: Track) = feedback(track, -1)
+
+    private suspend fun feedback(track: Track, @IntRange(-1, 1) score: Int): Boolean {
         try {
             val msid = track.msid
             val mbid = if (msid == null)
@@ -191,13 +197,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
             val response = client.post("feedback/recording-feedback") {
                 contentType(ContentType.Application.Json)
-                setBody(
-                    ListenBrainzFeedback(
-                        mbid,
-                        msid,
-                        if (love) 1 else 0
-                    )
-                )
+                setBody(ListenBrainzFeedback(mbid, msid, score))
                 expectSuccess = false
             }
 
@@ -275,7 +275,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 it.recording_msid,
                 -1,
                 -1,
-                false,
                 0,
                 -1,
                 it.track_metadata.additional_info?.duration_ms ?: -1,
@@ -349,32 +348,33 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         }.also {
             fromCache = it.isFromCache
         }.body<ListenBrainzFeedbacks>()
-        val tracks = feedbacks.feedback.map {
-            Track(
-                0,
-                it.track_metadata.track_name,
-                null,
-                it.recording_mbid,
-                it.recording_msid,
-                -1,
-                -1,
-                it.score == 1,
-                it.score,
-                -1,
-                it.track_metadata.additional_info?.duration_ms ?: -1,
-                false,
-                it.track_metadata.release_name,
-                it.track_metadata.mbid_mapping?.release_mbid,
-                it.track_metadata.artist_name,
-                null,
-                it.track_metadata.mbid_mapping?.artist_mbids?.firstOrNull(),
-                Date(it.created * 1000L),
-                false,
-                false,
-            ).apply {
-                imageUrlsMap = createImageMap(it.track_metadata.mbid_mapping?.release_mbid)
+        val tracks = feedbacks.feedback
+            .filter { it.track_metadata != null }
+            .map {
+                Track(
+                    0,
+                    it.track_metadata!!.track_name,
+                    null,
+                    it.recording_mbid,
+                    it.recording_msid,
+                    -1,
+                    -1,
+                    it.score,
+                    -1,
+                    it.track_metadata.additional_info?.duration_ms ?: -1,
+                    false,
+                    it.track_metadata.release_name,
+                    it.track_metadata.mbid_mapping?.release_mbid,
+                    it.track_metadata.artist_name,
+                    null,
+                    it.track_metadata.mbid_mapping?.artist_mbids?.firstOrNull(),
+                    Date(it.created * 1000L),
+                    false,
+                    false,
+                ).apply {
+                    imageUrlsMap = createImageMap(it.track_metadata.mbid_mapping?.release_mbid)
+                }
             }
-        }
         val totalPages = ceil(feedbacks.total_count.toFloat() / limit).toInt()
         val pr = PaginatedResult(page, totalPages, tracks.size, tracks)
         pr.isStale = fromCache && cacheStrategy == Caller.CacheStrategy.CACHE_FIRST
@@ -490,7 +490,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     null,
                     it.listen_count,
                     it.listen_count,
-                    false,
                     0,
                     -1,
                     -1,

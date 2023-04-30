@@ -40,6 +40,10 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
             binding.optionsMenuNav.menu.removeItem(R.id.nav_pro)
         }
 
+        mainNotifierViewModel.updateCanIndex()
+        if (mainNotifierViewModel.canIndex.value == false)
+            binding.optionsMenuNav.menu.removeItem(R.id.nav_do_index)
+
         if (metadata.showHeader) {
             binding.headerNav.root.isVisible = true
             mainNotifierViewModel.drawerData.observe(viewLifecycleOwner) {

@@ -24,10 +24,6 @@ import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.TrackFeatures
 import com.arn.scrobble.charts.ChartsOverviewAdapter
 import com.arn.scrobble.charts.ChartsVM
-import com.arn.scrobble.charts.FakeAlbumFragment
-import com.arn.scrobble.charts.FakeArtistFragment
-import com.arn.scrobble.charts.FakeTrackFragment
-import com.arn.scrobble.charts.ShittyArchitectureFragment
 import com.arn.scrobble.databinding.ContentInfoExtraBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.LayoutSpotifyTrackFeaturesBinding
@@ -49,11 +45,9 @@ import kotlin.math.roundToInt
 
 
 class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListener {
-    private lateinit var artistsFragment: FakeArtistFragment
-    private lateinit var albumsFragment: FakeAlbumFragment
-    private lateinit var tracksFragment: FakeTrackFragment
 
     private val trackFeaturesVM by viewModels<TrackFeaturesVM>()
+    private val infoExtraVM by viewModels<InfoExtraVM>()
 
     private val track by lazy {
         requireArguments().getString(NLService.B_TRACK)
@@ -69,33 +63,10 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
     ): View {
         val binding = ContentInfoExtraBinding.inflate(inflater, container, false)
 
-        tracksFragment =
-            childFragmentManager.findFragmentByTag(Stuff.TYPE_TRACKS.toString()) as? FakeTrackFragment
-                ?: FakeTrackFragment()
-        if (!tracksFragment.isAdded)
-            childFragmentManager.beginTransaction()
-                .add(tracksFragment, Stuff.TYPE_TRACKS.toString()).commitNow()
-
         if (track == null) {
-            artistsFragment =
-                childFragmentManager.findFragmentByTag(Stuff.TYPE_ARTISTS.toString()) as? FakeArtistFragment
-                    ?: FakeArtistFragment()
-            if (!artistsFragment.isAdded)
-                childFragmentManager.beginTransaction()
-                    .add(artistsFragment, Stuff.TYPE_ARTISTS.toString()).commitNow()
-            albumsFragment =
-                childFragmentManager.findFragmentByTag(Stuff.TYPE_ALBUMS.toString()) as? FakeAlbumFragment
-                    ?: FakeAlbumFragment()
-            if (!albumsFragment.isAdded)
-                childFragmentManager.beginTransaction()
-                    .add(albumsFragment, Stuff.TYPE_ALBUMS.toString()).commitNow()
-
-            initFragment(artistsFragment, binding.infoExtraFrame3)
-            initFragment(albumsFragment, binding.infoExtraFrame2)
-            initFragment(tracksFragment, binding.infoExtraFrame1)
-
-            albumsFragment.adapter.showArtists = false
-            tracksFragment.adapter.showArtists = false
+            initSection(binding.infoExtraFrame3, infoExtraVM.artistsVM, true)
+            initSection(binding.infoExtraFrame2, infoExtraVM.albumsVM, false)
+            initSection(binding.infoExtraFrame1, infoExtraVM.tracksVM, false)
 
             binding.infoExtraHeader3.headerText.text = getString(R.string.similar_artists)
             binding.infoExtraHeader3.headerAction.setOnClickListener {
@@ -135,18 +106,18 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoSubtitle.visibility = View.GONE
             binding.infoExtraFrame3.gridItemToReserveSpace.chartInfoScrobbles.visibility = View.GONE
 
-            if (tracksFragment.viewModel.chartsData.isEmpty()) {
+            if (infoExtraVM.tracksVM.chartsData.isEmpty()) {
                 LFMRequester(
-                    artistsFragment.viewModel.viewModelScope,
-                    artistsFragment.viewModel.listReceiver
+                    infoExtraVM.artistsVM.viewModelScope,
+                    infoExtraVM.artistsVM.listReceiver
                 ).getSimilarArtists(artist)
                 LFMRequester(
-                    albumsFragment.viewModel.viewModelScope,
-                    albumsFragment.viewModel.listReceiver
+                    infoExtraVM.albumsVM.viewModelScope,
+                    infoExtraVM.albumsVM.listReceiver
                 ).getArtistTopAlbums(artist)
                 LFMRequester(
-                    tracksFragment.viewModel.viewModelScope,
-                    tracksFragment.viewModel.listReceiver
+                    infoExtraVM.tracksVM.viewModelScope,
+                    infoExtraVM.tracksVM.listReceiver
                 ).getArtistTopTracks(artist)
             }
         } else {
@@ -183,7 +154,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             if (trackFeaturesVM.spotifyTrackWithFeatures.value == null)
                 trackFeaturesVM.loadTrackFeatures(artist, track!!)
 
-            initFragment(tracksFragment, binding.infoExtraFrame1)
+            initSection(binding.infoExtraFrame1, infoExtraVM.tracksVM, true)
             binding.infoExtraHeader1.headerText.text = getString(R.string.similar_tracks)
             binding.infoExtraHeader1.headerAction.setOnClickListener {
                 showFullFragment(R.id.trackExtraFragment, Stuff.TYPE_TRACKS)
@@ -202,10 +173,10 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
 
             binding.infoExtraTitle.text = getString(R.string.artist_title, artist, track)
 
-            if (tracksFragment.viewModel.chartsData.isEmpty()) {
+            if (infoExtraVM.tracksVM.chartsData.isEmpty()) {
                 LFMRequester(
-                    tracksFragment.viewModel.viewModelScope,
-                    tracksFragment.viewModel.listReceiver
+                    infoExtraVM.tracksVM.viewModelScope,
+                    infoExtraVM.tracksVM.listReceiver
                 ).getSimilarTracks(artist, track!!)
             }
             binding.root.startFadeLoop()
@@ -214,19 +185,18 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         return binding.root
     }
 
-    private fun initFragment(
-        fragment: ShittyArchitectureFragment,
-        rootViewBinding: FrameChartsListBinding
+    private fun initSection(
+        rootViewBinding: FrameChartsListBinding,
+        sectionVM: ChartsVM,
+        showArtists: Boolean
     ) {
-        fragment.viewModel = viewModels<ChartsVM>({ fragment }).value
-
         val adapter = ChartsOverviewAdapter(rootViewBinding)
-        adapter.viewModel = fragment.viewModel
+        adapter.viewModel = sectionVM
         adapter.clickListener = this
         adapter.emptyTextRes = R.string.not_found
-        adapter.checkAllForMax =
-            true //top tracks/albums are ordered by listeners and not by play count
-        fragment.adapter = adapter
+        //top tracks/albums are ordered by listeners and not by play count
+        adapter.checkAllForMax = true
+        adapter.showArtists = showArtists
 
         val itemDecor = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         itemDecor.setDrawable(
@@ -243,15 +213,15 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             false
         rootViewBinding.chartsList.adapter = adapter
 
-        fragment.viewModel.listReceiver.observe(viewLifecycleOwner) {
-            fragment.viewModel.reachedEnd = true
-            synchronized(fragment.viewModel.chartsData) {
-                fragment.viewModel.chartsData.addAll(it)
+        sectionVM.listReceiver.observe(viewLifecycleOwner) {
+            sectionVM.reachedEnd = true
+            synchronized(sectionVM.chartsData) {
+                sectionVM.chartsData.addAll(it)
             }
             adapter.populate()
         }
 
-        if (fragment.viewModel.chartsData.isNotEmpty())
+        if (sectionVM.chartsData.isNotEmpty())
             adapter.populate()
     }
 

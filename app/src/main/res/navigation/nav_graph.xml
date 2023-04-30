@@ -376,4 +376,9 @@
             app:argType="string"
             app:nullable="true" />
     </fragment>
+    <dialog
+        android:id="@+id/indexingDialogFragment"
+        android:name="com.arn.scrobble.search.IndexingDialogFragment"
+        tools:layout="@layout/dialog_indexing"
+        android:label="IndexingDialogFragment" />
 </navigation>

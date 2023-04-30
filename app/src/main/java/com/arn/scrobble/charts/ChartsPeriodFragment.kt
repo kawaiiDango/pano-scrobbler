@@ -42,7 +42,17 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     protected val activityViewModel by activityViewModels<MainNotifierViewModel>()
 
 
-    protected val prefs = App.prefs
+    protected open var lastPeriodSelectedJson
+        get() = App.prefs.lastChartsPeriodSelectedJson
+        set(value) {
+            App.prefs.lastChartsPeriodSelectedJson = value
+        }
+
+    protected open var lastPeriodType
+        get() = App.prefs.lastChartsPeriodType
+        set(value) {
+            App.prefs.lastChartsPeriodType = value
+        }
 
     abstract fun loadFirstPage(networkOnly: Boolean = false)
 
@@ -83,7 +93,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
                 TimePeriodType.CUSTOM -> {
                     val selectedPeriod = if (firstLoad) {
-                        prefs.lastChartsPeriodSelectedJson
+                        lastPeriodSelectedJson
                     } else {
                         viewModel.selectedPeriod.value ?: TimePeriod(
                             0,
@@ -113,7 +123,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         }
 
-        prefs.lastChartsPeriodSelectedJson.let {
+        lastPeriodSelectedJson.let {
             prevSelectedPeriod =
                 if (it.period == null && Scrobblables.current !is Lastfm &&
                     Scrobblables.current !is ListenBrainz ||
@@ -140,8 +150,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
                 firstLoad = false
             }
 
-            prefs.lastChartsPeriodSelectedJson = timePeriod
-            prefs.lastChartsPeriodType = viewModel.periodType.value?.name ?: ""
+            lastPeriodSelectedJson = timePeriod
+            lastPeriodType = viewModel.periodType.value?.name ?: ""
             prevSelectedPeriod = timePeriod
 
         }
@@ -155,7 +165,7 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
         viewModel.periodType.value = try {
             require(Scrobblables.current?.userAccount?.type == AccountType.LASTFM)
-            TimePeriodType.valueOf(prefs.lastChartsPeriodType)
+            TimePeriodType.valueOf(lastPeriodType)
         } catch (e: IllegalArgumentException) {
             if (Scrobblables.current is ListenBrainz)
                 TimePeriodType.LISTENBRAINZ

@@ -8,6 +8,7 @@ import androidx.annotation.PluralsRes
 import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.scrobbleable.ListenbrainzRanges
 import de.umass.lastfm.Period
 import kotlinx.parcelize.Parcelize
@@ -26,7 +27,7 @@ class TimePeriodsGenerator(
     private val anchorTime: Long,
     private val contextForFormatter: Context?
 ) {
-    private val cal by lazy { Calendar.getInstance() }
+    private val cal by lazy { Calendar.getInstance().setUserFirstDayOfWeek() }
 
     val days
         get(): List<TimePeriod> {

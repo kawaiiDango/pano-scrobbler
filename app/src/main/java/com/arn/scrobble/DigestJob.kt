@@ -19,6 +19,7 @@ import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.Stuff.scheduleExpeditedCompat
 import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.ListenbrainzRanges
@@ -38,7 +39,7 @@ class DigestJob : JobService() {
 
     private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
     private val prefs = App.prefs
-    private val cal by lazy { Calendar.getInstance() }
+    private val cal by lazy { Calendar.getInstance().setUserFirstDayOfWeek() }
 
     override fun onStartJob(jp: JobParameters): Boolean {
         scheduleAlarms(applicationContext)
@@ -242,11 +243,11 @@ class DigestJob : JobService() {
             val now = System.currentTimeMillis()
 
             val cal = Calendar.getInstance()
-            cal.firstDayOfWeek = Calendar.MONDAY
+            cal.setUserFirstDayOfWeek()
+            cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
 
             cal.setMidnight()
 
-            cal[Calendar.DAY_OF_WEEK] = Calendar.MONDAY
             cal.add(Calendar.WEEK_OF_YEAR, 1)
             cal.add(Calendar.SECOND, secondsToAdd)
             if (cal.timeInMillis < now)

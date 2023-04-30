@@ -210,6 +210,10 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
+        mainNotifierViewModel.canIndex.observe(this) {
+            binding.sidebarNav.menu.findItem(R.id.nav_do_index)?.isVisible = it
+        }
+
         billingViewModel.proStatus.observe(this) {
             if (it == true) {
                 binding.sidebarNav.menu.removeItem(R.id.nav_pro)

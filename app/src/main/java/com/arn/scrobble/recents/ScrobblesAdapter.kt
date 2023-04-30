@@ -439,12 +439,14 @@ class ScrobblesAdapter(
                 UiUtils.nowPlayingAnim(binding.recentsPlaying, false)
             }
 
-            if (track.isLoved) {
-                if (binding.recentsImgOverlay.background == null)
-                    binding.recentsImgOverlay.background = ContextCompat.getDrawable(
-                        binding.recentsImgOverlay.context,
+            if (track.isLoved || track.isHated) {
+                binding.recentsImgOverlay.background = ContextCompat.getDrawable(
+                    binding.recentsImgOverlay.context,
+                    if (track.isLoved)
                         R.drawable.vd_heart_stroked
-                    )
+                    else
+                        R.drawable.vd_heart_break_stroked
+                )
                 binding.recentsImgOverlay.visibility = View.VISIBLE
             } else {
                 binding.recentsImgOverlay.visibility = View.INVISIBLE

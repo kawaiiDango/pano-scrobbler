@@ -11,6 +11,7 @@ import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.scheduleExpeditedCompat
 import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
@@ -88,7 +89,7 @@ class ChartsWidgetUpdaterJob : JobService() {
                 val timePeriod = widgetTimePeriods.periodsMap[periodStr]
                     ?: widgetTimePeriods.periodsMap[Period.ONE_MONTH.string]!! // default to 1 month
 
-                val cal = Calendar.getInstance()
+                val cal = Calendar.getInstance().setUserFirstDayOfWeek()
                 cal.setMidnight()
 
                 val prevTimePeriod =

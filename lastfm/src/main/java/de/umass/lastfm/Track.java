@@ -53,6 +53,10 @@ public class Track extends MusicEntry {
         return score;
     }
 
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     public boolean isLastScrobbleOfTheDay() {
         return lastScrobbleOfTheDay;
     }
@@ -85,7 +89,6 @@ public class Track extends MusicEntry {
 
 	private boolean fullTrackAvailable;
 	private boolean nowPlaying;
-    private boolean loved = false;
     private boolean lastScrobbleOfTheDay = false;
 
 	private Date playedWhen;
@@ -107,7 +110,7 @@ public class Track extends MusicEntry {
 	}
 
 	public Track(int id, String name, String url, String mbid, String msid, int playcount,
-                 int userPlaycount, boolean isLoved, int score,
+                 int userPlaycount, int score,
                  int listeners, int duration, boolean streamable,
                     String album, String albumMbid,
 					String artist, String artistUrl, String artistMbid, Date playedWhen,
@@ -122,7 +125,6 @@ public class Track extends MusicEntry {
 		this.nowPlaying = nowPlaying;
         this.playedWhen = playedWhen;
         this.duration = duration;
-        this.loved = isLoved;
         this.userPlaycount = userPlaycount;
         this.album = album;
         this.albumMbid = albumMbid;
@@ -130,11 +132,18 @@ public class Track extends MusicEntry {
 	}
 
     public boolean isLoved() {
-        return loved;
+        return score == 1;
+    }
+
+    public boolean isHated() {
+        return score == -1;
     }
 
     public void setLoved(boolean loved) {
-        this.loved = loved;
+        this.score = 1;
+    }
+    public void setHated(boolean hated) {
+        this.score = -1;
     }
 
     public void setNowPlaying(boolean nowPlaying) {
@@ -785,7 +794,7 @@ public class Track extends MusicEntry {
 
 	@Override
 	public String toString() {
-		return "Track[name=" + name + ",artist=" + artist + ", album=" + album + ", albumArtist=" + albumArtist + ", loved=" + loved + ", position=" + position + ", duration=" + duration
+		return "Track[name=" + name + ",artist=" + artist + ", album=" + album + ", albumArtist=" + albumArtist + ", score=" + score + ", position=" + position + ", duration=" + duration
 				+ ", location=" + location + ", nowPlaying=" + nowPlaying + ", fullTrackAvailable=" + fullTrackAvailable + ", playedWhen="
 				+ playedWhen + ", artistMbId=" + artistMbid + ", albumMbId=" + albumMbid + "]";
 	}
@@ -841,7 +850,8 @@ public class Track extends MusicEntry {
                 loved = element.getChild("userloved");
 			if (loved != null) {
 				String s = loved.getText();
-				track.loved = s != null && Integer.parseInt(s) == 1;
+				boolean isLoved = s != null && Integer.parseInt(s) == 1;
+                track.score = isLoved ? 1 : 0;
 			}
 			return track;
 		}

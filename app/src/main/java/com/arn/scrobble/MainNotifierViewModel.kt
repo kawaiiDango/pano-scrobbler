@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pending.PendingScrService
+import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.FabData
 import com.hadilq.liveevent.LiveEvent
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 
 class MainNotifierViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -31,6 +33,8 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
         )
     }
 
+    val canIndex by lazy { MutableLiveData(false) }
+
     val fabData by lazy { MutableLiveData<FabData>() }
 
     val editData by lazy { LiveEvent<Track>() }
@@ -38,6 +42,12 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     lateinit var currentUser: UserSerializable
 
     private var prevDrawerUser: UserSerializable? = null
+
+    fun updateCanIndex() {
+        canIndex.value = BuildConfig.DEBUG && Scrobblables.current is Lastfm &&
+                System.currentTimeMillis() - (prefs.lastMaxIndexTime
+            ?: 0) > TimeUnit.MINUTES.toMillis(30)
+    }
 
     fun initializeCurrentUser(user: UserSerializable) {
         if (!::currentUser.isInitialized)

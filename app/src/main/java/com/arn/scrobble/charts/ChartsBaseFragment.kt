@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.R
@@ -65,14 +66,11 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
     private fun optionsMenuSelected(menuItemId: Int) {
         when (menuItemId) {
             R.id.menu_collage -> {
-                CollageGeneratorFragment()
-                    .apply {
-                        arguments = Bundle().apply {
-                            putSingle(viewModel.selectedPeriod.value ?: return)
-                            putInt(Stuff.ARG_TYPE, chartsType)
-                        }
-                    }
-                    .show(childFragmentManager, null)
+                val arguments = Bundle().apply {
+                    putSingle(viewModel.selectedPeriod.value ?: return)
+                    putInt(Stuff.ARG_TYPE, chartsType)
+                }
+                findNavController().navigate(R.id.collageGeneratorFragment, arguments)
             }
 
             R.id.menu_legend -> {

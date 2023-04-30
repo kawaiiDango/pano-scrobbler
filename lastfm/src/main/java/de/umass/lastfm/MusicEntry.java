@@ -95,6 +95,10 @@ public abstract class MusicEntry extends ImageHolder {
 		return mbid;
 	}
 
+    public void setMbid(String mbid) {
+        this.mbid = mbid;
+    }
+
 	public String getName() {
 		return name;
 	}

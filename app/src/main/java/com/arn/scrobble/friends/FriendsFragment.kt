@@ -191,7 +191,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             viewModel.total = it.total
             viewModel.hasLoaded = true
 
-            if (viewModel.total > 0)
+            if (viewModel.total > 0 && isResumed)
                 setTitle(
                     resources.getQuantityString(
                         R.plurals.num_friends,

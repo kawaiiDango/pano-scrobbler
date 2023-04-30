@@ -1184,6 +1184,8 @@ class LFMRequester(
                                 .putSingle(
                                     ScrobbleError(
                                         context.getString(R.string.parse_error),
+                                        null,
+                                        trackInfo.packageName,
                                         canForceScrobble = forceable
                                     )
                                 )
@@ -1291,6 +1293,8 @@ class LFMRequester(
                                     .putSingle(
                                         ScrobbleError(
                                             context.getString(R.string.state_unrecognised_artist),
+                                            null,
+                                            trackInfo.packageName,
                                             canForceScrobble = forceable
                                         )
                                     )
@@ -1387,6 +1391,7 @@ class LFMRequester(
                                     ScrobbleError(
                                         "",
                                         failedText,
+                                        trackInfo.packageName,
                                         canForceScrobble = forceable
                                     )
                                 )
@@ -1400,6 +1405,7 @@ class LFMRequester(
                                         else
                                             "",
                                         failedText,
+                                        trackInfo.packageName,
                                     )
                                 )
                         }

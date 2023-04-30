@@ -108,6 +108,10 @@
             android:dependency="show_scrobble_sources"
             android:persistent="true"/>
 
+        <Preference
+            android:title="@string/pref_first_day_of_week"
+            android:key="first_day_of_week"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

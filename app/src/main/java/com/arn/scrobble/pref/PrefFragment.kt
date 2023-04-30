@@ -186,9 +186,9 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val changeLocalePref = findPreference<Preference>(MainPrefs.PREF_LOCALE)!!
 
-        val _entryValues = LocaleUtils.localesSet.toTypedArray()
+        val _localeEntryValues = LocaleUtils.localesSet.toTypedArray()
         var prevLang = ""
-        val _entries = _entryValues.map {
+        val _localeEntries = _localeEntryValues.map {
             val locale = Locale.forLanguageTag(it)
 
             val displayStr = when {
@@ -205,8 +205,8 @@ class PrefFragment : PreferenceFragmentCompat() {
             displayStr
         }.toTypedArray()
 
-        val entries = arrayOf(getString(R.string.auto)) + _entries
-        val entryValues = arrayOf("auto") + _entryValues
+        val localeEntries = arrayOf(getString(R.string.auto)) + _localeEntries
+        val localeEntryValues = arrayOf("auto") + _localeEntryValues
         var currentLocale = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
             prefs.locale
         else {
@@ -219,21 +219,24 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         currentLocale = currentLocale ?: "auto"
 
-        val checkedIndex = entryValues.indexOf(currentLocale)
+        val checkedLocaleIndex = localeEntryValues.indexOf(currentLocale)
 
         changeLocalePref.setSummaryProvider { preference ->
-            var idx = entryValues.indexOf(currentLocale)
+            var idx = localeEntryValues.indexOf(currentLocale)
             if (idx == -1)
                 idx = 0 // choose "Auto"
-            entries[idx]
+            localeEntries[idx]
         }
         changeLocalePref.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.pref_change_locale)
-                    .setSingleChoiceItems(entries, checkedIndex) { dialogInterface, idx ->
+                    .setSingleChoiceItems(
+                        localeEntries,
+                        checkedLocaleIndex
+                    ) { dialogInterface, idx ->
                         dialogInterface.dismiss()
-                        val newLocale = entryValues[idx]
+                        val newLocale = localeEntryValues[idx]
                         if (currentLocale != newLocale) {
                             prefs.locale = newLocale
                             requireContext().setLocaleCompat(force = true)
@@ -243,6 +246,50 @@ class PrefFragment : PreferenceFragmentCompat() {
                     .show()
                 true
             }
+
+
+        val startOfWeekPref = findPreference<Preference>(MainPrefs.PREF_FIRST_DAY_OF_WEEK)!!
+        val cal = Calendar.getInstance()
+        cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
+
+        val weekAutoText = getString(R.string.auto) + " - " + cal.getDisplayName(
+            Calendar.DAY_OF_WEEK,
+            Calendar.LONG,
+            Locale.getDefault()
+        )
+        val weeksMap = mutableMapOf(0 to weekAutoText)
+        weeksMap.putAll(
+            cal.getDisplayNames(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())!!
+                .entries
+                .associateBy({ it.value }) { it.key }
+                .toSortedMap()
+        )
+
+        startOfWeekPref.setSummaryProvider {
+            weeksMap[prefs.firstDayOfWeek] ?: getString(R.string.auto)
+        }
+
+        val checkedWeekIndex = prefs.firstDayOfWeek.coerceIn(0..7)
+
+        startOfWeekPref.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.pref_first_day_of_week)
+                    .setSingleChoiceItems(
+                        weeksMap.values.toTypedArray(),
+                        checkedWeekIndex
+                    ) { dialogInterface, idx ->
+                        dialogInterface.dismiss()
+                        if (checkedWeekIndex != idx) {
+                            prefs.firstDayOfWeek = idx
+                            requireActivity().recreate()
+                        }
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+                true
+            }
+
 
         val appList = findPreference<Preference>(MainPrefs.PREF_ALLOWED_PACKAGES)!!
         appList.setOnPreferenceClickListener {
@@ -378,17 +425,6 @@ class PrefFragment : PreferenceFragmentCompat() {
                 true
             }
         hideOnTV.add(findPreference("imexport")!!)
-
-
-        initAuthConfirmation("lastfm", AccountType.LASTFM)
-
-        initAuthConfirmation("librefm", AccountType.LIBREFM)
-
-        initAuthConfirmation("gnufm", AccountType.GNUFM)
-
-        initAuthConfirmation("listenbrainz", AccountType.LISTENBRAINZ)
-
-        initAuthConfirmation("lb", AccountType.CUSTOM_LISTENBRAINZ)
 
         findPreference<Preference>(MainPrefs.PREF_INTENTS)!!
             .setOnPreferenceClickListener {
@@ -611,7 +647,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                                 popBackStack(R.id.myHomePagerFragment, true)
                                 navigate(R.id.onboardingFragment)
                             }
-                        } else if(currentAccount != prevAccount) {
+                        } else if (currentAccount != prevAccount) {
                             findNavController().apply {
                                 popBackStack(R.id.myHomePagerFragment, true)
                                 navigate(R.id.myHomePagerFragment)
@@ -765,6 +801,16 @@ class PrefFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+
+        initAuthConfirmation("lastfm", AccountType.LASTFM)
+
+        initAuthConfirmation("librefm", AccountType.LIBREFM)
+
+        initAuthConfirmation("gnufm", AccountType.GNUFM)
+
+        initAuthConfirmation("listenbrainz", AccountType.LISTENBRAINZ)
+
+        initAuthConfirmation("lb", AccountType.CUSTOM_LISTENBRAINZ)
     }
 
     companion object {

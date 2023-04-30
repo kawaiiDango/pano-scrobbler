@@ -141,8 +141,7 @@ object Scrobblables {
     }
 
     fun add(userAccount: UserAccountSerializable) {
-        val prefs = App.prefs
-        prefs.scrobbleAccounts += userAccount
+        App.prefs.scrobbleAccounts += userAccount
         updateScrobblables()
     }
 

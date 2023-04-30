@@ -113,7 +113,7 @@ data class ListenBrainzFeedbackPayload(
     val recording_mbid: String?,
     val recording_msid: String?,
     val score: Int,
-    val track_metadata: ListenBrainzTrackMetadata
+    val track_metadata: ListenBrainzTrackMetadata?
 )
 
 @Serializable

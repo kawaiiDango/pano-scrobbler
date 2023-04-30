@@ -175,7 +175,7 @@ class SessListener(
             scheduleSyntheticStateIfNeeded()
 
             trackInfo.playStartTime = System.currentTimeMillis()
-            scrobbleHandler.remove(trackInfo.lastScrobbleHash, false)
+            scrobbleHandler.remove(trackInfo.lastScrobbleHash)
 
             scrobbleHandler.nowPlaying(trackInfo)
 
@@ -445,7 +445,7 @@ class SessListener(
             }
             if (trackInfo.packageName in Stuff.needSyntheticStates)
                 syntheticStateHandler.removeCallbacksAndMessages(null)
-            scrobbleHandler.remove(trackInfo.lastScrobbleHash)
+            scrobbleHandler.remove(trackInfo.lastScrobbleHash, trackInfo.packageName)
             if (isMuted)
                 unmute(clearMutedHash = false)
         }

@@ -1,6 +1,5 @@
 package com.arn.scrobble.search
 
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
@@ -224,30 +223,6 @@ class SearchFragment : Fragment() {
 
             binding.searchResultsList.scheduleLayoutAnimation()
         }
-
-        viewModel.indexingProgress.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            val progressInt = (binding.searchProgress.max * it).toInt()
-            binding.searchResultsList.visibility = View.GONE
-            binding.searchProgress.isIndeterminate = progressInt == 0
-            if (progressInt == 0)
-                binding.searchProgress.show()
-            ObjectAnimator.ofInt(binding.searchProgress, "progress", progressInt).apply {
-                duration = 150
-                start()
-            }
-            if (progressInt == binding.searchProgress.max && !binding.searchEdittext.text.isNullOrBlank()) {
-                viewModel.loadSearches(binding.searchEdittext.text.toString(), prefs.searchType)
-                // prevent progress bar from showing
-            }
-        }
-
-        viewModel.indexingError.observe(viewLifecycleOwner) { exception ->
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(exception.message)
-                .setIcon(R.drawable.vd_error)
-                .show()
-        }
     }
 
     private fun updateSearchHistory() {
@@ -267,10 +242,12 @@ class SearchFragment : Fragment() {
         lastTimerJob?.cancel()
 
         binding.searchResultsList.visibility = View.GONE
-        binding.searchProgress.show()
+
         if (prefs.searchType == SearchResultsAdapter.SearchType.LOCAL && prefs.lastMaxIndexTime == null)
-            viewModel.fullIndex()
-        else
+            findNavController().navigate(R.id.indexingDialogFragment)
+        else {
+            binding.searchProgress.show()
             viewModel.loadSearches(term, prefs.searchType)
+        }
     }
 }

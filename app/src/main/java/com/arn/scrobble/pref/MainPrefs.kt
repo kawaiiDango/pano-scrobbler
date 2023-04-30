@@ -59,6 +59,7 @@ class MainPrefs(context: Context) : Krate {
     var searchType by kotlinxPref<SearchResultsAdapter.SearchType>(PREF_SEARCH_TYPE).withDefault(
         SearchResultsAdapter.SearchType.GLOBAL
     )
+    var firstDayOfWeek by intPref(PREF_FIRST_DAY_OF_WEEK).withDefault(0)
 
     var locale by stringPref(PREF_LOCALE)
     var showAlbumInRecents by booleanPref(PREF_SHOW_RECENTS_ALBUM).withDefault(false)
@@ -73,12 +74,21 @@ class MainPrefs(context: Context) : Krate {
         !(allowedPackages.isEmpty() && blockedPackages.isEmpty())
     )
     var lastHomePagerTab by intPref(PREF_ACTIVITY_LAST_TAB).withDefault(0)
+
     var lastChartsPeriodType by stringPref(PREF_ACTIVITY_LAST_CHARTS_PERIOD_TYPE).withDefault(
         TimePeriodType.CONTINUOUS.name
     )
     var lastChartsPeriodSelectedJson by kotlinxPref<TimePeriod>(
         PREF_ACTIVITY_LAST_CHARTS_PERIOD_SELECTED
     ).withDefault(TimePeriod(Period.ONE_MONTH))
+
+    var lastRandomPeriodType by stringPref(PREF_ACTIVITY_LAST_RANDOM_PERIOD_TYPE).withDefault(
+        TimePeriodType.CONTINUOUS.name
+    )
+    var lastRandomPeriodSelectedJson by kotlinxPref<TimePeriod>(
+        PREF_ACTIVITY_LAST_RANDOM_PERIOD_SELECTED
+    ).withDefault(TimePeriod(Period.OVERALL))
+
     var currentAccountIdx by intPref(PREF_CURRENT_USER_IDX).withDefault(0)
     var scrobbleAccounts by kotlinxPref<List<UserAccountSerializable>>(PREF_SCROBBLE_ACCOUNTS).withDefault(
         listOf()
@@ -208,6 +218,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
         const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"
         const val PREF_SCROBBLE_SPOTIFY_REMOTE = "scrobble_spotify_remote"
+        const val PREF_FIRST_DAY_OF_WEEK = "first_day_of_week"
 
         const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
         const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"
@@ -223,6 +234,8 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_ACTIVITY_LAST_TAB = "last_tab"
         const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_SELECTED = "last_charts_period_selected"
         const val PREF_ACTIVITY_LAST_CHARTS_PERIOD_TYPE = "last_charts_period_type"
+        const val PREF_ACTIVITY_LAST_RANDOM_PERIOD_SELECTED = "last_random_period_selected"
+        const val PREF_ACTIVITY_LAST_RANDOM_PERIOD_TYPE = "last_random_period_type"
         const val PREF_ACTIVITY_DRAWER_DATA_CACHED = "drawer_data_cached"
         const val PREF_ACTIVITY_SCROBBLING_SINCE = "scrobbling_since"
         const val PREF_ACTIVITY_LAST_RANDOM_TYPE = "random_type"

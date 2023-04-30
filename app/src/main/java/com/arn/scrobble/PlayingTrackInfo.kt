@@ -1,6 +1,5 @@
 package com.arn.scrobble
 
-import android.os.Bundle
 import android.os.Parcelable
 import de.umass.lastfm.scrobble.ScrobbleData
 import kotlinx.parcelize.Parcelize
@@ -91,6 +90,7 @@ data class PlayingTrackInfo(
 @Parcelize
 data class ScrobbleError(
     val title: String,
-    val description: String? = null,
+    val description: String?,
+    val packageName: String,
     val canForceScrobble: Boolean = true,
 ) : Parcelable

@@ -12,12 +12,12 @@
             android:id="@+id/nav_search"
             android:icon="@drawable/vd_search"
             android:title="@string/search"/>
+        <item
+            android:id="@+id/nav_do_index"
+            android:icon="@drawable/vd_arrow_downward"
+            android:title="@string/do_index"/>
     </group>
     <group android:id="@+id/nav_group_4">
-        <item
-            android:id="@+id/nav_report"
-            android:icon="@drawable/vd_bug"
-            android:title="@string/bug_report"/>
         <item
             android:id="@+id/nav_pro"
             android:icon="@drawable/vd_medal"
@@ -26,6 +26,10 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/vd_settings"
             android:title="@string/settings"/>
+        <item
+            android:id="@+id/nav_report"
+            android:icon="@drawable/vd_bug"
+            android:title="@string/bug_report"/>
     </group>
 
 </menu>

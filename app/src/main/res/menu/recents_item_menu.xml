@@ -8,6 +8,11 @@
         android:icon="@drawable/vd_heart"
         android:title="@string/love"/>
     <item
+        android:id="@+id/menu_hate"
+        app:iconTint="?android:colorForeground"
+        android:icon="@drawable/vd_heart_break_outline"
+        android:title="@string/hate"/>
+    <item
         android:id="@+id/menu_edit"
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_edit"

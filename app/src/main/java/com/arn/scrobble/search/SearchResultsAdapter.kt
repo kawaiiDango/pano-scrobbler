@@ -5,7 +5,6 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -21,7 +20,6 @@ import com.arn.scrobble.ui.SectionWithHeader
 import com.arn.scrobble.ui.SectionedVirtualList
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.umass.lastfm.Album
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.MusicEntry
@@ -166,8 +164,8 @@ class SearchResultsAdapter(
                     header = ExpandableHeader(
                         R.drawable.vd_info,
                         lastIndexedInfo,
-                        "⋮",
-                        "⋮",
+                        "",
+                        "",
                     ),
                     showHeaderWhenEmpty = true
                 )
@@ -256,45 +254,7 @@ class SearchResultsAdapter(
             )
             binding.headerText.text = headerData.title
 
-            if (headerData.section.sectionId == Section.REINDEX) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    binding.headerText.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
-                }
-
-                binding.headerAction.setOnClickListener {
-                    val prefs = App.prefs
-                    val popup = PopupMenu(binding.headerAction.context, binding.headerAction)
-                    popup.inflate(R.menu.indexing_menu)
-
-                    if (prefs.lastMaxIndexTime == null)
-                        popup.menu.removeItem(R.id.menu_quick_index)
-
-                    if (prefs.lastFullIndexTime != null && System.currentTimeMillis() - prefs.lastFullIndexTime!! < Stuff.FULL_INDEX_ALLOWED_INTERVAL)
-                        popup.menu.removeItem(R.id.menu_full_index)
-
-                    popup.setOnMenuItemClickListener {
-                        when (it.itemId) {
-                            R.id.menu_quick_index -> {
-                                viewModel.deltaIndex()
-                            }
-
-                            R.id.menu_full_index -> {
-                                MaterialAlertDialogBuilder(binding.headerAction.context)
-                                    .setMessage("⚠ " + binding.root.context.getString(R.string.full_index_desc))
-                                    .setIcon(R.drawable.vd_error)
-                                    .setPositiveButton(R.string.full_index) { _, _ ->
-                                        viewModel.fullIndex()
-                                    }
-                                    .setNegativeButton(android.R.string.cancel, null)
-                                    .show()
-
-                            }
-                        }
-                        true
-                    }
-                    popup.show()
-                }
-            } else {
+            if (headerData.section.sectionId != Section.REINDEX) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.headerText.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleMedium)
                 }

@@ -28,14 +28,13 @@
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/ctl"
-            style="?collapsingToolbarLayoutLargeStyle"
+            style="?collapsingToolbarLayoutMediumStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             app:collapsedTitleTextColor="?colorPrimary"
             app:contentScrim="@android:color/transparent"
             app:expandedTitleTextColor="?colorPrimary"
-            app:forceApplySystemWindowInsetTop="true"
             app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:statusBarScrim="?android:colorBackground">
 

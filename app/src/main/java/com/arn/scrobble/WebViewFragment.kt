@@ -159,7 +159,6 @@ class WebViewFragment : Fragment() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
 
             if (
-//                url.startsWith("${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/") ||
                 url.startsWith("https://www.last.fm/join") ||
                 url.startsWith("https://secure.last.fm/settings/lostpassword")
             ) {

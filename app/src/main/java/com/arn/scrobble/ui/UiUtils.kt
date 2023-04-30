@@ -560,10 +560,10 @@ object UiUtils {
         )
     }
 
-    fun BottomSheetDialogFragment.expandIfNeeded() {
+    fun BottomSheetDialogFragment.expandIfNeeded(force: Boolean = false) {
         val bottomSheetView =
             dialog!!.window!!.decorView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-        if (view?.isInTouchMode == false || Stuff.hasMouse)
+        if (view?.isInTouchMode == false || Stuff.hasMouse || force)
             BottomSheetBehavior.from(bottomSheetView).state =
                 BottomSheetBehavior.STATE_EXPANDED
     }

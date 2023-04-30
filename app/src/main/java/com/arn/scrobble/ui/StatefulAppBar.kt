@@ -84,12 +84,7 @@ class StatefulAppBar : AppBarLayout, AppBarLayout.OnOffsetChangedListener {
             else
                 context.resources.getDimensionPixelSize(R.dimen.app_bar_height)
         } else {
-            context.getDimenFromAttr(
-                if (UiUtils.isTabletUi)
-                    com.google.android.material.R.attr.collapsingToolbarLayoutMediumSize
-                else
-                    com.google.android.material.R.attr.collapsingToolbarLayoutLargeSize
-            )
+            context.getDimenFromAttr(com.google.android.material.R.attr.collapsingToolbarLayoutMediumSize)
         }
 
         val prevHeight = ctl.layoutParams.height

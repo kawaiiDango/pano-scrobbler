@@ -53,6 +53,18 @@ class RandomFragment : ChartsPeriodFragment() {
         )
     }
 
+    override var lastPeriodSelectedJson
+        get() = App.prefs.lastRandomPeriodSelectedJson
+        set(value) {
+            App.prefs.lastRandomPeriodSelectedJson = value
+        }
+
+    override var lastPeriodType
+        get() = App.prefs.lastRandomPeriodType
+        set(value) {
+            App.prefs.lastRandomPeriodType = value
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
@@ -90,7 +102,12 @@ class RandomFragment : ChartsPeriodFragment() {
                 binding.randomizeText.context,
                 activityViewModel.currentUser
             ) {
-                binding.randomizeText.setCompoundDrawablesRelativeWithIntrinsicBounds(it, null, null, null)
+                binding.randomizeText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    it,
+                    null,
+                    null,
+                    null
+                )
             }
         }
 
@@ -130,7 +147,7 @@ class RandomFragment : ChartsPeriodFragment() {
             viewModel.totalCount = it.total
 
             if (it.entry != null) {
-                prefs.lastRandomType = it.type
+                App.prefs.lastRandomType = it.type
                 setData(it.entry)
             } else {
                 doneLoading(R.string.charts_no_data)
@@ -143,7 +160,7 @@ class RandomFragment : ChartsPeriodFragment() {
             doneLoading(R.string.network_error)
         }
 
-        val type = arguments?.getInt(Stuff.ARG_TYPE) ?: prefs.lastRandomType
+        val type = arguments?.getInt(Stuff.ARG_TYPE) ?: App.prefs.lastRandomType
 
         buttonToTypeBimap.inverse[type]?.let { id ->
             binding.randomScrobbleTypeGroup.check(id)

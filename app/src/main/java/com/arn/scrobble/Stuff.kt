@@ -108,7 +108,7 @@ object Stuff {
     const val CROSSFADE_DURATION = 200
     const val MAX_PATTERNS = 30
     const val MAX_PINNED_FRIENDS = 10
-    const val MAX_INDEXED_ITEMS = 5000
+    const val MAX_INDEXED_ITEMS = 10000
     const val MAX_CHARTS_NUM_COLUMNS = 6
     const val MIN_CHARTS_NUM_COLUMNS = 1
     const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000
@@ -684,6 +684,12 @@ object Stuff {
         this[Calendar.MINUTE] = 0
         this[Calendar.SECOND] = 0
         this[Calendar.MILLISECOND] = 0
+    }
+
+    fun Calendar.setUserFirstDayOfWeek(): Calendar {
+        if (App.prefs.firstDayOfWeek >= Calendar.SUNDAY)
+            firstDayOfWeek = App.prefs.firstDayOfWeek
+        return this
     }
 
     fun String.isUrlOrDomain(): Boolean {

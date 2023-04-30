@@ -88,7 +88,7 @@ class HiddenTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
         super.onDismiss(dialog)
         val prevTags = arguments?.getStringArray(PREV_TAGS)?.toHashSet() ?: emptySet()
         if (prevTags != prefs.hiddenTags) {
-            val parentViewModel by viewModels<ChartsVM>({ requireParentFragment() })
+            val parentViewModel by viewModels<ChartsOverviewVM>({ requireParentFragment() })
             parentViewModel.tagCloudRefresh.value = Unit
         }
     }

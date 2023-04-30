@@ -132,6 +132,9 @@ open class GnuFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount
 
             pr.isStale =
                 _session.result.isFromCache && _session.cacheStrategy == Caller.CacheStrategy.CACHE_FIRST
+            pr.pageResults?.forEach {
+                it.mbid = null // remove unreliable mbid from lastfm
+            }
             return@coroutineScope pr
         }
     }
@@ -162,6 +165,7 @@ open class GnuFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount
         pr.pageResults.forEach {
             it.isLoved = true
             it.imageUrlsMap = null
+            it.mbid = null
         }
         pr.isStale =
             _session.result.isFromCache && _session.cacheStrategy == Caller.CacheStrategy.CACHE_FIRST

@@ -397,7 +397,7 @@ class NLService : NotificationListenerService() {
                 Stuff.log("${this::scrobbleFromNoti.name} $notiText removed=$removed")
 
                 if (removed) {
-                    scrobbleHandler.remove(trackInfo?.hash ?: return)
+                    scrobbleHandler.remove(trackInfo?.hash ?: return, trackInfo.packageName)
                     return
                 }
                 val meta = MetadataUtils.scrobbleFromNotiExtractMeta(
@@ -419,7 +419,7 @@ class NLService : NotificationListenerService() {
                         }
                     } else {
                         // different song, scrobble it
-                        trackInfo?.let { scrobbleHandler.remove(it.hash, false) }
+                        trackInfo?.let { scrobbleHandler.remove(it.hash) }
                         val newTrackInfo = PlayingTrackInfo(
                             playStartTime = System.currentTimeMillis(),
                             hash = hash,
@@ -474,8 +474,8 @@ class NLService : NotificationListenerService() {
                 Stuff.updateCurrentOrImmutable
             )
             Stuff.getNotificationAction(
-                R.drawable.vd_heart_break,
-                "\uD83D\uDC94",
+                R.drawable.vd_heart_filled,
+                "\uD83E\uDD0D",
                 getString(R.string.unlove),
                 loveIntent
             )
@@ -504,7 +504,11 @@ class NLService : NotificationListenerService() {
         i = Intent(iCANCEL)
             .setPackage(packageName)
             .putExtra(B_HASH, trackInfo.hash)
-            .putSingle(ScrobbleError(getString(R.string.state_unscrobbled)))
+            .putSingle(ScrobbleError(
+                getString(R.string.state_unscrobbled),
+                null,
+                trackInfo.packageName,
+            ))
 
         val cancelToastIntent = PendingIntent.getBroadcast(
             applicationContext, 5, i,
@@ -585,12 +589,12 @@ class NLService : NotificationListenerService() {
         }
 
         try {
-            nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.buildMediaStyleMod())
+            nm.notify(trackInfo.packageName, 0, nb.buildMediaStyleMod())
         } catch (e: RuntimeException) {
             val nExpandable = nb.setLargeIcon(null)
                 .setStyle(null)
                 .build()
-            nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nExpandable)
+            nm.notify(trackInfo.packageName, 0, nExpandable)
         }
     }
 
@@ -626,9 +630,9 @@ class NLService : NotificationListenerService() {
                     .setBigContentTitle(scrobbleError.title)
                     .bigText(subtitleSpanned)
             )
-        scrobbleHandler.remove(trackInfo.hash, false)
+        scrobbleHandler.remove(trackInfo.hash)
 
-        nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
+        nm.notify(trackInfo.packageName, 0, nb.build())
         sessListener?.findTrackInfoByHash(trackInfo.hash)?.markAsScrobbled()
     }
 
@@ -660,7 +664,7 @@ class NLService : NotificationListenerService() {
                 .bigText(spanned)
         )
 
-        nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
+        nm.notify(scrobbleError.packageName, 0, nb.build())
     }
 
     private fun notifyUnscrobbled(hash: Int) {
@@ -693,9 +697,9 @@ class NLService : NotificationListenerService() {
             .setContentTitle(getString(R.string.state_unscrobbled) + " • " + getString(R.string.blocked_metadata_noti))
             .setContentIntent(blockPi)
             .setTimeoutAfter(delay)
-        nm.notify(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0, nb.build())
+        nm.notify(trackInfo.packageName, 0, nb.build())
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            scrobbleHandler.postDelayed({ nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0) }, delay)
+            scrobbleHandler.postDelayed({ nm.cancel(trackInfo.packageName, 0) }, delay)
     }
 
     private fun notifyAppDetected(pkgName: String) {
@@ -804,10 +808,11 @@ class NLService : NotificationListenerService() {
                         hash = trackInfo.hash
                         if (!scrobbleHandler.has(hash))
                             return
-                        nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0)
+                        nm.cancel(trackInfo.packageName, 0)
                         trackInfo.markAsScrobbled()
                     } else {
                         hash = intent.getIntExtra(B_HASH, 0)
+                        val packageName = intent.getStringExtra(B_PACKAGE_NAME)
                         val trackInfo = sessListener?.findTrackInfoByHash(hash)
                         if (scrobbleHandler.has(hash)) {
                             trackInfo?.markAsScrobbled()
@@ -824,7 +829,7 @@ class NLService : NotificationListenerService() {
                         notifyUnscrobbled(hash)
                     }
 
-                    scrobbleHandler.remove(hash, false)
+                    scrobbleHandler.remove(hash)
                 }
 
                 iLOVE, iUNLOVE -> {
@@ -1105,15 +1110,14 @@ class NLService : NotificationListenerService() {
             trackInfo.markAsScrobbled()
         }
 
-        fun remove(hash: Int, removeNoti: Boolean = true) {
+        fun remove(hash: Int, notificationPackageNameToRemove: String? = null) {
             if (hash == lockedHash) return
             
-            Stuff.log("$hash cancelled")
+            Stuff.log("$hash from $notificationPackageNameToRemove cancelled")
             tracksCopyPQ.removeAll { it.hash == hash }
             sessListener?.findTrackInfoByHash(hash)?.isPlaying = false
-            if (removeNoti)
-                nm.cancel(MainPrefs.CHANNEL_NOTI_SCROBBLING, 0)
-//              broadcastNowPlayingInfo()
+            if (notificationPackageNameToRemove != null)
+                nm.cancel(notificationPackageNameToRemove, 0)
         }
     }
 

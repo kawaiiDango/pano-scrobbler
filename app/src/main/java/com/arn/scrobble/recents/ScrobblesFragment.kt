@@ -12,7 +12,6 @@ import android.os.Parcel
 import android.transition.Fade
 import android.transition.TransitionManager
 import android.util.DisplayMetrics
-import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -22,6 +21,7 @@ import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.IntRange
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
@@ -51,6 +51,8 @@ import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
+import com.arn.scrobble.scrobbleable.ListenBrainz
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
 import com.arn.scrobble.ui.FocusChangeListener
 import com.arn.scrobble.ui.ItemClickListener
@@ -71,6 +73,7 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -537,6 +540,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             loadMoreListener.isAllPagesLoaded = true
             return false
         }
+        activityViewModel.updateCanIndex()
         return true
     }
 
@@ -607,10 +611,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         }
         when (view.id) {
             R.id.recents_menu -> openTrackPopupMenu(dateFrame, item)
-            R.id.recents_img_overlay -> {
-                loveToggle(view, item)
-                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-            }
 
             else -> {
                 val lastClickedPos = viewModel.selectedPos
@@ -652,6 +652,11 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 loveMenu.icon =
                     ContextCompat.getDrawable(requireContext(), R.drawable.vd_heart_break_outline)
             }
+
+            if (track.isHated) {
+                popup.menu.findItem(R.id.menu_hate).title = getString(R.string.unhate)
+            }
+
             if (track.playedWhen == null)
                 popup.menu.removeItem(R.id.menu_delete)
 
@@ -659,15 +664,25 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 popup.menu.removeItem(R.id.menu_delete)
                 popup.menu.removeItem(R.id.menu_edit)
             }
+
+            if (Scrobblables.current !is ListenBrainz)
+                popup.menu.removeItem(R.id.menu_hate)
         }
         if (!anchor.isInTouchMode)
             popup.menuInflater.inflate(R.menu.recents_item_tv_menu, popup.menu)
 
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.menu_love -> loveToggle(
+                R.id.menu_love -> loveUnloveHate(
                     (anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay),
-                    track
+                    track,
+                    if (track.isLoved) 0 else 1
+                )
+
+                R.id.menu_hate -> loveUnloveHate(
+                    (anchor.parent as ViewGroup).findViewById(R.id.recents_img_overlay),
+                    track,
+                    if (track.isHated) 0 else -1
                 )
 
                 R.id.menu_edit -> PopupMenuUtils.editScrobble(findNavController(), track)
@@ -735,14 +750,15 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         dpd.show(parentFragmentManager, null)
     }
 
-    private fun loveToggle(loveIcon: View, track: Track) {
+    private fun loveUnloveHate(loveIcon: View, track: Track, @IntRange(-1, 1) score: Int) {
         val alphaAnimator = ObjectAnimator.ofFloat(loveIcon, "alpha", 0f)
         val scalexAnimator = ObjectAnimator.ofFloat(loveIcon, "scaleX", 0f)
         val scaleyAnimator = ObjectAnimator.ofFloat(loveIcon, "scaleY", 0f)
         val rotAnimator = ObjectAnimator.ofFloat(loveIcon, "rotation", 0f)
 
         val isRtl = resources.getBoolean(R.bool.is_rtl)
-        if (track.isLoved) {
+
+        if (score == 0) { // was loved or hated
             LFMRequester(lifecycleScope).loveOrUnlove(track, false)
 
             alphaAnimator.setFloatValues(0f)
@@ -752,11 +768,20 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             val toRot = if (isRtl) 50f else -50f
             rotAnimator.setFloatValues(startRot, toRot)
         } else {
-            if (loveIcon.background == null)
-                loveIcon.background =
-                    ContextCompat.getDrawable(requireContext(), R.drawable.vd_heart_stroked)
+            loveIcon.background = ContextCompat.getDrawable(
+                requireContext(),
+                if (score == 1)
+                    R.drawable.vd_heart_stroked
+                else
+                    R.drawable.vd_heart_break_stroked
+            )
 
-            LFMRequester(lifecycleScope).loveOrUnlove(track, true)
+            if (score == 1)
+                LFMRequester(lifecycleScope).loveOrUnlove(track, true)
+            else
+                viewModel.viewModelScope.launch(Dispatchers.IO + LFMRequester.ExceptionNotifier()) {
+                    (Scrobblables.current as? ListenBrainz)?.hate(track)
+                }
 
             loveIcon.alpha = 0f
             loveIcon.visibility = View.VISIBLE
@@ -773,7 +798,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         aSet.duration = 800
         aSet.start()
 
-        track.isLoved = !track.isLoved
+        track.score = score
     }
 
     private fun showTrackInfo(track: Track) {

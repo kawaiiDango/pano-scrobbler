@@ -16,6 +16,7 @@ plugins {
     kotlin("plugin.serialization")
     id("com.mikepenz.aboutlibraries.plugin")
     id("com.github.breadmoirai.github-release")
+    id("androidx.baselineprofile")
 }
 
 android {
@@ -84,7 +85,7 @@ android {
     }
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
+//        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -118,6 +119,8 @@ aboutLibraries {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+//    implementation("androidx.profileinstaller:profileinstaller:1.3.0")
+    "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
     implementation("androidx.core:core-ktx:1.10.0")
@@ -144,12 +147,12 @@ dependencies {
 
     implementation("com.google.android.material:material:1.9.0-rc01")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:31.4.0"))
+    implementation(platform("com.google.firebase:firebase-bom:31.5.0"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
 
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
     implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("hu.autsoft:krate:2.0.0")
     implementation("hu.autsoft:krate-kotlinx:2.0.0")
@@ -164,7 +167,7 @@ dependencies {
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-gif:$coilVersion")
 
-    val ktorVersion = "2.2.4"
+    val ktorVersion = "2.3.0"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
     implementation("io.ktor:ktor-client-android:$ktorVersion")

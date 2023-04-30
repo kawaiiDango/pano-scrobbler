@@ -16,7 +16,7 @@ buildscript {
 }
 
 plugins {
-    id("com.android.application") version "8.1.0-alpha11" apply false
+    id("com.android.application") version "8.2.0-alpha01" apply false
     kotlin("android") version "1.8.20" apply false
     id("com.google.firebase.crashlytics") version "2.9.4" apply false
     id("com.google.gms.google-services") version "4.3.15" apply false
@@ -24,6 +24,8 @@ plugins {
     kotlin("plugin.serialization") version "1.8.20" apply false
     id("com.mikepenz.aboutlibraries.plugin") version "10.6.1" apply false
     id("com.github.breadmoirai.github-release") version "2.4.1" apply false
+    id("com.android.test") version "8.2.0-alpha01" apply false
+    id("androidx.baselineprofile") version "1.2.0-alpha13" apply false
 }
 
 tasks.register<Delete>("clean").configure {

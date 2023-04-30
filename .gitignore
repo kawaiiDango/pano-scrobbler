@@ -14,6 +14,7 @@
 /app/*.json
 /app/src/test/java/com/arn/scrobble/AuthTest.kt
 /app/release-public
+/app/src/release/generated
 /app/src/main/res/**/strings-sz.xml
 /app/src/main/res/**/strings-np.xml
 /buildSrc/build/tmp

@@ -64,6 +64,10 @@
         <item quantity="one">%1$s amigo</item>
         <item quantity="other">%1$s amigos</item>
     </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s pendiente</item>
+        <item quantity="other">%1$s pendientes</item>
+    </plurals>
     <string name="yes">Si</string>
     <string name="no">No</string>
     <string name="reset">Restablecer</string>
@@ -93,9 +97,9 @@
     <string name="similar_tracks">Canciones similares</string>
     <string name="similar" comment="Similar tracks but in short">Similar</string>
     <string name="state_scrobbling">Ahora en scrobbling…</string>
-    <string name="state_scrobbled">Scrobbled</string>
-    <string name="unscrobble">Unscrobble</string>
-    <string name="state_unscrobbled">Unscrobbled</string>
+    <string name="state_scrobbled">Scrobbleado</string>
+    <string name="unscrobble">Remover scrobble</string>
+    <string name="state_unscrobbled">Scrobble removido</string>
     <string name="state_unrecognised_artist">Artista no reconocido</string>
     <string name="tap_to_edit">(Toca para editar)</string>
     <string name="recently_scrobbled">Recientemente Scrobbled</string>
@@ -120,6 +124,9 @@
     <string name="grid_size">Cambiar el tamaño de la cuadrícula</string>
     <string name="pinch_to_zoom">Pellizcar para ampliar</string>
     <string name="more_info">Más información</string>
+    <string name="more" comment="More options menu in short">Ver más</string>
+    <string name="learn" comment="(Learn java regex syntax)">Aprender</string>
+    <string name="hide">Ocultar</string>
     <string name="rank_change" comment="%1= delta change">Cambio de rango: %s</string>
     <string name="rank_change_no_change">Ningún cambio</string>
     <string name="rank_change_new">No scrobbleado en el período anterior</string>
@@ -193,6 +200,7 @@
     <string name="sort">Ordenar</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto en el tiempo</string>
     <string name="my_scrobbles">Mis scrobbles</string>
+    <string name="their_scrobbles">Sus scrobbles</string>
     <string name="listeners">Oyentes</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Colapso</string>
@@ -209,6 +217,7 @@
     <string name="months">Meses</string>
     <string name="years" comment="For the charts menu which displays year by year">Años</string>
     <string name="charts_overall">Total</string>
+    <string name="listening_activity">Actividad de escucha</string>
     <string name="charts_no_data">No hay datos para este período</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Personalizar</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continuo</string>
@@ -373,6 +382,7 @@
     <string name="pref_intents">Intentos para Tasker etc</string>
     <string name="copied">¡Copiado!</string>
     <string name="lastfm_reauth">Necesitas volver a autenticarte para editar o eliminar scrobbles</string>
+    <string name="custom_listenbrainz">Servidor personalizado de Listenbrainz</string>
     <string name="failed_encode_url">Fallo al codificar URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Comprobar %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Acceso especial a la aplicación &gt; Acceso a notificaciones &gt; %1$s</string>

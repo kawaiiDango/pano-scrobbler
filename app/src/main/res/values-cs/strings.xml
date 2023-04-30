@@ -6,6 +6,12 @@
         <item quantity="many">%1$s scrobblů</item>
         <item quantity="other">%1$s scrobblů</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s dnes</item>
+        <item quantity="few">%1$s dnes</item>
+        <item quantity="many">%1$s dnes</item>
+        <item quantity="other">%1$s dnes</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s posluchač</item>
         <item quantity="few">%1$s posluchači</item>
@@ -90,6 +96,12 @@
         <item quantity="many">%1$s přátel</item>
         <item quantity="other">%1$s přátel</item>
     </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s čekající</item>
+        <item quantity="few">%1$s čekající</item>
+        <item quantity="many">%1$s čekajících</item>
+        <item quantity="other">%1$s čekajících</item>
+    </plurals>
     <string name="yes">Ano</string>
     <string name="no">Ne</string>
     <string name="reset">Obnovit</string>
@@ -146,6 +158,9 @@
     <string name="grid_size">Změnit velikost mřížky</string>
     <string name="pinch_to_zoom">Přetažením přiblížit</string>
     <string name="more_info">Více informací</string>
+    <string name="more" comment="More options menu in short">Další</string>
+    <string name="learn" comment="(Learn java regex syntax)">Více informací</string>
+    <string name="hide">Skrýt</string>
     <string name="rank_change" comment="%1= delta change">Změna pořadí: %s</string>
     <string name="rank_change_no_change">Beze změn</string>
     <string name="rank_change_new">Nebylo scrobblováno v předchozím období</string>
@@ -167,6 +182,7 @@
     <string name="new_player_prompt">Nadále scrobblovat tuto aplikaci?</string>
     <string name="no_track_url">Tato skladba nemá stránku na lastFM</string>
     <string name="no_scrobbles">Zatím zde nejsou žádné skladby…</string>
+    <string name="no_friends">Nikoho zatím nesledujete…</string>
     <string name="channel_err">Chyby při scrobblování</string>
     <string name="new_app">Nová aplikace</string>
     <string name="no_apps_enabled">Nejsou povoleny žádné aplikace</string>
@@ -218,6 +234,7 @@
     <string name="sort">Seřadit</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Skočit v čase</string>
     <string name="my_scrobbles">Moje scrobbly</string>
+    <string name="their_scrobbles">Jejich scrobbly</string>
     <string name="listeners">Posluchači</string>
     <string name="scrobbles">Scrobbly</string>
     <string name="collapse" comment="(view only a few items)">Sbalit</string>
@@ -227,12 +244,14 @@
     <string name="not_found" comment="Shown in search">Nenalezeno</string>
     <string name="save" comment="saves a file">Uložit</string>
     <string name="saved_to_gallery">Uloženo do galerie</string>
+    <string name="reports" comment="Like last.week reports and stuff">Hlášení</string>
     <string name="weekly">Týdenní</string>
     <string name="weeks">Týdny</string>
     <string name="monthly">Měsíční</string>
     <string name="months">Měsíce</string>
     <string name="years" comment="For the charts menu which displays year by year">Roky</string>
     <string name="charts_overall">Celkově</string>
+    <string name="listening_activity">Aktivita poslouchání</string>
     <string name="charts_no_data">Žádné údaje v tomto období</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Vlastní</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Průběžně</string>
@@ -310,6 +329,13 @@
     <string name="persistent_noti_desc">Dlouhým stiskem skryjete</string>
     <string name="scrobbler_off">Scrobbler zakázán</string>
     <string name="scrobbler_on">Scrobbler je aktivní</string>
+    <string name="acoustic" comment="(Acoustic music)">Akustická</string>
+    <string name="instrumental">Instrumentální</string>
+    <string name="energetic" comment="(Energetic music)">Energetická</string>
+    <string name="danceable">Taneční</string>
+    <string name="valence" comment="(Musical positivity)">Pozitivita</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Popularita: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analýza</string>
     <string name="enable" comment="To enable the scrobbler">Povolit</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Velikost</string>
     <string name="skip_missing_images">Přeskočit chybějící obrázky</string>
@@ -390,6 +416,7 @@
     <string name="pref_intents">Pro Tasker apod.</string>
     <string name="copied">Zkopírováno!</string>
     <string name="lastfm_reauth">Pro úpravu nebo smazání scrobblů je třeba se znovu ověřit</string>
+    <string name="custom_listenbrainz">Vlastní ListenBrainz</string>
     <string name="failed_encode_url">Kódování URL selhalo</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Zkontrolovat %1$s</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Aplikace se speciálním přístupem &gt; Oznámení v zařízeních a aplikacích &gt; %1$s</string>

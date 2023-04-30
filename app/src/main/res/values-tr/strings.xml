@@ -4,6 +4,10 @@
         <item quantity="one">%1$s skrop</item>
         <item quantity="other">%1$s skrop</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">Bugün: %1$s</item>
+        <item quantity="other">Bugün: %1$s</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s dinleyici</item>
         <item quantity="other">%1$s dinleyici</item>
@@ -59,6 +63,10 @@
     <plurals name="num_friends">
         <item quantity="one">%1$s arkadaş</item>
         <item quantity="other">%1$s arkadaş</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">Askıda: %1$s</item>
+        <item quantity="other">Askıda: %1$s</item>
     </plurals>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
@@ -116,6 +124,7 @@
     <string name="grid_size">Görünümü değiştirin</string>
     <string name="pinch_to_zoom">İki parmakla yakınlaştırın</string>
     <string name="more_info">Daha fazla bilgi</string>
+    <string name="hide">Gizle</string>
     <string name="rank_change" comment="%1= delta change">Sıralama değişikliği: %s</string>
     <string name="rank_change_no_change">Değişiklik yok</string>
     <string name="rank_change_new">Bir önceki dönemde skroplanmamış</string>
@@ -197,6 +206,7 @@
     <string name="not_found" comment="Shown in search">Bulunamadı</string>
     <string name="save" comment="saves a file">Kaydet</string>
     <string name="saved_to_gallery">Galeriye kaydedildi</string>
+    <string name="reports" comment="Like last.week reports and stuff">Raporlar</string>
     <string name="weekly">Haftalık</string>
     <string name="weeks">Haftalık</string>
     <string name="monthly">Aylık</string>
@@ -280,6 +290,10 @@
     <string name="persistent_noti_desc">Saklamak için uzun bas</string>
     <string name="scrobbler_off">Skroplayıcı devre dışı</string>
     <string name="scrobbler_on">Skroplayıcı aktif</string>
+    <string name="acoustic" comment="(Acoustic music)">Akustik</string>
+    <string name="instrumental">Enstrümental</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Popülarite: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiz</string>
     <string name="enable" comment="To enable the scrobbler">Etkinleştir</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Ebat</string>
     <string name="skip_missing_images">Eksik resimleri atla</string>
@@ -317,6 +331,7 @@
     <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
     <string name="pref_fetch_aa">Albüm sanatçılarını lastFM\'den al</string>
     <string name="pref_fetch_aa_desc">Bu bilgiyi sağlamayan oynatıcılar için kullanılır. Alınan veriler sizin etiketlerinizden farklı olabilir. LastFM bazı şarkıların verilerine sahip olmayabilir.</string>
+    <string name="pref_fetch_album">Eksik albüm verilerini last.fm\'den al</string>
     <string name="pref_locale">Diller</string>
     <string name="pref_change_locale">Dili değiştir</string>
     <string name="pref_crashlytics_enabled">Hataları otomatik olarak bildir</string>
@@ -359,6 +374,7 @@
     <string name="pref_intents">Tasker vb. için intentler</string>
     <string name="copied">Kopyalandı!</string>
     <string name="lastfm_reauth">Skropları düzenlemek veya silmek için tekrar kimlik doğrulaması yapmalısınız</string>
+    <string name="custom_listenbrainz">Özel Listenbrainz</string>
     <string name="failed_encode_url">URL şifreleme başarısız</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">%1$s uygulamasını kontrol et</string>
     <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Özel uygulama erişimi &gt; Bildirim Erişimi &gt; %1$s</string>

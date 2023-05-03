@@ -269,6 +269,7 @@
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Énergisante</string>
     <string name="danceable">Dansable</string>
+    <string name="valence" comment="(Musical positivity)">Joyeuse</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Popularité: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable the scrobbler">Activer</string>
@@ -292,6 +293,7 @@
     <string name="pref_confirm_logout">CONFIRMER LA DÉCONNEXION ? Appuyez à nouveau</string>
     <string name="pref_login">Se connecter</string>
     <string name="pref_about" comment="Info about this app">À propos</string>
+    <string name="pref_privacy_policy">Politique de confidentialité</string>
     <string name="pref_scrobble_only">(Scrobbler seulement)</string>
     <string name="pref_user_label" comment="(Like username)">Utilisateur</string>
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>

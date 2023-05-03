@@ -170,6 +170,7 @@
     <string name="library" comment="search within the library">Библиотека</string>
     <string name="global" comment="search globally across lastfm">Глобальное</string>
     <string name="reindex">Быстрый индекс</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Индексировать свои скробблинги</string>
     <string name="full_index">Полный индекс</string>
     <string name="take_long_time">Это может занять некоторое время</string>
     <string name="full_index_desc">Используйте это только если вы изменили или удалили скробблы с сайта.</string>
@@ -378,6 +379,7 @@
     <string name="pref_change_locale">Изменить язык</string>
     <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>
     <string name="pref_misc">Разное</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Начало недели</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Импорт и экспорт</string>
     <string name="pref_export">Экспорт</string>
     <string name="pref_export_desc">Сохраняет настройки, правки и черный список. Не сохраняет логины по соображениям безопасности. Полезно для перемещения между устройствами или обмена с друзьями.</string>

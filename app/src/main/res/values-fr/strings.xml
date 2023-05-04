@@ -331,6 +331,7 @@
     <string name="import_lists_nope">Ne pas importer les modifications et la liste noire</string>
     <string name="import_lists_replace_all">Remplacer toutes les modifications et la liste noire</string>
     <string name="import_settings">Importer les paramètres</string>
+    <string name="current_track">Morceau en cours de lecture :</string>
     <string name="copied">Copié !</string>
     <string name="lastfm_reauth">Vous devez vous authentifier à nouveau pour éditer ou supprimer des scrobbles</string>
     <string name="failed_encode_url">L\'encodage de l\'URL a échoué</string>
@@ -355,6 +356,7 @@
     <string name="graph">Graphique en courbes</string>
     <string name="cleared_disabled_apps">Applications désactivées effacées</string>
     <string name="fix_it_title">Corrections possibles</string>
+    <string name="fix_it_startup_title">Économiseurs d\'énergie / gestionnaires de démarrage</string>
     <string name="fix_it_battery_title">Désactiver les optimisations de la batterie</string>
     <string name="fix_it_action" comment="(To open an app)">Ouvrir</string>
     <string name="delete_account">Supprimer votre compte</string>

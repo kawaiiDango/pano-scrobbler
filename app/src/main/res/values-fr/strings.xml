@@ -231,6 +231,7 @@
     <string name="appwidget_show">Afficher</string>
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
+    <string name="system_colors">Couleurs du système</string>
     <string name="appwidget_alpha">Opacité de l\'arrière-plan</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Le widget sera actualisé toutes les %1$s minutes</string>
     <string name="primary_color">Couleur principale</string>
@@ -251,8 +252,11 @@
     <string name="edit_no_presets_available">Tous les préréglages sont utilisés</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Présélection %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite de modèles atteinte (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Poignée de classement glissante</string>
     <string name="text" comment="text to test regex rules with">Texte</string>
+    <string name="blocked_metadata_noti">Appuyer pour bloquer et passer</string>
     <string name="skip" comment="skip to next track">Passer</string>
+    <string name="mute">Mettre en sourdine</string>
     <string name="block">Bloquer</string>
     <string name="hidden_tags">Tags cachés</string>
     <string name="pin">Épingler</string>
@@ -296,6 +300,7 @@
     <string name="pref_privacy_policy">Politique de confidentialité</string>
     <string name="pref_scrobble_only">(Scrobbler seulement)</string>
     <string name="pref_user_label" comment="(Like username)">Utilisateur</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Jeton d\'authentification</string>
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
     <string name="pref_fetch_aa">Récupérer les artistes de l\'album depuis lastFM</string>

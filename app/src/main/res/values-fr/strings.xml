@@ -120,6 +120,7 @@
     <string name="library" comment="search within the library">Bibliothèque</string>
     <string name="global" comment="search globally across lastfm">Global</string>
     <string name="reindex">Indexage rapide</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexer vos scrobbles</string>
     <string name="full_index">Indexage complet</string>
     <string name="take_long_time">Cela peut prendre du temps</string>
     <string name="full_index_desc">Utilisez ceci uniquement si vous avez modifié ou supprimé des scrobbles du site Web.</string>
@@ -257,6 +258,7 @@
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Poignée de classement glissante</string>
     <string name="text" comment="text to test regex rules with">Texte</string>
     <string name="blocked_metadata_noti">Appuyer pour bloquer et passer</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>
     <string name="skip" comment="skip to next track">Passer</string>
     <string name="mute">Mettre en sourdine</string>
     <string name="block">Bloquer</string>
@@ -268,6 +270,7 @@
     <string name="use_channel" comment="(Use youtube channel name)">Utiliser le nom de la chaîne</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Voulez-vous rendre cette régle d\'édition répétitive pour ce schéma %1$s?</string>
     <string name="show_persistent_noti">Afficher une notification permanente</string>
+    <string name="fix_it_desc">Cela peut aider à continuer de faire fonctionner le scrobbler en arrière-plan sur certains appareils</string>
     <string name="persistent_noti_desc">Appuyez longuement pour masquer ceci</string>
     <string name="scrobbler_off">Scrobbler désactivé</string>
     <string name="scrobbler_on">Scrobbler activé</string>
@@ -326,6 +329,7 @@
     <string name="pref_translate_credits">Crédits de traduction</string>
     <string name="pref_oss_credits">Crédits Open Source</string>
     <string name="pref_check_updates">Rechercher des mises à jour</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Mise à jour disponible: %1$s</string>
     <string name="download">Télécharger</string>
     <string name="import_hey_wtf">Ce n\'est probablement pas un fichier d\'exportation Pano Scrobbler</string>
     <string name="export_failed">Échec de l\'export</string>

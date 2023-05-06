@@ -124,6 +124,8 @@
     <string name="grid_size">Görünümü değiştirin</string>
     <string name="pinch_to_zoom">İki parmakla yakınlaştırın</string>
     <string name="more_info">Daha fazla bilgi</string>
+    <string name="more" comment="More options menu in short">Dahası</string>
+    <string name="learn" comment="(Learn java regex syntax)">Öğren</string>
     <string name="hide">Gizle</string>
     <string name="rank_change" comment="%1= delta change">Sıralama değişikliği: %s</string>
     <string name="rank_change_no_change">Değişiklik yok</string>
@@ -134,6 +136,7 @@
     <string name="library" comment="search within the library">Kitaplık</string>
     <string name="global" comment="search globally across lastfm">Genel</string>
     <string name="reindex">Hızlı endeksleme</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Skroplarını endeksle</string>
     <string name="full_index">Kapsamlı endeksleme</string>
     <string name="take_long_time">Bu işlem uzun sürebilir</string>
     <string name="full_index_desc">Bu özelliği yalnızca site üzerinden bir skropu düzenlediyseniz veya sildiyseniz kullanın.</string>
@@ -146,6 +149,7 @@
     <string name="new_player_prompt">Bu uygulama skroplanmaya devam edilsin mi?</string>
     <string name="no_track_url">Bu şarkının lastFM\'de sayfası bulunmamakta</string>
     <string name="no_scrobbles">Henüz hiç şarkı yok…</string>
+    <string name="no_friends">Henüz kimse takip edilmiyor...</string>
     <string name="channel_err">Skrop hatası</string>
     <string name="new_app">Yeni uygulama</string>
     <string name="no_apps_enabled">Etkin uygulama yok</string>
@@ -154,6 +158,8 @@
     <string name="edit">Düzenle</string>
     <string name="delete">Sil</string>
     <string name="love">Beğen</string>
+    <string name="hate">Nefret et</string>
+    <string name="unhate">Nefreti kaldır</string>
     <string name="unlove">Beğeniyi kaldır</string>
     <string name="pending_scrobbles">Askıdaki Skroplar</string>
     <string name="pending_scrobble">Askıda skrop</string>

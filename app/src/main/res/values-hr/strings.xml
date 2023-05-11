@@ -130,6 +130,7 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Promijeni veličinu mreže</string>
     <string name="more_info">Više informacija</string>
+    <string name="hide">Sakrij</string>
     <string name="rank_change" comment="%1= delta change">Promjena ranga: %s</string>
     <string name="rank_change_no_change">Nema promjene</string>
     <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
@@ -141,6 +142,7 @@
     <string name="reindex">Brzo indeksiranje</string>
     <string name="full_index">Potpuno indeksiranje</string>
     <string name="take_long_time">Ovo može dugo potrajati</string>
+    <string name="full_index_desc">Koristi samo ako su scrobblovi izbrisani ili uređeni na stranici.</string>
     <string name="last_indexed" formatted="true" comment="%1= date">Posljednje indeksiranje %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Slika profila</string>
@@ -149,6 +151,7 @@
     <string name="new_player_prompt">Nastaviti scrobbleati ovu aplikaciju?</string>
     <string name="no_track_url">Ova pjesma nema stranicu na lastFM-u</string>
     <string name="no_scrobbles">Ovdje još nema pjesama…</string>
+    <string name="no_friends">Ne pratiš nikoga…</string>
     <string name="channel_err">Greške kod scrobbleanja</string>
     <string name="new_app">Nova aplikacija</string>
     <string name="no_apps_enabled">Nijedna aplikacija nije omogućena</string>
@@ -183,6 +186,7 @@
     <string name="loved">Voljeno</string>
     <string name="unloved">Nije voljeno</string>
     <string name="simple_edits">Uređivanja</string>
+    <string name="grant_rec_perm">Omogućite pristup mikrofonu</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
     <string name="scrobble_from_mic">Scrobbleaj pomoću mikrofona</string>
@@ -205,6 +209,7 @@
     <string name="not_found" comment="Shown in search">Nije pronađeno</string>
     <string name="save" comment="saves a file">Spremi</string>
     <string name="saved_to_gallery">Spremljeno u galeriju</string>
+    <string name="reports" comment="Like last.week reports and stuff">Izvješća</string>
     <string name="weekly">Tjedni</string>
     <string name="weeks">Tjedni</string>
     <string name="monthly">Mjesečni</string>

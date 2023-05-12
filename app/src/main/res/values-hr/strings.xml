@@ -130,6 +130,7 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Promijeni veličinu mreže</string>
     <string name="more_info">Više informacija</string>
+    <string name="learn" comment="(Learn java regex syntax)">Saznaj</string>
     <string name="hide">Sakrij</string>
     <string name="rank_change" comment="%1= delta change">Promjena ranga: %s</string>
     <string name="rank_change_no_change">Nema promjene</string>
@@ -140,6 +141,7 @@
     <string name="library" comment="search within the library">Zbirka</string>
     <string name="global" comment="search globally across lastfm">Globalno</string>
     <string name="reindex">Brzo indeksiranje</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Označi svoje scrobblove</string>
     <string name="full_index">Potpuno indeksiranje</string>
     <string name="take_long_time">Ovo može dugo potrajati</string>
     <string name="full_index_desc">Koristi samo ako su scrobblovi izbrisani ili uređeni na stranici.</string>

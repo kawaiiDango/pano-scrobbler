@@ -5,6 +5,11 @@
         <item quantity="few">%1$s scrobblea</item>
         <item quantity="other">%1$s scrobblea</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s danas</item>
+        <item quantity="few">%1$s danas</item>
+        <item quantity="other">%1$s danas</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s slušatelj</item>
         <item quantity="few">%1$s slušatelja</item>
@@ -75,6 +80,11 @@
         <item quantity="few">%1$s prijatelja</item>
         <item quantity="other">%1$s prijatelja</item>
     </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s na čekanju</item>
+        <item quantity="few">%1$s na čekanju</item>
+        <item quantity="other">%1$s na čekanju</item>
+    </plurals>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="reset">Ponovno postavi</string>
@@ -130,6 +140,7 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Promijeni veličinu mreže</string>
     <string name="more_info">Više informacija</string>
+    <string name="more" comment="More options menu in short">Više</string>
     <string name="learn" comment="(Learn java regex syntax)">Saznaj</string>
     <string name="hide">Sakrij</string>
     <string name="rank_change" comment="%1= delta change">Promjena ranga: %s</string>
@@ -145,6 +156,7 @@
     <string name="full_index">Potpuno indeksiranje</string>
     <string name="take_long_time">Ovo može dugo potrajati</string>
     <string name="full_index_desc">Koristi samo ako su scrobblovi izbrisani ili uređeni na stranici.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pretražio/la si top %1$s stvari u svakoj kategoriji.</string>
     <string name="last_indexed" formatted="true" comment="%1= date">Posljednje indeksiranje %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Slika profila</string>
@@ -202,6 +214,7 @@
     <string name="sort">Sortiraj</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Vremenski skok</string>
     <string name="my_scrobbles">Moji scrobbleovi</string>
+    <string name="their_scrobbles">Njihovi scrobblovi</string>
     <string name="listeners">Slušatelji</string>
     <string name="scrobbles">Scrobbleovi</string>
     <string name="collapse" comment="(view only a few items)">Sažmi</string>
@@ -218,6 +231,7 @@
     <string name="months">Mjeseci</string>
     <string name="years" comment="For the charts menu which displays year by year">Godine</string>
     <string name="charts_overall">Sveukupno</string>
+    <string name="listening_activity">Aktivnost slušanja</string>
     <string name="charts_no_data">Nema podataka za ovo razdoblje</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Prilagođeno</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Kontinuirano</string>
@@ -419,4 +433,5 @@ Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom k
     <string name="billing_block">Blokiranje izvođača/pjesama i automatsko preskakanje ili utišavanje</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prikvačivanje do %1$d prijatelja i mijenjanje njihovog poretka</string>
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>
+    <string name="billing_scrobble_source">Zapamti i pregledaj aplikacije iz kojih si scrobblao i direktno pretraži u njima</string>
 </resources>

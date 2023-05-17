@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobble</item>
+        <item quantity="one">%1$s scrobble
+%1$s scrobbles</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
     <plurals name="num_listeners">
@@ -51,6 +52,11 @@
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s métadonnée bloquée</item>
         <item quantity="other">%1$s métadonnée bloquée</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s ami(e)
+%1$s ami(e)s</item>
+        <item quantity="other">%1$s ami(e)s</item>
     </plurals>
     <string name="yes">Oui</string>
     <string name="no">Non</string>

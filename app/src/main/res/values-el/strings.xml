@@ -304,7 +304,6 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Λεπτά</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Ποσοστό</string>
     <string name="pref_logout">Αποσύνδεση</string>
-    <string name="pref_confirm_logout">ΕΠΙΒΕΒΑΙΩΣΗ ΕΞΟΔΟΥ; Πατήστε ξανά</string>
     <string name="pref_login">Σύνδεση</string>
     <string name="pref_about" comment="Info about this app">Σχετικά με</string>
     <string name="pref_privacy_policy">Πολιτική απορρήτου</string>

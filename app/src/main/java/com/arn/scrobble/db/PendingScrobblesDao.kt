@@ -51,11 +51,17 @@ interface PendingScrobblesDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(ps: PendingScrobble)
 
+    @Query("UPDATE $tableName SET state = state & :loggedInAccountsBitset")
+    fun removeLoggedOutAccounts(loggedInAccountsBitset: Int)
+
     @Delete
     fun delete(ps: PendingScrobble)
 
     @Query("DELETE FROM $tableName WHERE _id IN (:ids)")
     fun delete(ids: List<Int>)
+
+    @Query("DELETE FROM $tableName WHERE state = 0")
+    fun deleteStateZero()
 
     @Query("DELETE FROM $tableName")
     fun nuke()

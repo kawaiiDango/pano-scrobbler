@@ -33,8 +33,14 @@ interface PendingLovesDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(pl: PendingLove)
 
+    @Query("UPDATE $tableName SET state = state & :loggedInAccountsBitset")
+    fun removeLoggedOutAccounts(loggedInAccountsBitset: Int)
+
     @Delete
     fun delete(pl: PendingLove)
+
+    @Query("DELETE FROM $tableName WHERE state = 0")
+    fun deleteStateZero()
 
     @Query("DELETE FROM $tableName")
     fun nuke()

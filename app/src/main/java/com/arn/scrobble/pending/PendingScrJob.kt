@@ -69,6 +69,8 @@ class PendingScrJob : JobService() {
         }
 
         private suspend fun run(): Boolean {
+            deleteForLoggedOutServices()
+
             var done = submitLoves()
 
             while (dao.count > 0) {
@@ -223,6 +225,18 @@ class PendingScrJob : JobService() {
                     filtered += scrobbleData
             }
             return filtered
+        }
+
+        private fun deleteForLoggedOutServices() {
+            var loggedInServicesBitset = 0
+            Scrobblables.all.forEach {
+                loggedInServicesBitset =
+                    loggedInServicesBitset or (1 shl it.userAccount.type.ordinal)
+            }
+            dao.removeLoggedOutAccounts(loggedInServicesBitset)
+            dao.deleteStateZero()
+            lovesDao.removeLoggedOutAccounts(loggedInServicesBitset)
+            lovesDao.deleteStateZero()
         }
     }
 

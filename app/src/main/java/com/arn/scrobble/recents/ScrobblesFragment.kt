@@ -514,10 +514,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            delay(50)
-            binding.scrobblesChipGroup.visibility = View.VISIBLE
-        }
+        binding.scrobblesChipGroup.visibility = View.VISIBLE
     }
 
     private fun loadRecents(page: Int, force: Boolean = false): Boolean {

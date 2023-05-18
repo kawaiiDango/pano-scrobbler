@@ -222,6 +222,7 @@
     <string name="show_all">See all</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="delete_all">Delete all</string>
     <string name="love">Love</string>
     <string name="hate">Hate</string>
     <string name="unhate">Unhate</string>
@@ -512,7 +513,7 @@
         comment="(Scrobble delay in percent)"
         >Percent</string>
     <string name="pref_logout">Logout</string>
-    <string name="pref_confirm_logout">CONFIRM LOGOUT? Tap again</string>
+    <string name="sure_tap_again">Sure? Tap again</string>
     <string name="pref_login">Login</string>
     <string name="pref_about"
         comment="Info about this app"

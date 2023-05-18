@@ -334,7 +334,6 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuty</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
     <string name="pref_logout">Wyloguj</string>
-    <string name="pref_confirm_logout">POTWIERDZASZ WYLOGOWANIE? Dotknij ponownie</string>
     <string name="pref_login">Logowanie</string>
     <string name="pref_about" comment="Info about this app">O aplikacji</string>
     <string name="pref_privacy_policy">Polityka prywatności</string>

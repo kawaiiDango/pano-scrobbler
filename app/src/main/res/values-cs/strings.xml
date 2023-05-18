@@ -362,7 +362,6 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minut</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
     <string name="pref_logout">Odhlásit se</string>
-    <string name="pref_confirm_logout">POTVRDIT ODHLÁŠENÍ? Klepněte znovu</string>
     <string name="pref_login">Přihlásit se</string>
     <string name="pref_about" comment="Info about this app">O Aplikaci</string>
     <string name="pref_privacy_policy">Zásady ochrany osobních údajů</string>

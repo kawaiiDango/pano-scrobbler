@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobble</item>
+        <item quantity="one">%1$s scrobble
+%1$s scrobbles</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
     <plurals name="num_listeners">
@@ -51,6 +52,11 @@
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s métadonnée bloquée</item>
         <item quantity="other">%1$s métadonnée bloquée</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s ami(e)
+%1$s ami(e)s</item>
+        <item quantity="other">%1$s ami(e)s</item>
     </plurals>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
@@ -120,6 +126,7 @@
     <string name="library" comment="search within the library">Bibliothèque</string>
     <string name="global" comment="search globally across lastfm">Global</string>
     <string name="reindex">Indexage rapide</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexer vos scrobbles</string>
     <string name="full_index">Indexage complet</string>
     <string name="take_long_time">Cela peut prendre du temps</string>
     <string name="full_index_desc">Utilisez ceci uniquement si vous avez modifié ou supprimé des scrobbles du site Web.</string>
@@ -158,6 +165,7 @@
 - Obtenez vos scrobbles favoris chaque semaine
 - Et plus
 - Les notifications ne feront pas de sons\"\""</string>
+    <string name="will_not_scrobble">Passer cette étape désactivera le scrobble</string>
     <string name="swap" comment="(Swap title and artist)">Changer</string>
     <string name="rate_msg">Vous aimez cette application ?</string>
     <string name="rate_action">Notez-la</string>
@@ -178,6 +186,7 @@
     <string name="recording_failed">Impossible de démarrer l\'enregistrement. Le micro est peut-être occupé ou indisponible sur cet appareil</string>
     <string name="press_back">Appuyer sur retour une fois terminé</string>
     <string name="details">Détails</string>
+    <string name="saved_as_pending">Enregistré en tant que scrobble en attente</string>
     <string name="sort">Filtrer</string>
     <string name="my_scrobbles">Mes scrobbles</string>
     <string name="their_scrobbles">Leurs scrobbles</string>
@@ -231,6 +240,7 @@
     <string name="appwidget_show">Afficher</string>
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
+    <string name="system_colors">Couleurs du système</string>
     <string name="appwidget_alpha">Opacité de l\'arrière-plan</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Le widget sera actualisé toutes les %1$s minutes</string>
     <string name="primary_color">Couleur principale</string>
@@ -251,8 +261,12 @@
     <string name="edit_no_presets_available">Tous les préréglages sont utilisés</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Présélection %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite de modèles atteinte (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Poignée de classement glissante</string>
     <string name="text" comment="text to test regex rules with">Texte</string>
+    <string name="blocked_metadata_noti">Appuyer pour bloquer et passer</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>
     <string name="skip" comment="skip to next track">Passer</string>
+    <string name="mute">Mettre en sourdine</string>
     <string name="block">Bloquer</string>
     <string name="hidden_tags">Tags cachés</string>
     <string name="pin">Épingler</string>
@@ -260,13 +274,17 @@
     <string name="pin_limit_reached" formatted="true">Limite d\'épingles atteinte (%1$d)</string>
     <string name="pin_help">Appuyer longuement sur les éléments épinglés pour les classer</string>
     <string name="use_channel" comment="(Use youtube channel name)">Utiliser le nom de la chaîne</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Voulez-vous rendre cette régle d\'édition répétitive pour ce schéma %1$s?</string>
     <string name="show_persistent_noti">Afficher une notification permanente</string>
+    <string name="fix_it_desc">Cela peut aider à continuer de faire fonctionner le scrobbler en arrière-plan sur certains appareils</string>
+    <string name="persistent_noti_desc">Appuyez longuement pour masquer ceci</string>
     <string name="scrobbler_off">Scrobbler désactivé</string>
     <string name="scrobbler_on">Scrobbler activé</string>
     <string name="acoustic" comment="(Acoustic music)">Acoustique</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Énergisante</string>
     <string name="danceable">Dansable</string>
+    <string name="valence" comment="(Musical positivity)">Joyeuse</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Popularité: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable the scrobbler">Activer</string>
@@ -287,11 +305,12 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutes</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Pourcentage</string>
     <string name="pref_logout">Se déconnecter</string>
-    <string name="pref_confirm_logout">CONFIRMER LA DÉCONNEXION ? Appuyez à nouveau</string>
     <string name="pref_login">Se connecter</string>
     <string name="pref_about" comment="Info about this app">À propos</string>
+    <string name="pref_privacy_policy">Politique de confidentialité</string>
     <string name="pref_scrobble_only">(Scrobbler seulement)</string>
     <string name="pref_user_label" comment="(Like username)">Utilisateur</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Jeton d\'authentification</string>
     <string name="api_url" comment="For Listenbrainz">URL d\'API</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
     <string name="pref_fetch_aa">Récupérer les artistes de l\'album depuis lastFM</string>
@@ -300,6 +319,7 @@
     <string name="pref_change_locale">Changer de langage</string>
     <string name="pref_crashlytics_enabled">Signaler les erreurs automatiquement</string>
     <string name="pref_misc">Divers.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La semaine commence le</string>
     <string name="pref_export">Exportation</string>
     <string name="pref_import">Importation</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personnalisation</string>
@@ -314,6 +334,7 @@
     <string name="pref_translate_credits">Crédits de traduction</string>
     <string name="pref_oss_credits">Crédits Open Source</string>
     <string name="pref_check_updates">Rechercher des mises à jour</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">Mise à jour disponible: %1$s</string>
     <string name="download">Télécharger</string>
     <string name="import_hey_wtf">Ce n\'est probablement pas un fichier d\'exportation Pano Scrobbler</string>
     <string name="export_failed">Échec de l\'export</string>
@@ -322,6 +343,7 @@
     <string name="import_lists_nope">Ne pas importer les modifications et la liste noire</string>
     <string name="import_lists_replace_all">Remplacer toutes les modifications et la liste noire</string>
     <string name="import_settings">Importer les paramètres</string>
+    <string name="current_track">Morceau en cours de lecture :</string>
     <string name="copied">Copié !</string>
     <string name="lastfm_reauth">Vous devez vous authentifier à nouveau pour éditer ou supprimer des scrobbles</string>
     <string name="failed_encode_url">L\'encodage de l\'URL a échoué</string>
@@ -346,6 +368,7 @@
     <string name="graph">Graphique en courbes</string>
     <string name="cleared_disabled_apps">Applications désactivées effacées</string>
     <string name="fix_it_title">Corrections possibles</string>
+    <string name="fix_it_startup_title">Économiseurs d\'énergie / gestionnaires de démarrage</string>
     <string name="fix_it_battery_title">Désactiver les optimisations de la batterie</string>
     <string name="fix_it_action" comment="(To open an app)">Ouvrir</string>
     <string name="delete_account">Supprimer votre compte</string>

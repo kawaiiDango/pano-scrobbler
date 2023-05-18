@@ -146,6 +146,7 @@
     <string name="grid_size">Змінити розмір сітки</string>
     <string name="pinch_to_zoom">Щипніть для збільшення</string>
     <string name="more_info">Детальніше</string>
+    <string name="more" comment="More options menu in short">Більше</string>
     <string name="rank_change" comment="%1= delta change">Зміна рангу: %s</string>
     <string name="rank_change_no_change">Без змін</string>
     <string name="rank_change_new">Не скроблено за попередній період</string>
@@ -155,6 +156,7 @@
     <string name="library" comment="search within the library">Бібліотека</string>
     <string name="global" comment="search globally across lastfm">Глобальний</string>
     <string name="reindex">Швидкий покажчик</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Індексувати свої скроббли</string>
     <string name="full_index">Повний індекс</string>
     <string name="take_long_time">Це може зайняти багато часу</string>
     <string name="full_index_desc">Використовуйте це лише при редагуванні чи видаленні скроблів з веб-сайту.</string>
@@ -227,6 +229,7 @@
     <string name="not_found" comment="Shown in search">Не знайдено</string>
     <string name="save" comment="saves a file">Зберегти</string>
     <string name="saved_to_gallery">Збережено до галереї</string>
+    <string name="reports" comment="Like last.week reports and stuff">Звіти</string>
     <string name="weekly">Щотижня</string>
     <string name="weeks">Тижні</string>
     <string name="monthly">Щомісяця</string>
@@ -310,6 +313,8 @@
     <string name="persistent_noti_desc">Натисніть і утримуйте кнопку щоб сховати</string>
     <string name="scrobbler_off">Скроблер вимкнено</string>
     <string name="scrobbler_on">Скроблер увімкнений</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Популярність: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Аналіз</string>
     <string name="enable" comment="To enable the scrobbler">Увімкнути</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Розмір</string>
     <string name="skip_missing_images">Пропуск відсутніх зображень</string>
@@ -336,7 +341,6 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Хвилини</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Відсотки</string>
     <string name="pref_logout">Вихід</string>
-    <string name="pref_confirm_logout">Підтвердити вихід? Нажміть ще раз</string>
     <string name="pref_login">Увійти</string>
     <string name="pref_about" comment="Info about this app">Про застосунок</string>
     <string name="pref_privacy_policy">Політика конфіденційності</string>
@@ -352,6 +356,7 @@
     <string name="pref_change_locale">Змінити мову</string>
     <string name="pref_crashlytics_enabled">Автоматично повідомляти про помилки</string>
     <string name="pref_misc">Інше.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Тиждень починається з</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Імпорт &amp; Експорт</string>
     <string name="pref_export">Експорт</string>
     <string name="pref_export_desc">Зберігає налаштування, правки та чорний список. Не зберігає логіни за міркувань безпеки. Корисно для переміщення між девайсами або обміну з друзями.</string>

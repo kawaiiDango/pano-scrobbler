@@ -10,39 +10,39 @@
 
 [![download][play-store]][play-store-link] [![translate][crowdin]][crowdin-link]
 
-<img src="https://i.imgur.com/HUgxLlo.png" alt="scrobbles" width="200"/> <img src="https://i.imgur.com/eZAYGBC.png" alt="friends" width="200"/> <img src="https://i.imgur.com/iv2MsJn.png" alt="charts" width="200"/>
+<img src="https://i.imgur.com/pgETfhc.png" alt="scrobbles" width="150"/> <img src="https://i.imgur.com/Q7yPi2z.png" alt="friends" width="150"/> <img src="https://i.imgur.com/MUhcyBw.png" alt="charts" width="150"/> <img src="https://i.imgur.com/aikbtGR.png" alt="random" width="150"/>
 
 ### PC app?
-Pano Scrobbler works on Windows 11 with WSA. It scrobbles from other Android apps.
-Buttons in notifications don't work as expected. This is a WSA bug.
+Pano Scrobbler works on Windows 11 with WSA and can scrobble from other Android apps.
+However, there is a known issue with the buttons in notifications not functioning as expected,
+which is a bug specific to WSA.
 
 ### Features:
-- No ADs ever
-- Supports LastFM, LibreFM, GNU FM and Listenbrainz
-- Supports phones, TVs, tablets and Android desktops including Windows 11
-- Interactive notification: View track info, edit, love, cancel or block tracks directly from the notification
-- View track, album, artist, album artist and tag details
-- View scrobbles from a specific time such as last year, last month etc.
+- No ads ever
+- Supports LastFM, LibreFM, GNU FM, and Listenbrainz
+- Supports phones, TVs, tablets, and Android desktops, including Windows 11
+- Interactive notification: View track info, edit, love, cancel, or block tracks directly from the notification
+- View track, album, artist, album artist, and tag details
+- View scrobbles from a specific time, such as last year or last month
 - Edit or delete existing scrobbles. Remembers edits
-- Fix metadata such as "Remastered" or your own patterns with regex edits
-- Block artists, tracks etc and auto skip or mute when they play
+- Fix metadata such as "Remastered" with regex pattern edits
+- Block artists, tracks, etc., and automatically skip or mute when they play
 - Check what your friends are listening to and view their stats
 - Identify and scrobble a song from the microphone
-- Scrobble from AutoShazam and Pixel Now Playing
-- Import & export settings, edits and blocklists
-- View charts for a specific week, month, year or custom range, with change indicators
+- Scrobble from the S app and Pixel Now Playing
+- Import and export settings, edits, and blocklists
+- View charts for a specific week, month, year, or custom range, with change indicators
 - Charts are also available as a customizable home-screen widget
 - Collage generator
 - View scrobble count graphs for specific time periods
-- Get a random track, album or artist from your listening history
-- Search for a track, artist or album
+- Get a random track, album, or artist from your listening history
+- Search for a track, artist, or album
 - Fetch albums and album artists from LastFM, if missing, before scrobbling
 - Get your top scrobble digests as a notification at the end of every week and month
 - Add or remove personal tags
 - Mix and match themes, supports Material You
 - Broadcast Intents for automation apps like Tasker
-- Remember and see apps you scrobbled from and search directly in them
-- In-app update checker for devices without Play Store
+- Remember and see apps you scrobbled from and search directly within them
 
 ### Building:
 See [instructions.md](instructions.md)

@@ -310,7 +310,6 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">パーセント</string>
     <string name="pref_logout">ログアウト</string>
-    <string name="pref_confirm_logout">ログイアウトしてもよろしいですか？再度タップで実行します</string>
     <string name="pref_login">ログイン</string>
     <string name="pref_about" comment="Info about this app">アプリ情報</string>
     <string name="pref_privacy_policy">プライバシーポリシー</string>

@@ -269,7 +269,6 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuts</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentatge</string>
     <string name="pref_logout">Tanca la sessió</string>
-    <string name="pref_confirm_logout">SEGUR QUE VOLS TANCAR LA SESSIÓ? Toca una altra vegada</string>
     <string name="pref_login">Inicia sessió</string>
     <string name="pref_about" comment="Info about this app">Quant a</string>
     <string name="pref_privacy_policy">Política de privacitat</string>

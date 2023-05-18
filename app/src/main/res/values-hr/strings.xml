@@ -5,6 +5,11 @@
         <item quantity="few">%1$s scrobblea</item>
         <item quantity="other">%1$s scrobblea</item>
     </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s danas</item>
+        <item quantity="few">%1$s danas</item>
+        <item quantity="other">%1$s danas</item>
+    </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s slušatelj</item>
         <item quantity="few">%1$s slušatelja</item>
@@ -75,6 +80,11 @@
         <item quantity="few">%1$s prijatelja</item>
         <item quantity="other">%1$s prijatelja</item>
     </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s na čekanju</item>
+        <item quantity="few">%1$s na čekanju</item>
+        <item quantity="other">%1$s na čekanju</item>
+    </plurals>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="reset">Ponovno postavi</string>
@@ -83,7 +93,7 @@
     <string name="album_art">Naslovnica albuma</string>
     <string name="artist_image">Slika izvođača</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nije moguće analizirati naslov</string>
-    <string name="network_error">Mrežna greška</string>
+    <string name="network_error">Greška mreže</string>
     <string name="disable_tls_verify">Ignoriraj TLS greške</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoriran</string>
     <string name="scrobble_ignored_save_edit">Lastfm je ignorirao uređivanje vjerojatno jer je scrobble prestar. Želite li ovo uređivanje spremiti za buduće scrobbleove?</string>
@@ -130,6 +140,9 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Promijeni veličinu mreže</string>
     <string name="more_info">Više informacija</string>
+    <string name="more" comment="More options menu in short">Više</string>
+    <string name="learn" comment="(Learn java regex syntax)">Saznaj</string>
+    <string name="hide">Sakrij</string>
     <string name="rank_change" comment="%1= delta change">Promjena ranga: %s</string>
     <string name="rank_change_no_change">Nema promjene</string>
     <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
@@ -139,8 +152,11 @@
     <string name="library" comment="search within the library">Zbirka</string>
     <string name="global" comment="search globally across lastfm">Globalno</string>
     <string name="reindex">Brzo indeksiranje</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Označi svoje scrobblove</string>
     <string name="full_index">Potpuno indeksiranje</string>
     <string name="take_long_time">Ovo može dugo potrajati</string>
+    <string name="full_index_desc">Koristi samo ako su scrobblovi izbrisani ili uređeni na stranici.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pretražio/la si top %1$s stvari u svakoj kategoriji.</string>
     <string name="last_indexed" formatted="true" comment="%1= date">Posljednje indeksiranje %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Slika profila</string>
@@ -149,6 +165,7 @@
     <string name="new_player_prompt">Nastaviti scrobbleati ovu aplikaciju?</string>
     <string name="no_track_url">Ova pjesma nema stranicu na lastFM-u</string>
     <string name="no_scrobbles">Ovdje još nema pjesama…</string>
+    <string name="no_friends">Ne pratiš nikoga…</string>
     <string name="channel_err">Greške kod scrobbleanja</string>
     <string name="new_app">Nova aplikacija</string>
     <string name="no_apps_enabled">Nijedna aplikacija nije omogućena</string>
@@ -183,6 +200,7 @@
     <string name="loved">Voljeno</string>
     <string name="unloved">Nije voljeno</string>
     <string name="simple_edits">Uređivanja</string>
+    <string name="grant_rec_perm">Omogućite pristup mikrofonu</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
     <string name="scrobble_from_mic">Scrobbleaj pomoću mikrofona</string>
@@ -196,6 +214,7 @@
     <string name="sort">Sortiraj</string>
     <string name="time_jump" comment="Button shows scrobbles from a specific time">Vremenski skok</string>
     <string name="my_scrobbles">Moji scrobbleovi</string>
+    <string name="their_scrobbles">Njihovi scrobblovi</string>
     <string name="listeners">Slušatelji</string>
     <string name="scrobbles">Scrobbleovi</string>
     <string name="collapse" comment="(view only a few items)">Sažmi</string>
@@ -205,12 +224,14 @@
     <string name="not_found" comment="Shown in search">Nije pronađeno</string>
     <string name="save" comment="saves a file">Spremi</string>
     <string name="saved_to_gallery">Spremljeno u galeriju</string>
+    <string name="reports" comment="Like last.week reports and stuff">Izvješća</string>
     <string name="weekly">Tjedni</string>
     <string name="weeks">Tjedni</string>
     <string name="monthly">Mjesečni</string>
     <string name="months">Mjeseci</string>
     <string name="years" comment="For the charts menu which displays year by year">Godine</string>
     <string name="charts_overall">Sveukupno</string>
+    <string name="listening_activity">Aktivnost slušanja</string>
     <string name="charts_no_data">Nema podataka za ovo razdoblje</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Prilagođeno</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Kontinuirano</string>
@@ -279,6 +300,12 @@
     <string name="persistent_noti_desc">Za skrivanje ovoga dugo pritisnite</string>
     <string name="scrobbler_off">Scrobbler onemogućen</string>
     <string name="scrobbler_on">Scrobbler aktivan</string>
+    <string name="acoustic" comment="(Acoustic music)">Akustična</string>
+    <string name="instrumental">Instrumental</string>
+    <string name="energetic" comment="(Energetic music)">Energična</string>
+    <string name="valence" comment="(Musical positivity)">Pozitivnost</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Popularnost: %1$d%%</string>
+    <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiza</string>
     <string name="enable" comment="To enable the scrobbler">Omogući</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Veličina</string>
     <string name="skip_missing_images">Preskoči slike koje nedostaju</string>
@@ -297,11 +324,12 @@
     <string name="pref_enabled_apps_summary">ℹ️ Podržane su aplikacije koje dijele metapodatke o glazbi. Da biste izbjegli duplo scrobbleanje sa Spotifya, samo aktivirajte značajku na jednom mjestu.</string>
     <string name="pref_enabled_apps_title">Odaberite aplikacije</string>
     <string name="pref_auto_detect_summary">…i dalje ćemo Vas tražiti da potvrdite/ignorirate tu aplikaciju</string>
+    <string name="pref_auto_detect">Automatski scrobblaj iz novih aplikacija</string>
+    <string name="pref_spotify_remote">Scrobblaj Spotify s drugih uređaja</string>
     <string name="pref_delay">Odgoda scrobbleanja (koje god će biti prvo)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minute</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Postotak</string>
     <string name="pref_logout">Odjava</string>
-    <string name="pref_confirm_logout">POTVRDITI ODJAVU? Pritisnite ponovno</string>
     <string name="pref_login">Prijava</string>
     <string name="pref_about" comment="Info about this app">O aplikaciji</string>
     <string name="pref_privacy_policy">Politika privatnosti</string>
@@ -312,10 +340,12 @@
     <string name="pref_now_playing">Dijeli što sada svira</string>
     <string name="pref_fetch_aa">Dohvati izvođače albuma s lastFM-a</string>
     <string name="pref_fetch_aa_desc">Za reproduktore koji ne dijele ovu informaciju. Dohvaćeni podatci možda će se razlikovati od Vaših oznaka. lastFM možda neće imati podatke za sve pjesme.</string>
+    <string name="pref_fetch_album">Dohvati nedostale podatke albuma s lastFM-a</string>
     <string name="pref_locale">Jezici</string>
     <string name="pref_change_locale">Promijeni jezik</string>
     <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
     <string name="pref_misc">Razno</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tjedan počinje u</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Uvoz i izvoz</string>
     <string name="pref_export">Izvezi</string>
     <string name="pref_export_desc">Sigurnosno kopira postavke, uređivanja i popise blokiranja. Iz sigurnosnih razloga ne sprema prijave. Korisno za premještanje na novi uređaj ili dijeljenje s prijateljima.</string>
@@ -349,7 +379,9 @@
     <string name="current_track">Trenutna pjesma:</string>
     <string name="copied">Kopirano!</string>
     <string name="lastfm_reauth">Morate se ponovno autentificirati za uređivanje ili brisanje scrobbleova</string>
+    <string name="custom_listenbrainz">Prilagođeni Listenbrainz</string>
     <string name="failed_encode_url">Kodiranje URL-a nije uspjelo</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Provjeri %1$s</string>
     <string name="artist_extra">Pjesme, albumi i slično</string>
     <string name="no_browser">Nema instaliranih preglednika</string>
     <string name="no_player">Nema instaliranih reproduktora glazbe</string>
@@ -400,4 +432,5 @@ Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom k
     <string name="billing_block">Blokiranje izvođača/pjesama i automatsko preskakanje ili utišavanje</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prikvačivanje do %1$d prijatelja i mijenjanje njihovog poretka</string>
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>
+    <string name="billing_scrobble_source">Zapamti i pregledaj aplikacije iz kojih si scrobblao i direktno pretraži u njima</string>
 </resources>

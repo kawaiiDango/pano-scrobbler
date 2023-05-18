@@ -11,6 +11,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.StrictMode
+import androidx.core.content.ContextCompat
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
@@ -130,7 +131,7 @@ class App : Application(), ImageLoaderFactory {
     fun initConnectivityCheck() {
         if (connectivityCheckInited) return
 
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val cm = ContextCompat.getSystemService(this, ConnectivityManager::class.java)!!
         val nr = NetworkRequest.Builder().apply {
             addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -170,7 +171,7 @@ class App : Application(), ImageLoaderFactory {
                 add(GifDecoder.Factory())
             }
 
-            if (Stuff.DEMO_MODE)
+            if (prefs.demoMode)
                 add(DemoInterceptor())
         }
         .crossfade(Stuff.CROSSFADE_DURATION)

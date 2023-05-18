@@ -168,6 +168,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
     override fun onPause() {
         super.onPause()
 
+        animSet?.end()
         TransitionManager.beginDelayedTransition(
             coordinatorBinding.ctl,
             Fade().addTarget(coordinatorBinding.heroFrame)
@@ -180,7 +181,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         )
         coordinatorBinding.sidebarNav.setBackgroundColor(bgColor)
         coordinatorBinding.ctl.setStatusBarScrimColor(bgColor)
-        animSet?.end()
     }
 
     private fun postInit() {
@@ -208,11 +208,11 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         animSet = AnimatorSet()
 
         binding.scrobblesList.addItemDecoration(SimpleHeaderDecoration())
-        binding.scrobblesSwipeRefresh.setProgressCircleColors()
-        binding.scrobblesSwipeRefresh.setOnRefreshListener {
+        binding.swipeRefresh.setProgressCircleColors()
+        binding.swipeRefresh.setOnRefreshListener {
             loadRecents(1)
         }
-        binding.scrobblesSwipeRefresh.isRefreshing = false
+        binding.swipeRefresh.isRefreshing = false
         binding.scrobblesList.adapter = adapter
         binding.scrobblesList.scrollToTopOnInsertToTop()
         (binding.scrobblesList.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations =
@@ -282,7 +282,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         binding.scrobblesChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             val checkedId = checkedIds.firstOrNull() ?: return@setOnCheckedStateChangeListener
 
-            binding.scrobblesSwipeRefresh.isRefreshing = true
+            binding.swipeRefresh.isRefreshing = true
 
             when (checkedId) {
                 R.id.recents_chip,
@@ -816,6 +816,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
 
     private fun setLoading(b: Boolean) {
         loadMoreListener.loading = b
-        binding.scrobblesSwipeRefresh.isRefreshing = false
+        binding.swipeRefresh.isRefreshing = false
     }
 }

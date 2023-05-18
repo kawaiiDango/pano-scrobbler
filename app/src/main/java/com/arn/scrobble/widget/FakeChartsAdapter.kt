@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.AppwidgetChartsItemBinding
@@ -14,7 +15,7 @@ import java.text.NumberFormat
 class FakeChartsAdapter(
     context: Context,
 ) : ArrayAdapter<ChartsWidgetListItem>(context, R.layout.appwidget_charts_item) {
-    private val inflater by lazy { context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater }
+    private val inflater by lazy { ContextCompat.getSystemService(context, LayoutInflater::class.java)!! }
 
     init {
         addAll(

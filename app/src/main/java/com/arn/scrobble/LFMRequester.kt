@@ -1103,7 +1103,7 @@ class LFMRequester(
                 val scrobbleData = trackInfo.toScrobbleData()
 
                 fun doFallbackScrobble(): Boolean {
-                    if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && unparsedData != null) {
+                    if (trackInfo.canDoFallbackScrobble && unparsedData != null) {
 
                         val newTrackInfo = trackInfo.updateMetaFrom(unparsedData)
                         val i = Intent(NLService.iMETA_UPDATE_S)

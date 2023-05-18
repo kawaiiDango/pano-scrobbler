@@ -18,7 +18,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.ColorUtils
-import androidx.core.os.BuildCompat
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -232,11 +231,11 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
             loadMoreSectionsIfNeeded()
         }
 
-        binding.chartsSwipeRefresh.setProgressCircleColors()
-        binding.chartsSwipeRefresh.setOnRefreshListener {
+        binding.swipeRefresh.setProgressCircleColors()
+        binding.swipeRefresh.setOnRefreshListener {
             loadFirstPage(true)
         }
-        binding.chartsSwipeRefresh.isEnabled = false
+        binding.swipeRefresh.isEnabled = false
         // todo: actually fix this not loading the network version
 
         binding.chartsCreateCollage.setOnClickListener {
@@ -378,7 +377,7 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         chartFrameBinding.chartsList.adapter = adapter
 
         sectionVM.chartsReceiver.observe(viewLifecycleOwner) {
-            binding.chartsSwipeRefresh.isRefreshing = false
+            binding.swipeRefresh.isRefreshing = false
 
             sectionVM.totalCount = it.total
             if (it.total > 0)

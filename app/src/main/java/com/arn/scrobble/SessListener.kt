@@ -11,9 +11,11 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.media.MediaMetadataCompat
 import com.arn.scrobble.Stuff.dump
 import com.arn.scrobble.Stuff.isUrlOrDomain
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.scrobbleable.Scrobblables
 import java.util.Locale
 import java.util.Objects
 
@@ -205,6 +207,16 @@ class SessListener(
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             metadata ?: return
 
+            // spotify ads look like these:
+            // e.g. GCTC () [] ~ Free Spring Tuition
+            // Beef Its Whats For Dinner () [] ~
+            // Kroger () [] ~ Advertisement
+
+            if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_ADVERTISEMENT) != 0L) {
+                resetMeta()
+                return
+            }
+
             var albumArtist =
                 metadata.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)?.trim() ?: ""
             var artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST)?.trim()
@@ -216,6 +228,10 @@ class SessListener(
             var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
             if (durationMillis < -1)
                 durationMillis = -1
+            val youtubeHeight =
+                metadata.getLong("com.google.android.youtube.MEDIA_METADATA_VIDEO_WIDTH_PX")
+            val youtubeWidth =
+                metadata.getLong("com.google.android.youtube.MEDIA_METADATA_VIDEO_HEIGHT_PX")
 
             when (trackInfo.packageName) {
                 Stuff.PACKAGE_XIAMI -> {
@@ -290,14 +306,9 @@ class SessListener(
                 }
 
                 Stuff.PACKAGE_SPOTIFY -> {
-                    // ads look like these:
-                    // e.g. GCTC () [] ~ Free Spring Tuition
-                    // Beef Its Whats For Dinner () [] ~
-                    // Kroger () [] ~ Advertisement
-                    if (albumArtist.isEmpty() && album.isEmpty() && title.isNotEmpty()) {
-                        resetMeta()
-                        return
-                    }
+                    // goddamn spotify
+                    if (albumArtist.isNotEmpty() && albumArtist != artist && albumArtist.lowercase() != "various artists")
+                        artist = albumArtist
 
                     if (BuildConfig.DEBUG) {
                         val circles = prefs.touhouCircles.split('\n')
@@ -331,6 +342,12 @@ class SessListener(
                 trackInfo.putOriginals(artist, title, album, albumArtist)
 
                 trackInfo.ignoreOrigArtist = shouldIgnoreOrigArtist(trackInfo)
+
+                trackInfo.canDoFallbackScrobble =
+                    trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
+                            youtubeHeight > 0 && youtubeWidth > 0 && youtubeHeight == youtubeWidth
+                // auto generated artist channels usually have square videos
+
                 trackInfo.durationMillis = durationMillis
                 trackInfo.hash =
                     Objects.hash(artist, album, title, trackInfo.packageName)
@@ -340,13 +357,6 @@ class SessListener(
 
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastState == PlaybackState.STATE_PLAYING)
                     unmute(clearMutedHash = isMuted)
-
-                // scrobbled when ad was playing
-//                if (onlyDurationUpdated && packageName in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)) {
-//                    scheduleSyntheticStateIfNeeded()
-//                    if (!handler.hasMessages(currHash))
-//                        return
-//                }
 
                 // for cases:
                 // - meta is sent after play
@@ -532,6 +542,10 @@ class SessListener(
             MainPrefs.PREF_BLOCKED_PACKAGES -> synchronized(blockedPackages) {
                 blockedPackages.clear()
                 blockedPackages.addAll(pref.getStringSet(key, setOf())!!)
+            }
+
+            MainPrefs.PREF_SCROBBLE_ACCOUNTS -> {
+                Scrobblables.updateScrobblables()
             }
         }
         if (key == MainPrefs.PREF_ALLOWED_PACKAGES ||

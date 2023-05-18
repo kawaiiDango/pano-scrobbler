@@ -121,7 +121,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
                 prefs.period = key
                 prefs.periodName = widgetTimePeriods.periodsMap[key]?.name
             }
-            ChartsListUtils.updateWidget(appWidgetId)
+            ChartsListUtils.updateWidget(intArrayOf(appWidgetId))
 
             if (widgetExists)
                 ChartsWidgetUpdaterJob.checkAndSchedule(applicationContext, true)
@@ -190,10 +190,8 @@ class ChartsWidgetActivity : AppCompatActivity() {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         }
         setResult(
-            if (positive)
-                Activity.RESULT_OK
-            else
-                Activity.RESULT_CANCELED, resultValue
+            if (positive) Activity.RESULT_OK else Activity.RESULT_CANCELED,
+            resultValue
         )
 
     }
@@ -206,26 +204,32 @@ class ChartsWidgetActivity : AppCompatActivity() {
                 b = AppwidgetChartsDarkShadowBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
+
             theme == WidgetTheme.DARK && !hasShadow -> {
                 b = AppwidgetChartsDarkBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
+
             theme == WidgetTheme.LIGHT && hasShadow -> {
                 b = AppwidgetChartsLightShadowBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
+
             theme == WidgetTheme.LIGHT && !hasShadow -> {
                 b = AppwidgetChartsLightBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
+
             theme == WidgetTheme.DYNAMIC && hasShadow -> {
                 b = AppwidgetChartsDynamicShadowBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
+
             theme == WidgetTheme.DYNAMIC && !hasShadow -> {
                 b = AppwidgetChartsDynamicBinding.inflate(layoutInflater)
                 previewBinding = b.appwidgetOuterFrame
             }
+
             else -> throw IllegalArgumentException("Invalid theme")
         }
 

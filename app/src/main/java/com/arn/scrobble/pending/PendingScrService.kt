@@ -5,12 +5,12 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.app.job.JobScheduler
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -28,15 +28,19 @@ class PendingScrService : Service() {
     private lateinit var nm: NotificationManager
     private var job: Job? = null
 
+    override fun onCreate() {
+        super.onCreate()
+        showNotification()
+    }
+
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        showNotification()
         if (!PendingScrJob.mightBeRunning) {
             mightBeRunning = true
-            val js = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val js = ContextCompat.getSystemService(this, JobScheduler::class.java)!!
             js.cancel(PendingScrJob.JOB_ID)
             doTask()
         } else
@@ -57,14 +61,14 @@ class PendingScrService : Service() {
             .apply { color = (ColorPatchUtils.getNotiColor(applicationContext) ?: return@apply) }
             .setContentTitle(getString(R.string.pending_scrobbles_noti))
 
-        nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm = ContextCompat.getSystemService(this, NotificationManager::class.java)!!
 
         startForeground(PendingScrJob.JOB_ID, nb.build())
     }
 
     private fun doTask() {
         job = SupervisorJob()
-        PendingScrJob.OfflineScrobbleTask(
+        PendingScrJob.PendingScrobbleTask(
             applicationContext,
             CoroutineScope(Dispatchers.IO + job!!),
             { str ->

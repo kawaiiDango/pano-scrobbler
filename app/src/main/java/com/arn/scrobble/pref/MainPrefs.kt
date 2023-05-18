@@ -3,6 +3,8 @@ package com.arn.scrobble.pref
 import android.app.NotificationManager
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
+import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.DrawerData
 import com.arn.scrobble.MetadataUtils
 import com.arn.scrobble.Stuff
@@ -28,7 +30,7 @@ class MainPrefs(context: Context) : Krate {
 
     override val sharedPreferences = context.getHarmonySharedPreferences(NAME)
 
-    private val nm by lazy { context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
+    private val nm by lazy { ContextCompat.getSystemService(context, NotificationManager::class.java)!! }
 
     var scrobblerEnabled by booleanPref(PREF_MASTER).withDefault(true)
     var allowedPackages by stringSetPref(PREF_ALLOWED_PACKAGES).withDefault(setOf())
@@ -60,6 +62,10 @@ class MainPrefs(context: Context) : Krate {
         SearchResultsAdapter.SearchType.GLOBAL
     )
     var firstDayOfWeek by intPref(PREF_FIRST_DAY_OF_WEEK).withDefault(0)
+    var lastInteractiveTime by longPref(PREF_LAST_SCREEN_ON_TIME)
+    private var _demoMode by booleanPref(PREF_ACTIVITY_DEMO_MODE).withDefault(false)
+    val demoMode
+        get() = _demoMode && BuildConfig.DEBUG
 
     var locale by stringPref(PREF_LOCALE)
     var showAlbumInRecents by booleanPref(PREF_SHOW_RECENTS_ALBUM).withDefault(false)
@@ -219,6 +225,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"
         const val PREF_SCROBBLE_SPOTIFY_REMOTE = "scrobble_spotify_remote"
         const val PREF_FIRST_DAY_OF_WEEK = "first_day_of_week"
+        const val PREF_LAST_SCREEN_ON_TIME = "last_screen_on_time"
 
         const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
         const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"
@@ -259,6 +266,7 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_ACTIVITY_GRID_PINCH_LEARNT = "grid_pinch_learnt"
         const val PREF_ACTIVITY_LAST_KILL_CHECK_TIME = "last_kill_checked"
         const val PREF_ACTIVITY_REGEX_LEARNT = "regex_learnt"
+        const val PREF_ACTIVITY_DEMO_MODE = "demo_mode"
 
         const val PREF_COLLAGE_SIZE = "collage_size"
         const val PREF_COLLAGE_CAPTIONS = "collage_captions"

@@ -6,6 +6,7 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
+import androidx.core.content.ContextCompat
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -17,6 +18,7 @@ import com.arn.scrobble.scrobbleable.Scrobblables
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,9 +39,9 @@ class PendingScrJob : JobService() {
     override fun onStartJob(jp: JobParameters): Boolean {
         mightBeRunning = true
         job = SupervisorJob()
-        OfflineScrobbleTask(applicationContext, CoroutineScope(Dispatchers.IO + job)) { done ->
+        PendingScrobbleTask(applicationContext, CoroutineScope(Dispatchers.IO + job)) { done ->
             mightBeRunning = false
-            jobFinished(jp, done)
+            jobFinished(jp, false)
         }
         return true
     }
@@ -50,7 +52,7 @@ class PendingScrJob : JobService() {
         return true
     }
 
-    class OfflineScrobbleTask(
+    class PendingScrobbleTask(
         private val context: Context,
         scope: CoroutineScope,
         private val progressCb: ((str: String) -> Unit)? = null,
@@ -105,6 +107,10 @@ class PendingScrJob : JobService() {
                         val filteredData by lazy { filterForService(it, scrobbleDataToEntry) }
                         if (filteredData.isNotEmpty()) {
                             scrobbleResults[it] = it.scrobble(filteredData)
+                            // Rate Limit Exceeded - Too many scrobbles in a short period. Please try again later
+                            if (scrobbleResults[it]?.errorCode == 29) {
+                                return false
+                            }
                         }
                     }
 
@@ -151,6 +157,8 @@ class PendingScrJob : JobService() {
                     } else
                         done = false
                     return done
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (e: Exception) {
                     Stuff.log("OfflineScrobble: n/w err - ")
                     Timber.tag(Stuff.TAG).w(e)
@@ -228,7 +236,7 @@ class PendingScrJob : JobService() {
         fun checkAndSchedule(context: Context, force: Boolean = false) {
             if (PendingScrService.mightBeRunning)
                 return
-            val js = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val js = ContextCompat.getSystemService(context, JobScheduler::class.java)!!
             val jobs = js.allPendingJobs
 
             if (jobs.any { it.id == JOB_ID }) {

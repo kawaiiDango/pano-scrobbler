@@ -157,14 +157,14 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         adapter.clickListener = this
         adapter.viewModel = viewModel
 
-        chartsBinding.chartsSwipeRefresh.isEnabled = false
-        chartsBinding.chartsSwipeRefresh.setProgressCircleColors()
-        chartsBinding.chartsSwipeRefresh.setOnRefreshListener {
+        chartsBinding.swipeRefresh.isEnabled = false
+        chartsBinding.swipeRefresh.setProgressCircleColors()
+        chartsBinding.swipeRefresh.setOnRefreshListener {
             loadFirstPage(true)
         }
 
         viewModel.chartsReceiver.observe(viewLifecycleOwner) {
-            chartsBinding.chartsSwipeRefresh.isRefreshing = false
+            chartsBinding.swipeRefresh.isRefreshing = false
 
             viewModel.totalCount = it.total
             if (it.page >= it.totalPages)

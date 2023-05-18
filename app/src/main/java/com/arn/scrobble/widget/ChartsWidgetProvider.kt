@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.widget.RemoteViewsCompat
 import com.arn.scrobble.MainDialogActivity
-import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.WidgetPrefs
@@ -26,7 +25,7 @@ class ChartsWidgetProvider : AppWidgetProvider() {
         val prefs = WidgetPrefs(context)
 
         // There may be multiple widgets active, so update all of them
-        for (appWidgetId in appWidgetIds) {
+        appWidgetIds.forEach { appWidgetId ->
             updateAppWidget(context, appWidgetManager, appWidgetId, prefs[appWidgetId])
         }
     }
@@ -48,24 +47,19 @@ class ChartsWidgetProvider : AppWidgetProvider() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
 
-        if (NLService.iUPDATE_WIDGET == intent.action) {
-            val appWidgetId = intent.getIntExtra(
-                AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID
-            )
-            if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
-                return
-            val appWidgetManager = AppWidgetManager.getInstance(context)
+        if (AppWidgetManager.ACTION_APPWIDGET_UPDATE == intent.action) {
+            val ids = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS) ?: intArrayOf()
 
-            val prefs = WidgetPrefs(context)[appWidgetId]
-            val tab = intent.getIntExtra(WidgetPrefs.PREF_WIDGET_TAB, -1)
-            if (tab != -1) {
-                prefs.tab = tab
-            }
-            updateAppWidget(context, appWidgetManager, appWidgetId, prefs, tab != -1)
+            ids.filter { it != AppWidgetManager.INVALID_APPWIDGET_ID }
+                .forEach { appWidgetId ->
+                    val tab = intent.getIntExtra(WidgetPrefs.PREF_WIDGET_TAB, -1)
+                    if (tab != -1)
+                        WidgetPrefs(context)[appWidgetId].tab = tab
+                }
         }
+
+        super.onReceive(context, intent)
     }
 }
 
@@ -142,8 +136,8 @@ internal fun updateAppWidget(
     rv.setPendingIntentTemplate(R.id.appwidget_list, infoPendingIntent)
 
     val tabIntent = Intent(context, ChartsWidgetProvider::class.java)
-    tabIntent.action = NLService.iUPDATE_WIDGET
-    tabIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+    tabIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+    tabIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
 
     tabIntent.putExtra(WidgetPrefs.PREF_WIDGET_TAB, Stuff.TYPE_ARTISTS)
     var tabIntentPending = PendingIntent.getBroadcast(

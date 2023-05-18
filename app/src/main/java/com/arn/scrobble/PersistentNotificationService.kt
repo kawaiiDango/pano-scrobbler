@@ -4,28 +4,32 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.arn.scrobble.pref.MainPrefs
 
 class PersistentNotificationService : Service() {
 
     // I hope that the popular notification pushing app was right and this thing actually works.
 
+    override fun onCreate() {
+        super.onCreate()
+        showNotification()
+    }
+
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        showNotification()
         return START_STICKY
     }
 
     private fun showNotification() {
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val nm = ContextCompat.getSystemService(this, NotificationManager::class.java)!!
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(

@@ -1,6 +1,5 @@
 package com.arn.scrobble.friends
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -97,7 +96,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 viewModel.loadFriendsList(page, activityViewModel.currentUser)
             }
             if (adapter.itemCount == 0)
-                binding.friendsSwipeRefresh.isRefreshing = true
+                binding.swipeRefresh.isRefreshing = true
             true
         } else {
             adapter.loadMoreListener.isAllPagesLoaded = true
@@ -141,8 +140,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
         viewModel.showsPins =
             activityViewModel.userIsSelf && Scrobblables.current?.userAccount?.type == AccountType.LASTFM
 
-        binding.friendsSwipeRefresh.setProgressCircleColors()
-        binding.friendsSwipeRefresh.setOnRefreshListener {
+        binding.swipeRefresh.setProgressCircleColors()
+        binding.swipeRefresh.setOnRefreshListener {
             viewModel.sorted = false
             activityViewModel.fabData.value = null
             loadFriends(1)
@@ -206,9 +205,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
             doNextTimedRefresh()
 
-            if (binding.friendsSwipeRefresh.isRefreshing) {
+            if (binding.swipeRefresh.isRefreshing) {
                 binding.friendsGrid.scheduleLayoutAnimation()
-                binding.friendsSwipeRefresh.isRefreshing = false
+                binding.swipeRefresh.isRefreshing = false
             }
             loadMoreListener.loading = false
             binding.empty.isVisible = viewModel.sectionedList.isEmpty()
@@ -346,7 +345,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
                         R.string.from,
                         userSerializable.country + " " + Stuff.getCountryFlag(userSerializable.country)
                     )
-                if (Stuff.DEMO_MODE)
+                if (prefs.demoMode)
                     contentBinding.friendsCountry.text = getString(R.string.from, "Gensokyo")
                 contentBinding.friendsCountry.visibility = View.VISIBLE
             }
@@ -469,7 +468,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         popup.showAtLocation(anchor, 0, coords[0], coords[1])
 
         val rootView = popup.contentView.rootView as ViewGroup
-        val wm = rootView.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val wm = ContextCompat.getSystemService(rootView.context, WindowManager::class.java)!!
 
         val lp = rootView.layoutParams as WindowManager.LayoutParams
         lp.flags = lp.flags or WindowManager.LayoutParams.FLAG_DIM_BEHIND

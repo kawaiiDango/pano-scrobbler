@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.view.View
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.pref.MainPrefs
@@ -150,8 +151,7 @@ class Updater(
 
     // from job
     fun withNotification() {
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = ContextCompat.getSystemService(context, NotificationManager::class.java)!!
 
         if (!notificationManager.isChannelEnabled(
                 prefs.sharedPreferences,

@@ -15,6 +15,7 @@ import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
 import androidx.core.view.children
@@ -318,8 +319,8 @@ class MainActivity : AppCompatActivity(),
                 v.getGlobalVisibleRect(outRect)
                 if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
                     v.clearFocus()
-                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                    ContextCompat.getSystemService(this, InputMethodManager::class.java)!!
+                        .hideSoftInputFromWindow(v.getWindowToken(), 0)
                 }
             }
         }

@@ -3,6 +3,8 @@ package com.arn.scrobble.baselineprofile
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,9 +43,30 @@ class BaselineProfileGenerator {
             // through your most important UI.
 
             // Start default activity for your app
+
             pressHome()
             startActivityAndWait()
 
+            device.wait(Until.hasObject(By.res("testing_pass")), 10000)
+            device.findObject(By.res("testing_pass")).click()
+            device.findObject(By.res("testing_pass")).text = Secrets.loginCreds
+//            Create a file called Secrets.kt in the same package as this class.
+//            object Secrets {
+//                val loginCreds = "username,sesstionKey,"
+//            }
+            device.waitForIdle()
+            device.findObject(By.desc("Scrobbles")).click()
+            device.waitForIdle()
+            device.findObject(By.desc("Friends")).click()
+            device.waitForIdle()
+            device.findObject(By.desc("Charts")).click()
+            device.waitForIdle()
+            device.findObject(By.desc("More")).click()
+            device.waitForIdle()
+            device.pressBack()
+            device.setOrientationLeft()
+            device.waitForIdle()
+            Thread.sleep(2000)
 
             // TODO Write more interactions to optimize advanced journeys of your app.
             // For example:

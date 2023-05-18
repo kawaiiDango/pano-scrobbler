@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
@@ -42,6 +43,7 @@ import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.dp
 import com.arn.scrobble.ui.UiUtils.getTintedDrawable
 import com.arn.scrobble.ui.UiUtils.memoryCacheKey
+import com.arn.scrobble.ui.UiUtils.showWithIcons
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
@@ -276,7 +278,7 @@ class ScrobblesAdapter(
         }
 
 
-        if (oldVirtualList.isEmpty() && viewModel.virtualList.isNotEmpty() || fragmentBinding.scrobblesSwipeRefresh.isRefreshing) {
+        if (oldVirtualList.isEmpty() && viewModel.virtualList.isNotEmpty() || fragmentBinding.swipeRefresh.isRefreshing) {
             fragmentBinding.scrobblesList.scheduleLayoutAnimation()
             notifyItemChanged(0, 0) //animation gets delayed otherwise
         } else if (oldVirtualList.size < viewModel.virtualList.size) // remove the loading gap from the last item
@@ -513,8 +515,26 @@ class ScrobblesAdapter(
                             listSize,
                             listSize
                         )
-            } else
+                binding.headerOverflowButton.isVisible =  true
+                binding.headerOverflowButton.setOnClickListener {
+                    val popupMenu = PopupMenu(binding.headerOverflowButton.context, binding.headerOverflowButton)
+                    popupMenu.inflate(R.menu.delete_all_menu)
+                    popupMenu.setOnMenuItemClickListener {
+                        if (it.itemId == R.id.delete_all_confirm) {
+                            viewModel.viewModelScope.launch(Dispatchers.IO) {
+                                PanoDb.db.getPendingScrobblesDao().nuke()
+                                PanoDb.db.getPendingLovesDao().nuke()
+                            }
+                            true
+                        } else
+                        false
+                    }
+                    popupMenu.showWithIcons()
+                }
+            } else {
                 binding.headerText.text = headerData.title
+                binding.headerOverflowButton.isVisible = false
+            }
 
             if (headerData.section.listSize > 3) {
                 binding.headerAction.visibility = View.VISIBLE

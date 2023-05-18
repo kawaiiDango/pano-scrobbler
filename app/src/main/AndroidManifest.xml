@@ -35,6 +35,10 @@
         android:name="android.hardware.microphone"
         android:required="false" />
 
+    <instrumentation
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:targetPackage="com.arn.scrobble" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -46,6 +50,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false">
+
+        <profileable
+            android:shell="true"
+            tools:targetApi="q" />
+
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" />
@@ -53,8 +62,8 @@
         <receiver
             android:name=".widget.ChartsWidgetProvider"
             android:exported="true"
-            android:process=":bgScrobbler"
-            android:label="@string/charts">
+            android:label="@string/charts"
+            android:process=":bgScrobbler">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -74,11 +83,23 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".ReschedulerReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="androidx.core.widget.RemoteViewsCompatService"
             android:exported="false"
-            android:process=":bgScrobbler"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:process=":bgScrobbler" />
 
         <activity
             android:name=".MainActivity"
@@ -101,9 +122,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="pscrobbler"/>
-                <data android:host="screen"/>
-                <data android:host="test"/>
+                <data android:scheme="pscrobbler" />
+                <data android:host="screen" />
+                <data android:host="test" />
             </intent-filter>
 
             <meta-data
@@ -122,19 +143,19 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="https"/>
-                <data android:host="last.fm"/>
-                <data android:host="www.last.fm"/>
-                <data android:pathPrefix="/user/"/>
+                <data android:scheme="https" />
+                <data android:host="last.fm" />
+                <data android:host="www.last.fm" />
+                <data android:pathPrefix="/user/" />
             </intent-filter>
         </activity-alias>
 
         <activity
             android:name=".MainDialogActivity"
             android:configChanges="keyboard|keyboardHidden|navigation"
-            android:launchMode="singleInstancePerTask"
             android:excludeFromRecents="true"
             android:exported="false"
+            android:launchMode="singleInstancePerTask"
             android:theme="@style/AppThemeDialog"
             android:windowSoftInputMode="adjustPan" />
 
@@ -175,8 +196,9 @@
         <service
             android:name=".DigestJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".pending.PendingScrService"
-            android:foregroundServiceType="dataSync"/>
+        <service
+            android:name=".pending.PendingScrService"
+            android:foregroundServiceType="dataSync" />
         <service
             android:name=".PersistentNotificationService"
             android:foregroundServiceType="mediaPlayback"

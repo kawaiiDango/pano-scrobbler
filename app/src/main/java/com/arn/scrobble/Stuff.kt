@@ -98,8 +98,6 @@ object Stuff {
     const val TYPE_ALBUMS = 2
     const val TYPE_TRACKS = 3
     const val TYPE_LOVES = 4
-    const val TYPE_SC = 5
-    const val TYPE_TAG_CLOUD = 6
     const val LIBREFM_KEY = "panoScrobbler"
     val LAST_KEY = Tokens.LAST_KEY
     val LAST_SECRET = Tokens.LAST_SECRET
@@ -115,7 +113,6 @@ object Stuff {
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
 
     const val EXTRA_PINNED = "pinned"
-    val DEMO_MODE = BuildConfig.DEBUG && false
 
     const val USER_AGENT =
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"
@@ -174,7 +171,6 @@ object Stuff {
     const val PACKAGE_DIFM = "com.audioaddict.di"
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
-    const val PACKAGE_YOUTUBE_MUSIC = "com.google.android.apps.youtube.music"
     const val PACKAGE_SPOTIFY = "com.spotify.music"
     const val PACKAGE_YOUTUBE_TV = "com.google.android.youtube.tv"
     const val PACKAGE_YMUSIC = "com.kapp.youtube.final"
@@ -194,6 +190,11 @@ object Stuff {
         "com.liskovsoft.smarttubetv.beta",
         "com.liskovsoft.smarttubetv",
         "app.revanced.android.youtube",
+
+        "com.google.android.apps.youtube.music",
+        "com.vanced.android.apps.youtube.music",
+        "app.revanced.android.apps.youtube.music",
+
         "org.schabi.newpipe",
         PACKAGE_YMUSIC,
         PACKAGE_NICOBOX,
@@ -205,6 +206,9 @@ object Stuff {
 
     val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
         PACKAGE_SOUNDCLOUD,
+        "com.google.android.apps.youtube.music",
+        "com.vanced.android.apps.youtube.music",
+        "app.revanced.android.apps.youtube.music",
     )
 
     val needSyntheticStates = setOf(
@@ -810,7 +814,7 @@ object Stuff {
     }
 
     fun Context.copyToClipboard(text: String, toast: Boolean = true) {
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipboard = ContextCompat.getSystemService(this, ClipboardManager::class.java)!!
         val clip = ClipData.newPlainText("Pano Scrobbler", text)
         clipboard.setPrimaryClip(clip)
         if (toast)

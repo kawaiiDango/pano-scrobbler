@@ -5,12 +5,12 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
@@ -31,6 +31,7 @@ class ListenAlongService : Service() {
     private var coroutineScope: CoroutineScope? = null
     private var currentUsername: String? = null
     private var currentTrack: Track? = null
+    private var notificationPosted = false
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -47,7 +48,10 @@ class ListenAlongService : Service() {
             currentUsername = it.name
         }
 
-        showNotification()
+        if (!notificationPosted) {
+            showNotification()
+            notificationPosted = true
+        }
 
         intent?.extras?.getBoolean(STOP_EXTRA)?.let {
             if (it) {
@@ -93,7 +97,7 @@ class ListenAlongService : Service() {
     }
 
     private fun showNotification() {
-        nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm = ContextCompat.getSystemService(this, NotificationManager::class.java)!!
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(

@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.app.StatusBarManager
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
@@ -28,7 +27,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
@@ -129,8 +128,9 @@ class PrefFragment : PreferenceFragmentCompat() {
             findPreference<Preference>("master_qs_add")!!.apply {
                 isVisible = true
                 setOnPreferenceClickListener {
-                    val statusBarManager = getSystemService(context, StatusBarManager::class.java)
-                        ?: return@setOnPreferenceClickListener false
+                    val statusBarManager =
+                        ContextCompat.getSystemService(context, StatusBarManager::class.java)
+                            ?: return@setOnPreferenceClickListener false
                     statusBarManager.requestAddTileService(
                         ComponentName(context, MasterSwitchQS::class.java),
                         getString(
@@ -299,7 +299,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         val autoDetect = findPreference<SwitchPreference>(MainPrefs.PREF_AUTO_DETECT)!!
         hideOnTV.add(autoDetect)
-        val nm = getSystemService(requireContext(), NotificationManager::class.java)!!
+        val nm = ContextCompat.getSystemService(requireContext(), NotificationManager::class.java)!!
         if (!nm.isChannelEnabled(prefs.sharedPreferences, MainPrefs.CHANNEL_NOTI_NEW_APP)) {
             autoDetect.apply {
                 summary = getString(R.string.notification_channel_blocked)
@@ -315,30 +315,28 @@ class PrefFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY)!!
             .title = getString(R.string.s_top_scrobbles, getString(R.string.monthly))
 
-        findPreference<Preference>("charts_widget")!!
-            .setOnPreferenceClickListener {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val appWidgetManager =
-                        getSystemService(
-                            requireContext(),
-                            AppWidgetManager::class.java
-                        ) as AppWidgetManager
-                    if (appWidgetManager.isRequestPinAppWidgetSupported) {
-                        val pi = PendingIntent.getActivity(
-                            context,
-                            30,
-                            Intent(context, ChartsWidgetActivity::class.java)
-                                .apply { putExtra(Stuff.EXTRA_PINNED, true) },
-                            Stuff.updateCurrentOrMutable
-                        )
+        val chartsWidget = findPreference<Preference>("charts_widget")!!
+        chartsWidget.setOnPreferenceClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val appWidgetManager = AppWidgetManager.getInstance(requireContext())
+                if (appWidgetManager.isRequestPinAppWidgetSupported) {
+                    val pi = PendingIntent.getActivity(
+                        context,
+                        30,
+                        Intent(context, ChartsWidgetActivity::class.java)
+                            .apply { putExtra(Stuff.EXTRA_PINNED, true) },
+                        Stuff.updateCurrentOrMutable
+                    )
 
-                        val myProvider =
-                            ComponentName(requireContext(), ChartsWidgetProvider::class.java)
-                        appWidgetManager.requestPinAppWidget(myProvider, null, pi)
-                    }
+                    val myProvider =
+                        ComponentName(requireContext(), ChartsWidgetProvider::class.java)
+                    appWidgetManager.requestPinAppWidget(myProvider, null, pi)
                 }
-                true
             }
+            true
+        }
+
+        hideOnTV += chartsWidget
 
         findPreference<Preference>("themes")!!
             .setOnPreferenceClickListener {
@@ -518,7 +516,10 @@ class PrefFragment : PreferenceFragmentCompat() {
                 newValue as String
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     val notificationManager =
-                        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        ContextCompat.getSystemService(
+                            requireContext(),
+                            NotificationManager::class.java
+                        )!!
                     val channel = NotificationChannel(
                         MainPrefs.CHANNEL_TEST_SCROBBLE_FROM_NOTI,
                         getString(R.string.test_scrobble_from_noti),
@@ -611,7 +612,7 @@ class PrefFragment : PreferenceFragmentCompat() {
                             delay(CONFIRM_TIME)
                             setAuthLabel(it, type)
                         }
-                        val span = SpannableString(getString(R.string.pref_confirm_logout))
+                        val span = SpannableString(getString(R.string.sure_tap_again))
                         span.setSpan(
                             ForegroundColorSpan(
                                 MaterialColors.getColor(

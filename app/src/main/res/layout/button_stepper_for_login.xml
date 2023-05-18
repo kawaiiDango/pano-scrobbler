@@ -17,15 +17,15 @@
             style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:toggleCheckedStateOnClick="false"
-            android:text="@string/lastfm" />
+            android:text="@string/lastfm"
+            app:toggleCheckedStateOnClick="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_service_chooser"
             style="?materialButtonOutlinedStyle"
-            android:minWidth="@dimen/m3_btn_icon_only_min_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="@dimen/m3_btn_icon_only_min_width"
             app:icon="@drawable/vd_arrow_down"
             app:toggleCheckedStateOnClick="false" />
 
@@ -38,6 +38,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginTop="0dp"
         android:alpha="0"
+        android:contentDescription="testing_pass"
         android:ems="1"
         android:importantForAccessibility="no"
         android:singleLine="true"

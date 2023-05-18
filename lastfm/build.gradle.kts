@@ -14,6 +14,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_17
     }
+    buildTypes {
+        create("nonMinifiedRelease") {
+        }
+    }
 }
 
 dependencies {

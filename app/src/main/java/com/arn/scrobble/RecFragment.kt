@@ -88,7 +88,7 @@ class RecFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (Stuff.DEMO_MODE)
+        if (prefs.demoMode)
             binding.recShazam.text = binding.recShazam.text.toString().replace("Shazam", "S app")
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Stuff.isTv)

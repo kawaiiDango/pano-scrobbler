@@ -13,9 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-class CrystallizeTransformation constructor(
-    private val context: Context,
-) : Transformation {
+class CrystallizeTransformation(private val context: Context) : Transformation {
 
     override val cacheKey = "${CrystallizeTransformation::class.java.name}-a"
 

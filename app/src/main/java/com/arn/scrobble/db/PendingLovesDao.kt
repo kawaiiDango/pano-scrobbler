@@ -1,7 +1,12 @@
 package com.arn.scrobble.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 
 
 /**
@@ -30,6 +35,9 @@ interface PendingLovesDao {
 
     @Delete
     fun delete(pl: PendingLove)
+
+    @Query("DELETE FROM $tableName")
+    fun nuke()
 
     companion object {
         const val tableName = "PendingLoves"

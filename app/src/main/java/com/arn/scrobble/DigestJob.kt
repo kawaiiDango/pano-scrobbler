@@ -13,6 +13,7 @@ import android.content.Intent
 import android.os.PersistableBundle
 import android.text.Html
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
 import com.arn.scrobble.Stuff.isChannelEnabled
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit
 
 class DigestJob : JobService() {
 
-    private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
+    private val nm by lazy { ContextCompat.getSystemService(this, NotificationManager::class.java)!! }
     private val prefs = App.prefs
     private val cal by lazy { Calendar.getInstance().setUserFirstDayOfWeek() }
 
@@ -202,7 +203,7 @@ class DigestJob : JobService() {
                 else -> return
             }
 
-            val js = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val js = ContextCompat.getSystemService(context, JobScheduler::class.java)!!
 
             JobInfo.Builder(id, ComponentName(context, DigestJob::class.java))
                 .setExtras(
@@ -264,7 +265,7 @@ class DigestJob : JobService() {
                 cal.add(Calendar.MONTH, 1)
             val nextMonth = cal.timeInMillis
 
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)!!
             alarmManager.set(AlarmManager.RTC, nextWeek, weeklyIntent)
             alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
 

@@ -32,7 +32,7 @@
             android:key="scrobble_spotify_remote"
             android:persistent="true"
             android:title="@string/pref_spotify_remote"/>
-        
+
         <SwitchPreference
             android:defaultValue="true"
             android:key="auto_detect"
@@ -299,5 +299,11 @@
             android:defaultValue=""
             android:title="@string/touhou_circles"
             android:persistent="true"/>
+
+        <SwitchPreference
+            android:key="demo_mode"
+            android:title="@string/demo_mode"
+            android:persistent="true"
+            android:defaultValue="false"/>
     </PreferenceCategory>
 </PreferenceScreen>

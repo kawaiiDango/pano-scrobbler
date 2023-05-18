@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.load
+import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentFriendsBinding
@@ -74,7 +75,7 @@ class FriendsAdapter(
         val user = viewModel.sectionedList[position] as UserSerializable
         val holder = VHUser(binding, false)
         holder.setItemData(user)
-        if (!Stuff.DEMO_MODE)
+        if (!App.prefs.demoMode)
             binding.friendsName.text = (user.realname.ifEmpty { user.name })
         return binding
     }
@@ -125,7 +126,7 @@ class FriendsAdapter(
                 (userSerializable.realname.ifEmpty { userSerializable.name }) +
                         (if (isPinned) " 📍" else "")
 
-            if (Stuff.DEMO_MODE)
+            if (App.prefs.demoMode)
                 binding.friendsName.text = "User ${bindingAdapterPosition + 1}"
 
             val track = viewModel.lastPlayedTracksMap[userSerializable.name]

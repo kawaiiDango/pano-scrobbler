@@ -10,8 +10,6 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.ACTION_PACKAGE_ADDED
-import android.content.Intent.ACTION_TIME_CHANGED
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -65,7 +63,7 @@ import kotlin.math.min
 
 class NLService : NotificationListenerService() {
     private val prefs = App.prefs
-    private val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
+    private val nm by lazy { ContextCompat.getSystemService(this, NotificationManager::class.java)!! }
     private var sessListener: SessListener? = null
     private lateinit var scrobbleHandler: ScrobbleHandler
     private var lastNpTask: LFMRequester? = null
@@ -74,7 +72,7 @@ class NLService : NotificationListenerService() {
     private var notiColor: Int? = Color.MAGENTA
     private var job: Job? = null
     private val browserPackages = mutableSetOf<String>()
-    private val audioManager by lazy { getSystemService(AUDIO_SERVICE) as AudioManager }
+    private val audioManager by lazy { ContextCompat.getSystemService(this, AudioManager::class.java)!! }
 
     override fun onCreate() {
         if (BuildConfig.DEBUG)
@@ -127,7 +125,7 @@ class NLService : NotificationListenerService() {
             addAction(iSCROBBLER_ON)
             addAction(iSCROBBLER_OFF)
 
-            addAction(ACTION_TIME_CHANGED)
+            addAction(Intent.ACTION_SCREEN_ON)
         }
         ContextCompat.registerReceiver(
             applicationContext,
@@ -138,7 +136,7 @@ class NLService : NotificationListenerService() {
 
         val pkgFilter = IntentFilter().apply {
             addDataScheme("package")
-            addAction(ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_ADDED)
         }
         ContextCompat.registerReceiver(
             applicationContext,
@@ -168,8 +166,7 @@ class NLService : NotificationListenerService() {
         notiColor = ColorPatchUtils.getNotiColor(applicationContext)
 
         scrobbleHandler = ScrobbleHandler(mainLooper)
-        val sessManager =
-            applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+        val sessManager = ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
 
         sessListener = SessListener(scrobbleHandler, audioManager, browserPackages)
         packageTrackMap = sessListener!!.packageTrackMap
@@ -200,7 +197,6 @@ class NLService : NotificationListenerService() {
             // permissions to be granted.
         }
 
-        DigestJob.scheduleAlarms(applicationContext)
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
 
         if (prefs.notiPersistent)
@@ -235,7 +231,7 @@ class NLService : NotificationListenerService() {
         }
         if (sessListener != null) {
             sessListener?.removeSessions(setOf())
-            (applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager)
+            ContextCompat.getSystemService(this, MediaSessionManager::class.java)!!
                 .removeOnActiveSessionsChangedListener(sessListener!!)
             sessListener!!.unregisterPrefsChangeListener()
             sessListener = null
@@ -900,8 +896,8 @@ class NLService : NotificationListenerService() {
                     toast(R.string.scrobbler_off)
                 }
 
-                ACTION_TIME_CHANGED -> {
-                    DigestJob.scheduleAlarms(applicationContext)
+                Intent.ACTION_SCREEN_ON -> {
+                    prefs.lastInteractiveTime = System.currentTimeMillis()
                 }
             }
         }
@@ -971,7 +967,7 @@ class NLService : NotificationListenerService() {
 
     private val pkgInstallReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == ACTION_PACKAGE_ADDED) {
+            if (intent.action == Intent.ACTION_PACKAGE_ADDED) {
                 if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false))
                     browserPackages += Stuff.getBrowsersAsStrings(packageManager)
             }
@@ -1130,7 +1126,6 @@ class NLService : NotificationListenerService() {
         const val iALLOWLIST = "com.arn.scrobble.ALLOWLIST"
         const val iDIGEST_WEEKLY = "com.arn.scrobble.DIGEST_WEEKLY"
         const val iDIGEST_MONTHLY = "com.arn.scrobble.DIGEST_MONTHLY"
-        const val iUPDATE_WIDGET = "com.arn.scrobble.UPDATE_WIDGET"
         const val iSCROBBLER_ON = "com.arn.scrobble.SCROBBLER_ON"
         const val iSCROBBLER_OFF = "com.arn.scrobble.SCROBBLER_OFF"
 

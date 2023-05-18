@@ -118,12 +118,15 @@ aboutLibraries {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-//    implementation("androidx.profileinstaller:profileinstaller:1.3.0")
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
+    debugImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("androidjhlabs.jar"))))
+
+    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
     "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
+
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
-    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.media:media:1.6.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
@@ -134,20 +137,20 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha09")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0-alpha09")
-    implementation("androidx.navigation:navigation-ui-ktx:2.6.0-alpha09")
-    implementation("androidx.core:core-remoteviews:1.0.0-beta03")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0-rc01")
+    implementation("androidx.navigation:navigation-ui-ktx:2.6.0-rc01")
+    implementation("androidx.core:core-remoteviews:1.0.0-beta04")
     ksp("androidx.room:room-compiler:2.5.1")
     implementation("androidx.room:room-runtime:2.5.1")
     implementation("com.android.billingclient:billing:5.2.0")
     implementation("com.google.android.play:review:2.0.1")
     implementation("com.google.android.play:review-ktx:2.0.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.9.0-rc01")
+    implementation("com.google.android.material:material:1.9.0")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:31.5.0"))
+    implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -163,26 +166,28 @@ dependencies {
     implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.telefonica:nestedscrollwebview:0.1.2")
-    val coilVersion = "2.3.0"
-    implementation("io.coil-kt:coil:$coilVersion")
-    implementation("io.coil-kt:coil-gif:$coilVersion")
 
-    val ktorVersion = "2.3.0"
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-    implementation("io.ktor:ktor-client-android:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("io.ktor:ktor-client-auth:$ktorVersion")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.coil-kt:coil-bom:2.3.0")
+    implementation("io.coil-kt:coil")
+    implementation("io.coil-kt:coil-gif")
 
-    implementation("com.mikepenz:aboutlibraries-core:10.6.2")
+    implementation(platform("io.ktor:ktor-bom:2.3.0"))
+    implementation("io.ktor:ktor-client-core")
+    implementation("io.ktor:ktor-client-okhttp")
+    implementation("io.ktor:ktor-client-android")
+    implementation("io.ktor:ktor-serialization-kotlinx-json")
+    implementation("io.ktor:ktor-client-auth")
+    implementation("io.ktor:ktor-client-content-negotiation")
+
+    implementation("com.mikepenz:aboutlibraries-core:10.6.3")
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
     implementation(project(":lastfm"))
 
     testImplementation("junit:junit:4.13.2")
-    // androidTestImplementation("androidx.test:runner:1.1.0-alpha1")
-    // androidTestImplementation("androidx.test.espresso:espresso-core:3.1.0-alpha1")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0-alpha03")
+    androidTestImplementation("androidx.test:runner:1.6.0-alpha02")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0-alpha01")
 }
 
 

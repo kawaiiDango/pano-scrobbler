@@ -111,9 +111,6 @@ class RandomFragment : ChartsPeriodFragment() {
             }
         }
 
-        if (!BuildConfig.DEBUG)
-            periodChipsBinding.root.visibility = View.GONE
-
         binding.randomScrobbleTypeGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
 
             TransitionManager.beginDelayedTransition(group)
@@ -127,10 +124,8 @@ class RandomFragment : ChartsPeriodFragment() {
                 btn.text = ""
             }
 
-            if (BuildConfig.DEBUG) {
-                periodChipsBinding.root.visibility = (isChecked && checkedId == R.id.get_loved)
-                    .let { if (it) View.INVISIBLE else View.VISIBLE }
-            }
+            periodChipsBinding.root.visibility = (isChecked && checkedId == R.id.get_loved)
+                .let { if (it) View.INVISIBLE else View.VISIBLE }
         }
 
         binding.randomScrobbleTypeGroup.children.forEach {
@@ -171,8 +166,7 @@ class RandomFragment : ChartsPeriodFragment() {
         _binding ?: return
 
         val type = buttonToTypeBimap[binding.randomScrobbleTypeGroup.checkedButtonId]!!
-        if (BuildConfig.DEBUG)
-            viewModel.selectedPeriod.value?.let { randomViewModel.timePeriod = it }
+        viewModel.selectedPeriod.value?.let { randomViewModel.timePeriod = it }
         load(type)
     }
 

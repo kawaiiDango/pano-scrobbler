@@ -40,12 +40,14 @@ class MainDialogActivity : AppCompatActivity() {
         }
 
         // navigate
-        val destinationId = intent.getIntExtra(ARG_DESTINATION, 0)
-        if (destinationId != 0) {
-            navHostFragment.navController.navigate(
-                destinationId,
-                intent.getBundleExtra(ARG_NAV_ARGS)
-            )
+        if (savedInstanceState == null) {
+            val destinationId = intent.getIntExtra(ARG_DESTINATION, 0)
+            if (destinationId != 0) {
+                navHostFragment.navController.navigate(
+                    destinationId,
+                    intent.getBundleExtra(ARG_NAV_ARGS)
+                )
+            }
         }
     }
 

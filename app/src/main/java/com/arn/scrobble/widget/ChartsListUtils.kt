@@ -2,7 +2,6 @@ package com.arn.scrobble.widget
 
 import android.appwidget.AppWidgetManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
@@ -12,7 +11,6 @@ import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.WidgetPrefs
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.text.NumberFormat
 
@@ -81,12 +79,10 @@ object ChartsListUtils {
         }.getOrDefault(arrayListOf())
     }
 
-
-    fun updateWidget(appWidgetId: Int) {
+    fun updateWidget(appWidgetIds: IntArray) {
         val i = Intent(App.context, ChartsWidgetProvider::class.java).apply {
-            action = NLService.iUPDATE_WIDGET
-            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-            data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
         }
         App.context.sendBroadcast(i)
     }

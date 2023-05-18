@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.animation.ObjectAnimator
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.PorterDuff
@@ -7,8 +8,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.MenuItemCompat
+import androidx.core.view.children
+import androidx.core.view.get
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -16,6 +21,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import coil.load
 import com.arn.scrobble.Stuff.getSingle
@@ -56,7 +63,7 @@ object NavUtils {
         )
 
         val displayText = when {
-            Stuff.DEMO_MODE -> "nobody"
+            App.prefs.demoMode -> "nobody"
             accountType == AccountType.LASTFM -> username
             else -> Scrobblables.getString(accountType) + ": " + username
         }
@@ -95,7 +102,7 @@ object NavUtils {
         }
 
         val profilePicUrl = currentUser.getWebpImageURL(ImageSize.EXTRALARGE) ?: ""
-        if (headerNavBinding.navProfilePic.getTag(R.id.img_url)  != profilePicUrl + username) // todo prevent flash
+        if (headerNavBinding.navProfilePic.getTag(R.id.img_url) != profilePicUrl + username) // todo prevent flash
             headerNavBinding.navProfilePic.load(profilePicUrl) {
                 allowHardware(false)
                 error(
@@ -107,10 +114,16 @@ object NavUtils {
                 )
                 listener(
                     onSuccess = { _, _ ->
-                        headerNavBinding.navProfilePic.setTag(R.id.img_url, profilePicUrl + username)
+                        headerNavBinding.navProfilePic.setTag(
+                            R.id.img_url,
+                            profilePicUrl + username
+                        )
                     },
                     onError = { _, _ ->
-                        headerNavBinding.navProfilePic.setTag(R.id.img_url, profilePicUrl + username)
+                        headerNavBinding.navProfilePic.setTag(
+                            R.id.img_url,
+                            profilePicUrl + username
+                        )
                     }
                 )
             }
@@ -186,6 +199,24 @@ object NavUtils {
         }
     }
 
+    fun BasePagerFragment.scrollToTop() {
+        val currentFragment = adapter.instantiateItem(
+            binding.pager,
+            binding.pager.currentItem
+        ) as Fragment
+        val scrollableView = currentFragment.view
+            ?.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
+            ?.get(0)
+
+        if (scrollableView is RecyclerView)
+            scrollableView.smoothScrollToPosition(0)
+        else if (scrollableView is ConstraintLayout) // for frame_charts_list
+            (scrollableView.children.find { it is RecyclerView } as? RecyclerView)
+                ?.smoothScrollToPosition(0)
+        else if (scrollableView != null)
+            ObjectAnimator.ofInt(scrollableView, "scrollY", 0).start();
+    }
+
     fun BasePagerFragment.setupWithNavUi() {
         val activityBinding = (activity as? MainActivity)?.binding ?: return
         val menus = listOf(
@@ -234,16 +265,23 @@ object NavUtils {
                                 )
                                 moreMenu.isCheckable = false
                                 if (shouldShowUser) {
-                                    UiUtils.loadSmallUserPic(
-                                        activityBinding.bottomNav.context,
-                                        mainNotifierViewModel.currentUser,
-                                    ) {
-                                        it.colorFilter = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
-                                        MenuItemCompat.setIconTintMode(
-                                            moreMenu,
-                                            PorterDuff.Mode.DST
-                                        )
-                                        moreMenu.icon = it
+                                    if (App.prefs.demoMode) {
+                                        moreMenu.setIcon(R.drawable.vd_user)
+                                    } else {
+                                        UiUtils.loadSmallUserPic(
+                                            activityBinding.bottomNav.context,
+                                            mainNotifierViewModel.currentUser,
+                                        ) {
+                                            it.colorFilter =
+                                                ColorMatrixColorFilter(ColorMatrix().apply {
+                                                    setSaturation(0f)
+                                                })
+                                            MenuItemCompat.setIconTintMode(
+                                                moreMenu,
+                                                PorterDuff.Mode.DST
+                                            )
+                                            moreMenu.icon = it
+                                        }
                                     }
                                 } else {
                                     moreMenu.setIcon(R.drawable.vd_more_horiz)
@@ -274,12 +312,20 @@ object NavUtils {
                                     false
                             }
 
+                            activityBinding.bottomNav.setOnItemReselectedListener {
+                                scrollToTop()
+                            }
+
                             activityBinding.sidebarNav.setNavigationItemSelectedListener { menuItem ->
                                 val page = menuItem.itemId - idOffset
 
                                 if (page in adapter.tabMetadata.indices) {
                                     menuItem.isChecked = true
-                                    binding.pager.setCurrentItem(page, true)
+                                    val reselected = page == binding.pager.currentItem
+                                    if (reselected)
+                                        scrollToTop()
+                                    else
+                                        binding.pager.setCurrentItem(page, true)
                                     true
                                 } else {
                                     optionsMenuViewModel.menuEvent.value = menuItem.itemId

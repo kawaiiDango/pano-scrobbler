@@ -243,7 +243,7 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
             NavDeepLinkBuilder(requireContext())
                 .setComponentName(MainActivity::class.java)
                 .setGraph(R.navigation.nav_graph)
-                .setDestination(R.id.infoPagerFragment)
+                .setDestination(fragmentId)
                 .setArguments(args)
                 .createPendingIntent()
                 .send()

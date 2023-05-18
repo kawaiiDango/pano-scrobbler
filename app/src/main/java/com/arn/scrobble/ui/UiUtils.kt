@@ -62,6 +62,7 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.result
 import coil.transform.CircleCropTransformation
+import com.arn.scrobble.App
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -136,13 +137,13 @@ object UiUtils {
         get() = (this.result as? SuccessResult)?.memoryCacheKey
 
     fun Fragment.hideKeyboard() {
-        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
+        ContextCompat.getSystemService(context ?: return, InputMethodManager::class.java)
+            ?.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 
     fun Fragment.showKeyboard(view: View) {
-        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.showSoftInput(view, 0)
+        ContextCompat.getSystemService(context ?: return, InputMethodManager::class.java)
+            ?.showSoftInput(view, 0)
     }
 
     fun Context.attrToThemeId(@AttrRes attributeResId: Int): Int {
@@ -430,6 +431,11 @@ object UiUtils {
         userSerializable: UserSerializable,
         onResult: (Drawable) -> Unit
     ) {
+        if (App.prefs.demoMode) {
+            onResult(ContextCompat.getDrawable(context, R.drawable.vd_user)!!)
+            return
+        }
+
         val initialsDrawable = InitialsDrawable(context, userSerializable)
         val request = ImageRequest.Builder(context)
             .data(userSerializable

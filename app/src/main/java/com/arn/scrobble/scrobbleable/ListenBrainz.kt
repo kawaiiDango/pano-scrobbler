@@ -577,6 +577,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             ).execute().use { response ->
                 Json {
                     ignoreUnknownKeys = true
+                    explicitNulls = false
                 }.decodeFromString<ValidateToken>(response.body.string())
             }
 

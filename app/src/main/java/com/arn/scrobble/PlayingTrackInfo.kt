@@ -31,6 +31,7 @@ data class PlayingTrackInfo(
     var userPlayCount: Int = 0,
     var userLoved: Boolean = false,
     var ignoreOrigArtist: Boolean = false,
+    var canDoFallbackScrobble: Boolean = false,
 
     var lastScrobbleHash: Int = 0,
     var lastSubmittedScrobbleHash: Int = 0,

@@ -9,7 +9,7 @@
         layout="@layout/chips_charts_period" />
 
     <com.arn.scrobble.ui.OnlyVerticalSwipeRefreshLayout
-        android:id="@+id/charts_swipe_refresh"
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

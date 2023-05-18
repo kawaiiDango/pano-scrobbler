@@ -311,7 +311,6 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分钟</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">百分比</string>
     <string name="pref_logout">退出登录</string>
-    <string name="pref_confirm_logout">确认退出？再次点击以确认</string>
     <string name="pref_login">登录</string>
     <string name="pref_about" comment="Info about this app">关于</string>
     <string name="pref_privacy_policy">隐私策略</string>

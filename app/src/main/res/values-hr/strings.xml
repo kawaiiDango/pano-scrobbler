@@ -209,6 +209,7 @@
     <string name="add_to_hs">Dodaj na početni zaslon</string>
     <string name="listening">Slušanje glazbe koja svira oko Vas…</string>
     <string name="uploading">Prenošenje…</string>
+    <string name="recording_failed">Nije moguće pokrenuti snimanje. Mikrofon je možda zauzet ili nedostupan na ovom uređaju.</string>
     <string name="press_back">Pritisnite natrag kada ste gotovi</string>
     <string name="powered_acr">Omogućuje <i><b>ACR</b>Cloud</i></string>
     <string name="details">Detalji</string>

@@ -173,6 +173,7 @@
     <string name="show_all">Prikaži sve</string>
     <string name="edit">Uredi</string>
     <string name="delete">Izbriši</string>
+    <string name="delete_all">Izbriši sve</string>
     <string name="love">Volim</string>
     <string name="unlove">Ne volim</string>
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
@@ -206,6 +207,7 @@
     <string name="scrobble_from_mic">Scrobbleaj pomoću mikrofona</string>
     <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Pomoću mikrofona</string>
     <string name="add_to_hs">Dodaj na početni zaslon</string>
+    <string name="listening">Slušanje glazbe koja svira oko Vas…</string>
     <string name="uploading">Prenošenje…</string>
     <string name="press_back">Pritisnite natrag kada ste gotovi</string>
     <string name="powered_acr">Omogućuje <i><b>ACR</b>Cloud</i></string>

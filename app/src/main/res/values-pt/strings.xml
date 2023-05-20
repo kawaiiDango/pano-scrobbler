@@ -157,6 +157,7 @@
     <string name="show_all">Ver tudo</string>
     <string name="edit">Editar</string>
     <string name="delete">Eliminar</string>
+    <string name="delete_all">Eliminar tudo</string>
     <string name="love">Favorita</string>
     <string name="hate">Não gosto</string>
     <string name="unhate">Desfazer não gosto</string>
@@ -331,6 +332,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutos</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentagem</string>
     <string name="pref_logout">Sair</string>
+    <string name="sure_tap_again">Tem a certeza? Toque novamente</string>
     <string name="pref_login">Iniciar sessão</string>
     <string name="pref_about" comment="Info about this app">Acerca</string>
     <string name="pref_privacy_policy">Política de privacidade</string>

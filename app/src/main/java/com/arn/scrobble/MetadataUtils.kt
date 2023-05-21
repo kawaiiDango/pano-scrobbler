@@ -6,12 +6,10 @@ import java.util.Locale
 object MetadataUtils {
 
     private val separators = arrayOf( // in priority order
-        "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", /*"ー", */" • ",
-
+        "—", " – ", " –", "– ", " _ ", " - ", " | ", " -", "- ", "「", "『", " • ",
         "【", "〖", "〔",
         "】", "〗", "』", "」", "〕",
-        // ":",
-        " \"", " / ", "／"
+        " \"", "／"
     )
     private val unwantedSeparators =
         arrayOf("『", "』", "「", "」", "\"", "'", "【", "】", "〖", "〗", "〔", "〕", "\\|")

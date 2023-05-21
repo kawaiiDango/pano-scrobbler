@@ -907,16 +907,13 @@ class NLService : NotificationListenerService() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 iOTHER_ERR_S -> {
-                    val scrobbleError =
-                        intent.getSingle<ScrobbleError>()!!
+                    val scrobbleError = intent.getSingle<ScrobbleError>() ?: return
                     notifyOtherError(scrobbleError)
                 }
 
                 iBAD_META_S -> {
-                    val trackInfo =
-                        intent.getSingle<PlayingTrackInfo>()!!
-                    val scrobbleError =
-                        intent.getSingle<ScrobbleError>()!!
+                    val trackInfo = intent.getSingle<PlayingTrackInfo>() ?: return
+                    val scrobbleError = intent.getSingle<ScrobbleError>() ?: return
 
                     notifyBadMeta(trackInfo, scrobbleError)
                 }
@@ -1108,7 +1105,7 @@ class NLService : NotificationListenerService() {
 
         fun remove(hash: Int, notificationPackageNameToRemove: String? = null) {
             if (hash == lockedHash) return
-            
+
             Stuff.log("$hash from $notificationPackageNameToRemove cancelled")
             tracksCopyPQ.removeAll { it.hash == hash }
             sessListener?.findTrackInfoByHash(hash)?.isPlaying = false

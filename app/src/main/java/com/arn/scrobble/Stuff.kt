@@ -206,6 +206,7 @@ object Stuff {
 
     val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
         PACKAGE_SOUNDCLOUD,
+        PACKAGE_NICOBOX,
         "com.google.android.apps.youtube.music",
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
@@ -291,8 +292,12 @@ object Stuff {
         this ?: return "null"
         var s = ""
         for (key in keySet().sortedDescending()) {
-            val value = get(key) ?: "null"
-            s += "$key= $value, "
+            s += try {
+                val value = get(key) ?: "null"
+                "$key= $value, "
+            } catch (e: Exception) {
+                "$key= $e, "
+            }
         }
         return s
     }

@@ -22,7 +22,7 @@ plugins {
     id("com.google.gms.google-services") version "4.3.15" apply false
     id("com.google.devtools.ksp") version "1.8.21-1.0.11" apply false
     kotlin("plugin.serialization") version "1.8.21" apply false
-    id("com.mikepenz.aboutlibraries.plugin") version "10.6.3" apply false
+    id("com.mikepenz.aboutlibraries.plugin") version "10.7.0" apply false
     id("com.github.breadmoirai.github-release") version "2.4.1" apply false
     id("com.android.test") version "8.2.0-alpha04" apply false
     id("androidx.baselineprofile") version "1.2.0-alpha13" apply false

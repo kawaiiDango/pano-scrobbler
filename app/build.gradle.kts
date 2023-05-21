@@ -179,7 +179,7 @@ dependencies {
     implementation("io.ktor:ktor-client-auth")
     implementation("io.ktor:ktor-client-content-negotiation")
 
-    implementation("com.mikepenz:aboutlibraries-core:10.6.3")
+    implementation("com.mikepenz:aboutlibraries-core:10.7.0")
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
     implementation(project(":lastfm"))

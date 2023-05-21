@@ -289,10 +289,6 @@ class SessListener(
                     }
                 }
 
-                Stuff.PACKAGE_NICOBOX -> {
-                    artist = "Unknown"
-                }
-
                 Stuff.PACKAGE_YANDEX_MUSIC -> {
                     albumArtist = ""
                 }
@@ -307,7 +303,9 @@ class SessListener(
 
                 Stuff.PACKAGE_SPOTIFY -> {
                     // goddamn spotify
-                    if (albumArtist.isNotEmpty() && albumArtist != artist && albumArtist.lowercase() != "various artists")
+                    if (albumArtist.isNotEmpty() && albumArtist != artist &&
+                        albumArtist.lowercase() != "various artists"
+                    )
                         artist = albumArtist
 
                     if (BuildConfig.DEBUG) {
@@ -343,14 +341,14 @@ class SessListener(
 
                 trackInfo.ignoreOrigArtist = shouldIgnoreOrigArtist(trackInfo)
 
-                trackInfo.canDoFallbackScrobble =
-                    trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
-                            youtubeHeight > 0 && youtubeWidth > 0 && youtubeHeight == youtubeWidth
+                trackInfo.canDoFallbackScrobble = trackInfo.ignoreOrigArtist && (
+                        trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK ||
+                                youtubeHeight > 0 && youtubeWidth > 0 && youtubeHeight == youtubeWidth
+                        )
                 // auto generated artist channels usually have square videos
 
                 trackInfo.durationMillis = durationMillis
-                trackInfo.hash =
-                    Objects.hash(artist, album, title, trackInfo.packageName)
+                trackInfo.hash = Objects.hash(artist, album, title, trackInfo.packageName)
 
                 if (trackInfo.packageName in Stuff.IGNORE_ARTIST_META)
                     trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
@@ -521,6 +519,7 @@ class SessListener(
 
     private fun shouldIgnoreOrigArtist(trackInfo: PlayingTrackInfo): Boolean {
         return if (
+            trackInfo.packageName in Stuff.IGNORE_ARTIST_META_WITH_FALLBACK && trackInfo.album.isNotEmpty() ||
             trackInfo.packageName == Stuff.PACKAGE_YOUTUBE_TV && trackInfo.album.isNotEmpty() ||
             trackInfo.packageName == Stuff.PACKAGE_YMUSIC &&
             trackInfo.album.replace("YMusic", "").isNotEmpty()

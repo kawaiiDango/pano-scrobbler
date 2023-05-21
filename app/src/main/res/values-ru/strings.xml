@@ -191,7 +191,10 @@
     <string name="show_all">Показать все</string>
     <string name="edit">Изменить</string>
     <string name="delete">Удалить</string>
+    <string name="delete_all">Удалить все</string>
     <string name="love">Лайк</string>
+    <string name="hate">Ненавижу</string>
+    <string name="unhate">Не ненавижу</string>
     <string name="unlove">Убрать лайк</string>
     <string name="pending_scrobbles">Отложенные скробблы</string>
     <string name="pending_scrobble">Отложенный скроббл</string>
@@ -363,6 +366,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Минуты</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Проценты</string>
     <string name="pref_logout">Выход из системы</string>
+    <string name="sure_tap_again">Уверены? Нажмите еще раз</string>
     <string name="pref_login">Войти</string>
     <string name="pref_about" comment="Info about this app">О программе</string>
     <string name="pref_privacy_policy">Политика конфиденциальности</string>

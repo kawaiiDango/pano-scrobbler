@@ -147,6 +147,7 @@
     <string name="show_all">Tout voir</string>
     <string name="edit">Éditer</string>
     <string name="delete">Supprimer</string>
+    <string name="delete_all">Tout supprimer</string>
     <string name="love">J\'aime</string>
     <string name="unlove">Je n\'aime pas</string>
     <string name="pending_scrobbles">Scrobbles en attente</string>

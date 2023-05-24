@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <plurals name="num_scrobbles_noti">
-        <item quantity="one">%1$s scrobble
-%1$s scrobbles</item>
+        <item quantity="one">%1$s scrobble</item>
         <item quantity="other">%1$s scrobbles</item>
     </plurals>
     <plurals name="num_listeners">
@@ -52,6 +51,10 @@
     <plurals name="num_blocked_metadata">
         <item quantity="one">%1$s métadonnée bloquée</item>
         <item quantity="other">%1$s métadonnée bloquée</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
     </plurals>
     <plurals name="num_friends">
         <item quantity="one">%1$s ami(e)
@@ -149,6 +152,8 @@
     <string name="delete">Supprimer</string>
     <string name="delete_all">Tout supprimer</string>
     <string name="love">J\'aime</string>
+    <string name="hate">Je déteste</string>
+    <string name="unhate">Je ne déteste plus</string>
     <string name="unlove">Je n\'aime pas</string>
     <string name="pending_scrobbles">Scrobbles en attente</string>
     <string name="pending_scrobble">Scrobble en attente</string>
@@ -265,6 +270,7 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite de modèles atteinte (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Poignée de classement glissante</string>
     <string name="text" comment="text to test regex rules with">Texte</string>
+    <string name="blocked_metadata_info">i Remplir plusieurs de ces champs appliquera un opérateur ET entre eux</string>
     <string name="blocked_metadata_noti">Appuyer pour bloquer et passer</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>
     <string name="skip" comment="skip to next track">Passer</string>
@@ -332,6 +338,7 @@
     <string name="pref_themes">Thèmes</string>
     <string name="pref_widget_charts">Widget de l\'écran d\'accueil - Graphiques</string>
     <string name="pref_show_albums">Afficher le titre des albums</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…pour les scrobbles</string>
     <string name="pref_show_scrobble_sources">Afficher les icônes des applications depuis lesquelles vous avez scrobblé</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listes</string>
     <string name="pref_regex_edits">Modifications des paternes</string>

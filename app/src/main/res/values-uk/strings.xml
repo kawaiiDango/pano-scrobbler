@@ -169,6 +169,7 @@
     <string name="new_player_prompt">Чи скроблювати з цього додатку?</string>
     <string name="no_track_url">Ця пісня не має сторінки в lastFM</string>
     <string name="no_scrobbles">Тут ще немає пісень…</string>
+    <string name="no_friends">Ви ні на кого не підписані…</string>
     <string name="channel_err">Помилки скроблінгу</string>
     <string name="new_app">Новий додаток</string>
     <string name="no_apps_enabled">Жодних програм не встановлено</string>
@@ -176,6 +177,7 @@
     <string name="show_all">Переглянути всі</string>
     <string name="edit">Редагувати</string>
     <string name="delete">Видалити</string>
+    <string name="delete_all">Видалити всі</string>
     <string name="love">Вподобати</string>
     <string name="unlove">Скасувати вподобання</string>
     <string name="pending_scrobbles">Очікуючі Скробли</string>
@@ -313,6 +315,10 @@
     <string name="persistent_noti_desc">Натисніть і утримуйте кнопку щоб сховати</string>
     <string name="scrobbler_off">Скроблер вимкнено</string>
     <string name="scrobbler_on">Скроблер увімкнений</string>
+    <string name="acoustic" comment="(Acoustic music)">Акустична</string>
+    <string name="energetic" comment="(Energetic music)">Енергетика</string>
+    <string name="danceable">Танцювальність</string>
+    <string name="valence" comment="(Musical positivity)">Позитивність</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Популярність: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Аналіз</string>
     <string name="enable" comment="To enable the scrobbler">Увімкнути</string>
@@ -341,6 +347,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Хвилини</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Відсотки</string>
     <string name="pref_logout">Вихід</string>
+    <string name="sure_tap_again">Точно? Натисніть ще раз</string>
     <string name="pref_login">Увійти</string>
     <string name="pref_about" comment="Info about this app">Про застосунок</string>
     <string name="pref_privacy_policy">Політика конфіденційності</string>

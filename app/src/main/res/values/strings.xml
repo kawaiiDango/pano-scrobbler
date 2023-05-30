@@ -77,6 +77,7 @@
     <string name="reset">Reset</string>
     <string name="settings">Configure</string>
     <string name="bug_report">Bug report</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Album art</string>
     <string name="artist_image">Artist image</string>
     <string name="parse_error"
@@ -137,11 +138,13 @@
         comment="Shown on the first screen after install, asking the user to complete the setup"
         >Almost there…</string>
     <string name="music_players">Music Players</string>
-    <string name="video_players">Video Streaming Apps</string>
     <string name="other_apps"
         comment="Apps which are not music players or video streaming apps"
         >Other Apps</string>
     <string name="choose_apps">Choose Apps to scrobble</string>
+    <string name="apps"
+        comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps"
+        >Apps</string>
     <string name="offline">Offline. Data shown isn\'t fresh</string>
     <string name="unavailable_offline">Not available when offline</string>
     <string name="scrobble_services"
@@ -154,7 +157,6 @@
         comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username"
         >%3$s was listening to\n%1$s %2$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
-    <string name="share_this_song">Share this song</string>
     <string name="share">Share</string>
     <string name="legend"
         comment="Chart legend - descriptions of the symbols used"
@@ -209,10 +211,11 @@
         comment="(%1 = App name) detected (shown in notification, when a new music player is detected)"
         >%1$s detected</string>
     <string name="new_player_prompt">Keep scrobbling this app?</string>
-    <string name="no_track_url">This song doesn\'t have a page on lastFM</string>
     <string name="no_scrobbles">No songs here yet…</string>
     <string name="no_friends">Not following anyone yet…</string>
-    <string name="channel_err">Scrobble errors</string>
+    <string name="channel_err"
+        comment="Its a noun"
+        >Scrobble errors</string>
     <string name="new_app">New app</string>
     <string name="no_apps_enabled">No apps are enabled</string>
     <string name="n_more" formatted="true"
@@ -223,10 +226,18 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="delete_all">Delete all</string>
-    <string name="love">Love</string>
-    <string name="hate">Hate</string>
-    <string name="unhate">Unhate</string>
-    <string name="unlove">Unlove</string>
+    <string name="love"
+        comment="Love/like a song"
+        >Love</string>
+    <string name="hate"
+        comment="Hate or dislike a song"
+        >Hate</string>
+    <string name="unhate"
+        comment="Undo a hate/dislike and make it neutral. This is not the same as Like"
+        >Unhate</string>
+    <string name="unlove"
+        comment="Undo a love/like and make it neutral. This is not the same as Dislike"
+        >Unlove</string>
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobble">Pending scrobble</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
@@ -253,13 +264,15 @@
         comment="(Swap title and artist)"
         >Swap</string>
     <string name="rate_msg">Enjoying this app?</string>
-    <string name="rate_action">Rate it</string>
     <string name="time_just_now">just now</string>
     <string name="no_mail_apps">No email client is installed</string>
-    <string name="loved">Loved</string>
-    <string name="unloved">Unloved</string>
+    <string name="loved"
+        comment="Its a noun"
+        >Loved</string>
+    <string name="unloved"
+        comment="Its a noun"
+        >Unloved</string>
     <string name="simple_edits">Edits</string>
-    <string name="force_remembered">Force scrobble (will remember)</string>
     <string name="grant_rec_perm">Please grant permission to use the microphone</string>
     <string name="charts"
         comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud"
@@ -267,9 +280,11 @@
     <string name="tag_cloud"
         comment="https://www.google.com/search?&amp;q=tag+cloud"
         >Tag cloud</string>
-    <string name="scrobble_from_mic">Scrobble from mic</string>
+    <string name="scrobble_from_mic"
+        comment="Its a verb"
+        >Scrobble from mic</string>
     <string name="from_mic"
-        comment="(Scrobble from mic in short, ideally 10 characters or less)"
+        comment="(To scrobble from mic, in short, ideally 10 characters or less)"
         >From mic</string>
     <string name="add_to_hs">Add to homescreen</string>
     <string name="listening">Listening to music playing around you…</string>
@@ -318,7 +333,9 @@
         comment="For the charts menu which displays year by year"
         >Years</string>
     <string name="charts_overall">Overall</string>
-    <string name="listening_activity">Listening activity</string>
+    <string name="listening_activity"
+        comment="Shows a bar chart of the number of scrobbles each day/week/month/year"
+        >Listening activity</string>
     <string name="charts_no_data">No data for this period</string>
     <string name="charts_custom"
         comment="Custom date range, but in short, used in the charts menu"
@@ -337,7 +354,9 @@
         >I\'m feeling lucky</string>
     <string name="random_not_found">No track found</string>
     <string name="loved_track">Loved track</string>
-    <string name="randomize">Randomize</string>
+    <string name="randomize"
+        comment="(To randomize or fetch a new random item)"
+        >Randomize</string>
     <string name="random_text">Random</string>
     <string name="graph_daily">Daily scrobble counts</string>
     <string name="graph_weekly">Weekly scrobble counts</string>
@@ -363,11 +382,19 @@
     <string name="s_top_scrobbles" formatted="true"
         comment="%1= the word weekly or monthly"
         >%1$s top scrobbles</string>
-    <string name="my_tags">My tags</string>
-    <string name="close">Close</string>
-    <string name="user_tags_hint">New tag</string>
+    <string name="my_tags"
+        comment="Tags, the user has added"
+        >My tags</string>
+    <string name="close"
+        comment="To close a dialog or something"
+        >Close</string>
+    <string name="user_tags_hint"
+        comment="To add a new tag"
+        >New tag</string>
     <string name="user_tags_empty">You haven\'t added any tags</string>
-    <string name="info_long_press_hint">Long press on a track to open this</string>
+    <string name="info_long_press_hint"
+        comment="'This' is a dialog"
+        >Long press on a track to open this</string>
 
     <string name="appwidget_loading">Loading…</string>
     <string name="appwidget_period"
@@ -381,17 +408,19 @@
     <string name="system_colors">System colors</string>
     <string name="appwidget_alpha">Background Opacity</string>
     <string name="appwidget_refresh_every" formatted="true"
-        comment="%1= 'n minutes'"
+        comment="%1= 'n minutes'; n is >= 45"
         >Widget will refresh every %1$s</string>
 
     <string name="primary_color">Primary color</string>
     <string name="secondary_color">Secondary color</string>
-    <string name="tint_background">Tint background</string>
+    <string name="tint_background"
+        comment="Tint the background with the primary color"
+        >Tint background</string>
     <string name="random_theme">Randomize on every launch</string>
 
     <string name="edit_name"
         comment="name for regex pattern"
-        >Friendly name (optional)</string>
+        >Friendly name</string>
     <string name="edit_regex">Regex pattern</string>
     <string name="edit_regex_replacement">Regex replacement</string>
     <string name="edit_field"
@@ -404,6 +433,12 @@
     <string name="edit_all"
         comment="All occurrences of a pattern"
         >All</string>
+    <string name="edit_extract"
+        comment="To extract sub text from a larger text, used in pattern edits"
+        >Extract</string>
+    <string name="edit_extract_desc"
+        comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups"
+        >Name your capture groups <i>track, album, artist</i> or <i>albumArtist</i> to extract them from other fields</string>
     <string name="edit_continue">If found, continue matching other regexes</string>
     <string name="edit_case_sensitive">Case sensitive</string>
     <string name="edit_regex_test"
@@ -426,27 +461,41 @@
     <string name="text"
         comment="text to test regex rules with"
         >Text</string>
-    <string name="edit_regex_warning">⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
+    <string name="edit_regex_warning"
+        comment="shown before adding a custom pattern edit"
+        >⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
     <string name="blocked_metadata_info">ℹ️ Filling in more than one of these fields will apply an AND operator between them</string>
-    <string name="blocked_metadata_noti">Tap to block and skip</string>
+    <string name="blocked_metadata_noti"
+        comment="to block and skip a track from scrobbling and playing"
+        >Tap to block and skip</string>
     <string name="player_actions"
         comment="music player actions such as skip/mute"
         >Player actions</string>
     <string name="skip"
         comment="skip to next track"
         >Skip</string>
-    <string name="mute">Mute</string>
-    <string name="block">Block</string>
-    <string name="hidden_tags">Hidden tags</string>
-    <string name="pin">Pin</string>
-    <string name="unpin">Unpin</string>
+    <string name="mute"
+        comment="mute the music"
+        >Mute</string>
+    <string name="block"
+        comment="block the track from scrobbling"
+        >Block</string>
+    <string name="hidden_tags"
+        comment="Tags that should not be shown to the user"
+        >Hidden tags</string>
+    <string name="pin"
+        comment="pin a friend to the top"
+        >Pin</string>
+    <string name="unpin"
+        comment="unpin a friend to the top"
+        >Unpin</string>
     <string name="pin_limit_reached" formatted="true">Pin limit reached (%1$d)</string>
     <string name="pin_help">Long press pinned items to reorder them</string>
     <string name="use_channel"
         comment="(Use youtube channel name)"
         >Use channel name</string>
     <string name="regex_edits_suggestion" formatted="true"
-        comment="%1= the preset name (e.g. Remastered (Track))"
+        comment="%1= the preset name (e.g. Remastered)"
         >Would you like to enable the pattern edit rule: %1$s?</string>
 
     <string name="show_persistent_noti">Show a persistent notification</string>
@@ -479,7 +528,9 @@
     <string name="size"
         comment="Collage size such as 3x3, 4x4 etc"
         >Size</string>
-    <string name="skip_missing_images">Skip missing images</string>
+    <string name="skip_missing_images"
+        comment="(while generating a collage)"
+        >Skip missing images</string>
     <string name="create_collage">Create collage</string>
     <string name="captions"
         comment="Collage image captions such as artist names, play counts"
@@ -502,7 +553,6 @@
         >Scrobble from</string>
     <string name="pref_enabled_apps_summary">ℹ️ Supports apps that reveal music metadata. To avoid double scrobbles from Spotify, enable it only in one place.</string>
     <string name="pref_enabled_apps_title">Choose apps</string>
-    <string name="pref_auto_detect_summary">…we will still ask you to confirm/ignore that app</string>
     <string name="pref_auto_detect">Automatically scrobble from new apps</string>
     <string name="pref_spotify_remote">Scrobble Spotify playing on other devices</string>
     <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
@@ -531,8 +581,6 @@
         >API URL</string>
 
     <string name="pref_now_playing">Submit now playing</string>
-    <string name="pref_fetch_aa">Fetch album artists from lastFM</string>
-    <string name="pref_fetch_aa_desc">For players that do not provide this data. The fetched data may differ from your tags. lastFM may not have the data for some songs.</string>
     <string name="pref_fetch_album">Fetch missing album data from lastFM</string>
     <string name="pref_locale">Languages</string>
     <string name="pref_change_locale">Change language</string>
@@ -550,7 +598,9 @@
     <string name="pref_personalization"
         comment="Such as themes, widgets and some appearance settings"
         >Personalization</string>
-    <string name="pref_themes">Themes</string>
+    <string name="pref_themes"
+        comment="Color themes"
+        >Themes</string>
     <string name="pref_themes_desc"
         comment="This is a continuation of the string: Themes"
         >Mix and match\nAlso changes the notification color</string>
@@ -571,7 +621,9 @@
         comment="Such as edits list and block lists"
         >Lists</string>
     <string name="pref_regex_edits">Pattern edits</string>
-    <string name="pref_blocked_metadata">Blocked metadata</string>
+    <string name="pref_blocked_metadata"
+        comment="Block things from scrobbling"
+        >Blocked metadata</string>
     <string name="pref_translate">Translate this app</string>
     <string name="pref_translate_credits">Translation credits</string>
     <string name="pref_oss_credits">Open source credits</string>
@@ -579,7 +631,9 @@
     <string name="update_available" formatted="true"
         comment="%1= the version number"
         >Update available: %1$s</string>
-    <string name="download">Download</string>
+    <string name="download"
+        comment="Its a verb"
+        >Download</string>
     <string name="changelog">Changelog</string>
 
     <string name="import_hey_wtf">That\'s probably not a Pano Scrobbler export file</string>
@@ -615,7 +669,9 @@
         comment="%1= reason for the app kill"
         formatted="true">Kill reason given by the system: %s</string>
     <string name="not_running_fix_action">Fix it</string>
-    <string name="login_submit">Verify</string>
+    <string name="login_submit"
+        comment="Verifies the login details"
+        >Verify</string>
     <string name="acr_host"
         comment="Web hostname"
         >Host</string>
@@ -628,7 +684,9 @@
     <string name="add_acr_key">Add ACRCloud Key</string>
     <string name="remove_acr_key">Remove ACRCloud Key</string>
     <string name="add_acr_consider">To prevent hitting rate limits, consider adding your own ACRCloud Key</string>
-    <string name="add">Add</string>
+    <string name="add"
+        comment="Add a new item such as an edit, a tag, etc"
+        >Add</string>
     <string name="add_acr_key_info"
         comment="Bucket as in a cloud storage bucket"
         >"• Sign up at https://console.acrcloud.com
@@ -643,7 +701,7 @@
         comment="For pending scrobbles"
         >Submitting a batch</string>
     <string name="webview_error">The page failed to load (is your internet working?)</string>
-    <string name="graph">Line chart</string>
+    <string name="bar_chart">Bar chart</string>
     <string name="cleared_disabled_apps">Cleared disabled apps</string>
 
     <string name="fix_it_title">Possible fixes</string>

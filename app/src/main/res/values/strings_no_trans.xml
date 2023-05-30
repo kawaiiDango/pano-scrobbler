@@ -7,6 +7,7 @@
     <string name="github_link" translatable="false">https://github.com/kawaiiDango/pScrobbler</string>
     <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
     <string name="privacy_policy_link" translatable="false">https://telegra.ph/Pano-Scrobbler-Privacy-Policy-08-17</string>
+    <string name="faq_link" translatable="false">https://telegra.ph/Pano-Scrobbler-FAQ-05-30</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>
     <string name="gnufm" translatable="false">GNU FM</string>
@@ -21,6 +22,8 @@
     <string name="preset_remastered" translatable="false">Remastered</string>
     <string name="preset_explicit" translatable="false">Explicit</string>
     <string name="preset_album_version" translatable="false">Album version</string>
+    <string name="preset_single" translatable="false">Single</string>
+    <string name="preset_ep" translatable="false">EP</string>
     <string name="artist_title" formatted="true" translatable="false">%1$s — %2$s</string>
     <string name="sidebar_visibility" translatable="false">gone</string>
     <string name="charts_num_text" formatted="true" translatable="false"

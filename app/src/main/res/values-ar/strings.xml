@@ -38,7 +38,6 @@
     <string name="enabled_apps">التطبيقات المفعلة</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">تقريبا هناك…</string>
     <string name="music_players">مشغلي الموسيقى</string>
-    <string name="video_players">تطبيقات بث الفيديو</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">تطبيقات أخرى</string>
     <string name="choose_apps">اختر تطبيقات للتمرير</string>
     <string name="offline">دون اتصال بالإنترنت. البيانات المعروضة ليست جديدة</string>
@@ -47,7 +46,6 @@
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">كنت أستمع إلى\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s كان يستمع إلى\n%1$s %2$s</string>
     <string name="share_sig">(عبر بانو سكرببلر)</string>
-    <string name="share_this_song">شارك هذه الأغنية</string>
     <string name="share">مشاركة</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">عنوان توضيحي</string>
     <string name="grid_size">تغيير حجم الشبكة</string>
@@ -58,8 +56,8 @@
     <string name="show_all">عرض الكل</string>
     <string name="edit">تعديل</string>
     <string name="delete">حذف</string>
-    <string name="love">أحببته</string>
-    <string name="unlove">ازالة الحب</string>
+    <string name="love" comment="Love/like a song">أحببته</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">ازالة الحب</string>
     <string name="pending_scrobbles">أسكروبلس معلق</string>
     <string name="pending_scrobble">أسكروبل معلق</string>
     <string name="pending_scrobbles_noti">يتم تحويل الأسكروبلس المعلق </string>

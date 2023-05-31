@@ -56,6 +56,10 @@
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
     </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s ami(e)</item>
+        <item quantity="other">%1$s ami(e)s</item>
+    </plurals>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="reset">Réinitialiser</string>

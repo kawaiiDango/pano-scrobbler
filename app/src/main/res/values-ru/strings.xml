@@ -107,6 +107,7 @@
     <string name="reset">Сбросить</string>
     <string name="settings">Настроить</string>
     <string name="bug_report">Сообщить об ошибке</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Обложка альбома</string>
     <string name="artist_image">Изображение исполнителя</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Не удалось разобрать заголовок</string>
@@ -145,6 +146,7 @@
     <string name="music_players">Музыкальные плееры</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Другие приложения</string>
     <string name="choose_apps">Выберите приложения для скробблинга</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Приложения</string>
     <string name="offline">Не в сети. Показанные данные не актуальны</string>
     <string name="unavailable_offline">Недоступно, когда не в сети</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Сервисы</string>
@@ -292,12 +294,14 @@
     <string name="secondary_color">Вторичный цвет</string>
     <string name="tint_background" comment="Tint the background with the primary color">Окрасить фон</string>
     <string name="random_theme">Выбирать случайным образом при каждом запуске</string>
+    <string name="edit_name" comment="name for regex pattern">Название</string>
     <string name="edit_regex">Шаблон регулярного выражения</string>
     <string name="edit_regex_replacement">Замена регулярного выражения</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Поля</string>
     <string name="edit_replace">Замена</string>
     <string name="edit_first" comment="First occurrence of a pattern">Первый</string>
     <string name="edit_all" comment="All occurrences of a pattern">Все</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, used in pattern edits">Извлечь</string>
     <string name="edit_continue">Если найдено, продолжить сопоставление с другими регулярными выражениями</string>
     <string name="edit_case_sensitive">С учетом регистра</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Проверка</string>
@@ -438,6 +442,7 @@
     <string name="submitting_loves" formatted="true">Отправка лайков, осталось %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Отправка пакета</string>
     <string name="webview_error">Не удалось загрузить страницу (работает ли у вас интернет?)</string>
+    <string name="bar_chart">Гистограмма</string>
     <string name="cleared_disabled_apps">Отключенные приложения очищены</string>
     <string name="fix_it_title">Возможные исправления</string>
     <string name="fix_it_startup_title">Экономия энергии / менеджеры запусков</string>

@@ -111,6 +111,7 @@
     <string name="music_players">Reprodutores de música</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Outras Aplicações</string>
     <string name="choose_apps">Escolher apps para scrobble</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicações</string>
     <string name="offline">Offline. Os dados mostrados não são recentes</string>
     <string name="unavailable_offline">Não disponível quando offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serviços</string>
@@ -264,6 +265,8 @@
     <string name="edit_replace">Substituir</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primeiro</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, used in pattern edits">Extrair</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Nomeie os seus grupos de captura <i>track, album, artist</i> ou <i>albumArtist</i> para extraí-los de outros campos</string>
     <string name="edit_continue">Se encontrado, continuar a corresponder com outros regexes</string>
     <string name="edit_case_sensitive">Maiúsculas/minúsculas</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Testar</string>
@@ -404,6 +407,7 @@
     <string name="submitting_loves" formatted="true">A submeter favoritas, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">Submeter lote</string>
     <string name="webview_error">Falha ao carregar a página (está ligado à Internet?)</string>
+    <string name="bar_chart">Gráfico de barras</string>
     <string name="cleared_disabled_apps">Lista de apps desativadas limpa</string>
     <string name="fix_it_title">Possíveis correções</string>
     <string name="fix_it_startup_title">Economizadores de energia / gestores de inicialização</string>

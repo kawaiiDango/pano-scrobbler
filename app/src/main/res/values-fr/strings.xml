@@ -56,16 +56,12 @@
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
     </plurals>
-    <plurals name="num_friends">
-        <item quantity="one">%1$s ami(e)
-%1$s ami(e)s</item>
-        <item quantity="other">%1$s ami(e)s</item>
-    </plurals>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="reset">Réinitialiser</string>
     <string name="settings">Configurer</string>
     <string name="bug_report">Rapporter un bug</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Pochette d\'album</string>
     <string name="artist_image">Image d\'artiste</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossible d\'analyser le titre</string>
@@ -104,6 +100,7 @@
     <string name="music_players">Lecteurs de musique</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Autres applications</string>
     <string name="choose_apps">Choisir une application pour scrobbler</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Applis</string>
     <string name="offline">Hors-ligne. Les données affichées ne sont pas rafraichies</string>
     <string name="unavailable_offline">Indisponible hors-ligne</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Services</string>

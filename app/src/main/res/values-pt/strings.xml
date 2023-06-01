@@ -73,6 +73,7 @@
     <string name="reset">Redefinir</string>
     <string name="settings">Definições</string>
     <string name="bug_report">Relatório de erros</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Capa do álbum</string>
     <string name="artist_image">Imagem do artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar título</string>
@@ -259,6 +260,7 @@
     <string name="secondary_color">Cor secundária</string>
     <string name="tint_background" comment="Tint the background with the primary color">Matriz de fundo</string>
     <string name="random_theme">Aleatório a cada inicialização</string>
+    <string name="edit_name" comment="name for regex pattern">Nome favorável</string>
     <string name="edit_regex">Padrão Regex</string>
     <string name="edit_regex_replacement">Regex de substituição</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Campos</string>

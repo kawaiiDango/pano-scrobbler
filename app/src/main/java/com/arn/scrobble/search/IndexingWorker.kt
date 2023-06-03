@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
@@ -11,6 +12,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.arn.scrobble.App.Companion.prefs
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.db.CachedAlbum
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
@@ -25,6 +27,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.GnuFm
 import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.ui.UiUtils
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.MusicEntry
@@ -46,6 +49,14 @@ class IndexingWorker(
     private val lastfmScrobblable = Scrobblables.current as? GnuFm
     private val session by lazy { lastfmScrobblable!!.sessionCopy() }
     private val username by lazy { lastfmScrobblable!!.userAccount.user.name }
+
+    override suspend fun getForegroundInfo() = ForegroundInfo(
+        NAME.hashCode(),
+        UiUtils.createNotificationForFgs(
+            applicationContext,
+            applicationContext.getString(R.string.reindex)
+        )
+    )
 
     override suspend fun doWork(): Result {
 

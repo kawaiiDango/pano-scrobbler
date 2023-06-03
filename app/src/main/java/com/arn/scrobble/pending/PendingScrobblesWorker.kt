@@ -5,6 +5,7 @@ import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
@@ -19,6 +20,7 @@ import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.scrobbleable.Scrobblable
 import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.ui.UiUtils
 import de.umass.lastfm.Track
 import de.umass.lastfm.scrobble.ScrobbleData
 import de.umass.lastfm.scrobble.ScrobbleResult
@@ -39,6 +41,14 @@ class PendingScrobblesWorker(
 
     private val scrobblesDao by lazy { PanoDb.db.getPendingScrobblesDao() }
     private val lovesDao by lazy { PanoDb.db.getPendingLovesDao() }
+
+    override suspend fun getForegroundInfo() = ForegroundInfo(
+        NAME.hashCode(),
+        UiUtils.createNotificationForFgs(
+            applicationContext,
+            applicationContext.getString(R.string.pending_scrobbles_noti)
+        )
+    )
 
     override suspend fun doWork(): Result {
         var errored: Boolean
@@ -80,7 +90,7 @@ class PendingScrobblesWorker(
         setProgress(
             workDataOf(
                 PROGRESS_KEY to
-                applicationContext.getString(R.string.pending_batch)
+                        applicationContext.getString(R.string.pending_batch)
             )
         )
 
@@ -175,7 +185,7 @@ class PendingScrobblesWorker(
                 setProgress(
                     workDataOf(
                         PROGRESS_KEY to
-                        applicationContext.getString(R.string.submitting_loves, remaining--)
+                                applicationContext.getString(R.string.submitting_loves, remaining--)
                     )
                 )
                 val results = mutableMapOf<Scrobblable, Boolean>()
@@ -242,7 +252,7 @@ class PendingScrobblesWorker(
 
 
     companion object {
-        private val MOCK = BuildConfig.DEBUG && true
+        private val MOCK = BuildConfig.DEBUG && false
         private var BATCH_SIZE = 40 //max 50
         private const val DELAY = 400L
         const val PROGRESS_KEY = "progress"

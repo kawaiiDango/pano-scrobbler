@@ -7,6 +7,7 @@ import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
@@ -16,6 +17,7 @@ import androidx.work.WorkerParameters
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.Stuff.setMidnight
@@ -25,6 +27,7 @@ import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.pref.WidgetPrefs
+import com.arn.scrobble.ui.UiUtils
 import de.umass.lastfm.Album
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.MusicEntry
@@ -47,14 +50,19 @@ import java.util.concurrent.TimeUnit
 
 class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
-    private lateinit var job: Job
     private val widgetPrefs by lazy { WidgetPrefs(applicationContext) }
+
+    override suspend fun getForegroundInfo() = ForegroundInfo(
+        NAME_ONE_TIME.hashCode(),
+        UiUtils.createNotificationForFgs(
+            applicationContext,
+            applicationContext.getString(R.string.pref_widget_charts)
+        )
+    )
 
     // runs in Dispatchers.DEFAULT
     override suspend fun doWork(): Result {
         logTimestampToFile("started")
-
-        job = SupervisorJob()
 
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
 
@@ -95,7 +103,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
 
         val exHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
             throwable.printStackTrace()
-            logTimestampToFile("errored "+ throwable.message)
+            logTimestampToFile("errored " + throwable.message)
             errored = true
         }
 

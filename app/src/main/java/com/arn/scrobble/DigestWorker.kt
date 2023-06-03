@@ -11,6 +11,7 @@ import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -24,6 +25,7 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.scrobbleable.ListenbrainzRanges
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.arn.scrobble.ui.UiUtils
 import de.umass.lastfm.Period
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +45,14 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
     }
     private val prefs = App.prefs
     private val cal by lazy { Calendar.getInstance().setUserFirstDayOfWeek() }
+
+    override suspend fun getForegroundInfo() = ForegroundInfo(
+        this::class.hashCode(),
+        UiUtils.createNotificationForFgs(
+            applicationContext,
+            applicationContext.getString(R.string.graph_weekly)
+        )
+    )
 
     override suspend fun doWork(): Result {
         var errored = false

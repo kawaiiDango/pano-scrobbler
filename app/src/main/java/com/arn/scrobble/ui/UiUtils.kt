@@ -2,8 +2,11 @@ package com.arn.scrobble.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.Animatable2
@@ -39,6 +42,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
@@ -67,6 +71,8 @@ import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.friends.UserSerializable
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.themes.ColorPatchUtils
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -613,5 +619,20 @@ object UiUtils {
 
     fun View.postRequestFocus() {
         post { requestFocus() }
+    }
+
+    fun createNotificationForFgs(context: Context, title: String): Notification {
+        val intent = Intent(context, MainActivity::class.java)
+        val launchIntent = PendingIntent.getActivity(
+            context, 8, intent,
+            Stuff.updateCurrentOrImmutable
+        )
+        return NotificationCompat.Builder(context, MainPrefs.CHANNEL_NOTI_PENDING)
+            .setSmallIcon(R.drawable.vd_noti)
+            .setPriority(Notification.PRIORITY_MIN)
+            .setContentIntent(launchIntent)
+            .apply { color = (ColorPatchUtils.getNotiColor(context) ?: return@apply) }
+            .setContentTitle(title)
+            .build()
     }
 }

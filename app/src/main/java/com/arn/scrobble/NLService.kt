@@ -111,8 +111,6 @@ class NLService : NotificationListenerService() {
     */
 
     private fun init() {
-        initChannels()
-
         job = SupervisorJob()
         coroutineScope = CoroutineScope(Dispatchers.IO + job!!)
 
@@ -252,58 +250,6 @@ class NLService : NotificationListenerService() {
         if (sessListener != null)
             destroy()
         super.onDestroy()
-    }
-
-    private fun initChannels() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            return
-
-        val channels = nm.notificationChannels
-
-        // delete old channels, if they exist
-        if (channels?.any { it.id == "fg" } == true) {
-            channels.forEach { nm.deleteNotificationChannel(it.id) }
-        }
-
-        nm.createNotificationChannel(
-            NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_SCROBBLING,
-                getString(R.string.state_scrobbling), NotificationManager.IMPORTANCE_LOW
-            )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_SCR_ERR,
-                getString(R.string.channel_err), NotificationManager.IMPORTANCE_MIN
-            )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_NEW_APP,
-                getString(R.string.new_player, getString(R.string.new_app)),
-                NotificationManager.IMPORTANCE_LOW
-            )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_PENDING,
-                getString(R.string.pending_scrobbles), NotificationManager.IMPORTANCE_MIN
-            )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY,
-                getString(R.string.s_top_scrobbles, getString(R.string.weekly)),
-                NotificationManager.IMPORTANCE_LOW
-            )
-        )
-        nm.createNotificationChannel(
-            NotificationChannel(
-                MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY,
-                getString(R.string.s_top_scrobbles, getString(R.string.monthly)),
-                NotificationManager.IMPORTANCE_LOW
-            )
-        )
     }
 
     private fun isAppEnabled(pkgName: String) =

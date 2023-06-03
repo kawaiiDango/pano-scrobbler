@@ -2,6 +2,8 @@ package com.arn.scrobble
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
@@ -12,6 +14,7 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.StrictMode
 import androidx.core.content.ContextCompat
+import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
@@ -36,8 +39,15 @@ import java.io.File
 import java.util.logging.Level
 
 
-class App : Application(), ImageLoaderFactory {
+class App : Application(), ImageLoaderFactory, Configuration.Provider {
     private var connectivityCheckInited = false
+
+    override fun getWorkManagerConfiguration() =
+        Configuration.Builder().apply {
+            if (BuildConfig.DEBUG)
+                setMinimumLoggingLevel(android.util.Log.INFO)
+        }.build()
+
 
     override fun onCreate() {
         if (BuildConfig.DEBUG) {
@@ -80,6 +90,8 @@ class App : Application(), ImageLoaderFactory {
             } // do manual collection in other (background) processes
             Timber.plant(CrashlyticsTree())
         }
+
+        createChannels()
     }
 
     private fun initCaller() {
@@ -183,5 +195,60 @@ class App : Application(), ImageLoaderFactory {
         // not a leak
         lateinit var context: Context
         val prefs by lazy { MainPrefs() }
+    }
+
+
+    private fun createChannels() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            return
+
+        val nm = ContextCompat.getSystemService(this, NotificationManager::class.java)!!
+
+        val channels = nm.notificationChannels
+
+        // delete old channels, if they exist
+        if (channels?.any { it.id == "fg" } == true) {
+            channels.forEach { nm.deleteNotificationChannel(it.id) }
+        }
+
+        nm.createNotificationChannel(
+            NotificationChannel(
+                MainPrefs.CHANNEL_NOTI_SCROBBLING,
+                getString(R.string.state_scrobbling), NotificationManager.IMPORTANCE_LOW
+            )
+        )
+        nm.createNotificationChannel(
+            NotificationChannel(
+                MainPrefs.CHANNEL_NOTI_SCR_ERR,
+                getString(R.string.channel_err), NotificationManager.IMPORTANCE_MIN
+            )
+        )
+        nm.createNotificationChannel(
+            NotificationChannel(
+                MainPrefs.CHANNEL_NOTI_NEW_APP,
+                getString(R.string.new_player, getString(R.string.new_app)),
+                NotificationManager.IMPORTANCE_LOW
+            )
+        )
+        nm.createNotificationChannel(
+            NotificationChannel(
+                MainPrefs.CHANNEL_NOTI_PENDING,
+                getString(R.string.pending_scrobbles), NotificationManager.IMPORTANCE_MIN
+            )
+        )
+        nm.createNotificationChannel(
+            NotificationChannel(
+                MainPrefs.CHANNEL_NOTI_DIGEST_WEEKLY,
+                getString(R.string.s_top_scrobbles, getString(R.string.weekly)),
+                NotificationManager.IMPORTANCE_LOW
+            )
+        )
+        nm.createNotificationChannel(
+            NotificationChannel(
+                MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY,
+                getString(R.string.s_top_scrobbles, getString(R.string.monthly)),
+                NotificationManager.IMPORTANCE_LOW
+            )
+        )
     }
 }

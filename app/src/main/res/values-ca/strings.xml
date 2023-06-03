@@ -101,7 +101,6 @@
     <string name="enabled_apps">Aplicacions activades</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ja falta poc…</string>
     <string name="music_players">Reproductors de música</string>
-    <string name="video_players">Aplicacions de vídeo en temps real</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altres aplicacions</string>
     <string name="choose_apps">Tria les aplicacions per a fer scrobbling</string>
     <string name="offline">Sense connexió. Les informació no està actualitzada</string>
@@ -110,7 +109,6 @@
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Estava escoltant\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s estava escoltant\n%1$s %2$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
-    <string name="share_this_song">Comparteix la cançó</string>
     <string name="share">Comparteix</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Llegenda</string>
     <string name="grid_size">Canvia la quadrícula</string>
@@ -134,17 +132,16 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcions per a aquest element</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s detectat</string>
     <string name="new_player_prompt">Vols fer scrobble en aquesta aplicació?</string>
-    <string name="no_track_url">Aquesta cançó no té una pàgina en Last.fm</string>
     <string name="no_scrobbles">Encara no hi ha cançons…</string>
-    <string name="channel_err">Errors d\'scrobble</string>
+    <string name="channel_err" comment="Its a noun">Errors d\'scrobble</string>
     <string name="new_app">Aplicació nova</string>
     <string name="no_apps_enabled">No hi ha cap aplicació activada</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d més</string>
     <string name="show_all">Mostra-ho tot</string>
     <string name="edit">Edita</string>
     <string name="delete">Elimina</string>
-    <string name="love">Preferit</string>
-    <string name="unlove">Elimina dels preferits</string>
+    <string name="love" comment="Love/like a song">Preferit</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Elimina dels preferits</string>
     <string name="pending_scrobbles">Scrobbles pendents</string>
     <string name="pending_scrobble">Scrobble pendent</string>
     <string name="pending_scrobbles_noti">S\'estan processant els scrobbles pendents</string>
@@ -155,15 +152,14 @@
     <string name="will_not_scrobble">Si salteu aquest pas, es desactivarà l\'enviament d\'scrobbles</string>
     <string name="swap" comment="(Swap title and artist)">Intercanvia</string>
     <string name="rate_msg">T\'agrada l\'aplicació?</string>
-    <string name="rate_action">Valora-la</string>
     <string name="time_just_now">ara mateix</string>
-    <string name="loved">Preferits</string>
-    <string name="unloved">Eliminat dels preferits</string>
+    <string name="loved" comment="Its a noun">Preferits</string>
+    <string name="unloved" comment="Its a noun">Eliminat dels preferits</string>
     <string name="simple_edits">Edicions</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Gràfics</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Núvol d\'etiquetes</string>
-    <string name="scrobble_from_mic">Fes scrobble amb el micro</string>
-    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Amb el micro</string>
+    <string name="scrobble_from_mic" comment="Its a verb">Fes scrobble amb el micro</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Amb el micro</string>
     <string name="add_to_hs">Afegeix a la pantalla d\'inici</string>
     <string name="listening">S\'està escoltant la música del voltant…</string>
     <string name="uploading">S\'està pujant…</string>
@@ -194,7 +190,7 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Segur que tinc sort</string>
     <string name="random_not_found">No s\'han trobat la cançó</string>
     <string name="loved_track">Cançó preferida</string>
-    <string name="randomize">Aleatori</string>
+    <string name="randomize" comment="(To randomize or fetch a new random item)">Aleatori</string>
     <string name="random_text">Aleatori</string>
     <string name="graph_daily">Scrobbles diaris</string>
     <string name="graph_weekly">Scrobbles setmanals</string>
@@ -208,11 +204,11 @@
     <string name="digest_weekly">Top cançons de la setmana</string>
     <string name="digest_monthly">Top cançons del mes</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">Top %1$s de cançons</string>
-    <string name="my_tags">Les meues etiquetes</string>
-    <string name="close">Tanca</string>
-    <string name="user_tags_hint">Etiqueta nova</string>
+    <string name="my_tags" comment="Tags, the user has added">Les meues etiquetes</string>
+    <string name="close" comment="To close a dialog or something">Tanca</string>
+    <string name="user_tags_hint" comment="To add a new tag">Etiqueta nova</string>
     <string name="user_tags_empty">No has afegit cap etiqueta</string>
-    <string name="info_long_press_hint">Mantín una cançó per a obrir açò</string>
+    <string name="info_long_press_hint" comment="'This' is a dialog">Mantín una cançó per a obrir açò</string>
     <string name="appwidget_loading">S\'està carregant…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Període</string>
     <string name="appwidget_theme">Tema</string>
@@ -224,9 +220,8 @@
     <string name="appwidget_alpha">Opacitat del fons</string>
     <string name="primary_color">Color principal</string>
     <string name="secondary_color">Color secundari</string>
-    <string name="tint_background">Tint del fons</string>
+    <string name="tint_background" comment="Tint the background with the primary color">Tint del fons</string>
     <string name="random_theme">Aleatori en cada obertura</string>
-    <string name="edit_name" comment="name for regex pattern">Nom amigable (opcional)</string>
     <string name="edit_regex">Patró de regex</string>
     <string name="edit_regex_replacement">Reemplaçament de regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Camps</string>
@@ -237,20 +232,20 @@
     <string name="edit_presets_available">Predefinits disponibles</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Botó de reordenació</string>
     <string name="text" comment="text to test regex rules with">Text</string>
-    <string name="blocked_metadata_noti">Toca per a saltar i bloquejar</string>
+    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Toca per a saltar i bloquejar</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Accions del reproductor</string>
     <string name="skip" comment="skip to next track">Salta</string>
-    <string name="mute">Silencia</string>
-    <string name="block">Bloqueja</string>
-    <string name="hidden_tags">Etiquetes amagades</string>
-    <string name="pin">Fixa</string>
-    <string name="unpin">No fixis</string>
+    <string name="mute" comment="mute the music">Silencia</string>
+    <string name="block" comment="block the track from scrobbling">Bloqueja</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">Etiquetes amagades</string>
+    <string name="pin" comment="pin a friend to the top">Fixa</string>
+    <string name="unpin" comment="unpin a friend to the top">No fixis</string>
     <string name="show_persistent_noti">Mostra una notificació persistent</string>
     <string name="scrobbler_off">Scrobbler desactivat</string>
     <string name="scrobbler_on">Scrobbler activat</string>
     <string name="enable" comment="To enable the scrobbler">Activa</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Disposició</string>
-    <string name="skip_missing_images">Omet les imatges que falten</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">Omet les imatges que falten</string>
     <string name="create_collage">Crea un collage</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Subtítols de les imatges</string>
     <string name="username" comment="last.fm Username">Nom d\'usuari</string>
@@ -265,7 +260,6 @@
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Fes scrobble des de</string>
     <string name="pref_enabled_apps_summary">ℹ️ Són compatibles les aplicacions que mostren metadades de música. Per a evitar scrobbles d\'Spotify duplicats, activa-ho només en un lloc.</string>
     <string name="pref_enabled_apps_title">Tria les aplicacions</string>
-    <string name="pref_auto_detect_summary">Et preguntarem si vols confirmar o ignorar cada aplicació</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuts</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentatge</string>
     <string name="pref_logout">Tanca la sessió</string>
@@ -276,8 +270,6 @@
     <string name="pref_user_label" comment="(Like username)">Usuari</string>
     <string name="api_url" comment="For Listenbrainz">URL de l\'API</string>
     <string name="pref_now_playing">Envia la reproducció actual</string>
-    <string name="pref_fetch_aa">Obtín de Last.fm els artistes dels àlbums</string>
-    <string name="pref_fetch_aa_desc">Per als reproductors que no proporcionen aquestes dades. Les dades obtingudes poden diferir de les teues etiquetes. És possible que Last.fm no tinga les dades d\'algunes cançons.</string>
     <string name="pref_locale">Llengües</string>
     <string name="pref_change_locale">Canvia la llengua</string>
     <string name="pref_crashlytics_enabled">Notifica els errors automàticament</string>
@@ -286,7 +278,7 @@
     <string name="pref_export">Exporta</string>
     <string name="pref_import">Importa</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalització</string>
-    <string name="pref_themes">Temes</string>
+    <string name="pref_themes" comment="Color themes">Temes</string>
     <string name="pref_widget_charts">Giny de la pantalla d\'inici – Gràfics</string>
     <string name="pref_show_albums">Mostra els noms dels àlbums</string>
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…als scrobbles</string>
@@ -296,13 +288,13 @@
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Per a les aplicacions compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Llistes</string>
     <string name="pref_regex_edits">Edicions de patró</string>
-    <string name="pref_blocked_metadata">Metadades bloquejades</string>
+    <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadades bloquejades</string>
     <string name="pref_translate">Tradueix l\'aplicació</string>
     <string name="pref_translate_credits">Agraïments de traducció</string>
     <string name="pref_oss_credits">Crèdits del codi obert</string>
     <string name="pref_check_updates">Comprova actualitzacions</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Actualització disponible: %1$s</string>
-    <string name="download">Baixa</string>
+    <string name="download" comment="Its a verb">Baixa</string>
     <string name="changelog">Historial de canvis</string>
     <string name="import_hey_wtf">Segurament no és un fitxer d\'exportació de Pano Scrobbler</string>
     <string name="export_failed">L\'exportació ha fallat</string>
@@ -319,15 +311,14 @@
     <string name="not_running">⚠ El sistema ha tancat l\'scrobbler</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Raó del tancament: %s</string>
     <string name="not_running_fix_action">Arregla-ho</string>
-    <string name="login_submit">Verifica</string>
+    <string name="login_submit" comment="Verifies the login details">Verifica</string>
     <string name="acr_key" comment="API key">Clau d\'accés</string>
     <string name="acr_secret" comment="API secret">Secreta</string>
     <string name="add_acr_key">Afegeix una clau d\'ACRCloud</string>
     <string name="remove_acr_key">Elimina la clau d\'ACRCloud</string>
-    <string name="add">Afegeix</string>
+    <string name="add" comment="Add a new item such as an edit, a tag, etc">Afegeix</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>
     <string name="submitting_loves" formatted="true">S\'estan enviant els preferits, %1$d restants</string>
-    <string name="graph">Gràfic de línies</string>
     <string name="fix_it_title">Possibles correccions</string>
     <string name="fix_it_action" comment="(To open an app)">Obre</string>
     <string name="delete_account">Elimina el compte</string>

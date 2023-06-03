@@ -97,7 +97,6 @@
     <string name="enabled_apps">Ingeschakelde apps</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Bijna klaar…</string>
     <string name="music_players">Muziekspelers</string>
-    <string name="video_players">Video Streaming Apps</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andere Apps</string>
     <string name="choose_apps">Kies apps om te scrobbelen</string>
     <string name="offline">Offline. Getoonde data is niet nieuw</string>
@@ -106,7 +105,6 @@
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Ik was aan het luisteren naar\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s luisterde naar\n%1$s %2$s</string>
     <string name="share_sig">(via Pano Scrobbeler)</string>
-    <string name="share_this_song">Deel dit nummer</string>
     <string name="share">Delen</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Rastergrootte wijzigen</string>
@@ -134,18 +132,17 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opties voor dit item</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s gedetecteerd</string>
     <string name="new_player_prompt">Deze app blijven scrobbelen?</string>
-    <string name="no_track_url">Dit nummer heeft geen pagina op de lastFM</string>
     <string name="no_scrobbles">Nog geen nummers hier…</string>
     <string name="no_friends">Volgt nog niemand…</string>
-    <string name="channel_err">Scrobbel errors</string>
+    <string name="channel_err" comment="Its a noun">Scrobbel errors</string>
     <string name="new_app">Nieuwe App</string>
     <string name="no_apps_enabled">Er zijn geen apps ingeschakeld</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">Nog %1$d</string>
     <string name="show_all">Alles weergeven</string>
     <string name="edit">Bewerken</string>
     <string name="delete">Verwijderen</string>
-    <string name="love">Love</string>
-    <string name="unlove">Unlove</string>
+    <string name="love" comment="Love/like a song">Love</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Unlove</string>
     <string name="pending_scrobbles">Wachtende scrobbels</string>
     <string name="pending_scrobble">Wachtende scrobbel</string>
     <string name="pending_scrobbles_noti">Wachtende scrobbels verwerken</string>
@@ -165,18 +162,16 @@
     <string name="will_not_scrobble">Het overslaan van deze stap zal scrobbling uitschakelen</string>
     <string name="swap" comment="(Swap title and artist)">Wissel</string>
     <string name="rate_msg">Tevreden over de app?</string>
-    <string name="rate_action">Beoordelen</string>
     <string name="time_just_now">zojuist</string>
     <string name="no_mail_apps">Geen mail apps geïnstalleerd</string>
-    <string name="loved">Geloved</string>
-    <string name="unloved">Geunloved</string>
+    <string name="loved" comment="Its a noun">Geloved</string>
+    <string name="unloved" comment="Its a noun">Geunloved</string>
     <string name="simple_edits">Bewerkingen</string>
-    <string name="force_remembered">Forceer scrobbel (zal onthouden)</string>
     <string name="grant_rec_perm">Geef toestemming om de microfoon te gebruiken</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitlijsten</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tagwolk</string>
-    <string name="scrobble_from_mic">Scrobbel van de microfoon</string>
-    <string name="from_mic" comment="(Scrobble from mic in short, ideally 10 characters or less)">Van de microfoon</string>
+    <string name="scrobble_from_mic" comment="Its a verb">Scrobbel van de microfoon</string>
+    <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Van de microfoon</string>
     <string name="add_to_hs">Toevoegen aan homescherm</string>
     <string name="listening">Luisteren naar muziek die om je heen afspeelt…</string>
     <string name="uploading">Uploaden…</string>
@@ -205,7 +200,7 @@
     <string name="months">Maanden</string>
     <string name="years" comment="For the charts menu which displays year by year">Jaren</string>
     <string name="charts_overall">In totaal</string>
-    <string name="listening_activity">Luisteractiviteit</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Luisteractiviteit</string>
     <string name="charts_no_data">Geen data voor deze periode</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Aangepaste</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Doorlopende</string>
@@ -214,7 +209,7 @@
     <string name="random" comment="Displays a random scrobble or a loved track of the user">Ik doe een gok</string>
     <string name="random_not_found">Geen nummers gevonden</string>
     <string name="loved_track">Geloved nummer</string>
-    <string name="randomize">Willekeurig</string>
+    <string name="randomize" comment="(To randomize or fetch a new random item)">Willekeurig</string>
     <string name="random_text">Willekeurig</string>
     <string name="graph_daily">Dagelijkse scrobbel aantallen</string>
     <string name="graph_weekly">Wekelijkse scrobbel aantallen</string>
@@ -228,11 +223,11 @@
     <string name="digest_weekly">Mijn topscrobbels van afgelopen week</string>
     <string name="digest_monthly">Mijn topscrobbels van afgelopen maand</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s top scrobbels</string>
-    <string name="my_tags">Mijn tags</string>
-    <string name="close">Sluiten</string>
-    <string name="user_tags_hint">Nieuwe tag</string>
+    <string name="my_tags" comment="Tags, the user has added">Mijn tags</string>
+    <string name="close" comment="To close a dialog or something">Sluiten</string>
+    <string name="user_tags_hint" comment="To add a new tag">Nieuwe tag</string>
     <string name="user_tags_empty">Je hebt nog geen tags toegevoegd</string>
-    <string name="info_long_press_hint">Lang drukken op een nummer om te openen</string>
+    <string name="info_long_press_hint" comment="'This' is a dialog">Lang drukken op een nummer om te openen</string>
     <string name="appwidget_loading">Laden…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Periode</string>
     <string name="appwidget_theme">Thema</string>
@@ -242,12 +237,11 @@
     <string name="dark">Donker</string>
     <string name="system_colors">Systeemkleuren gebruiken</string>
     <string name="appwidget_alpha">Transparantie achtergrond</string>
-    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'">Widget ververst elke %1$s</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget ververst elke %1$s</string>
     <string name="primary_color">Primaire kleur</string>
     <string name="secondary_color">Secundaire kleur</string>
-    <string name="tint_background">Tint achtergrond</string>
+    <string name="tint_background" comment="Tint the background with the primary color">Tint achtergrond</string>
     <string name="random_theme">Willekeurig bij elke start van de app</string>
-    <string name="edit_name" comment="name for regex pattern">Vriendelijke naam (optioneel)</string>
     <string name="edit_regex">Regex-patroon</string>
     <string name="edit_regex_replacement">Regex vervanging</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Velden</string>
@@ -264,20 +258,20 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Patroon limiet bereikt (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Sleephandvat</string>
     <string name="text" comment="text to test regex rules with">Tekst</string>
-    <string name="edit_regex_warning">⚠ Zorg ervoor dat je <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> begrijpt voordat je dit gebruikt, of gebruik een van de <b>voorinstellingen</b> die gegeven zijn. Regex matches worden van boven naar beneden geprobeerd</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Zorg ervoor dat je <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> begrijpt voordat je dit gebruikt, of gebruik een van de <b>voorinstellingen</b> die gegeven zijn. Regex matches worden van boven naar beneden geprobeerd</string>
     <string name="blocked_metadata_info">ℹ️ Meer dan één van deze velden invullen zal een AND operator tussen ze toepassen</string>
-    <string name="blocked_metadata_noti">Klik om te blokkeren en over te slaan</string>
+    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Klik om te blokkeren en over te slaan</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Speler acties</string>
     <string name="skip" comment="skip to next track">Overslaan</string>
-    <string name="mute">Mute</string>
-    <string name="block">Blokkeer</string>
-    <string name="hidden_tags">Verborgen tags</string>
-    <string name="pin">Vastzetten</string>
-    <string name="unpin">Losmaken</string>
+    <string name="mute" comment="mute the music">Mute</string>
+    <string name="block" comment="block the track from scrobbling">Blokkeer</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">Verborgen tags</string>
+    <string name="pin" comment="pin a friend to the top">Vastzetten</string>
+    <string name="unpin" comment="unpin a friend to the top">Losmaken</string>
     <string name="pin_limit_reached" formatted="true">Limiet voor vastzetten bereikt (%1$d)</string>
     <string name="pin_help">Lang drukken op vastgezette items om ze te sorteren</string>
     <string name="use_channel" comment="(Use youtube channel name)">Kanaalnaam gebruiken</string>
-    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered (Track))">Wilt u deze patroon bewerkingsregel inschakelen: %1$s?</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Wilt u deze patroon bewerkingsregel inschakelen: %1$s?</string>
     <string name="show_persistent_noti">Aanhoudende notificaties weergeven</string>
     <string name="fix_it_desc">Deze kunnen helpen om de scrobbler in de achtergrond op sommige apparaten actief te houden</string>
     <string name="persistent_noti_desc">Lang ingedrukt houden om dit te verbergen</string>
@@ -292,7 +286,7 @@
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analyse</string>
     <string name="enable" comment="To enable the scrobbler">Schakel in</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Formaat</string>
-    <string name="skip_missing_images">Ontbrekende afbeeldingen overslaan</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">Ontbrekende afbeeldingen overslaan</string>
     <string name="create_collage">Maak collage</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Afbeelding bijschriften</string>
     <string name="username" comment="last.fm Username">Gebruikersnaam</string>
@@ -309,7 +303,6 @@
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbel vanaf</string>
     <string name="pref_enabled_apps_summary">ℹ️ Ondersteunt apps die muziek metadata onthullen. Om dubbele scrobbles van Spotify te voorkomen, schakel het alleen in op één plek.</string>
     <string name="pref_enabled_apps_title">Kies apps</string>
-    <string name="pref_auto_detect_summary">…we zullen je nog steeds vragen om die app te bevestigen of te negeren</string>
     <string name="pref_auto_detect">Automatisch van nieuwe apps scroblen</string>
     <string name="pref_spotify_remote">Scrobble Spotify terwijl deze op andere apparaten speelt</string>
     <string name="pref_delay">Scrobble-vertraging (welke vroeger is)</string>
@@ -324,8 +317,6 @@
     <string name="pref_token_label" comment="For Listenbrainz">Authenticatietoken</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="pref_now_playing">Nu aan het spelen doorgeven</string>
-    <string name="pref_fetch_aa">Album artiesten ophalen van lastFM</string>
-    <string name="pref_fetch_aa_desc">Voor spelers die deze gegevens niet verstrekken. De opgehaalde gegevens kunnen verschillen van je tags. lastFM heeft mogelijk geen gegevens voor sommige nummers.</string>
     <string name="pref_fetch_album">Ontbrekende albumgegevens ophalen van lastFM</string>
     <string name="pref_locale">Talen</string>
     <string name="pref_change_locale">Taal wijzigen</string>
@@ -336,7 +327,7 @@
     <string name="pref_export_desc">Back-up van instellingen, bewerkingen en blokkeerlijsten. Slaat logins niet op voor veiligheidsredenen. Nuttig om te wisselen tussen apparaten of delen met vrienden.</string>
     <string name="pref_import">Importeren</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalisatie</string>
-    <string name="pref_themes">Thema\'s</string>
+    <string name="pref_themes" comment="Color themes">Thema\'s</string>
     <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix en match\nverandert ook de kleur van de notificatie</string>
     <string name="pref_widget_charts">Homescherm widget - Lijsten</string>
     <string name="pref_show_albums">Toon albumtitels</string>
@@ -347,13 +338,13 @@
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Voor ondersteunde apps</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Lijsten</string>
     <string name="pref_regex_edits">Patroon bewerkingen</string>
-    <string name="pref_blocked_metadata">Geblokkeerde metadata</string>
+    <string name="pref_blocked_metadata" comment="Block things from scrobbling">Geblokkeerde metadata</string>
     <string name="pref_translate">Deze app vertalen</string>
     <string name="pref_translate_credits">Vertalingscredits</string>
     <string name="pref_oss_credits">Open source credits</string>
     <string name="pref_check_updates">Check voor updates</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Update beschikbaar: %1$s</string>
-    <string name="download">Downloaden</string>
+    <string name="download" comment="Its a verb">Downloaden</string>
     <string name="changelog">Lijst met veranderingen</string>
     <string name="import_hey_wtf">Dat is waarschijnlijk geen Pano Scrobbler exportbestand</string>
     <string name="export_failed">Exporteren mislukt</string>
@@ -379,14 +370,14 @@
     <string name="not_running">⚠ De scrobbler is gesloten door uw systeem</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Reden voor sluiting gegeven door het systeem: %s</string>
     <string name="not_running_fix_action">Maak het</string>
-    <string name="login_submit">Verifieer</string>
+    <string name="login_submit" comment="Verifies the login details">Verifieer</string>
     <string name="acr_host" comment="Web hostname">Host</string>
     <string name="acr_key" comment="API key">Toegangssleutel</string>
     <string name="acr_secret" comment="API secret">Geheim</string>
     <string name="add_acr_key">Voeg ACRCloud-sleutel toe</string>
     <string name="remove_acr_key">Verwijder ACRCloud-sleutel</string>
     <string name="add_acr_consider">Overweeg om uw eigen ACRCloud-sleutel toe te voegen om te voorkomen dat de rate-limits worden bereikt</string>
-    <string name="add">Voeg toe</string>
+    <string name="add" comment="Add a new item such as an edit, a tag, etc">Voeg toe</string>
     <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Meld u aan op https://console.acrcloud.com
 • Navigeer naar Projecten &gt; Geluid &amp; videoherkenning
 • Maak een nieuw project, selecteer Opgenomen audio en de ACRCloud Muziek-bucket"</string>
@@ -395,7 +386,6 @@
     <string name="submitting_loves" formatted="true">Loves aan het indienen, %1$d resterend</string>
     <string name="pending_batch" comment="For pending scrobbles">Een batch indienen</string>
     <string name="webview_error">De pagina kon niet worden geladen (werkt je internet?)</string>
-    <string name="graph">Lijngrafiek</string>
     <string name="cleared_disabled_apps">Uitgeschakelde apps gewist</string>
     <string name="fix_it_title">Mogelijke oplossingen</string>
     <string name="fix_it_startup_title">Energiespaarders / opstartmanagers</string>

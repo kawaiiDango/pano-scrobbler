@@ -75,6 +75,7 @@
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/charts_scrobble_frequencies"
+                        android:contentDescription="@string/bar_chart"
                         android:layout_width="match_parent"
                         android:layout_height="200dp" />
 

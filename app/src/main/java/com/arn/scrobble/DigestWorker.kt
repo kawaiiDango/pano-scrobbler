@@ -1,24 +1,22 @@
 package com.arn.scrobble
 
-import android.app.AlarmManager
 import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.job.JobInfo
-import android.app.job.JobParameters
-import android.app.job.JobScheduler
-import android.app.job.JobService
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.os.PersistableBundle
 import android.text.Html
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.Stuff.putSingle
-import com.arn.scrobble.Stuff.scheduleExpeditedCompat
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.charts.TimePeriod
@@ -27,23 +25,27 @@ import com.arn.scrobble.scrobbleable.ListenbrainzRanges
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.themes.ColorPatchUtils
 import de.umass.lastfm.Period
-import de.umass.lastfm.Session
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-class DigestJob : JobService() {
-
-    private val nm by lazy { ContextCompat.getSystemService(this, NotificationManager::class.java)!! }
+class DigestWorker(context: Context, private val workerParameters: WorkerParameters) :
+    CoroutineWorker(context, workerParameters) {
+    private val nm by lazy {
+        ContextCompat.getSystemService(
+            applicationContext,
+            NotificationManager::class.java
+        )!!
+    }
     private val prefs = App.prefs
     private val cal by lazy { Calendar.getInstance().setUserFirstDayOfWeek() }
 
-    override fun onStartJob(jp: JobParameters): Boolean {
-        scheduleAlarms(applicationContext)
+    override suspend fun doWork(): Result {
+        var errored = false
 
         if (nm.isChannelEnabled(
                 prefs.sharedPreferences,
@@ -52,28 +54,34 @@ class DigestJob : JobService() {
         ) {
             val coExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
                 throwable.printStackTrace()
-                jobFinished(jp, true)
+                errored = true
             }
-            val period = when (jp.extras.getString(Stuff.ARG_ACTION)) {
-                NLService.iDIGEST_WEEKLY -> Period.WEEK
-                NLService.iDIGEST_MONTHLY -> Period.ONE_MONTH
+            val period = when (workerParameters.inputData.getString(Stuff.ARG_ACTION)) {
+                DAILY,
+                WEEKLY -> Period.WEEK
+
+                MONTHLY -> Period.ONE_MONTH
                 else -> throw IllegalArgumentException("Unknown action")
             }
 
-            GlobalScope.launch(coExceptionHandler) {
+            withContext(Dispatchers.IO + coExceptionHandler) {
                 fetchAndNotify(period)
-
                 // yearly digest
                 if (period == Period.ONE_MONTH && cal[Calendar.MONTH] == Calendar.DECEMBER) {
                     fetchAndNotify(Period.TWELVE_MONTHS)
                 }
-                jobFinished(jp, false)
             }
 
         } else {
-            jobFinished(jp, false)
+            errored = true
         }
-        return true
+
+        schedule(applicationContext)
+
+        return if (errored)
+            Result.failure()
+        else
+            Result.success()
     }
 
     private suspend fun fetchAndNotify(period: Period) {
@@ -81,9 +89,6 @@ class DigestJob : JobService() {
             val limit = 3
             val notificationTextList = mutableListOf<String>()
             val scrobblable = Scrobblables.current ?: return@supervisorScope
-            val account = scrobblable.userAccount
-            val lastfmSession =
-                Session.createSession(Stuff.LAST_KEY, Stuff.LAST_SECRET, account.authKey)
 
             val timePeriod = TimePeriod(period).apply {
                 tag = when (period) {
@@ -115,12 +120,12 @@ class DigestJob : JobService() {
                 val result = kResult.getOrNull() ?: return@forEach
                 if (result.pageResults.isEmpty()) return@forEach
 
-                val title = getString(titleRes)
+                val title = applicationContext.getString(titleRes)
                 val text = result.pageResults.joinToString { it.name }
                 notificationTextList += "<b>$title:</b>\n$text"
             }
 
-            val title = getString(
+            val title = applicationContext.getString(
                 when (period) {
                     Period.WEEK -> R.string.digest_weekly
                     Period.ONE_MONTH -> R.string.digest_monthly
@@ -140,7 +145,7 @@ class DigestJob : JobService() {
             else
                 MainPrefs.CHANNEL_NOTI_DIGEST_MONTHLY
 
-            val launchPi = NavDeepLinkBuilder(this@DigestJob)
+            val launchPi = NavDeepLinkBuilder(applicationContext)
                 .setComponentName(MainActivity::class.java)
                 .setGraph(R.navigation.nav_graph)
                 .setDestination(R.id.myHomePagerFragment)
@@ -167,7 +172,7 @@ class DigestJob : JobService() {
                     Stuff.getNotificationAction(
                         R.drawable.vd_mosaic,
                         "🖼️",
-                        getString(R.string.create_collage),
+                        applicationContext.getString(R.string.create_collage),
                         collagePi
                     )
                 )
@@ -179,7 +184,7 @@ class DigestJob : JobService() {
                         .bigText(notificationText)
                 )
                 .setVisibility(
-                    if (prefs.notiLockscreen)
+                    if (prefs.notificationsOnLockscreen)
                         NotificationCompat.VISIBILITY_PUBLIC
                     else
                         NotificationCompat.VISIBILITY_SECRET
@@ -189,57 +194,58 @@ class DigestJob : JobService() {
         }
     }
 
-    override fun onStopJob(p0: JobParameters?) = true
-
     companion object {
-        private const val JOB_ID_1 = 13
-        private const val JOB_ID_2 = 14
+        const val DAILY = "DIGEST_DAILY"
+        const val WEEKLY = "DIGEST_WEEKLY"
+        const val MONTHLY = "DIGEST_MONTHLY"
 
-        fun schedule(context: Context, actionString: String) {
+        fun schedule(
+            context: Context,
+            existingWorkPolicy: ExistingWorkPolicy = ExistingWorkPolicy.REPLACE
+        ) {
+            val workManager = WorkManager.getInstance(context)
 
-            val id = when (actionString) {
-                NLService.iDIGEST_WEEKLY -> JOB_ID_1
-                NLService.iDIGEST_MONTHLY -> JOB_ID_2
-                else -> return
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val scheduleTimes = getScheduleTimes()
+
+            fun enqueue(period: String) {
+                val inputData = Data.Builder()
+                    .putString(Stuff.ARG_ACTION, period)
+                    .build()
+
+                val work = OneTimeWorkRequestBuilder<DigestWorker>()
+                    .setConstraints(constraints)
+                    .setInputData(inputData)
+                    .setInitialDelay(
+                        scheduleTimes[period]!! - System.currentTimeMillis(),
+                        TimeUnit.MILLISECONDS
+                    )
+                    .build()
+
+                workManager.enqueueUniqueWork(period, existingWorkPolicy, work)
             }
 
-            val js = ContextCompat.getSystemService(context, JobScheduler::class.java)!!
+            val dailyTestDigests = true
+            if (BuildConfig.DEBUG && dailyTestDigests)
+                enqueue(DAILY)
+            enqueue(WEEKLY)
+            enqueue(MONTHLY)
 
-            JobInfo.Builder(id, ComponentName(context, DigestJob::class.java))
-                .setExtras(
-                    PersistableBundle().apply {
-                        putString(Stuff.ARG_ACTION, actionString)
-                    }
-                )
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPersisted(true)
-                .scheduleExpeditedCompat(js) {
-                    setMinimumLatency(10 * 1000)
-                    setOverrideDeadline(TimeUnit.DAYS.toMillis(1))
-                }
-            Stuff.log("scheduling ${DigestJob::class.java.simpleName}")
+            Stuff.log("scheduling ${DigestWorker::class.java.simpleName}")
         }
 
-        fun scheduleAlarms(context: Context) {
+        private fun getScheduleTimes(): Map<String, Long> {
             val prefs = App.prefs
 
             if (prefs.digestSeconds == null)
-                prefs.digestSeconds = (60..3600).random()
+                prefs.digestSeconds = (60..(30 * 60)).random()
 
             val secondsToAdd = -(prefs.digestSeconds ?: 60)
 
-            val weeklyIntent = PendingIntent.getBroadcast(
-                context, 20,
-                Intent(NLService.iDIGEST_WEEKLY, null, context, DigestReceiver::class.java),
-                Stuff.updateCurrentOrImmutable
-            )
-
-            val monthlyIntent = PendingIntent.getBroadcast(
-                context,
-                21,
-                Intent(NLService.iDIGEST_MONTHLY, null, context, DigestReceiver::class.java),
-                Stuff.updateCurrentOrImmutable
-            )
+            val timesMap = mutableMapOf<String, Long>()
 
             val now = System.currentTimeMillis()
 
@@ -253,7 +259,8 @@ class DigestJob : JobService() {
             cal.add(Calendar.SECOND, secondsToAdd)
             if (cal.timeInMillis < now)
                 cal.add(Calendar.WEEK_OF_YEAR, 1)
-            val nextWeek = cal.timeInMillis
+
+            timesMap[WEEKLY] = cal.timeInMillis
 
             cal.timeInMillis = now
             cal.setMidnight()
@@ -263,31 +270,20 @@ class DigestJob : JobService() {
             cal.add(Calendar.SECOND, secondsToAdd)
             if (cal.timeInMillis < now)
                 cal.add(Calendar.MONTH, 1)
-            val nextMonth = cal.timeInMillis
 
-            val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)!!
-            alarmManager.set(AlarmManager.RTC, nextWeek, weeklyIntent)
-            alarmManager.set(AlarmManager.RTC, nextMonth, monthlyIntent)
+            timesMap[MONTHLY] = cal.timeInMillis
 
-
-            val dailyTestDigests = false
-            if (BuildConfig.DEBUG && dailyTestDigests) {
-                val dailyIntent = PendingIntent.getBroadcast(
-                    context, 22,
-                    Intent(NLService.iDIGEST_WEEKLY, null, context, DigestReceiver::class.java),
-                    Stuff.updateCurrentOrImmutable
-                )
-
-                cal.timeInMillis = now
-                cal.setMidnight()
+            cal.timeInMillis = now
+            cal.setMidnight()
+            cal.add(Calendar.DAY_OF_YEAR, 1)
+            cal.add(Calendar.SECOND, secondsToAdd)
+//            cal.add(Calendar.MINUTE, 1)
+            if (cal.timeInMillis < now)
                 cal.add(Calendar.DAY_OF_YEAR, 1)
-                cal.add(Calendar.SECOND, secondsToAdd)
-//                cal.add(Calendar.SECOND, 20)
-                if (cal.timeInMillis < now)
-                    cal.add(Calendar.DAY_OF_YEAR, 1)
-                val nextDay = cal.timeInMillis
-                alarmManager.set(AlarmManager.RTC, nextDay, dailyIntent)
-            }
+            timesMap[DAILY] = cal.timeInMillis
+
+
+            return timesMap
         }
 
     }

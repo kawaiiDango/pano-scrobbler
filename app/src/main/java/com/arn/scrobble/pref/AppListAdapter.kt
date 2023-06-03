@@ -145,10 +145,4 @@ class AppListAdapter(
             )
         }
     }
-
-    enum class AppListSection {
-        MUSIC_PLAYERS,
-        VIDEO_PLAYERS,
-        OTHERS
-    }
 }

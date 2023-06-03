@@ -1,9 +1,12 @@
 package com.arn.scrobble.edits
 
+import android.app.SearchManager
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -23,11 +26,13 @@ import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 
 class RegexEditsFragment : Fragment(), ItemClickListener {
     private var _binding: ContentRegexEditBinding? = null
@@ -63,6 +68,8 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
             }
         )
 
+        binding.editsList.setupInsets()
+
         adapter = RegexEditsAdapter(viewModel, this)
         RegexItemTouchHelper(adapter, viewModel).apply {
             attachToRecyclerView(binding.editsList)
@@ -86,15 +93,8 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         viewModel.regexesReceiver.observe(viewLifecycleOwner) {
             it ?: return@observe
 
-            binding.empty.visibility = if (it.isEmpty())
-                View.VISIBLE
-            else
-                View.INVISIBLE
-
-            binding.editsList.visibility = if (it.isNotEmpty())
-                View.VISIBLE
-            else
-                View.INVISIBLE
+            binding.empty.isVisible = it.isEmpty()
+            binding.editsList.isVisible = it.isNotEmpty()
 
             val oldList = viewModel.regexes.toList()
             viewModel.regexes.clear()
@@ -131,18 +131,24 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         }
 
         if (prefs.regexLearnt) {
-            findNavController().navigate(R.id.regexEditsAddDialogFragment, args)
+            findNavController().navigate(R.id.regexEditsAddFragment, args)
         } else {
             MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.edit_regex_warning)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    findNavController().navigate(R.id.regexEditsAddDialogFragment, args)
+                    findNavController().navigate(R.id.regexEditsAddFragment, args)
                 }
                 .setNeutralButton(R.string.learn) { _, _ ->
-                    Stuff.openInBrowser("https://www.google.com/search?q=regex+tutorial")
+                    runCatching {
+                        startActivity(
+                            Intent(Intent.ACTION_WEB_SEARCH)
+                                .putExtra(SearchManager.QUERY, "regex tutorial")
+                        )
+                    }
                 }
                 .setNegativeButton(R.string.hide) { _, _ ->
                     prefs.regexLearnt = true
+                    findNavController().navigate(R.id.regexEditsAddFragment, args)
                 }
                 .show()
         }

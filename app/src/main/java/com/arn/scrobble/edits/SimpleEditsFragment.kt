@@ -54,7 +54,6 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = ContentSimpleEditsBinding.inflate(inflater, container, false)
-        binding.editsList.setupInsets()
         return binding.root
     }
 
@@ -66,6 +65,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.editsList.setupInsets()
 
         binding.editsList.layoutManager = LinearLayoutManager(requireContext())
         binding.editsList.adapter = adapter

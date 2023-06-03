@@ -6,8 +6,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.os.Build
 import android.provider.MediaStore
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -32,28 +30,6 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
             val sectionedList = SectionedVirtualList()
             val packagesAdded = mutableSetOf(application.packageName)
 
-            fun addSection(
-                enum: AppListAdapter.AppListSection,
-                appList: List<ApplicationInfo>,
-                checkedByDefault: Boolean,
-                @StringRes titleRes: Int,
-                @DrawableRes iconRes: Int
-            ) {
-                val filteredList =
-                    appList.filter { it.packageName !in packagesAdded }.sortApps()
-                sectionedList.addSection(
-                    SectionWithHeader(
-                        enum,
-                        filteredList,
-                        header = ExpandableHeader(application, iconRes, titleRes, isExpanded = true)
-                    )
-                )
-                packagesAdded += filteredList.packagesSet
-
-                if (checkDefaultApps && checkedByDefault)
-                    selectedPackages += filteredList.packagesSet
-            }
-
             var intent = Intent(MediaStore.INTENT_ACTION_MUSIC_PLAYER)
             //the newer intent category doesn't match many players including poweramp
             val musicPlayers = packageManager.queryIntentActivities(intent, 0)
@@ -66,6 +42,7 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
                 .map { it.activityInfo.applicationInfo }
                 .removeSpam()
                 .toMutableList()
+
             val launcherPackagesSet = launcherApps.packagesSet
 
             intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
@@ -74,10 +51,6 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
                 .map { it.activityInfo.applicationInfo }
                 .removeSpam()
                 .filter { it.packageName !in launcherPackagesSet }
-
-            val videoApps = Stuff.getBrowsers(packageManager)
-                .map { it.activityInfo.applicationInfo }
-                .toMutableList()
 
             // pixel now playing
             var nowPlayingPackageInfo: PackageInfo? = null
@@ -97,39 +70,56 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
                     packageManager.getPackageInfo(Stuff.PACKAGE_PIXEL_NP_AMM, 0)
                 }.getOrNull()
 
-            val ignoreMetaPackages = Stuff.IGNORE_ARTIST_META.toSet()
+            val ignoreMetaPackages = Stuff.IGNORE_ARTIST_META
 
             musicPlayers += launcherApps.filter { it.packageName == Stuff.PACKAGE_SHAZAM }
             nowPlayingPackageInfo?.applicationInfo?.let { musicPlayers += it }
 
-            videoApps += launcherApps.filter { it.packageName in ignoreMetaPackages }
+            // add music players to list
+            musicPlayers.removeAll { it.packageName in packagesAdded }
+            packagesAdded += musicPlayers.packagesSet
 
-            addSection(
-                AppListAdapter.AppListSection.MUSIC_PLAYERS,
-                musicPlayers,
-                true,
-                R.string.music_players,
-                R.drawable.vd_play_circle
+            musicPlayers += launcherApps.filter { it.packageName in ignoreMetaPackages && it.packageName !in packagesAdded }
+            packagesAdded += ignoreMetaPackages
+
+            val browserApps = Stuff.getBrowsers(packageManager)
+                .map { it.activityInfo.applicationInfo }
+                .filter { it.packageName !in packagesAdded }
+
+            musicPlayers += browserApps
+            packagesAdded += browserApps.packagesSet
+
+            sectionedList.addSection(
+                SectionWithHeader(
+                    AppListSection.MUSIC_PLAYERS,
+                    musicPlayers.sortApps(),
+                    header = ExpandableHeader(
+                        R.drawable.vd_play_circle,
+                        R.string.music_players,
+                        isExpanded = true
+                    )
+                )
             )
 
-            addSection(
-                AppListAdapter.AppListSection.VIDEO_PLAYERS,
-                videoApps,
-                true,
-                R.string.video_players,
-                R.drawable.vd_video
-            )
+            if (checkDefaultApps)
+                selectedPackages += musicPlayers.packagesSet
 
             withContext(Dispatchers.Main) {
                 data.value = sectionedList
             }
 
-            addSection(
-                AppListAdapter.AppListSection.OTHERS,
-                launcherApps,
-                false,
-                R.string.other_apps,
-                R.drawable.vd_apps
+
+            // add other apps to list
+            sectionedList.addSection(
+                SectionWithHeader(
+                    AppListSection.OTHERS,
+                    launcherApps.filter { it.packageName !in packagesAdded }.sortApps(),
+                    header = ExpandableHeader(
+                        R.drawable.vd_apps,
+                        R.string.other_apps,
+                        isExpanded = true
+                    )
+                )
             )
 
             withContext(Dispatchers.Main) {
@@ -140,18 +130,22 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private val List<ApplicationInfo>.packagesSet
+    private val Collection<ApplicationInfo>.packagesSet
         get() = map { it.packageName }.toSet()
 
-    private fun List<ApplicationInfo>.removeSpam() = filter {
+    private fun Collection<ApplicationInfo>.removeSpam() = filter {
         it.icon != 0 && it.enabled
     }
 
-    private fun List<ApplicationInfo>.sortApps(): List<ApplicationInfo> {
+    private fun Collection<ApplicationInfo>.sortApps(): List<ApplicationInfo> {
         val (selectedList, unselectedList) = this
             .sortedWith(ApplicationInfo.DisplayNameComparator(packageManager))
             .partition { it.packageName in selectedPackages }
         return selectedList + unselectedList
     }
 
+    enum class AppListSection {
+        MUSIC_PLAYERS,
+        OTHERS
+    }
 }

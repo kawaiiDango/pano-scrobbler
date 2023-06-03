@@ -80,13 +80,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     override val periodChipsBinding
         get() = _periodChipsBinding!!
 
-    private val scrobbleCountPeriodTypeMap = mapOf(
-        TimePeriodType.WEEK to R.string.graph_weekly,
-        TimePeriodType.DAY to R.string.graph_daily,
-        TimePeriodType.MONTH to R.string.graph_monthly,
-        TimePeriodType.YEAR to R.string.graph_yearly,
-    )
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

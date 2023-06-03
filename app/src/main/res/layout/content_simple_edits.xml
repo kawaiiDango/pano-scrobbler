@@ -18,13 +18,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:startIconDrawable="@drawable/vd_search"
+        app:startIconContentDescription="@string/search"
         tools:visibility="visible">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/search_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/search"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:imeOptions="actionSearch"

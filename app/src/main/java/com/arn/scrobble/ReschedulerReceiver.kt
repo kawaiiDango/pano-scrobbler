@@ -6,7 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import com.arn.scrobble.widget.ChartsWidgetProvider
-import com.arn.scrobble.widget.ChartsWidgetUpdaterJob
+import com.arn.scrobble.widget.ChartsWidgetUpdaterWorker
 
 class ReschedulerReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -28,10 +28,9 @@ class ReschedulerReceiver : BroadcastReceiver() {
             )
 
             if (appWidgetIds.isNotEmpty())
-                ChartsWidgetUpdaterJob.checkAndSchedule(context, false)
+                ChartsWidgetUpdaterWorker.checkAndSchedule(context, false)
 
-            // digest alarms
-            DigestJob.scheduleAlarms(context)
+            DigestWorker.schedule(context)
         }
     }
 }

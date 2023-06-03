@@ -9,6 +9,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.work.WorkInfo
 import com.arn.scrobble.App
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
@@ -18,7 +19,7 @@ import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class IndexingDialogFragment: BottomSheetDialogFragment() {
+class IndexingDialogFragment : BottomSheetDialogFragment() {
 
     private val viewModel by viewModels<IndexingVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
@@ -48,8 +49,12 @@ class IndexingDialogFragment: BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.indexingProgress.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            val progressInt = (binding.indexingProgress.max * it).toInt()
+            if (it.isNullOrEmpty()) return@observe
+            val progress = it.first().progress.getDouble(IndexingWorker.PROGRESS_KEY, 0.0)
+            val errorMsg = it.first().progress.getString(IndexingWorker.ERROR_KEY)
+            val finished = it.first().state  == WorkInfo.State.SUCCEEDED || it.first().state == WorkInfo.State.FAILED
+
+            val progressInt = (binding.indexingProgress.max * progress).toInt()
             binding.indexingProgress.isIndeterminate = progressInt == 0
             if (progressInt == 0) {
                 binding.indexingProgress.show()
@@ -59,15 +64,16 @@ class IndexingDialogFragment: BottomSheetDialogFragment() {
                 start()
             }
 
-            if (it == 1.0) {
+            if (progress == 1.0 || finished) {
                 binding.indexingProgress.hide()
-            viewModel.indexingMessage.value = getString(com.google.android.material.R.string.abc_action_mode_done)
+                viewModel.indexingMessage.value =
+                    getString(com.google.android.material.R.string.abc_action_mode_done)
             }
-        }
 
-        viewModel.indexingError.observe(viewLifecycleOwner) { exception ->
-            binding.indexingProgress.hide()
-            viewModel.indexingMessage.value = "❗" + exception.message
+            if (errorMsg != null) {
+                binding.indexingProgress.hide()
+                viewModel.indexingMessage.value = "❗" + errorMsg
+            }
         }
 
         viewModel.indexingMessage.observe(viewLifecycleOwner) {

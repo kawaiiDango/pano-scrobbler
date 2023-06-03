@@ -77,7 +77,7 @@ class FixItFragment : BottomSheetDialogFragment() {
                         getString(R.string.kill_reason, "\n" + it.description)
                 }
 
-            prefs.lastKillCheckTime = System.currentTimeMillis()
+            App.prefs.lastKillCheckTime = System.currentTimeMillis()
             // this is technically wrong
         }
     }

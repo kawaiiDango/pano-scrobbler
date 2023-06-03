@@ -88,8 +88,8 @@
                         style="?materialIconButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:contentDescription="@string/share_this_song"
-                        android:tooltipText="@string/share_this_song"
+                        android:contentDescription="@string/share"
+                        android:tooltipText="@string/share"
                         app:icon="@drawable/vd_share"
                         app:iconSize="22dp" />
 

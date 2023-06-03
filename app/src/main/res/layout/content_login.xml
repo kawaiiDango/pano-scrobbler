@@ -96,7 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            tools:text="@string/force_remembered" />
+            tools:text="login checkbox" />
 
         <FrameLayout
             android:layout_width="wrap_content"

@@ -50,5 +50,6 @@ See [instructions.md](instructions.md)
 - Inspiration from: Musixmatch's FloatingLyrics
 - Lastfm API wrapper: Based on https://github.com/jkovacs/lastfm-java
 - Icons: https://materialdesignicons.com and https://material.io
+- Genres filter from https://everynoise.com
 
 Thanks to the amazing [translators](https://crowdin.com/project/pscrobbler/members) and everyone who reported bugs and helped me with this project.

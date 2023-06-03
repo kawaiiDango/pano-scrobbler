@@ -6,8 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.SearchManager
 import android.app.UiModeManager
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -93,6 +91,9 @@ object Stuff {
     const val ARG_ACTION = "action"
     const val ARG_TLS_NO_VERIFY = "tls_no_verify"
     const val ARG_ALLOWED_PACKAGES = MainPrefs.PREF_ALLOWED_PACKAGES
+    const val ARG_MONTH_PICKER_PERIOD = "month_picker_period"
+    const val ARG_SELECTED_YEAR = "selected_year"
+    const val ARG_SELECTED_MONTH = "selected_month"
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
@@ -131,10 +132,6 @@ object Stuff {
     const val START_POS_LIMIT = 1500L
     const val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
     const val MIN_LISTENER_COUNT = 5
-    const val EDITS_NOPE = 0
-    const val EDITS_REPLACE_ALL = 1
-    const val EDITS_REPLACE_EXISTING = 2
-    const val EDITS_KEEP_EXISTING = 3
 
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"
@@ -207,6 +204,7 @@ object Stuff {
     val IGNORE_ARTIST_META_WITH_FALLBACK = setOf(
         PACKAGE_SOUNDCLOUD,
         PACKAGE_NICOBOX,
+        PACKAGE_YMUSIC,
         "com.google.android.apps.youtube.music",
         "com.vanced.android.apps.youtube.music",
         "app.revanced.android.apps.youtube.music",
@@ -637,26 +635,6 @@ object Stuff {
     fun <T : Any> BiMap<Int, T>.firstOrNull() = get(0)
 
     fun <T : Any> BiMap<Int, T>.lastOrNull() = get(size - 1)
-
-    fun JobInfo.Builder.scheduleExpeditedCompat(
-        js: JobScheduler,
-        elseFn: (JobInfo.Builder.() -> Unit)? = null
-    ): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            setExpedited(true)
-        } else {
-            elseFn?.invoke(this)
-        }
-        val jobInfo = build()
-        var result = js.schedule(jobInfo)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && jobInfo.isExpedited && result == JobScheduler.RESULT_FAILURE) {
-            setExpedited(false)
-            elseFn?.invoke(this)
-            build()
-            result = js.schedule(jobInfo)
-        }
-        return result
-    }
 
     fun getNotificationAction(
         icon: Int,

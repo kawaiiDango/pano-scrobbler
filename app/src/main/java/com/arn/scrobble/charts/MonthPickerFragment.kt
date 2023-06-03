@@ -10,17 +10,20 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.firstOrNull
 import com.arn.scrobble.Stuff.lastOrNull
 import com.arn.scrobble.Stuff.setMidnight
+import com.arn.scrobble.Stuff.toBimap
 import com.arn.scrobble.databinding.DialogMonthPickerBinding
+import com.arn.scrobble.ui.NoOpFilter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
-import io.michaelrocks.bimap.BiMap
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -29,32 +32,58 @@ import kotlin.math.max
 import kotlin.math.min
 
 class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
-    private val viewModel by viewModels<MonthPickerVM>({ requireParentFragment() })
+    private val activityViewModel by activityViewModels<MainNotifierViewModel>()
     private var _binding: DialogMonthPickerBinding? = null
     private val binding
         get() = _binding!!
     private val cal by lazy { Calendar.getInstance() }
 
     private val monthAdapter by lazy {
-        ArrayAdapter(
+        object: ArrayAdapter<MonthPickerItem>(
             requireContext(),
             R.layout.list_item_month,
             R.id.text_item,
             months
-        )
+        ) {
+            val noOpFilter = NoOpFilter()
+            override fun getFilter() = noOpFilter
+        }
     }
 
     private val yearAdapter by lazy {
-        ArrayAdapter(
+        object: ArrayAdapter<MonthPickerItem>(
             requireContext(),
             R.layout.list_item_month,
             R.id.text_item,
             years
-        )
+        ) {
+            val noOpFilter = NoOpFilter()
+            override fun getFilter() = noOpFilter
+        }
+    }
+
+    private val timePeriods by lazy {
+        TimePeriodsGenerator(
+            activityViewModel.currentUser.registeredTime,
+            System.currentTimeMillis(),
+            context
+        ).months.toBimap()
     }
 
     private val yearFormatter by lazy { SimpleDateFormat("yyyy", Locale.getDefault()) }
     private val monthFormatter by lazy { SimpleDateFormat("MMM", Locale.getDefault()) }
+
+    private var selectedYear
+        get() = requireArguments().getInt(Stuff.ARG_SELECTED_YEAR)
+        set(value) {
+            requireArguments().putInt(Stuff.ARG_SELECTED_YEAR, value)
+        }
+
+    private var selectedMonth
+        get() = requireArguments().getInt(Stuff.ARG_SELECTED_MONTH)
+        set(value) {
+            requireArguments().putInt(Stuff.ARG_SELECTED_MONTH, value)
+        }
 
     private lateinit var monthsEditText: MaterialAutoCompleteTextView
     private lateinit var yearsEditText: MaterialAutoCompleteTextView
@@ -68,16 +97,16 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     override fun onShow(p0: DialogInterface?) {
-        yearsEditText.setText(formattedYear(viewModel.selectedYear), false)
-        monthsEditText.setText(formattedMonth(viewModel.selectedMonth), false)
+        yearsEditText.setText(formattedYear(selectedYear), false)
+        monthsEditText.setText(formattedMonth(selectedMonth), false)
 
         val okButton = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
         okButton.setOnClickListener {
             // get the original one with name
             cal.setMidnight()
             cal[Calendar.DAY_OF_MONTH] = 1
-            cal[Calendar.YEAR] = viewModel.selectedYear
-            cal[Calendar.MONTH] = viewModel.selectedMonth
+            cal[Calendar.YEAR] = selectedYear
+            cal[Calendar.MONTH] = selectedMonth
             val startTime = cal.timeInMillis
             cal.add(Calendar.MONTH, 1)
             val endTime = cal.timeInMillis
@@ -91,8 +120,13 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
                 )
             )
 
-            val idx = viewModel.timePeriods.inverse[timePeriod]
-            viewModel.callback(viewModel.timePeriods[idx]!!)
+            val idx = timePeriods.inverse[timePeriod]
+            requireActivity()
+                .supportFragmentManager
+                .setFragmentResult(
+                Stuff.ARG_MONTH_PICKER_PERIOD,
+                bundleOf(Stuff.ARG_MONTH_PICKER_PERIOD to timePeriods[idx]!!)
+            )
             dismiss()
         }
     }
@@ -117,19 +151,19 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
 
         monthsEditText.setAdapter(monthAdapter)
         monthsEditText.setOnItemClickListener { adapterView, view, pos, l ->
-            viewModel.selectedMonth = monthAdapter.getItem(pos)!!.id
+            selectedMonth = monthAdapter.getItem(pos)!!.id
         }
 
         yearsEditText.setAdapter(yearAdapter)
         yearsEditText.setOnItemClickListener { adapterView, view, pos, l ->
-            viewModel.selectedYear = yearAdapter.getItem(pos)!!.id
+            selectedYear = yearAdapter.getItem(pos)!!.id
 
             months.let {
                 val firstMonth = it.first().id
                 val lastMonth = it.last().id
-                viewModel.selectedMonth = viewModel.selectedMonth.coerceIn(firstMonth, lastMonth)
+                selectedMonth = selectedMonth.coerceIn(firstMonth, lastMonth)
 
-                monthsEditText.setText(formattedMonth(viewModel.selectedMonth), false)
+                monthsEditText.setText(formattedMonth(selectedMonth), false)
 
                 monthAdapter.clear()
                 monthAdapter.addAll(it)
@@ -138,8 +172,8 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             monthAdapter.notifyDataSetChanged()
         }
 
-        scrollToSelected(monthsEditText, monthAdapter, viewModel.selectedMonth)
-        scrollToSelected(yearsEditText, yearAdapter, viewModel.selectedYear)
+        scrollToSelected(monthsEditText, monthAdapter, selectedMonth)
+        scrollToSelected(yearsEditText, yearAdapter, selectedYear)
 
         return MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
@@ -196,9 +230,9 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val years
         get(): List<MonthPickerItem> {
             val years = mutableListOf<MonthPickerItem>()
-            cal.timeInMillis = viewModel.timePeriods.firstOrNull()!!.end
+            cal.timeInMillis = timePeriods.firstOrNull()!!.end
             val startYear = cal[Calendar.YEAR]
-            cal.timeInMillis = viewModel.timePeriods.lastOrNull()!!.start
+            cal.timeInMillis = timePeriods.lastOrNull()!!.start
             val endYear = cal[Calendar.YEAR]
 
             for (year in startYear downTo endYear) {
@@ -210,11 +244,11 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val months
         get(): List<MonthPickerItem> {
             val months = mutableListOf<MonthPickerItem>()
-            cal[Calendar.YEAR] = viewModel.selectedYear
+            cal[Calendar.YEAR] = selectedYear
             cal[Calendar.MONTH] = cal.getActualMinimum(Calendar.MONTH)
-            val startMonthTime = max(cal.timeInMillis, viewModel.timePeriods.lastOrNull()!!.start)
+            val startMonthTime = max(cal.timeInMillis, timePeriods.lastOrNull()!!.start)
             cal[Calendar.MONTH] = cal.getActualMaximum(Calendar.MONTH)
-            val endMonthTime = min(cal.timeInMillis, viewModel.timePeriods.firstOrNull()!!.end - 1)
+            val endMonthTime = min(cal.timeInMillis, timePeriods.firstOrNull()!!.end - 1)
             cal.timeInMillis = startMonthTime
             val startMonth = cal[Calendar.MONTH]
             cal.timeInMillis = endMonthTime
@@ -225,36 +259,8 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             }
             return months
         }
+}
 
-    companion object {
-        fun launch(
-            parentFragment: Fragment,
-            timePeriods: BiMap<Int, TimePeriod>,
-            selectedPeriodp: TimePeriod?,
-            callback: (TimePeriod) -> Unit
-        ): MonthPickerFragment {
-            val viewModel by parentFragment.viewModels<MonthPickerVM>({ parentFragment })
-
-            viewModel.timePeriods = timePeriods
-
-            val selectedPeriod = selectedPeriodp ?: TimePeriodsGenerator(
-                System.currentTimeMillis() - 1,
-                System.currentTimeMillis(),
-                parentFragment.context
-            ).months.first()
-
-            viewModel.callback = callback
-
-            return MonthPickerFragment().apply {
-                cal.timeInMillis = selectedPeriod.start
-                viewModel.selectedMonth = cal[Calendar.MONTH]
-                viewModel.selectedYear = cal[Calendar.YEAR]
-                show(parentFragment.childFragmentManager, null)
-            }
-        }
-    }
-
-    data class MonthPickerItem(val text: String, val id: Int) {
-        override fun toString() = text
-    }
+data class MonthPickerItem(val text: String, val id: Int) {
+    override fun toString() = text
 }

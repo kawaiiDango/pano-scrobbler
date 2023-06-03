@@ -36,7 +36,7 @@ class ChartsWidgetProvider : AppWidgetProvider() {
 
     override fun onDisabled(context: Context) {
         // Enter relevant functionality for when the last widget is disabled
-        ChartsWidgetUpdaterJob.cancel(context)
+        ChartsWidgetUpdaterWorker.cancel(context)
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {

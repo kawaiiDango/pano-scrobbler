@@ -36,6 +36,8 @@ import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import coil.load
 import coil.memory.MemoryCache
 import com.arn.scrobble.App
@@ -51,6 +53,7 @@ import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
+import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
@@ -71,6 +74,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import de.umass.lastfm.ImageSize
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
@@ -264,6 +268,8 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                     }
                 }
                 adapter.populate()
+
+                submitPendingIfNeeded()
             }
             if (viewModel.page != it.page && Stuff.isTv)
                 loadRecents(1, true)
@@ -323,7 +329,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                 }
-                startActivity(Intent.createChooser(i, getString(R.string.share_this_song)))
+                startActivity(Intent.createChooser(i, getString(R.string.share)))
             }
         }
 
@@ -515,6 +521,47 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
         }
 
         binding.scrobblesChipGroup.visibility = View.VISIBLE
+    }
+
+    private fun submitPendingIfNeeded() {
+        if (!viewModel.pendingSubmitAttempted && (
+                    viewModel.pendingScrobblesLd.value?.isNotEmpty() == true ||
+                            viewModel.pendingLovesLd.value?.isNotEmpty() == true
+                    )
+            && Stuff.isOnline
+        ) {
+            viewModel.pendingSubmitAttempted = true
+            PendingScrobblesWorker.checkAndSchedule(requireContext(), true)
+            val wm = WorkManager.getInstance(requireContext())
+            var lastSnackbar: Snackbar? = null
+            wm.getWorkInfosForUniqueWorkLiveData(PendingScrobblesWorker.NAME)
+                .observe(viewLifecycleOwner) {
+                    if (it.isNullOrEmpty()) return@observe
+                    val workInfo = it.first()
+                    when (workInfo.state) {
+                        WorkInfo.State.RUNNING -> {
+                            val progressText =
+                                workInfo.progress.getString(PendingScrobblesWorker.PROGRESS_KEY)
+                                    ?: return@observe
+                            lastSnackbar = Snackbar.make(
+                                coordinatorBinding.root,
+                                progressText,
+                                Snackbar.LENGTH_SHORT
+                            )
+                                .setAction(android.R.string.cancel) {
+                                    PendingScrobblesWorker.cancel(requireContext())
+                                }
+                            lastSnackbar!!.show()
+                        }
+
+                        WorkInfo.State.SUCCEEDED -> {
+                            lastSnackbar?.dismiss()
+                        }
+
+                        else -> {}
+                    }
+                }
+        }
     }
 
     private fun loadRecents(page: Int, force: Boolean = false): Boolean {

@@ -1,7 +1,11 @@
 package com.arn.scrobble.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import de.umass.lastfm.scrobble.ScrobbleData
 
 @Dao
@@ -77,10 +81,9 @@ interface BlockedMetadataDao {
             val maxIdx = entriesToBlanks.indexOfLast { it.second == lowestBlanks }
             val bestEntries = entriesToBlanks.map { it.first }.subList(0, maxIdx + 1)
             val bestEntry = bestEntries.first()
-            bestEntry.skip = bestEntries.any { it.skip }
-            if (!bestEntry.skip)
-                bestEntry.mute = bestEntries.any { it.mute }
-            return bestEntry
+            val skip = bestEntries.any { it.skip }
+            val mute = !skip && bestEntries.any { it.mute }
+            return bestEntry.copy(skip = skip, mute = mute)
         }
 
 
@@ -88,16 +91,18 @@ interface BlockedMetadataDao {
             entries: List<BlockedMetadata>,
             ignore: Boolean = false
         ) {
-            entries.forEach { entry ->
-                entry.track = entry.track.lowercase()
-                entry.album = entry.album.lowercase()
-                entry.artist = entry.artist.lowercase()
-                entry.albumArtist = entry.albumArtist.lowercase()
+            val lowercaseEntries = entries.map { entry ->
+                entry.copy(
+                    artist = entry.artist.lowercase(),
+                    album = entry.album.lowercase(),
+                    albumArtist = entry.albumArtist.lowercase(),
+                    track = entry.track.lowercase()
+                )
             }
             if (ignore)
-                insertIgnore(entries)
+                insertIgnore(lowercaseEntries)
             else
-                insert(entries)
+                insert(lowercaseEntries)
         }
 
     }

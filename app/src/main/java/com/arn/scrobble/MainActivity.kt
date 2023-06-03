@@ -37,6 +37,7 @@ import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.HeaderNavBinding
 import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.search.IndexingWorker
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dp
@@ -48,6 +49,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import timber.log.Timber
 
 
@@ -61,6 +63,8 @@ class MainActivity : AppCompatActivity(),
     private lateinit var navController: NavController
     private var navHeaderbinding: HeaderNavBinding? = null
     private lateinit var mainFab: View
+    private val fabDataMutex = Mutex()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         var canShowNotices = false
@@ -160,59 +164,79 @@ class MainActivity : AppCompatActivity(),
         navController.addOnDestinationChangedListener(this)
 
         mainNotifierViewModel.fabData.observe(this) {
-            if (it == null) {
-                if (UiUtils.isTabletUi) {
-                    (mainFab as ExtendedFloatingActionButton).hide()
-                    binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
-                        topMargin = 0
+            // onDestroy of previous fragment gets called AFTER on create of the current fragment
+            // So use locks to queue events
+            lifecycleScope.launch {
+                if (it == null) {
+                    try {
+                        fabDataMutex.unlock()
+                    } catch (e: IllegalStateException) {
+
                     }
                 } else {
-                    (mainFab as FloatingActionButton).hide()
+                    fabDataMutex.lock()
                 }
 
-                return@observe
-            }
+                if (it == null) {
+                    if (UiUtils.isTabletUi) {
+                        (mainFab as ExtendedFloatingActionButton).hide()
+                        binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
+                            topMargin = 0
+                        }
+                    } else {
+                        (mainFab as FloatingActionButton).hide()
+                    }
 
-            it.lifecycleOwner.lifecycle.addObserver(
-                object : LifecycleEventObserver {
-                    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                        when (event) {
-                            Lifecycle.Event.ON_DESTROY -> {
-                                it.lifecycleOwner.lifecycle.removeObserver(this)
-                                mainNotifierViewModel.fabData.value = null
+                    return@launch
+                }
+
+                it.lifecycleOwner.lifecycle.addObserver(
+                    object : LifecycleEventObserver {
+                        override fun onStateChanged(
+                            source: LifecycleOwner,
+                            event: Lifecycle.Event
+                        ) {
+                            when (event) {
+                                Lifecycle.Event.ON_DESTROY -> {
+                                    it.lifecycleOwner.lifecycle.removeObserver(this)
+                                    mainNotifierViewModel.fabData.value = null
+                                }
+
+                                else -> {}
                             }
+                        }
 
-                            else -> {}
+                    }
+                )
+
+                if (UiUtils.isTabletUi) {
+                    (mainFab as ExtendedFloatingActionButton).apply {
+                        setIconResource(it.iconRes)
+                        setText(it.stringRes)
+                        setOnClickListener(it.clickListener)
+                        setOnLongClickListener(it.longClickListener)
+                        show()
+                        binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
+                            topMargin = resources.getDimensionPixelSize(R.dimen.fab_margin)
                         }
                     }
-
-                }
-            )
-
-            if (UiUtils.isTabletUi) {
-                (mainFab as ExtendedFloatingActionButton).apply {
-                    setIconResource(it.iconRes)
-                    setText(it.stringRes)
-                    setOnClickListener(it.clickListener)
-                    setOnLongClickListener(it.longClickListener)
-                    show()
-                    binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
-                        topMargin = resources.getDimensionPixelSize(R.dimen.fab_margin)
+                } else {
+                    (mainFab as FloatingActionButton).apply {
+                        setImageResource(it.iconRes)
+                        contentDescription = getString(it.stringRes)
+                        setOnClickListener(it.clickListener)
+                        setOnLongClickListener(it.longClickListener)
+                        show()
                     }
-                }
-            } else {
-                (mainFab as FloatingActionButton).apply {
-                    setImageResource(it.iconRes)
-                    contentDescription = getString(it.stringRes)
-                    setOnClickListener(it.clickListener)
-                    setOnLongClickListener(it.longClickListener)
-                    show()
                 }
             }
         }
 
         mainNotifierViewModel.canIndex.observe(this) {
             binding.sidebarNav.menu.findItem(R.id.nav_do_index)?.isVisible = it
+            if (it == true && prefs.lastMaxIndexTime != null) {
+                IndexingWorker.schedule(this)
+            }
         }
 
         billingViewModel.proStatus.observe(this) {
@@ -326,11 +350,4 @@ class MainActivity : AppCompatActivity(),
         }
         return super.dispatchTouchEvent(event)
     }
-
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        if (binding.drawerLayout.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
-//            binding.drawerLayout.isSaveEnabled = false
-//        outState.putInt("tab_bar_visible", binding.tabBar.visibility)
-//        super.onSaveInstanceState(outState)
-//    }
 }

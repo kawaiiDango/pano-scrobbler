@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.FabData
@@ -45,8 +44,8 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
 
     fun updateCanIndex() {
         canIndex.value = BuildConfig.DEBUG && Scrobblables.current is Lastfm &&
-                System.currentTimeMillis() - (prefs.lastMaxIndexTime
-            ?: 0) > TimeUnit.MINUTES.toMillis(30)
+                System.currentTimeMillis() -
+                (prefs.lastMaxIndexTime ?: 0) > TimeUnit.HOURS.toMillis(12)
     }
 
     fun initializeCurrentUser(user: UserSerializable) {
@@ -68,8 +67,7 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     }
 
     override fun onCleared() {
-        if (!PendingScrService.mightBeRunning)
-            PanoDb.destroyInstance()
+        PanoDb.destroyInstance()
     }
 
     val userIsSelf

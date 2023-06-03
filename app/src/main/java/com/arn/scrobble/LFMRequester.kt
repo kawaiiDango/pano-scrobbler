@@ -9,11 +9,9 @@ import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.getBlockedEntry
-import com.arn.scrobble.db.CachedAlbum
 import com.arn.scrobble.db.CachedAlbum.Companion.toAlbum
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
 import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
-import com.arn.scrobble.db.CachedArtist
 import com.arn.scrobble.db.CachedArtist.Companion.toArtist
 import com.arn.scrobble.db.CachedArtist.Companion.toCachedArtist
 import com.arn.scrobble.db.CachedArtistsDao.Companion.deltaUpdate
@@ -32,7 +30,7 @@ import com.arn.scrobble.db.SimpleEditsDao.Companion.performEdit
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
-import com.arn.scrobble.pending.PendingScrJob
+import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.pref.HistoryPref
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.GnuFm
@@ -68,8 +66,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
@@ -368,9 +364,10 @@ class LFMRequester(
                 throw IllegalStateException("Not enough tags")
             }
 
+            val acceptableTags = AcceptableTags()
             val topTags = tags
                 .toList()
-                .filter { it.first.isNotEmpty() && it.first.lowercase() !in prefs.hiddenTags }
+                .filter { acceptableTags.isAcceptable(it.first) }
                 .sortedByDescending { it.second.score }
                 .take(nTags)
                 .toMap()
@@ -577,270 +574,6 @@ class LFMRequester(
                     artists.await(),
                     albums.await(),
                 )
-            }
-        }
-    }
-
-    fun runFullIndex() {
-        toExec = {
-            indexingMutex.withLock {
-                Stuff.log(this::runFullIndex.name)
-                if (gnufmAccount?.type != AccountType.LASTFM) return@withLock null
-
-
-                val db = PanoDb.db
-                val limitPerPage = 1000
-                val numPages = Stuff.MAX_INDEXED_ITEMS / limitPerPage
-                val maxCalls = numPages * 4
-                var callsMade = 0
-
-                if (db.getPendingScrobblesDao().count > 0 || db.getPendingLovesDao().count > 0) {
-                    throw IllegalStateException("Cannot run when there are pending scrobbles")
-                }
-
-                suspend fun postProgress(finished: Boolean = false) {
-                    if (finished)
-                        callsMade = maxCalls
-                    else
-                        callsMade++
-                    withContext(Dispatchers.Main) {
-                        liveData?.value = callsMade.toDouble() / maxCalls
-                    }
-                    if (!finished)
-                        delay(50)
-                }
-
-                val list = mutableListOf<MusicEntry>()
-
-                val lastScrobbledTrack = User.getRecentTracks(
-                    null,
-                    1,
-                    1,
-                    session
-                ).pageResults.find { it.playedWhen != null }
-                    ?: throw IllegalStateException("No scrobbled tracks found")
-
-                for (i in 1..numPages) {
-                    val artists = User.getTopArtists(
-                        gnufmAccount!!.user.name,
-                        Period.OVERALL,
-                        limitPerPage,
-                        i,
-                        session
-                    )
-                    postProgress()
-                    list.addAll(artists.pageResults)
-                    if (i >= artists.totalPages)
-                        break
-                }
-
-                db.getCachedArtistsDao().apply {
-                    nuke()
-                    insert(list.map { (it as Artist).toCachedArtist() })
-                }
-                list.clear()
-
-
-                for (i in 1..numPages) {
-                    val albums = User.getTopAlbums(
-                        gnufmAccount!!.user.name,
-                        Period.OVERALL,
-                        limitPerPage,
-                        i,
-                        session
-                    )
-                    postProgress()
-                    list.addAll(albums.pageResults)
-                    if (i >= albums.totalPages)
-                        break
-                }
-
-                db.getCachedAlbumsDao().apply {
-                    nuke()
-                    insert(list.map { (it as Album).toCachedAlbum() })
-                }
-                list.clear()
-
-                for (i in 1..numPages) {
-                    val tracks = User.getTopTracks(
-                        gnufmAccount!!.user.name,
-                        Period.OVERALL,
-                        limitPerPage,
-                        i,
-                        session
-                    )
-                    postProgress()
-                    list.addAll(tracks.pageResults)
-                    if (i >= tracks.totalPages)
-                        break
-                }
-
-                val lovedTracksList = mutableListOf<Track>()
-
-                for (i in 1..numPages) {
-                    val lovedTracks =
-                        User.getLovedTracks(
-                            gnufmAccount!!.user.name,
-                            limitPerPage,
-                            i,
-                            session
-                        )
-                    postProgress()
-                    lovedTracksList.addAll(lovedTracks.pageResults)
-                    if (i >= lovedTracks.totalPages)
-                        break
-                }
-
-                val tracksMap = mutableMapOf<Pair<String, String>, MusicEntry>()
-
-                list.forEach {
-                    it as Track
-                    tracksMap[it.artist to it.name] = it
-                }
-
-                lovedTracksList.forEach {
-                    val pair = it.artist to it.name
-                    if (pair in tracksMap) {
-                        val existingTrack = tracksMap[pair] as Track
-                        existingTrack.isLoved = true
-                        existingTrack.playedWhen = it.playedWhen
-                    } else {
-                        it.isLoved = true
-                        list += it
-                    }
-                }
-
-                db.getCachedTracksDao().apply {
-                    nuke()
-                    insert(list.map { (it as Track).toCachedTrack() })
-                }
-
-                prefs.lastFullIndexedScrobbleTime = lastScrobbledTrack.playedWhen.time
-                prefs.lastFullIndexTime = System.currentTimeMillis()
-
-                prefs.lastDeltaIndexedScrobbleTime = null
-                prefs.lastDeltaIndexTime = null
-
-                postProgress(finished = true)
-
-                null
-            }
-        }
-    }
-
-    fun runDeltaIndex(prFromRecents: PaginatedResult<Track>? = null) {
-        toExec = {
-            indexingMutex.withLock {
-
-                Stuff.log(this::runDeltaIndex.name)
-
-                if (gnufmAccount?.type != AccountType.LASTFM) return@withLock null
-
-                val db = PanoDb.db
-                val from = prefs.lastMaxIndexedScrobbleTime
-                    ?: throw IllegalStateException("Full index never run")
-                val to = System.currentTimeMillis()
-                val limitPerPage = 1000
-                val maxCalls = 15
-                var currentPage = 1
-                val tracks = mutableListOf<Track>()
-
-                if (db.getPendingScrobblesDao().count > 0 || db.getPendingLovesDao().count > 0) {
-                    throw IllegalStateException("Cannot run when there are pending scrobbles")
-                }
-
-                withContext(Dispatchers.Main) {
-                    liveData?.value = 0.5
-                }
-
-                if (prFromRecents == null) {
-                    val recentsCall = suspend {
-                        currentScrobblable!!
-                            .getRecents(
-                                currentPage,
-                                null,
-                                from = from,
-                                to = to,
-                                limit = limitPerPage,
-                            )
-                    }
-
-                    val firstPage = recentsCall()
-
-                    if (firstPage.totalPages > maxCalls)
-                        throw IllegalStateException("Too many pages, run full index instead")
-
-                    tracks += firstPage.pageResults
-
-                    for (i in 2..firstPage.totalPages) {
-                        currentPage = i
-                        val pr = recentsCall()
-                        tracks += pr.pageResults
-                    }
-                } else {
-                    val lastTrack = prFromRecents.pageResults.lastOrNull()
-
-                    if (prFromRecents.page == 1 && lastTrack != null) {
-                        if (lastTrack.playedWhen.time > from)
-                            throw IllegalStateException("More than one page, run indexing manually")
-
-                        // todo handle pending scrobbles submitted at an earlier time
-
-                        for (track in prFromRecents.pageResults) {
-                            if (!track.isNowPlaying && track.playedWhen != null && track.playedWhen.time > from)
-                                tracks += track
-                            else
-                                break
-                        }
-                    }
-                }
-
-                val tracksLastPlayedMap = mutableMapOf<CachedTrack, Long>()
-                val trackCounts = mutableMapOf<CachedTrack, Int>()
-                val albumCounts = mutableMapOf<CachedAlbum, Int>()
-                val artistCounts = mutableMapOf<CachedArtist, Int>()
-
-                tracks.forEach {
-                    val cachedTrack = it.toCachedTrack().apply { lastPlayed = -1 }
-                    val cachedAlbum = if (!it.album.isNullOrEmpty()) it.toCachedAlbum() else null
-                    val cachedArtist = it.toCachedArtist()
-
-                    val playedWhen = it.playedWhen?.time ?: -1
-
-                    // put max time
-                    if (tracksLastPlayedMap[cachedTrack] == null || tracksLastPlayedMap[cachedTrack]!! < playedWhen)
-                        tracksLastPlayedMap[cachedTrack] = playedWhen
-
-                    trackCounts[cachedTrack] = (trackCounts[cachedTrack] ?: 0) + 1
-                    if (cachedAlbum != null)
-                        albumCounts[cachedAlbum] = (albumCounts[cachedAlbum] ?: 0) + 1
-                    artistCounts[cachedArtist] = (artistCounts[cachedArtist] ?: 0) + 1
-                }
-
-
-                trackCounts.forEach { (track, count) ->
-                    track.lastPlayed = tracksLastPlayedMap[track] ?: -1
-                    db.getCachedTracksDao().deltaUpdate(track, count)
-                }
-
-                albumCounts.forEach { (album, count) ->
-                    db.getCachedAlbumsDao().deltaUpdate(album, count)
-                }
-
-                artistCounts.forEach { (artist, count) ->
-                    db.getCachedArtistsDao().deltaUpdate(artist, count)
-                }
-
-                tracks.firstOrNull()?.let {
-                    prefs.lastDeltaIndexedScrobbleTime = it.playedWhen!!.time
-                    prefs.lastDeltaIndexTime = System.currentTimeMillis()
-                }
-
-                withContext(Dispatchers.Main) {
-                    liveData?.value = 1.0
-                }
-
-                null
             }
         }
     }
@@ -1160,7 +893,7 @@ class LFMRequester(
 
                     val regexEdits = PanoDb.db
                         .getRegexEditsDao()
-                        .performRegexReplace(scrobbleData)
+                        .performRegexReplace(scrobbleData, trackInfo.packageName)
 
                     if (scrobbleData.artist.isNullOrBlank())
                         scrobbleData.artist = oldArtist
@@ -1223,7 +956,7 @@ class LFMRequester(
                                     scrobbleData.albumArtist = track.albumArtist
                                 scrobbleData.track = track.name
                             } else if (!track.albumArtist.isNullOrEmpty() &&
-                                prefs.fetchAlbumArtist &&
+                                prefs.fetchAlbum &&
                                 scrobbleData.album.equals(track.album, ignoreCase = true) &&
                                 (scrobbleData.albumArtist.isNullOrEmpty() || scrobbleData.artist == scrobbleData.albumArtist)
                             ) {
@@ -1248,7 +981,7 @@ class LFMRequester(
 
                             PanoDb.db
                                 .getRegexEditsDao()
-                                .performRegexReplace(scrobbleData)
+                                .performRegexReplace(scrobbleData, trackInfo.packageName)
 
                             if (regexEdits.values.sum() > 0)
                                 edit = editsDao.performEdit(scrobbleData, false)
@@ -1350,7 +1083,7 @@ class LFMRequester(
                             entry.autoCorrected = 1
                         dao.insert(entry)
                         savedAsPending = true
-                        PendingScrJob.checkAndSchedule(context)
+                        PendingScrobblesWorker.checkAndSchedule(context)
                     } else {
                         // successful
                         CachedTracksDao.deltaUpdateAll(
@@ -1462,7 +1195,7 @@ class LFMRequester(
                     }
                     if (entry.state != 0) {
                         dao.insert(entry)
-                        PendingScrJob.checkAndSchedule(context)
+                        PendingScrobblesWorker.checkAndSchedule(context)
                         submittedAll = false
                     }
                 }
@@ -1589,8 +1322,6 @@ class LFMRequester(
         private var lastNpInfoTime = 0L
         private var lastNpInfoCount = 0
 
-        private val indexingMutex = Mutex()
-
         val okHttpClient by lazy {
             OkHttpClient.Builder()
                 .followRedirects(false)
@@ -1681,22 +1412,6 @@ class LFMRequester(
                 Tokens.SPOTIFY_ARTIST_INFO_KEY, mapOf("artist" to artist)
             )
             return ResponseBuilder.buildItem(result, Artist::class.java)
-        }
-
-        fun getCorrectedDataOld(artist: String, track: String): Pair<String, String>? {
-            val correction = Track.getCorrection(artist, track, Stuff.LAST_KEY)
-            var cArtist = correction?.artist?.trim() ?: ""
-            var cTrack = correction?.name?.trim() ?: ""
-
-            return if (cArtist == "" && cTrack == "")
-                null
-            else {
-                if (cArtist == "")
-                    cArtist = artist
-                if (cTrack == "")
-                    cTrack = artist
-                Pair(cArtist, cTrack)
-            }
         }
 
         fun ExceptionNotifier(

@@ -20,7 +20,7 @@
     <string name="edit_case_sensitive_aa" translatable="false">Aa</string>
 
     <string name="preset_remastered" translatable="false">Remastered</string>
-    <string name="preset_explicit" translatable="false">Explicit</string>
+    <string name="preset_explicit" translatable="false">Explicit / Clean</string>
     <string name="preset_album_version" translatable="false">Album version</string>
     <string name="preset_single" translatable="false">Single</string>
     <string name="preset_ep" translatable="false">EP</string>

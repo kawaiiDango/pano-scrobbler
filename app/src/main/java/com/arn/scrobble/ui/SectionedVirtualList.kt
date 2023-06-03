@@ -1,8 +1,8 @@
 package com.arn.scrobble.ui
 
-import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.arn.scrobble.App
 import com.arn.scrobble.R
 import kotlin.math.min
 
@@ -152,7 +152,6 @@ data class ExpandableHeader(
     var maxCollapsedItems: Int = 3,
 ) {
     constructor(
-        context: Context,
         @DrawableRes
         iconRes: Int,
         @StringRes
@@ -165,9 +164,9 @@ data class ExpandableHeader(
         maxCollapsedItems: Int = 3,
     ) : this(
         iconRes,
-        context.getString(titleRes),
-        context.getString(expandTextRes),
-        context.getString(collapseTextRes),
+        App.context.getString(titleRes),
+        App.context.getString(expandTextRes),
+        App.context.getString(collapseTextRes),
         isExpanded,
         maxCollapsedItems
     )

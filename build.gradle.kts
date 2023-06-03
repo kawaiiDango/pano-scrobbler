@@ -11,12 +11,12 @@ buildscript {
     dependencies {
         classpath("com.github.triplet.gradle:play-publisher:4.0.0-SNAPSHOT")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.6.0-rc01")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.7.0-alpha01")
     }
 }
 
 plugins {
-    id("com.android.application") version "8.2.0-alpha04" apply false
+    id("com.android.application") version "8.2.0-alpha06" apply false
     kotlin("android") version "1.8.21" apply false
     id("com.google.firebase.crashlytics") version "2.9.5" apply false
     id("com.google.gms.google-services") version "4.3.15" apply false
@@ -24,7 +24,7 @@ plugins {
     kotlin("plugin.serialization") version "1.8.21" apply false
     id("com.mikepenz.aboutlibraries.plugin") version "10.7.0" apply false
     id("com.github.breadmoirai.github-release") version "2.4.1" apply false
-    id("com.android.test") version "8.2.0-alpha04" apply false
+    id("com.android.test") version "8.2.0-alpha06" apply false
     id("androidx.baselineprofile") version "1.2.0-alpha13" apply false
 }
 

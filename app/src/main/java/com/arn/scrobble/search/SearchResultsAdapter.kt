@@ -30,7 +30,7 @@ import java.text.NumberFormat
 
 class SearchResultsAdapter(
     private val context: Context,
-    private val viewModel: SearchVM,
+    viewModel: SearchVM,
     private val clickListener: MusicEntryItemClickListener
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -104,7 +104,6 @@ class SearchResultsAdapter(
                     Section.ARTISTS,
                     searchResults.artists,
                     header = ExpandableHeader(
-                        context,
                         R.drawable.vd_mic,
                         R.string.artists,
                     )
@@ -115,7 +114,6 @@ class SearchResultsAdapter(
                     Section.ALBUMS,
                     searchResults.albums,
                     header = ExpandableHeader(
-                        context,
                         R.drawable.vd_album,
                         R.string.albums,
                     )
@@ -126,7 +124,6 @@ class SearchResultsAdapter(
                     Section.TRACKS,
                     searchResults.tracks,
                     header = ExpandableHeader(
-                        context,
                         R.drawable.vd_note,
                         R.string.tracks,
                     )
@@ -137,7 +134,6 @@ class SearchResultsAdapter(
                     Section.LOVED_TRACKS,
                     searchResults.lovedTracks,
                     header = ExpandableHeader(
-                        context,
                         R.drawable.vd_heart,
                         R.string.loved,
                     )

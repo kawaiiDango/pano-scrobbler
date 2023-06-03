@@ -22,6 +22,7 @@ import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setupInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -61,6 +62,8 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
                 showAddEditDialog(null)
             }
         )
+
+        binding.blockList.setupInsets()
 
         adapter = BlockedMetadataAdapter(
             viewModel,

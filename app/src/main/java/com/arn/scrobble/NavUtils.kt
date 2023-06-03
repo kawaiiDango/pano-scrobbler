@@ -214,7 +214,7 @@ object NavUtils {
             (scrollableView.children.find { it is RecyclerView } as? RecyclerView)
                 ?.smoothScrollToPosition(0)
         else if (scrollableView != null)
-            ObjectAnimator.ofInt(scrollableView, "scrollY", 0).start();
+            ObjectAnimator.ofInt(scrollableView, "scrollY", 0).start()
     }
 
     fun BasePagerFragment.setupWithNavUi() {
@@ -328,7 +328,8 @@ object NavUtils {
                                         binding.pager.setCurrentItem(page, true)
                                     true
                                 } else {
-                                    optionsMenuViewModel.menuEvent.value = menuItem.itemId
+                                    optionsMenuViewModel.menuEvent.value =
+                                        activityBinding.sidebarNav to menuItem.itemId
                                     false
                                 }
                             }

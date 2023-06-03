@@ -3,6 +3,9 @@ package com.arn.scrobble.db
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 
 /**
@@ -16,17 +19,20 @@ import androidx.room.PrimaryKey
         Index(value = ["origArtist", "origAlbum", "origTrack"], unique = true),
     ]
 )
+@Serializable
 data class SimpleEdit(
     @PrimaryKey(autoGenerate = true)
-    var _id: Int = 0,
+    @Transient
+    val _id: Int = 0,
 
-    var legacyHash: String? = null,
+    @SerialName("hash")
+    val legacyHash: String? = null,
 
-    var origTrack: String = "",
-    var origAlbum: String = "",
-    var origArtist: String = "",
-    var track: String = "",
-    var album: String = "",
-    var albumArtist: String = "",
-    var artist: String = "",
+    val origTrack: String = "",
+    val origAlbum: String = "",
+    val origArtist: String = "",
+    val track: String = "",
+    val album: String = "",
+    val albumArtist: String = "",
+    val artist: String = "",
 )

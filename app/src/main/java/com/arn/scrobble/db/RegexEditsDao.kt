@@ -1,7 +1,11 @@
 package com.arn.scrobble.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.arn.scrobble.NLService
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.edits.RegexPresets
@@ -27,8 +31,8 @@ interface RegexEditsDao {
     @get:Query("SELECT * FROM $tableName WHERE preset IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
     val allPresets: List<RegexEdit>
 
-    @get:Query("SELECT * FROM $tableName WHERE pattern IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    val allRegexes: List<RegexEdit>
+//    @get:Query("SELECT * FROM $tableName WHERE pattern IS NOT NULL OR extractionTrack IS NOT NULL OR extractionAlbum iS NOT NULL OR extractionArtist IS NOT NULL OR extractionAlbumArtist IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
+//    val allRegexes: List<RegexEdit>
 
     @Query("UPDATE $tableName SET `order` = `order` + 1")
     fun shiftDown()
@@ -50,6 +54,7 @@ interface RegexEditsDao {
 
         fun RegexEditsDao.performRegexReplace(
             scrobbleData: ScrobbleData,
+            pkgName: String? = null, // null means all
             regexEdits: List<RegexEdit> = all.map { RegexPresets.getPossiblePreset(it) },
             matchedRegexEditsRef: MutableList<RegexEdit>? = null,
         ): Map<String, Int> {
@@ -63,9 +68,12 @@ interface RegexEditsDao {
             fun replaceField(textp: String?, field: String): String? {
                 textp ?: return null
                 var text: String = textp
-                for (regexEdit in regexEdits.filter { it.fields != null && field in it.fields!! }) {
-                    regexEdit.pattern ?: continue
-
+                regexEdits.filter {
+                    it.pattern != null &&
+                            it.fields != null &&
+                            field in it.fields!! &&
+                            (it.packages.isNullOrEmpty() || pkgName == null || pkgName in it.packages!!)
+                }.forEach { regexEdit ->
                     val regexOptions = mutableSetOf<RegexOption>()
                     if (!regexEdit.caseSensitive)
                         regexOptions += RegexOption.IGNORE_CASE
@@ -81,11 +89,68 @@ interface RegexEditsDao {
                         else
                             text.replaceFirst(regex, regexEdit.replacement).trim()
                         if (!regexEdit.continueMatching)
-                            break
+                            return text
                     }
                 }
                 return text
             }
+
+            fun extract() {
+                regexEdits
+                    .filter {
+                        it.extractionPatterns != null &&
+                                (it.packages.isNullOrEmpty() || pkgName == null || pkgName in it.packages!!)
+                    }.forEachIndexed { _, regexEdit ->
+                        val extractionPatterns = regexEdit.extractionPatterns!!
+
+                        val scrobbleDataToRegexes = mapOf(
+                            scrobbleData.track to extractionPatterns.extractionTrack,
+                            scrobbleData.album to extractionPatterns.extractionAlbum,
+                            scrobbleData.artist to extractionPatterns.extractionArtist,
+                            scrobbleData.albumArtist to extractionPatterns.extractionAlbumArtist,
+                        ).mapValues { (key, value) ->
+                            if (regexEdit.caseSensitive)
+                                value.toRegex()
+                            else
+                                value.toRegex(RegexOption.IGNORE_CASE)
+                        }
+
+                        val (track, album, artist, albumArtist) = arrayOf(
+                            NLService.B_TRACK,
+                            NLService.B_ALBUM,
+                            NLService.B_ARTIST,
+                            "albumArtist"
+                        ).map { groupName ->
+                            scrobbleDataToRegexes.forEach { (sdField, regex) ->
+                                if (regex.pattern.isEmpty()) return@forEach
+                                val namedGroups =
+                                    regex.find(sdField)?.groups ?: return@forEach
+                                val groupValue =
+                                    runCatching { namedGroups[groupName] }.getOrNull()
+                                        ?: return@forEach
+
+                                numMatches[groupName.lowercase()] =
+                                    numMatches[groupName.lowercase()]!! + 1
+                                matchedRegexEditsRef?.add(regexEdit)
+
+                                return@map groupValue.value
+                            }
+                            null
+                        }
+
+                        val found =
+                            track != null || album != null || artist != null || albumArtist != null
+
+                        if (track != null) scrobbleData.track = track
+                        if (album != null) scrobbleData.album = album
+                        if (artist != null) scrobbleData.artist = artist
+                        if (albumArtist != null) scrobbleData.albumArtist = albumArtist
+
+                        if (found && !regexEdit.continueMatching)
+                            return
+                    }
+            }
+
 
             try {
                 scrobbleData.artist = replaceField(scrobbleData.artist, NLService.B_ARTIST)
@@ -93,9 +158,11 @@ interface RegexEditsDao {
                 scrobbleData.albumArtist =
                     replaceField(scrobbleData.albumArtist, NLService.B_ALBUM_ARTIST)
                 scrobbleData.track = replaceField(scrobbleData.track, NLService.B_TRACK)
+                extract()
             } catch (e: IllegalArgumentException) {
                 Stuff.log("regex error: ${e.message}")
             }
+
             return numMatches
         }
 

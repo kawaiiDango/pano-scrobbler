@@ -3,6 +3,7 @@ package com.arn.scrobble.charts
 import android.os.Parcel
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.os.bundleOf
 import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
 import androidx.fragment.app.Fragment
@@ -30,6 +31,7 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Period
+import java.util.Calendar
 import kotlin.math.max
 
 
@@ -58,6 +60,17 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
 
     protected open fun postInit() {
         context ?: return
+
+        requireActivity()
+            .supportFragmentManager
+            .setFragmentResultListener(Stuff.ARG_MONTH_PICKER_PERIOD, viewLifecycleOwner) { key, bundle ->
+                when (key) {
+                    Stuff.ARG_MONTH_PICKER_PERIOD -> {
+                        viewModel.selectedPeriod.value = bundle.getParcelable(key)
+                        findSelectedAndScroll(true)
+                    }
+                }
+            }
 
         periodChipsBinding.root.visibility = View.VISIBLE
 
@@ -312,14 +325,19 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     }
 
     private fun showMonthPicker() {
-        MonthPickerFragment.launch(
-            this,
-            viewModel.timePeriods.value!!,
-            viewModel.selectedPeriod.value
-        ) {
-            viewModel.selectedPeriod.value = it
-            findSelectedAndScroll(true)
-        }
+        val selectedPeriod = viewModel.selectedPeriod.value ?: TimePeriodsGenerator(
+            System.currentTimeMillis() - 1,
+            System.currentTimeMillis(),
+            requireContext()
+        ).months.first()
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = selectedPeriod.start
+
+        val args = bundleOf(
+            Stuff.ARG_SELECTED_YEAR to cal[Calendar.YEAR],
+            Stuff.ARG_SELECTED_MONTH to cal[Calendar.MONTH],
+        )
+        findNavController().navigate(R.id.monthPickerFragment, args)
     }
 
     private fun showPeriodTypeSelector() {

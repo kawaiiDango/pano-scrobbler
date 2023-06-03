@@ -17,7 +17,7 @@ object ColorPatchUtils {
     const val secondaryDefault = "Deeporange"
 
     // before Activity.onCreate
-    fun setDarkMode(context: Context, proStatus: Boolean) {
+    fun setDarkMode(proStatus: Boolean) {
         val prefs = App.prefs
 
         var dayNightConstant = prefs.themeDayNight

@@ -338,10 +338,11 @@ class EditDialogFragment : LoginFragment() {
                 val matchedRegexEdits = mutableListOf<RegexEdit>()
                 val suggestedRegexReplacements = dao.performRegexReplace(
                     originalScrobbleData,
+                    null,
                     allPresets,
                     matchedRegexEdits
                 )
-                val replacementsInEdit = dao.performRegexReplace(scrobbleData, allPresets)
+                val replacementsInEdit = dao.performRegexReplace(scrobbleData, null, allPresets)
 
                 if (suggestedRegexReplacements.values.sum() > 0 && replacementsInEdit.values.sum() == 0) {
                     withContext(Dispatchers.Main) {

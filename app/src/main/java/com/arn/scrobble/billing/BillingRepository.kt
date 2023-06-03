@@ -67,8 +67,14 @@ class BillingRepository private constructor(private val application: Application
             }
 
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                Timber.tag(LOG_TAG).d("onBillingSetupFinished BILLING_UNAVAILABLE")
+                Timber.tag(LOG_TAG)
+                    .e(RuntimeException("BILLING_UNAVAILABLE " + billingResult.debugMessage))
                 //Some apps may choose to make decisions based on this knowledge.
+            }
+
+            BillingClient.BillingResponseCode.ERROR -> {
+                Timber.tag(LOG_TAG)
+                    .e(RuntimeException("BILLING_ERROR " + billingResult.debugMessage))
             }
 
             else -> {

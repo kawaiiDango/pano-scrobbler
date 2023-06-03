@@ -1,12 +1,11 @@
 package com.arn.scrobble.pref
 
 import android.app.NotificationManager
-import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.DrawerData
-import com.arn.scrobble.MetadataUtils
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.isChannelEnabled
 import com.arn.scrobble.charts.TimePeriod
@@ -25,12 +24,19 @@ import hu.autsoft.krate.kotlinx.kotlinxPref
 import hu.autsoft.krate.longPref
 import hu.autsoft.krate.stringPref
 import hu.autsoft.krate.stringSetPref
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class MainPrefs(context: Context) : Krate {
+class MainPrefs : Krate {
 
-    override val sharedPreferences = context.getHarmonySharedPreferences(NAME)
+    override val sharedPreferences = App.context.getHarmonySharedPreferences(NAME)
 
-    private val nm by lazy { ContextCompat.getSystemService(context, NotificationManager::class.java)!! }
+    private val nm by lazy {
+        ContextCompat.getSystemService(
+            App.context,
+            NotificationManager::class.java
+        )!!
+    }
 
     var scrobblerEnabled by booleanPref(PREF_MASTER).withDefault(true)
     var allowedPackages by stringSetPref(PREF_ALLOWED_PACKAGES).withDefault(setOf())
@@ -54,7 +60,6 @@ class MainPrefs(context: Context) : Krate {
     var scrobbleSpotifyRemote by booleanPref(PREF_SCROBBLE_SPOTIFY_REMOTE).withDefault(false)
     var allowedArtists by stringSetPref(PREF_ALLOWED_ARTISTS).withDefault(setOf())
     var submitNowPlaying by booleanPref(PREF_NOW_PLAYING).withDefault(true)
-    var fetchAlbumArtist by booleanPref(PREF_FETCH_AA).withDefault(false)
     var fetchAlbum by booleanPref(PREF_FETCH_ALBUM).withDefault(false)
     var searchInSource by booleanPref(PREF_SEARCH_IN_SOURCE).withDefault(false)
     var crashlyticsEnabled by booleanPref(PREF_CRASHLYTICS_ENABLED).withDefault(true)
@@ -133,7 +138,7 @@ class MainPrefs(context: Context) : Krate {
     var searchHistory by stringSetPref(PREF_ACTIVITY_SEARCH_HISTORY)
     var tagHistory by stringSetPref(PREF_ACTIVITY_TAG_HISTORY)
 
-    var notiLockscreen by booleanPref(PREF_LOCKSCREEN_NOTI).withDefault(false)
+    var notificationsOnLockscreen by booleanPref(PREF_LOCKSCREEN_NOTI).withDefault(false)
     var notiScrobbling by booleanPref(CHANNEL_NOTI_SCROBBLING).withDefault(true)
     var notiError by booleanPref(CHANNEL_NOTI_SCR_ERR).withDefault(true)
     var notiWeeklyDigests by booleanPref(CHANNEL_NOTI_DIGEST_WEEKLY).withDefault(true)
@@ -153,7 +158,7 @@ class MainPrefs(context: Context) : Krate {
     var checkForUpdates by booleanPref(PREF_CHECK_FOR_UPDATES)
     var prefVersion by intPref(PREF_VERSION).withDefault(0)
     var lastfmLinksEnabled by booleanPref(PREF_ENABLE_LASTFM_LINKS).withDefault(false)
-    var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(MetadataUtils.tagSpam)
+    var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(setOf())
     var pinnedFriendsJson by kotlinxPref<List<UserSerializable>>(PREF_ACTIVITY_PINNED_FRIENDS)
         .withDefault(emptyList())
     var touhouCircles by stringPref(PREF_TOUHOU_CIRCLES).withDefault("")
@@ -163,6 +168,79 @@ class MainPrefs(context: Context) : Krate {
     var spotifyAccessTokenExpires by longPref(PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES).withDefault(-1)
 
     var songSearchUrl by stringPref(PREF_ACTIVITY_SONG_SEARCH_URL).withDefault("https://www.youtube.com/results?search_query=\$artist+\$title")
+
+
+    // Make all the fields optional
+    @Serializable
+    data class MainPrefsPublic(
+        @SerialName(PREF_MASTER)
+        val scrobblerEnabled: Boolean = App.prefs.scrobblerEnabled,
+        @SerialName(PREF_DELAY_SECS)
+        val delaySecs: Int = App.prefs.delaySecs,
+        @SerialName(PREF_DELAY_PER)
+        val delayPercent: Int = App.prefs.delayPercent,
+        @SerialName(PREF_NOW_PLAYING)
+        val submitNowPlaying: Boolean = App.prefs.submitNowPlaying,
+        @SerialName(PREF_FETCH_ALBUM)
+        val fetchAlbum: Boolean = App.prefs.fetchAlbum,
+        @SerialName(PREF_LOCALE)
+        val locale: String? = App.prefs.locale,
+        @SerialName(PREF_AUTO_DETECT)
+        val autoDetectApps: Boolean = App.prefs.autoDetectApps,
+        @SerialName(PREF_SHOW_RECENTS_ALBUM)
+        val showAlbumInRecents: Boolean = App.prefs.showAlbumInRecents,
+        @SerialName(PREF_SHOW_SCROBBLE_SOURCES)
+        val showScrobbleSources: Boolean = App.prefs.showScrobbleSources,
+        @SerialName(PREF_LOCKSCREEN_NOTI)
+        val notificationsOnLockscreen: Boolean = App.prefs.notificationsOnLockscreen,
+        @SerialName(PREF_THEME_PRIMARY)
+        val themePrimary: String = App.prefs.themePrimary,
+        @SerialName(PREF_THEME_SECONDARY)
+        val themeSecondary: String = App.prefs.themeSecondary,
+        @SerialName(PREF_THEME_RANDOM)
+        val themeRandom: Boolean = App.prefs.themeRandom,
+        @SerialName(PREF_THEME_DAY_NIGHT)
+        val themeDayNight: Int = App.prefs.themeDayNight,
+        @SerialName(PREF_THEME_TINT_BG)
+        val themeTintBackground: Boolean = App.prefs.themeTintBackground,
+        @SerialName(PREF_THEME_DYNAMIC)
+        val themeDynamic: Boolean = App.prefs.themeDynamic,
+        @SerialName(PREF_SEARCH_IN_SOURCE)
+        val searchInSource: Boolean = App.prefs.searchInSource,
+        @SerialName(PREF_SCROBBLE_SPOTIFY_REMOTE)
+        val scrobbleSpotifyRemote: Boolean = App.prefs.scrobbleSpotifyRemote,
+        @SerialName(PREF_FIRST_DAY_OF_WEEK)
+        val firstDayOfWeek: Int = App.prefs.firstDayOfWeek,
+        @SerialName(PREF_ALLOWED_PACKAGES)
+        val allowedPackages: Set<String> = App.prefs.allowedPackages,
+        @SerialName(PREF_BLOCKED_PACKAGES)
+        val blockedPackages: Set<String> = App.prefs.blockedPackages,
+    )
+
+    fun fromMainPrefsPublic(settings: MainPrefsPublic) {
+        scrobblerEnabled = settings.scrobblerEnabled
+        _delaySecs = settings.delaySecs
+        _delayPercent = settings.delayPercent
+        submitNowPlaying = settings.submitNowPlaying
+        fetchAlbum = settings.fetchAlbum
+        locale = settings.locale
+        _autoDetectApps = settings.autoDetectApps
+        showAlbumInRecents = settings.showAlbumInRecents
+        showScrobbleSources = settings.showScrobbleSources
+        notificationsOnLockscreen = settings.notificationsOnLockscreen
+        themePrimary = settings.themePrimary
+        themeSecondary = settings.themeSecondary
+        themeRandom = settings.themeRandom
+        themeDayNight = settings.themeDayNight
+        themeTintBackground = settings.themeTintBackground
+        themeDynamic = settings.themeDynamic
+        searchInSource = settings.searchInSource
+        scrobbleSpotifyRemote = settings.scrobbleSpotifyRemote
+        firstDayOfWeek = settings.firstDayOfWeek
+        allowedPackages = settings.allowedPackages
+        blockedPackages = settings.blockedPackages
+
+    }
 
     companion object {
         const val NAME = "main"
@@ -201,13 +279,11 @@ class MainPrefs(context: Context) : Krate {
         const val PREF_IMPORT = "import"
         const val PREF_EXPORT = "export"
         const val PREF_INTENTS = "intents"
-        const val PREF_FETCH_AA = "fetch_album_artist"
         const val PREF_FETCH_ALBUM = "fetch_album"
         const val PREF_SHOW_SCROBBLE_SOURCES = "show_scrobble_sources"
         const val PREF_SHOW_RECENTS_ALBUM = "show_album"
         const val PREF_THEME_PRIMARY = "theme_primary"
         const val PREF_THEME_SECONDARY = "theme_secondary"
-        const val PREF_THEME_BACKGROUND = "theme_background"
         const val PREF_THEME_RANDOM = "theme_random"
         const val PREF_THEME_TINT_BG = "theme_tint_bg"
         const val PREF_THEME_DYNAMIC = "theme_dynamic"

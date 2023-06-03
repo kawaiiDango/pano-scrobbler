@@ -1,6 +1,5 @@
 package com.arn.scrobble.recents
 
-import android.content.Intent
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
@@ -24,8 +23,6 @@ import com.arn.scrobble.databinding.ListItemRecentsBinding
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingLove
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.pending.PendingScrJob
-import com.arn.scrobble.pending.PendingScrService
 import com.arn.scrobble.pending.VHPendingLove
 import com.arn.scrobble.pending.VHPendingScrobble
 import com.arn.scrobble.ui.EndlessRecyclerViewScrollListener
@@ -68,7 +65,6 @@ class ScrobblesAdapter(
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
     var isShowingAlbums = false
     var isShowingPlayers = false
-    private var pendingSubmitAttempted = false
     private var lastPopulateTime = System.currentTimeMillis()
     private val playerDao = PanoDb.db.getScrobbleSourcesDao()
     private val prefs = App.prefs
@@ -145,7 +141,6 @@ class ScrobblesAdapter(
                 list,
                 Section.PENDING_SCROBBLES.ordinal,
                 header = ExpandableHeader(
-                    App.context,
                     R.drawable.vd_hourglass,
                     R.string.scrobbles,
                     maxCollapsedItems = 2
@@ -171,7 +166,6 @@ class ScrobblesAdapter(
                 list,
                 Section.PENDING_LOVES.ordinal,
                 header = ExpandableHeader(
-                    App.context,
                     R.drawable.vd_hourglass,
                     R.string.loved,
                     maxCollapsedItems = 2
@@ -182,19 +176,6 @@ class ScrobblesAdapter(
         if (notify)
             notify(oldVirtualList)
 
-    }
-
-    private fun submitPendingIfNeeded() {
-        if (!pendingSubmitAttempted && (
-                    viewModel.pendingScrobblesLd.value?.isNotEmpty() == true ||
-                            viewModel.pendingLovesLd.value?.isNotEmpty() == true
-                    )
-            && Stuff.isOnline && !PendingScrService.mightBeRunning && !PendingScrJob.mightBeRunning
-        ) {
-            pendingSubmitAttempted = true
-            val intent = Intent(App.context, PendingScrService::class.java)
-            ContextCompat.startForegroundService(App.context, intent)
-        }
     }
 
     fun removeTrack(track: Track) {
@@ -286,7 +267,6 @@ class ScrobblesAdapter(
         notify(oldVirtualList, prevSelectedItem)
 
         lastPopulateTime = System.currentTimeMillis()
-        submitPendingIfNeeded()
     }
 
     private fun notify(oldVirtualList: SectionedVirtualList, prevSelectedItem: Any? = null) {
@@ -515,9 +495,12 @@ class ScrobblesAdapter(
                             listSize,
                             listSize
                         )
-                binding.headerOverflowButton.isVisible =  true
+                binding.headerOverflowButton.isVisible = true
                 binding.headerOverflowButton.setOnClickListener {
-                    val popupMenu = PopupMenu(binding.headerOverflowButton.context, binding.headerOverflowButton)
+                    val popupMenu = PopupMenu(
+                        binding.headerOverflowButton.context,
+                        binding.headerOverflowButton
+                    )
                     popupMenu.inflate(R.menu.delete_all_menu)
                     popupMenu.setOnMenuItemClickListener {
                         if (it.itemId == R.id.delete_all_confirm) {
@@ -527,7 +510,7 @@ class ScrobblesAdapter(
                             }
                             true
                         } else
-                        false
+                            false
                     }
                     popupMenu.showWithIcons()
                 }

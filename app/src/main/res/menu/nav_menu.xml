@@ -27,9 +27,9 @@
             android:icon="@drawable/vd_settings"
             android:title="@string/settings"/>
         <item
-            android:id="@+id/nav_report"
-            android:icon="@drawable/vd_bug"
-            android:title="@string/bug_report"/>
+            android:id="@+id/nav_help"
+            android:icon="@drawable/vd_help"
+            android:title="@string/help"/>
     </group>
 
 </menu>

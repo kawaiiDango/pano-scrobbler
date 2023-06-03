@@ -23,21 +23,12 @@ import com.arn.scrobble.App
         CachedAlbum::class,
         CachedArtist::class,
     ],
-    version = 12,
+    version = 13,
     autoMigrations = [
-        AutoMigration(
-            from = 9,
-            to = 10,
-        ),
-        AutoMigration(
-            from = 10,
-            to = 11,
-            spec = Spec_10_11::class
-        ),
-        AutoMigration(
-            from = 11,
-            to = 12,
-        ),
+        AutoMigration(from = 9, to = 10),
+        AutoMigration(from = 10, to = 11, spec = Spec_10_11::class),
+        AutoMigration(from = 11, to = 12),
+        AutoMigration(from = 12, to = 13),
     ],
 )
 abstract class PanoDb : RoomDatabase() {
@@ -57,13 +48,14 @@ abstract class PanoDb : RoomDatabase() {
         @Volatile
         private var INSTANCE: PanoDb? = null
 
-        val db get(): PanoDb = INSTANCE ?: synchronized(this) {
-            Room.databaseBuilder(App.context, PanoDb::class.java, fileName)
-                .addMigrations(*ManualMigrations.all)
-                .enableMultiInstanceInvalidation()
-                .build()
-                .also { INSTANCE = it }
-        }
+        val db
+            get(): PanoDb = INSTANCE ?: synchronized(this) {
+                Room.databaseBuilder(App.context, PanoDb::class.java, fileName)
+                    .addMigrations(*ManualMigrations.all)
+                    .enableMultiInstanceInvalidation()
+                    .build()
+                    .also { INSTANCE = it }
+            }
 
         fun destroyInstance() {
             if (INSTANCE?.isOpen == true)

@@ -438,7 +438,7 @@ class NLService : NotificationListenerService() {
 
 
     private fun buildNotification(): NotificationCompat.Builder {
-        val visibility = if (prefs.notiLockscreen)
+        val visibility = if (prefs.notificationsOnLockscreen)
             NotificationCompat.VISIBILITY_PUBLIC
         else
             NotificationCompat.VISIBILITY_SECRET
@@ -761,15 +761,6 @@ class NLService : NotificationListenerService() {
     }
 
     private var notiIconBitmap: Bitmap? = null
-
-    private fun NotificationCompat.Builder.setSubtextCompat(state: String): NotificationCompat.Builder {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            setSubText(state)
-        } else {
-            setContentInfo(state)
-        }
-        return this
-    }
 
     private fun NotificationCompat.Builder.setStyleCompat(style: NotificationCompat.Style): NotificationCompat.Builder {
         if (!(Stuff.isWindows11 && style is MediaStyleMod))
@@ -1121,8 +1112,6 @@ class NLService : NotificationListenerService() {
         const val iUNLOVE = "com.arn.scrobble.UNLOVE"
         const val iBLOCKLIST = "com.arn.scrobble.BLOCKLIST"
         const val iALLOWLIST = "com.arn.scrobble.ALLOWLIST"
-        const val iDIGEST_WEEKLY = "com.arn.scrobble.DIGEST_WEEKLY"
-        const val iDIGEST_MONTHLY = "com.arn.scrobble.DIGEST_MONTHLY"
         const val iSCROBBLER_ON = "com.arn.scrobble.SCROBBLER_ON"
         const val iSCROBBLER_OFF = "com.arn.scrobble.SCROBBLER_OFF"
 

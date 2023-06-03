@@ -26,7 +26,7 @@ android {
     if (versionFile.canRead()) {
         verCode = versionFile.readText().toInt()
         for (task in gradle.startParameter.taskNames) {
-            if (task.contains("publishReleaseBundle") || task.contains("publish")) {
+            if (task.contains("publish")) {
                 verCode++
                 versionFile.writeText(verCode.toString())
                 break
@@ -135,22 +135,23 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha09")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha10")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.6.0-rc01")
-    implementation("androidx.navigation:navigation-ui-ktx:2.6.0-rc01")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.0-alpha01")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.0-alpha01")
     implementation("androidx.core:core-remoteviews:1.0.0-beta04")
     ksp("androidx.room:room-compiler:2.5.1")
     implementation("androidx.room:room-runtime:2.5.1")
-    implementation("com.android.billingclient:billing:5.2.0")
+    implementation("com.android.billingclient:billing:6.0.0")
     implementation("com.google.android.play:review:2.0.1")
     implementation("com.google.android.play:review-ktx:2.0.1")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
+    implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -165,13 +166,13 @@ dependencies {
     implementation("com.github.hadilq:live-event:1.3.0")
     implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation("com.telefonica:nestedscrollwebview:0.1.2")
+    implementation("com.telefonica:nestedscrollwebview:0.1.4")
 
-    implementation("io.coil-kt:coil-bom:2.3.0")
+    implementation("io.coil-kt:coil-bom:2.4.0")
     implementation("io.coil-kt:coil")
     implementation("io.coil-kt:coil-gif")
 
-    implementation(platform("io.ktor:ktor-bom:2.3.0"))
+    implementation(platform("io.ktor:ktor-bom:2.3.1"))
     implementation("io.ktor:ktor-client-core")
     implementation("io.ktor:ktor-client-okhttp")
     implementation("io.ktor:ktor-client-android")

@@ -16,5 +16,5 @@
         android:id="@+id/menu_share"
         app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_share"
-        android:title="@string/share_this_song"/>
+        android:title="@string/share"/>
 </menu>

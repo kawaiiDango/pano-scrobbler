@@ -29,7 +29,7 @@ object MetadataUtils {
     private val artistSpam = arrayOf("va")
 
     // in lowercase
-    val tagSpam = setOf("geohash", "all", "seen live", "i have seen live",)
+//    val tagSpam = setOf("geohash", "all", "seen live", "i have seen live",)
 
 
     fun parseArtistTitle(titleContentOriginal: String): Array<String> {

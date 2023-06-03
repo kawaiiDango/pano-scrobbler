@@ -187,16 +187,16 @@
         tools:layout="@layout/content_regex_edit">
         <action
             android:id="@+id/action_regexEditsFragment_to_regexEditsAddDialogFragment"
-            app:destination="@id/regexEditsAddDialogFragment" />
+            app:destination="@id/regexEditsAddFragment" />
         <action
             android:id="@+id/action_regexEditsFragment_to_regexEditsTestDialogFragment"
             app:destination="@id/regexEditsTestDialogFragment" />
     </fragment>
-    <dialog
-        android:id="@+id/regexEditsAddDialogFragment"
-        android:name="com.arn.scrobble.edits.RegexEditsAddDialogFragment"
-        android:label="@string/pref_regex_edits"
-        tools:layout="@layout/dialog_regex_edit" />
+    <fragment
+        android:id="@+id/regexEditsAddFragment"
+        android:name="com.arn.scrobble.edits.RegexEditsAddFragment"
+        android:label="@string/edit"
+        tools:layout="@layout/content_regex_edit_add" />
     <dialog
         android:id="@+id/userTagsFragment"
         android:name="com.arn.scrobble.info.UserTagsFragment"

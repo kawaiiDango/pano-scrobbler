@@ -689,14 +689,14 @@ class PrefFragment : PreferenceFragmentCompat() {
             .setTitle(R.string.import_options)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 val editsModeMap = mapOf(
-                    R.id.import_edits_nope to Stuff.EDITS_NOPE,
-                    R.id.import_edits_replace_all to Stuff.EDITS_REPLACE_ALL,
-                    R.id.import_edits_replace_existing to Stuff.EDITS_REPLACE_EXISTING,
-                    R.id.import_edits_keep to Stuff.EDITS_KEEP_EXISTING
+                    R.id.import_edits_nope to ImExporter.EditsMode.EDITS_NOPE,
+                    R.id.import_edits_replace_all to ImExporter.EditsMode.EDITS_REPLACE_ALL,
+                    R.id.import_edits_replace_existing to ImExporter.EditsMode.EDITS_REPLACE_EXISTING,
+                    R.id.import_edits_keep to ImExporter.EditsMode.EDITS_KEEP_EXISTING
                 )
                 val editsMode = editsModeMap[binding.importRadioGroup.checkedRadioButtonId]!!
                 val settingsMode = binding.importSettings.isChecked
-                if (editsMode == Stuff.EDITS_NOPE && !settingsMode)
+                if (editsMode == ImExporter.EditsMode.EDITS_NOPE && !settingsMode)
                     return@setPositiveButton
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     val imported = ImExporter().use {

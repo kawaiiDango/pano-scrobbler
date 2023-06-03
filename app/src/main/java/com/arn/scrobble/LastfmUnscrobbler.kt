@@ -22,7 +22,7 @@ import okio.Buffer
 import org.json.JSONObject
 
 
-class LastfmUnscrobbler() {
+class LastfmUnscrobbler {
 
     private val client by lazy {
         LFMRequester.okHttpClient.newBuilder()

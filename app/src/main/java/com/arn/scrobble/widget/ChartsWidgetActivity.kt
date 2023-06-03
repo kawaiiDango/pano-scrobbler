@@ -124,7 +124,7 @@ class ChartsWidgetActivity : AppCompatActivity() {
             ChartsListUtils.updateWidget(intArrayOf(appWidgetId))
 
             if (widgetExists)
-                ChartsWidgetUpdaterJob.checkAndSchedule(applicationContext, true)
+                ChartsWidgetUpdaterWorker.checkAndSchedule(applicationContext, true)
 
             finish()
         }

@@ -6,6 +6,7 @@
         android:id="@+id/menu_hidden_tags"
         android:icon="@drawable/vd_ban"
         android:title="@string/hidden_tags"
+        android:visible="false"
         app:iconTint="?colorPrimary"
         app:showAsAction="always" />
     <item

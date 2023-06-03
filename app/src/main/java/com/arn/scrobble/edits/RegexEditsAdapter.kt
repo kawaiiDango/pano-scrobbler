@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.arn.scrobble.NLService
 import com.arn.scrobble.R
@@ -84,17 +85,20 @@ class RegexEditsAdapter(
 
             val modifiersSet = (e.fields ?: emptySet()).toMutableSet()
 
-            if (e.caseSensitive) {
+            if (e.extractionPatterns != null)
+                modifiersSet.add("ex")
+
+            if (!e.packages.isNullOrEmpty())
+                modifiersSet.add(RegexEdit::packages.name)
+
+            if (e.caseSensitive)
                 modifiersSet.add("Aa")
-            }
 
-            if (e.continueMatching) {
-                modifiersSet.add(RegexEdit::continueMatching.name)
-            }
-
-            if (e.replaceAll) {
+            if (e.replaceAll)
                 modifiersSet.add("all")
-            }
+
+            if (e.continueMatching)
+                modifiersSet.add(RegexEdit::continueMatching.name)
 
             binding.editModifiers.text = createImageSpans(modifiersSet.joinToString())
 
@@ -122,6 +126,7 @@ class RegexEditsAdapter(
                     NLService.B_ALBUM_ARTIST -> R.drawable.vd_album_artist
                     NLService.B_ARTIST -> R.drawable.vd_mic
                     RegexEdit::continueMatching.name -> R.drawable.vd_arrow_right
+                    RegexEdit::packages.name -> R.drawable.vd_apps
                     else -> null
                 }
 
@@ -131,6 +136,7 @@ class RegexEditsAdapter(
                     NLService.B_ALBUM_ARTIST -> itemView.context.getString(R.string.album_artist)
                     NLService.B_ARTIST -> itemView.context.getString(R.string.artist)
                     RegexEdit::continueMatching.name -> itemView.context.getString(R.string.edit_continue)
+                    RegexEdit::packages.name -> itemView.context.getString(R.string.apps)
                     else -> null
                 }
 
@@ -138,18 +144,22 @@ class RegexEditsAdapter(
                     val start = positions[index] + 1
                     val end = start + token.length
 
+                    val drawable =
+                        AppCompatResources.getDrawable(itemView.context, imgRes)!!.apply {
+                            setTint(
+                                MaterialColors.getColor(
+                                    itemView,
+                                    com.google.android.material.R.attr.colorPrimary,
+                                )
+                            )
+                            setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+                        }
+
                     spannable.setSpan(
-                        ImageSpan(itemView.context, imgRes).apply {
+                        ImageSpan(drawable).apply {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                 contentDescription = contentDesc
                             }
-                            drawable.setTint(
-                                MaterialColors.getColor(
-                                    itemView.context,
-                                    com.google.android.material.R.attr.colorPrimary,
-                                    null
-                                )
-                            )
                         },
                         start,
                         end,

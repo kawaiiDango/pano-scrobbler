@@ -120,8 +120,8 @@ open class InfoExtraFullFragment : Fragment(), MusicEntryItemClickListener {
             adapter.populate()
         }
 
-        optionsMenuViewModel.menuEvent.observe(viewLifecycleOwner) {
-            optionsMenuSelected(it)
+        optionsMenuViewModel.menuEvent.observe(viewLifecycleOwner) {(_, menuItemId) ->
+            optionsMenuSelected(menuItemId)
         }
 
         if (viewModel.chartsData.isNotEmpty())

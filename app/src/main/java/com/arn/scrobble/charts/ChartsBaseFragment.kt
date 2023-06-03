@@ -186,11 +186,11 @@ open class ChartsBaseFragment : ChartsPeriodFragment() {
         if (viewModel.chartsData.isNotEmpty())
             adapter.populate()
 
-        optionsMenuViewModel.menuEvent.observe(viewLifecycleOwner) {
+        optionsMenuViewModel.menuEvent.observe(viewLifecycleOwner) {(_, menuItemId) ->
             if (!isResumed)
                 return@observe
 
-            optionsMenuSelected(it)
+            optionsMenuSelected(menuItemId)
         }
 
         updateTitle()

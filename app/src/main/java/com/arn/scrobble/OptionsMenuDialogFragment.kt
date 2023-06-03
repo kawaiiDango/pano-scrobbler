@@ -26,6 +26,10 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
     private var _binding: ContentOptionsMenuBinding? = null
     private val binding
         get() = _binding!!
+    private val dontDismissForTheseIds = setOf(
+        R.id.nav_help,
+    )
+    private var selectedMenuItemId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,8 +65,12 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
         }
 
         binding.optionsMenuNav.setNavigationItemSelectedListener { menuItem ->
-            dismiss()
-            optionsMenuViewModel.menuEvent.value = menuItem.itemId
+            selectedMenuItemId = menuItem.itemId
+            if (menuItem.itemId !in dontDismissForTheseIds)
+                dismiss()
+            else
+                optionsMenuViewModel.menuEvent.value = binding.optionsMenuNav to selectedMenuItemId!!
+
             true
         }
 
@@ -72,6 +80,15 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
     override fun onStart() {
         super.onStart()
         expandIfNeeded()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // if the new destination is a BottomSheetDialogFragment, both get dismissed otherwise
+        selectedMenuItemId?.let {
+            optionsMenuViewModel.menuEvent.value = binding.optionsMenuNav to it
+        }
+        _binding = null
     }
 }
 

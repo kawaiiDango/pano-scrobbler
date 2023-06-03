@@ -143,10 +143,12 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
                 entry = Track(track, null, artist)
                 icon = R.drawable.vd_note
             }
+
             album != null -> {
                 entry = Album(album, null, artist)
                 icon = R.drawable.vd_album
             }
+
             else -> {
                 entry = Artist(artist, null)
                 icon = R.drawable.vd_mic

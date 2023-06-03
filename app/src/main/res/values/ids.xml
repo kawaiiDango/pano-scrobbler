@@ -8,4 +8,5 @@
     <item type="id" name="hero_track" />
     <item type="id" name="img_url" />
     <item type="id" name="inited" />
+    <item type="id" name="raw_text" />
 </resources>

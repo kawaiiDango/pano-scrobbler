@@ -138,7 +138,7 @@ class ThemesFragment : Fragment() {
                     findNavController().popBackStack()
 
                     if (prefs.themeDayNight != prevDayNightId)
-                        ColorPatchUtils.setDarkMode(requireContext(), true) // recreates
+                        ColorPatchUtils.setDarkMode(true) // recreates
                     else
                         requireActivity().recreate()
                 } else {

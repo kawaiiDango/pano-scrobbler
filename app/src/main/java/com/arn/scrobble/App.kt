@@ -60,7 +60,7 @@ class App : Application(), ImageLoaderFactory {
             prefs.lastfmLinksEnabled = true
         }
 
-        ColorPatchUtils.setDarkMode(this, prefs.proStatus)
+        ColorPatchUtils.setDarkMode(prefs.proStatus)
 
         val colorsOptions = DynamicColorsOptions.Builder()
             .setThemeOverlay(R.style.AppTheme_Dynamic_Overlay)
@@ -182,6 +182,6 @@ class App : Application(), ImageLoaderFactory {
     companion object {
         // not a leak
         lateinit var context: Context
-        val prefs by lazy { MainPrefs(context) }
+        val prefs by lazy { MainPrefs() }
     }
 }

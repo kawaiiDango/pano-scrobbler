@@ -7,15 +7,15 @@
     android:padding="16dp">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/info_type"
@@ -23,8 +23,8 @@
                 android:layout_height="20sp"
                 android:layout_marginEnd="10dp"
                 android:contentDescription="@string/tag"
-                app:tint="?colorPrimary"
-                app:srcCompat="@drawable/vd_tag" />
+                app:srcCompat="@drawable/vd_tag"
+                app:tint="?colorPrimary" />
 
             <TextView
                 android:id="@+id/tag_info_title"
@@ -46,126 +46,121 @@
                 app:iconTint="?colorSecondary" />
         </LinearLayout>
 
-        <FrameLayout
+        <LinearLayout
+            android:id="@+id/tag_info_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layoutAnimation="@anim/layout_animation_slide_up"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
-                android:id="@+id/tag_info_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layoutAnimation="@anim/layout_animation_slide_up"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/list_item_padding">
+
+                    <TextView
+                        android:id="@+id/tag_info_taggers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        android:textSize="18sp"
+                        tools:text="1" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/taggers"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/list_item_padding">
+
+                    <TextView
+                        android:id="@+id/tag_info_taggings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        android:textSize="18sp"
+                        tools:text="1" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/taggings"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tag_info_wiki_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:addStatesFromChildren="true"
+                android:background="@drawable/selector_border_gentle"
+                android:orientation="horizontal"
+                android:padding="@dimen/list_item_padding"
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tag_info_wiki"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:baselineAligned="false">
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:autoLink="web"
+                    android:ellipsize="end"
+                    android:maxLines="4"
+                    android:scrollbars="none"
+                    tools:text="wiki" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:padding="@dimen/list_item_padding"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/tag_info_taggers"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?textAppearanceTitleMedium"
-                            android:textSize="18sp"
-                            tools:text="1" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/taggers"
-                            android:textAlignment="center" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:padding="@dimen/list_item_padding"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/tag_info_taggings"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?textAppearanceTitleMedium"
-                            android:textSize="18sp"
-                            tools:text="1" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/taggings"
-                            android:textAlignment="center" />
-
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tag_info_wiki_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:visibility="gone"
-                    android:padding="@dimen/list_item_padding"
-                    android:background="@drawable/selector_border_gentle"
-                    android:addStatesFromChildren="true"
-                    tools:visibility="visible"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tag_info_wiki"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_weight="1"
-                        android:autoLink="web"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        tools:text="wiki"
-                        android:scrollbars="none" />
-
-                    <ImageView
-                        android:id="@+id/tag_info_wiki_expand"
-                        android:layout_width="40dp"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/expand"
-                        android:scaleType="center"
-                        android:visibility="invisible"
-                        app:srcCompat="@drawable/vd_arrow_down"
-                        tools:visibility="visible" />
-                </LinearLayout>
-                <!--
-                                <TextView
-                                    android:id="@+id/tag_info_similar_title"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="10dp"
-                                    android:text="@string/similar_tags"
-                                    android:textAppearance="?textAppearanceBodyLarge"
-                                    android:textColor="?colorPrimary"
-                                    android:visibility="gone"
-                                    tools:visibility="visible" />
-
-                                <com.google.android.material.chip.ChipGroup
-                                    android:id="@+id/tag_info_tags"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content" />
-                -->
+                <ImageView
+                    android:id="@+id/tag_info_wiki_expand"
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/expand"
+                    android:scaleType="center"
+                    android:visibility="invisible"
+                    app:srcCompat="@drawable/vd_arrow_down"
+                    tools:visibility="visible" />
             </LinearLayout>
-        </FrameLayout>
+            <!--
+                            <TextView
+                                android:id="@+id/tag_info_similar_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:text="@string/similar_tags"
+                                android:textAppearance="?textAppearanceBodyLarge"
+                                android:textColor="?colorPrimary"
+                                android:visibility="gone"
+                                tools:visibility="visible" />
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/tag_info_tags"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+            -->
+        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

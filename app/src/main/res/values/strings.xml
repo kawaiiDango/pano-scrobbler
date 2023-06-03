@@ -434,7 +434,7 @@
         comment="All occurrences of a pattern"
         >All</string>
     <string name="edit_extract"
-        comment="To extract sub text from a larger text, used in pattern edits"
+        comment="To extract sub text from a larger text, in short, used in pattern edits"
         >Extract</string>
     <string name="edit_extract_desc"
         comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups"

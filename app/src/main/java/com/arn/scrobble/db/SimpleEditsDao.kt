@@ -1,7 +1,11 @@
 package com.arn.scrobble.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import de.umass.lastfm.scrobble.ScrobbleData
 
 
@@ -41,16 +45,22 @@ interface SimpleEditsDao {
     companion object {
         const val tableName = "simpleEdits"
 
-        fun SimpleEditsDao.performEdit(scrobbleData: ScrobbleData, allowBlankAlbumArtist: Boolean = true): SimpleEdit? {
+        fun SimpleEditsDao.performEdit(
+            scrobbleData: ScrobbleData,
+            allowBlankAlbumArtist: Boolean = true
+        ): SimpleEdit? {
             val artist = scrobbleData.artist
             val album = scrobbleData.album
             val track = scrobbleData.track
 
             val hash = if (artist == "" && track != "")
-                track.hashCode().toString() + album.hashCode().toString() + artist.hashCode().toString()
+                track.hashCode().toString() + album.hashCode().toString() + artist.hashCode()
+                    .toString()
             else
-                artist.hashCode().toString() + album.hashCode().toString() + track.hashCode().toString()
-            val edit = findByNamesOrHash(artist.lowercase(), album.lowercase(), track.lowercase(), hash)
+                artist.hashCode().toString() + album.hashCode().toString() + track.hashCode()
+                    .toString()
+            val edit =
+                findByNamesOrHash(artist.lowercase(), album.lowercase(), track.lowercase(), hash)
             if (edit != null) {
                 scrobbleData.artist = edit.artist
                 scrobbleData.album = edit.album
@@ -62,10 +72,12 @@ interface SimpleEditsDao {
         }
 
         fun SimpleEditsDao.insertReplaceLowerCase(e: SimpleEdit) {
-            e.origArtist = e.origArtist.lowercase()
-            e.origAlbum = e.origAlbum.lowercase()
-            e.origTrack = e.origTrack.lowercase()
-            insert(listOf(e))
+            val edit = e.copy(
+                origArtist = e.origArtist.lowercase(),
+                origAlbum = e.origAlbum.lowercase(),
+                origTrack = e.origTrack.lowercase(),
+            )
+            insert(listOf(edit))
         }
 
     }

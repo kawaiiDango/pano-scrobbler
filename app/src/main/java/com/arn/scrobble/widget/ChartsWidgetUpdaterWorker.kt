@@ -1,21 +1,23 @@
 package com.arn.scrobble.widget
 
-import android.app.job.JobInfo
-import android.app.job.JobParameters
-import android.app.job.JobScheduler
-import android.app.job.JobService
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
-import android.os.Build
-import androidx.core.content.ContextCompat
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.ForceLogException
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.mapConcurrently
-import com.arn.scrobble.Stuff.scheduleExpeditedCompat
 import com.arn.scrobble.Stuff.setMidnight
 import com.arn.scrobble.Stuff.setUserFirstDayOfWeek
 import com.arn.scrobble.charts.TimePeriod
@@ -30,60 +32,54 @@ import de.umass.lastfm.PaginatedResult
 import de.umass.lastfm.Period
 import de.umass.lastfm.Track
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import timber.log.Timber
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.DateFormat
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 
-class ChartsWidgetUpdaterJob : JobService() {
-
+class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParameters) :
+    CoroutineWorker(appContext, workerParams) {
     private lateinit var job: Job
     private val widgetPrefs by lazy { WidgetPrefs(applicationContext) }
 
-    override fun onStartJob(jp: JobParameters): Boolean {
-
+    // runs in Dispatchers.DEFAULT
+    override suspend fun doWork(): Result {
         logTimestampToFile("started")
 
         job = SupervisorJob()
 
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
 
-        val widgetTimePeriods = WidgetTimePeriods(this)
+        val widgetTimePeriods = WidgetTimePeriods(applicationContext)
 
         val appWidgetIdToPeriodStr = mutableMapOf<Int, String>()
         val appWidgetIds =
-            appWidgetManager.getAppWidgetIds(ComponentName(this, ChartsWidgetProvider::class.java))
+            appWidgetManager.getAppWidgetIds(
+                ComponentName(
+                    applicationContext,
+                    ChartsWidgetProvider::class.java
+                )
+            )
         var errored = false
-
-        // expedited job scheduled, don't run the periodic job
-        if (jp.jobId == JOB_ID_PERIODIC &&
-            ContextCompat.getSystemService(
-                this,
-                JobScheduler::class.java
-            )!!.allPendingJobs.any { it.id == ONE_SHOT_JOB_ID }
-        )
-            return false
 
         // don't run if the user has not checked the device recently or it already ran recently
         val lastInteractiveTime = App.prefs.lastInteractiveTime
-        if (jp.jobId == JOB_ID_PERIODIC &&
-            (appWidgetIds.isEmpty() ||
+        if ((appWidgetIds.isEmpty() ||
                     System.currentTimeMillis() - (widgetPrefs[appWidgetIds.first()].lastUpdated
                 ?: 0) < Stuff.CHARTS_WIDGET_REFRESH_INTERVAL / 2 ||
                     lastInteractiveTime == null ||
                     System.currentTimeMillis() - lastInteractiveTime > Stuff.CHARTS_WIDGET_REFRESH_INTERVAL * 2)
         ) {
             logTimestampToFile("skipped")
-            return false
+            return Result.failure()
         }
 
         appWidgetIds.forEach { id ->
@@ -99,12 +95,11 @@ class ChartsWidgetUpdaterJob : JobService() {
 
         val exHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
             throwable.printStackTrace()
-            logTimestampToFile("errored")
+            logTimestampToFile("errored "+ throwable.message)
             errored = true
-            jobFinished(jp, false)
         }
 
-        CoroutineScope(Dispatchers.IO + job).launch(exHandler) {
+        withContext(Dispatchers.IO + exHandler) {
             // support a max of 3 widgets at a time
             appWidgetIdToPeriodStr.values.toSet().take(3).mapConcurrently(3) { periodStr ->
                 val timePeriod = widgetTimePeriods.periodsMap[periodStr]
@@ -189,16 +184,18 @@ class ChartsWidgetUpdaterJob : JobService() {
             ChartsListUtils.updateWidget(appWidgetIdToPeriodStr.keys.toIntArray())
 
             logTimestampToFile("finished")
-
-            jobFinished(jp, false)
         }
-        return true
+
+        return if (errored)
+            Result.failure()
+        else
+            Result.success()
     }
 
     private fun logTimestampToFile(event: String) {
         if (!BuildConfig.DEBUG) return
 
-        val file = File(filesDir, "timestamps.txt")
+        val file = File(applicationContext.filesDir, "timestamps.txt")
         if (!file.exists()) {
             file.createNewFile()
         }
@@ -209,59 +206,49 @@ class ChartsWidgetUpdaterJob : JobService() {
         )
     }
 
-    override fun onStopJob(params: JobParameters): Boolean {
-        val reason = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) params.stopReason else ""
-        if (BuildConfig.DEBUG)
-            Timber.tag(Stuff.TAG)
-                .e(ForceLogException("${ChartsWidgetUpdaterJob::class.simpleName} force stopped $reason"))
-        logTimestampToFile("stopped $reason")
-        job.cancel()
-        return true
-    }
-
     companion object {
-        private const val JOB_ID_PERIODIC = 11
-        private const val ONE_SHOT_JOB_ID = 12
+
+        const val NAME_ONE_TIME = "charts_widget_updater_one_time"
+        const val NAME_PERIODIC = "charts_widget_updater_periodic"
 
         fun checkAndSchedule(context: Context, runImmediately: Boolean) {
-            val js = ContextCompat.getSystemService(context, JobScheduler::class.java)!!
-            val jobs = js.allPendingJobs
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
 
             if (runImmediately) {
-                JobInfo.Builder(
-                    ONE_SHOT_JOB_ID,
-                    ComponentName(context, ChartsWidgetUpdaterJob::class.java)
-                )
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .scheduleExpeditedCompat(js) {
-                        setMinimumLatency(1)
-                        setOverrideDeadline(1)
-                    }
-            }
-
-            if (jobs.any { it.id == JOB_ID_PERIODIC }) {
-                Stuff.log("Found " + jobs.size + " existing jobs")
-                return
-            }
-
-            val job =
-                JobInfo.Builder(
-                    JOB_ID_PERIODIC,
-                    ComponentName(context, ChartsWidgetUpdaterJob::class.java)
-                )
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setPeriodic(Stuff.CHARTS_WIDGET_REFRESH_INTERVAL)
-                    .setPersisted(true)
+                val oneTimeWork = OneTimeWorkRequestBuilder<ChartsWidgetUpdaterWorker>()
+                    .setConstraints(constraints)
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     .build()
-            js.schedule(job)
-            Stuff.log("scheduling ${ChartsWidgetUpdaterJob::class.java.simpleName}")
+
+                WorkManager.getInstance(context).enqueueUniqueWork(
+                    NAME_ONE_TIME,
+                    ExistingWorkPolicy.REPLACE,
+                    oneTimeWork
+                )
+            }
+
+            val periodicWork = PeriodicWorkRequestBuilder<ChartsWidgetUpdaterWorker>(
+                Stuff.CHARTS_WIDGET_REFRESH_INTERVAL,
+                TimeUnit.MILLISECONDS
+            )
+                .setConstraints(constraints)
+                .setInitialDelay(Stuff.CHARTS_WIDGET_REFRESH_INTERVAL, TimeUnit.MILLISECONDS)
+                .build()
+
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                NAME_PERIODIC,
+                ExistingPeriodicWorkPolicy.KEEP,
+                periodicWork
+            )
+
+            Stuff.log("scheduling ${ChartsWidgetUpdaterWorker::class.java.simpleName}")
         }
 
         fun cancel(context: Context) {
-            val js = ContextCompat.getSystemService(context, JobScheduler::class.java)!!
-            val id = js.allPendingJobs.firstOrNull { it.id == JOB_ID_PERIODIC }?.id
-            id?.let { js.cancel(it) }
-            Stuff.log("cancelled ${ChartsWidgetUpdaterJob::class.java.simpleName}")
+            WorkManager.getInstance(context).cancelUniqueWork(NAME_PERIODIC)
+            Stuff.log("cancelled ${ChartsWidgetUpdaterWorker::class.java.simpleName}")
         }
     }
 }

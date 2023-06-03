@@ -5,9 +5,9 @@ import androidx.room.TypeConverter
 object Converters {
     @TypeConverter
     fun fromCommaSeperatedString(value: String?) =
-        value?.split(", ")?.toSet()
+        value?.split(", ")?.filter { it.isNotEmpty() }?.toSet()
 
     @TypeConverter
     fun toCommaSeperatedString(value: Set<String>?) =
-        value?.joinToString()
+        value?.joinToString()?.ifEmpty { null }
 }

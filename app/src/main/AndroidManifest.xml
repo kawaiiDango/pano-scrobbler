@@ -74,16 +74,6 @@
         </receiver>
 
         <receiver
-            android:name=".DigestReceiver"
-            android:exported="true"
-            android:label="Digests">
-            <intent-filter>
-                <action android:name="com.arn.scrobble.DIGEST_WEEKLY" />
-                <action android:name="com.arn.scrobble.DIGEST_MONTHLY" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
             android:name=".ReschedulerReceiver"
             android:enabled="true"
             android:exported="true">
@@ -187,21 +177,10 @@
                 android:value="conversations" />
 
         </service>
-        <service
-            android:name=".pending.PendingScrJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".widget.ChartsWidgetUpdaterJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".DigestJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".pending.PendingScrService"
-            android:foregroundServiceType="dataSync" />
+
         <service
             android:name=".PersistentNotificationService"
-            android:foregroundServiceType="mediaPlayback"
+            android:foregroundServiceType="dataSync"
             android:process=":bgScrobbler" />
         <service
             android:name=".MasterSwitchQS"
@@ -219,7 +198,7 @@
         </service>
         <service
             android:name="com.arn.scrobble.ListenAlongService"
-            android:foregroundServiceType="mediaPlayback"
+            android:foregroundServiceType="dataSync"
             android:process=":bgScrobbler" />
 
         <provider

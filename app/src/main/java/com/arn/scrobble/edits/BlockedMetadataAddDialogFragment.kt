@@ -96,29 +96,33 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                     return@setOnClickListener
                 }
 
-                val prevBlockedTag = blockedMetadata.copy()
-                blockedMetadata.apply {
-                    artist = trimmedText(binding.blockArtist)
-                    albumArtist = trimmedText(binding.blockAlbumArtist)
-                    album = trimmedText(binding.blockAlbum)
-                    track = trimmedText(binding.blockTrack)
-                    skip = binding.skip.isChecked
-                    mute = binding.mute.isChecked
+                val newBlockedMetadata = blockedMetadata.copy(
+                    artist = trimmedText(binding.blockArtist),
+                    albumArtist = trimmedText(binding.blockAlbumArtist),
+                    album = trimmedText(binding.blockAlbum),
+                    track = trimmedText(binding.blockTrack),
+                    skip = binding.skip.isChecked,
+                    mute = binding.mute.isChecked,
+                )
 
-                    if (listOf(artist, albumArtist, album, track)
-                            .all { it == "" }
-                    )
-                        return@setOnClickListener
-                }
-                if (prevBlockedTag != blockedMetadata || activity is MainDialogActivity)
+                if (listOf(
+                        newBlockedMetadata.artist,
+                        newBlockedMetadata.albumArtist,
+                        newBlockedMetadata.album,
+                        newBlockedMetadata.track
+                    ).all { it.isEmpty() }
+                )
+                    return@setOnClickListener
+
+                if (newBlockedMetadata != blockedMetadata || activity is MainDialogActivity)
                     GlobalScope.launch(Dispatchers.IO) {
                         PanoDb.db.getBlockedMetadataDao()
-                            .insertLowerCase(listOf(blockedMetadata), ignore = false)
+                            .insertLowerCase(listOf(newBlockedMetadata), ignore = false)
                     }
-                if (activity is MainDialogActivity && blockedMetadata.skip) {
+                if (activity is MainDialogActivity && newBlockedMetadata.skip) {
                     val i = Intent(NLService.iBLOCK_ACTION_S).apply {
                         `package` = requireContext().packageName
-                        putSingle(blockedMetadata)
+                        putSingle(newBlockedMetadata)
                         putExtra(NLService.B_HASH, requireArguments().getInt(NLService.B_HASH))
                     }
                     requireContext().sendBroadcast(i, NLService.BROADCAST_PERMISSION)

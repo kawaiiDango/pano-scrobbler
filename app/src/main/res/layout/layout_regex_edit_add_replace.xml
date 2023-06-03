@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_pattern_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/text_input_margin"
+        android:hint="@string/edit_regex">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_pattern"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/text_input_margin"
+        android:hint="@string/edit_regex_replacement">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_replacement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/text_input_margin"
+        android:text="@string/edit_field" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/edit_field_chipgroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/edit_field_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add"
+            app:chipIcon="@drawable/vd_add_borderless"
+            app:chipIconTint="?colorPrimary"
+            app:chipIconVisible="true" />
+    </com.google.android.material.chip.ChipGroup>
+</LinearLayout>

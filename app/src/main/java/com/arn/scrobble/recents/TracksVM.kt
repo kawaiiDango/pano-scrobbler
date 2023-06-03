@@ -3,10 +3,8 @@ package com.arn.scrobble.recents
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arn.scrobble.App
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.SectionedVirtualList
@@ -28,6 +26,7 @@ class TracksVM : ViewModel() {
     val pendingScrobblesLd by lazy { PanoDb.db.getPendingScrobblesDao().allLd(10000) }
     val pendingLovesLd by lazy { PanoDb.db.getPendingLovesDao().allLd(10000) }
     var isShowingLoves = false
+    var pendingSubmitAttempted = false
 
     val deletedTracksStringSet by lazy { mutableSetOf<String>() }
     val pkgMap = mutableMapOf<Long, String>()
@@ -53,10 +52,7 @@ class TracksVM : ViewModel() {
         else
             toTime ?: -1L
 
-        val limit = if (!isListenbrainz && username == null)
-            300
-        else
-            50
+        val limit = 100
         lastLoadJob?.cancel()
         lastLoadJob = viewModelScope.launch(errorNotifier) {
             val pr = withContext(Dispatchers.IO) {
@@ -87,23 +83,24 @@ class TracksVM : ViewModel() {
                 // do deltaindex for lastfm
 
 
-                if (toTime == null &&
-                    page == 1 &&
-                    username == null &&
-                    Scrobblables.current is Lastfm
-                ) {
-                    val firstTrack = pr.pageResults?.find { it.playedWhen != null }
-                    val indexedScrobbleTime = App.prefs.lastMaxIndexedScrobbleTime
-                    val hasPendingScrobbles =
-                        pendingScrobblesLd.value!!.isNotEmpty() || pendingLovesLd.value!!.isNotEmpty()
-                    if (firstTrack != null &&
-                        indexedScrobbleTime != null &&
-                        firstTrack.playedWhen.time > indexedScrobbleTime &&
-                        !hasPendingScrobbles
-                    ) {
-                        LFMRequester(this).runDeltaIndex(pr)
-                    }
-                }
+//                if (toTime == null &&
+//                    page == 1 &&
+//                    username == null &&
+//                    Scrobblables.current is Lastfm
+//                ) {
+//                    val firstTrack = pr.pageResults?.find { it.playedWhen != null }
+//                    val indexedScrobbleTime = App.prefs.lastMaxIndexedScrobbleTime
+//                    val hasPendingScrobbles =
+//                        pendingScrobblesLd.value!!.isNotEmpty() || pendingLovesLd.value!!.isNotEmpty()
+//                    if (firstTrack != null &&
+//                        indexedScrobbleTime != null &&
+//                        firstTrack.playedWhen.time > indexedScrobbleTime &&
+//                        !hasPendingScrobbles
+//                    ) {
+//                        LFMRequester(this).runDeltaIndex(pr)
+//                    }
+//                }
+                // todo i think it stays removed
 
             }
         }

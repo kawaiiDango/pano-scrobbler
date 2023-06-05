@@ -368,6 +368,7 @@
     <string name="pref_change_locale">Změnit jazyk</string>
     <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>
     <string name="pref_misc">Ostatní</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Týden začíná v</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Import a export</string>
     <string name="pref_export">Exportovat</string>
     <string name="pref_export_desc">Zálohuje nastavení, úpravy a seznam blokovaných. Z bezpečnostních důvodů neukládá přihlášení. Užitečné při přesouvání mezi zařízeními nebo sdílení s kamarády.</string>
@@ -432,6 +433,7 @@
     <string name="submitting_loves" formatted="true">Odesílám oblíbení, %1$d zbývá</string>
     <string name="pending_batch" comment="For pending scrobbles">Odesílám várku</string>
     <string name="webview_error">Stránku se nepodařilo načíst (funguje vám internet?)</string>
+    <string name="bar_chart">Sloupcový graf</string>
     <string name="cleared_disabled_apps">Vymazány zakázané aplikace</string>
     <string name="fix_it_title">Možné opravy</string>
     <string name="fix_it_startup_title">Spořiče napájení / správci spouštění</string>

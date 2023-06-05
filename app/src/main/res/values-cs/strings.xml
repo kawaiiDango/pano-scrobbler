@@ -145,6 +145,7 @@
     <string name="music_players">Hudební Přehrávače</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostatní Aplikace</string>
     <string name="choose_apps">Vyberte aplikace ke scrobblování</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikace</string>
     <string name="offline">Offline. Zobrazená data nejsou čerstvá</string>
     <string name="unavailable_offline">Není dostupné offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Služby</string>
@@ -187,6 +188,7 @@
     <string name="show_all">Zobrazit vše</string>
     <string name="edit">Upravit</string>
     <string name="delete">Smazat</string>
+    <string name="delete_all">Odstranit vše</string>
     <string name="love" comment="Love/like a song">Oblíbit</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Zrušit oblíbení</string>
     <string name="pending_scrobbles">Čekající Scrobbly</string>
@@ -288,12 +290,14 @@
     <string name="secondary_color">Sekundární barva</string>
     <string name="tint_background" comment="Tint the background with the primary color">Zvýraznit pozadí</string>
     <string name="random_theme">Náhodný při každém spuštění</string>
+    <string name="edit_name" comment="name for regex pattern">Popisný název</string>
     <string name="edit_regex">Regex vzor</string>
     <string name="edit_regex_replacement">Regex nahrazení</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Pole</string>
     <string name="edit_replace">Nahradit</string>
     <string name="edit_first" comment="First occurrence of a pattern">První</string>
     <string name="edit_all" comment="All occurrences of a pattern">Všechny</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrahovat</string>
     <string name="edit_continue">Při nalezení pokračovat ve srovnávání ostatních regexů</string>
     <string name="edit_case_sensitive">Rozlišovat velká a malá písmena</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
@@ -355,6 +359,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minut</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
     <string name="pref_logout">Odhlásit se</string>
+    <string name="sure_tap_again">Určitě? Klepněte znovu</string>
     <string name="pref_login">Přihlásit se</string>
     <string name="pref_about" comment="Info about this app">O Aplikaci</string>
     <string name="pref_privacy_policy">Zásady ochrany osobních údajů</string>

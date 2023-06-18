@@ -13,4 +13,7 @@ assignees: ''
 **Steps to Reproduce**
 
 
+**App version**
+
+
 **Additional info**

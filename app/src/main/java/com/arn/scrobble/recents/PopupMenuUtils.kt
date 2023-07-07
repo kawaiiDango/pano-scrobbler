@@ -45,14 +45,16 @@ object PopupMenuUtils {
         if (!Stuff.isOnline)
             navController.context.toast(R.string.unavailable_offline)
         else if (cookieExists(navController)) {
-            val args = EditDialogFragmentArgs(
-                artist = track.artist,
-                album = track.album,
-                track = track.name,
-                msid = track.msid,
-                timeMillis = track.playedWhen?.time ?: System.currentTimeMillis(),
-                nowPlaying = track.isNowPlaying,
-            ).toBundle()
+            val args = EditDialogFragmentArgs.Builder().apply {
+                artist = track.artist
+                album = track.album
+                this.track = track.name
+                msid = track.msid
+                timeMillis = track.playedWhen?.time ?: System.currentTimeMillis()
+                nowPlaying = track.isNowPlaying
+            }
+                .build()
+                .toBundle()
 
             navController.navigate(R.id.editDialogFragment, args)
         }
@@ -80,7 +82,7 @@ object PopupMenuUtils {
         val popup = PopupMenu(context, anchor)
         popup.menuInflater.inflate(R.menu.pending_item_menu, popup.menu)
 
-        val servicesList = mutableListOf<String>()
+        val accountTypesList = mutableListOf<AccountType>()
 
         @StringRes
         val state = when (p) {
@@ -88,15 +90,16 @@ object PopupMenuUtils {
             is PendingLove -> p.state
             else -> throw RuntimeException("Not a Pending Item")
         }
+
         AccountType.values().forEach {
             if (state and (1 shl it.ordinal) != 0)
-                servicesList += Scrobblables.getString(it)
+                accountTypesList += it
         }
 
         if (p is PendingLove)
             popup.menu.removeItem(R.id.menu_love)
 
-        if (servicesList.size == 1)
+        if (accountTypesList.size == 1 && accountTypesList.first() == Scrobblables.current?.userAccount?.type)
             popup.menu.removeItem(R.id.menu_services)
 
         popup.setOnMenuItemClickListener { menuItem ->
@@ -105,7 +108,7 @@ object PopupMenuUtils {
                     MaterialAlertDialogBuilder(context)
                         .setMessage(
                             context.getString(R.string.scrobble_services) + ":\n" +
-                                    servicesList.joinToString(", ")
+                                    accountTypesList.joinToString(", ") { Scrobblables.getString(it) }
                         )
                         .setPositiveButton(android.R.string.ok, null)
                         .show()

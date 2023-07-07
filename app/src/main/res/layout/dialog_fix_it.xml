@@ -45,34 +45,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/fix_it_persistent_noti_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingVertical="8dp"
-        android:paddingStart="16dp"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/show_persistent_noti"
-            android:textAppearance="?textAppearanceTitleMedium" />
-
-        <Button
-            android:id="@+id/fix_it_persistent_noti_action"
-            style="?materialButtonOutlinedStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/appwidget_show" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/fix_it_battery"
         style="@style/bottomSheetContent"
         android:layout_width="match_parent"

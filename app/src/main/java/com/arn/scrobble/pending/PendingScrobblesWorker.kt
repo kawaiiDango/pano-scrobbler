@@ -74,7 +74,7 @@ class PendingScrobblesWorker(
 
         var done = submitLoves()
 
-        while (scrobblesDao.count > 0) {
+        while (scrobblesDao.count() > 0) {
             done = submitScrobbleBatch()
             if (!done) //err
                 break

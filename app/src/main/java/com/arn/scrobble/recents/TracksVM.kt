@@ -79,29 +79,6 @@ class TracksVM : ViewModel() {
 
             if (pr.isStale && !_loadedCached) {
                 loadRecents(page)
-            } else {
-                // do deltaindex for lastfm
-
-
-//                if (toTime == null &&
-//                    page == 1 &&
-//                    username == null &&
-//                    Scrobblables.current is Lastfm
-//                ) {
-//                    val firstTrack = pr.pageResults?.find { it.playedWhen != null }
-//                    val indexedScrobbleTime = App.prefs.lastMaxIndexedScrobbleTime
-//                    val hasPendingScrobbles =
-//                        pendingScrobblesLd.value!!.isNotEmpty() || pendingLovesLd.value!!.isNotEmpty()
-//                    if (firstTrack != null &&
-//                        indexedScrobbleTime != null &&
-//                        firstTrack.playedWhen.time > indexedScrobbleTime &&
-//                        !hasPendingScrobbles
-//                    ) {
-//                        LFMRequester(this).runDeltaIndex(pr)
-//                    }
-//                }
-                // todo i think it stays removed
-
             }
         }
     }

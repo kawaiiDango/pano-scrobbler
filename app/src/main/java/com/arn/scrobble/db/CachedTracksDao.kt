@@ -1,6 +1,11 @@
 package com.arn.scrobble.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.arn.scrobble.App
 import com.arn.scrobble.db.CachedAlbum.Companion.toCachedAlbum
 import com.arn.scrobble.db.CachedAlbumsDao.Companion.deltaUpdate
@@ -25,8 +30,8 @@ interface CachedTracksDao {
     @Query("SELECT * FROM $tableName WHERE artistName like :artist AND trackName like :track LIMIT 1")
     fun findExact(artist: String, track: String): CachedTrack?
 
-    @get:Query("SELECT count(1) FROM $tableName")
-    val count: Int
+    @Query("SELECT count(1) FROM $tableName")
+    fun count(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entry: List<CachedTrack>)

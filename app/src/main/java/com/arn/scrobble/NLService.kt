@@ -2,7 +2,6 @@ package com.arn.scrobble
 
 import android.annotation.SuppressLint
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -53,6 +52,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.Date
@@ -63,7 +63,12 @@ import kotlin.math.min
 
 class NLService : NotificationListenerService() {
     private val prefs = App.prefs
-    private val nm by lazy { ContextCompat.getSystemService(this, NotificationManager::class.java)!! }
+    private val nm by lazy {
+        ContextCompat.getSystemService(
+            this,
+            NotificationManager::class.java
+        )!!
+    }
     private var sessListener: SessListener? = null
     private lateinit var scrobbleHandler: ScrobbleHandler
     private var lastNpTask: LFMRequester? = null
@@ -71,8 +76,14 @@ class NLService : NotificationListenerService() {
     private lateinit var packageTrackMap: MutableMap<String, PlayingTrackInfo> // package name to track info
     private var notiColor: Int? = Color.MAGENTA
     private var job: Job? = null
+    private var listenAlongJob: Job? = null
     private val browserPackages = mutableSetOf<String>()
-    private val audioManager by lazy { ContextCompat.getSystemService(this, AudioManager::class.java)!! }
+    private val audioManager by lazy {
+        ContextCompat.getSystemService(
+            this,
+            AudioManager::class.java
+        )!!
+    }
 
     override fun onCreate() {
         if (BuildConfig.DEBUG)
@@ -122,6 +133,7 @@ class NLService : NotificationListenerService() {
             addAction(iBLOCKLIST)
             addAction(iSCROBBLER_ON)
             addAction(iSCROBBLER_OFF)
+            addAction(iLISTEN_ALONG)
 
             addAction(Intent.ACTION_SCREEN_ON)
         }
@@ -196,12 +208,6 @@ class NLService : NotificationListenerService() {
         }
 
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
-
-        if (prefs.notiPersistent)
-            ContextCompat.startForegroundService(
-                this,
-                Intent(this, PersistentNotificationService::class.java)
-            )
 
         (application as App).initConnectivityCheck()
 
@@ -446,25 +452,29 @@ class NLService : NotificationListenerService() {
         i = Intent(iCANCEL)
             .setPackage(packageName)
             .putExtra(B_HASH, trackInfo.hash)
-            .putSingle(ScrobbleError(
-                getString(R.string.state_unscrobbled),
-                null,
-                trackInfo.packageName,
-            ))
+            .putSingle(
+                ScrobbleError(
+                    getString(R.string.state_unscrobbled),
+                    null,
+                    trackInfo.packageName,
+                )
+            )
 
         val cancelToastIntent = PendingIntent.getBroadcast(
             applicationContext, 5, i,
             Stuff.updateCurrentOrImmutable
         )
-        val editArgs = EditDialogFragmentArgs(
-            track = trackInfo.title,
-            album = trackInfo.album,
-            artist = trackInfo.artist,
-            albumArtist = trackInfo.albumArtist,
-            timeMillis = trackInfo.playStartTime,
-            nowPlaying = nowPlaying,
+        val editArgs = EditDialogFragmentArgs.Builder().apply {
+            track = trackInfo.title
+            album = trackInfo.album
+            artist = trackInfo.artist
+            albumArtist = trackInfo.albumArtist
+            timeMillis = trackInfo.playStartTime
+            this.nowPlaying = nowPlaying
             hash = trackInfo.hash
-        ).toBundle()
+        }
+            .build()
+            .toBundle()
 
         val editPi =
             MainDialogActivity.createDestinationPendingIntent(R.id.editDialogFragment, editArgs)
@@ -533,7 +543,7 @@ class NLService : NotificationListenerService() {
         try {
             nm.notify(trackInfo.packageName, 0, nb.buildMediaStyleMod())
         } catch (e: RuntimeException) {
-            val nExpandable = nb.setLargeIcon(null)
+            val nExpandable = nb.setLargeIcon(null as Bitmap?)
                 .setStyle(null)
                 .build()
             nm.notify(trackInfo.packageName, 0, nExpandable)
@@ -541,15 +551,17 @@ class NLService : NotificationListenerService() {
     }
 
     private fun notifyBadMeta(trackInfo: PlayingTrackInfo, scrobbleError: ScrobbleError) {
-        val editArgs = EditDialogFragmentArgs(
-            track = trackInfo.title,
-            album = trackInfo.album,
-            artist = trackInfo.artist,
-            albumArtist = trackInfo.albumArtist,
-            timeMillis = trackInfo.playStartTime,
-            nowPlaying = true,
+        val editArgs = EditDialogFragmentArgs.Builder().apply {
+            track = trackInfo.title
+            album = trackInfo.album
+            artist = trackInfo.artist
+            albumArtist = trackInfo.albumArtist
+            timeMillis = trackInfo.playStartTime
+            nowPlaying = true
             hash = trackInfo.hash
-        ).toBundle()
+        }
+            .build()
+            .toBundle()
 
         val editPi =
             MainDialogActivity.createDestinationPendingIntent(R.id.editDialogFragment, editArgs)
@@ -833,6 +845,24 @@ class NLService : NotificationListenerService() {
                     toast(R.string.scrobbler_off)
                 }
 
+                iLISTEN_ALONG -> {
+                    if (!BuildConfig.DEBUG) return
+
+                    val username = intent.getStringExtra(ListenAlong.USERNAME_EXTRA)
+                    val stop = intent.getBooleanExtra(ListenAlong.STOP_EXTRA, false)
+
+                    if (username != null) {
+                        listenAlongJob?.cancel()
+                        listenAlongJob = coroutineScope.launch {
+                            ListenAlong.fetchTrackLoop(username)
+                        }
+                    } else if (stop) {
+                        listenAlongJob?.cancel()
+                        nm.cancel(ListenAlong.NOTIFICATION_ID)
+
+                    }
+                }
+
                 Intent.ACTION_SCREEN_ON -> {
                     prefs.lastInteractiveTime = System.currentTimeMillis()
                 }
@@ -1067,6 +1097,7 @@ class NLService : NotificationListenerService() {
         const val iTHEME_CHANGED_S = "com.arn.scrobble.THEME_CHANGED"
         const val iBLOCK_ACTION_S = "com.arn.scrobble.BLOCK_ACTION"
         const val iSCROBBLE_SUBMIT_LOCK_S = "com.arn.scrobble.SCROBBLE_SUBMIT_LOCK"
+        const val iLISTEN_ALONG = "com.arn.scrobble.LISTEN_ALONG"
 
         const val BROADCAST_PERMISSION = "com.arn.scrobble.MY_AWESOME_PERMISSION"
 

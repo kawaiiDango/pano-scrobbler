@@ -883,7 +883,7 @@ object Stuff {
     val hasMouse by lazy {
         val inputManager = ContextCompat.getSystemService(App.context, InputManager::class.java)!!
         inputManager.inputDeviceIds.any {
-            val device = inputManager.getInputDevice(it)
+            val device = inputManager.getInputDevice(it) ?: return@any false
             // for windows 11 wsa
             device.supportsSource(InputDevice.SOURCE_MOUSE) or
                     device.supportsSource(InputDevice.SOURCE_STYLUS)

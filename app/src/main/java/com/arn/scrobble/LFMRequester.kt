@@ -280,7 +280,7 @@ class LFMRequester(
             val minArtists = 5
             val nTags = 65
             val minTags = 20
-            val delayPerN = 150L
+            val delayPerN = 500L
             val nParallel = 2
             val tags = mutableMapOf<String, TagStats>()
             var errored = false
@@ -364,10 +364,9 @@ class LFMRequester(
                 throw IllegalStateException("Not enough tags")
             }
 
-            val acceptableTags = AcceptableTags()
             val topTags = tags
                 .toList()
-                .filter { acceptableTags.isAcceptable(it.first) }
+                .filter { AcceptableTags.isAcceptable(it.first) }
                 .sortedByDescending { it.second.score }
                 .take(nTags)
                 .toMap()
@@ -626,8 +625,8 @@ class LFMRequester(
         toExec = {
             when (entry) {
                 is Artist -> Artist.removeTag(entry.name, tag, session)
-                is Album -> Album.removeTag(entry.artist, tag, entry.name, session)
-                is Track -> Track.removeTag(entry.artist, tag, entry.name, session)
+                is Album -> Album.removeTag(entry.artist, entry.name, tag, session)
+                is Track -> Track.removeTag(entry.artist, entry.name, tag, session)
                 else -> throw RuntimeException("invalid type")
             }
         }

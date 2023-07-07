@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -327,11 +326,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         chartsOverviewVM.tagCloudRefresh.observe(viewLifecycleOwner) {
             chartsOverviewVM.tagCloudRequested = false
             loadMoreSectionsIfNeeded()
-        }
-
-        if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            binding.chartsTagCloudHeader.root.visibility = View.VISIBLE
-            binding.chartsTagCloudFrame.visibility = View.VISIBLE
         }
 
         super.postInit()

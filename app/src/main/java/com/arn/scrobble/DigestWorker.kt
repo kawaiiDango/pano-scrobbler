@@ -238,7 +238,7 @@ class DigestWorker(context: Context, private val workerParameters: WorkerParamet
                 workManager.enqueueUniqueWork(period, existingWorkPolicy, work)
             }
 
-            val dailyTestDigests = true
+            val dailyTestDigests = false
             if (BuildConfig.DEBUG && dailyTestDigests)
                 enqueue(DAILY)
             enqueue(WEEKLY)

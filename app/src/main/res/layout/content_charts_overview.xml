@@ -90,8 +90,7 @@
 
                 <include
                     android:id="@+id/charts_tag_cloud_header"
-                    layout="@layout/header_with_action"
-                    android:visibility="gone" />
+                    layout="@layout/header_with_action" />
 
                 <com.arn.scrobble.ui.SquareFrameLayout
                     android:id="@+id/charts_tag_cloud_frame"
@@ -99,7 +98,6 @@
                     android:layout_height="350dp"
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="4dp"
-                    android:visibility="gone"
                     app:maxSize="370dp">
 
                     <ImageView

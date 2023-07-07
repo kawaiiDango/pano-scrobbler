@@ -13,23 +13,23 @@ import de.umass.lastfm.scrobble.ScrobbleData
 
 @Dao
 interface RegexEditsDao {
-    @get:Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    val all: List<RegexEdit>
+    @Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
+    fun all(): List<RegexEdit>
 
-    @get:Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    val allLd: LiveData<List<RegexEdit>>
+    @Query("SELECT * FROM $tableName ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
+    fun allLd(): LiveData<List<RegexEdit>>
 
-    @get:Query("SELECT count(1) FROM $tableName")
-    val count: Int
+    @Query("SELECT count(1) FROM $tableName")
+    fun count(): Int
 
-    @get:Query("SELECT count(1) FROM $tableName")
-    val countLd: LiveData<Int>
+    @Query("SELECT count(1) FROM $tableName")
+    fun countLd(): LiveData<Int>
 
-    @get:Query("SELECT MAX(`order`) FROM $tableName")
-    val maxOrder: Int?
+    @Query("SELECT MAX(`order`) FROM $tableName")
+    fun maxOrder(): Int?
 
-    @get:Query("SELECT * FROM $tableName WHERE preset IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-    val allPresets: List<RegexEdit>
+    @Query("SELECT * FROM $tableName WHERE preset IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
+    fun allPresets(): List<RegexEdit>
 
 //    @get:Query("SELECT * FROM $tableName WHERE pattern IS NOT NULL OR extractionTrack IS NOT NULL OR extractionAlbum iS NOT NULL OR extractionArtist IS NOT NULL OR extractionAlbumArtist IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
 //    val allRegexes: List<RegexEdit>
@@ -55,7 +55,7 @@ interface RegexEditsDao {
         fun RegexEditsDao.performRegexReplace(
             scrobbleData: ScrobbleData,
             pkgName: String? = null, // null means all
-            regexEdits: List<RegexEdit> = all.map { RegexPresets.getPossiblePreset(it) },
+            regexEdits: List<RegexEdit> = all().map { RegexPresets.getPossiblePreset(it) },
             matchedRegexEditsRef: MutableList<RegexEdit>? = null,
         ): Map<String, Int> {
             val numMatches = mutableMapOf(

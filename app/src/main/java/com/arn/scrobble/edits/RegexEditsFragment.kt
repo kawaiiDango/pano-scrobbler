@@ -161,7 +161,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         val dao = PanoDb.db.getRegexEditsDao()
 
         val presetsAvailable = withContext(Dispatchers.IO) {
-            (RegexPresets.presetKeys - dao.allPresets.map {
+            (RegexPresets.presetKeys - dao.allPresets().map {
                 it.preset
             }.toSet()).toList()
         }

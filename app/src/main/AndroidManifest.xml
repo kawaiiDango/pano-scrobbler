@@ -35,10 +35,6 @@
         android:name="android.hardware.microphone"
         android:required="false" />
 
-    <instrumentation
-        android:name="androidx.test.runner.AndroidJUnitRunner"
-        android:targetPackage="com.arn.scrobble" />
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -49,11 +45,8 @@
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="false">
-
-        <profileable
-            android:shell="true"
-            tools:targetApi="q" />
+        android:usesCleartextTraffic="false"
+        tools:targetApi="tiramisu">
 
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
@@ -81,7 +74,8 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.TIME_SET" />
-                <category android:name="android.intent.category.DEFAULT"/>
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
@@ -179,10 +173,6 @@
         </service>
 
         <service
-            android:name=".PersistentNotificationService"
-            android:foregroundServiceType="dataSync"
-            android:process=":bgScrobbler" />
-        <service
             android:name=".MasterSwitchQS"
             android:exported="true"
             android:icon="@drawable/vd_noti"
@@ -196,14 +186,10 @@
                 android:name="android.service.quicksettings.TOGGLEABLE_TILE"
                 android:value="true" />
         </service>
-        <service
-            android:name="com.arn.scrobble.ListenAlongService"
-            android:foregroundServiceType="dataSync"
-            android:process=":bgScrobbler" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.arn.scrobble.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -222,7 +208,6 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
-
 
     </application>
 

@@ -24,9 +24,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
-import com.arn.scrobble.ListenAlongService
+import com.arn.scrobble.ListenAlong
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
+import com.arn.scrobble.NLService
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.putSingle
@@ -425,13 +426,11 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
             if (BuildConfig.DEBUG) {
                 contentBinding.friendsScrobbles.setOnLongClickListener {
-                    lifecycleScope.launch {
-                        ContextCompat.startForegroundService(
-                            requireContext(),
-                            Intent(requireContext(), ListenAlongService::class.java)
-                                .putSingle(userSerializable)
-                        )
-                    }
+                    requireContext().sendBroadcast(
+                        Intent(NLService.iLISTEN_ALONG)
+                            .setPackage(requireContext().packageName)
+                            .putExtra(ListenAlong.USERNAME_EXTRA, userSerializable.name)
+                    )
                     true
                 }
             }

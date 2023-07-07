@@ -72,7 +72,11 @@ object BugReportUtils {
         val logFile = File(App.context.filesDir, "log.txt")
         logFile.writeText(log)
         val logUri =
-            FileProvider.getUriForFile(App.context, "com.arn.scrobble.fileprovider", logFile)
+            FileProvider.getUriForFile(
+                App.context,
+                "${BuildConfig.APPLICATION_ID}.fileprovider",
+                logFile
+            )
 
 //        PendingScrobblesDb.destroyInstance()
 //        val dbFile = File(filesDir, PendingScrobblesDb.tableName + ".sqlite")

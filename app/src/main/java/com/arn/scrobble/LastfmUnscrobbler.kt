@@ -6,6 +6,7 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.frybits.harmony.getHarmonySharedPreferences
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import okhttp3.Cookie
@@ -128,6 +129,9 @@ class LastfmUnscrobbler {
                     Stuff.log("LastfmUnscrobbler: error unscrobbling: " + resp.code + " response: " + respStr)
                 }
             }
+
+            // add a random delay to prevent 406 error
+            delay((100L..500L).random())
 
             success
         }

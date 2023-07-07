@@ -377,8 +377,6 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>(MainPrefs.PREF_EXPORT)
             ?.setOnPreferenceClickListener {
-                val cal = Calendar.getInstance()
-
                 if (prefs.proStatus && prefs.showScrobbleSources) {
                     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
@@ -562,7 +560,9 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         listView.layoutAnimation =
             AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_slide_up)
-        listView.scheduleLayoutAnimation()
+
+        if (savedInstanceState == null)
+            listView.scheduleLayoutAnimation()
 
         super.onViewCreated(view, savedInstanceState)
 
@@ -737,7 +737,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.db.getSimpleEditsDao().count
+                PanoDb.db.getSimpleEditsDao().count()
             }
             withContext(Dispatchers.Main) {
                 simpleEdits.title =
@@ -757,7 +757,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.db.getRegexEditsDao().count
+                PanoDb.db.getRegexEditsDao().count()
             }
             withContext(Dispatchers.Main) {
                 regexEdits.title =
@@ -777,7 +777,7 @@ class PrefFragment : PreferenceFragmentCompat() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             val numEdits = withContext(Dispatchers.IO) {
-                PanoDb.db.getBlockedMetadataDao().count
+                PanoDb.db.getBlockedMetadataDao().count()
             }
             withContext(Dispatchers.Main) {
                 blockedMetadata.title =

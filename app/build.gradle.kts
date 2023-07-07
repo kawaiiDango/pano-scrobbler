@@ -1,3 +1,4 @@
+
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
@@ -5,18 +6,18 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
-    id("kotlin-parcelize")
-    id("com.github.triplet.play")
-    id("androidx.navigation.safeargs.kotlin")
-    id("com.google.devtools.ksp")
-    kotlin("plugin.serialization")
-    id("com.mikepenz.aboutlibraries.plugin")
-    id("com.github.breadmoirai.github-release")
-    id("androidx.baselineprofile")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.crashlytics)
+    alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.aboutlibraries)
+    alias(libs.plugins.github.release)
+    alias(libs.plugins.baselineprofile)
+    id(libs.plugins.parcelize.get().pluginId)
+    id(libs.plugins.play.publisher.get().pluginId)
 }
 
 android {
@@ -36,14 +37,12 @@ android {
         throw GradleException("Could not read version.txt!")
     }
 
-    compileSdk = 33
-//    compileSdkPreview = "UpsideDownCake"
+    compileSdk = 34
     defaultConfig {
         applicationId = "com.arn.scrobble"
         namespace = "com.arn.scrobble"
         minSdk = 21
-        targetSdk = 33
-//        targetSdkPreview = "UpsideDownCake"
+        targetSdk = 34
         versionCode = verCode
         versionName = "${verCode / 100}.${verCode % 100} - ${
             SimpleDateFormat("YYYY, MMM dd").format(Date())
@@ -53,6 +52,8 @@ android {
 
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
+            arg("room.generateKotlin", "true")
+            arg("room.incremental", "true")
         }
     }
     buildFeatures {
@@ -79,23 +80,19 @@ android {
 
         debug {
             versionNameSuffix = " DEBUG"
-//            applicationIdSuffix = ".debug"
 //            extra["enableCrashlytics"] = false
         }
     }
 
     compileOptions {
-//        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
         freeCompilerArgs += "-Xjvm-default=all"
-    }
-
-    kotlin {
-        jvmToolchain(17)
+        jvmTarget = "17"
     }
 }
 
@@ -117,78 +114,83 @@ aboutLibraries {
     duplicationMode = DuplicateMode.MERGE
 }
 
+//tasks.withType(KaptGenerateStubsTask::class.java).configureEach {
+//    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+//}
+
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("acrcloud*.jar"))))
     debugImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("androidjhlabs.jar"))))
 
-    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+    implementation(libs.profileinstaller)
     "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
-    implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.preference:preference-ktx:1.2.0")
-    implementation("androidx.media:media:1.6.0")
-    implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
-//    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha10")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.0-alpha01")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.0-alpha01")
-    implementation("androidx.core:core-remoteviews:1.0.0-beta04")
-    ksp("androidx.room:room-compiler:2.5.1")
-    implementation("androidx.room:room-runtime:2.5.1")
-    implementation("com.android.billingclient:billing:6.0.0")
-    implementation("com.google.android.play:review:2.0.1")
-    implementation("com.google.android.play:review-ktx:2.0.1")
-    implementation("androidx.work:work-runtime-ktx:2.8.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.appcompat)
+    implementation(libs.core.ktx)
+    implementation(libs.fragment.ktx)
+    implementation(libs.preference.ktx)
+    implementation(libs.media)
+    implementation(libs.palette.ktx)
+    implementation(libs.recyclerview)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.core.remoteviews)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.billing)
+    implementation(libs.review.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.kotlinx.serialization.json)
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
-    implementation("com.google.android.material:material:1.9.0")
-    implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
+    implementation(libs.material)
+    implementation(libs.timber)
+    implementation(platform(libs.firebase.bom))
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don"t specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation(libs.crashlytics.ktx)
 
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
-    implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
-    implementation("hu.autsoft:krate:2.0.0")
-    implementation("hu.autsoft:krate-kotlinx:2.0.0")
-    implementation("com.frybits.harmony:harmony:1.2.2")
-    implementation("io.github.kawaiidango.kumo-android:kumo-core:1.28.1")
-    implementation("io.michaelrocks.bimap:bimap:1.1.0")
-    implementation("com.github.hadilq:live-event:1.3.0")
-    implementation("com.ernestoyaquello.stepperform:vertical-stepper-form:2.7.0")
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation("com.telefonica:nestedscrollwebview:0.1.4")
+    implementation(libs.okhttp)
+    implementation(libs.persistentCookieJar)
+    implementation(libs.krate)
+    implementation(libs.krate.kotlinx)
+    implementation(libs.harmony)
+    implementation(libs.kumo.core)
+    implementation(libs.bimap)
+    implementation(libs.live.event)
+    implementation(libs.vertical.stepper.form)
+    implementation(libs.mpAndroidChart)
+    implementation(libs.nestedscrollwebview)
 
-    implementation("io.coil-kt:coil-bom:2.4.0")
-    implementation("io.coil-kt:coil")
-    implementation("io.coil-kt:coil-gif")
+    implementation(libs.coil.bom)
+    implementation(libs.coil)
+    implementation(libs.coil.gif)
 
-    implementation(platform("io.ktor:ktor-bom:2.3.1"))
-    implementation("io.ktor:ktor-client-core")
-    implementation("io.ktor:ktor-client-okhttp")
-    implementation("io.ktor:ktor-client-android")
-    implementation("io.ktor:ktor-serialization-kotlinx-json")
-    implementation("io.ktor:ktor-client-auth")
-    implementation("io.ktor:ktor-client-content-negotiation")
+    implementation(platform(libs.ktor.bom))
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.auth)
+    implementation(libs.ktor.client.content.negotiation)
 
-    implementation("com.mikepenz:aboutlibraries-core:10.7.0")
+    implementation(libs.aboutlibraries.core)
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
     implementation(project(":lastfm"))
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0-alpha03")
-    androidTestImplementation("androidx.test:runner:1.6.0-alpha02")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0-alpha01")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.uiautomator)
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
 
 

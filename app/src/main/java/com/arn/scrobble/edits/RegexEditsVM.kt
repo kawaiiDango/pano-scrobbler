@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 class RegexEditsVM : ViewModel() {
     val dao = PanoDb.db.getRegexEditsDao()
     val regexes = mutableListOf<RegexEdit>()
-    val regexesReceiver = dao.allLd
-    val countReceiver = dao.countLd
+    val regexesReceiver = dao.allLd()
+    val countReceiver = dao.countLd()
 
     fun upsertAll(el: List<RegexEdit>) {
         viewModelScope.launch(Dispatchers.IO) {

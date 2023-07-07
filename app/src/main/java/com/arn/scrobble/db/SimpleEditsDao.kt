@@ -15,17 +15,17 @@ import de.umass.lastfm.scrobble.ScrobbleData
 
 @Dao
 interface SimpleEditsDao {
-    @get:Query("SELECT * FROM $tableName ORDER BY _id DESC")
-    val all: List<SimpleEdit>
+    @Query("SELECT * FROM $tableName ORDER BY _id DESC")
+    fun all(): List<SimpleEdit>
 
-    @get:Query("SELECT * FROM $tableName ORDER BY _id DESC")
-    val allLd: LiveData<List<SimpleEdit>>
+    @Query("SELECT * FROM $tableName ORDER BY _id DESC")
+    fun allLd(): LiveData<List<SimpleEdit>>
 
     @Query("SELECT * FROM $tableName WHERE (origArtist = :artist and origAlbum = :album and origTrack = :track) OR legacyHash = :hash")
     fun findByNamesOrHash(artist: String, album: String, track: String, hash: String): SimpleEdit?
 
-    @get:Query("SELECT count(1) FROM $tableName")
-    val count: Int
+    @Query("SELECT count(1) FROM $tableName")
+    fun count(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(e: List<SimpleEdit>)

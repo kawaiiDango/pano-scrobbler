@@ -10,14 +10,14 @@ import de.umass.lastfm.scrobble.ScrobbleData
 
 @Dao
 interface BlockedMetadataDao {
-    @get:Query("SELECT * FROM $tableName ORDER BY _id DESC")
-    val all: List<BlockedMetadata>
+    @Query("SELECT * FROM $tableName ORDER BY _id DESC")
+    fun all(): List<BlockedMetadata>
 
-    @get:Query("SELECT * FROM $tableName ORDER BY _id DESC")
-    val allLd: LiveData<List<BlockedMetadata>>
+    @Query("SELECT * FROM $tableName ORDER BY _id DESC")
+    fun allLd(): LiveData<List<BlockedMetadata>>
 
-    @get:Query("SELECT count(1) FROM $tableName")
-    val count: Int
+    @Query("SELECT count(1) FROM $tableName")
+    fun count(): Int
 
     @Query(
         """SELECT * FROM $tableName

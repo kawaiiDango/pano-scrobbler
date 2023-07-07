@@ -2,6 +2,7 @@ package com.arn.scrobble.edits
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -59,7 +60,7 @@ class RegexEditsAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.setupInsets()
 
-        if (!BuildConfig.DEBUG)
+        if (!BuildConfig.DEBUG || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) // needs java 8
             binding.editExtract.isVisible = false
 
         val regexEdit = arguments?.getSingle<RegexEdit>()?.copy() ?: RegexEdit()
@@ -163,7 +164,7 @@ class RegexEditsAddFragment : Fragment() {
 
                     if (isNew)
                         newRegexEdit.order = withContext(Dispatchers.IO) {
-                            (dao.maxOrder ?: -1) + 1
+                            (dao.maxOrder() ?: -1) + 1
                         }
 
                     if (newRegexEdit.preset != null)

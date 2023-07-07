@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.App
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
 import com.arn.scrobble.friends.UserSerializable
@@ -27,7 +26,8 @@ class ChartsOverviewVM : ViewModel() {
     var listeningActivityRequested = false
     var tagCloudRequested = false
     val tagCloudProgressLd by lazy { MutableLiveData<Double>() }
-    val listeningActivityHeader = MutableLiveData(App.context.getString(R.string.listening_activity))
+    val listeningActivityHeader =
+        MutableLiveData(App.context.getString(R.string.listening_activity))
     private var lastListeningActivityJob: Job? = null
     var tagCloudBitmap: Pair<Int, Bitmap?>? = null
     private var lastTagCloudTask: LFMRequester? = null
@@ -47,9 +47,6 @@ class ChartsOverviewVM : ViewModel() {
     }
 
     fun loadTagCloud() {
-        if (!BuildConfig.DEBUG)
-            return
-
         if (!artistsVM.hasLoaded())
             return
 

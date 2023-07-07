@@ -59,9 +59,9 @@ class ImExporter : Closeable {
 
         val appPrefs = AppPrefs(
             pano_version = BuildConfig.VERSION_CODE,
-            simple_edits = db.getSimpleEditsDao().all.asReversed(),
-            blocked_metadata = db.getBlockedMetadataDao().all.asReversed(),
-            regex_edits = db.getRegexEditsDao().all,
+            simple_edits = db.getSimpleEditsDao().all().asReversed(),
+            blocked_metadata = db.getBlockedMetadataDao().all().asReversed(),
+            regex_edits = db.getRegexEditsDao().all(),
             scrobble_sources = null,
             settings = MainPrefs.MainPrefsPublic()
         )
@@ -80,7 +80,7 @@ class ImExporter : Closeable {
         writer ?: throw NullPointerException("ImExporter not inited")
         val appPrefsPrivate = AppPrefs(
             pano_version = BuildConfig.VERSION_CODE,
-            scrobble_sources = db.getScrobbleSourcesDao().all.asReversed(),
+            scrobble_sources = db.getScrobbleSourcesDao().all().asReversed(),
             settings = null,
             simple_edits = null,
             regex_edits = null,

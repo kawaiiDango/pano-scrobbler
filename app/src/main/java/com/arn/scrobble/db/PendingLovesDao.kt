@@ -24,8 +24,8 @@ interface PendingLovesDao {
     @Query("SELECT * FROM $tableName WHERE artist =:artist AND track=:track")
     fun find(artist: String, track: String): PendingLove?
 
-    @get:Query("SELECT count(1) FROM $tableName")
-    val count: Int
+    @Query("SELECT count(1) FROM $tableName")
+    fun count(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(pl: PendingLove)

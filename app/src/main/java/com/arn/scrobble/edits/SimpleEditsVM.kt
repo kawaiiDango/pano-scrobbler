@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 class SimpleEditsVM : ViewModel() {
     val dao = PanoDb.db.getSimpleEditsDao()
     val edits = mutableListOf<SimpleEdit>()
-    val editsReceiver = dao.allLd
+    val editsReceiver = dao.allLd()
 
     fun upsert(simpleEdit: SimpleEdit) {
         viewModelScope.launch(Dispatchers.IO) {

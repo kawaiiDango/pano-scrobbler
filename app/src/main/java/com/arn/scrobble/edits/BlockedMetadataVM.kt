@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 class BlockedMetadataVM : ViewModel() {
     private val dao = PanoDb.db.getBlockedMetadataDao()
     val blockedMetadata = mutableListOf<BlockedMetadata>()
-    val blockedMetadataReceiver = dao.allLd
+    val blockedMetadataReceiver = dao.allLd()
 
     fun delete(index: Int) {
         viewModelScope.launch(Dispatchers.IO) {

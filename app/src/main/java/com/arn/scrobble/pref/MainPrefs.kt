@@ -145,7 +145,6 @@ class MainPrefs : Krate {
     var notiMonthlyDigests by booleanPref(CHANNEL_NOTI_DIGEST_MONTHLY).withDefault(true)
     var notiPendingScrobbles by booleanPref(CHANNEL_NOTI_PENDING).withDefault(true)
     var notiNewApp by booleanPref(CHANNEL_NOTI_NEW_APP).withDefault(true)
-    var notiPersistent by booleanPref(CHANNEL_NOTI_PERSISTENT).withDefault(Stuff.forcePersistentNoti)
 
     var acrcloudHost by stringPref(PREF_ACR_HOST)
     var acrcloudKey by stringPref(PREF_ACR_KEY)

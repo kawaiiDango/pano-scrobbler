@@ -5,6 +5,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import com.android.billingclient.api.ProductDetails
+import com.arn.scrobble.BuildConfig
 
 
 class BillingViewModel(application: Application) : AndroidViewModel(application) {

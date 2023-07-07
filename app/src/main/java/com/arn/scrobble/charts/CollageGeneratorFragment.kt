@@ -397,7 +397,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
             collageFooter.collageUsernameImage.visibility = View.GONE
         }
 
-        if (prefs.proStatus && !BuildConfig.DEBUG) {
+        if (prefs.proStatus) {
             collageFooter.collageFooterBrandingImage.visibility = View.GONE
             collageFooter.collageFooterBrandingText.visibility = View.GONE
         } else {

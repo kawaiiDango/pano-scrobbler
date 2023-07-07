@@ -42,7 +42,7 @@ import java.util.logging.Level
 class App : Application(), ImageLoaderFactory, Configuration.Provider {
     private var connectivityCheckInited = false
 
-    override fun getWorkManagerConfiguration() =
+    override val workManagerConfiguration =
         Configuration.Builder().apply {
             if (BuildConfig.DEBUG)
                 setMinimumLoggingLevel(android.util.Log.INFO)

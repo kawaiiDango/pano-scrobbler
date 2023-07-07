@@ -1,7 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    val kotlin_version by extra("1.8.21")
     repositories {
         google()
         maven("https://oss.sonatype.org/content/repositories/snapshots")
@@ -9,23 +8,22 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.github.triplet.gradle:play-publisher:4.0.0-SNAPSHOT")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.7.0-alpha01")
+        classpath(libs.play.publisher)
     }
 }
 
 plugins {
-    id("com.android.application") version "8.2.0-alpha06" apply false
-    kotlin("android") version "1.8.21" apply false
-    id("com.google.firebase.crashlytics") version "2.9.5" apply false
-    id("com.google.gms.google-services") version "4.3.15" apply false
-    id("com.google.devtools.ksp") version "1.8.21-1.0.11" apply false
-    kotlin("plugin.serialization") version "1.8.21" apply false
-    id("com.mikepenz.aboutlibraries.plugin") version "10.7.0" apply false
-    id("com.github.breadmoirai.github-release") version "2.4.1" apply false
-    id("com.android.test") version "8.2.0-alpha06" apply false
-    id("androidx.baselineprofile") version "1.2.0-alpha13" apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.navigation.safeargs) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.test) apply false
+    alias(libs.plugins.crashlytics) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.aboutlibraries) apply false
+    alias(libs.plugins.github.release) apply false
+    alias(libs.plugins.baselineprofile) apply false
 }
 
 tasks.register<Delete>("clean").configure {

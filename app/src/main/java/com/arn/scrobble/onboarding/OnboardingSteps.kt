@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.App
@@ -112,6 +113,12 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                 }
 
                 popup.show()
+            }
+
+            binding.buttonServiceChooser.setOnLongClickListener {
+                binding.testingPass.isVisible = true
+                binding.testingPass.alpha = 1f
+                true
             }
 
             // setup testing password box

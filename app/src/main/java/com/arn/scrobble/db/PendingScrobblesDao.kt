@@ -24,8 +24,8 @@ interface PendingScrobblesDao {
     @Query("SELECT * FROM $tableName WHERE (album = \"\" OR albumArtist = artist OR albumArtist = \"\") AND autoCorrected = 0 ORDER BY _id DESC LIMIT :limit")
     fun allEmptyAlbumORAlbumArtist(limit: Int): List<PendingScrobble>
 
-    @get:Query("SELECT count(1) FROM $tableName")
-    val count: Int
+    @Query("SELECT count(1) FROM $tableName")
+    fun count(): Int
 
     @Query("SELECT count(1) FROM $tableName WHERE autoCorrected = :autoCorrected")
     fun getAutoCorrectedCount(autoCorrected: Boolean): Int

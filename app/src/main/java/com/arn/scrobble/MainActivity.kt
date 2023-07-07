@@ -233,7 +233,8 @@ class MainActivity : AppCompatActivity(),
         }
 
         mainNotifierViewModel.canIndex.observe(this) {
-            binding.sidebarNav.menu.findItem(R.id.nav_do_index)?.isVisible = it
+            if (!BuildConfig.DEBUG)
+                binding.sidebarNav.menu.findItem(R.id.nav_do_index)?.isVisible = it
             if (it == true && prefs.lastMaxIndexTime != null) {
                 IndexingWorker.schedule(this)
             }

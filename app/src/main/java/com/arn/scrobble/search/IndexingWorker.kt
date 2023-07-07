@@ -72,7 +72,7 @@ class IndexingWorker(
 
         withContext(Dispatchers.IO + exHandler) {
 
-            if (db.getPendingScrobblesDao().count > 0 || db.getPendingLovesDao().count > 0) {
+            if (db.getPendingScrobblesDao().count() > 0 || db.getPendingLovesDao().count() > 0) {
                 throw IllegalStateException("Cannot run when there are pending scrobbles")
             }
 

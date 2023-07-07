@@ -40,43 +40,53 @@ class LoginFlows(private val navController: NavController) {
     }
 
     private fun gnufm() {
-        val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.gnufm),
-            textFieldLast = App.context.getString(R.string.api_url),
+        val arguments = LoginFragmentArgs.Builder(
+            App.context.getString(R.string.gnufm),
+            App.context.getString(R.string.api_url),
+        ).apply {
             textCheckbox = App.context.getString(R.string.disable_tls_verify)
-        ).toBundle()
+        }
+            .build()
+            .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
 
     private fun listenbrainz() {
-        val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.listenbrainz),
-            textFieldLast = App.context.getString(R.string.pref_token_label),
-        ).toBundle()
+        val arguments = LoginFragmentArgs.Builder(
+            App.context.getString(R.string.listenbrainz),
+            App.context.getString(R.string.pref_token_label),
+        )
+            .build()
+            .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
 
     private fun customListenbrainz() {
-        val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.custom_listenbrainz),
-            textField1 = App.context.getString(R.string.api_url),
-            textFieldLast = App.context.getString(R.string.pref_token_label),
+        val arguments = LoginFragmentArgs.Builder(
+            App.context.getString(R.string.custom_listenbrainz),
+            App.context.getString(R.string.pref_token_label),
+        ).apply {
+            textField1 = App.context.getString(R.string.api_url)
             textCheckbox = App.context.getString(R.string.disable_tls_verify)
-        ).toBundle()
+        }
+            .build()
+            .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
 
     fun acrCloud() {
-        val arguments = LoginFragmentArgs(
-            loginTitle = App.context.getString(R.string.add_acr_key),
-            infoText = App.context.getString(R.string.add_acr_key_info),
-            textField1 = App.context.getString(R.string.acr_host),
-            textField2 = App.context.getString(R.string.acr_key),
-            textFieldLast = App.context.getString(R.string.acr_secret),
-        ).toBundle()
+        val arguments = LoginFragmentArgs.Builder(
+            App.context.getString(R.string.add_acr_key),
+            App.context.getString(R.string.acr_secret)
+        ).apply {
+            infoText = App.context.getString(R.string.add_acr_key_info)
+            textField1 = App.context.getString(R.string.acr_host)
+            textField2 = App.context.getString(R.string.acr_key)
+        }
+            .build()
+            .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
     }
-
 
 
     fun go(accountType: AccountType) {

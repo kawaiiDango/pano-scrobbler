@@ -531,7 +531,7 @@ class SessListener(
                         trackInfo.artist.isUrlOrDomain())
     }
 
-    override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(pref: SharedPreferences, key: String?) {
         when (key) {
             MainPrefs.PREF_ALLOWED_PACKAGES -> synchronized(allowedPackages) {
                 allowedPackages.clear()

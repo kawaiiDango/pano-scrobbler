@@ -73,7 +73,7 @@
     <string name="reset">Redefinir</string>
     <string name="settings">Definições</string>
     <string name="bug_report">Relatório de erros</string>
-    <string name="faq">FAQ</string>
+    <string name="faq">Perguntas comuns</string>
     <string name="album_art">Capa do álbum</string>
     <string name="artist_image">Imagem do artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível analisar título</string>
@@ -267,7 +267,7 @@
     <string name="edit_replace">Substituir</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primeiro</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
-    <string name="edit_extract" comment="To extract sub text from a larger text, used in pattern edits">Extrair</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrair</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Nomeie os seus grupos de captura <i>track, album, artist</i> ou <i>albumArtist</i> para extraí-los de outros campos</string>
     <string name="edit_continue">Se encontrado, continuar a corresponder com outros regexes</string>
     <string name="edit_case_sensitive">Maiúsculas/minúsculas</string>

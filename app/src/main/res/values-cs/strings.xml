@@ -105,8 +105,9 @@
     <string name="yes">Ano</string>
     <string name="no">Ne</string>
     <string name="reset">Obnovit</string>
-    <string name="settings">Nastavit</string>
+    <string name="settings">Nastavení</string>
     <string name="bug_report">Hlášení o chybě</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Obal alba</string>
     <string name="artist_image">Obrázek umělce</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nepodařilo se zpracovat název</string>
@@ -145,6 +146,7 @@
     <string name="music_players">Hudební Přehrávače</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostatní Aplikace</string>
     <string name="choose_apps">Vyberte aplikace ke scrobblování</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikace</string>
     <string name="offline">Offline. Zobrazená data nejsou čerstvá</string>
     <string name="unavailable_offline">Není dostupné offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Služby</string>
@@ -168,6 +170,7 @@
     <string name="library" comment="search within the library">Knihovna</string>
     <string name="global" comment="search globally across lastfm">Globálně</string>
     <string name="reindex">Rychlý index</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexujte své scrobbly</string>
     <string name="full_index">Plný index</string>
     <string name="take_long_time">Tohle může zabrat dlouho</string>
     <string name="full_index_desc">Použijte pouze v případě, že jste upravili nebo odstranili scrobbly z webu.</string>
@@ -187,7 +190,10 @@
     <string name="show_all">Zobrazit vše</string>
     <string name="edit">Upravit</string>
     <string name="delete">Smazat</string>
+    <string name="delete_all">Odstranit vše</string>
     <string name="love" comment="Love/like a song">Oblíbit</string>
+    <string name="hate" comment="Hate or dislike a song">Znelíbit</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Zrušit znelíbení</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Zrušit oblíbení</string>
     <string name="pending_scrobbles">Čekající Scrobbly</string>
     <string name="pending_scrobble">Čekající scrobble</string>
@@ -215,7 +221,7 @@
     <string name="simple_edits">Úpravy</string>
     <string name="grant_rec_perm">Prosím povolte oprávnění pro přístup k mikrofonu</string>
     <string name="charts" comment="User\'s top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitparády</string>
-    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tagový mrak</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Shluk tagů</string>
     <string name="scrobble_from_mic" comment="Its a verb">Scrobblovat z mikrofonu</string>
     <string name="from_mic" comment="(To scrobble from mic, in short, ideally 10 characters or less)">Z mikrofonu</string>
     <string name="add_to_hs">Přidat na domovskou obrazovku</string>
@@ -227,7 +233,7 @@
     <string name="details">Detaily</string>
     <string name="saved_as_pending">Uloženo jako čekající scrobble</string>
     <string name="sort">Seřadit</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">Skočit v čase</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Časový skok</string>
     <string name="my_scrobbles">Moje scrobbly</string>
     <string name="their_scrobbles">Jejich scrobbly</string>
     <string name="listeners">Posluchači</string>
@@ -288,12 +294,14 @@
     <string name="secondary_color">Sekundární barva</string>
     <string name="tint_background" comment="Tint the background with the primary color">Zvýraznit pozadí</string>
     <string name="random_theme">Náhodný při každém spuštění</string>
+    <string name="edit_name" comment="name for regex pattern">Popisný název</string>
     <string name="edit_regex">Regex vzor</string>
     <string name="edit_regex_replacement">Regex nahrazení</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Pole</string>
     <string name="edit_replace">Nahradit</string>
     <string name="edit_first" comment="First occurrence of a pattern">První</string>
     <string name="edit_all" comment="All occurrences of a pattern">Všechny</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrahovat</string>
     <string name="edit_continue">Při nalezení pokračovat ve srovnávání ostatních regexů</string>
     <string name="edit_case_sensitive">Rozlišovat velká a malá písmena</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
@@ -355,6 +363,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minut</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
     <string name="pref_logout">Odhlásit se</string>
+    <string name="sure_tap_again">Určitě? Klepněte znovu</string>
     <string name="pref_login">Přihlásit se</string>
     <string name="pref_about" comment="Info about this app">O Aplikaci</string>
     <string name="pref_privacy_policy">Zásady ochrany osobních údajů</string>
@@ -368,6 +377,7 @@
     <string name="pref_change_locale">Změnit jazyk</string>
     <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>
     <string name="pref_misc">Ostatní</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Začátek týdne</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Import a export</string>
     <string name="pref_export">Exportovat</string>
     <string name="pref_export_desc">Zálohuje nastavení, úpravy a seznam blokovaných. Z bezpečnostních důvodů neukládá přihlášení. Užitečné při přesouvání mezi zařízeními nebo sdílení s kamarády.</string>
@@ -432,6 +442,7 @@
     <string name="submitting_loves" formatted="true">Odesílám oblíbení, %1$d zbývá</string>
     <string name="pending_batch" comment="For pending scrobbles">Odesílám várku</string>
     <string name="webview_error">Stránku se nepodařilo načíst (funguje vám internet?)</string>
+    <string name="bar_chart">Sloupcový graf</string>
     <string name="cleared_disabled_apps">Vymazány zakázané aplikace</string>
     <string name="fix_it_title">Možné opravy</string>
     <string name="fix_it_startup_title">Spořiče napájení / správci spouštění</string>

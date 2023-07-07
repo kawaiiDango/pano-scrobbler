@@ -73,6 +73,7 @@
     <string name="reset">Sıfırla</string>
     <string name="settings">Ayarlar</string>
     <string name="bug_report">Hata raporu</string>
+    <string name="faq">SSS</string>
     <string name="album_art">Albüm kapağı</string>
     <string name="artist_image">Sanatçı resmi</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Başlık ayrıştırılamadı</string>
@@ -111,6 +112,7 @@
     <string name="music_players">Müzik Oynatıcılar</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Diğer Uygulamalar</string>
     <string name="choose_apps">Skroplanacak Uygulamaları seçin</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Uygulamalar</string>
     <string name="offline">Çevrimdışı. Güncel veriler gösterilemiyor</string>
     <string name="unavailable_offline">Çevrimdışı kullanılamıyor</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Hizmetler</string>
@@ -154,6 +156,7 @@
     <string name="show_all">Tümünü gör</string>
     <string name="edit">Düzenle</string>
     <string name="delete">Sil</string>
+    <string name="delete_all">Tümünü sil</string>
     <string name="love" comment="Love/like a song">Beğen</string>
     <string name="hate" comment="Hate or dislike a song">Nefret et</string>
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Nefreti kaldır</string>
@@ -257,12 +260,14 @@
     <string name="secondary_color">İkincil renk</string>
     <string name="tint_background" comment="Tint the background with the primary color">Renkli arkaplan</string>
     <string name="random_theme">Her açılışta rastgele seç</string>
+    <string name="edit_name" comment="name for regex pattern">Kolay ad</string>
     <string name="edit_regex">Düzenli ifade kalıbı</string>
     <string name="edit_regex_replacement">Düzenli ifade değiştirme</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Alanlar</string>
     <string name="edit_replace">Değiştir</string>
     <string name="edit_first" comment="First occurrence of a pattern">İlkini</string>
     <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Çıkart</string>
     <string name="edit_continue">Mevcutsa, diğer düzenli ifadeleri de eşleştirmeye devam et</string>
     <string name="edit_case_sensitive">Büyük küçük harfe duyarlı</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Dene</string>
@@ -324,6 +329,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Dakika</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Yüzde</string>
     <string name="pref_logout">Oturumu kapat</string>
+    <string name="sure_tap_again">Emin misiniz? Lütfen tekrar dokunun</string>
     <string name="pref_login">Oturum aç</string>
     <string name="pref_about" comment="Info about this app">Hakkında</string>
     <string name="pref_privacy_policy">Gizlilik politikası</string>
@@ -402,6 +408,7 @@
     <string name="submitting_loves" formatted="true">Beğeniler gönderiliyor, %1$d kaldı</string>
     <string name="pending_batch" comment="For pending scrobbles">Skroplar gönderiliyor</string>
     <string name="webview_error">Sayfa yüklenirken bir hata oluştu (internet bağlantınız var mı?)</string>
+    <string name="bar_chart">Çubuk grafiği</string>
     <string name="cleared_disabled_apps">Devre dışı uygulamalar temizlendi</string>
     <string name="fix_it_title">Muhtemel düzeltmeler</string>
     <string name="fix_it_startup_title">Pil tasarufu ve başlangıç yöneticileri</string>

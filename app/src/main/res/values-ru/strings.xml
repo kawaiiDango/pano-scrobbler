@@ -301,7 +301,7 @@
     <string name="edit_replace">Замена</string>
     <string name="edit_first" comment="First occurrence of a pattern">Первый</string>
     <string name="edit_all" comment="All occurrences of a pattern">Все</string>
-    <string name="edit_extract" comment="To extract sub text from a larger text, used in pattern edits">Извлечь</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Извлечь</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Назовите ваши группы захвата <i>track, album, artist</i> или <i>albumArtist</i>, чтобы извлечь их из других полей</string>
     <string name="edit_continue">Если найдено, продолжить сопоставление с другими регулярными выражениями</string>
     <string name="edit_case_sensitive">С учетом регистра</string>

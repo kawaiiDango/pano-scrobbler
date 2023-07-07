@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="yes">Da</string>
+    <string name="no">Nu</string>
+    <string name="reset">Resetează</string>
+    <string name="settings">Configurați</string>
+    <string name="faq">FAQ</string>
+    <string name="album_art">Copertă album</string>
+    <string name="artist_image">Imagine artist</string>
+    <string name="recents" comment="Short for recently scrobbled">Recente</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Aproape terminat…</string>
     <!--  pro  -->
 </resources>

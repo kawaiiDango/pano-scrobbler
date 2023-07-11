@@ -28,6 +28,25 @@ object MetadataUtils {
     )
     private val artistSpam = arrayOf("va")
 
+    // spotify:artist:0LyfQWJT6nXafLPZqxe9Of
+    private val variousArtists = arrayOf(
+        "Various Artists",
+        "Verschiedene Interpreten",
+        "Varios Artistas",
+        "Hainbat Artista",
+        "Multi-interprètes",
+        "Artisti Vari",
+        "Vários intérpretes",
+        "Blandade Artister",
+        "Çeşitli Sanatçılar",
+        "אמנים שונים",
+        "Разные исполнители",
+        "فنانون متنوعون",
+        "รวมศิลปิน",
+        "群星",
+        "ヴァリアス・アーティスト",
+    ).map { it.lowercase() }.toSet()
+
     // in lowercase
 //    val tagSpam = setOf("geohash", "all", "seen live", "i have seen live",)
 
@@ -161,4 +180,6 @@ object MetadataUtils {
             null
         }
     }
+
+    fun isVariousArtists(artist: String) = artist.lowercase() in variousArtists
 }

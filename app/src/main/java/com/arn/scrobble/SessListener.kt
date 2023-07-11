@@ -304,7 +304,7 @@ class SessListener(
                 Stuff.PACKAGE_SPOTIFY -> {
                     // goddamn spotify
                     if (albumArtist.isNotEmpty() && albumArtist != artist &&
-                        albumArtist.lowercase() != "various artists"
+                        !MetadataUtils.isVariousArtists(albumArtist)
                     )
                         artist = albumArtist
 

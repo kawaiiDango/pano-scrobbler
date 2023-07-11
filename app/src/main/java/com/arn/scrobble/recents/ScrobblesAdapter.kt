@@ -216,31 +216,13 @@ class ScrobblesAdapter(
         notifyItemChanged(idx)
     }
 
-//    fun setStatusHeader() {
-//        val username = if (viewModel.username != null)
-//            " • " + viewModel.username
-//        else
-//            ""
-//        val header = if (isShowingLoves)
-//            fragmentBinding.root.context.getString(R.string.recently_loved) + username
-//        else if (viewModel.toTime != null)
-//            fragmentBinding.root.context.getString(
-//                R.string.scrobbles_till,
-//                DateFormat.getMediumDateFormat(fragmentBinding.root.context)
-//                    .format(viewModel.toTime)
-//            ) + username
-//        else
-//            fragmentBinding.root.context.getString(R.string.recently_scrobbled) + username
-//        setStatusHeader(header)
-//    }
-
     fun populate() {
         val oldVirtualList = viewModel.virtualList.copy()
         val prevSelectedItem =
             if (viewModel.virtualList.isEmpty())
                 null
             else
-                getItem(viewModel.selectedPos)
+                viewModel.virtualList.getOrNull(viewModel.selectedPos)
         val firstTrack = viewModel.virtualList[Section.SCROBBLES]?.items?.firstOrNull()
         val firstTrackSelected = prevSelectedItem === firstTrack
 
@@ -264,12 +246,16 @@ class ScrobblesAdapter(
             notifyItemChanged(0, 0) //animation gets delayed otherwise
         } else if (oldVirtualList.size < viewModel.virtualList.size) // remove the loading gap from the last item
             notifyItemChanged(itemCount - 1, 0)
-        notify(oldVirtualList, prevSelectedItem)
+        notify(oldVirtualList, true, prevSelectedItem)
 
         lastPopulateTime = System.currentTimeMillis()
     }
 
-    private fun notify(oldVirtualList: SectionedVirtualList, prevSelectedItem: Any? = null) {
+    private fun notify(
+        oldVirtualList: SectionedVirtualList,
+        allHaveChanged: Boolean = false,
+        prevSelectedItem: Any? = null
+    ) {
         autoNotify(oldVirtualList,
             viewModel.virtualList,
             compare = { oldItem, newItem ->
@@ -283,6 +269,7 @@ class ScrobblesAdapter(
             },
             compareContents = { oldItem, newItem ->
                 when {
+                    allHaveChanged -> false
                     oldItem === prevSelectedItem -> false // clears the previous selection
                     System.currentTimeMillis() - lastPopulateTime > 60 * 60 * 1000 -> false
                     oldItem is ExpandableHeader && newItem is ExpandableHeader -> oldItem == newItem

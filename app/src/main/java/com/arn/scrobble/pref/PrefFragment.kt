@@ -645,8 +645,8 @@ class PrefFragment : PreferenceFragmentCompat() {
 
                         if (currentAccount == null) {
                             findNavController().apply {
-                                popBackStack(R.id.myHomePagerFragment, true)
-                                navigate(R.id.onboardingFragment)
+//                                popBackStack(R.id.myHomePagerFragment, true)
+                                setGraph(R.navigation.nav_graph_onboarding)
                             }
                         } else if (currentAccount != prevAccount) {
                             findNavController().apply {

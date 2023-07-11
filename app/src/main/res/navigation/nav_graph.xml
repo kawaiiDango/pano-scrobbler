@@ -134,22 +134,7 @@
             android:id="@+id/action_blockedMetadataFragment_to_blockedMetadataAddDialogFragment"
             app:destination="@id/blockedMetadataAddDialogFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/onboardingFragment"
-        android:name="com.arn.scrobble.onboarding.OnboardingFragment"
-        android:label=" "
-        tools:layout="@layout/content_onboarding">
-        <action
-            android:id="@+id/action_onboardingFragment_to_homePagerFragment"
-            app:destination="@id/myHomePagerFragment" />
-        <argument
-            android:name="nopass"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <deepLink
-            android:id="@+id/deepLink6"
-            app:uri="pscrobbler://screen/onboarding?nopass={nopass}" />
-    </fragment>
+
     <dialog
         android:id="@+id/blockedMetadataAddDialogFragment"
         android:name="com.arn.scrobble.edits.BlockedMetadataAddDialogFragment"

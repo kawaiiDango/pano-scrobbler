@@ -148,10 +148,12 @@ class MainActivity : AppCompatActivity(),
             if (Stuff.isLoggedIn()) {
                 canShowNotices = true
                 mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
+                navController.setGraph(it, startArguments)
             } else {
-                it.setStartDestination(R.id.onboardingFragment)
+//                it.setStartDestination(R.id.onboardingFragment)
+                navController.setGraph(R.navigation.nav_graph_onboarding)
+
             }
-            navController.setGraph(it, startArguments)
         }
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -311,7 +313,7 @@ class MainActivity : AppCompatActivity(),
                     if (!prefs.scrobblerEnabled)
                         prefs.scrobblerEnabled = true
                     else
-                        navController.navigate(R.id.onboardingFragment)
+                        navController.setGraph(R.navigation.nav_graph_onboarding)
                 }
                 .focusOnTv()
                 .show()

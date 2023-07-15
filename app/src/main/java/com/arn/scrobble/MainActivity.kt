@@ -346,8 +346,8 @@ class MainActivity : AppCompatActivity(),
                 v.getGlobalVisibleRect(outRect)
                 if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
                     v.clearFocus()
-                    ContextCompat.getSystemService(this, InputMethodManager::class.java)!!
-                        .hideSoftInputFromWindow(v.getWindowToken(), 0)
+                    ContextCompat.getSystemService(this, InputMethodManager::class.java)
+                        ?.hideSoftInputFromWindow(v.getWindowToken(), 0)
                 }
             }
         }

@@ -606,7 +606,7 @@ class LFMRequester(
                 is Track -> Track.getTags(entry.artist, entry.name, session)
                 else -> throw RuntimeException("invalid type")
             }
-            list.toMutableSet()
+            list.toSet()
         }
     }
 

@@ -88,12 +88,13 @@ class UserTagsFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     override fun onShow(p0: DialogInterface?) {
-        viewModel.tags.observe(viewLifecycleOwner, object : Observer<MutableSet<String>> {
-            override fun onChanged(it: MutableSet<String>) {
+        viewModel.tags.observe(viewLifecycleOwner, object : Observer<Set<String>?> {
+            override fun onChanged(value: Set<String>?) {
+                value ?: return
                 binding.userTagsProgress.hide()
-                if (it.isEmpty())
+                if (value.isEmpty())
                     binding.userTagsStatus.visibility = View.VISIBLE
-                it.forEach {
+                value.forEach {
                     addChip(it)
                 }
                 viewModel.tags.removeObserver(this)

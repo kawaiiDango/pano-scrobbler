@@ -381,10 +381,7 @@ class SessListener(
 
             if (lastState == state /* bandcamp does this */ &&
                 playbackState.errorMessage != "synthetic" &&
-                !(state == PlaybackState.STATE_PLAYING &&
-                        isPossiblyAtStart
-//                        && packageName !in arrayOf(Stuff.PACKAGE_YOUTUBE_MUSIC)
-                        )
+                !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart)
             )
                 return
 

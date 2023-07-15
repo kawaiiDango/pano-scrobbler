@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawablePadding="16px"
-        android:textSize="56px"
+        android:textSize="48px"
         android:textStyle="bold"
         tools:text="Top Artists" />
 
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingHorizontal="16px"
-        android:textSize="48px"
+        android:textSize="42px"
         tools:text="Overall" />
 
     <!--  Compound drawables do not appear in the image for some reason  -->
@@ -41,7 +41,7 @@
         android:id="@+id/collage_footer_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="50px"
+        android:textSize="42px"
         tools:text="username" />
 
     <TextView
@@ -50,23 +50,37 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16px"
         android:textAlignment="textEnd"
-        android:textSize="40px"
+        android:textSize="36px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/collage_footer_branding_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Pano\nScrobbler" />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/collage_footer_branding_image"
+    <ImageView
+        android:id="@+id/collage_footer_branding_image_bg"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginVertical="8px"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearance="@style/roundedCorners"
-        app:srcCompat="@drawable/ic_launcher" />
+        app:srcCompat="@drawable/shape_launcher_bg_round" />
+
+    <ImageView
+        android:id="@+id/collage_footer_branding_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleX="1.3"
+        android:scaleY="1.3"
+        android:layout_marginVertical="8px"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/vd_launcher_fg" />
 
     <ImageView
         android:id="@+id/collage_type_image"

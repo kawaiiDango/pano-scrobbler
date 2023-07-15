@@ -45,6 +45,7 @@ class BaselineProfileGenerator {
             // Start default activity for your app
             pressHome()
             startActivityAndWait()
+            device.setOrientationPortrait()
             loginIfNeeded()
             Thread.sleep(1500)
             switchTabs()

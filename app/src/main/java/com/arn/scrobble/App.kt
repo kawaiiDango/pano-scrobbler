@@ -53,9 +53,9 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         if (BuildConfig.DEBUG) {
             enableStrictMode()
         }
-        super.onCreate()
 
         context = applicationContext
+        super.onCreate()
 
         initCaller()
 

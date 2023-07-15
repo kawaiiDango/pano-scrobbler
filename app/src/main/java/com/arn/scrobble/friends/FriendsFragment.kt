@@ -204,7 +204,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
 
             loadMoreListener.currentPage = it.page
 
-            doNextTimedRefresh()
 
             if (binding.swipeRefresh.isRefreshing) {
                 binding.friendsGrid.scheduleLayoutAnimation()
@@ -212,8 +211,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
             }
             loadMoreListener.loading = false
             binding.empty.isVisible = viewModel.sectionedList.isEmpty()
-
             adapter.notifyDataSetChanged()
+
+            doNextTimedRefresh()
         }
 
         viewModel.tracksReceiver.observe(viewLifecycleOwner) {
@@ -221,9 +221,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
             viewModel.lastPlayedTracksMap[username] = tracksPr.pageResults.firstOrNull()
             viewModel.playCountsMap[username] = tracksPr.totalPages
 
-            val idxChanged = viewModel.sectionedList.indexOfFirst {
-                it as UserSerializable
-                it.name == username
+            val idxChanged = viewModel.sectionedList.indexOfFirst { user ->
+                user as UserSerializable
+                user.name == username
             }
 
             if (idxChanged != -1) {

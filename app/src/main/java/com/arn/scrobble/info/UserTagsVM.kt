@@ -11,19 +11,19 @@ import de.umass.lastfm.MusicEntry
 class UserTagsVM : ViewModel() {
     lateinit var entry: MusicEntry
     lateinit var historyPref: HistoryPref
-    val tags = MutableLiveData<MutableSet<String>>()
+    val tags = MutableLiveData<Set<String>>()
 
     fun loadTags() {
         LFMRequester(viewModelScope, tags).getUserTagsForEntry(entry, historyPref)
     }
 
     fun deleteTag(tag: String) {
-        tags.value = tags.value?.filter { it != tag }?.toMutableSet()
+        tags.value = tags.value?.filter { it != tag }?.toSet()
         LFMRequester(viewModelScope).deleteUserTagsForEntry(entry, tag)
     }
 
     fun addTag(newTags: String) {
-        tags.value = tags.value?.apply { this += splitTags(newTags) }
+        tags.value = tags.value?.also { it + splitTags(newTags) }
 
         // ignore play store test string
         if (newTags == "text") return

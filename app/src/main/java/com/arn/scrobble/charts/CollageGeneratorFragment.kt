@@ -31,7 +31,7 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.mapConcurrently
 import com.arn.scrobble.databinding.DialogCollageGeneratorBinding
-import com.arn.scrobble.databinding.FooterCollageBinding
+import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.GridItemCollageBinding
 import com.arn.scrobble.databinding.LayoutCollageHeaderBinding
 import com.arn.scrobble.scrobbleable.Scrobblables
@@ -386,7 +386,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
     }
 
     private fun createAddFooter(collageRoot: LinearLayout, type: Int, textScaler: Float) {
-        val collageFooter = FooterCollageBinding.inflate(layoutInflater, collageRoot, true)
+        val collageFooter = LayoutCollageFooterBinding.inflate(layoutInflater, collageRoot, true)
 
         if (prefs.collageUsername) {
             collageFooter.collageFooterUsername.visibility = View.VISIBLE
@@ -399,6 +399,7 @@ class CollageGeneratorFragment : BottomSheetDialogFragment() {
 
         if (prefs.proStatus) {
             collageFooter.collageFooterBrandingImage.visibility = View.GONE
+            collageFooter.collageFooterBrandingImageBg.visibility = View.GONE
             collageFooter.collageFooterBrandingText.visibility = View.GONE
         } else {
             collageFooter.collageFooterBrandingText.text =

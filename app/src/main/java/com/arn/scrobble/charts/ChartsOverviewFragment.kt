@@ -9,6 +9,7 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -33,7 +34,7 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
-import com.arn.scrobble.databinding.FooterCollageBinding
+import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
 import com.arn.scrobble.ui.RoundedBarChart
@@ -360,7 +361,8 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
 
         chartFrameBinding.chartsList.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
-        (chartFrameBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+        (chartFrameBinding.chartsList.itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations =
+            false
         chartFrameBinding.chartsList.adapter = adapter
 
         sectionVM.chartsReceiver.observe(viewLifecycleOwner) {
@@ -616,11 +618,12 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
         val tagCloudBitmap = chartsOverviewVM.tagCloudBitmap?.second ?: return null
         val selectedPeriod = viewModel.selectedPeriod.value ?: return null
 
-        val footerBinding = FooterCollageBinding.inflate(layoutInflater, null, false)
+        val footerBinding = LayoutCollageFooterBinding.inflate(layoutInflater, null, false)
 
         if (App.prefs.proStatus) {
             footerBinding.collageFooterBrandingText.visibility = View.GONE
             footerBinding.collageFooterBrandingImage.visibility = View.GONE
+            footerBinding.collageFooterBrandingImageBg.visibility = View.GONE
         }
 
         footerBinding.collageFooterDuration.text = selectedPeriod.name

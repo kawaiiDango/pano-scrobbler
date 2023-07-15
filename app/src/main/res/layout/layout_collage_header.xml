@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="?colorControlNormal"
-        android:textSize="50px"
+        android:textSize="42px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/collage_header_icon"
         app:layout_constraintTop_toTopOf="parent"

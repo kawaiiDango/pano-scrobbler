@@ -1,6 +1,6 @@
 package com.arn.scrobble.ui
 
-import androidx.collection.LruCache
+import android.util.LruCache
 import coil.intercept.Interceptor
 import coil.request.ImageRequest
 import coil.request.ImageResult
@@ -15,14 +15,16 @@ import de.umass.lastfm.MusicEntry
 import de.umass.lastfm.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 
 
 class MusicEntryImageInterceptor : Interceptor {
 
-    private var nwReqCount = 0
-    private val delayMs = 150L
+    private val delayMs = 200L
     private val musicEntryCache by lazy { LruCache<String, Optional<MusicEntry>>(500) }
+    private val semaphore = Semaphore(3)
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val musicEntryImageReq = when (val data = chain.request.data) {
@@ -38,18 +40,23 @@ class MusicEntryImageInterceptor : Interceptor {
         if (cachedOptional == null) {
             withContext(Dispatchers.IO) {
                 try {
-                    delay(nwReqCount * delayMs)
-                    nwReqCount++
                     fetchedEntry = when (entry) {
                         is Artist -> {
                             if (Tokens.SPOTIFY_ARTIST_INFO_SERVER.isNotEmpty()) {
-                                val info = LFMRequester.getArtistInfoSpotify(entry.name)
+                                val info =
+                                    semaphore.withPermit {
+                                        delay(delayMs)
+                                        LFMRequester.getArtistInfoSpotify(entry.name)
+                                    }
                                 if (info?.name.equals(entry.name, ignoreCase = true))
                                     info
                                 else
                                     null
                             } else {
-                                val imagesMap = SpotifyRequester.getSpotifyArtistImages(entry.name)
+                                val imagesMap = semaphore.withPermit {
+                                    delay(delayMs)
+                                    SpotifyRequester.getSpotifyArtistImages(entry.name)
+                                }
                                 Artist(entry.name, null)
                                     .apply { imageUrlsMap = imagesMap }
                             }
@@ -58,26 +65,28 @@ class MusicEntryImageInterceptor : Interceptor {
                         is Album -> {
                             val hasMissingArtwork = entry.imageUrlsMap?.values?.firstOrNull()
                                 ?.let { imgUrl ->
-                                    StarInterceptor.starPatterns.any {
-                                        imgUrl.contains(it)
-                                    }
+                                    StarInterceptor.starPatterns.any { imgUrl.contains(it) }
                                 } ?: true
 
                             if (hasMissingArtwork)
-                                Album.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
+                                semaphore.withPermit {
+                                    delay(delayMs)
+                                    Album.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
+                                }
                             else
                                 entry
                         }
 
-                        is Track -> Track.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
+                        is Track -> semaphore.withPermit {
+                            delay(delayMs)
+                            Track.getInfo(entry.artist, entry.name, Stuff.LAST_KEY)
+                        }
+
                         else -> throw IllegalArgumentException("Not valid MusicEntry")
                     }
                     musicEntryCache.put(key, Optional(fetchedEntry))
                 } catch (e: Exception) {
                     throw e
-                } finally {
-                    if (nwReqCount > 0)
-                        nwReqCount--
                 }
             }
         }

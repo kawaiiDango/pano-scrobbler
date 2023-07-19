@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
@@ -275,10 +276,8 @@ class FriendsFragment : Fragment(), ItemClickListener {
             if (i < 0)
                 break
             val userSerializable = viewModel.sectionedList[i] as UserSerializable
-            if (!adapter.handler.hasMessages(userSerializable.name.hashCode())) {
-                val msg = adapter.handler.obtainMessage(userSerializable.name.hashCode())
-                msg.arg1 = i
-                adapter.handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
+            viewModel.viewModelScope.launch {
+                adapter.loadFriendsRecents(userSerializable.name)
             }
         }
     }

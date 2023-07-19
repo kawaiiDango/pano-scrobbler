@@ -156,6 +156,7 @@ class WebViewFragment : Fragment() {
     }
 
     inner class MyWebViewClient : WebViewClient() {
+        @Deprecated("Deprecated in Java")
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
 
             if (
@@ -181,6 +182,7 @@ class WebViewFragment : Fragment() {
             return callbackHandled
         }
 
+        @Deprecated("Deprecated in Java")
         override fun onReceivedError(
             view: WebView?,
             errorCode: Int,

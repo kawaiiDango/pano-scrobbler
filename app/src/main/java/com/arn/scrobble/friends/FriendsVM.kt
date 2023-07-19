@@ -21,6 +21,8 @@ import de.umass.lastfm.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 
 
@@ -37,6 +39,7 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
     val tracksReceiver = LiveEvent<Pair<String, PaginatedResult<Track>>>()
     val privateUsers = mutableSetOf<String>() // todo this is a hack
     private val errorNotifier = LFMRequester.ExceptionNotifier()
+    private val friendsRecentsSemaphore = Semaphore(3)
     var showsPins = false
     var page = 1
     var totalPages = 1
@@ -76,9 +79,9 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun loadFriendsRecents(username: String) {
-        viewModelScope.launch(errorNotifier) {
-            val pr = withContext(Dispatchers.IO) {
+    suspend fun loadFriendsRecents(username: String) {
+        val pr = withContext(Dispatchers.IO) {
+            friendsRecentsSemaphore.withPermit {
                 Scrobblables.current!!.getRecents(
                     1,
                     username,
@@ -86,12 +89,12 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
                     includeNowPlaying = true,
                 )
             }
-
-            if (pr.pageResults != null && pr.pageResults.isNotEmpty())
-                tracksReceiver.value = username to pr
-            else
-                privateUsers += username
         }
+
+        if (pr.pageResults != null && pr.pageResults.isNotEmpty())
+            tracksReceiver.value = username to pr
+        else
+            privateUsers += username
     }
 
     fun putFriends(users: Collection<User>, replace: Boolean) {

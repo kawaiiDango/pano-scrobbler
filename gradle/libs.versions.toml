@@ -1,8 +1,8 @@
 [versions]
-aboutlibraries = "10.8.2"
+aboutlibraries = "10.8.3"
 annotation = "1.6.0"
 bimap = "1.1.0"
-coil-bom = "2.4.0"
+coil = "2.4.0"
 constraintlayout = "2.2.0-alpha10"
 billing = "6.0.1"
 core-ktx = "1.12.0-alpha05"
@@ -10,7 +10,7 @@ appcompat = "1.7.0-alpha02"
 core-remoteviews = "1.0.0-beta04"
 desugar_jdk_libs = "2.0.3"
 espresso-core = "3.6.0-alpha01"
-firebase-bom = "32.1.1"
+firebase-bom = "32.2.0"
 crashlytics = "2.9.5"
 fragment-ktx = "1.7.0-alpha01"
 harmony = "1.2.2"
@@ -43,8 +43,8 @@ uiautomator = "2.3.0-alpha03"
 vertical-stepper-form = "2.7.0"
 work-runtime-ktx = "2.9.0-alpha01"
 google-services = "4.3.15"
-android-application = "8.2.0-alpha12"
-benchmark-macro-junit4 = "1.2.0-alpha16"
+android-application = "8.2.0-alpha13"
+benchmark-macro-junit4 = "1.2.0-beta01"
 ksp = "1.9.0-1.0.11"
 github-release = "2.4.1"
 baselineprofile = "1.2.0-alpha16"
@@ -77,9 +77,8 @@ androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", versi
 billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work-runtime-ktx" }
 bimap = { module = "io.michaelrocks.bimap:bimap", version.ref = "bimap" }
-coil-bom = { module = "io.coil-kt:coil-bom", version.ref = "coil-bom" }
-coil = { module = "io.coil-kt:coil" }
-coil-gif = { module = "io.coil-kt:coil-gif" }
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
+coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }

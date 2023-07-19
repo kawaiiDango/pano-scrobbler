@@ -170,7 +170,6 @@ dependencies {
     implementation(libs.mpAndroidChart)
     implementation(libs.nestedscrollwebview)
 
-    implementation(libs.coil.bom)
     implementation(libs.coil)
     implementation(libs.coil.gif)
 

@@ -4,14 +4,12 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.VectorDrawable
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
@@ -32,7 +30,9 @@ import com.arn.scrobble.ui.UiUtils
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import de.umass.lastfm.ImageSize
-import java.lang.ref.WeakReference
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 /**
@@ -46,7 +46,7 @@ class FriendsAdapter(
 
     lateinit var itemClickListener: ItemClickListener
     override lateinit var loadMoreListener: EndlessRecyclerViewScrollListener
-    val handler by lazy { DelayHandler(WeakReference(this)) }
+
     private val shapeAppearanceModel by lazy {
         ShapeAppearanceModel.builder(
             fragmentBinding.root.context,
@@ -87,12 +87,10 @@ class FriendsAdapter(
     // total number of cells
     override fun getItemCount() = viewModel.sectionedList.size
 
-    fun loadFriendsRecents(pos: Int) {
-        val glm = fragmentBinding.friendsGrid.layoutManager as GridLayoutManager? ?: return
-        if (pos < viewModel.sectionedList.size && (pos + glm.spanCount) >= glm.findFirstVisibleItemPosition() &&
-            (pos - glm.spanCount) <= glm.findLastVisibleItemPosition()
-        )
-            viewModel.loadFriendsRecents((viewModel.sectionedList[pos] as UserSerializable).name)
+    suspend fun loadFriendsRecents(username: String) {
+        delay(Stuff.FRIENDS_RECENTS_DELAY)
+        val glm = fragmentBinding.friendsGrid.layoutManager as? GridLayoutManager ?: return
+        viewModel.loadFriendsRecents(username)
     }
 
     override fun getItemId(position: Int): Long {
@@ -105,6 +103,7 @@ class FriendsAdapter(
     ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
         var isPinned = false
+        private var friendsRecentsJob: Job? = null
 
         init {
             if (clickable) {
@@ -162,11 +161,12 @@ class FriendsAdapter(
                     binding.friendsMusicIcon.setImageResource(R.drawable.vd_music_circle)
 
                 if (userSerializable.name !in viewModel.privateUsers &&
-                    !handler.hasMessages(userSerializable.name.hashCode()) &&
-                    bindingAdapterPosition > -1) {
-                    val msg = handler.obtainMessage(userSerializable.name.hashCode())
-                    msg.arg1 = bindingAdapterPosition
-                    handler.sendMessageDelayed(msg, Stuff.FRIENDS_RECENTS_DELAY)
+                    bindingAdapterPosition > -1
+                ) {
+                    friendsRecentsJob?.cancel()
+                    friendsRecentsJob = viewModel.viewModelScope.launch {
+                        loadFriendsRecents(userSerializable.name)
+                    }
                 }
             }
 
@@ -192,7 +192,6 @@ class FriendsAdapter(
                     bg.setTint(color)
                 }
 
-//                if (userImg != null) {
                 binding.friendsPic
                     .load(userImgUrl) {
                         placeholder(R.drawable.vd_placeholder_user)
@@ -215,18 +214,7 @@ class FriendsAdapter(
                                 viewModel.urlToPaletteMap[userImgUrl] = paletteColors
                             })
                     }
-//                } else {
-//                    binding.friendsPic.load(InitialsDrawable(itemView.context, user))
-//                }
             }
-        }
-    }
-
-    class DelayHandler(private val friendsAdapterWr: WeakReference<FriendsAdapter>) :
-        Handler(Looper.getMainLooper()) {
-        override fun handleMessage(m: Message) {
-            val pos = m.arg1
-            friendsAdapterWr.get()?.loadFriendsRecents(pos)
         }
     }
 

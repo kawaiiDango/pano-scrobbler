@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.arn.scrobble.App
 import com.arn.scrobble.BuildConfig
+import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.ListenAlong
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
@@ -276,7 +277,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             if (i < 0)
                 break
             val userSerializable = viewModel.sectionedList[i] as UserSerializable
-            viewModel.viewModelScope.launch {
+            viewModel.viewModelScope.launch(LFMRequester.ExceptionNotifier()) {
                 adapter.loadFriendsRecents(userSerializable.name)
             }
         }

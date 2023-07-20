@@ -16,6 +16,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coil.load
 import com.arn.scrobble.App
+import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentFriendsBinding
@@ -164,7 +165,7 @@ class FriendsAdapter(
                     bindingAdapterPosition > -1
                 ) {
                     friendsRecentsJob?.cancel()
-                    friendsRecentsJob = viewModel.viewModelScope.launch {
+                    friendsRecentsJob = viewModel.viewModelScope.launch(LFMRequester.ExceptionNotifier()) {
                         loadFriendsRecents(userSerializable.name)
                     }
                 }

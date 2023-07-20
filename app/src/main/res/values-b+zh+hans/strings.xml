@@ -95,6 +95,7 @@
     <string name="music_players">音乐播放器</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">其他应用</string>
     <string name="choose_apps">选择要记录的应用</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">应用</string>
     <string name="offline">已离线。所展示的数据并不是最新的。</string>
     <string name="unavailable_offline">离线时不可用</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">服务</string>
@@ -118,6 +119,7 @@
     <string name="library" comment="search within the library">媒体库</string>
     <string name="global" comment="search globally across lastfm">全局</string>
     <string name="reindex">快速索引</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">建立记录索引</string>
     <string name="full_index">完整索引</string>
     <string name="take_long_time">可能会花很长时间</string>
     <string name="full_index_desc">仅在您从网站编辑或删除过记录条目时使用该选项。</string>
@@ -137,7 +139,10 @@
     <string name="show_all">查看所有</string>
     <string name="edit">编辑</string>
     <string name="delete">删除</string>
+    <string name="delete_all">全部删除</string>
     <string name="love" comment="Love/like a song">喜爱</string>
+    <string name="hate" comment="Hate or dislike a song">点踩</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">取消点踩</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">不再喜爱</string>
     <string name="pending_scrobbles">待记录的音乐</string>
     <string name="pending_scrobble">待记录的音乐</string>
@@ -238,12 +243,15 @@
     <string name="secondary_color">次要颜色</string>
     <string name="tint_background" comment="Tint the background with the primary color">背景色调</string>
     <string name="random_theme">每次启动时随机显示</string>
+    <string name="edit_name" comment="name for regex pattern">友好的姓名</string>
     <string name="edit_regex">正则表达式模板</string>
     <string name="edit_regex_replacement">正则表达式替换</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">输入框</string>
     <string name="edit_replace">替换</string>
     <string name="edit_first" comment="First occurrence of a pattern">第一项</string>
     <string name="edit_all" comment="All occurrences of a pattern">全部</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">提取</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">为捕获组 <i>track、album、artist</i> 或 <i>albumArtist</i> 命名以从其他字段中进行提取</string>
     <string name="edit_continue">若有结果，继续匹配其它正则</string>
     <string name="edit_case_sensitive">区分大小写</string>
     <string name="edit_regex_test" comment="(Test regex rules)">测试</string>
@@ -305,6 +313,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">分钟</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">百分比</string>
     <string name="pref_logout">退出登录</string>
+    <string name="sure_tap_again">再次点击以确认</string>
     <string name="pref_login">登录</string>
     <string name="pref_about" comment="Info about this app">关于</string>
     <string name="pref_privacy_policy">隐私策略</string>
@@ -318,6 +327,7 @@
     <string name="pref_change_locale">更改语言</string>
     <string name="pref_crashlytics_enabled">自动上报错误</string>
     <string name="pref_misc">杂项</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">每周起始于</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">导入 &amp; 导出</string>
     <string name="pref_export">导出</string>
     <string name="pref_export_desc">备份设置、编辑列表和黑名单。出于安全原因不保存登录信息。可用于设备间同步或与朋友共享。</string>
@@ -382,6 +392,7 @@
     <string name="submitting_loves" formatted="true">正在提交喜爱曲目，还剩 %1$d 条</string>
     <string name="pending_batch" comment="For pending scrobbles">正在提交批量记录</string>
     <string name="webview_error">页面加载失败（您的网络是否正常？）</string>
+    <string name="bar_chart">柱状图表</string>
     <string name="cleared_disabled_apps">已清除禁用应用</string>
     <string name="fix_it_title">可能的解决方案</string>
     <string name="fix_it_startup_title">省电程序/启动管理器</string>

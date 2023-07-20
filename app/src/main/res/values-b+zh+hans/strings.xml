@@ -56,6 +56,7 @@
     <string name="reset">重置</string>
     <string name="settings">设置</string>
     <string name="bug_report">Bug 报告</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">专辑封面</string>
     <string name="artist_image">艺术家图像</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">无法解析标题</string>

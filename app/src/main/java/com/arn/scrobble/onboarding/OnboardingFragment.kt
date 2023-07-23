@@ -63,6 +63,8 @@ class OnboardingFragment : Fragment(), StepperFormListener {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         onboardingSteps = OnboardingSteps(this)
 
         onboardingSteps.addStep { LoginStep() }
@@ -100,12 +102,12 @@ class OnboardingFragment : Fragment(), StepperFormListener {
     override fun onCompletedForm() {
         mainNotifierViewModel.currentUser = Scrobblables.currentScrobblableUser!!
         findNavController().apply {
-//            if (graph.startDestinationId != R.id.myHomePagerFragment) {
-            setGraph(R.navigation.nav_graph) // reset
-//            } else {
-//                popBackStack(R.id.myHomePagerFragment, true)
-//                navigate(R.id.myHomePagerFragment)
-//            }
+            if (graph.startDestinationId != R.id.myHomePagerFragment) {
+                setGraph(R.navigation.nav_graph) // reset
+            } else {
+                popBackStack(R.id.myHomePagerFragment, true)
+                navigate(R.id.myHomePagerFragment)
+            }
         }
     }
 

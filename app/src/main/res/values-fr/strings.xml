@@ -298,6 +298,8 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Légendes des images</string>
     <string name="username" comment="last.fm Username">Nom d’utilisateur</string>
     <string name="pref_master">Scrobler la musique</string>
+    <string name="pref_master_qs_add">Ajouter une option de paramétrage rapide</string>
+    <string name="pref_master_qs_already_addded">L\'option de paramétrage rapide est déjà configurée</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_noti_categories">Catégories de notification</string>
     <string name="pref_scrobble_noti">Notifications de scrobble</string>

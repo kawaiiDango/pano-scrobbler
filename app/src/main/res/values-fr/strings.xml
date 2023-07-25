@@ -255,6 +255,7 @@
     <string name="edit_replace">Remplacer</string>
     <string name="edit_first" comment="First occurrence of a pattern">Premier</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tous</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extraire</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
     <string name="edit_case_sensitive">Sensible à la casse</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>

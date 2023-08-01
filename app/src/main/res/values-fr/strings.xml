@@ -339,13 +339,18 @@
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La semaine commence le</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importer &amp; Exporter</string>
     <string name="pref_export">Exportation</string>
+    <string name="pref_export_desc">Sauvegarde les paramètres, les modifications et la blocklist. Ne sauvegarde pas les identifiants pour des raisons de sécurité. Utile en cas de changement d\'appareil ou pour partager les paramètres avec des amis.</string>
     <string name="pref_import">Importation</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personnalisation</string>
     <string name="pref_themes" comment="Color themes">Thèmes</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix and Match\nModifie également la couleur de la notification</string>
     <string name="pref_widget_charts">Widget de l\'écran d\'accueil - Graphiques</string>
     <string name="pref_show_albums">Afficher le titre des albums</string>
     <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…pour les scrobbles</string>
     <string name="pref_show_scrobble_sources">Afficher les icônes des applications depuis lesquelles vous avez scrobblé</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…à côté de chaque scrobble. Ces données restent sur votre appareil</string>
+    <string name="pref_search_in_source">Rechercher &amp; lancer sur l\'application depuis laquelle le scrobble est en cours</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Pour les applications compatibles</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listes</string>
     <string name="pref_regex_edits">Modifications des paternes</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Métadonnées bloquées</string>
@@ -355,22 +360,30 @@
     <string name="pref_check_updates">Rechercher des mises à jour</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Mise à jour disponible: %1$s</string>
     <string name="download" comment="Its a verb">Télécharger</string>
+    <string name="changelog">Journal des modifications</string>
     <string name="import_hey_wtf">Ce n\'est probablement pas un fichier d\'exportation Pano Scrobbler</string>
     <string name="export_failed">Échec de l\'export</string>
     <string name="imported">Importé</string>
     <string name="import_options">Options d\'import</string>
     <string name="import_lists_nope">Ne pas importer les modifications et la liste noire</string>
     <string name="import_lists_replace_all">Remplacer toutes les modifications et la liste noire</string>
+    <string name="import_lists_replace_existing">Fusionner, remplacer les modifications existantes et la blocklist</string>
+    <string name="import_lists_keep">Fusionner, conserver les modifications existantes et la blocklist</string>
     <string name="import_settings">Importer les paramètres</string>
+    <string name="pref_intents_dialog_title" comment="Android broadcast intents for apps like Tasker">Broadcast intents</string>
     <string name="current_track">Morceau en cours de lecture :</string>
+    <string name="pref_intents">Intents pour Tasker etc</string>
     <string name="copied">Copié !</string>
     <string name="lastfm_reauth">Vous devez vous authentifier à nouveau pour éditer ou supprimer des scrobbles</string>
+    <string name="custom_listenbrainz">Serveur personnalisé Listenbrainz</string>
     <string name="failed_encode_url">L\'encodage de l\'URL a échoué</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Vérifier %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Accès spécial à l\'application &gt; Accès aux notifications &gt; %1$s</string>
     <string name="artist_extra">Morceaux, albums &amp; similaires</string>
     <string name="no_browser">Aucun navigateur n’est installé</string>
     <string name="no_player">Aucun lecteur de musique n\'est installé</string>
     <string name="not_running">⚠ Le scrobbler a été tué par votre système</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Raison d\'arrêt donnée par le système: %s</string>
     <string name="not_running_fix_action">Réparer</string>
     <string name="login_submit" comment="Verifies the login details">Vérifier</string>
     <string name="acr_host" comment="Web hostname">Hôte</string>
@@ -378,13 +391,17 @@
     <string name="acr_secret" comment="API secret">Confidentiel</string>
     <string name="add_acr_key">Ajouter une clé ACRCloud</string>
     <string name="remove_acr_key">Supprimer la clé ACRCloud</string>
+    <string name="add_acr_consider">Pour éviter les limites de l\'API, pensez à ajouter votre propre clé ACRCloud</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Ajouter</string>
     <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Inscrivez-vous sur https://console.acrcloud.com
 • Naviguer vers les projets &gt; Audio &amp; reconnaissance vidéo
 • Créer un nouveau projet, sélectionnez un enregistrement vocal et le seau de musique ACRCloud"</string>
+    <string name="shazam_scrobbling">Pour faire du scrobble continu, ouvrez plutôt <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> et activez Auto Shazam. Assurez-vous également que Shazam est activé pour le scrobble.</string>
     <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d restants</string>
+    <string name="submitting_loves" formatted="true">Envoi de soutien, %1$d restant</string>
     <string name="pending_batch" comment="For pending scrobbles">Soumission d\'un lot</string>
     <string name="webview_error">La page n\'a pas pu être chargée (votre connexion fonctionne-t-elle ?)</string>
+    <string name="bar_chart">Histogramme</string>
     <string name="cleared_disabled_apps">Applications désactivées effacées</string>
     <string name="fix_it_title">Corrections possibles</string>
     <string name="fix_it_startup_title">Économiseurs d\'énergie / gestionnaires de démarrage</string>

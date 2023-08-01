@@ -187,9 +187,11 @@
     <string name="uploading">Envoi en cours…</string>
     <string name="recording_failed">Impossible de démarrer l\'enregistrement. Le micro est peut-être occupé ou indisponible sur cet appareil</string>
     <string name="press_back">Appuyer sur retour une fois terminé</string>
+    <string name="powered_acr">Powered by <i><b>ACR</b>Cloud</i></string>
     <string name="details">Détails</string>
     <string name="saved_as_pending">Enregistré en tant que scrobble en attente</string>
     <string name="sort">Filtrer</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">Retour dans le temps</string>
     <string name="my_scrobbles">Mes scrobbles</string>
     <string name="their_scrobbles">Leurs scrobbles</string>
     <string name="listeners">Auditeurs</string>
@@ -230,6 +232,7 @@
     <string name="taggings" comment="(total count of) a particular tag">Tags</string>
     <string name="digest_weekly">Mes meilleurs scrobbles de la semaine dernière</string>
     <string name="digest_monthly">Mes meilleurs scrobbles du mois dernier</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s top scrobbles</string>
     <string name="my_tags" comment="Tags, the user has added">Mes tags</string>
     <string name="close" comment="To close a dialog or something">Fermer</string>
     <string name="user_tags_hint" comment="To add a new tag">Nouveau tag</string>
@@ -249,6 +252,7 @@
     <string name="secondary_color">Couleur secondaire</string>
     <string name="tint_background" comment="Tint the background with the primary color">Teindre l\'arrière-plan</string>
     <string name="random_theme">Aléatoire à chaque lancement</string>
+    <string name="edit_name" comment="name for regex pattern">Nom</string>
     <string name="edit_regex">Patterne regex</string>
     <string name="edit_regex_replacement">Remplacement regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Champs</string>
@@ -256,6 +260,7 @@
     <string name="edit_first" comment="First occurrence of a pattern">Premier</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tous</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extraire</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Nommez vos groupes de capture <i>morceau, album, artiste</i> ou <i>artiste de l\'album</i> pour les extraire d\'autres champs</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
     <string name="edit_case_sensitive">Sensible à la casse</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
@@ -266,6 +271,7 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite de modèles atteinte (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Poignée de classement glissante</string>
     <string name="text" comment="text to test regex rules with">Texte</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠️ Assurez-vous de bien comprendre <a href="https://www.google.com/search?q=regex+tutorial">les regex java</a> avant d\'utiliser ceci, ou utilisez l\'un des presets <b></b> fournis. Les correspondances avec les regex sont faites du haut vers le bas</string>
     <string name="blocked_metadata_info">i Remplir plusieurs de ces champs appliquera un opérateur ET entre eux</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Appuyer pour bloquer et passer</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Actions du lecteur</string>
@@ -298,14 +304,17 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Légendes des images</string>
     <string name="username" comment="last.fm Username">Nom d’utilisateur</string>
     <string name="pref_master">Scrobler la musique</string>
+    <string name="pref_master_qs_hint">Peut également être activé depuis le bouton de paramétrage rapide</string>
     <string name="pref_master_qs_add">Ajouter une option de paramétrage rapide</string>
     <string name="pref_master_qs_already_addded">L\'option de paramétrage rapide est déjà configurée</string>
+    <string name="pref_noti_q">Vous pouvez revoir la priorité de la notification si l\'icône n\'apparaît pas</string>
     <string name="pref_noti">Notifications</string>
     <string name="pref_noti_categories">Catégories de notification</string>
     <string name="pref_scrobble_noti">Notifications de scrobble</string>
     <string name="pref_lockscreen_noti">Notifications de l\'écran de verrouillage</string>
     <string name="pref_offline_info">ℹ️ Les scrobbles hors-ligne &amp; et les j\'aime vont être sauvegardés, pour être envoyés plus tard.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobbler depuis</string>
+    <string name="pref_enabled_apps_summary">ℹ️Supporte les applications qui indiquent les métadonnées de la musique. Pour éviter les doubles scrobbles de Spotify, activez-le seulement à un seul endroit.</string>
     <string name="pref_enabled_apps_title">Choisir les applications</string>
     <string name="pref_auto_detect">Scrobbler automatiquement à partir de nouvelles applications</string>
     <string name="pref_spotify_remote">Scrobbler depuis Spotify utilisé sur d\'autres appareils</string>
@@ -328,6 +337,7 @@
     <string name="pref_crashlytics_enabled">Signaler les erreurs automatiquement</string>
     <string name="pref_misc">Divers.</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La semaine commence le</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Importer &amp; Exporter</string>
     <string name="pref_export">Exportation</string>
     <string name="pref_import">Importation</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personnalisation</string>
@@ -385,6 +395,7 @@
     <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="help">Aide</string>
+    <string name="pro_support">C\'est une façon simple et rapide pour les utilisateurs incroyables comme vous de montrer leur soutien en reconnaissant la valeur de cette application.</string>
     <string name="pro_also_get">Vous obtiendrez également les fonctionnalités suivantes :</string>
     <string name="thank_you">Merci !</string>
     <string name="purchase_pending">Votre achat n\'a pas encore été confirmé par votre fournisseur de paiement. Veuillez vérifier après quelques minutes.</string>

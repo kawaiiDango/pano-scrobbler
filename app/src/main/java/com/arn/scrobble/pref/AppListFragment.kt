@@ -120,7 +120,7 @@ class AppListFragment : Fragment() {
                     com.google.android.material.R.string.abc_action_mode_done,
                     R.drawable.vd_check_simple,
                     {
-                        findNavController().popBackStack()
+                        findNavController().navigateUp()
                     },
                     {
                         if (allowedPackagesArg == null) {

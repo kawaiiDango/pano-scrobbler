@@ -16,10 +16,10 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.DialogBlockedMetadataBinding
-import com.arn.scrobble.databinding.TextInputEditBinding
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.ui.UiUtils.trimmedText
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
@@ -38,8 +38,6 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
 
         val ignoredArtist = arguments?.getString(NLService.B_IGNORED_ARTIST)
 
-        fun trimmedText(tib: TextInputEditBinding) = tib.edittext.text.toString().trim()
-
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(binding.root)
             .setPositiveButton(R.string.block, null)
@@ -47,27 +45,23 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
             .create()
 
         binding.apply {
-            blockArtist.root.hint = getString(R.string.artist_channel)
-            blockAlbumArtist.root.hint = getString(R.string.album_artist)
-            blockAlbum.root.hint = getString(R.string.album)
-            blockTrack.root.hint = getString(R.string.track)
-
-            blockArtist.edittext.setText(blockedMetadata.artist)
-            blockAlbumArtist.edittext.setText(blockedMetadata.albumArtist)
-            blockAlbum.edittext.setText(blockedMetadata.album)
-            blockTrack.edittext.setText(blockedMetadata.track)
+            blockArtistEdittext.setText(blockedMetadata.artist)
+            blockAlbumArtistEdittext.setText(blockedMetadata.albumArtist)
+            blockAlbumEdittext.setText(blockedMetadata.album)
+            blockTrackEdittext.setText(blockedMetadata.track)
             skip.isChecked = blockedMetadata.skip
             mute.isChecked = blockedMetadata.mute
+            ignore.isChecked = !blockedMetadata.skip && !blockedMetadata.mute
 
             arrayOf(blockArtist, blockAlbumArtist, blockAlbum, blockTrack).forEach {
-                it.root.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
-                it.root.setEndIconDrawable(R.drawable.vd_cancel)
+                it.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
+                it.setEndIconDrawable(R.drawable.vd_cancel)
             }
 
             if (ignoredArtist != null) {
                 useChannel.visibility = View.VISIBLE
                 useChannel.setOnCheckedChangeListener { _, checked ->
-                    blockArtist.edittext.setText(
+                    blockArtistEdittext.setText(
                         if (checked)
                             ignoredArtist
                         else
@@ -83,24 +77,28 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
 
                 if (!prefs.proStatus) {
                     dialog.dismiss()
-                    if (activity is MainDialogActivity) {
-                        NavDeepLinkBuilder(requireContext())
-                            .setComponentName(MainActivity::class.java)
-                            .setGraph(R.navigation.nav_graph)
-                            .setDestination(R.id.billingFragment)
-                            .createPendingIntent()
-                            .send()
-                    } else if (parentFragment is BlockedMetadataFragment) {
-                        findNavController().navigate(R.id.billingFragment)
+                    when (activity) {
+                        is MainDialogActivity -> {
+                            NavDeepLinkBuilder(requireContext())
+                                .setComponentName(MainActivity::class.java)
+                                .setGraph(R.navigation.nav_graph)
+                                .setDestination(R.id.billingFragment)
+                                .createPendingIntent()
+                                .send()
+                        }
+
+                        is MainActivity -> {
+                            findNavController().navigate(R.id.billingFragment)
+                        }
                     }
                     return@setOnClickListener
                 }
 
                 val newBlockedMetadata = blockedMetadata.copy(
-                    artist = trimmedText(binding.blockArtist),
-                    albumArtist = trimmedText(binding.blockAlbumArtist),
-                    album = trimmedText(binding.blockAlbum),
-                    track = trimmedText(binding.blockTrack),
+                    artist = binding.blockArtistEdittext.trimmedText(),
+                    albumArtist = binding.blockAlbumArtistEdittext.trimmedText(),
+                    album = binding.blockAlbumEdittext.trimmedText(),
+                    track = binding.blockTrackEdittext.trimmedText(),
                     skip = binding.skip.isChecked,
                     mute = binding.mute.isChecked,
                 )

@@ -996,7 +996,7 @@ class LFMRequester(
                                 .findExact(scrobbleData.artist, scrobbleData.track)
                         else
                             null
-                    if (edit != null || cachedTrack != null) {
+                    if (edit != null || cachedTrack != null || track != null) {
                         trackInfo.updateMetaFrom(scrobbleData).apply {
                             cachedTrack?.let {
                                 userPlayCount = it.plays
@@ -1346,11 +1346,7 @@ class LFMRequester(
                 lastNpInfoTime = now
                 lastNpInfoCount = 0
             }
-            val track = try {
-                Track.getInfo(artist, title, Stuff.LAST_KEY)
-            } catch (e: Exception) {
-                null
-            }
+            val track = runCatching { Track.getInfo(artist, title, Stuff.LAST_KEY) }.getOrNull()
             if (track != null)
                 validArtistsCache.put(artist, track.artist)
 

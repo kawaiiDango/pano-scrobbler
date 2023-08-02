@@ -22,7 +22,6 @@ class ChartsOverviewVM : ViewModel() {
     val listeningActivity by lazy { MutableLiveData<Map<TimePeriod, Int>>() }
     val tagCloud by lazy { MutableLiveData<Map<String, Float>>() }
     val tagCloudError by lazy { LiveEvent<Throwable>() }
-    val tagCloudRefresh by lazy { LiveEvent<Unit>() }
     var listeningActivityRequested = false
     var tagCloudRequested = false
     val tagCloudProgressLd by lazy { MutableLiveData<Double>() }

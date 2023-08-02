@@ -9,7 +9,7 @@
         android:id="@+id/edit_extract_track_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/text_input_margin"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
         tools:hint="@string/track">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -22,7 +22,7 @@
         android:id="@+id/edit_extract_album_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/text_input_margin"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
         tools:hint="@string/album">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -35,7 +35,7 @@
         android:id="@+id/edit_extract_artist_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/text_input_margin"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
         tools:hint="@string/artist">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -48,7 +48,7 @@
         android:id="@+id/edit_extract_album_artist_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/text_input_margin"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
         tools:hint="@string/album_artist">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -61,7 +61,7 @@
         android:id="@+id/edit_extract_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/text_input_margin"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
         android:justificationMode="inter_word"
         android:text="@string/edit_extract_desc" />
 

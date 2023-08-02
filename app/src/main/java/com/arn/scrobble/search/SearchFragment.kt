@@ -84,13 +84,14 @@ class SearchFragment : Fragment() {
             binding.searchType.visibility = View.GONE
         }
 
-        binding.searchTerm.editText!!.requestFocus()
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            delay(100)
-            showKeyboard(binding.searchTerm.editText!!)
-            delay(400)
-            binding.searchEdittext.showDropDown()
+        if (savedInstanceState == null) {
+            binding.searchEdittext.requestFocus()
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                showKeyboard(binding.searchTerm.editText!!)
+                delay(400)
+                binding.searchEdittext.showDropDown()
+            }
         }
 
         binding.searchTerm.editText!!.setOnEditorActionListener { textView, actionId, keyEvent ->
@@ -116,16 +117,15 @@ class SearchFragment : Fragment() {
             override fun afterTextChanged(editable: Editable) {
                 val term = editable.trim().toString()
                 if (term.isNotEmpty()) {
-//                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
-//                    bug https://github.com/material-components/material-components-android/issues/503
-                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                    binding.searchTerm.endIconMode = TextInputLayout.END_ICON_CLEAR_TEXT
                     binding.searchTerm.setEndIconDrawable(R.drawable.vd_cancel)
-                    binding.searchTerm.setEndIconOnClickListener { binding.searchTerm.editText?.text?.clear() }
 
-                    lastTimerJob?.cancel()
-                    lastTimerJob = viewLifecycleOwner.lifecycleScope.launch {
-                        delay(autoSubmitDelay)
-                        loadSearches(term)
+                    if (viewModel.searchResults.value?.term != term) {
+                        lastTimerJob?.cancel()
+                        lastTimerJob = viewLifecycleOwner.lifecycleScope.launch {
+                            delay(autoSubmitDelay)
+                            loadSearches(term)
+                        }
                     }
 
                 } else {

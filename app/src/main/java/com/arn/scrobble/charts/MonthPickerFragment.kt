@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
@@ -39,7 +40,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     private val cal by lazy { Calendar.getInstance() }
 
     private val monthAdapter by lazy {
-        object: ArrayAdapter<MonthPickerItem>(
+        object : ArrayAdapter<MonthPickerItem>(
             requireContext(),
             R.layout.list_item_month,
             R.id.text_item,
@@ -51,7 +52,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
     }
 
     private val yearAdapter by lazy {
-        object: ArrayAdapter<MonthPickerItem>(
+        object : ArrayAdapter<MonthPickerItem>(
             requireContext(),
             R.layout.list_item_month,
             R.id.text_item,
@@ -121,9 +122,7 @@ class MonthPickerFragment : DialogFragment(), DialogInterface.OnShowListener {
             )
 
             val idx = timePeriods.inverse[timePeriod]
-            requireActivity()
-                .supportFragmentManager
-                .setFragmentResult(
+            setFragmentResult(
                 Stuff.ARG_MONTH_PICKER_PERIOD,
                 bundleOf(Stuff.ARG_MONTH_PICKER_PERIOD to timePeriods[idx]!!)
             )

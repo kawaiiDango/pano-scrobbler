@@ -784,13 +784,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             binding.scrobblesList.scheduleLayoutAnimation()
         }
 
-        dpd.addOnNegativeButtonClickListener {
-            if (viewModel.toTime != null) {
-                viewModel.toTime = null
-                loadRecents(1, true)
-            }
-        }
-
         dpd.show(parentFragmentManager, null)
     }
 

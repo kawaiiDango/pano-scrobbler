@@ -94,6 +94,8 @@ object Stuff {
     const val ARG_MONTH_PICKER_PERIOD = "month_picker_period"
     const val ARG_SELECTED_YEAR = "selected_year"
     const val ARG_SELECTED_MONTH = "selected_month"
+    const val ARG_HIDDEN_TAGS_CHANGED = "hidden_tags_changed"
+    const val ARG_EDIT = "edit"
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
@@ -112,6 +114,7 @@ object Stuff {
     const val MIN_CHARTS_NUM_COLUMNS = 1
     const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
+    const val TIME_2002 = 1009823400L * 1000 // Jan 1 2002
 
     const val EXTRA_PINNED = "pinned"
 

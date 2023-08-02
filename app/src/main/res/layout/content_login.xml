@@ -20,14 +20,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:drawablePadding="8dp"
             android:visibility="gone"
-            tools:text="info" />
+            app:drawableStartCompat="@drawable/vd_info"
+            app:drawableTint="?colorControlNormal"
+            tools:text="info"
+            tools:visibility="visible" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_textfield1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/text_input_margin"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
             android:visibility="gone"
             tools:hint="User"
             tools:visibility="visible">
@@ -44,7 +48,7 @@
             android:id="@+id/login_textfield2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/text_input_margin"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
             android:visibility="gone"
             app:endIconTint="?colorSecondary"
             tools:hint="@string/album_optional"
@@ -63,7 +67,7 @@
             android:id="@+id/login_textfield_last"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/text_input_margin"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
             app:endIconTint="?colorSecondary"
             tools:hint="@string/pref_token_label">
 
@@ -79,7 +83,7 @@
             android:id="@+id/login_textfield_last2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/text_input_margin"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
             android:visibility="gone"
             tools:visibility="visible">
 

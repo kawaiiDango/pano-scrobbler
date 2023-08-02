@@ -1,6 +1,7 @@
 package com.arn.scrobble.friends
 
 import android.os.Parcelable
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.scrobbleable.AccountType
 import de.umass.lastfm.ImageHolder
 import de.umass.lastfm.ImageSize
@@ -56,7 +57,7 @@ data class UserSerializable(
             url = url,
             realname = realname,
             country = country ?: "", // gnufm
-            registeredTime = registeredDate?.time ?: 0, // gnufm
+            registeredTime = registeredDate?.time ?: Stuff.TIME_2002, // gnufm
             imgUrls = imageUrls
         )
     }

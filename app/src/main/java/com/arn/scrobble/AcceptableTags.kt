@@ -10,8 +10,11 @@ object AcceptableTags {
             .toSet()
     }
 
-    fun isAcceptable(lastfmTag: String) =
-        lastfmTag.isNotEmpty() &&
-                lastfmTag.lowercase().split(" ", "-").any { it in tagFragments }
+    fun isAcceptable(lastfmTag: String): Boolean {
+        val lastfmTagLower = lastfmTag.lowercase()
+        return lastfmTagLower.isNotEmpty() &&
+                lastfmTagLower.split(" ", "-").any { it in tagFragments } &&
+                lastfmTagLower !in App.prefs.hiddenTags
+    }
 }
 

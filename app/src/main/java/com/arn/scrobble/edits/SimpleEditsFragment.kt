@@ -8,25 +8,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentSimpleEditsBinding
-import com.arn.scrobble.databinding.DialogEditEditsBinding
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
 import com.arn.scrobble.ui.UiUtils.setupInsets
-import com.arn.scrobble.ui.UiUtils.toast
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -47,6 +46,17 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
     private val viewModel by viewModels<SimpleEditsVM>()
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
     private var lastSearchJob: Job? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setFragmentResultListener(
+            Stuff.ARG_EDIT,
+        ) { _, bundle ->
+            val edit = bundle.getParcelable<SimpleEdit>(Stuff.ARG_EDIT) ?: return@setFragmentResultListener
+            viewModel.upsert(edit)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,7 +100,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
             R.string.add,
             R.drawable.vd_add_borderless,
             {
-                showEditDialog(-1)
+                showEditDialog(null)
             }
         )
 
@@ -117,7 +127,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
         simpleEdits ?: return
 
         lastSearchJob?.cancel()
-        lastSearchJob=viewLifecycleOwner.lifecycleScope.launch {
+        lastSearchJob = viewLifecycleOwner.lifecycleScope.launch {
             mutex.withLock {
                 delay(300)
 
@@ -158,72 +168,15 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
         }
     }
 
-    private fun showEditDialog(position: Int) {
-        val isNew = position == -1
-
-        val edit = if (isNew)
-            SimpleEdit()
-        else
-            viewModel.edits[position]
-
-        val dialogBinding = DialogEditEditsBinding.inflate(layoutInflater).apply {
-            editTrackOrig.root.hint = getString(R.string.track)
-            editTrack.root.hint = getString(R.string.track)
-            editAlbumOrig.root.hint = getString(R.string.album)
-            editAlbum.root.hint = getString(R.string.album)
-            editArtistOrig.root.hint = getString(R.string.artist)
-            editArtist.root.hint = getString(R.string.artist)
-            editAlbumArtist.root.hint = getString(R.string.album_artist)
-            editTrackOrig.edittext.setText(edit.origTrack)
-            editTrack.edittext.setText(edit.track)
-            editAlbumOrig.edittext.setText(edit.origAlbum)
-            editAlbum.edittext.setText(edit.album)
-            editArtistOrig.edittext.setText(edit.origArtist)
-            editArtist.edittext.setText(edit.artist)
-            editAlbumArtist.edittext.setText(edit.albumArtist)
-        }
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setView(dialogBinding.root)
-            .setPositiveButton(android.R.string.ok, null)
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            val newEdit = SimpleEdit(
-                _id = edit._id,
-                origTrack = dialogBinding.editTrackOrig.edittext.text.toString().trim(),
-                track = dialogBinding.editTrack.edittext.text.toString().trim(),
-                origAlbum = dialogBinding.editAlbumOrig.edittext.text.toString().trim(),
-                album = dialogBinding.editAlbum.edittext.text.toString().trim(),
-                origArtist = dialogBinding.editArtistOrig.edittext.text.toString().trim(),
-                artist = dialogBinding.editArtist.edittext.text.toString().trim(),
-                albumArtist = dialogBinding.editAlbumArtist.edittext.text.toString().trim(),
-            )
-
-            if (
-                newEdit.origTrack.isEmpty() ||
-                newEdit.artist.isEmpty() ||
-                newEdit.track.isEmpty()
-            ) {
-                requireContext().toast(R.string.required_fields_empty)
-                return@setOnClickListener
-            }
-            if (edit != newEdit) {
-                if (position > 0)
-                    adapter.tempUpdate(position, newEdit)
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    viewModel.upsert(newEdit)
-                }
-            }
-            dialog.dismiss()
-        }
+    private fun showEditDialog(edit: SimpleEdit?) {
+        findNavController().navigate(R.id.simpleEditsEditFragment, bundleOf(Stuff.ARG_EDIT to edit))
     }
 
     override fun onItemClick(view: View, position: Int) {
         if (view.id == R.id.edits_delete) {
             viewModel.delete(position)
         } else if (viewModel.edits[position].legacyHash == null) {
-            showEditDialog(position)
+            showEditDialog(viewModel.edits[position])
         }
     }
 }

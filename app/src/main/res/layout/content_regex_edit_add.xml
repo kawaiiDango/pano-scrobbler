@@ -17,7 +17,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/text_input_margin"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
             android:hint="@string/edit_name">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -41,7 +41,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/text_input_margin"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
             android:text="@string/apps" />
 
         <com.google.android.material.chip.ChipGroup

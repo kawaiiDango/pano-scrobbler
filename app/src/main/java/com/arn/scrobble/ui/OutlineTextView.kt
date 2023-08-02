@@ -8,29 +8,19 @@ import android.util.TypedValue
 import com.arn.scrobble.R
 import com.google.android.material.textview.MaterialTextView
 
-class OutlineTextView : MaterialTextView {
+class OutlineTextView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0,
+): MaterialTextView(context, attrs, defStyle) {
 
     private val defaultStrokeWidth = 0f
     private var isDrawing = false
 
-    private var strokeColor = 0
-    private var strokeWidth = 0f
+    var strokeColor = 0
+    var strokeWidth = 0f
 
-    constructor(context: Context) : super(context) {
-        initResources(context, null)
-    }
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        initResources(context, attrs)
-    }
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context, attrs, defStyleAttr
-    ) {
-        initResources(context, attrs)
-    }
-
-    private fun initResources(context: Context, attrs: AttributeSet?) {
+    init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.OutlineTextView)
             strokeColor = a.getColor(
@@ -45,28 +35,12 @@ class OutlineTextView : MaterialTextView {
             strokeColor = currentTextColor
             strokeWidth = defaultStrokeWidth
         }
-        setStrokeWidth(strokeWidth)
-    }
-
-    fun setStrokeColor(color: Int) {
-        strokeColor = color
-    }
-
-    fun setStrokeWidth(widthPx: Float) {
-        strokeWidth = widthPx
-    }
-
-    fun setStrokeWidth(unit: Int, width: Float) {
-        strokeWidth = TypedValue.applyDimension(
-            unit, width, context.resources.displayMetrics
-        )
     }
 
     override fun invalidate() {
         if (isDrawing) return
         super.invalidate()
     }
-
 
     override fun onDraw(canvas: Canvas) {
         if (strokeWidth > 0) {

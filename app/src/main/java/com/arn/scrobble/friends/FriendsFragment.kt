@@ -329,7 +329,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
             contentBinding.friendsPic.layoutParams.height = 150.dp
             val playCount = viewModel.playCountsMap[userSerializable.name] ?: 0
             if (playCount > 0) {
-                val since = if (userSerializable.registeredTime == 0L)
+                val since = if (userSerializable.registeredTime <= Stuff.TIME_2002)
                     ""
                 else
                     DateFormat.getMediumDateFormat(context).format(userSerializable.registeredTime)

@@ -137,6 +137,7 @@
         android:layout_marginStart="@dimen/sidebar_width"
         android:fitsSystemWindows="true"
         app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

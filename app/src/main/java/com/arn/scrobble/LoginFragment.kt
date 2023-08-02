@@ -116,7 +116,7 @@ open class LoginFragment : DialogFragment() {
             if (showsDialog)
                 dismiss()
             else
-                activity?.onBackPressed()
+                findNavController().popBackStack()
         }
     }
 
@@ -218,31 +218,17 @@ open class LoginFragment : DialogFragment() {
                     if (URLUtil.isValidUrl(url)) {
                         if (!url.endsWith('/'))
                             url += '/'
-                        val wf = WebViewFragment()
-                        wf.arguments = Bundle().apply {
+                        val arguments = Bundle().apply {
                             putString(
                                 Stuff.ARG_URL,
                                 url + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/gnufm"
                             )
                             putBoolean(Stuff.ARG_TLS_NO_VERIFY, tlsNoVerify)
-                            putSingle(
-                                UserAccountTemp(
-                                    AccountType.GNUFM,
-                                    "",
-                                    url,
-                                    tlsNoVerify
-                                )
-                            )
+                            putSingle(UserAccountTemp(AccountType.GNUFM, "", url, tlsNoVerify))
                         }
                         withContext(Dispatchers.Main) {
                             findNavController().popBackStack()
-                            findNavController().navigate(R.id.webViewFragment, Bundle().apply {
-                                putString(
-                                    Stuff.ARG_URL,
-                                    url + "api/auth?api_key=" + Stuff.LIBREFM_KEY + "&cb=${Stuff.DEEPLINK_PROTOCOL_NAME}://auth/gnufm"
-                                )
-                                putBoolean(Stuff.ARG_TLS_NO_VERIFY, tlsNoVerify)
-                            })
+                            findNavController().navigate(R.id.webViewFragment, arguments)
                         }
                         return true
                     } else {

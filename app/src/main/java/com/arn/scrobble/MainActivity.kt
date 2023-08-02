@@ -16,7 +16,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -139,19 +138,11 @@ class MainActivity : AppCompatActivity(),
                     ?.isFocusable = false
         }
 
-        val navHostFragment = binding.navHostFragment.getFragment<NavHostFragment>()
-        navController = navHostFragment.navController
+        navController = binding.navHostFragment.getFragment<NavHostFragment>().navController
 
-        navController.navInflater.inflate(R.navigation.nav_graph).let {
-            val startArguments = bundleOf(Stuff.ARG_TAB to prefs.lastHomePagerTab)
-
-            if (Stuff.isLoggedIn()) {
-                canShowNotices = true
-                mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
-            } else {
-                it.setStartDestination(R.id.onboardingFragment)
-            }
-            navController.setGraph(it, startArguments)
+        if (Stuff.isLoggedIn()) {
+            canShowNotices = true
+            mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
         }
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -164,6 +155,7 @@ class MainActivity : AppCompatActivity(),
         navController.addOnDestinationChangedListener(this)
 
         mainNotifierViewModel.fabData.observe(this) {
+            //  todo: fix this
             // onDestroy of previous fragment gets called AFTER on create of the current fragment
             // So use locks to queue events
             lifecycleScope.launch {
@@ -186,7 +178,7 @@ class MainActivity : AppCompatActivity(),
                     } else {
                         (mainFab as FloatingActionButton).hide()
                     }
-
+                    mainFab.setOnClickListener(null)
                     return@launch
                 }
 
@@ -205,7 +197,6 @@ class MainActivity : AppCompatActivity(),
                                 else -> {}
                             }
                         }
-
                     }
                 )
 
@@ -213,8 +204,6 @@ class MainActivity : AppCompatActivity(),
                     (mainFab as ExtendedFloatingActionButton).apply {
                         setIconResource(it.iconRes)
                         setText(it.stringRes)
-                        setOnClickListener(it.clickListener)
-                        setOnLongClickListener(it.longClickListener)
                         show()
                         binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
                             topMargin = resources.getDimensionPixelSize(R.dimen.fab_margin)
@@ -224,11 +213,11 @@ class MainActivity : AppCompatActivity(),
                     (mainFab as FloatingActionButton).apply {
                         setImageResource(it.iconRes)
                         contentDescription = getString(it.stringRes)
-                        setOnClickListener(it.clickListener)
-                        setOnLongClickListener(it.longClickListener)
                         show()
                     }
                 }
+                mainFab.setOnClickListener(it.clickListener)
+                mainFab.setOnLongClickListener(it.longClickListener)
             }
         }
 

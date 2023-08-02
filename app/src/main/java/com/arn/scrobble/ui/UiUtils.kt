@@ -31,6 +31,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
@@ -563,7 +564,7 @@ object UiUtils {
         val activity = activity as? MainActivity ?: return
         val title = str ?: " "
         activity.binding.ctl.title = title
-        findNavController().currentDestination!!.addArgument(
+        findNavController().currentDestination?.addArgument(
             Stuff.ARG_TITLE,
             NavArgumentBuilder().apply {
                 defaultValue = title
@@ -620,6 +621,8 @@ object UiUtils {
     fun View.postRequestFocus() {
         post { requestFocus() }
     }
+
+    fun EditText.trimmedText() = text.toString().trim()
 
     fun createNotificationForFgs(context: Context, title: String): Notification {
         val intent = Intent(context, MainActivity::class.java)

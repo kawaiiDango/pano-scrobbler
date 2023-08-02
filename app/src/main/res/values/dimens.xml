@@ -14,7 +14,8 @@
     <dimen name="widgetBackgroundRadius">30dp</dimen>
     <dimen name="album_text_height">20sp</dimen>
     <dimen name="divider_inset">32dp</dimen>
-    <dimen name="text_input_margin">3dp</dimen>
+    <dimen name="text_input_margin_vertical">3dp</dimen>
+    <dimen name="text_input_margin_horizontal">16dp</dimen>
     <dimen name="popup_menu_icon_padding">16dp</dimen>
     <dimen name="dialog_padding">24dp</dimen>
     <dimen name="random_image_max_width">400dp</dimen>

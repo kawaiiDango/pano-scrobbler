@@ -12,48 +12,140 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="16dp"
-            android:layout_gravity="center_horizontal"
             android:text="@string/original"
             android:textAppearance="?textAppearanceTitleSmall"
             android:textColor="?colorPrimary" />
 
-        <include
-            layout="@layout/text_input_edit"
-            android:id="@+id/edit_track_orig" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_track_orig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/text_input_margin_horizontal"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
+            android:hint="@string/track">
 
-        <include
-            layout="@layout/text_input_edit"
-            android:id="@+id/edit_album_orig" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_track_orig_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:singleLine="true" />
 
-        <include
-            layout="@layout/text_input_edit"
-            android:id="@+id/edit_artist_orig" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_album_orig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/text_input_margin_horizontal"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
+            android:hint="@string/album">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_album_orig_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_artist_orig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/text_input_margin_horizontal"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
+            android:hint="@string/artist">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_artist_orig_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/corrected"
-            android:textColor="?colorPrimary"
             android:layout_marginVertical="16dp"
-            android:textAppearance="?textAppearanceTitleSmall" />
+            android:text="@string/corrected"
+            android:textAppearance="?textAppearanceTitleSmall"
+            android:textColor="?colorPrimary" />
 
-        <include
-            layout="@layout/text_input_edit"
-            android:id="@+id/edit_track" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_track"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/text_input_margin_horizontal"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
+            android:hint="@string/track">
 
-        <include
-            layout="@layout/text_input_edit"
-            android:id="@+id/edit_album" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_track_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:singleLine="true" />
 
-        <include
-            layout="@layout/text_input_edit"
-            android:id="@+id/edit_artist" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <include
-            layout="@layout/text_input_edit"
-            android:id="@+id/edit_album_artist" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_album"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/text_input_margin_horizontal"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
+            android:hint="@string/album">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_album_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/text_input_margin_horizontal"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
+            android:hint="@string/artist">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_artist_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_album_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/text_input_margin_horizontal"
+            android:layout_marginVertical="@dimen/text_input_margin_vertical"
+            android:hint="@string/album_artist">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_album_artist_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
 </ScrollView>

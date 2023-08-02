@@ -11,7 +11,7 @@
         android:id="@+id/edit_pattern_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/text_input_margin"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
         android:hint="@string/edit_regex">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -23,7 +23,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/text_input_margin"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
         android:hint="@string/edit_regex_replacement">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -35,7 +35,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/text_input_margin"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
         android:text="@string/edit_field" />
 
     <com.google.android.material.chip.ChipGroup

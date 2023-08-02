@@ -55,7 +55,12 @@ class LoginFlows(private val navController: NavController) {
         val arguments = LoginFragmentArgs.Builder(
             App.context.getString(R.string.listenbrainz),
             App.context.getString(R.string.pref_token_label),
-        )
+        ).apply {
+            infoText = App.context.getString(
+                R.string.listenbrainz_info,
+                "https://listenbrainz.org/profile"
+            )
+        }
             .build()
             .toBundle()
         navController.navigate(R.id.loginFragment, arguments)
@@ -68,6 +73,10 @@ class LoginFlows(private val navController: NavController) {
         ).apply {
             textField1 = App.context.getString(R.string.api_url)
             textCheckbox = App.context.getString(R.string.disable_tls_verify)
+            infoText = App.context.getString(
+                R.string.listenbrainz_info,
+                "[API_URL]/profile"
+            )
         }
             .build()
             .toBundle()

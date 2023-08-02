@@ -9,12 +9,10 @@ import kotlin.math.abs
 
 // https://stackoverflow.com/a/34224634/1067596
 
-class OnlyVerticalSwipeRefreshLayout(
+class OnlyVerticalSwipeRefreshLayout @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet?,
+    attrs: AttributeSet? = null,
 ) : SwipeRefreshLayout(context, attrs) {
-
-    constructor(context: Context) : this(context, null)
 
     private val touchSlop: Int
     private var prevX = 0f

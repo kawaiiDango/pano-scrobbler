@@ -1,8 +1,10 @@
 package com.arn.scrobble.db
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -20,6 +22,7 @@ import kotlinx.serialization.Transient
     ]
 )
 @Serializable
+@Parcelize
 data class SimpleEdit(
     @PrimaryKey(autoGenerate = true)
     @Transient
@@ -35,4 +38,4 @@ data class SimpleEdit(
     val album: String = "",
     val albumArtist: String = "",
     val artist: String = "",
-)
+): Parcelable

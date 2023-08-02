@@ -61,9 +61,8 @@ abstract class ChartsPeriodFragment : Fragment(), MusicEntryItemClickListener {
     protected open fun postInit() {
         context ?: return
 
-        requireActivity()
-            .supportFragmentManager
-            .setFragmentResultListener(Stuff.ARG_MONTH_PICKER_PERIOD, viewLifecycleOwner) { key, bundle ->
+        childFragmentManager
+            .setFragmentResultListener(Stuff.ARG_MONTH_PICKER_PERIOD, this) { key, bundle ->
                 when (key) {
                     Stuff.ARG_MONTH_PICKER_PERIOD -> {
                         viewModel.selectedPeriod.value = bundle.getParcelable(key)

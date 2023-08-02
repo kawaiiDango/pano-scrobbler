@@ -3,7 +3,9 @@ package com.arn.scrobble
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
+import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -14,7 +16,18 @@ class HomePagerFragment : BasePagerFragment() {
     val prefs = App.prefs
     override val optionsMenuRes = R.menu.nav_menu
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (Scrobblables.currentScrobblableUser == null) {
+            findNavController().navigate(R.id.action_myHomePagerFragment_to_onboardingFragment)
+            return
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (savedInstanceState == null && findNavController().currentDestination?.id == R.id.myHomePagerFragment)
+            arguments = bundleOf(Stuff.ARG_TAB to prefs.lastHomePagerTab)
+
         adapter = HomePagerAdapter(this)
 
         super.onViewCreated(view, savedInstanceState)

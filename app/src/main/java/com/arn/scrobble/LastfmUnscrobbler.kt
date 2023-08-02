@@ -131,7 +131,7 @@ class LastfmUnscrobbler {
             }
 
             // add a random delay to prevent 406 error
-            delay((100L..500L).random())
+            delay((250L..1000L).random())
 
             success
         }

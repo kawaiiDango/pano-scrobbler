@@ -9,7 +9,6 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -34,9 +33,9 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ChipsChartsPeriodBinding
 import com.arn.scrobble.databinding.ContentChartsOverviewBinding
-import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.databinding.FrameChartsListBinding
 import com.arn.scrobble.databinding.HeaderWithActionBinding
+import com.arn.scrobble.databinding.LayoutCollageFooterBinding
 import com.arn.scrobble.ui.RoundedBarChart
 import com.arn.scrobble.ui.UiUtils.setProgressCircleColors
 import com.arn.scrobble.ui.UiUtils.setTitle
@@ -79,6 +78,17 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
     private var _periodChipsBinding: ChipsChartsPeriodBinding? = null
     override val periodChipsBinding
         get() = _periodChipsBinding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+      childFragmentManager.setFragmentResultListener(Stuff.ARG_HIDDEN_TAGS_CHANGED, this) { requestKey, bundle ->
+            if (requestKey == Stuff.ARG_HIDDEN_TAGS_CHANGED && bundle.getBoolean(Stuff.ARG_HIDDEN_TAGS_CHANGED)) {
+                chartsOverviewVM.tagCloudRequested = false
+                loadMoreSectionsIfNeeded()
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -322,11 +332,6 @@ open class ChartsOverviewFragment : ChartsPeriodFragment() {
                 binding.chartsTagCloudProgress.hide()
                 binding.chartsTagCloudStatus.visibility = View.VISIBLE
             }
-        }
-
-        chartsOverviewVM.tagCloudRefresh.observe(viewLifecycleOwner) {
-            chartsOverviewVM.tagCloudRequested = false
-            loadMoreSectionsIfNeeded()
         }
 
         super.postInit()

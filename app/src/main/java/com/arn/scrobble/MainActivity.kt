@@ -48,7 +48,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import timber.log.Timber
 
 
@@ -62,8 +61,6 @@ class MainActivity : AppCompatActivity(),
     private lateinit var navController: NavController
     private var navHeaderbinding: HeaderNavBinding? = null
     private lateinit var mainFab: View
-    private val fabDataMutex = Mutex()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         var canShowNotices = false
@@ -155,70 +152,43 @@ class MainActivity : AppCompatActivity(),
         navController.addOnDestinationChangedListener(this)
 
         mainNotifierViewModel.fabData.observe(this) {
-            //  todo: fix this
             // onDestroy of previous fragment gets called AFTER on create of the current fragment
-            // So use locks to queue events
-            lifecycleScope.launch {
-                if (it == null) {
-                    try {
-                        fabDataMutex.unlock()
-                    } catch (e: IllegalStateException) {
+            it ?: return@observe
 
-                    }
-                } else {
-                    fabDataMutex.lock()
-                }
+            it.lifecycleOwner.lifecycle.addObserver(
+                object : LifecycleEventObserver {
+                    override fun onStateChanged(
+                        source: LifecycleOwner,
+                        event: Lifecycle.Event
+                    ) {
+                        when (event) {
+                            Lifecycle.Event.ON_DESTROY -> {
+                                source.lifecycle.removeObserver(this)
 
-                if (it == null) {
-                    if (UiUtils.isTabletUi) {
-                        (mainFab as ExtendedFloatingActionButton).hide()
-                        binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
-                            topMargin = 0
-                        }
-                    } else {
-                        (mainFab as FloatingActionButton).hide()
-                    }
-                    mainFab.setOnClickListener(null)
-                    return@launch
-                }
-
-                it.lifecycleOwner.lifecycle.addObserver(
-                    object : LifecycleEventObserver {
-                        override fun onStateChanged(
-                            source: LifecycleOwner,
-                            event: Lifecycle.Event
-                        ) {
-                            when (event) {
-                                Lifecycle.Event.ON_DESTROY -> {
-                                    it.lifecycleOwner.lifecycle.removeObserver(this)
-                                    mainNotifierViewModel.fabData.value = null
-                                }
-
-                                else -> {}
+                                if (mainNotifierViewModel.fabData.value?.lifecycleOwner == source)
+                                    hideFab()
                             }
-                        }
-                    }
-                )
 
-                if (UiUtils.isTabletUi) {
-                    (mainFab as ExtendedFloatingActionButton).apply {
-                        setIconResource(it.iconRes)
-                        setText(it.stringRes)
-                        show()
-                        binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
-                            topMargin = resources.getDimensionPixelSize(R.dimen.fab_margin)
+                            else -> {}
                         }
-                    }
-                } else {
-                    (mainFab as FloatingActionButton).apply {
-                        setImageResource(it.iconRes)
-                        contentDescription = getString(it.stringRes)
-                        show()
                     }
                 }
-                mainFab.setOnClickListener(it.clickListener)
-                mainFab.setOnLongClickListener(it.longClickListener)
+            )
+
+            if (UiUtils.isTabletUi) {
+                (mainFab as ExtendedFloatingActionButton).apply {
+                    setIconResource(it.iconRes)
+                    setText(it.stringRes)
+                }
+            } else {
+                (mainFab as FloatingActionButton).apply {
+                    setImageResource(it.iconRes)
+                    contentDescription = getString(it.stringRes)
+                }
             }
+            mainFab.setOnClickListener(it.clickListener)
+            mainFab.setOnLongClickListener(it.longClickListener)
+            showHiddenFab()
         }
 
         mainNotifierViewModel.canIndex.observe(this) {
@@ -249,6 +219,35 @@ class MainActivity : AppCompatActivity(),
             )
         }
 //        showSnackbarIfNeeded()
+    }
+
+    fun hideFab(removeListeners: Boolean = true) {
+        if (UiUtils.isTabletUi) {
+            (mainFab as ExtendedFloatingActionButton).hide()
+            binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
+                topMargin = 0
+            }
+        } else {
+            (mainFab as FloatingActionButton).hide()
+        }
+
+        if (removeListeners) {
+            mainNotifierViewModel.fabData.value = null
+            mainFab.setOnClickListener(null)
+        }
+    }
+
+    private fun showHiddenFab() {
+        if (mainNotifierViewModel.fabData.value == null) return
+
+        if (UiUtils.isTabletUi) {
+            (mainFab as ExtendedFloatingActionButton).show()
+            binding.sidebarNav.updateLayoutParams<MarginLayoutParams> {
+                topMargin = resources.getDimensionPixelSize(R.dimen.fab_margin)
+            }
+        } else {
+            (mainFab as FloatingActionButton).show()
+        }
     }
 
     override fun onDestinationChanged(

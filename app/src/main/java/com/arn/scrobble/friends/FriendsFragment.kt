@@ -70,7 +70,6 @@ class FriendsFragment : Fragment(), ItemClickListener {
     private var lastRefreshTime = System.currentTimeMillis()
     private val prefs = App.prefs
     private var _binding: ContentFriendsBinding? = null
-    private var fabData: FabData? = null
     private val binding
         get() = _binding!!
 
@@ -130,13 +129,12 @@ class FriendsFragment : Fragment(), ItemClickListener {
             postInit()
         else
             doNextTimedRefresh()
-        activityViewModel.fabData.value = fabData
-
+        showFab()
     }
 
     override fun onPause() {
         super.onPause()
-        activityViewModel.fabData.value = null
+        (requireActivity() as? MainActivity)?.hideFab(false)
     }
 
     private fun postInit() {
@@ -146,7 +144,7 @@ class FriendsFragment : Fragment(), ItemClickListener {
         binding.swipeRefresh.setProgressCircleColors()
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.sorted = false
-            activityViewModel.fabData.value = null
+            (requireActivity() as? MainActivity)?.hideFab(false)
             loadFriends(1)
             if (isResumed)
                 refreshFriendsRecents()
@@ -232,33 +230,9 @@ class FriendsFragment : Fragment(), ItemClickListener {
                 adapter.notifyItemChanged(idxChanged, 0)
             }
 
-            if (!Stuff.isTv && !viewModel.sorted &&
-                loadMoreListener.isAllPagesLoaded &&
-                viewModel.sectionedList.size > 1 &&
-                viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size - viewModel.privateUsers.size
-            ) {
-                fabData = FabData(
-                    viewLifecycleOwner,
-                    R.string.sort,
-                    R.drawable.vd_sort_clock,
-                    {
-                        viewModel.friendsFiltered.sortByDescending {
-                            if (viewModel.lastPlayedTracksMap[it.name] == null) //put users with no tracks at the end
-                                0L
-                            else
-                                viewModel.lastPlayedTracksMap[it.name]!!.playedWhen?.time
-                                    ?: System.currentTimeMillis()
-                        }
-                        viewModel.sorted = true
-                        adapter.notifyDataSetChanged()
-                        activityViewModel.fabData.value = null
-                        binding.friendsGrid.smoothScrollToPosition(0)
-                    }
-                )
-                if (isResumed)
-                    activityViewModel.fabData.value = fabData
-            }
+            showFab()
         }
+
 
         binding.friendsGrid.addOnScrollListener(loadMoreListener)
         adapter.itemClickListener = this
@@ -266,6 +240,33 @@ class FriendsFragment : Fragment(), ItemClickListener {
         if (!viewModel.hasLoaded) {
             loadFriends(1)
             viewModel.refreshPins()
+        }
+    }
+
+    private fun showFab() {
+        if (binding.friendsGrid.adapter != null && !Stuff.isTv && !viewModel.sorted &&
+            adapter.loadMoreListener.isAllPagesLoaded &&
+            viewModel.sectionedList.size > 1 &&
+            viewModel.lastPlayedTracksMap.size == viewModel.sectionedList.size - viewModel.privateUsers.size
+        ) {
+            activityViewModel.fabData.value = FabData(
+                viewLifecycleOwner,
+                R.string.sort,
+                R.drawable.vd_sort_clock,
+                {
+                    viewModel.friendsFiltered.sortByDescending {
+                        if (viewModel.lastPlayedTracksMap[it.name] == null) //put users with no tracks at the end
+                            0L
+                        else
+                            viewModel.lastPlayedTracksMap[it.name]!!.playedWhen?.time
+                                ?: System.currentTimeMillis()
+                    }
+                    viewModel.sorted = true
+                    adapter.notifyDataSetChanged()
+                    (requireActivity() as? MainActivity)?.hideFab(false)
+                    binding.friendsGrid.smoothScrollToPosition(0)
+                }
+            )
         }
     }
 

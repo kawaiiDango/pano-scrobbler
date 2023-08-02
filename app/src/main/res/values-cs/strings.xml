@@ -318,6 +318,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Akce přehráváče</string>
     <string name="skip" comment="skip to next track">Přeskočit</string>
     <string name="mute" comment="mute the music">Ztlumit</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignorovat</string>
     <string name="block" comment="block the track from scrobbling">Zablokovat</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Skryté tagy</string>
     <string name="pin" comment="pin a friend to the top">Připnout</string>

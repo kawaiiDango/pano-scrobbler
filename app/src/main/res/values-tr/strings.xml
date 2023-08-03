@@ -337,6 +337,7 @@
     <string name="pref_user_label" comment="(Like username)">Kullanıcı</string>
     <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
     <string name="api_url" comment="For Listenbrainz">API Adresi</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Kimlik doğrulama tokeninizi şu adreste bulabilirsiniz: %1$s</string>
     <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
     <string name="pref_fetch_album">Eksik albüm verilerini last.fm\'den al</string>
     <string name="pref_locale">Diller</string>

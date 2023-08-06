@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_blocked_metadata">
+        <item quantity="zero">%1$s بيان تعريف محظور</item>
+        <item quantity="one">%1$s بيان تعريف محظور</item>
+        <item quantity="two">%1$s بيان تعريف محظور</item>
+        <item quantity="few">%1$s بيانات التعريف المحظورة</item>
+        <item quantity="many">%1$s بيانات التعريف المحظورة</item>
+        <item quantity="other">%1$s بيانات التعريف المحظورة</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="zero">صديق %1$s</item>
+        <item quantity="one">صديق %1$s</item>
+        <item quantity="two">صديقين %1$s</item>
+        <item quantity="few">أصدقاء %1$s</item>
+        <item quantity="many">أصدقاء %1$s</item>
+        <item quantity="other">أصدقاء %1$s</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="zero">معلّق %1$s</item>
+        <item quantity="one">معلّق %1$s</item>
+        <item quantity="two">معلّقين %1$s</item>
+        <item quantity="few">معلّقة %1$s</item>
+        <item quantity="many">معلّقة %1$s</item>
+        <item quantity="other">معلّقة %1$s</item>
+    </plurals>
     <string name="yes">تأكيد</string>
     <string name="no">لا</string>
     <string name="reset">إعادة ضبط</string>
     <string name="settings">ضبط</string>
     <string name="bug_report">الإبلاغ عن الأخطاء</string>
+    <string name="faq">الأسئلة الأكثر شيوعاً</string>
     <string name="album_art">صورة الألبوم</string>
     <string name="artist_image">صورة ألفنان</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">خطأ في تحليل العنوان</string>
@@ -35,11 +60,15 @@
     <string name="state_unrecognised_artist">فنان غير معروف</string>
     <string name="tap_to_edit">(اضغط للتعديل)</string>
     <string name="recently_scrobbled">تم الاسكروبلنج موخرا</string>
+    <string name="recents" comment="Short for recently scrobbled">الحديثة</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">تم مسحه أولاً في %1$s</string>
+    <string name="auto" comment="automatic or default setting">تلقائي</string>
     <string name="enabled_apps">التطبيقات المفعلة</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">تقريبا هناك…</string>
     <string name="music_players">مشغلي الموسيقى</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">تطبيقات أخرى</string>
     <string name="choose_apps">اختر تطبيقات للتمرير</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">تطبيقات</string>
     <string name="offline">دون اتصال بالإنترنت. البيانات المعروضة ليست جديدة</string>
     <string name="unavailable_offline">غير متوفر عند عدم الاتصال</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">الخدمات</string>
@@ -51,8 +80,15 @@
     <string name="grid_size">تغيير حجم الشبكة</string>
     <string name="pinch_to_zoom">اقرص للتكبير</string>
     <string name="more_info">معلومات إضافية</string>
+    <string name="more" comment="More options menu in short">المزيد</string>
+    <string name="learn" comment="(Learn java regex syntax)">تعلّم</string>
+    <string name="hide">إخفاء</string>
     <string name="rank_change" comment="%1= delta change">تغيير الترتيب: %s</string>
     <string name="rank_change_no_change">لا تغيير</string>
+    <string name="rank_change_new">لم تمسح خلال المدّة السابقة</string>
+    <string name="search">البحث</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">محو كل السجل</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">حذف هذا العنصر من السجل ؟</string>
     <string name="show_all">عرض الكل</string>
     <string name="edit">تعديل</string>
     <string name="delete">حذف</string>

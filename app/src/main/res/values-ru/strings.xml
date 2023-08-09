@@ -319,6 +319,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Действия плеера</string>
     <string name="skip" comment="skip to next track">Пропустить</string>
     <string name="mute" comment="mute the music">Выключить звук</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Игнорировать</string>
     <string name="block" comment="block the track from scrobbling">Блокировать</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Скрытые теги</string>
     <string name="pin" comment="pin a friend to the top">Закрепить</string>
@@ -372,6 +373,7 @@
     <string name="pref_user_label" comment="(Like username)">Пользователь</string>
     <string name="pref_token_label" comment="For Listenbrainz">Токен аутентификации</string>
     <string name="api_url" comment="For Listenbrainz">URL-адрес API</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Вы можете найти ваш токен аутентификации на: %1$s</string>
     <string name="pref_now_playing">Отправить сейчас играет</string>
     <string name="pref_fetch_album">Получить недостающие данные альбома с lastFM</string>
     <string name="pref_locale">Языки</string>

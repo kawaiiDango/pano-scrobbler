@@ -193,5 +193,6 @@
     <string name="corrected" comment="Corrected metadata after editing">تم التصحيح</string>
     <string name="tag" comment="last.fm tag">وسم</string>
     <string name="taggers" comment="(number of) people who have tagged">الواسمون</string>
+    <string name="taggings" comment="(total count of) a particular tag">علامات</string>
     <!--  pro  -->
 </resources>

@@ -167,5 +167,31 @@
     <string name="not_found" comment="Shown in search">لم يتم العثور على نتائج</string>
     <string name="save" comment="saves a file">حفظ</string>
     <string name="saved_to_gallery">تم الحفظ في معرض الصور</string>
+    <string name="reports" comment="Like last.week reports and stuff">التقارير</string>
+    <string name="weekly">أسبوعي</string>
+    <string name="weeks">أسابيع</string>
+    <string name="monthly">شهرياً</string>
+    <string name="months">أشهر</string>
+    <string name="years" comment="For the charts menu which displays year by year">سنوات</string>
+    <string name="charts_overall">الإجمالي</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">نشاط الإستماع</string>
+    <string name="charts_no_data">لا يوجد بيانات في هذه الفترة</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">مُخصّص</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">متواصل</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">استنادًا إلى %1$s</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">لا توجد بيانات كافية</string>
+    <string name="random" comment="Displays a random scrobble or a loved track of the user">أشعر أنني محظوظ</string>
+    <string name="random_not_found">لم يتم العثور على مسار</string>
+    <string name="loved_track">المسار المحبوب</string>
+    <string name="randomize" comment="(To randomize or fetch a new random item)">عشوائي</string>
+    <string name="random_text">عشوائي</string>
+    <string name="graph_daily">العدادات اليومية للمسح الموسيقي</string>
+    <string name="graph_weekly">العداد الأسبوعي للمسح الموسيقي</string>
+    <string name="graph_monthly">العداد الشهرية للمسح الموسيقي</string>
+    <string name="graph_yearly">العداد السنوي للمسح الموسيقي</string>
+    <string name="original" comment="Original metadata before editing">أصليّة</string>
+    <string name="corrected" comment="Corrected metadata after editing">تم التصحيح</string>
+    <string name="tag" comment="last.fm tag">وسم</string>
+    <string name="taggers" comment="(number of) people who have tagged">الواسمون</string>
     <!--  pro  -->
 </resources>

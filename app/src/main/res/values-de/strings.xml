@@ -65,6 +65,7 @@
     <string name="reset">Zurücksetzen</string>
     <string name="settings">Einstellungen</string>
     <string name="bug_report">Fehler melden</string>
+    <string name="faq">FAQ</string>
     <string name="album_art">Album-Cover</string>
     <string name="artist_image">Interpretenbild</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Titel wurde nicht gefunden</string>
@@ -103,6 +104,7 @@
     <string name="music_players">Musik-Player</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andere Apps</string>
     <string name="choose_apps">Apps zum scrobbeln auswählen</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Apps</string>
     <string name="offline">Offline. Angezeigte Daten sind nicht aktuell</string>
     <string name="unavailable_offline">Nicht verfügbar im Offline-Modus</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Dienste</string>
@@ -126,6 +128,7 @@
     <string name="library" comment="search within the library">Bibliothek</string>
     <string name="global" comment="search globally across lastfm">Global</string>
     <string name="reindex">Schnell indexieren</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexiere deine Scrobbles</string>
     <string name="full_index">Gesamter Index</string>
     <string name="take_long_time">Dies kann einige Zeit in Anspruch nehmen</string>
     <string name="full_index_desc">Verwenden Sie dies nur, wenn Sie Scrobbles auf der Website bearbeitet oder gelöscht haben.</string>
@@ -145,7 +148,10 @@
     <string name="show_all">Alle anzeigen</string>
     <string name="edit">Bearbeiten</string>
     <string name="delete">Löschen</string>
+    <string name="delete_all">Alles löschen</string>
     <string name="love" comment="Love/like a song">Favorisieren</string>
+    <string name="hate" comment="Hate or dislike a song">Nicht mögen</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Bewertung entfernen</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Nicht mehr favorisieren</string>
     <string name="pending_scrobbles">Ausstehende Scrobbles</string>
     <string name="pending_scrobble">Ausstehender Scrobble</string>
@@ -246,12 +252,14 @@
     <string name="secondary_color">Sekundärfarbe</string>
     <string name="tint_background" comment="Tint the background with the primary color">Hintergrund einfärben</string>
     <string name="random_theme">Bei jedem Start zufällig</string>
+    <string name="edit_name" comment="name for regex pattern">Anzeigename</string>
     <string name="edit_regex">Regex-Muster</string>
     <string name="edit_regex_replacement">Regex-Ersatz</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Felder</string>
     <string name="edit_replace">Ersetzen</string>
     <string name="edit_first" comment="First occurrence of a pattern">Erster</string>
     <string name="edit_all" comment="All occurrences of a pattern">Alle</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extrahieren</string>
     <string name="edit_continue">Wenn gefunden, setze die Suche mit anderen Regexes fort</string>
     <string name="edit_case_sensitive">Unterscheidet Groß-/Kleinschreibung</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>

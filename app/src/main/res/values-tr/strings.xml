@@ -268,6 +268,7 @@
     <string name="edit_first" comment="First occurrence of a pattern">İlkini</string>
     <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Çıkart</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Yakalama gruplarınızı diğer alanlardan çıkarabilmek için yakalama gruplarınızı <i>track, album, artist</i> veya <i>albumArtist</i> olarak adlandırın</string>
     <string name="edit_continue">Mevcutsa, diğer düzenli ifadeleri de eşleştirmeye devam et</string>
     <string name="edit_case_sensitive">Büyük küçük harfe duyarlı</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Dene</string>
@@ -284,6 +285,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Oynatıcı komutları</string>
     <string name="skip" comment="skip to next track">Atla</string>
     <string name="mute" comment="mute the music">Sustur</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Yok say</string>
     <string name="block" comment="block the track from scrobbling">Engelle</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Gizlenmiş etiketler</string>
     <string name="pin" comment="pin a friend to the top">Sabitle</string>
@@ -337,6 +339,7 @@
     <string name="pref_user_label" comment="(Like username)">Kullanıcı</string>
     <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
     <string name="api_url" comment="For Listenbrainz">API Adresi</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Kimlik doğrulama tokeninizi şu adreste bulabilirsiniz: %1$s</string>
     <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
     <string name="pref_fetch_album">Eksik albüm verilerini last.fm\'den al</string>
     <string name="pref_locale">Diller</string>

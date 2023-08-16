@@ -318,6 +318,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Akce přehráváče</string>
     <string name="skip" comment="skip to next track">Přeskočit</string>
     <string name="mute" comment="mute the music">Ztlumit</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignorovat</string>
     <string name="block" comment="block the track from scrobbling">Zablokovat</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Skryté tagy</string>
     <string name="pin" comment="pin a friend to the top">Připnout</string>
@@ -371,6 +372,7 @@
     <string name="pref_user_label" comment="(Like username)">Uživatel</string>
     <string name="pref_token_label" comment="For Listenbrainz">Autorizační token</string>
     <string name="api_url" comment="For Listenbrainz">URL API</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Váš ověřovací token můžete najít na: %1$s</string>
     <string name="pref_now_playing">Odeslat právě přehrávané</string>
     <string name="pref_fetch_album">Načíst chybějící data alba z lastFM</string>
     <string name="pref_locale">Jazyky</string>

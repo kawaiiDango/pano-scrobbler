@@ -63,7 +63,7 @@
     <string name="network_error">网络异常</string>
     <string name="disable_tls_verify">忽略 TLS 错误</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">已忽略记录</string>
-    <string name="scrobble_ignored_save_edit">可能由于本次记录太过陈旧，Last.fm忽略了此次编辑。你想保存此次编辑，以便可以为未来的歌曲记录所用吗？</string>
+    <string name="scrobble_ignored_save_edit">或许是由于本记录时间过于久远，Last.fm 忽略了本次编辑。您是否愿意保存本次编辑用于后续的记录？</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必填字段不能为空</string>
     <string name="artist">艺术家</string>
     <string name="artists">艺术家</string>
@@ -268,6 +268,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">播放器操作</string>
     <string name="skip" comment="skip to next track">跳过</string>
     <string name="mute" comment="mute the music">静音</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">忽略</string>
     <string name="block" comment="block the track from scrobbling">屏蔽</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">隐藏标签</string>
     <string name="pin" comment="pin a friend to the top">钉选</string>
@@ -321,6 +322,7 @@
     <string name="pref_user_label" comment="(Like username)">用户名</string>
     <string name="pref_token_label" comment="For Listenbrainz">认证密钥</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">您可以在 %1$s 找到您的验证 token。</string>
     <string name="pref_now_playing">提交当前播放的音乐</string>
     <string name="pref_fetch_album">从 lastFM 获取缺失的专辑数据</string>
     <string name="pref_locale">语言</string>

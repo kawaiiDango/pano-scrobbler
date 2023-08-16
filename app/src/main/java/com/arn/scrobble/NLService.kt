@@ -203,11 +203,15 @@ class NLService : NotificationListenerService() {
             } catch (e: Exception) {
                 Timber.tag(Stuff.TAG).w(e)
             }
-            // Media controller needs notification listener service
-            // permissions to be granted.
+            // Media controller needs notification listener service permissions.
         }
 
 //      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
+        if (prefs.notiPersistent && Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU)
+            ContextCompat.startForegroundService(
+                this,
+                Intent(this, PersistentNotificationService::class.java)
+            )
 
         (application as App).initConnectivityCheck()
 
@@ -337,6 +341,10 @@ class NLService : NotificationListenerService() {
             sbn.packageName in packageNames &&
             isAppEnabled(sbn.packageName)
         ) {
+
+            if (prefs.preventDuplicateAmbientScrobbles && sessListener?.isMediaPlaying() == true)
+                return
+
             val n = sbn.notification
             if (n.channelId == channelName) {
                 val notiText = n.extras.getString(notiField) ?: return
@@ -1098,8 +1106,7 @@ class NLService : NotificationListenerService() {
         const val iBLOCK_ACTION_S = "com.arn.scrobble.BLOCK_ACTION"
         const val iSCROBBLE_SUBMIT_LOCK_S = "com.arn.scrobble.SCROBBLE_SUBMIT_LOCK"
         const val iLISTEN_ALONG = "com.arn.scrobble.LISTEN_ALONG"
-
-        const val BROADCAST_PERMISSION = "com.arn.scrobble.MY_AWESOME_PERMISSION"
+        const val BROADCAST_PERMISSION = "com.arn.scrobble.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
 
         const val B_TRACK = "track"
         const val B_ALBUM_ARTIST = "albumartist"

@@ -299,13 +299,9 @@ class ScrobblesAdapter(
                 true
             }
             binding.root.onFocusChangeListener = this
-            if (viewModel.username != null && !Stuff.isTv) {
-                binding.recentsMenu.visibility = View.INVISIBLE
-                binding.recentsMenuText.visibility = View.GONE
-            } else
-                binding.recentsMenu.setOnClickListener {
-                    itemClickListener.call(it, bindingAdapterPosition)
-                }
+            binding.recentsMenu.setOnClickListener {
+                itemClickListener.call(it, bindingAdapterPosition)
+            }
         }
 
         override fun onFocusChange(view: View?, focused: Boolean) {

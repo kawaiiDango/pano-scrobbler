@@ -4,22 +4,68 @@
 
     <item
         android:id="@+id/menu_love"
-        app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_heart"
-        android:title="@string/love"/>
-    <item
-        android:id="@+id/menu_hate"
-        app:iconTint="?android:colorForeground"
-        android:icon="@drawable/vd_heart_break_outline"
-        android:title="@string/hate"/>
+        android:title="@string/love"
+        app:iconTint="?android:colorForeground" />
     <item
         android:id="@+id/menu_edit"
-        app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_edit"
-        android:title="@string/edit"/>
+        android:title="@string/edit"
+        app:iconTint="?android:colorForeground" />
     <item
         android:id="@+id/menu_delete"
-        app:iconTint="?android:colorForeground"
         android:icon="@drawable/vd_delete"
-        android:title="@string/delete"/>
+        android:title="@string/delete"
+        app:iconTint="?android:colorForeground" />
+    <item
+        android:id="@+id/menu_more"
+        android:icon="@drawable/vd_more_horiz"
+        android:title="@string/more"
+        app:iconTint="?android:colorForeground">
+        <menu>
+            <item
+                android:id="@+id/menu_hate"
+                android:icon="@drawable/vd_heart_break_outline"
+                android:title="@string/hate"
+                app:iconTint="?android:colorForeground" />
+            <item
+                android:id="@+id/menu_play"
+                android:icon="@drawable/vd_search_play"
+                android:title="@string/search"
+                app:iconTint="?android:colorForeground" />
+            <item
+                android:id="@+id/menu_block"
+                android:icon="@drawable/vd_ban"
+                android:title="@string/block"
+                app:iconTint="?android:colorForeground">
+                <menu>
+                    <item
+                        android:id="@+id/menu_block_track"
+                        android:icon="@drawable/vd_note"
+                        android:title="@string/track"
+                        app:iconTint="?android:colorForeground" />
+                    <item
+                        android:id="@+id/menu_block_album"
+                        android:icon="@drawable/vd_album"
+                        android:title="@string/album"
+                        app:iconTint="?android:colorForeground" />
+                    <item
+                        android:id="@+id/menu_block_artist"
+                        android:icon="@drawable/vd_mic"
+                        android:title="@string/artist"
+                        app:iconTint="?android:colorForeground" />
+                </menu>
+            </item>
+            <item
+                android:id="@+id/menu_info"
+                android:icon="@drawable/vd_info"
+                android:title="@string/details"
+                app:iconTint="?android:colorForeground" />
+            <item
+                android:id="@+id/menu_share"
+                android:icon="@drawable/vd_share"
+                android:title="@string/share"
+                app:iconTint="?android:colorForeground" />
+        </menu>
+    </item>
 </menu>

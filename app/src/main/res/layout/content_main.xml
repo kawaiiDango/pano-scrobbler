@@ -102,16 +102,6 @@
                         android:tooltipText="@string/details"
                         app:icon="@drawable/vd_info"
                         app:iconSize="22dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/hero_play"
-                        style="?materialIconButtonStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/search"
-                        android:tooltipText="@string/search"
-                        app:icon="@drawable/vd_search_play"
-                        app:iconSize="22dp" />
                 </LinearLayout>
             </FrameLayout>
 

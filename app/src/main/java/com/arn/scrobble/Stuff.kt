@@ -247,6 +247,7 @@ object Stuff {
 
     val forcePersistentNoti by lazy {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+        Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
                 Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(
             MANUFACTURER_HUAWEI,
             MANUFACTURER_XIAOMI,

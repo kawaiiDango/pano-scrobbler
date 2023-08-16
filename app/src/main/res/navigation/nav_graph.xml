@@ -30,11 +30,6 @@
         <action
             android:id="@+id/action_myHomePagerFragment_to_billingFragment"
             app:destination="@id/billingFragment" />
-        <action
-            android:id="@+id/action_myHomePagerFragment_to_onboardingFragment"
-            app:destination="@id/onboardingFragment"
-            app:popUpTo="@id/myHomePagerFragment"
-            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/othersHomePagerFragment"

@@ -18,7 +18,7 @@ import kotlinx.serialization.Transient
 data class BlockedMetadata(
     @PrimaryKey(autoGenerate = true)
     @Transient
-    val _id: Int = 0,
+    val _id: Int = -1,
 
     // SQLite (unlike SQL Server) chose that multiple NULL values do not count towards uniqueness in an index.
     // Use "" for null instead

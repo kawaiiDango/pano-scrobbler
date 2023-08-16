@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.arn.scrobble.scrobbleable.Scrobblables
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -19,7 +20,9 @@ class HomePagerFragment : BasePagerFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Scrobblables.currentScrobblableUser == null) {
-            findNavController().navigate(R.id.action_myHomePagerFragment_to_onboardingFragment)
+            findNavController().navigate(R.id.onboardingFragment, null, navOptions {
+                popUpTo(R.id.myHomePagerFragment) { inclusive = true }
+            })
             return
         }
     }

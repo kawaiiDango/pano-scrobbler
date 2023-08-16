@@ -58,6 +58,7 @@ class MainPrefs : Krate {
         get() = _delayPercent.coerceIn(PREF_DELAY_PER_MIN, PREF_DELAY_PER_MAX)
 
     var scrobbleSpotifyRemote by booleanPref(PREF_SCROBBLE_SPOTIFY_REMOTE).withDefault(false)
+    var preventDuplicateAmbientScrobbles by booleanPref(PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES).withDefault(false)
     var allowedArtists by stringSetPref(PREF_ALLOWED_ARTISTS).withDefault(setOf())
     var submitNowPlaying by booleanPref(PREF_NOW_PLAYING).withDefault(true)
     var fetchAlbum by booleanPref(PREF_FETCH_ALBUM).withDefault(false)
@@ -145,6 +146,7 @@ class MainPrefs : Krate {
     var notiMonthlyDigests by booleanPref(CHANNEL_NOTI_DIGEST_MONTHLY).withDefault(true)
     var notiPendingScrobbles by booleanPref(CHANNEL_NOTI_PENDING).withDefault(true)
     var notiNewApp by booleanPref(CHANNEL_NOTI_NEW_APP).withDefault(true)
+    var notiPersistent by booleanPref(CHANNEL_NOTI_PERSISTENT).withDefault(Stuff.forcePersistentNoti)
 
     var acrcloudHost by stringPref(PREF_ACR_HOST)
     var acrcloudKey by stringPref(PREF_ACR_KEY)
@@ -208,6 +210,8 @@ class MainPrefs : Krate {
         val searchInSource: Boolean = App.prefs.searchInSource,
         @SerialName(PREF_SCROBBLE_SPOTIFY_REMOTE)
         val scrobbleSpotifyRemote: Boolean = App.prefs.scrobbleSpotifyRemote,
+        @SerialName(PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES)
+        val preventDuplicateAmbientScrobbles: Boolean = App.prefs.preventDuplicateAmbientScrobbles,
         @SerialName(PREF_FIRST_DAY_OF_WEEK)
         val firstDayOfWeek: Int = App.prefs.firstDayOfWeek,
         @SerialName(PREF_ALLOWED_PACKAGES)
@@ -235,6 +239,7 @@ class MainPrefs : Krate {
         themeDynamic = settings.themeDynamic
         searchInSource = settings.searchInSource
         scrobbleSpotifyRemote = settings.scrobbleSpotifyRemote
+        preventDuplicateAmbientScrobbles = settings.preventDuplicateAmbientScrobbles
         firstDayOfWeek = settings.firstDayOfWeek
         allowedPackages = settings.allowedPackages
         blockedPackages = settings.blockedPackages
@@ -299,6 +304,7 @@ class MainPrefs : Krate {
         const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
         const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"
         const val PREF_SCROBBLE_SPOTIFY_REMOTE = "scrobble_spotify_remote"
+        const val PREF_PREVENT_DUPLICATE_AMBIENT_SCROBBLES = "prevent_duplicate_ambient_scrobbles"
         const val PREF_FIRST_DAY_OF_WEEK = "first_day_of_week"
         const val PREF_LAST_SCREEN_ON_TIME = "last_screen_on_time"
 

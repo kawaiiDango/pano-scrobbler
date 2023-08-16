@@ -33,6 +33,9 @@ class OnboardingFragment : Fragment(), StepperFormListener {
         super.onCreate(savedInstanceState)
         notificationPermRequest =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    onboardingSteps.stepsList.find { it is OnboardingSteps.SendNotificationsStep }
+                        ?.markAsCompleted(true)
             }
     }
 

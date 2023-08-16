@@ -41,18 +41,19 @@ import androidx.work.WorkManager
 import coil.load
 import coil.memory.MemoryCache
 import com.arn.scrobble.App
-import com.arn.scrobble.BuildConfig
 import com.arn.scrobble.LFMRequester
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.MainNotifierViewModel
 import com.arn.scrobble.R
 import com.arn.scrobble.ReviewPrompter
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.Stuff.toBundle
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.databinding.ContentMainBinding
 import com.arn.scrobble.databinding.ContentScrobblesBinding
+import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.pending.PendingScrobblesWorker
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.scrobbleable.Scrobblables
@@ -81,7 +82,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
 import java.util.Calendar
 import java.util.Objects
 import kotlin.math.max
@@ -355,31 +355,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 )
             }
             findNavController().navigate(R.id.randomFragment, arguments)
-        }
-
-        if (BuildConfig.DEBUG)
-            coordinatorBinding.heroPlay.setOnLongClickListener {
-                val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
-                if (track is Track) {
-                    Stuff.openInBrowser(
-                        "https://en.touhouwiki.net/index.php?search=" +
-                                URLEncoder.encode("${track.artist} - ${track.name}", "UTF-8")
-                    )
-                }
-                true
-            }
-
-        coordinatorBinding.heroPlay.setOnClickListener {
-            val track = coordinatorBinding.heroImg.getTag(R.id.hero_track)
-            if (track is Track) {
-                val pkgName = if (track.playedWhen != null)
-                    viewModel.pkgMap[track.playedWhen.time]
-                else if (track.isNowPlaying)
-                    viewModel.pkgMap[0]
-                else
-                    null
-                Stuff.launchSearchIntent(track, pkgName)
-            }
         }
 
         binding.timeJumpChip.setOnClickListener { view ->
@@ -686,7 +661,6 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
     private fun openTrackPopupMenu(anchor: View, track: Track) {
         val popup = PopupMenu(requireContext(), anchor)
 
-
         if (activityViewModel.userIsSelf) {
             popup.menuInflater.inflate(R.menu.recents_item_menu, popup.menu)
             val loveMenu = popup.menu.findItem(R.id.menu_love)
@@ -698,7 +672,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             }
 
             if (track.isHated) {
-                popup.menu.findItem(R.id.menu_hate).title = getString(R.string.unhate)
+                popup.menu.findItem(R.id.menu_hate)?.title = getString(R.string.unhate)
             }
 
             if (track.playedWhen == null)
@@ -708,12 +682,19 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                 popup.menu.removeItem(R.id.menu_delete)
                 popup.menu.removeItem(R.id.menu_edit)
             }
-
-            if (Scrobblables.current !is ListenBrainz)
-                popup.menu.removeItem(R.id.menu_hate)
+        } else {
+            popup.menuInflater.inflate(R.menu.recents_item_friends_menu, popup.menu)
         }
-        if (!anchor.isInTouchMode)
-            popup.menuInflater.inflate(R.menu.recents_item_tv_menu, popup.menu)
+
+        val moreMenu: Menu = popup.menu.findItem(R.id.menu_more)?.subMenu ?: popup.menu
+
+        if (Scrobblables.current !is ListenBrainz)
+            moreMenu.removeItem(R.id.menu_hate)
+
+        if (anchor.isInTouchMode) {
+            moreMenu.removeItem(R.id.menu_info)
+            moreMenu.removeItem(R.id.menu_share)
+        }
 
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -741,7 +722,43 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                         requireActivity().toast(R.string.network_error)
                 }
 
-                R.id.menu_play -> coordinatorBinding.heroPlay.callOnClick()
+                R.id.menu_block_track, R.id.menu_block_album, R.id.menu_block_artist -> {
+                    val blockedMetadata = when (menuItem.itemId) {
+                        R.id.menu_block_track -> BlockedMetadata(
+                            artist = track.artist,
+                            album = track.album,
+                            track = track.name,
+                            skip = true
+                        )
+
+                        R.id.menu_block_album -> BlockedMetadata(
+                            artist = track.artist,
+                            album = track.album,
+                            skip = true
+                        )
+
+                        R.id.menu_block_artist -> BlockedMetadata(
+                            artist = track.artist,
+                            skip = true
+                        )
+
+                        else -> return@setOnMenuItemClickListener false
+                    }
+
+                    val args = Bundle().putSingle(blockedMetadata)
+                    findNavController().navigate(R.id.blockedMetadataAddDialogFragment, args)
+                }
+
+                R.id.menu_play -> {
+                    val pkgName = if (track.playedWhen != null)
+                        viewModel.pkgMap[track.playedWhen.time]
+                    else if (track.isNowPlaying)
+                        viewModel.pkgMap[0]
+                    else
+                        null
+                    Stuff.launchSearchIntent(track, pkgName)
+                }
+
                 R.id.menu_info -> coordinatorBinding.heroInfo.callOnClick()
                 R.id.menu_share -> coordinatorBinding.heroShare.callOnClick()
             }

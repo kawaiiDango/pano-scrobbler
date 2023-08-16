@@ -296,12 +296,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
             }
 
             binding.openButton.postRequestFocus()
-
             binding.skipButton.visibility = View.GONE
-//            binding.skipButton.setOnClickListener {
-//                clicked = true
-//                continueIfComplete()
-//            }
 
             return binding.root
         }
@@ -324,7 +319,6 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
 
             binding.openButton.setOnClickListener {
                 notificationPermRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
-                markAsCompleted(true)
             }
             binding.openButton.postRequestFocus()
 

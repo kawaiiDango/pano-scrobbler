@@ -44,7 +44,19 @@ class FixItFragment : BottomSheetDialogFragment() {
         binding.fixItDkmaAction.setOnClickListener {
             Stuff.openInBrowser("https://dontkillmyapp.com")
         }
-
+        if (!App.prefs.notiPersistent &&
+            Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU
+        ) {
+            binding.fixItPersistentNotiLayout.visibility = View.VISIBLE
+            binding.fixItPersistentNotiAction.setOnClickListener { button ->
+                App.prefs.notiPersistent = true
+                ContextCompat.startForegroundService(
+                    requireContext(),
+                    Intent(requireContext(), PersistentNotificationService::class.java)
+                )
+                button.isEnabled = false
+            }
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val batteryIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
             if (requireActivity().packageManager.queryIntentActivities(
@@ -67,7 +79,7 @@ class FixItFragment : BottomSheetDialogFragment() {
                 }
 
             App.prefs.lastKillCheckTime = System.currentTimeMillis()
-            // this is technically wrong
+            // todo: this is technically wrong
         }
     }
 }

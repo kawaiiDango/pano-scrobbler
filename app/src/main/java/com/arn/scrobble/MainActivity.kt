@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity(),
                 mainNotifierViewModel
             )
         }
-//        showSnackbarIfNeeded()
+//        navController.navigate(R.id.fixItFragment)
     }
 
     fun hideFab(removeListeners: Boolean = true) {

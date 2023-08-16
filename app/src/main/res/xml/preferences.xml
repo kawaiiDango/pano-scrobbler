@@ -180,18 +180,24 @@
     <PreferenceCategory
         app:icon="@drawable/vd_more_horiz"
         android:title="@string/pref_misc">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="now_playing"
-            android:persistent="true"
-            android:title="@string/pref_now_playing"/>
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="fetch_album"
             android:persistent="true"
-            android:title="@string/pref_fetch_album"
-            android:summary="@string/pref_show_albums_desc"/>
+            android:summary="@string/pref_fetch_album"/>
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prevent_duplicate_ambient_scrobbles"
+            android:persistent="true"
+            android:summary="@string/pref_prevent_duplicate_ambient_scrobbles"/>
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="now_playing"
+            android:persistent="true"
+            android:title="@string/pref_now_playing"/>
 
         <Preference
             android:title="@string/pref_intents"

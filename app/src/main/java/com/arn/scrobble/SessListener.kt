@@ -98,6 +98,13 @@ class SessListener(
 //        removeSessions(tokens)
     }
 
+    fun isMediaPlaying() =
+        controllers?.any {
+            it.playbackState?.state == PlaybackState.STATE_PLAYING &&
+                    !it.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST).isNullOrEmpty() &&
+                    !it.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
+        } ?: false
+
     fun findControllersByPackage(packageName: String) =
         controllersMap.values.filter { it.first.packageName == packageName }.map { it.first }
 

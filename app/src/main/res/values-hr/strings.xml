@@ -90,6 +90,7 @@
     <string name="reset">Ponovno postavi</string>
     <string name="settings">Konfiguracija</string>
     <string name="bug_report">Prijava greške</string>
+    <string name="faq">ČPP</string>
     <string name="album_art">Naslovnica albuma</string>
     <string name="artist_image">Slika izvođača</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nije moguće analizirati naslov</string>
@@ -128,6 +129,7 @@
     <string name="music_players">Reproduktori glazbe</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostale aplikacije</string>
     <string name="choose_apps">Odaberite aplikacije za scrobbleanje</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikacije</string>
     <string name="offline">Izvan mreže. Prikazani podatci nisu osvježeni</string>
     <string name="unavailable_offline">Nije dostupno izvan mreže</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servisi</string>
@@ -137,6 +139,7 @@
     <string name="share">Podijeli</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="grid_size">Promijeni veličinu mreže</string>
+    <string name="pinch_to_zoom">Zumiranje prstima</string>
     <string name="more_info">Više informacija</string>
     <string name="more" comment="More options menu in short">Više</string>
     <string name="learn" comment="(Learn java regex syntax)">Saznaj</string>
@@ -172,6 +175,8 @@
     <string name="delete">Izbriši</string>
     <string name="delete_all">Izbriši sve</string>
     <string name="love" comment="Love/like a song">Volim</string>
+    <string name="hate" comment="Hate or dislike a song">Mrzim</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Ne mrzim</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Ne volim</string>
     <string name="pending_scrobbles">Scrobbleovi na čekanju</string>
     <string name="pending_scrobble">Scrobble na čekanju</string>
@@ -270,6 +275,7 @@
     <string name="secondary_color">Sekundarna boja</string>
     <string name="tint_background" comment="Tint the background with the primary color">Ton pozadine</string>
     <string name="random_theme">Nasumično odaberi kod svakog pokretanja</string>
+    <string name="edit_name" comment="name for regex pattern">Lako prepoznatljiv naziv</string>
     <string name="edit_regex">Regex šablona</string>
     <string name="edit_regex_replacement">Regex zamjena</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Polja</string>
@@ -285,6 +291,7 @@
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Dodirnite za blokiranje i preskakanje</string>
     <string name="skip" comment="skip to next track">Preskoči</string>
     <string name="mute" comment="mute the music">Utišaj</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignoriraj</string>
     <string name="block" comment="block the track from scrobbling">Blokiraj</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Skrivene oznake</string>
     <string name="pin" comment="pin a friend to the top">Prikvači</string>
@@ -327,6 +334,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minute</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Postotak</string>
     <string name="pref_logout">Odjava</string>
+    <string name="sure_tap_again">Sigurni? Dodirnite opet</string>
     <string name="pref_login">Prijava</string>
     <string name="pref_about" comment="Info about this app">O aplikaciji</string>
     <string name="pref_privacy_policy">Politika privatnosti</string>

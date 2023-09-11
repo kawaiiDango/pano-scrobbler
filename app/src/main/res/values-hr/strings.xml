@@ -253,6 +253,7 @@
     <string name="original" comment="Original metadata before editing">Izvorno</string>
     <string name="corrected" comment="Corrected metadata after editing">Ispravljeno</string>
     <string name="tag" comment="last.fm tag">Oznaka</string>
+    <string name="taggings" comment="(total count of) a particular tag">Oznake</string>
     <string name="digest_weekly">Moji prošlotjedni top scrobbleovi</string>
     <string name="digest_monthly">Moji prošlomjesečni top scrobbleovi</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s top scrobbleovi</string>
@@ -282,6 +283,7 @@
     <string name="edit_replace">Zamijeni</string>
     <string name="edit_first" comment="First occurrence of a pattern">Prvo</string>
     <string name="edit_all" comment="All occurrences of a pattern">Sve</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Raspakiraj</string>
     <string name="edit_continue">Ako je pronađeno, nastavi provjeravati ostale regexe</string>
     <string name="edit_case_sensitive">Razlikuj velika i mala slova</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Testiraj</string>
@@ -308,6 +310,7 @@
     <string name="acoustic" comment="(Acoustic music)">Akustična</string>
     <string name="instrumental">Instrumental</string>
     <string name="energetic" comment="(Energetic music)">Energična</string>
+    <string name="danceable">Plesna</string>
     <string name="valence" comment="(Musical positivity)">Pozitivnost</string>
     <string name="popularity" formatted="true" comment="popularity of a track">Popularnost: %1$d%%</string>
     <string name="analysis" comment="musical analysis such as key, bpm, time signature, dancability etc">Analiza</string>

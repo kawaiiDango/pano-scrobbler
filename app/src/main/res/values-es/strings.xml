@@ -327,10 +327,12 @@
     <string name="pref_enabled_apps_title">Escoge las aplicaciones</string>
     <string name="pref_auto_detect">Automáticamente hace scrobble de nuevas aplicaciones</string>
     <string name="pref_spotify_remote">Haz scrobble de Spotify reproduciendo en otros dispositivos</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Deshabilitar el scrobbling continuo desde el micrófono cuando el dispositivo reproduce música</string>
     <string name="pref_delay">Demora del scrobble (lo que ocurra primero)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutos</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Porcentaje</string>
     <string name="pref_logout">Cerrar sesión</string>
+    <string name="sure_tap_again">¿Seguro? Toca de nuevo</string>
     <string name="pref_login">Iniciar sesión</string>
     <string name="pref_about" comment="Info about this app">Acerca de</string>
     <string name="pref_privacy_policy">Política de privacidad</string>
@@ -338,12 +340,14 @@
     <string name="pref_user_label" comment="(Like username)">Usuario</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token de autenticación</string>
     <string name="api_url" comment="For Listenbrainz">URL de la API</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Puedes encontrar tu token de autenticación en: %1$s</string>
     <string name="pref_now_playing">Enviar reproducción</string>
     <string name="pref_fetch_album">Obtener los datos de los álbumes faltantes en lastFM</string>
     <string name="pref_locale">Idiomas</string>
     <string name="pref_change_locale">Elegir idioma</string>
     <string name="pref_crashlytics_enabled">Reportar errores automáticamente</string>
     <string name="pref_misc">Misceláneo.</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La semana comienza el</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importar &amp; Exportar</string>
     <string name="pref_export">Exportar</string>
     <string name="pref_export_desc">Realiza copias de seguridad de la configuración, las ediciones y la lista de bloqueo. No guarda inicios de sesión por razones de seguridad. Útil para moverse entre dispositivos o compartir con amigos.</string>
@@ -408,6 +412,7 @@
     <string name="submitting_loves" formatted="true">Enviando favoritos, %1$d restantes</string>
     <string name="pending_batch" comment="For pending scrobbles">Enviar un lote</string>
     <string name="webview_error">No se pudo cargar la página (¿Está funcionando tu internet?)</string>
+    <string name="bar_chart">Gráfico de barras</string>
     <string name="cleared_disabled_apps">Limpiar aplicaciones desactivadas</string>
     <string name="fix_it_title">Posibles soluciones</string>
     <string name="fix_it_startup_title">Ahorradores de energía / gestores de arranque</string>

@@ -73,6 +73,7 @@
     <string name="reset">Restablecer</string>
     <string name="settings">Configuración</string>
     <string name="bug_report">Reportar error</string>
+    <string name="faq">Preguntas frecuentes</string>
     <string name="album_art">Imagen del álbum</string>
     <string name="artist_image">Imagen del artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">No se ha podido analizar el título</string>
@@ -111,6 +112,7 @@
     <string name="music_players">Reproductores de música</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Otras Aplicaciones</string>
     <string name="choose_apps">Selecciona las aplicaciones para hacer scrobble</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicaciones</string>
     <string name="offline">Sin conexión. Los datos mostrados no son recientes</string>
     <string name="unavailable_offline">No disponible sin conexión</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Servicios</string>
@@ -134,6 +136,7 @@
     <string name="library" comment="search within the library">Biblioteca</string>
     <string name="global" comment="search globally across lastfm">Global</string>
     <string name="reindex">Índice rápido</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexar tus scrobbles</string>
     <string name="full_index">Índice completo</string>
     <string name="take_long_time">Esto puede tomar mucho tiempo</string>
     <string name="full_index_desc">Use esto solo si ha editado o eliminado scrobbles del sitio web.</string>
@@ -153,7 +156,10 @@
     <string name="show_all">Ver todo</string>
     <string name="edit">Editar</string>
     <string name="delete">Eliminar</string>
+    <string name="delete_all">Eliminar todo</string>
     <string name="love" comment="Love/like a song">Favorito</string>
+    <string name="hate" comment="Hate or dislike a song">No me gusta</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">No odiar</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Eliminar de favoritos</string>
     <string name="pending_scrobbles">Scrobbles pendientes</string>
     <string name="pending_scrobble">Scrobble pendiente</string>
@@ -254,12 +260,15 @@
     <string name="secondary_color">Color secundario</string>
     <string name="tint_background" comment="Tint the background with the primary color">Tinte de fondo</string>
     <string name="random_theme">Aleatorizar cada lanzamiento</string>
+    <string name="edit_name" comment="name for regex pattern">Nombre simple</string>
     <string name="edit_regex">Patrón regex</string>
     <string name="edit_regex_replacement">Reemplazo de Regex</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Campos</string>
     <string name="edit_replace">Reemplazar</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primero</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extraer</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Dale un nombre a tus grupos de captura <i>pista, álbum, artista</i> o <i>álbumArtista</i> para extraerlos de otros campos</string>
     <string name="edit_continue">Si se encuentra, continúa coincidiendo con otras expresiones regulares</string>
     <string name="edit_case_sensitive">Distingue entre mayúsculas y minúsculas</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Prueba</string>
@@ -276,6 +285,7 @@
     <string name="player_actions" comment="music player actions such as skip/mute">Acciones del jugador</string>
     <string name="skip" comment="skip to next track">Saltar</string>
     <string name="mute" comment="mute the music">Silenciar</string>
+    <string name="ignore" comment="ignore the track so that it doesn't scrobble">Ignorar</string>
     <string name="block" comment="block the track from scrobbling">Bloquear</string>
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Etiquetas ocultas</string>
     <string name="pin" comment="pin a friend to the top">Fijar</string>

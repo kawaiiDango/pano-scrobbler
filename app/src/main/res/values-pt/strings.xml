@@ -244,7 +244,7 @@
     <string name="my_tags" comment="Tags, the user has added">Minhas etiquetas</string>
     <string name="close" comment="To close a dialog or something">Fechar</string>
     <string name="user_tags_hint" comment="To add a new tag">Nova etiqueta</string>
-    <string name="user_tags_empty">Ainda não adicionou nenhuma equipa</string>
+    <string name="user_tags_empty">Ainda não adicionou nenhuma etiqueta</string>
     <string name="info_long_press_hint" comment="'This' is a dialog">Pressione e segure numa faixa para abrir isto</string>
     <string name="appwidget_loading">A carregar…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Período</string>

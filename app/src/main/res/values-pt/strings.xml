@@ -403,7 +403,7 @@
     <string name="add_acr_key">Adicionar chave ACRCloud</string>
     <string name="remove_acr_key">Remover chave ACRCloud</string>
     <string name="add_acr_consider">Para evitar limites de taxa de acesso, considere adicionar a sua própria chave ACRCloud</string>
-    <string name="add" comment="Add a new item such as an edit, a tag, etc">Adir</string>
+    <string name="add" comment="Add a new item such as an edit, a tag, etc">Adicionar</string>
     <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Registe-se em https://console.acrcloud.com
 • Navegue em Projects &gt; Audio &amp; video recognition
 • Crie um novo projeto, selecione Recorded Audio e o repositório ACRCloud Music"</string>

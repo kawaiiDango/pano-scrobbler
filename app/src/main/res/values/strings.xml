@@ -133,7 +133,6 @@
     <string name="auto"
         comment="automatic or default setting"
         >Auto</string>
-    <string name="enabled_apps">Enabled Apps</string>
     <string name="almost_there"
         comment="Shown on the first screen after install, asking the user to complete the setup"
         >Almost there…</string>
@@ -141,7 +140,8 @@
     <string name="other_apps"
         comment="Apps which are not music players or video streaming apps"
         >Other Apps</string>
-    <string name="choose_apps">Choose Apps to scrobble</string>
+    <string name="choose_apps">Choose apps</string>
+    <string name="choose_an_app">Choose an app</string>
     <string name="apps"
         comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps"
         >Apps</string>
@@ -241,7 +241,6 @@
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="pending_scrobble">Pending scrobble</string>
     <string name="pending_scrobbles_noti">Processing pending scrobbles</string>
-
     <string name="friends">Friends</string>
     <string name="num_scrobbles_since" formatted="true"
         comment="%1= number, %2= date of joining lastfm"
@@ -437,8 +436,23 @@
         comment="To extract sub text from a larger text, in short, used in pattern edits"
         >Extract</string>
     <string name="edit_extract_desc"
-        comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups"
+        comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"
         >Name your capture groups <i>track, album, artist</i> or <i>albumArtist</i> to extract them from other fields</string>
+    <string name="edit_extract_example"
+        comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"
+        >e.g. To swap the artist and title, you would put the artist regex as (?&lt;track&gt;.*) and the track regex as (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups"
+        comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups"
+        >Your regexes should at least have these named capture groups: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true"
+        comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups"
+        >Your regexes contain more than one \"%1$s\" capture groups, which is not allowed</string>
+    <string name="edit_regex_invalid" formatted="true"
+        comment="%1= the regex error message"
+        >Invalid regex: %1$s</string>
+    <string name="edit_regex_rules_matched"
+        comment="the specific regex patterns that were used"
+        >Patterns used:</string>
     <string name="edit_continue">If found, continue matching other regexes</string>
     <string name="edit_case_sensitive">Case sensitive</string>
     <string name="edit_regex_test"
@@ -743,5 +757,6 @@ Your purchases are managed by Google Play. They are linked with a Google Play ac
         >Pin up to %1$d friends and reorder them</string>
     <string name="billing_sharing">Remove app name when sharing</string>
     <string name="billing_scrobble_source">Remember and see apps you scrobbled from and search directly in them</string>
+    <string name="billing_regex_extract">Write custom metadata extraction rules using regex</string>
 
 </resources>

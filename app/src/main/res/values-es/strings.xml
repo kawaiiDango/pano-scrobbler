@@ -107,11 +107,9 @@
     <string name="recents" comment="Short for recently scrobbled">Recientes</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primer scrobble el %1$s</string>
     <string name="auto" comment="automatic or default setting">Automático</string>
-    <string name="enabled_apps">Aplicaciones habilitadas</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Casi listos…</string>
     <string name="music_players">Reproductores de música</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Otras Aplicaciones</string>
-    <string name="choose_apps">Selecciona las aplicaciones para hacer scrobble</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicaciones</string>
     <string name="offline">Sin conexión. Los datos mostrados no son recientes</string>
     <string name="unavailable_offline">No disponible sin conexión</string>
@@ -268,7 +266,7 @@
     <string name="edit_first" comment="First occurrence of a pattern">Primero</string>
     <string name="edit_all" comment="All occurrences of a pattern">Todos</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extraer</string>
-    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Dale un nombre a tus grupos de captura <i>pista, álbum, artista</i> o <i>álbumArtista</i> para extraerlos de otros campos</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Dale un nombre a tus grupos de captura <i>pista, álbum, artista</i> o <i>álbumArtista</i> para extraerlos de otros campos</string>
     <string name="edit_continue">Si se encuentra, continúa coincidiendo con otras expresiones regulares</string>
     <string name="edit_case_sensitive">Distingue entre mayúsculas y minúsculas</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Prueba</string>

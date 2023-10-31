@@ -107,11 +107,9 @@
     <string name="recents" comment="Short for recently scrobbled">Son dinlemeler</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">İlk %1$s tarihinde skroplandı</string>
     <string name="auto" comment="automatic or default setting">Otomatik</string>
-    <string name="enabled_apps">Etkin Uygulamalar</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Neredeyse tamam…</string>
     <string name="music_players">Müzik Oynatıcılar</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Diğer Uygulamalar</string>
-    <string name="choose_apps">Skroplanacak Uygulamaları seçin</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Uygulamalar</string>
     <string name="offline">Çevrimdışı. Güncel veriler gösterilemiyor</string>
     <string name="unavailable_offline">Çevrimdışı kullanılamıyor</string>
@@ -268,7 +266,7 @@
     <string name="edit_first" comment="First occurrence of a pattern">İlkini</string>
     <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Çıkart</string>
-    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Yakalama gruplarınızı diğer alanlardan çıkarabilmek için yakalama gruplarınızı <i>track, album, artist</i> veya <i>albumArtist</i> olarak adlandırın</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Yakalama gruplarınızı diğer alanlardan çıkarabilmek için yakalama gruplarınızı <i>track, album, artist</i> veya <i>albumArtist</i> olarak adlandırın</string>
     <string name="edit_continue">Mevcutsa, diğer düzenli ifadeleri de eşleştirmeye devam et</string>
     <string name="edit_case_sensitive">Büyük küçük harfe duyarlı</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Dene</string>

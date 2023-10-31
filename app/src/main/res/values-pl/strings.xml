@@ -128,11 +128,9 @@
     <string name="recents" comment="Short for recently scrobbled">Ostatnie</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pierwsze scrobblowanie w %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatycznie</string>
-    <string name="enabled_apps">Włączone aplikacje</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Prawie gotowe…</string>
     <string name="music_players">Odtwarzacze muzyki</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Inne aplikacje</string>
-    <string name="choose_apps">Wybierz aplikacje do scrobblowania</string>
     <string name="offline">Offline. Dane nie są aktualne</string>
     <string name="unavailable_offline">Niedostępne w trybie offline</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Usługi</string>

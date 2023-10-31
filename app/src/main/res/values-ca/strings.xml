@@ -98,11 +98,9 @@
     <string name="recents" comment="Short for recently scrobbled">Recents</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Primer scrobble fet el %1$s</string>
     <string name="auto" comment="automatic or default setting">Automàtic</string>
-    <string name="enabled_apps">Aplicacions activades</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Ja falta poc…</string>
     <string name="music_players">Reproductors de música</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altres aplicacions</string>
-    <string name="choose_apps">Tria les aplicacions per a fer scrobbling</string>
     <string name="offline">Sense connexió. Les informació no està actualitzada</string>
     <string name="unavailable_offline">No disponible sense connexió</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Serveis</string>

@@ -99,11 +99,9 @@
     <string name="recents" comment="Short for recently scrobbled">Zuletzt</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Zuerst gescrobbelt auf %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="enabled_apps">Aktivierte Apps</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Fast geschafft…</string>
     <string name="music_players">Musik-Player</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andere Apps</string>
-    <string name="choose_apps">Apps zum scrobbeln auswählen</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Apps</string>
     <string name="offline">Offline. Angezeigte Daten sind nicht aktuell</string>
     <string name="unavailable_offline">Nicht verfügbar im Offline-Modus</string>

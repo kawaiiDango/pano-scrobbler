@@ -94,11 +94,9 @@
     <string name="recents" comment="Short for recently scrobbled">Recenten</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Voor het eerst gescrobbeld op %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatisch</string>
-    <string name="enabled_apps">Ingeschakelde apps</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Bijna klaar…</string>
     <string name="music_players">Muziekspelers</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andere Apps</string>
-    <string name="choose_apps">Kies apps om te scrobbelen</string>
     <string name="offline">Offline. Getoonde data is niet nieuw</string>
     <string name="unavailable_offline">Niet offline beschikbaar</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Diensten</string>

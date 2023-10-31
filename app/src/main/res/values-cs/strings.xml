@@ -141,11 +141,9 @@
     <string name="recents" comment="Short for recently scrobbled">Nedávné</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Poprvé scrobblováno dne %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="enabled_apps">Povolené Aplikace</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Skoro hotovo…</string>
     <string name="music_players">Hudební Přehrávače</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostatní Aplikace</string>
-    <string name="choose_apps">Vyberte aplikace ke scrobblování</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikace</string>
     <string name="offline">Offline. Zobrazená data nejsou čerstvá</string>
     <string name="unavailable_offline">Není dostupné offline</string>

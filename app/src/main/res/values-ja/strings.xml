@@ -89,11 +89,9 @@
     <string name="recents" comment="Short for recently scrobbled">履歴</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">初Scrobble: %1$s</string>
     <string name="auto" comment="automatic or default setting">自動</string>
-    <string name="enabled_apps">有効化済みアプリ</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">もう少しで完了です…</string>
     <string name="music_players">音楽プレーヤー</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">他のアプリ</string>
-    <string name="choose_apps">Scrobbleするアプリを選択</string>
     <string name="offline">現在オフラインです。表示中のデータは最新ではありません</string>
     <string name="unavailable_offline">オフライン時は利用できません</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">サービス</string>

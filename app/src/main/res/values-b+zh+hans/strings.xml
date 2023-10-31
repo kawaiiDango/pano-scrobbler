@@ -90,11 +90,9 @@
     <string name="recents" comment="Short for recently scrobbled">最近的</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">首次记录于 %1$s</string>
     <string name="auto" comment="automatic or default setting">自动</string>
-    <string name="enabled_apps">已启用的应用</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">即将完成……</string>
     <string name="music_players">音乐播放器</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">其他应用</string>
-    <string name="choose_apps">选择要记录的应用</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">应用</string>
     <string name="offline">已离线。所展示的数据并不是最新的。</string>
     <string name="unavailable_offline">离线时不可用</string>
@@ -251,7 +249,7 @@
     <string name="edit_first" comment="First occurrence of a pattern">第一项</string>
     <string name="edit_all" comment="All occurrences of a pattern">全部</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">提取</string>
-    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">为捕获组 <i>track、album、artist</i> 或 <i>albumArtist</i> 命名以从其他字段中进行提取</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">为捕获组 <i>track、album、artist</i> 或 <i>albumArtist</i> 命名以从其他字段中进行提取</string>
     <string name="edit_continue">若有结果，继续匹配其它正则</string>
     <string name="edit_case_sensitive">区分大小写</string>
     <string name="edit_regex_test" comment="(Test regex rules)">测试</string>

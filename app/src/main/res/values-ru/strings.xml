@@ -141,11 +141,9 @@
     <string name="recents" comment="Short for recently scrobbled">Недавние</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Первый скроббл был %1$s</string>
     <string name="auto" comment="automatic or default setting">Автоматический выбор</string>
-    <string name="enabled_apps">Подключенные приложения</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Почти готово…</string>
     <string name="music_players">Музыкальные плееры</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Другие приложения</string>
-    <string name="choose_apps">Выберите приложения для скробблинга</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Приложения</string>
     <string name="offline">Не в сети. Показанные данные не актуальны</string>
     <string name="unavailable_offline">Недоступно, когда не в сети</string>
@@ -302,7 +300,7 @@
     <string name="edit_first" comment="First occurrence of a pattern">Первый</string>
     <string name="edit_all" comment="All occurrences of a pattern">Все</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Извлечь</string>
-    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Назовите ваши группы захвата <i>track, album, artist</i> или <i>albumArtist</i>, чтобы извлечь их из других полей</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Назовите ваши группы захвата <i>track, album, artist</i> или <i>albumArtist</i>, чтобы извлечь их из других полей</string>
     <string name="edit_continue">Если найдено, продолжить сопоставление с другими регулярными выражениями</string>
     <string name="edit_case_sensitive">С учетом регистра</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Проверка</string>

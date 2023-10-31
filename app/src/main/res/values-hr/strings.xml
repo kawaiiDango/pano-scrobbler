@@ -124,11 +124,9 @@
     <string name="recents" comment="Short for recently scrobbled">Nedavno</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Prvi puta scrobbleano %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="enabled_apps">Omogućene aplikacije</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Još malo…</string>
     <string name="music_players">Reproduktori glazbe</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostale aplikacije</string>
-    <string name="choose_apps">Odaberite aplikacije za scrobbleanje</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikacije</string>
     <string name="offline">Izvan mreže. Prikazani podatci nisu osvježeni</string>
     <string name="unavailable_offline">Nije dostupno izvan mreže</string>

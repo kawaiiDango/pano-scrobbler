@@ -50,10 +50,6 @@
             android:id="@+id/deepLinkToPrefFragment"
             app:uri="pscrobbler://screen/settings" />
         <deepLink
-            android:id="@+id/deepLinkToPrefFragment2"
-            app:action="android.intent.category.NOTIFICATION_PREFERENCES"
-            app:uri="pscrobbler://screen/settings" />
-        <deepLink
             android:id="@+id/deepLinkToPrefFragment3"
             app:action="android.service.quicksettings.action.QS_TILE_PREFERENCES"
             app:uri="pscrobbler://screen/settings" />
@@ -120,7 +116,7 @@
     <fragment
         android:id="@+id/appListFragment"
         android:name="com.arn.scrobble.pref.AppListFragment"
-        android:label="@string/enabled_apps"
+        android:label="@string/choose_apps"
         tools:layout="@layout/content_app_list" />
     <fragment
         android:id="@+id/chartsPagerFragment"
@@ -193,11 +189,11 @@
         android:label="@string/pref_regex_edits"
         tools:layout="@layout/content_regex_edit">
         <action
-            android:id="@+id/action_regexEditsFragment_to_regexEditsAddDialogFragment"
+            android:id="@+id/action_regexEditsFragment_to_regexEditsAddFragment"
             app:destination="@id/regexEditsAddFragment" />
         <action
-            android:id="@+id/action_regexEditsFragment_to_regexEditsTestDialogFragment"
-            app:destination="@id/regexEditsTestDialogFragment" />
+            android:id="@+id/action_regexEditsFragment_to_regexEditsTestFragment"
+            app:destination="@id/regexEditsTestFragment" />
     </fragment>
     <fragment
         android:id="@+id/regexEditsAddFragment"
@@ -331,11 +327,11 @@
         android:name="com.arn.scrobble.info.InfoExtraFragment"
         android:label="InfoExtraFragment"
         tools:layout="@layout/content_info_track" />
-    <dialog
-        android:id="@+id/regexEditsTestDialogFragment"
-        android:name="com.arn.scrobble.edits.RegexEditsTestDialogFragment"
+    <fragment
+        android:id="@+id/regexEditsTestFragment"
+        android:name="com.arn.scrobble.edits.RegexEditsTestFragment"
         android:label="@string/edit_regex_test"
-        tools:layout="@layout/dialog_regex_test" />
+        tools:layout="@layout/content_regex_test" />
     <dialog
         android:id="@+id/monthPickerFragment"
         android:name="com.arn.scrobble.charts.MonthPickerFragment"

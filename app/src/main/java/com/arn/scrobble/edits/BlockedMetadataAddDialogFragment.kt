@@ -112,7 +112,7 @@ class BlockedMetadataAddDialogFragment : DialogFragment() {
                 )
                     return@setOnClickListener
 
-                if (newBlockedMetadata != blockedMetadata || blockedMetadata._id == -1)
+                if (newBlockedMetadata != blockedMetadata || blockedMetadata._id == 0)
                     GlobalScope.launch(Dispatchers.IO) {
                         PanoDb.db.getBlockedMetadataDao()
                             .insertLowerCase(listOf(newBlockedMetadata), ignore = false)

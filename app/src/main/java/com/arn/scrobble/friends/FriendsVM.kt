@@ -160,7 +160,8 @@ class FriendsVM(app: Application) : AndroidViewModel(app) {
                         kotlin.runCatching {
                             User.getInfo(userSerializable.name, lastfmSession)
                         }.onSuccess { user ->
-                            userSerializable.updateFromUser(user)
+                            if (user != null)
+                                userSerializable.updateFromUser(user)
                             modifiedCount++
                         }
                     }

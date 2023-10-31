@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/shape_launcher_bg_round" />
-    <item android:top="-10dp"
-        android:bottom="-10dp"
-        android:left="-10dp"
-        android:right="-10dp"
-        android:drawable="@drawable/vd_launcher_fg" />
+    <item android:drawable="@drawable/vd_launcher_fg" />
 </layer-list>

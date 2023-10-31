@@ -6,11 +6,13 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Parcel
-import android.transition.Fade
-import android.transition.TransitionManager
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.Menu
@@ -24,6 +26,8 @@ import android.widget.Toast
 import androidx.annotation.IntRange
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -82,6 +86,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Calendar
 import java.util.Objects
 import kotlin.math.max
@@ -320,15 +326,35 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
                         Stuff.myRelativeTime(requireContext(), track.playedWhen, true),
                         viewModel.username
                     )
+
                 if (billingViewModel.proStatus.value != true)
                     shareText += "\n\n" + getString(R.string.share_sig)
+
                 val i = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(Intent.EXTRA_SUBJECT, shareText)
                     putExtra(Intent.EXTRA_TEXT, shareText)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+
+                val shareAlbumArt = coordinatorBinding.heroImg.drawable as? BitmapDrawable
+                if (shareAlbumArt != null) {
+                    val albumArtFile = File(requireContext().filesDir, "album_art.jpg")
+                    FileOutputStream(albumArtFile).use { fos ->
+                        shareAlbumArt.bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
+                    }
+
+                    val albumArtUri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.arn.scrobble.fileprovider",
+                        albumArtFile
+                    )
+
+                    i.putExtra(Intent.EXTRA_STREAM, albumArtUri)
+                    i.type = "image/jpeg"
 
                 }
+
                 startActivity(Intent.createChooser(i, getString(R.string.share)))
             }
         }

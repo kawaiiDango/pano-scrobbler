@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -28,6 +29,7 @@ import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.SimpleHeaderDecoration
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.showWithIcons
 import com.google.android.material.transition.MaterialSharedAxis
@@ -53,9 +55,7 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
     }
 
     override fun onCreateView(
@@ -90,6 +90,8 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        postponeEnterTransition()
+
         if (!mainNotifierViewModel.userIsSelf)
             viewModel.username = mainNotifierViewModel.currentUser.name
 
@@ -102,6 +104,11 @@ class TrackHistoryFragment : Fragment(), ItemClickListener {
             val oldList = viewModel.tracks.toList()
             viewModel.tracks.addAll(it.pageResults)
             populate(oldList)
+
+//            (view.parent as? ViewGroup)?.doOnPreDraw {
+//                startPostponedEnterTransition()
+//            }
+            // todo transition
         }
 
         if (scrobbleCount > 1)

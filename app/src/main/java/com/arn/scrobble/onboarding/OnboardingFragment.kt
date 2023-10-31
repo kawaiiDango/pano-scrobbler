@@ -18,6 +18,8 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentOnboardingBinding
 import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
+import com.google.android.material.transition.MaterialSharedAxis
 import ernestoyaquello.com.verticalstepperform.Step
 import ernestoyaquello.com.verticalstepperform.listener.StepperFormListener
 
@@ -37,6 +39,8 @@ class OnboardingFragment : Fragment(), StepperFormListener {
                     onboardingSteps.stepsList.find { it is OnboardingSteps.SendNotificationsStep }
                         ?.markAsCompleted(true)
             }
+
+        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
     }
 
     override fun onCreateView(

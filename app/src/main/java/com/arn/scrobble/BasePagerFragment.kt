@@ -6,12 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.activityViewModels
 import com.arn.scrobble.NavUtils.setupWithNavUi
 import com.arn.scrobble.databinding.ContentPagerBinding
 import com.arn.scrobble.ui.OptionsMenuVM
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
+import com.google.android.material.transition.MaterialSharedAxis
 import kotlin.math.abs
 
 
@@ -24,6 +27,12 @@ open class BasePagerFragment : Fragment() {
         get() = _binding!!
     val optionsMenuViewModel by activityViewModels<OptionsMenuVM>()
     val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupAxisTransitions(MaterialSharedAxis.Z)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,12 +49,18 @@ open class BasePagerFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
         //https://stackoverflow.com/questions/12490963/replacing-viewpager-with-fragment-then-navigating-back
         if (!view.isInTouchMode)
             view.requestFocus()
 
         binding.pager.offscreenPageLimit = adapter.count - 1
         binding.pager.adapter = adapter
+
+        (view.parent as? ViewGroup)?.doOnPreDraw {
+            startPostponedEnterTransition()
+        }
+
         setupWithNavUi()
 
         binding.pager.setPageTransformer(false) { page, position ->

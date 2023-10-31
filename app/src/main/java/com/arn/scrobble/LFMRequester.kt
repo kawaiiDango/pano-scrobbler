@@ -91,7 +91,7 @@ class LFMRequester(
 ) {
     private val context = App.context
     private val prefs = App.prefs
-    private lateinit var job: Job
+    private var job: Job? = null
     private var launchExecOnSet = true
 
     private var toExec: (suspend () -> Any?) = {}
@@ -900,7 +900,7 @@ class LFMRequester(
                     if (scrobbleData.track.isNullOrBlank())
                         scrobbleData.track = oldTrack
 
-                    if (regexEdits.values.sum() > 0)
+                    if (regexEdits.values.any { it.isNotEmpty() })
                         edit = editsDao.performEdit(scrobbleData)
 
                     if (shouldBlockScrobble(unparsedData?.artist))
@@ -924,7 +924,7 @@ class LFMRequester(
                             context.sendBroadcast(i, NLService.BROADCAST_PERMISSION)
                         }
                         return@coroutineScope
-                    } else if (edit != null || regexEdits.values.sum() > 0) {
+                    } else if (edit != null || regexEdits.values.any { it.isNotEmpty() }) {
                         val i = Intent(NLService.iMETA_UPDATE_S)
                             .setPackage(context.packageName)
                             .putSingle(trackInfo.updateMetaFrom(scrobbleData))
@@ -982,7 +982,7 @@ class LFMRequester(
                                 .getRegexEditsDao()
                                 .performRegexReplace(scrobbleData, trackInfo.packageName)
 
-                            if (regexEdits.values.sum() > 0)
+                            if (regexEdits.values.any { it.isNotEmpty() })
                                 edit = editsDao.performEdit(scrobbleData, false)
 
                             if (shouldBlockScrobble(null))
@@ -1292,7 +1292,6 @@ class LFMRequester(
                     }
 
                     AccountType.LISTENBRAINZ, AccountType.CUSTOM_LISTENBRAINZ -> {
-                        TODO("NOT IMPLEMENTED")
                     }
                 }
             }
@@ -1301,7 +1300,7 @@ class LFMRequester(
     }
 
     fun cancel() {
-        job.cancel()
+        job?.cancel()
     }
 
     suspend fun <T> execHere(func: LFMRequester.() -> Unit): T? {
@@ -1310,7 +1309,7 @@ class LFMRequester(
         return toExec() as T?
     }
 
-    val isCompleted get() = ::job.isInitialized && job.isCompleted
+    val isCompleted get() = job?.isCompleted == true
 
     companion object {
 
@@ -1338,7 +1337,7 @@ class LFMRequester(
             title: String,
         ): Track? {
             val now = System.currentTimeMillis()
-            if (now - lastNpInfoTime < Stuff.TRACK_INFO_WINDOW && !BuildConfig.DEBUG) {
+            if (now - lastNpInfoTime < Stuff.TRACK_INFO_WINDOW) {
                 lastNpInfoCount++
                 if (lastNpInfoCount >= Stuff.TRACK_INFO_REQUESTS)
                     return null

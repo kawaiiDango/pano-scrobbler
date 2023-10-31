@@ -33,15 +33,16 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:banner="@drawable/tv_banner"
+        android:appCategory="audio"
+        android:banner="@mipmap/ic_banner"
         android:enableOnBackInvokedCallback="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
-        tools:targetApi="tiramisu">
+        tools:targetApi="UPSIDE_DOWN_CAKE">
 
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
@@ -110,24 +111,6 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-
-        <activity-alias
-            android:name=".LastfmLinksActivity"
-            android:enabled="false"
-            android:exported="true"
-            android:targetActivity=".MainActivity">
-            <intent-filter android:label="@string/profile">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="https" />
-                <data android:host="last.fm" />
-                <data android:host="www.last.fm" />
-                <data android:pathPrefix="/user/" />
-            </intent-filter>
-        </activity-alias>
 
         <activity
             android:name=".MainDialogActivity"

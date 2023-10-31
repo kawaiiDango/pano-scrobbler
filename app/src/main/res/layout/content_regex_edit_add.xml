@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:transitionGroup="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -74,7 +75,7 @@
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/edit_replace_chipgroup"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:checkedChip="@id/edit_replace_first"
                 app:selectionRequired="true"

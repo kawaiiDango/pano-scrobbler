@@ -18,6 +18,7 @@ import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
@@ -41,8 +42,7 @@ open class LoginFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.X)
     }
 
     override fun onCreateView(

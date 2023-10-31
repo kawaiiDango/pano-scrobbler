@@ -1,4 +1,3 @@
-
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
@@ -69,7 +68,7 @@ android {
 
     buildTypes {
         release {
-            isShrinkResources = true
+//            isShrinkResources = true // todo fix when the fix is fixed
             isMinifyEnabled = true
             setProguardFiles(
                 listOf(
@@ -143,6 +142,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.core.remoteviews)
+    implementation(libs.androidx.transition)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
@@ -197,7 +197,7 @@ dependencies {
 // play store and github publishing scripts
 // remove if not needed
 
-val localProperties = gradleLocalProperties(rootDir) as Map<String, String>
+val localProperties = gradleLocalProperties(rootDir, project.providers) as Map<String, String>
 
 android {
     signingConfigs {

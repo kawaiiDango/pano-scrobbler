@@ -19,6 +19,7 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentBillingBinding
 import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.color.MaterialColors
@@ -36,11 +37,7 @@ class BillingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
-
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
     }
 
     override fun onCreateView(
@@ -65,8 +62,9 @@ class BillingFragment : Fragment() {
             R.drawable.vd_apps to getString(R.string.billing_scrobble_source),
             R.drawable.vd_ban to getString(R.string.billing_block),
             R.drawable.vd_pin to getString(R.string.billing_pin_friends, 10),
+            R.drawable.vd_extract to getString(R.string.billing_regex_extract),
             R.drawable.vd_share to getString(R.string.billing_sharing),
-        )
+        ).reversedArray()
 
         bulletStrings.forEach { (iconRes, string) ->
             val textView = MaterialTextView(requireContext()).apply {

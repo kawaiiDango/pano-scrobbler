@@ -65,4 +65,12 @@
         android:justificationMode="inter_word"
         android:text="@string/edit_extract_desc" />
 
+    <TextView
+        android:id="@+id/edit_extract_example"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/text_input_margin_vertical"
+        android:justificationMode="inter_word"
+        android:text="@string/edit_extract_example" />
+
 </LinearLayout>

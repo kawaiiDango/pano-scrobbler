@@ -32,7 +32,6 @@
 <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
     <string name="force_exception" translatable="false">Force log an exception</string>
-    <string name="touhou_circles" translatable="false">2hu circles (newline separated)</string>
     <string name="debug_menu" translatable="false">Shrine maiden\'s menu</string>
     <string name="listen_along" translatable="false">Listen along</string>
     <string name="test_scrobble_from_noti" translatable="false">Scrobble from noti</string>

@@ -194,6 +194,11 @@ class SessListener(
             // if another player tried to scrobble, unmute whatever was muted
             // if self was muted, clear the muted hash too
             unmute(clearMutedHash = isMuted)
+
+            // add to seen packages
+            if (trackInfo.packageName !in prefs.seenPackages) {
+                prefs.seenPackages += trackInfo.packageName
+            }
         }
 
         private fun scheduleSyntheticStateIfNeeded() {
@@ -314,17 +319,6 @@ class SessListener(
                         !MetadataUtils.isVariousArtists(albumArtist)
                     )
                         artist = albumArtist
-
-                    if (BuildConfig.DEBUG) {
-                        val circles = prefs.touhouCircles.split('\n')
-                        if (artist in circles) {
-                            val titleArtist = title.split(" feat\\.? ".toRegex())
-                            if (titleArtist.size == 2) {
-                                title = titleArtist[0]
-                                artist = titleArtist[1]
-                            }
-                        }
-                    }
                 }
             }
 

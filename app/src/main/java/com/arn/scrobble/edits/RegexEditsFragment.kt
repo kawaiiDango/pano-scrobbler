@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -26,10 +27,13 @@ import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -42,6 +46,11 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
     private lateinit var adapter: RegexEditsAdapter
     private val prefs = App.prefs
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupAxisTransitions(MaterialSharedAxis.X)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,6 +68,8 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
+
         mainNotifierViewModel.fabData.value = FabData(
             viewLifecycleOwner,
             R.string.add,
@@ -81,7 +92,7 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
         binding.empty.text = resources.getQuantityString(R.plurals.num_regex_edits, 0, 0)
 
         binding.regexEditsChipTest.setOnClickListener {
-            findNavController().navigate(R.id.regexEditsTestDialogFragment)
+            findNavController().navigate(R.id.regexEditsTestFragment)
         }
 
         binding.regexEditsChipPresets.setOnClickListener {
@@ -100,6 +111,10 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
             viewModel.regexes.clear()
             viewModel.regexes.addAll(it)
             adapter.autoNotify(oldList, viewModel.regexes) { o, n -> o._id == n._id }
+
+            (view.parent as? ViewGroup)?.doOnPreDraw {
+                startPostponedEnterTransition()
+            }
         }
 
         viewModel.countReceiver.observe(viewLifecycleOwner) {
@@ -177,14 +192,19 @@ class RegexEditsFragment : Fragment(), ItemClickListener {
             .setItems(presetsAvailable
                 .map { RegexPresets.getString(it!!) }
                 .toTypedArray()
-            ) { dialogInterface, idx ->
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            ) { _, idx ->
+                viewLifecycleOwner.lifecycleScope.launch {
                     val regexEdit = RegexEdit(
                         preset = presetsAvailable[idx],
                         order = 0
                     )
-                    dao.shiftDown()
-                    dao.insert(listOf(regexEdit))
+                    withContext(Dispatchers.IO) {
+                        dao.shiftDown()
+                        dao.insert(listOf(regexEdit))
+                    }
+
+                    delay(200)
+                    binding.editsList.smoothScrollToPosition(0)
                 }
             }
             .show()

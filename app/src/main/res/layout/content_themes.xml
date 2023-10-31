@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
-        android:layoutAnimation="@anim/layout_animation_slide_up"
         android:orientation="vertical"
         android:paddingHorizontal="16dp">
 
@@ -27,7 +26,7 @@
             android:id="@+id/theme_primary_swatches"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layoutAnimation="@anim/layout_animation_slide_up"
+            android:layoutAnimation="@anim/layout_animation_slide_left"
             app:chipSpacingHorizontal="16dp"
             app:chipSpacingVertical="16dp"
             app:selectionRequired="true"
@@ -46,7 +45,7 @@
             android:id="@+id/theme_secondary_swatches"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layoutAnimation="@anim/layout_animation_slide_up"
+            android:layoutAnimation="@anim/layout_animation_slide_left"
             app:chipSpacingHorizontal="16dp"
             app:chipSpacingVertical="16dp"
             app:selectionRequired="true"

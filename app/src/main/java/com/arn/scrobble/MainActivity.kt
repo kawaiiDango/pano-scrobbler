@@ -1,5 +1,6 @@
 package com.arn.scrobble
 
+import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
@@ -21,6 +22,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.setMargins
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -40,6 +42,7 @@ import com.arn.scrobble.search.IndexingWorker
 import com.arn.scrobble.themes.ColorPatchUtils
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.fadeToolbarTitle
 import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.appbar.AppBarLayout
@@ -69,6 +72,9 @@ class MainActivity : AppCompatActivity(),
 
         ColorPatchUtils.setTheme(this, billingViewModel.proStatus.value == true)
         UiUtils.isTabletUi = resources.getBoolean(R.bool.is_tablet_ui)
+
+//        if (!BuildConfig.DEBUG)
+        FragmentManager.enablePredictiveBack(false)
 
         binding = ContentMainBinding.inflate(layoutInflater)
 
@@ -128,6 +134,7 @@ class MainActivity : AppCompatActivity(),
         }
         setContentView(binding.root)
 
+        // make back button unfocusable on tv
         if (Stuff.isTv) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 binding.toolbar.children
@@ -140,6 +147,9 @@ class MainActivity : AppCompatActivity(),
         if (Stuff.isLoggedIn()) {
             canShowNotices = true
             mainNotifierViewModel.initializeCurrentUser(Scrobblables.currentScrobblableUser!!)
+            if (savedInstanceState == null && intent?.categories?.contains(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true) {
+                navController.navigate(R.id.prefFragment)
+            }
         }
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -266,6 +276,8 @@ class MainActivity : AppCompatActivity(),
             binding.appBar.expandTillToolbar()
         }
 
+        fadeToolbarTitle(binding.ctl)
+
         destination.arguments[Stuff.ARG_TITLE]?.let {
             binding.ctl.title = it.defaultValue as String
         }
@@ -310,6 +322,9 @@ class MainActivity : AppCompatActivity(),
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         navController.handleDeepLink(intent)
+        if (Stuff.isLoggedIn() && intent?.categories?.contains(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES) == true) {
+            navController.navigate(R.id.prefFragment)
+        }
     }
 
     override fun attachBaseContext(newBase: Context?) {

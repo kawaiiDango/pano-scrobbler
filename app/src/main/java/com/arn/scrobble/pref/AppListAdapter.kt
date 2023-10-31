@@ -26,7 +26,8 @@ import com.google.android.material.color.MaterialColors
  */
 class AppListAdapter(
     context: Context,
-    private val viewModel: AppListVM
+    private val viewModel: AppListVM,
+    private val singleChoice: Boolean,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemClickListener {
 
     private val packageManager = context.packageManager
@@ -77,11 +78,25 @@ class AppListAdapter(
         if (getItemViewType(position) == SectionedVirtualList.TYPE_ITEM_DEFAULT) {
             val packageName =
                 (data[position] as ApplicationInfo).packageName
-            if (packageName in viewModel.selectedPackages)
-                viewModel.selectedPackages -= packageName
-            else
+
+            if (singleChoice) {
+                val previousIndex = data.indexOfFirst {
+                    it is ApplicationInfo && it.packageName in viewModel.selectedPackages
+                }
+
+                viewModel.selectedPackages.clear()
                 viewModel.selectedPackages += packageName
-            notifyItemChanged(position, 0)
+
+                notifyItemChanged(previousIndex, 0)
+                notifyItemChanged(position, 0)
+
+            } else {
+                if (packageName in viewModel.selectedPackages)
+                    viewModel.selectedPackages -= packageName
+                else
+                    viewModel.selectedPackages += packageName
+                notifyItemChanged(position, 0)
+            }
         }
     }
 

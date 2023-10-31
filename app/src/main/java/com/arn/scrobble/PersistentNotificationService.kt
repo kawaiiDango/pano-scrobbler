@@ -13,18 +13,12 @@ import com.arn.scrobble.pref.MainPrefs
 
 class PersistentNotificationService : Service() {
 
-    // I hope that the popular notification pushing app was right and this thing actually works.
-
-    override fun onCreate() {
-        super.onCreate()
-        showNotification()
-    }
-
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        showNotification()
         return START_STICKY
     }
 
@@ -49,8 +43,9 @@ class PersistentNotificationService : Service() {
         } else {
             nb.setContentTitle(getString(R.string.app_name))
         }
-
-        startForeground(ID, nb.build())
+        runCatching {
+            startForeground(ID, nb.build())
+        }
     }
 }
 

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.databinding.ContentBillingToubleshootBinding
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.transition.MaterialSharedAxis
 
@@ -20,8 +21,7 @@ class BillingTroubleshootFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.X)
     }
 
     override fun onCreateView(

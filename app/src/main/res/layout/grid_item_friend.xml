@@ -94,13 +94,15 @@
             android:id="@+id/friends_scrobbles"
             style="@style/friendsLinks"
             android:text="@string/scrobbles"
-            app:icon="@drawable/vd_history" />
+            app:icon="@drawable/vd_history"
+            app:toggleCheckedStateOnClick="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/friends_profile"
             style="@style/friendsLinks"
             android:text="@string/profile"
-            app:icon="@drawable/vd_open_in_new" />
+            app:icon="@drawable/vd_open_in_new"
+            app:toggleCheckedStateOnClick="false" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <FrameLayout

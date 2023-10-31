@@ -1,5 +1,6 @@
 package com.arn.scrobble.ui
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Notification
@@ -17,9 +18,6 @@ import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.transition.AutoTransition
-import android.transition.TransitionManager
-import android.transition.TransitionSet
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -53,6 +51,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.navigation.NavArgumentBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -60,6 +59,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
+import androidx.transition.TransitionSet
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import coil.imageLoader
@@ -74,12 +76,14 @@ import com.arn.scrobble.Stuff
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.ImageSize
 import kotlin.math.abs
 import kotlin.math.max
@@ -563,7 +567,7 @@ object UiUtils {
 
         val activity = activity as? MainActivity ?: return
         val title = str ?: " "
-        activity.binding.ctl.title = title
+
         findNavController().currentDestination?.addArgument(
             Stuff.ARG_TITLE,
             NavArgumentBuilder().apply {
@@ -571,6 +575,12 @@ object UiUtils {
                 nullable = true
             }.build()
         )
+
+        if (activity.binding.ctl.title == title)
+            return
+
+        fadeToolbarTitle(activity.binding.ctl)
+        activity.binding.ctl.title = title
     }
 
     fun BottomSheetDialogFragment.expandIfNeeded(force: Boolean = false) {
@@ -637,5 +647,27 @@ object UiUtils {
             .apply { color = (ColorPatchUtils.getNotiColor(context) ?: return@apply) }
             .setContentTitle(title)
             .build()
+    }
+
+    fun Fragment.setupAxisTransitions(enterAxis: Int, popAxis: Int = enterAxis) {
+        enterTransition = MaterialSharedAxis(enterAxis, true)
+        returnTransition = MaterialSharedAxis(enterAxis, false)
+        exitTransition = MaterialSharedAxis(popAxis, true)
+        reenterTransition = MaterialSharedAxis(popAxis, false)
+    }
+
+    fun fadeToolbarTitle(ctl: CollapsingToolbarLayout) {
+        // fade in title color
+        val va = ValueAnimator.ofArgb(
+            Color.TRANSPARENT,
+            MaterialColors.getColor(ctl, com.google.android.material.R.attr.colorPrimary)
+        )
+        va.addUpdateListener {
+            ctl.setExpandedTitleColor(it.animatedValue as Int)
+//            ctl.setCollapsedTitleTextColor(it.animatedValue as Int)
+        }
+        va.interpolator = FastOutSlowInInterpolator()
+        va.start()
+
     }
 }

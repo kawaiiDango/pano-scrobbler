@@ -5,8 +5,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.transition.Fade
-import android.transition.TransitionManager
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import com.arn.scrobble.App
 import com.arn.scrobble.LoginFragment
 import com.arn.scrobble.LoginFragmentArgs
@@ -39,6 +39,7 @@ import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import de.umass.lastfm.Track
@@ -160,6 +161,39 @@ class EditDialogFragment : LoginFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         lockScrobble(false)
+    }
+
+    private fun showRegexRecommendation(regexRecommendation: RegexEdit) {
+        val presetName = RegexPresets.getString(regexRecommendation.preset!!)
+        val navController = findNavController()
+        val activity = activity ?: return
+
+        MaterialAlertDialogBuilder(activity)
+            .setMessage(
+                getString(
+                    R.string.regex_edits_suggestion,
+                    presetName
+                )
+            )
+            .setPositiveButton(R.string.yes) { _, _ ->
+                val args = bundleOf(Stuff.ARG_SHOW_DIALOG to true)
+
+                if (activity is MainActivity)
+                    navController.navigate(R.id.regexEditsFragment, args)
+                else if (activity is MainDialogActivity) {
+                    NavDeepLinkBuilder(activity)
+                        .setComponentName(MainActivity::class.java)
+                        .setGraph(R.navigation.nav_graph)
+                        .setDestination(R.id.regexEditsFragment)
+                        .setArguments(args)
+                        .createPendingIntent()
+                        .send()
+                }
+            }
+            .setNegativeButton(R.string.no) { _, _ ->
+                prefs.regexEditsLearnt = true
+            }
+            .show()
     }
 
     override suspend fun validateAsync(): Boolean {
@@ -330,54 +364,31 @@ class EditDialogFragment : LoginFragment() {
             }
 
             val dao = PanoDb.db.getRegexEditsDao()
-            val existingRegexReplacements = dao.performRegexReplace(originalScrobbleData)
 
-            if (existingRegexReplacements.values.sum() == 0) {
-                val allPresets = RegexPresets.presetKeys.mapIndexed { index, key ->
+            val presetsAvailable = (RegexPresets.presetKeys - dao.allPresets()
+                .map { it.preset }.toSet())
+                .mapIndexed { index, key ->
                     RegexPresets.getPossiblePreset(
                         RegexEdit(order = index, preset = key)
                     )
                 }
-                val matchedRegexEdits = mutableListOf<RegexEdit>()
+
+            if (presetsAvailable.isNotEmpty()) {
                 val suggestedRegexReplacements = dao.performRegexReplace(
                     originalScrobbleData,
                     null,
-                    allPresets,
-                    matchedRegexEdits
+                    presetsAvailable,
                 )
-                val replacementsInEdit = dao.performRegexReplace(scrobbleData, null, allPresets)
 
-                if (suggestedRegexReplacements.values.sum() > 0 && replacementsInEdit.values.sum() == 0) {
+                val firstSuggestion =
+                    suggestedRegexReplacements.values.firstOrNull { it.isNotEmpty() }?.firstOrNull()
+
+                val replacementsInEdit =
+                    dao.performRegexReplace(scrobbleData, null, presetsAvailable)
+
+                if (firstSuggestion != null && replacementsInEdit.values.all { it.isEmpty() }) {
                     withContext(Dispatchers.Main) {
-                        val presetName = RegexPresets.getString(matchedRegexEdits.first().preset!!)
-
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setMessage(
-                                getString(
-                                    R.string.regex_edits_suggestion,
-                                    presetName
-                                )
-                            )
-                            .setPositiveButton(R.string.yes) { _, _ ->
-                                dismiss()
-                                val args = bundleOf(Stuff.ARG_SHOW_DIALOG to true)
-
-                                if (activity is MainActivity)
-                                    findNavController().navigate(R.id.regexEditsFragment, args)
-                                else if (activity is MainDialogActivity) {
-                                    NavDeepLinkBuilder(requireContext())
-                                        .setComponentName(MainActivity::class.java)
-                                        .setGraph(R.navigation.nav_graph)
-                                        .setDestination(R.id.regexEditsFragment)
-                                        .setArguments(args)
-                                        .createPendingIntent()
-                                        .send()
-                                }
-                            }
-                            .setNegativeButton(R.string.no) { _, _ ->
-                                prefs.regexEditsLearnt = true
-                            }
-                            .show()
+                        showRegexRecommendation(firstSuggestion)
                     }
                 }
             }

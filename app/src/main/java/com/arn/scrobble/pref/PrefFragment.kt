@@ -22,12 +22,13 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
-import android.view.animation.AnimationUtils
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
@@ -52,6 +53,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.LoginFlows
 import com.arn.scrobble.scrobbleable.Scrobblables
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.arn.scrobble.widget.ChartsWidgetActivity
@@ -85,8 +87,7 @@ class PrefFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.Y, MaterialSharedAxis.X)
 
         exportRequest =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -555,30 +556,30 @@ class PrefFragment : PreferenceFragmentCompat() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
+
         listView.clipToPadding = false
         listView.setupInsets()
 
-        listView.layoutAnimation =
-            AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_slide_up)
-
-        if (savedInstanceState == null)
-            listView.scheduleLayoutAnimation()
-
         super.onViewCreated(view, savedInstanceState)
 
-        val decoration =
-            MaterialDividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        decoration.setDividerInsetStartResource(requireContext(), R.dimen.divider_inset)
-        decoration.setDividerInsetEndResource(requireContext(), R.dimen.divider_inset)
-        val colorDrawable = ColorDrawable(decoration.dividerColor)
-        val insetDrawable = InsetDrawable(
-            colorDrawable,
-            decoration.dividerInsetStart,
-            0,
-            decoration.dividerInsetEnd,
-            0
-        )
-        setDivider(insetDrawable)
+//        val decoration =
+//            MaterialDividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+//        decoration.setDividerInsetStartResource(requireContext(), R.dimen.divider_inset)
+//        decoration.setDividerInsetEndResource(requireContext(), R.dimen.divider_inset)
+//        val colorDrawable = ColorDrawable(decoration.dividerColor)
+//        val insetDrawable = InsetDrawable(
+//            colorDrawable,
+//            decoration.dividerInsetStart,
+//            0,
+//            decoration.dividerInsetEnd,
+//            0
+//        )
+        setDivider(null)
+
+        (view.parent as? ViewGroup)?.doOnPreDraw {
+            startPostponedEnterTransition()
+        }
     }
 
     private fun setAuthLabel(elem: Preference, type: AccountType) {

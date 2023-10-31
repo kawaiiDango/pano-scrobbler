@@ -240,7 +240,6 @@ class ScrobblesAdapter(
             viewModel.selectedPos = viewModel.virtualList.indexOfFirst { it is Track }
         }
 
-
         if (oldVirtualList.isEmpty() && viewModel.virtualList.isNotEmpty() || fragmentBinding.swipeRefresh.isRefreshing) {
             fragmentBinding.scrobblesList.scheduleLayoutAnimation()
             notifyItemChanged(0, 0) //animation gets delayed otherwise
@@ -327,6 +326,7 @@ class ScrobblesAdapter(
             fun fetchIcon(pkgName: String) {
                 binding.playerIcon.load(PackageName(pkgName)) {
                     scale(Scale.FIT)
+                    allowHardware(false)
                     listener(onSuccess = { _, _ ->
                         binding.playerIcon.contentDescription = pkgName
                     })
@@ -429,12 +429,14 @@ class ScrobblesAdapter(
 
             if (!viewModel.isShowingLoves) {
                 binding.recentsImg.load(imgUrl ?: "") {
+                    allowHardware(false)
                     placeholder(R.drawable.vd_wave_simple_filled)
                     error(errorDrawable)
                 }
             } else {
                 val musicEntryImageReq = MusicEntryImageReq(track, ImageSize.LARGE, true)
                 binding.recentsImg.load(musicEntryImageReq) {
+                    allowHardware(false)
                     placeholder(R.drawable.vd_wave_simple_filled)
                     error(errorDrawable)
                     listener(onSuccess = { request, _ ->

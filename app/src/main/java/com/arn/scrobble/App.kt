@@ -65,11 +65,6 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         MigratePrefs.migrate(prefs)
         Scrobblables.updateScrobblables()
 
-        if (BuildConfig.DEBUG && !prefs.lastfmLinksEnabled) {
-            enableOpeningLastfmLinks()
-            prefs.lastfmLinksEnabled = true
-        }
-
         ColorPatchUtils.setDarkMode(prefs.proStatus)
 
         val colorsOptions = DynamicColorsOptions.Builder()
@@ -128,17 +123,6 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         )
     }
 
-    // This is broken af. Don't enable in production
-    private fun enableOpeningLastfmLinks() {
-        val pm = applicationContext.packageManager
-        val componentName = ComponentName(packageName, "$packageName.LastfmLinksActivity")
-        pm.setComponentEnabledSetting(
-            componentName,
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-            PackageManager.DONT_KILL_APP
-        )
-    }
-
     // will be called multiple times
     fun initConnectivityCheck() {
         if (connectivityCheckInited) return
@@ -188,6 +172,7 @@ class App : Application(), ImageLoaderFactory, Configuration.Provider {
         }
         .crossfade(Stuff.CROSSFADE_DURATION)
         .precision(Precision.INEXACT)
+        .allowHardware(false)
         .build()
 
     @SuppressLint("StaticFieldLeak")

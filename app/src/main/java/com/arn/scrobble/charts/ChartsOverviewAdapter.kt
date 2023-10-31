@@ -1,7 +1,7 @@
 package com.arn.scrobble.charts
 
-import android.transition.Fade
-import android.transition.TransitionManager
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import android.view.View
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff

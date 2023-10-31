@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:transitionGroup="true">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/search_term"
@@ -13,10 +14,10 @@
         android:layout_marginHorizontal="10dp"
         app:endIconMode="dropdown_menu"
         app:hintEnabled="false"
-        app:startIconContentDescription="@string/search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:startIconContentDescription="@string/search"
         app:startIconDrawable="@drawable/vd_search">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView

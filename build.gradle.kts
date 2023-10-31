@@ -17,9 +17,9 @@ plugins {
     alias(libs.plugins.navigation.safeargs) apply false
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.test) apply false
-    alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.aboutlibraries) apply false
     alias(libs.plugins.github.release) apply false
@@ -27,7 +27,7 @@ plugins {
 }
 
 tasks.register<Delete>("clean").configure {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
 
 // play store and github publishing scripts

@@ -11,6 +11,8 @@ import androidx.navigation.fragment.navArgs
 import com.arn.scrobble.Stuff.putSingle
 import com.arn.scrobble.databinding.ContentLoadingBinding
 import com.arn.scrobble.friends.UserSerializable.Companion.toUserSerializable
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
+import com.google.android.material.transition.MaterialSharedAxis
 
 class LoadingFragment : Fragment() {
     var _binding: ContentLoadingBinding? = null
@@ -18,6 +20,11 @@ class LoadingFragment : Fragment() {
 
     private val viewModel by viewModels<UserLoaderVM>()
     private val args by navArgs<LoadingFragmentArgs>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupAxisTransitions(MaterialSharedAxis.Z)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.arn.scrobble.App
 import com.arn.scrobble.NLService
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.edits.RegexPresets
@@ -31,8 +32,8 @@ interface RegexEditsDao {
     @Query("SELECT * FROM $tableName WHERE preset IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
     fun allPresets(): List<RegexEdit>
 
-//    @get:Query("SELECT * FROM $tableName WHERE pattern IS NOT NULL OR extractionTrack IS NOT NULL OR extractionAlbum iS NOT NULL OR extractionArtist IS NOT NULL OR extractionAlbumArtist IS NOT NULL ORDER BY `order` ASC LIMIT ${Stuff.MAX_PATTERNS}")
-//    val allRegexes: List<RegexEdit>
+    @Query("SELECT count(1) FROM $tableName WHERE packages IS NOT NULL")
+    fun hasPkgNameLd(): LiveData<Boolean>
 
     @Query("UPDATE $tableName SET `order` = `order` + 1")
     fun shiftDown()
@@ -56,13 +57,12 @@ interface RegexEditsDao {
             scrobbleData: ScrobbleData,
             pkgName: String? = null, // null means all
             regexEdits: List<RegexEdit> = all().map { RegexPresets.getPossiblePreset(it) },
-            matchedRegexEditsRef: MutableList<RegexEdit>? = null,
-        ): Map<String, Int> {
+        ): Map<String, Set<RegexEdit>> {
             val numMatches = mutableMapOf(
-                NLService.B_ARTIST to 0,
-                NLService.B_ALBUM to 0,
-                NLService.B_ALBUM_ARTIST to 0,
-                NLService.B_TRACK to 0,
+                NLService.B_ARTIST to mutableSetOf<RegexEdit>(),
+                NLService.B_ALBUM to mutableSetOf(),
+                NLService.B_ALBUM_ARTIST to mutableSetOf(),
+                NLService.B_TRACK to mutableSetOf(),
             )
 
             fun replaceField(textp: String?, field: String): String? {
@@ -81,8 +81,7 @@ interface RegexEditsDao {
                     val regex = regexEdit.pattern!!.toRegex(regexOptions)
 
                     if (regex.containsMatchIn(text)) {
-                        numMatches[field] = numMatches[field]!! + 1
-                        matchedRegexEditsRef?.add(regexEdit)
+                        numMatches[field]?.add(regexEdit)
 
                         text = if (regexEdit.replaceAll)
                             text.replace(regex, regexEdit.replacement).trim()
@@ -129,10 +128,7 @@ interface RegexEditsDao {
                                     runCatching { namedGroups[groupName] }.getOrNull()
                                         ?: return@forEach
 
-                                numMatches[groupName.lowercase()] =
-                                    numMatches[groupName.lowercase()]!! + 1
-                                matchedRegexEditsRef?.add(regexEdit)
-
+                                numMatches[groupName.lowercase()]?.add(regexEdit)
                                 return@map groupValue.value
                             }
                             null
@@ -158,7 +154,9 @@ interface RegexEditsDao {
                 scrobbleData.albumArtist =
                     replaceField(scrobbleData.albumArtist, NLService.B_ALBUM_ARTIST)
                 scrobbleData.track = replaceField(scrobbleData.track, NLService.B_TRACK)
-                extract()
+
+                if (App.prefs.proStatus)
+                    extract()
             } catch (e: IllegalArgumentException) {
                 Stuff.log("regex error: ${e.message}")
             }

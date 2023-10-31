@@ -26,15 +26,19 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.Stuff.putSingle
+import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentRegexEditAddBinding
 import com.arn.scrobble.db.ExtractionPatterns
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.PackageName
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,8 +49,17 @@ class RegexEditsAddFragment : Fragment() {
     private var _binding: ContentRegexEditAddBinding? = null
     private val binding get() = _binding!!
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+    private val billingViewModel by activityViewModels<BillingViewModel>()
     private val pm by lazy { requireContext().packageManager }
     private val dao by lazy { PanoDb.db.getRegexEditsDao() }
+    private var hasChanged
+        get() = requireArguments().getBoolean(ARG_CHANGED, false)
+        set(value) = requireArguments().putBoolean(ARG_CHANGED, value)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupAxisTransitions(MaterialSharedAxis.X)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,8 +73,13 @@ class RegexEditsAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.setupInsets()
 
-        if (!BuildConfig.DEBUG || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) // needs java 8
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) // needs java 8
             binding.editExtract.isVisible = false
+        else if (billingViewModel.proStatus.value == false) {
+            binding.editExtract.setOnClickListener {
+                findNavController().navigate(R.id.billingFragment)
+            }
+        }
 
         val regexEdit = arguments?.getSingle<RegexEdit>()?.copy() ?: RegexEdit()
         val isNew = regexEdit.order == -1
@@ -161,6 +179,11 @@ class RegexEditsAddFragment : Fragment() {
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     val newRegexEdit = saveRegexEditToArgs()
+
+                    if (!hasChanged) {
+                        findNavController().popBackStack()
+                        return@launch
+                    }
 
                     if (isNew)
                         newRegexEdit.order = withContext(Dispatchers.IO) {
@@ -312,14 +335,18 @@ class RegexEditsAddFragment : Fragment() {
     }
 
     private fun validate(): Boolean {
+        if (binding.editName.text.isNullOrEmpty()) {
+            binding.editName.error = getString(R.string.required_fields_empty)
+            return false
+        }
+
         if (binding.editExtract.isChecked) {
-            if (binding.editName.text.isNullOrEmpty()) {
-                binding.editName.error = getString(R.string.required_fields_empty)
+            if (billingViewModel.proStatus.value == false) {
+                findNavController().navigate(R.id.billingFragment)
                 return false
             }
 
             if (!areExtractionRulesValid()) {
-                requireContext().toast(R.string.required_fields_empty)
                 return false
             }
 
@@ -338,17 +365,18 @@ class RegexEditsAddFragment : Fragment() {
             try {
                 Pattern.compile(binding.editReplaceInclude.editPattern.text.toString())
             } catch (e: Exception) {
-                binding.editReplaceInclude.editPattern.error = e.message
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage(
+                        getString(R.string.edit_regex_invalid, e.message)
+                    )
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
                 return false
             }
             // the add button is always present
-            if (binding.editReplaceInclude.editFieldChipgroup.childCount <= 1)
+            if (binding.editReplaceInclude.editFieldChipgroup.childCount <= 1) {
+                requireContext().toast(R.string.required_fields_empty)
                 return false
-
-            if (binding.editName.text.isNullOrEmpty()) {
-                binding.editName.setText(
-                    "Pattern: " + binding.editReplaceInclude.editPattern.text.toString().take(10)
-                )
             }
         }
 
@@ -359,7 +387,8 @@ class RegexEditsAddFragment : Fragment() {
     }
 
     private fun saveRegexEditToArgs(): RegexEdit {
-        val regexEdit = arguments?.getSingle<RegexEdit>()?.copy() ?: RegexEdit()
+        val regexEditOld = arguments?.getSingle<RegexEdit>()
+        val regexEdit = regexEditOld?.copy() ?: RegexEdit()
 
         regexEdit.apply {
             if (!binding.editName.text.isNullOrBlank())
@@ -387,9 +416,16 @@ class RegexEditsAddFragment : Fragment() {
                 .map { it.getTag(R.id.raw_text) as? String }
                 .filterNotNull()
                 .toSet()
+                .ifEmpty { null }
             replaceAll = binding.editReplaceAll.isChecked
             caseSensitive = binding.editCaseSensitive.isChecked
             continueMatching = binding.editContinueMatching.isChecked
+        }
+
+        if (regexEditOld != regexEdit && !hasChanged) {
+            hasChanged = true
+            if (BuildConfig.DEBUG)
+                requireContext().toast(ARG_CHANGED)
         }
 
         requireArguments().putSingle(regexEdit)
@@ -417,14 +453,47 @@ class RegexEditsAddFragment : Fragment() {
                             Pattern.compile(binding.editReplaceInclude.editPattern.text.toString())
                             it
                         } catch (e: Exception) {
-                            requireContext().toast(e.message.toString())
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setMessage(
+                                    getString(R.string.edit_regex_invalid, e.message)
+                                )
+                                .setPositiveButton(android.R.string.ok, null)
+                                .show()
                             return false
                         }
                     }
                     .sumOf { it.split("(?<$groupName>").size - 1 }
             }
 
-        return trackGroups == 1 && albumGroups <= 1 && artistGroups == 1 && albumArtistGroups <= 1
+
+        val isSuccess =
+            trackGroups == 1 && albumGroups <= 1 && artistGroups == 1 && albumArtistGroups <= 1
+
+        if (!isSuccess) {
+            val errMsg = when {
+                trackGroups == 0 || artistGroups == 0 -> getString(R.string.edit_extract_no_groups)
+                trackGroups > 1 -> getString(R.string.edit_extract_extra_groups, NLService.B_TRACK)
+                albumGroups > 1 -> getString(R.string.edit_extract_extra_groups, NLService.B_ALBUM)
+                artistGroups > 1 -> getString(
+                    R.string.edit_extract_extra_groups,
+                    NLService.B_ARTIST
+                )
+
+                albumArtistGroups > 1 -> getString(
+                    R.string.edit_extract_extra_groups,
+                    "albumArtist"
+                )
+
+                else -> getString(R.string.edit_regex_invalid, "Unknown error")
+            }
+
+            MaterialAlertDialogBuilder(requireContext())
+                .setMessage(errMsg)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        }
+
+        return isSuccess
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -435,5 +504,9 @@ class RegexEditsAddFragment : Fragment() {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val ARG_CHANGED = "changed"
     }
 }

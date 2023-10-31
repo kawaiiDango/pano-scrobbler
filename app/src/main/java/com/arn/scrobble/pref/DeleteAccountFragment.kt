@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.arn.scrobble.databinding.ContentDeleteAccountBinding
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.google.android.material.transition.MaterialSharedAxis
 
 class DeleteAccountFragment : Fragment() {
@@ -16,8 +17,7 @@ class DeleteAccountFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.X)
     }
 
     override fun onCreateView(

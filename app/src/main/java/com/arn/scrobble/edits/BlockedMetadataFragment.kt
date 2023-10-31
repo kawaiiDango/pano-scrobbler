@@ -6,6 +6,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -22,8 +24,11 @@ import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -37,6 +42,11 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
     private val mutex = Mutex()
     private lateinit var adapter: BlockedMetadataAdapter
     private val mainNotifierViewModel by activityViewModels<MainNotifierViewModel>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupAxisTransitions(MaterialSharedAxis.X)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,6 +64,8 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
+
         mainNotifierViewModel.fabData.value = FabData(
             viewLifecycleOwner,
             R.string.add,
@@ -74,7 +86,12 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
         binding.empty.text = resources.getQuantityString(R.plurals.num_blocked_metadata, 0, 0)
 
         viewModel.blockedMetadataReceiver.observe(viewLifecycleOwner) {
+            it ?: return@observe
             update(it)
+
+            (view.parent as? ViewGroup)?.doOnPreDraw {
+                startPostponedEnterTransition()
+            }
         }
 
         binding.searchEdittext.addTextChangedListener(object : TextWatcher {
@@ -86,17 +103,19 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
             }
 
             override fun afterTextChanged(editable: Editable) {
-                update(viewModel.blockedMetadataReceiver.value)
+                viewModel.blockedMetadataReceiver.value?.let { update(it) }
             }
 
         })
     }
 
-    private fun update(blockedMetadata: List<BlockedMetadata>?) {
-        blockedMetadata ?: return
+    private fun update(blockedMetadata: List<BlockedMetadata>) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             mutex.withLock {
+                if (viewModel.blockedMetadata.isNotEmpty())
+                    delay(300)
+
                 val oldList = viewModel.blockedMetadata.toList()
                 val searchTerm = binding.searchEdittext.text?.trim()?.toString()?.lowercase()
 
@@ -118,16 +137,13 @@ class BlockedMetadataFragment : Fragment(), ItemClickListener {
                 else
                     View.INVISIBLE
 
-                binding.blockList.visibility = if (viewModel.blockedMetadata.isNotEmpty())
-                    View.VISIBLE
-                else
-                    View.INVISIBLE
+//                binding.blockList.visibility = if (viewModel.blockedMetadata.isNotEmpty())
+//                    View.VISIBLE
+//                else
+//                    View.INVISIBLE
 
-                binding.searchTerm.visibility =
-                    if (blockedMetadata.size > Stuff.MIN_ITEMS_TO_SHOW_SEARCH)
-                        View.VISIBLE
-                    else
-                        View.GONE
+                binding.searchTerm.isVisible =
+                    blockedMetadata.size > Stuff.MIN_ITEMS_TO_SHOW_SEARCH
 
                 adapter.autoNotify(oldList, viewModel.blockedMetadata) { o, n -> o._id == n._id }
             }

@@ -20,8 +20,10 @@ import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.databinding.ContentWebviewBinding
 import com.arn.scrobble.friends.UserAccountTemp
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.startFadeLoop
 import com.arn.scrobble.ui.UiUtils.toast
+import com.google.android.material.transition.MaterialSharedAxis
 import okhttp3.Cookie
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
@@ -41,6 +43,10 @@ class WebViewFragment : Fragment() {
         get() = arguments?.getBoolean(Stuff.ARG_TLS_NO_VERIFY) ?: false
     private val viewModel by viewModels<WebViewVM>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupAxisTransitions(MaterialSharedAxis.X)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

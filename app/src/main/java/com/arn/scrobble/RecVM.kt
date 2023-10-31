@@ -13,8 +13,8 @@ import com.acrcloud.rec.ACRCloudConfig
 import com.acrcloud.rec.ACRCloudResult
 import com.acrcloud.rec.IACRCloudListener
 import com.hadilq.liveevent.LiveEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,8 +30,11 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
     val fadeValue = MutableLiveData<Float>()
     val statusText = MutableLiveData<String>()
     val rateLimitedEvent = LiveEvent<Unit>()
+    val scrobbleEvent = LiveEvent<Unit>()
     private var progressAnimator: ValueAnimator? = null
     private var stopJob: Job? = null
+    var scrobbleJob: Job? = null
+    private var delayDeferred: Deferred<Unit>? = null
 
     private val acrConfig by lazy {
         ACRCloudConfig().apply {
@@ -155,8 +158,9 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
         when (statusCode) {
             0 -> {
 //                binding.recImg.setImageResource(R.drawable.vd_check_simple)
-                statusText.value = "✅ " + App.context.getString(R.string.state_scrobbled) + "\n" +
-                        App.context.getString(R.string.artist_title, artist, title)
+                statusText.value = "✅ " + App.context.getString(R.string.artist_title, artist, title)
+                scrobbleEvent.value = Unit
+
                 val trackInfo = PlayingTrackInfo(
                     App.context.packageName,
                     playStartTime = System.currentTimeMillis()
@@ -164,8 +168,10 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
 
                 trackInfo.putOriginals(artist, title, album, "")
 
-                LFMRequester(CoroutineScope(Dispatchers.IO + Job()))
-                    .scrobble(false, trackInfo)
+                scrobbleJob = GlobalScope.launch {
+                    delay(Stuff.SCROBBLE_FROM_MIC_DELAY.toLong())
+                    LFMRequester(this).scrobble(false, trackInfo)
+                }
             }
 
             1001 -> statusText.value = App.context.getString(R.string.not_found)

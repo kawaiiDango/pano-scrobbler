@@ -91,6 +91,7 @@ object Stuff {
     const val ARG_ACTION = "action"
     const val ARG_TLS_NO_VERIFY = "tls_no_verify"
     const val ARG_ALLOWED_PACKAGES = MainPrefs.PREF_ALLOWED_PACKAGES
+    const val ARG_SINGLE_CHOICE = "single_choice"
     const val ARG_MONTH_PICKER_PERIOD = "month_picker_period"
     const val ARG_SELECTED_YEAR = "selected_year"
     const val ARG_SELECTED_MONTH = "selected_month"
@@ -134,6 +135,7 @@ object Stuff {
     const val META_WAIT = 400L
     const val START_POS_LIMIT = 1500L
     const val PENDING_PURCHASE_NOTIFY_THRESHOLD = 15 * 1000L
+    const val SCROBBLE_FROM_MIC_DELAY = 3 * 1000
     const val MIN_LISTENER_COUNT = 5
 
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"

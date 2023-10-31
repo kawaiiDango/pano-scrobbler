@@ -6,13 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/selector_list_rounded"
+    android:clickable="true"
+    android:focusable="true"
+    android:nextFocusRight="@id/edits_delete"
     android:orientation="horizontal"
     android:paddingVertical="6dp"
     android:paddingLeft="1dp"
-    android:paddingRight="1dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:nextFocusRight="@id/edits_delete">
+    android:paddingRight="1dp">
 
     <ImageView
         android:id="@+id/edits_img"
@@ -21,9 +21,9 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:alpha="0.7"
+        android:importantForAccessibility="no"
         android:paddingHorizontal="20dp"
         app:srcCompat="@drawable/vd_edit"
-        android:importantForAccessibility="no"
         app:tint="?colorTertiary" />
 
     <TextView
@@ -33,12 +33,13 @@
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/edits_delete"
         android:layout_toEndOf="@+id/edits_img"
-        android:textStyle="bold"
         android:ellipsize="end"
         android:gravity="start"
         android:maxLines="1"
+        android:scrollbars="none"
         android:textAppearance="?textAppearanceTitleLarge"
         android:textColor="?colorTertiary"
+        android:textStyle="bold"
         app:autoSizeMaxTextSize="22sp"
         app:autoSizeMinTextSize="14sp"
         app:autoSizeStepGranularity="1sp"
@@ -56,6 +57,7 @@
         android:layout_toEndOf="@+id/edits_img"
         android:ellipsize="end"
         android:maxLines="1"
+        android:scrollbars="none"
         android:textAppearance="?textAppearanceBodyLarge"
         app:autoSizeMaxTextSize="20sp"
         app:autoSizeMinTextSize="12sp"
@@ -74,6 +76,7 @@
         android:layout_toEndOf="@+id/edits_img"
         android:ellipsize="end"
         android:maxLines="1"
+        android:scrollbars="none"
         app:autoSizeMaxTextSize="20sp"
         app:autoSizeMinTextSize="12sp"
         app:autoSizeStepGranularity="1sp"
@@ -93,8 +96,8 @@
         android:gravity="top|end"
         android:nextFocusLeft="@id/edits_layout"
         android:nextFocusRight="@id/edits_layout"
-        app:iconSize="28dp"
-        app:icon="@drawable/vd_delete" />
+        app:icon="@drawable/vd_delete"
+        app:iconSize="28dp" />
 
 </RelativeLayout>
 

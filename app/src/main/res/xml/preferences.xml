@@ -292,12 +292,6 @@
             android:title="@string/song_search_url"
             android:persistent="true"/>
 
-        <EditTextPreference
-            android:key="touhou_circles"
-            android:defaultValue=""
-            android:title="@string/touhou_circles"
-            android:persistent="true"/>
-
         <SwitchPreference
             android:key="demo_mode"
             android:title="@string/demo_mode"

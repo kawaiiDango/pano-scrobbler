@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -25,7 +26,9 @@ import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.ItemClickListener
 import com.arn.scrobble.ui.UiUtils.autoNotify
 import com.arn.scrobble.ui.UiUtils.hideKeyboard
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
+import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -53,9 +56,12 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
         setFragmentResultListener(
             Stuff.ARG_EDIT,
         ) { _, bundle ->
-            val edit = bundle.getParcelable<SimpleEdit>(Stuff.ARG_EDIT) ?: return@setFragmentResultListener
+            val edit =
+                bundle.getParcelable<SimpleEdit>(Stuff.ARG_EDIT) ?: return@setFragmentResultListener
             viewModel.upsert(edit)
         }
+
+        setupAxisTransitions(MaterialSharedAxis.X)
     }
 
     override fun onCreateView(
@@ -75,6 +81,8 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
+
         binding.editsList.setupInsets()
 
         binding.editsList.layoutManager = LinearLayoutManager(requireContext())
@@ -89,7 +97,7 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
 
             override fun afterTextChanged(editable: Editable?) {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                    update(viewModel.editsReceiver.value)
+                    viewModel.editsReceiver.value?.let { update(it) }
                 }
             }
 
@@ -119,17 +127,22 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
             binding.searchTerm.requestFocus()
 
         viewModel.editsReceiver.observe(viewLifecycleOwner) {
+            it ?: return@observe
             update(it)
+            (view.parent as? ViewGroup)?.doOnPreDraw {
+                startPostponedEnterTransition()
+            }
         }
     }
 
-    private fun update(simpleEdits: List<SimpleEdit>?) {
-        simpleEdits ?: return
+    private fun update(simpleEdits: List<SimpleEdit>) {
 
         lastSearchJob?.cancel()
         lastSearchJob = viewLifecycleOwner.lifecycleScope.launch {
             mutex.withLock {
-                delay(300)
+
+                if (viewModel.edits.isNotEmpty())
+                    delay(300)
 
                 val oldList = viewModel.edits.toList()
                 val searchTerm = binding.searchEdittext.text?.trim()?.toString()?.lowercase()
@@ -152,10 +165,10 @@ class SimpleEditsFragment : Fragment(), ItemClickListener {
                 else
                     View.INVISIBLE
 
-                binding.editsList.visibility = if (viewModel.edits.isNotEmpty())
-                    View.VISIBLE
-                else
-                    View.INVISIBLE
+//                binding.editsList.visibility = if (viewModel.edits.isNotEmpty())
+//                    View.VISIBLE
+//                else
+//                    View.INVISIBLE
 
                 binding.searchTerm.visibility =
                     if (simpleEdits.size > Stuff.MIN_ITEMS_TO_SHOW_SEARCH)

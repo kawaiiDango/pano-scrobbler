@@ -1,7 +1,7 @@
 package com.arn.scrobble
 
 import android.os.Bundle
-import android.transition.TransitionManager
+import androidx.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +17,10 @@ import com.arn.scrobble.databinding.ContentRandomBinding
 import com.arn.scrobble.ui.MusicEntryImageReq
 import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.ImageSize
@@ -67,10 +68,7 @@ class RandomFragment : ChartsPeriodFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.X)
     }
 
     override fun onCreateView(

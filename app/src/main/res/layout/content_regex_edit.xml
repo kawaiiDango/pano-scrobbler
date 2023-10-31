@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:transitionGroup="true">
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/regex_edits_chips"
@@ -44,7 +45,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:layoutAnimation="@anim/layout_animation_slide_up"
         android:scrollbars="vertical"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"

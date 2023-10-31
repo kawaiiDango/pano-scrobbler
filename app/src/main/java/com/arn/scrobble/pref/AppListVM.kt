@@ -4,11 +4,13 @@ import android.app.Application
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.arn.scrobble.App
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.ui.ExpandableHeader
@@ -108,12 +110,20 @@ class AppListVM(application: Application) : AndroidViewModel(application) {
                 data.value = sectionedList
             }
 
+            val systemApps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                packageManager.getInstalledApplications(PackageManager.MATCH_SYSTEM_ONLY)
+                    .filter { it.packageName in App.prefs.seenPackages }
+            } else {
+                emptyList()
+            }
+
+            val otherApps = (launcherApps + systemApps).filter { it.packageName !in packagesAdded }
 
             // add other apps to list
             sectionedList.addSection(
                 SectionWithHeader(
                     AppListSection.OTHERS,
-                    launcherApps.filter { it.packageName !in packagesAdded }.sortApps(),
+                    otherApps.sortApps(),
                     header = ExpandableHeader(
                         R.drawable.vd_apps,
                         R.string.other_apps,

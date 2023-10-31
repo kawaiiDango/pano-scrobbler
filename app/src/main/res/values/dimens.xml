@@ -3,6 +3,7 @@
     <dimen name="fab_margin">24dp</dimen>
     <dimen name="elevation_appbar">10dp</dimen>
     <dimen name="list_item_padding">8dp</dimen>
+    <dimen name="compound_drawable_padding">8dp</dimen>
     <dimen name="hero_overlay_height">48dp</dimen>
     <dimen name="sidebar_width">0dp</dimen>
     <dimen name="grid_size">200dp</dimen>
@@ -21,6 +22,7 @@
     <dimen name="random_image_max_width">400dp</dimen>
     <dimen name="stonks_icon_size">16dp</dimen>
     <dimen name="charts_horizontal_list_width">150dp</dimen>
+    <dimen name="regex_test_chip_max_width">200dp</dimen>
     <dimen name="bottom_nav_height">60dp</dimen>
     <integer name="splash_screen_duration">600</integer>
 </resources>

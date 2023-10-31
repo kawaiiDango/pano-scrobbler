@@ -4,8 +4,6 @@ import android.Manifest.permission.RECORD_AUDIO
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +19,7 @@ import com.arn.scrobble.databinding.ContentRecBinding
 import com.arn.scrobble.scrobbleable.LoginFlows
 import com.arn.scrobble.ui.UiUtils.focusOnTv
 import com.arn.scrobble.ui.UiUtils.setTextAndAnimate
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
@@ -29,7 +28,6 @@ import kotlinx.coroutines.launch
 
 
 class RecFragment : Fragment() {
-    private val handler by lazy { Handler(Looper.getMainLooper()) }
     private val prefs = App.prefs
     private lateinit var micPermRequest: ActivityResultLauncher<String>
     private val viewModel by viewModels<RecVM>()
@@ -40,8 +38,7 @@ class RecFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.Y)
 
         micPermRequest =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -60,8 +57,8 @@ class RecFragment : Fragment() {
     ): View {
         _binding = ContentRecBinding.inflate(inflater, container, false)
         binding.root.setupInsets()
-        if (!Stuff.isTv)
-            setHasOptionsMenu(true)
+//        if (!Stuff.isTv)
+//            setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -108,8 +105,16 @@ class RecFragment : Fragment() {
         }
 
         viewModel.rateLimitedEvent.observe(viewLifecycleOwner) {
-            it ?: return@observe
             showAddApiKey()
+        }
+
+        viewModel.scrobbleEvent.observe(viewLifecycleOwner) {
+            Snackbar.make(requireView(), R.string.state_scrobbled, Stuff.SCROBBLE_FROM_MIC_DELAY)
+                .setAction(android.R.string.cancel) {
+                    viewModel.scrobbleJob?.cancel()
+                }
+                .focusOnTv()
+                .show()
         }
     }
 
@@ -165,14 +170,15 @@ class RecFragment : Fragment() {
             }
             return super.onOptionsItemSelected(item)
         }
-    */
+
 
     private fun removeApiKey() {
         prefs.acrcloudHost = null
         prefs.acrcloudKey = null
         prefs.acrcloudSecret = null
     }
-
+    */
+    
     private fun showAddApiKey() {
         Snackbar.make(requireView(), R.string.add_acr_consider, 8 * 1000)
             .setAction(R.string.add) {

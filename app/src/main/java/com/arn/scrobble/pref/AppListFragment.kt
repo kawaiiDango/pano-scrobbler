@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -20,6 +21,8 @@ import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
 import com.arn.scrobble.databinding.ContentAppListBinding
 import com.arn.scrobble.ui.FabData
+import com.arn.scrobble.ui.UiUtils.setTitle
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.transition.MaterialSharedAxis
@@ -38,6 +41,10 @@ class AppListFragment : Fragment() {
 
     private val allowedPackagesArg
         get() = arguments?.getStringArray(Stuff.ARG_ALLOWED_PACKAGES)?.toSet()
+
+    private val singleChoiceArg
+        get() = arguments?.getBoolean(Stuff.ARG_SINGLE_CHOICE, false) ?: false
+
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -48,8 +55,7 @@ class AppListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
+        setupAxisTransitions(MaterialSharedAxis.X)
     }
 
     override fun onAttach(context: Context) {
@@ -74,6 +80,8 @@ class AppListFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
+
         binding.appList.setupInsets()
 //        binding.appListDone.setupInsets()
 
@@ -86,8 +94,11 @@ class AppListFragment : Fragment() {
             requireContext().toast(R.string.press_back)
         }
 
+        if (singleChoiceArg)
+            setTitle(R.string.choose_an_app)
+
         binding.appList.layoutManager = LinearLayoutManager(context)
-        val adapter = AppListAdapter(requireActivity(), viewModel)
+        val adapter = AppListAdapter(requireActivity(), viewModel, singleChoiceArg)
         binding.appList.adapter = adapter
         if (!Stuff.isTv) {
             binding.appList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -107,6 +118,10 @@ class AppListFragment : Fragment() {
         viewModel.data.observe(viewLifecycleOwner) {
             it ?: return@observe
             adapter.populate(it)
+
+            (view.parent as? ViewGroup)?.doOnPreDraw {
+                startPostponedEnterTransition()
+            }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) {

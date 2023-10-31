@@ -140,10 +140,16 @@ public class Track extends MusicEntry {
     }
 
     public void setLoved(boolean loved) {
-        this.score = 1;
+		if (loved)
+        	this.score = 1;
+		else
+			this.score = 0;
     }
     public void setHated(boolean hated) {
-        this.score = -1;
+		if (hated)
+			this.score = -1;
+		else
+			this.score = 0;
     }
 
     public void setNowPlaying(boolean nowPlaying) {

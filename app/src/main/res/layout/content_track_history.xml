@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:transitionGroup="true">
 
     <TextView
         android:id="@+id/first_scrobbled_on"
-        android:textSize="16sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
         android:padding="16dp"
+        android:textSize="16sp"
         android:visibility="invisible"
-        tools:visibility="visible"
+        app:drawableStartCompat="@drawable/vd_cake"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/first_scrobbled_on"
-        app:drawableStartCompat="@drawable/vd_cake"
-        android:drawablePadding="8dp" />
+        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tracks_list"
@@ -28,22 +29,22 @@
         android:layout_weight="1"
         android:layoutAnimation="@anim/layout_animation_slide_up"
         android:visibility="invisible"
-        tools:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@+id/first_scrobbled_on"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:listitem="@layout/list_item_recents" />
+        app:layout_constraintTop_toBottomOf="@+id/first_scrobbled_on"
+        tools:listitem="@layout/list_item_recents"
+        tools:visibility="visible" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

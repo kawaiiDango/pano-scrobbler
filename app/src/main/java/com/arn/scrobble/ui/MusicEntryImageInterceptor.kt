@@ -102,6 +102,7 @@ class MusicEntryImageInterceptor : Interceptor {
 
         val request = ImageRequest.Builder(chain.request)
             .data(imgUrl)
+            .allowHardware(false)
             .build()
 
         return chain.proceed(request)

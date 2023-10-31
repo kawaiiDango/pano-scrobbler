@@ -13,6 +13,7 @@ class StarInterceptor : Interceptor {
             chain.proceed(
                 ImageRequest.Builder(chain.request)
                     .data(R.drawable.vd_album_filled)
+                    .allowHardware(false)
                     .build()
             )
         } else

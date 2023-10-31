@@ -742,7 +742,7 @@ class NLService : NotificationListenerService() {
         if (modNeeded) {
             if (notiIconBitmap == null || notiIconBitmap?.isRecycled == true) {
                 notiIconBitmap =
-                    AppCompatResources.getDrawable(applicationContext, R.drawable.ic_launcher)
+                    AppCompatResources.getDrawable(applicationContext, R.mipmap.ic_launcher)
                         ?.toBitmap()
             }
 //                icon.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP)

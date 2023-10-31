@@ -332,6 +332,7 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
     }
 
     inner class ChooseAppsStep : OnboardingStep(
+        context.getString(R.string.pref_scrobble_from),
         context.getString(R.string.choose_apps),
     ) {
 

@@ -41,6 +41,7 @@ class MainPrefs : Krate {
     var scrobblerEnabled by booleanPref(PREF_MASTER).withDefault(true)
     var allowedPackages by stringSetPref(PREF_ALLOWED_PACKAGES).withDefault(setOf())
     var blockedPackages by stringSetPref(PREF_BLOCKED_PACKAGES).withDefault(setOf())
+    var seenPackages by stringSetPref(PREF_SEEN_PACKAGES).withDefault(setOf())
 
     private var _autoDetectApps by booleanPref(PREF_AUTO_DETECT).withDefault(true)
     val autoDetectApps
@@ -130,6 +131,7 @@ class MainPrefs : Krate {
 
     var gridColumnsToAdd by intPref(PREF_ACTIVITY_GRID_COLUMNS_TO_ADD).withDefault(0)
     var gridSingleColumn by booleanPref(PREF_ACTIVITY_GRID_SINGLE_COLUMN).withDefault(false)
+
     var regexLearnt by booleanPref(PREF_ACTIVITY_REGEX_LEARNT).withDefault(false)
     var longPressLearnt by booleanPref(PREF_ACTIVITY_LONG_PRESS_LEARNT).withDefault(false)
     var regexEditsLearnt by booleanPref(PREF_ACTIVITY_REGEX_EDITS_LEARNT).withDefault(false)
@@ -162,7 +164,6 @@ class MainPrefs : Krate {
     var hiddenTags by stringSetPref(PREF_ACTIVITY_HIDDEN_TAGS).withDefault(setOf())
     var pinnedFriendsJson by kotlinxPref<List<UserSerializable>>(PREF_ACTIVITY_PINNED_FRIENDS)
         .withDefault(emptyList())
-    var touhouCircles by stringPref(PREF_TOUHOU_CIRCLES).withDefault("")
 
     // we want 401 and not 400
     var spotifyAccessToken by stringPref(PREF_SPOTIFY_ACCESS_TOKEN).withDefault("qwertyuiopasdfghjklzxcvbnm")
@@ -251,6 +252,7 @@ class MainPrefs : Krate {
         const val PREF_MASTER = "master"
         const val PREF_ALLOWED_PACKAGES = "app_whitelist"
         const val PREF_BLOCKED_PACKAGES = "app_blacklist"
+        const val PREF_SEEN_PACKAGES = "apps_seen"
         const val PREF_AUTO_DETECT = "auto_detect"
         const val PREF_DELAY_SECS = "delay_secs"
         const val PREF_DELAY_SECS_MIN = 30
@@ -300,7 +302,6 @@ class MainPrefs : Krate {
         const val PREF_CRASHLYTICS_ENABLED = "crashlytics_enabled"
         const val PREF_CURRENT_USER_IDX = "current_user_idx"
         const val PREF_SCROBBLE_ACCOUNTS = "scrobble_accounts"
-        const val PREF_TOUHOU_CIRCLES = "touhou_circles"
         const val PREF_SPOTIFY_ACCESS_TOKEN = "spotify_access_token"
         const val PREF_SPOTIFY_ACCESS_TOKEN_EXPIRES = "spotify_access_token_expires"
         const val PREF_SCROBBLE_SPOTIFY_REMOTE = "scrobble_spotify_remote"

@@ -30,11 +30,13 @@ import com.arn.scrobble.databinding.ContentThemesBinding
 import com.arn.scrobble.themes.ColorPatchUtils.getStyledColor
 import com.arn.scrobble.ui.FabData
 import com.arn.scrobble.ui.UiUtils.dp
+import com.arn.scrobble.ui.UiUtils.setupAxisTransitions
 import com.arn.scrobble.ui.UiUtils.setupInsets
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.transition.MaterialSharedAxis
 import io.michaelrocks.bimap.HashBiMap
 
 class ThemesFragment : Fragment() {
@@ -59,6 +61,12 @@ class ThemesFragment : Fragment() {
     private val billingViewModel by activityViewModels<BillingViewModel>()
 
     private lateinit var themedContext: ContextThemeWrapper
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setupAxisTransitions(MaterialSharedAxis.X)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -98,11 +98,9 @@
     <string name="recents" comment="Short for recently scrobbled">Πρόσφατα</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Έγινε πρώτη φορά scrobble στις %1$s</string>
     <string name="auto" comment="automatic or default setting">Αυτόματο</string>
-    <string name="enabled_apps">Ενεργοποιημένες Εφαρμογές</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Σχεδόν τελειώσαμε…</string>
     <string name="music_players">Προγραμμάματα αναπαραγωγής μουσικής</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Άλλες Εφαρμογές</string>
-    <string name="choose_apps">Επιλογή εφαρμογών για scrobble</string>
     <string name="offline">Χωρίς σύνδεση. Τα δεδομένα που εμφανίζονται δεν είναι φρέσκα</string>
     <string name="unavailable_offline">Δεν είναι διαθέσιμο εκτός σύνδεσης</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Υπηρεσίες</string>

@@ -144,6 +144,8 @@
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Почти готово…</string>
     <string name="music_players">Музыкальные плееры</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Другие приложения</string>
+    <string name="choose_apps">Выберите приложения</string>
+    <string name="choose_an_app">Выберите приложение</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Приложения</string>
     <string name="offline">Не в сети. Показанные данные не актуальны</string>
     <string name="unavailable_offline">Недоступно, когда не в сети</string>
@@ -301,6 +303,11 @@
     <string name="edit_all" comment="All occurrences of a pattern">Все</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Извлечь</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Назовите ваши группы захвата <i>track, album, artist</i> или <i>albumArtist</i>, чтобы извлечь их из других полей</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Например, чтобы поменять местами исполнителя и название, можно задать регулярное выражение для исполнителя как (?&lt;track&gt;.*), а для трека - (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Ваши регулярные выражения должны содержать по крайней мере эти именованные группы: \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Ваши регулярные выражения содержат более одной группы \"%1$s\", что недопустимо</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Неверное регулярное выражение: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Используемые шаблоны:</string>
     <string name="edit_continue">Если найдено, продолжить сопоставление с другими регулярными выражениями</string>
     <string name="edit_case_sensitive">С учетом регистра</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Проверка</string>
@@ -359,6 +366,7 @@
     <string name="pref_enabled_apps_title">Выберите приложения</string>
     <string name="pref_auto_detect">Автоматически скробблить из новых приложений</string>
     <string name="pref_spotify_remote">Скробблинг Spotify, играющий на других устройствах</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Отключить непрерывный скробблинг с микрофона при воспроизведении музыки</string>
     <string name="pref_delay">Задержка скробблинга (в зависимости от того, что наступит раньше)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Минуты</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Проценты</string>
@@ -472,4 +480,5 @@
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закрепить до %1$d друзей и изменить их порядок</string>
     <string name="billing_sharing">Удалить имя приложения при шеринге</string>
     <string name="billing_scrobble_source">Запомнить и просмотреть приложения, из которых вы скробблили, и искать прямо в них</string>
+    <string name="billing_regex_extract">Напишите правила извлечения пользовательских метаданных с помощью регулярных выражений</string>
 </resources>

@@ -107,11 +107,9 @@
     <string name="recents" comment="Short for recently scrobbled">Récents</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Première fois scrobbled le %1$s</string>
     <string name="auto" comment="automatic or default setting">Auto</string>
-    <string name="enabled_apps">Applications activées</string>
     <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Presque prêt…</string>
     <string name="music_players">Lecteurs de musique</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Autres applications</string>
-    <string name="choose_apps">Choisir une application pour scrobbler</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Applis</string>
     <string name="offline">Hors-ligne. Les données affichées ne sont pas rafraichies</string>
     <string name="unavailable_offline">Indisponible hors-ligne</string>
@@ -268,7 +266,7 @@
     <string name="edit_first" comment="First occurrence of a pattern">Premier</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tous</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extraire</string>
-    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+capture+groups">Nommez vos groupes de capture <i>morceau, album, artiste</i> ou <i>artiste de l\'album</i> pour les extraire d\'autres champs</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nommez vos groupes de capture <i>morceau, album, artiste</i> ou <i>artiste de l\'album</i> pour les extraire d\'autres champs</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
     <string name="edit_case_sensitive">Sensible à la casse</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>

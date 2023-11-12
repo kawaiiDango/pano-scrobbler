@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s scrobble</item>
+        <item quantity="other">%1$s scrobbles</item>
+    </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="one">%1$s idag</item>
+        <item quantity="other">%1$s idag</item>
+    </plurals>
     <!--  pro  -->
 </resources>

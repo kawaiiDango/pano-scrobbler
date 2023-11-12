@@ -8,5 +8,118 @@
         <item quantity="one">%1$s idag</item>
         <item quantity="other">%1$s idag</item>
     </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s lyssnare</item>
+        <item quantity="other">%1$s lyssnare</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s dag</item>
+        <item quantity="other">%1$s dagar</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="one">%1$s vecka</item>
+        <item quantity="other">%1$s veckor</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">%1$s månad</item>
+        <item quantity="other">%1$s månader</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">%1$s år</item>
+        <item quantity="other">%1$s år</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s artist</item>
+        <item quantity="other">%1$s artister</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s album</item>
+        <item quantity="other">%1$s album</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s spår</item>
+        <item quantity="other">%1$s spår</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d träff</item>
+        <item quantity="other">%1$d träffar</item>
+    </plurals>
+    <plurals name="num_simple_edits">
+        <item quantity="one">%1$s ändring</item>
+        <item quantity="other">%1$s ändringar</item>
+    </plurals>
+    <plurals name="num_regex_edits">
+        <item quantity="one">%1$s mönsterändring</item>
+        <item quantity="other">%1$s mönsterändringar</item>
+    </plurals>
+    <plurals name="num_blocked_metadata">
+        <item quantity="one">%1$s blockerad metadata</item>
+        <item quantity="other">%1$s blockerad metadata</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minut</item>
+        <item quantity="other">%1$d minuter</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s vän</item>
+        <item quantity="other">%1$s vänner</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s väntande</item>
+        <item quantity="other">%1$s väntande</item>
+    </plurals>
+    <string name="yes">Ja</string>
+    <string name="no">Nej</string>
+    <string name="reset">Nollställ</string>
+    <string name="settings">Konfigurera</string>
+    <string name="bug_report">Rapportera fel</string>
+    <string name="faq">FAQ</string>
+    <string name="album_art">Skivomslag</string>
+    <string name="artist_image">Artistbild</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Titeln kunde inte tolkas</string>
+    <string name="network_error">Nätverksfel</string>
+    <string name="disable_tls_verify">Ignorera TLS-fel</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorerad</string>
+    <string name="scrobble_ignored_save_edit">last.fm ignorerade ändringen eftersom scrobblen är för gammal. Vill du spara ändringen för framtida scrobbles istället?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Vissa obligatoriska fält är tomma</string>
+    <string name="artist">Artist</string>
+    <string name="artists">Artister</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Toppartister</string>
+    <string name="album_artist">Albumartist</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Artist / kanal</string>
+    <string name="similar_artists">Liknande artister</string>
+    <string name="album_optional">Album (valfritt)</string>
+    <string name="album">Album</string>
+    <string name="albums">Album</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Toppalbum</string>
+    <string name="track">Spår</string>
+    <string name="tracks">Spår</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Toppspår</string>
+    <string name="similar_tracks">Liknande spår</string>
+    <string name="similar" comment="Similar tracks but in short">Liknande</string>
+    <string name="state_scrobbling">Nu scrobblas...</string>
+    <string name="state_scrobbled">Scrobblades</string>
+    <string name="unscrobble">Avscrobbla</string>
+    <string name="state_unscrobbled">Avscrobblad</string>
+    <string name="no_apps_enabled">Inga appar är aktiverade</string>
+    <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d till</string>
+    <string name="show_all">Visa alla</string>
+    <string name="edit">Redigera</string>
+    <string name="delete">Radera</string>
+    <string name="delete_all">Radera alla</string>
+    <string name="love" comment="Love/like a song">Älskar</string>
+    <string name="hate" comment="Hate or dislike a song">Hatar</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Avhata</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Oälska</string>
+    <string name="pending_scrobbles">Väntande scrobbles</string>
+    <string name="pending_scrobble">Väntande scrobble</string>
+    <string name="pending_scrobbles_noti">Behandlar väntande scrobbles</string>
+    <string name="friends">Vänner</string>
+    <string name="num_scrobbles_since" formatted="true" comment="%1= number, %2= date of joining lastfm">%1$s scrobbles, sedan %2$s</string>
+    <string name="allow_background">Tillåt scrobbling i bakgrunden</string>
+    <string name="grant_notification_access">Bevilja åtkomst till aviseringar</string>
+    <string name="grant_notification_access_desc">Krävs för att hämta musikrelaterad metadata. Inga icke-musiknotifieringar läses</string>
+    <string name="send_notifications">Tillåt aviseringar</string>
+    <string name="notification_channel_blocked">Detta kräver att notifikationer aktiveras</string>
     <!--  pro  -->
 </resources>

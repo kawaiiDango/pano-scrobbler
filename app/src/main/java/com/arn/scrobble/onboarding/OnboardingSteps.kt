@@ -86,12 +86,13 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
 
     inner class LoginStep : OnboardingStep(
         context.getString(R.string.pref_login),
+//        context.getString(R.string.data_collection_disclosure),
     ) {
         override fun getStepData() = Stuff.isLoggedIn()
 
         @SuppressLint("ClickableViewAccessibility")
         override fun createStepContentLayout(): View {
-            val serviceEnums = AccountType.values()
+            val serviceEnums = AccountType.entries.toTypedArray()
 
             val binding = ButtonStepperForLoginBinding.inflate(LayoutInflater.from(context))
 

@@ -33,62 +33,64 @@ package de.umass.lastfm.scrobble;
  */
 public class ScrobbleData {
 
-	/**
-	 * The artist name. Required for scrobbling and now playing.
-	 */
-	private String artist;
+    /**
+     * The artist name. Required for scrobbling and now playing.
+     */
+    private String artist;
 
-	/**
-	 * The track name. Required for scrobbling and now playing.
-	 */
-	private String track;
+    /**
+     * The track name. Required for scrobbling and now playing.
+     */
+    private String track;
 
-	/**
-	 * The time the track started playing, in UNIX timestamp format (integer number of seconds since 00:00:00, January 1st 1970 UTC). This must
-	 * be in the UTC time zone. Required for scrobbling only.
-	 */
-	private int timestamp = -1;
+    /**
+     * The time the track started playing, in UNIX timestamp format (integer number of seconds since 00:00:00, January 1st 1970 UTC). This must
+     * be in the UTC time zone. Required for scrobbling only.
+     */
+    private int timestamp = -1;
 
-	/**
-	 * The length of the track in seconds. Optional.
-	 */
-	private int duration = -1;
+    /**
+     * The length of the track in seconds. Optional.
+     */
+    private int duration = -1;
 
-	/**
-	 * The album name. Optional.
-	 */
-	private String album;
+    /**
+     * The album name. Optional.
+     */
+    private String album;
 
-	/**
-	 * The album artist, if this differs from the track artist. Optional.
-	 */
-	private String albumArtist;
+    /**
+     * The album artist, if this differs from the track artist. Optional.
+     */
+    private String albumArtist;
 
-	/**
-	 * The MusicBrainz track id. Optional.
-	 */
-	private String musicBrainzId;
+    /**
+     * The MusicBrainz track id. Optional.
+     */
+    private String musicBrainzId;
 
-	/**
-	 * The position of the track on the album. Optional.
-	 */
-	private int trackNumber = -1;
+    /**
+     * The position of the track on the album. Optional.
+     */
+    private int trackNumber = -1;
 
-	/**
-	 * The stream id for this track if received from the radio.getPlaylist service. Optional.
-	 */
-	private String streamId;
+    /**
+     * The stream id for this track if received from the radio.getPlaylist service. Optional.
+     */
+    private String streamId;
 
-	/**
-	 * Set to true if the user chose this song, or false if the song was chosen by someone else (such as a radio station or recommendation
-	 * service). Optional.
-	 */
-	private boolean chosenByUser = true;
+    /**
+     * Set to true if the user chose this song, or false if the song was chosen by someone else (such as a radio station or recommendation
+     * service). Optional.
+     */
+    private boolean chosenByUser = true;
 
-	public ScrobbleData() {
-	}
+    private String pkgName;
 
-	public ScrobbleData(ScrobbleData scrobbleData) {
+    public ScrobbleData() {
+    }
+
+    public ScrobbleData(ScrobbleData scrobbleData) {
         this(
                 scrobbleData.getArtist(),
                 scrobbleData.getTrack(),
@@ -99,122 +101,119 @@ public class ScrobbleData {
                 scrobbleData.getMusicBrainzId(),
                 scrobbleData.getTrackNumber(),
                 scrobbleData.getStreamId(),
+                scrobbleData.getPkgName(),
                 scrobbleData.isChosenByUser()
         );
-	}
+    }
 
-	public ScrobbleData(String artist, String track, int timestamp) {
-		this.artist = artist;
-		this.track = track;
-		this.timestamp = timestamp;
-	}
+    public ScrobbleData(String artist, String track, int timestamp) {
+        this.artist = artist;
+        this.track = track;
+        this.timestamp = timestamp;
+    }
 
-	public ScrobbleData(String artist, String track, int timestamp, int duration, String album, String albumArtist, String musicBrainzId,
-						int trackNumber, String streamId) {
-		this.artist = artist;
-		this.track = track;
-		this.timestamp = timestamp;
-		this.duration = duration;
-		this.album = album;
-		this.albumArtist = albumArtist;
-		this.musicBrainzId = musicBrainzId;
-		this.trackNumber = trackNumber;
-		this.streamId = streamId;
-	}
+    public ScrobbleData(String artist, String track, int timestamp, int duration, String album, String albumArtist, String musicBrainzId,
+                        int trackNumber, String streamId, String pkgName, boolean chosenByUser) {
+        this.artist = artist;
+        this.track = track;
+        this.timestamp = timestamp;
+        this.duration = duration;
+        this.album = album;
+        this.albumArtist = albumArtist;
+        this.musicBrainzId = musicBrainzId;
+        this.trackNumber = trackNumber;
+        this.streamId = streamId;
+        this.chosenByUser = chosenByUser;
+        this.pkgName = pkgName;
+    }
 
-	public ScrobbleData(String artist, String track, int timestamp, int duration, String album, String albumArtist, String musicBrainzId,
-			int trackNumber, String streamId, boolean chosenByUser) {
-		this.artist = artist;
-		this.track = track;
-		this.timestamp = timestamp;
-		this.duration = duration;
-		this.album = album;
-		this.albumArtist = albumArtist;
-		this.musicBrainzId = musicBrainzId;
-		this.trackNumber = trackNumber;
-		this.streamId = streamId;
-		this.chosenByUser = chosenByUser;
-	}
+    public String getArtist() {
+        return artist;
+    }
 
-	public String getArtist() {
-		return artist;
-	}
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
 
-	public void setArtist(String artist) {
-		this.artist = artist;
-	}
+    public String getTrack() {
+        return track;
+    }
 
-	public String getTrack() {
-		return track;
-	}
+    public void setTrack(String track) {
+        this.track = track;
+    }
 
-	public void setTrack(String track) {
-		this.track = track;
-	}
+    public int getTimestamp() {
+        return timestamp;
+    }
 
-	public int getTimestamp() {
-		return timestamp;
-	}
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
+    }
 
-	public void setTimestamp(int timestamp) {
-		this.timestamp = timestamp;
-	}
+    public int getDuration() {
+        return duration;
+    }
 
-	public int getDuration() {
-		return duration;
-	}
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 
-	public void setDuration(int duration) {
-		this.duration = duration;
-	}
+    public String getAlbum() {
+        return album;
+    }
 
-	public String getAlbum() {
-		return album;
-	}
+    public void setAlbum(String album) {
+        this.album = album;
+    }
 
-	public void setAlbum(String album) {
-		this.album = album;
-	}
+    public String getAlbumArtist() {
+        return albumArtist;
+    }
 
-	public String getAlbumArtist() {
-		return albumArtist;
-	}
+    public void setAlbumArtist(String albumArtist) {
+        this.albumArtist = albumArtist;
+    }
 
-	public void setAlbumArtist(String albumArtist) {
-		this.albumArtist = albumArtist;
-	}
+    public String getMusicBrainzId() {
+        return musicBrainzId;
+    }
 
-	public String getMusicBrainzId() {
-		return musicBrainzId;
-	}
+    public void setMusicBrainzId(String musicBrainzId) {
+        this.musicBrainzId = musicBrainzId;
+    }
 
-	public void setMusicBrainzId(String musicBrainzId) {
-		this.musicBrainzId = musicBrainzId;
-	}
+    public int getTrackNumber() {
+        return trackNumber;
+    }
 
-	public int getTrackNumber() {
-		return trackNumber;
-	}
+    public void setTrackNumber(int trackNumber) {
+        this.trackNumber = trackNumber;
+    }
 
-	public void setTrackNumber(int trackNumber) {
-		this.trackNumber = trackNumber;
-	}
+    public String getStreamId() {
+        return streamId;
+    }
 
-	public String getStreamId() {
-		return streamId;
-	}
+    public void setStreamId(String streamId) {
+        this.streamId = streamId;
+    }
 
-	public void setStreamId(String streamId) {
-		this.streamId = streamId;
-	}
+    public boolean isChosenByUser() {
+        return chosenByUser;
+    }
 
-	public boolean isChosenByUser() {
-		return chosenByUser;
-	}
+    public void setChosenByUser(boolean chosenByUser) {
+        this.chosenByUser = chosenByUser;
+    }
 
-	public void setChosenByUser(boolean chosenByUser) {
-		this.chosenByUser = chosenByUser;
-	}
+    public String getPkgName() {
+        return pkgName;
+    }
+
+    public void setPkgName(String pkgName) {
+        this.pkgName = pkgName;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -256,15 +255,15 @@ public class ScrobbleData {
     }
 
     /*
-	 * (non-Javadoc)
-	 *
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "ScrobbleData [track=" + track + ", artist=" + artist + ", album=" + album + ", albumArtist=" + albumArtist + ", duration="
-				+ duration + ", musicBrainzId=" + musicBrainzId + ", timestamp=" + timestamp + ", trackNumber=" + trackNumber
-				+ ", streamId=" + streamId + ", chosenByUser=" + chosenByUser + "]";
-	}
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ScrobbleData [track=" + track + ", artist=" + artist + ", album=" + album + ", albumArtist=" + albumArtist + ", duration="
+                + duration + ", musicBrainzId=" + musicBrainzId + ", timestamp=" + timestamp + ", trackNumber=" + trackNumber
+                + ", streamId=" + streamId + ", pkgName=redacted, chosenByUser=" + chosenByUser + "]";
+    }
 
 }

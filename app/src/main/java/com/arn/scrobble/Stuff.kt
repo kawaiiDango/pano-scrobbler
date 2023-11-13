@@ -77,7 +77,7 @@ import kotlin.math.pow
 
 object Stuff {
     const val SCROBBLER_PROCESS_NAME = "bgScrobbler"
-    const val DEEPLINK_PROTOCOL_NAME = "pscrobbler"
+    const val DEEPLINK_PROTOCOL_NAME = "pano-scrobbler"
     const val ARG_URL = "url"
     const val ARG_SAVE_COOKIES = "cookies"
     const val ARG_NOPASS = "nopass"
@@ -125,7 +125,6 @@ object Stuff {
     const val READ_TIMEOUT_SECS = 20L
     const val RECENTS_REFRESH_INTERVAL = 15 * 1000L
     const val NOTI_SCROBBLE_INTERVAL = 5 * 60 * 1000L
-    const val OFFLINE_SCROBBLE_JOB_DELAY = 20 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
     const val CHARTS_WIDGET_REFRESH_INTERVAL = 60 * 60 * 1000L
@@ -215,10 +214,9 @@ object Stuff {
         "app.revanced.android.apps.youtube.music",
     )
 
-    val needSyntheticStates = setOf(
-        PACKAGE_BLACKPLAYER,
-        PACKAGE_BLACKPLAYEREX,
-//        PACKAGE_YOUTUBE_MUSIC,
+    val needSyntheticStates = setOf<String>(
+//        PACKAGE_BLACKPLAYER,
+//        PACKAGE_BLACKPLAYEREX,
     )
     val PACKAGES_PIXEL_NP = setOf(
         PACKAGE_PIXEL_NP,
@@ -249,7 +247,7 @@ object Stuff {
 
     val forcePersistentNoti by lazy {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-        Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
                 Build.MANUFACTURER.lowercase(Locale.ENGLISH) in arrayOf(
             MANUFACTURER_HUAWEI,
             MANUFACTURER_XIAOMI,
@@ -284,6 +282,15 @@ object Stuff {
 
     fun log(s: String) {
         Timber.tag(TAG).i(s)
+    }
+
+    fun logD(s: String) {
+        if (BuildConfig.DEBUG && false)
+            Timber.tag(TAG).d(s)
+    }
+
+    fun logW(s: String) {
+        Timber.tag(TAG).w(s)
     }
 
     fun timeIt(s: String) {
@@ -717,11 +724,11 @@ object Stuff {
             if (service.service == serviceComponent) {
                 log(
                     "${this::isScrobblerRunning.name}  service - pid: " + service.pid + ", currentPID: " +
-                            Process.myPid() + ", clientPackage: " + service.clientPackage + ", clientCount: " +
-                            service.clientCount + " process:" + service.process + ", clientLabel: " +
-                            if (service.clientLabel == 0) "0" else "(" + App.context.resources.getString(
-                                service.clientLabel
-                            ) + ")"
+                            Process.myPid() + ", clientCount: " +
+                            service.clientCount + " process:" +
+                            service.process + ", clientLabel: " +
+                            if (service.clientLabel == 0) "null" else "(" +
+                                    App.context.resources.getString(service.clientLabel) + ")"
                 )
                 if (service.process == BuildConfig.APPLICATION_ID + ":${SCROBBLER_PROCESS_NAME}" /*&& service.clientCount > 0 */) {
                     serviceRunning = true
@@ -732,7 +739,7 @@ object Stuff {
         if (serviceRunning)
             return true
 
-        log("${this::isScrobblerRunning.name} : service not running")
+        logW("${this::isScrobblerRunning.name} : service not running")
         return false
     }
 
@@ -755,7 +762,7 @@ object Stuff {
                 value = getRating(it)?.toString()
             "$it: $value"
         }
-        log("MediaMetadata\n$data")
+        logD("MediaMetadata\n$data")
     }
 
     fun Intent.putSingle(parcelable: Parcelable): Intent {

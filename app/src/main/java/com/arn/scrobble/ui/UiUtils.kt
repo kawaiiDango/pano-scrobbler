@@ -73,6 +73,7 @@ import com.arn.scrobble.App
 import com.arn.scrobble.MainActivity
 import com.arn.scrobble.R
 import com.arn.scrobble.Stuff
+import com.arn.scrobble.databinding.LayoutSnowfallBinding
 import com.arn.scrobble.friends.UserSerializable
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.ColorPatchUtils
@@ -85,6 +86,10 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
 import de.umass.lastfm.ImageSize
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -668,6 +673,45 @@ object UiUtils {
         }
         va.interpolator = FastOutSlowInInterpolator()
         va.start()
+    }
 
+    fun applySnowfall(
+        anchor: View,
+        container: ViewGroup,
+        inflater: LayoutInflater,
+        coroutineScope: CoroutineScope
+    ) {
+        val emojiPairs = arrayOf(
+            "\u26C4" to "\u2603️",
+            "\uD83C\uDF32" to "\uD83C\uDF84",
+            "\u2B50" to "\uD83C\uDF1F"
+        )
+        var currentIdx = 0
+        val binding = LayoutSnowfallBinding.inflate(inflater, container, false)
+
+        fun updateEmojis() {
+            binding.snowfallText1.text = emojiPairs[currentIdx].first
+            binding.snowfallText2.text = emojiPairs[currentIdx].second
+        }
+
+        binding.root.layoutParams = anchor.layoutParams
+
+        updateEmojis()
+
+        container.addView(binding.root)
+
+        binding.snowfallText1.setOnClickListener {
+            currentIdx = (currentIdx + 1) % emojiPairs.size
+            updateEmojis()
+        }
+
+        coroutineScope.launch {
+            while (isActive) {
+                binding.snowfallText2.visibility = View.INVISIBLE
+                delay(1000)
+                binding.snowfallText2.visibility = View.VISIBLE
+                delay(500)
+            }
+        }
     }
 }

@@ -53,7 +53,7 @@ class SessListener(
     @Synchronized
     override fun onActiveSessionsChanged(controllers: List<MediaController>?) {
         this.controllers = controllers
-        Stuff.log("controllers: " + controllers?.joinToString { it.packageName })
+        Stuff.logD("controllers: " + controllers?.joinToString { it.packageName })
 
         if (!prefs.scrobblerEnabled || controllers == null)
             return
@@ -179,7 +179,7 @@ class SessListener(
         private val syntheticStateHandler = Handler(scrobbleHandler.looper)
 
         fun scrobble() {
-            Stuff.log("playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}")
+            Stuff.logD("playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}")
 
             scheduleSyntheticStateIfNeeded()
 
@@ -329,9 +329,9 @@ class SessListener(
 
             Stuff.log(
                 "onMetadataChanged $artist ($albumArtist) [$album] ~ $title, sameAsOld=$sameAsOld, " +
-                        "duration=$durationMillis lastState=$lastState, package=${trackInfo.packageName} isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
+                        "duration=$durationMillis lastState=$lastState, isRemotePlayback=$isRemotePlayback cb=${this.hashCode()} sl=${this@SessListener.hashCode()}"
             )
-            if (BuildConfig.DEBUG)
+            if (BuildConfig.DEBUG && false)
                 metadata.dump()
 
             if (artist == "" || title == "")
@@ -392,7 +392,7 @@ class SessListener(
                 PlaybackState.STATE_NONE,
                 PlaybackState.STATE_ERROR -> {
                     pause()
-                    Stuff.log("paused timePlayed=${trackInfo.timePlayed}")
+                    Stuff.logD("paused timePlayed=${trackInfo.timePlayed}")
                 }
 
                 PlaybackState.STATE_PLAYING -> {
@@ -417,14 +417,14 @@ class SessListener(
                                     trackInfo.hash != trackInfo.lastSubmittedScrobbleHash)
                         ) {
                             if (playbackState.errorMessage == "synthetic")
-                                Stuff.log("synthetic")
+                                Stuff.logD("synthetic")
                             scrobble()
                         }
                     }
                 }
 
                 else -> {
-                    Stuff.log("other ($state) : ${trackInfo.title}")
+                    Stuff.logD("other ($state) : ${trackInfo.title}")
                 }
             }
             if (state != PlaybackState.STATE_BUFFERING)
@@ -433,7 +433,7 @@ class SessListener(
         }
 
         override fun onSessionDestroyed() {
-            Stuff.log("onSessionDestroyed ${trackInfo.packageName}")
+            Stuff.logD("onSessionDestroyed ${trackInfo.packageName}")
             stop()
             synchronized(this@SessListener) {
                 controllersMap.remove(token)
@@ -480,18 +480,15 @@ class SessListener(
         }
 
         override fun onExtrasChanged(extras: Bundle?) {
-            if (BuildConfig.DEBUG)
-                Stuff.log("extras updated ${trackInfo.packageName}: ${extras.dump()}")
+            Stuff.logD("extras updated ${trackInfo.packageName}: ${extras.dump()}")
         }
 
         override fun onSessionEvent(event: String, extras: Bundle?) {
-            if (BuildConfig.DEBUG)
-                Stuff.log("onSessionEvent ${trackInfo.packageName}: $event ${extras.dump()}")
+            Stuff.logD("onSessionEvent ${trackInfo.packageName}: $event ${extras.dump()}")
         }
 
         override fun onAudioInfoChanged(info: MediaController.PlaybackInfo?) {
-            if (BuildConfig.DEBUG)
-                Stuff.log("audioinfo updated ${trackInfo.packageName}: $info")
+            Stuff.logD("audioinfo updated ${trackInfo.packageName}: $info")
 
             isRemotePlayback =
                 info?.playbackType == MediaController.PlaybackInfo.PLAYBACK_TYPE_REMOTE

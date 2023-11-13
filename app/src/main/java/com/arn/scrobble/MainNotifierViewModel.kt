@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 class MainNotifierViewModel(application: Application) : AndroidViewModel(application) {
@@ -41,6 +42,13 @@ class MainNotifierViewModel(application: Application) : AndroidViewModel(applica
     lateinit var currentUser: UserSerializable
 
     private var prevDrawerUser: UserSerializable? = null
+
+    val isItChristmas by lazy {
+        val cal = Calendar.getInstance()
+        BuildConfig.DEBUG ||
+                (cal.get(Calendar.MONTH) == Calendar.DECEMBER && cal.get(Calendar.DAY_OF_MONTH) >= 25) ||
+                (cal.get(Calendar.MONTH) == Calendar.JANUARY && cal.get(Calendar.DAY_OF_MONTH) <= 7)
+    }
 
     fun updateCanIndex() {
         canIndex.value = BuildConfig.DEBUG && Scrobblables.current is Lastfm &&

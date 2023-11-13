@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/snowfall_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.jetradarmobile.snowfall.SnowfallView
+        android:id="@+id/snowfall_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:snowflakeAlphaMax="200"
+        app:snowflakeAlphaMin="50"
+        app:snowflakeAngleMax="10"
+        app:snowflakeImage="@drawable/vd_snowflake"
+        app:snowflakeSizeMax="18dp"
+        app:snowflakeSizeMin="2dp"
+        app:snowflakeSpeedMax="5"
+        app:snowflakeSpeedMin="1"
+        app:snowflakesAlreadyFalling="true"
+        app:snowflakesFadingEnabled="true"
+        app:snowflakesNum="15" />
+
+    <FrameLayout
+        android:id="@+id/snowfall_emoji_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:animateLayoutChanges="true">
+
+        <TextView
+            android:id="@+id/snowfall_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceTitleMedium"
+            tools:text="a" />
+
+        <TextView
+            android:id="@+id/snowfall_text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceTitleMedium"
+            android:visibility="invisible"
+            tools:text="A️" />
+    </FrameLayout>
+</FrameLayout>

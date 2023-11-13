@@ -80,6 +80,15 @@ class MainActivity : AppCompatActivity(),
 
         if (UiUtils.isTabletUi) {
             navHeaderbinding = HeaderNavBinding.inflate(layoutInflater, binding.sidebarNav, false)
+
+            if (mainNotifierViewModel.isItChristmas)
+                UiUtils.applySnowfall(
+                    navHeaderbinding!!.navProfilePic,
+                    navHeaderbinding!!.root,
+                    layoutInflater,
+                    lifecycleScope
+                )
+
             mainFab = ExtendedFloatingActionButton(this).apply {
                 id = R.id.main_extended_fab
                 val lp = CoordinatorLayout.LayoutParams(

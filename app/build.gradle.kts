@@ -46,7 +46,7 @@ android {
         versionName = "${verCode / 100}.${verCode % 100} - ${
             SimpleDateFormat("YYYY, MMM dd").format(Date())
         }"
-        setProperty("archivesBaseName", "pScrobbler")
+        setProperty("archivesBaseName", "pano-scrobbler")
         vectorDrawables.useSupportLibrary = true
 
         ksp {
@@ -68,7 +68,7 @@ android {
 
     buildTypes {
         release {
-//            isShrinkResources = true // todo fix when the fix is fixed
+            isShrinkResources = true
             isMinifyEnabled = true
             setProguardFiles(
                 listOf(
@@ -150,6 +150,7 @@ dependencies {
     implementation(libs.review.ktx)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.android.snowfall)
     // viewpager2 doesnt respond to left/right press on TVs, don"t migrate
 
     implementation(libs.material)
@@ -233,7 +234,7 @@ play {
 githubRelease {
     token(localProperties["github.token"])
     owner("kawaiidango")
-    repo("pscrobbler")
+    repo("pano-scrobbler")
     val changelog = file("src/main/play/release-notes/en-US/default.txt").readText() +
             "\n\n" + "Copied from Play Store what's new, may not be accurate for minor updates."
     body(changelog)
@@ -242,7 +243,7 @@ githubRelease {
     targetCommitish("main")
     releaseAssets(
         listOf(
-            "build/outputs/apk/release/pScrobbler-release.apk",
+            "build/outputs/apk/release/pano-scrobbler-release.apk",
         )
     )
     draft(false) // by default this is true

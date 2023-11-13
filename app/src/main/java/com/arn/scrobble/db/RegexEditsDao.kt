@@ -1,5 +1,6 @@
 package com.arn.scrobble.db
 
+import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
@@ -155,10 +156,11 @@ interface RegexEditsDao {
                     replaceField(scrobbleData.albumArtist, NLService.B_ALBUM_ARTIST)
                 scrobbleData.track = replaceField(scrobbleData.track, NLService.B_TRACK)
 
-                if (App.prefs.proStatus)
+                // needs java 8
+                if (App.prefs.proStatus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     extract()
             } catch (e: IllegalArgumentException) {
-                Stuff.log("regex error: ${e.message}")
+                Stuff.logW("regex error: ${e.message}")
             }
 
             return numMatches

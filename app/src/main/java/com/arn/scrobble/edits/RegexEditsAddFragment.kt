@@ -424,8 +424,6 @@ class RegexEditsAddFragment : Fragment() {
 
         if (regexEditOld != regexEdit && !hasChanged) {
             hasChanged = true
-            if (BuildConfig.DEBUG)
-                requireContext().toast(ARG_CHANGED)
         }
 
         requireArguments().putSingle(regexEdit)

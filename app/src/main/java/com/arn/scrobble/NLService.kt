@@ -196,7 +196,7 @@ class NLService : NotificationListenerService() {
                 )
             )
         } catch (exception: SecurityException) {
-            Stuff.log("Failed to start media controller: " + exception.message)
+            Stuff.logW("Failed to start media controller: " + exception.message)
             // Try to unregister it, just in case.
             try {
                 sessManager.removeOnActiveSessionsChangedListener(sessListener!!)
@@ -227,7 +227,7 @@ class NLService : NotificationListenerService() {
         try {
             applicationContext.unregisterReceiver(nlserviceReciver)
         } catch (e: IllegalArgumentException) {
-            Stuff.log("nlservicereciver wasn't registered")
+            Stuff.logW("nlservicereciver wasn't registered")
         }
         try {
             applicationContext.unregisterReceiver(pkgInstallReceiver)
@@ -350,7 +350,7 @@ class NLService : NotificationListenerService() {
                 val notiText = n.extras.getString(notiField) ?: return
                 val trackInfo = packageTrackMap[sbn.packageName]
 
-                Stuff.log("${this::scrobbleFromNoti.name} $notiText removed=$removed")
+                Stuff.logD("${this::scrobbleFromNoti.name} $notiText removed=$removed")
 
                 if (removed) {
                     scrobbleHandler.remove(trackInfo?.hash ?: return, trackInfo.packageName)
@@ -390,7 +390,7 @@ class NLService : NotificationListenerService() {
                         )
                     }
                 } else {
-                    Stuff.log("\"${this::scrobbleFromNoti.name} parse failed")
+                    Stuff.logW("${this::scrobbleFromNoti.name} parse failed")
                 }
             }
         }
@@ -987,12 +987,6 @@ class NLService : NotificationListenerService() {
                 tracksCopyPQ.add(it)
             }
 
-        fun printContents() {
-            Stuff.log(tracksCopyPQ.toString())
-            val shit = tracksCopyPQ.any { it.hash == 345678 }
-            Stuff.log(shit.toString())
-        }
-
         fun nowPlaying(trackInfo: PlayingTrackInfo, fixedDelay: Long? = null) {
             if (trackInfo.title.isEmpty() || has(trackInfo.hash))
                 return
@@ -1081,7 +1075,7 @@ class NLService : NotificationListenerService() {
         fun remove(hash: Int, notificationPackageNameToRemove: String? = null) {
             if (hash == lockedHash) return
 
-            Stuff.log("$hash from $notificationPackageNameToRemove cancelled")
+            Stuff.logD("$hash from $notificationPackageNameToRemove cancelled")
             tracksCopyPQ.removeAll { it.hash == hash }
             sessListener?.findTrackInfoByHash(hash)?.isPlaying = false
             if (notificationPackageNameToRemove != null)

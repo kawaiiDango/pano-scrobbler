@@ -126,7 +126,7 @@ class LastfmUnscrobbler {
                     clearCookies()
                     throw RuntimeException("csrf token invalidated")
                 } else {
-                    Stuff.log("LastfmUnscrobbler: error unscrobbling: " + resp.code + " response: " + respStr)
+                    Stuff.logW("LastfmUnscrobbler: error unscrobbling: " + resp.code + " response: " + respStr)
                 }
             }
 

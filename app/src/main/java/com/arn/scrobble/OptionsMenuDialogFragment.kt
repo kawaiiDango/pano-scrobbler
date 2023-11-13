@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import androidx.annotation.MenuRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.arn.scrobble.Stuff.getSingle
 import com.arn.scrobble.billing.BillingViewModel
 import com.arn.scrobble.databinding.ContentOptionsMenuBinding
 import com.arn.scrobble.ui.OptionsMenuVM
+import com.arn.scrobble.ui.UiUtils
 import com.arn.scrobble.ui.UiUtils.expandIfNeeded
 import com.arn.scrobble.ui.UiUtils.scheduleTransition
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -62,6 +64,14 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
                 mainNotifierViewModel
             )
             binding.headerNav.navDivider.isVisible = false
+
+            if (mainNotifierViewModel.isItChristmas)
+                UiUtils.applySnowfall(
+                    binding.headerNav.navProfilePic,
+                    binding.headerNav.root,
+                    layoutInflater,
+                    viewLifecycleOwner.lifecycleScope
+                )
         }
 
         binding.optionsMenuNav.setNavigationItemSelectedListener { menuItem ->
@@ -69,7 +79,8 @@ class OptionsMenuDialogFragment : BottomSheetDialogFragment() {
             if (menuItem.itemId !in dontDismissForTheseIds)
                 dismiss()
             else
-                optionsMenuViewModel.menuEvent.value = binding.optionsMenuNav to selectedMenuItemId!!
+                optionsMenuViewModel.menuEvent.value =
+                    binding.optionsMenuNav to selectedMenuItemId!!
 
             true
         }

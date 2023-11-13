@@ -39,7 +39,7 @@ class ImExporter : Closeable {
     fun setOutputUri(uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "w")
         if (pfd == null) {
-            Stuff.log("pfd was null")
+            Stuff.logW("pfd was null")
             return
         }
         writer = FileOutputStream(pfd!!.fileDescriptor)
@@ -48,7 +48,7 @@ class ImExporter : Closeable {
     fun setInputUri(uri: Uri) {
         pfd = context.contentResolver.openFileDescriptor(uri, "r")
         if (pfd == null) {
-            Stuff.log("pfd was null")
+            Stuff.logW("pfd was null")
             return
         }
         reader = FileInputStream(pfd!!.fileDescriptor)

@@ -16,7 +16,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "pScrobbler"
+rootProject.name = "pano-scrobbler"
 include(":app")
 include(":lastfm")
 include(":baselineprofile")

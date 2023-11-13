@@ -46,6 +46,7 @@ data class ListenBrainzAdditionalInfo(
     val recording_msid: String? = null,
     val release_msid: String? = null,
     val media_player: String? = null,
+    val media_player_version: String? = null,
     val submission_client: String?,
     val submission_client_version: String?,
 )

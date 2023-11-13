@@ -67,7 +67,7 @@ class BillingRepository private constructor(private val application: Application
             }
 
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                Stuff.log("BILLING_UNAVAILABLE")
+                Stuff.logW("BILLING_UNAVAILABLE")
                 //Some apps may choose to make decisions based on this knowledge.
             }
 

@@ -102,7 +102,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="pscrobbler" />
+                <data android:scheme="pano-scrobbler" />
                 <data android:host="screen" />
                 <data android:host="test" />
             </intent-filter>

@@ -50,84 +50,84 @@ import de.umass.util.StringUtilities;
 @SuppressWarnings({"ALL"})
 public class FileSystemCache extends Cache implements ScrobbleCache {
 
-	private static final String SUBMISSIONS_FILE = "submissions.txt";
+    private static final String SUBMISSIONS_FILE = "submissions.txt";
 
-	private File cacheDir;
+    private File cacheDir;
 
-	public FileSystemCache() {
-		this(new File(System.getProperty("user.home") + "/.last.fm-cache"));
-	}
+    public FileSystemCache() {
+        this(new File(System.getProperty("user.home") + "/.last.fm-cache"));
+    }
 
-	public FileSystemCache(File cacheDir) {
-		this.cacheDir = cacheDir;
-	}
+    public FileSystemCache(File cacheDir) {
+        this.cacheDir = cacheDir;
+    }
 
-	public boolean contains(String cacheEntryName) {
-		return new File(cacheDir, cacheEntryName + ".xml").exists();
-	}
+    public boolean contains(String cacheEntryName) {
+        return new File(cacheDir, cacheEntryName + ".xml").exists();
+    }
 
-	public void remove(String cacheEntryName) {
-		new File(cacheDir, cacheEntryName + ".xml").delete();
-		new File(cacheDir, cacheEntryName + ".meta").delete();
-	}
+    public void remove(String cacheEntryName) {
+        new File(cacheDir, cacheEntryName + ".xml").delete();
+        new File(cacheDir, cacheEntryName + ".meta").delete();
+    }
 
-	public boolean isExpired(String cacheEntryName) {
-		File f = new File(cacheDir, cacheEntryName + ".meta");
-		if (!f.exists())
-			return false;
-		try {
-			Properties p = new Properties();
-			FileInputStream fis = new FileInputStream(f);
-			p.load(fis);
-			long expirationDate = Long.valueOf(p.getProperty("expiration-date"));
-			fis.close();
-			return expirationDate < System.currentTimeMillis();
-		} catch (IOException e) {
-			return false;
-		} catch (Exception e) {
-		    remove(cacheEntryName);
-		    return false;
+    public boolean isExpired(String cacheEntryName) {
+        File f = new File(cacheDir, cacheEntryName + ".meta");
+        if (!f.exists())
+            return false;
+        try {
+            Properties p = new Properties();
+            FileInputStream fis = new FileInputStream(f);
+            p.load(fis);
+            long expirationDate = Long.valueOf(p.getProperty("expiration-date"));
+            fis.close();
+            return expirationDate < System.currentTimeMillis();
+        } catch (IOException e) {
+            return false;
+        } catch (Exception e) {
+            remove(cacheEntryName);
+            return false;
         }
-	}
+    }
 
-	public void clear() {
-		for (File file : cacheDir.listFiles()) {
-			if (file.isFile()) {
-				file.delete();
-			}
-		}
-	}
+    public void clear() {
+        for (File file : cacheDir.listFiles()) {
+            if (file.isFile()) {
+                file.delete();
+            }
+        }
+    }
 
-	public InputStream load(String cacheEntryName) {
-		try {
-			return new FileInputStream(new File(cacheDir, cacheEntryName + ".xml"));
-		} catch (FileNotFoundException e) {
-			return null;
-		}
-	}
+    public InputStream load(String cacheEntryName) {
+        try {
+            return new FileInputStream(new File(cacheDir, cacheEntryName + ".xml"));
+        } catch (FileNotFoundException e) {
+            return null;
+        }
+    }
 
-	public void store(String cacheEntryName, InputStream inputStream, long expirationDate) {
-		createCache();
-		File f = new File(cacheDir, cacheEntryName + ".xml");
-		try {
-			BufferedInputStream is = new BufferedInputStream(inputStream);
-			BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(f));
-			int read;
-			byte[] buffer = new byte[4096];
-			while ((read = is.read(buffer)) != -1) {
-				os.write(buffer, 0, read);
-			}
-			os.close();
-			is.close();
-			File fm = new File(cacheDir, cacheEntryName + ".meta");
+    public void store(String cacheEntryName, InputStream inputStream, long expirationDate) {
+        createCache();
+        File f = new File(cacheDir, cacheEntryName + ".xml");
+        try {
+            BufferedInputStream is = new BufferedInputStream(inputStream);
+            BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(f));
+            int read;
+            byte[] buffer = new byte[4096];
+            while ((read = is.read(buffer)) != -1) {
+                os.write(buffer, 0, read);
+            }
+            os.close();
+            is.close();
+            File fm = new File(cacheDir, cacheEntryName + ".meta");
             FileOutputStream fmos = new FileOutputStream(fm);
-			Properties p = new Properties();
-			p.setProperty("expiration-date", Long.toString(expirationDate));
-			p.store(fmos, null);
+            Properties p = new Properties();
+            p.setProperty("expiration-date", Long.toString(expirationDate));
+            p.store(fmos, null);
             fmos.close();
-		} catch (IOException e) {
-			// we ignore the exception. if something went wrong we just don't cache it.
-		} catch (AssertionError e) {
+        } catch (IOException e) {
+            // we ignore the exception. if something went wrong we just don't cache it.
+        } catch (AssertionError e) {
 		    /* on Android 8.1
                 java.lang.AssertionError:
                   at android.icu.impl.TimeZoneNamesImpl$ZNames.getNameTypeIndex (TimeZoneNamesImpl.java:724)
@@ -141,134 +141,134 @@ public class FileSystemCache extends Cache implements ScrobbleCache {
                   at de.umass.lastfm.cache.FileSystemCache.store (FileSystemCache.java:2)
 		     */
         }
-	}
+    }
 
-	private void createCache() {
-		if (!cacheDir.exists()) {
-			cacheDir.mkdirs();
-			if (!cacheDir.isDirectory()) {
-				this.cacheDir = cacheDir.getParentFile();
-			}
-		}
-	}
+    private void createCache() {
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+            if (!cacheDir.isDirectory()) {
+                this.cacheDir = cacheDir.getParentFile();
+            }
+        }
+    }
 
-	public void cacheScrobble(Collection<SubmissionData> submissions) {
-		cacheScrobble(submissions.toArray(new SubmissionData[submissions.size()]));
-	}
+    public void cacheScrobble(Collection<SubmissionData> submissions) {
+        cacheScrobble(submissions.toArray(new SubmissionData[submissions.size()]));
+    }
 
-	public void cacheScrobble(SubmissionData... submissions) {
-		createCache();
-		try {
-			BufferedWriter w = new BufferedWriter(new FileWriter(new File(cacheDir, SUBMISSIONS_FILE), true));
-			for (SubmissionData submission : submissions) {
-				w.append(submission.toString());
-				w.newLine();
-			}
-			w.close();
-		} catch (IOException e) {
-			// huh ?
-			//	e.printStackTrace();
-		}
-	}
+    public void cacheScrobble(SubmissionData... submissions) {
+        createCache();
+        try {
+            BufferedWriter w = new BufferedWriter(new FileWriter(new File(cacheDir, SUBMISSIONS_FILE), true));
+            for (SubmissionData submission : submissions) {
+                w.append(submission.toString());
+                w.newLine();
+            }
+            w.close();
+        } catch (IOException e) {
+            // huh ?
+            //	e.printStackTrace();
+        }
+    }
 
-	public boolean isEmpty() {
-		File file = new File(cacheDir, SUBMISSIONS_FILE);
-		if (!file.exists())
-			return true;
-		try {
-			BufferedReader r = new BufferedReader(new FileReader(file));
-			String line = r.readLine();
-			r.close();
-			return line == null || "".equals(line);
-		} catch (IOException e) {
-			// huh
-			//	e.printStackTrace();
-		}
-		return true;
-	}
+    public boolean isEmpty() {
+        File file = new File(cacheDir, SUBMISSIONS_FILE);
+        if (!file.exists())
+            return true;
+        try {
+            BufferedReader r = new BufferedReader(new FileReader(file));
+            String line = r.readLine();
+            r.close();
+            return line == null || "".equals(line);
+        } catch (IOException e) {
+            // huh
+            //	e.printStackTrace();
+        }
+        return true;
+    }
 
-	public void scrobble(Scrobbler scrobbler) throws IOException {
-		File file = new File(cacheDir, SUBMISSIONS_FILE);
-		if (file.exists()) {
-			BufferedReader r = new BufferedReader(new FileReader(file));
-			List<SubmissionData> list = new ArrayList<SubmissionData>(50);
-			String line;
-			while ((line = r.readLine()) != null) {
-				SubmissionData d = new SubmissionData(line);
-				list.add(d);
-				if (list.size() == 50) {
-					scrobbler.submit(list);
-					list.clear();
-				}
-			}
-			if (list.size() > 0)
-				scrobbler.submit(list);
-			r.close();
-			FileWriter w = new FileWriter(file);
-			w.close();
-		}
-	}
+    public void scrobble(Scrobbler scrobbler) throws IOException {
+        File file = new File(cacheDir, SUBMISSIONS_FILE);
+        if (file.exists()) {
+            BufferedReader r = new BufferedReader(new FileReader(file));
+            List<SubmissionData> list = new ArrayList<SubmissionData>(50);
+            String line;
+            while ((line = r.readLine()) != null) {
+                SubmissionData d = new SubmissionData(line);
+                list.add(d);
+                if (list.size() == 50) {
+                    scrobbler.submit(list);
+                    list.clear();
+                }
+            }
+            if (list.size() > 0)
+                scrobbler.submit(list);
+            r.close();
+            FileWriter w = new FileWriter(file);
+            w.close();
+        }
+    }
 
-	public void clearScrobbleCache() {
-		File file = new File(cacheDir, SUBMISSIONS_FILE);
-		file.delete();
-	}
+    public void clearScrobbleCache() {
+        File file = new File(cacheDir, SUBMISSIONS_FILE);
+        file.delete();
+    }
 
-	public void cacheScrobbles(Collection<ScrobbleData> scrobbles) {
-		cacheScrobbles(scrobbles.toArray(new ScrobbleData[scrobbles.size()]));
-	}
+    public void cacheScrobbles(Collection<ScrobbleData> scrobbles) {
+        cacheScrobbles(scrobbles.toArray(new ScrobbleData[scrobbles.size()]));
+    }
 
-	public void cacheScrobbles(ScrobbleData... scrobbles) {
-		createCache();
-		try {
-			BufferedWriter w = new BufferedWriter(new FileWriter(new File(cacheDir, SUBMISSIONS_FILE), true));
-			for (ScrobbleData scrobble : scrobbles) {
-				w.append(encodeScrobbleData(scrobble));
-				w.newLine();
-			}
-			w.close();
-		} catch (IOException e) {
-			// huh ?
-			//	e.printStackTrace();
-		}
-	}
+    public void cacheScrobbles(ScrobbleData... scrobbles) {
+        createCache();
+        try {
+            BufferedWriter w = new BufferedWriter(new FileWriter(new File(cacheDir, SUBMISSIONS_FILE), true));
+            for (ScrobbleData scrobble : scrobbles) {
+                w.append(encodeScrobbleData(scrobble));
+                w.newLine();
+            }
+            w.close();
+        } catch (IOException e) {
+            // huh ?
+            //	e.printStackTrace();
+        }
+    }
 
-	public List<ScrobbleResult> scrobble(Session session) throws IOException {
-		File file = new File(cacheDir, SUBMISSIONS_FILE);
-		List<ScrobbleResult> result = new ArrayList<ScrobbleResult>();
-		if (file.exists()) {
-			BufferedReader r = new BufferedReader(new FileReader(file));
-			List<ScrobbleData> list = new ArrayList<ScrobbleData>(50);
-			String line;
-			while ((line = r.readLine()) != null) {
-				ScrobbleData d = decodeScrobbleData(line);
-				list.add(d);
-				if (list.size() == 50) {
-					result.addAll(Track.scrobble(list, session));
-					list.clear();
-				}
-			}
-			if (list.size() > 0)
-				result.addAll(Track.scrobble(list, session));
-			r.close();
-			FileWriter w = new FileWriter(file);
-			w.close();
-		}
-		return result;
-	}
+    public List<ScrobbleResult> scrobble(Session session) throws IOException {
+        File file = new File(cacheDir, SUBMISSIONS_FILE);
+        List<ScrobbleResult> result = new ArrayList<ScrobbleResult>();
+        if (file.exists()) {
+            BufferedReader r = new BufferedReader(new FileReader(file));
+            List<ScrobbleData> list = new ArrayList<ScrobbleData>(50);
+            String line;
+            while ((line = r.readLine()) != null) {
+                ScrobbleData d = decodeScrobbleData(line);
+                list.add(d);
+                if (list.size() == 50) {
+                    result.addAll(Track.scrobble(list, session));
+                    list.clear();
+                }
+            }
+            if (list.size() > 0)
+                result.addAll(Track.scrobble(list, session));
+            r.close();
+            FileWriter w = new FileWriter(file);
+            w.close();
+        }
+        return result;
+    }
 
-	private static String encodeScrobbleData(ScrobbleData d) {
-		String artist = StringUtilities.encode(d.getArtist());
-		String track = StringUtilities.encode(d.getTrack());
-		String album = StringUtilities.encode(d.getAlbum());
-		String albumArtist = StringUtilities.encode(d.getAlbumArtist());
-		return String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%b", artist, track, d.getTimestamp(), d.getDuration(), album, albumArtist, d.getMusicBrainzId(),
-				d.getTrackNumber(), d.getStreamId(), d.isChosenByUser());
-	}
+    private static String encodeScrobbleData(ScrobbleData d) {
+        String artist = StringUtilities.encode(d.getArtist());
+        String track = StringUtilities.encode(d.getTrack());
+        String album = StringUtilities.encode(d.getAlbum());
+        String albumArtist = StringUtilities.encode(d.getAlbumArtist());
+        return String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%b", artist, track, d.getTimestamp(), d.getDuration(), album, albumArtist, d.getMusicBrainzId(),
+                d.getTrackNumber(), d.getStreamId(), d.isChosenByUser());
+    }
 
-	private static ScrobbleData decodeScrobbleData(String s) {
-		String[] parts = s.split(";", 10);
-		return new ScrobbleData(StringUtilities.decode(parts[0]), StringUtilities.decode(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]),
-				StringUtilities.decode(parts[4]), StringUtilities.decode(parts[5]), parts[6], Integer.parseInt(parts[7]), parts[8], Boolean.parseBoolean(parts[9]));
-	}
+    private static ScrobbleData decodeScrobbleData(String s) {
+        String[] parts = s.split(";", 10);
+        return new ScrobbleData(StringUtilities.decode(parts[0]), StringUtilities.decode(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]),
+                StringUtilities.decode(parts[4]), StringUtilities.decode(parts[5]), parts[6], Integer.parseInt(parts[7]), parts[8], null, Boolean.parseBoolean(parts[9]));
+    }
 }

@@ -249,6 +249,8 @@ class EditDialogFragment : LoginFragment() {
             return true
         }
 
+        val scrobbleSourcesDao = PanoDb.db.getScrobbleSourcesDao()
+        val scrobbleSource = scrobbleSourcesDao.findPlayer((timeMillis / 1000L) * 1000)
 
         val scrobbleData = ScrobbleData().also {
             it.artist = artist
@@ -256,6 +258,7 @@ class EditDialogFragment : LoginFragment() {
             it.timestamp = (timeMillis / 1000).toInt()
             it.album = album
             it.albumArtist = albumArtist
+            it.pkgName = scrobbleSource?.pkg
         }
 
         if (fetchAlbumAndAlbumArtist) {

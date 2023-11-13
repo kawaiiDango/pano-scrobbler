@@ -11,8 +11,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Parcel
-import androidx.transition.Fade
-import androidx.transition.TransitionManager
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.Menu
@@ -27,7 +25,6 @@ import androidx.annotation.IntRange
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -40,6 +37,8 @@ import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import coil.load
@@ -632,7 +631,7 @@ open class ScrobblesFragment : Fragment(), ItemClickListener, ScrobblesAdapter.S
             })
             listener(
                 onError = { imageRequest, errorResult ->
-                    Stuff.log("Coil err for ${imageRequest.data} : ${errorResult.throwable.message}")
+                    Stuff.logW("Coil err for ${imageRequest.data} : ${errorResult.throwable.message}")
 
                     val swatch = Palette.Swatch(errColor, 1)
                     val palette = Palette.from(listOf(swatch))

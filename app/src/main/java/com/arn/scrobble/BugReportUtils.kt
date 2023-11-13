@@ -4,7 +4,6 @@ import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.LabeledIntent
-import android.media.session.MediaSessionManager
 import android.net.Uri
 import android.os.Build
 import androidx.core.content.ContextCompat
@@ -15,14 +14,14 @@ import java.io.File
 object BugReportUtils {
 
     fun mailLogs() {
-        val activeSessions = try {
-            val sessManager =
-                ContextCompat.getSystemService(App.context, MediaSessionManager::class.java)!!
-            sessManager.getActiveSessions(ComponentName(App.context, NLService::class.java))
-                .joinToString { it.packageName }
-        } catch (e: SecurityException) {
-            "SecurityException"
-        }
+//        val activeSessions = try {
+//            val sessManager =
+//                ContextCompat.getSystemService(App.context, MediaSessionManager::class.java)!!
+//            sessManager.getActiveSessions(ComponentName(App.context, NLService::class.java))
+//                .joinToString { it.packageName }
+//        } catch (e: SecurityException) {
+//            "SecurityException"
+//        }
         var bgRam = -1
         val manager = ContextCompat.getSystemService(App.context, ActivityManager::class.java)!!
         for (proc in manager.runningAppProcesses) {
@@ -42,13 +41,13 @@ object BugReportUtils {
         var text = ""
         text += App.context.getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME + "\n"
         text += "Android " + Build.VERSION.RELEASE + "\n"
-        text += "ROM: " + Build.DISPLAY + "\n"
+//        text += "ROM: " + Build.DISPLAY + "\n"
         text += "Device: " + Build.BRAND + " " + Build.MODEL + " / " + Build.DEVICE + "\n" //Build.PRODUCT is obsolete
 
         val mi = ActivityManager.MemoryInfo()
         manager.getMemoryInfo(mi)
         val megs = mi.totalMem / 1048576L
-        text += "RAM: " + megs + "M \n"
+//        text += "RAM: " + megs + "M \n"
         text += "Background RAM usage: " + bgRam + "M \n"
 
         val dm = App.context.resources.displayMetrics
@@ -59,13 +58,13 @@ object BugReportUtils {
             text += "Background service isn't running\n"
         if (lastExitInfo != null)
             text += "Last exit reason: $lastExitInfo\n"
-        text += "Active Sessions: $activeSessions\n"
+//        text += "Active Sessions: $activeSessions\n"
 
         text += if (App.prefs.proStatus)
             "~~~~~~~~~~~~~~~~~~~~~~~~"
         else
             "------------------------"
-        text += "\n\n[describe the issue]\n"
+        text += "\n\n[Describe the issue]\n[If it is related to scrobbling, mention the media player name]\n"
         //keep the email in english
 
         val log = Stuff.exec("logcat -d")

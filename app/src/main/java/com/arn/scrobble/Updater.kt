@@ -151,7 +151,8 @@ class Updater(
 
     // from job
     fun withNotification() {
-        val notificationManager = ContextCompat.getSystemService(context, NotificationManager::class.java)!!
+        val notificationManager =
+            ContextCompat.getSystemService(context, NotificationManager::class.java)!!
 
         if (!notificationManager.isChannelEnabled(
                 prefs.sharedPreferences,
@@ -220,5 +221,5 @@ data class GithubReleaseAsset(
     val browser_download_url: String
 )
 
-const val githubApiUrl = "https://api.github.com/repos/kawaiiDango/pscrobbler/releases/latest"
+const val githubApiUrl = "https://api.github.com/repos/kawaiiDango/pano-scrobbler/releases/latest"
 const val UPDATE_CHECK_INTERVAL = 60 * 60 * 1000L // 1 hour

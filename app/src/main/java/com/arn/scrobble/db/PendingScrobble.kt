@@ -1,5 +1,6 @@
 package com.arn.scrobble.db
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -22,4 +23,10 @@ data class PendingScrobble(
     var autoCorrected: Int = 0,
     var state: Int = 0,
     var state_timestamp: Long = System.currentTimeMillis(),
+)
+
+data class PendingScrobbleWithSource(
+    @Embedded
+    val pendingScrobble: PendingScrobble,
+    val pkg: String,
 )

@@ -90,6 +90,9 @@ class OnboardingFragment : Fragment(), StepperFormListener {
             .setup(this, onboardingSteps.stepsList)
             .init()
 
+        binding.onboardingPrivacyPolicy.setOnClickListener {
+            Stuff.openInBrowser(getString(R.string.privacy_policy_link))
+        }
     }
 
     private fun fixFocusBug() {

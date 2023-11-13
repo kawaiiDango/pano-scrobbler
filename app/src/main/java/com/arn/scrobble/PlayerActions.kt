@@ -22,6 +22,7 @@ object PlayerActions {
                     Rating.RATING_3_STARS,
                     3F
                 )
+
                 Rating.RATING_4_STARS -> Rating.newStarRating(Rating.RATING_4_STARS, 4F)
                 Rating.RATING_5_STARS -> Rating.newStarRating(Rating.RATING_5_STARS, 5F)
                 Rating.RATING_PERCENTAGE -> Rating.newPercentageRating(100F)
@@ -30,7 +31,7 @@ object PlayerActions {
             if (rating != null)
                 it.transportControls.setRating(rating)
 
-            Stuff.log("Rating type for ${it.packageName}: ${it.ratingType}")
+            Stuff.logD("Rating type for ${it.packageName}: ${it.ratingType}")
         }
     }
 

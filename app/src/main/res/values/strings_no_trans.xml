@@ -4,18 +4,16 @@
     <string name="app_name" translatable="false">Pano Scrobbler</string>
     <string name="email" translatable="false">kawaiiDango@protonmail.com</string>
     <string name="tv_link" translatable="false">https://bit.ly/Pscrtv</string>
-    <string name="github_link" translatable="false">https://github.com/kawaiiDango/pScrobbler</string>
+    <string name="github_link" translatable="false">https://github.com/kawaiiDango/pano-scrobbler</string>
     <string name="crowdin_link" translatable="false">https://crowdin.com/project/pscrobbler</string>
     <string name="privacy_policy_link" translatable="false">https://telegra.ph/Pano-Scrobbler-Privacy-Policy-08-17</string>
     <string name="faq_link" translatable="false">https://telegra.ph/Pano-Scrobbler-FAQ-05-30</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>
     <string name="gnufm" translatable="false">GNU FM</string>
-    <string name="listenbrainz" translatable="false">Listenbrainz</string>
+    <string name="listenbrainz" translatable="false">ListenBrainz</string>
     <string name="pixel_np" translatable="false">Pixel Now Playing</string>
     <string name="loading" translatable="false">…</string>
-
-<!--    <string name="mtrl_picker_cancel" description="Button text to indicate that the widget will ignore the user's selection [CHAR_LIMIT=16]" translatable="false">Reset</string>-->
     <string name="export_file_name" translatable="false" formatted="true">pano_scrobbler_export_%1$s.json</string>
     <string name="edit_case_sensitive_aa" translatable="false">Aa</string>
 
@@ -26,10 +24,8 @@
     <string name="preset_ep" translatable="false">EP</string>
     <string name="artist_title" formatted="true" translatable="false">%1$s — %2$s</string>
     <string name="sidebar_visibility" translatable="false">gone</string>
-    <string name="charts_num_text" formatted="true" translatable="false"
-        comment="%1= number, %2= List text (e.g. 1. Text)"
-        >%1$d. %2$s</string>
-<!-- strings for dev only stuff  -->
+    <string name="charts_num_text" formatted="true" translatable="false" comment="%1= number, %2= List text (e.g. 1. Text)">%1$d. %2$s</string>
+    <!-- strings for dev only stuff  -->
     <string name="song_search_url" translatable="false">Song search url (use $artist, $title)</string>
     <string name="force_exception" translatable="false">Force log an exception</string>
     <string name="debug_menu" translatable="false">Shrine maiden\'s menu</string>

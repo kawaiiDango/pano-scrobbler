@@ -96,15 +96,17 @@ class PendingScrobblesWorker(
 
         val scrobbleDataToEntry = mutableMapOf<ScrobbleData, PendingScrobble>()
         entries.forEach {
-            val scrobbleData = ScrobbleData()
-            scrobbleData.artist = it.artist
-            scrobbleData.album = it.album
-            scrobbleData.track = it.track
-            scrobbleData.albumArtist = it.albumArtist
-            scrobbleData.timestamp = (it.timestamp / 1000).toInt() // in secs
-            if (it.duration > 10 * 1000)
-                scrobbleData.duration = (it.duration / 1000).toInt() // in secs
-            scrobbleDataToEntry[scrobbleData] = it
+            ScrobbleData().apply {
+                artist = it.pendingScrobble.artist
+                album = it.pendingScrobble.album
+                track = it.pendingScrobble.track
+                albumArtist = it.pendingScrobble.albumArtist
+                timestamp = (it.pendingScrobble.timestamp / 1000).toInt() // in secs
+                if (it.pendingScrobble.duration > 10 * 1000)
+                    duration = (it.pendingScrobble.duration / 1000).toInt() // in secs
+                pkgName = it.pkg
+                scrobbleDataToEntry[this] = it.pendingScrobble
+            }
         }
         if (scrobbleDataToEntry.isNotEmpty()) {
             try {
@@ -149,7 +151,7 @@ class PendingScrobblesWorker(
 
                 scrobbleResults.forEach { (scrobblable, result) ->
                     if (!result.isSuccessful) {
-                        Stuff.log(
+                        Stuff.logW(
                             "OfflineScrobble: err for " + scrobblable.userAccount.type.ordinal +
                                     ": " + result
                         )
@@ -158,7 +160,7 @@ class PendingScrobblesWorker(
                 }
 
             } catch (e: SAXException) {
-                Stuff.log("OfflineScrobble: SAXException " + e.message)
+                Stuff.logW("OfflineScrobble: SAXException " + e.message)
                 if (BATCH_SIZE != 1) {
                     BATCH_SIZE = 1
                     done = true //try again
@@ -168,7 +170,7 @@ class PendingScrobblesWorker(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Stuff.log("OfflineScrobble: n/w err - ")
+                Stuff.logW("OfflineScrobble: n/w err - ")
                 Timber.tag(Stuff.TAG).w(e)
                 done = false
                 return done
@@ -217,7 +219,7 @@ class PendingScrobblesWorker(
             }
             return true
         } catch (e: Exception) {
-            Stuff.log("OfflineScrobble: n/w err submitLoves - " + e.message)
+            Stuff.logW("OfflineScrobble: n/w err submitLoves - " + e.message)
             return false
         }
     }

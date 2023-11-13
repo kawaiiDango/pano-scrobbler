@@ -381,7 +381,7 @@ public class FileSystemCacheNio extends Cache implements ScrobbleCache {
     private static ScrobbleData decodeScrobbleData(String s) {
         String[] parts = s.split(";", 10);
         return new ScrobbleData(StringUtilities.decode(parts[0]), StringUtilities.decode(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]),
-                StringUtilities.decode(parts[4]), StringUtilities.decode(parts[5]), parts[6], Integer.parseInt(parts[7]), parts[8], Boolean.parseBoolean(parts[9]));
+                StringUtilities.decode(parts[4]), StringUtilities.decode(parts[5]), parts[6], Integer.parseInt(parts[7]), parts[8], null, Boolean.parseBoolean(parts[9]));
     }
 
     private static void tryRelease(FileLock lock) {

@@ -58,6 +58,7 @@ data class PlayingTrackInfo(
         it.album = album
         it.albumArtist = albumArtist
         it.timestamp = (playStartTime / 1000).toInt()
+        it.pkgName = packageName
 
         val durationSecs = (durationMillis / 1000).toInt() // in secs
         if (durationSecs >= 30) it.duration = durationSecs

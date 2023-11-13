@@ -14,6 +14,7 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserSerializable
+import com.arn.scrobble.ui.PackageName
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.CacheInterceptor
@@ -104,6 +105,9 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
         val listen = ListenBrainzListen(listenType,
             scrobbleDatas.map { scrobbleData ->
+
+                val pkgName = PackageName(scrobbleData.pkgName)
+
                 ListenBrainzPayload(
                     if (listenType != "playing_now") scrobbleData.timestamp else null,
                     ListenBrainzTrackMetadata(
@@ -112,7 +116,8 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         track_name = scrobbleData.track,
                         additional_info = ListenBrainzAdditionalInfo(
                             duration_ms = if (scrobbleData.duration > 30) scrobbleData.duration * 1000 else null,
-                            media_player = null,
+//                            media_player = pkgName.englishLabel,
+//                            media_player_version = pkgName.version,
                             submission_client = App.context.getString(R.string.app_name),
                             submission_client_version = BuildConfig.VERSION_NAME,
                         )
@@ -186,10 +191,10 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             else
                 null
 
-            Stuff.log("msid: $msid mbid: $mbid")
+            Stuff.logD("msid: $msid mbid: $mbid")
 
             if (msid == null && mbid == null) {
-                Stuff.log("Track mbid not found, skipping")
+                Stuff.logW("Track mbid not found, skipping feedback")
                 return true // ignore
             }
 

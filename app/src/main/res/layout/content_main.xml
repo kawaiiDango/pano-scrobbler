@@ -56,7 +56,7 @@
                     android:contentDescription="@string/album_art"
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
-                    tools:srcCompat="@drawable/vd_wave" />
+                    tools:srcCompat="@drawable/vd_wave_simple_filled" />
 
                 <View
                     android:id="@+id/hero_dark_overlay_top"
@@ -67,6 +67,7 @@
                     android:rotation="180"
                     android:visibility="gone"
                     android:background="@drawable/gradient_overlay_hero" />
+
                 <View
                     android:id="@+id/hero_dark_overlay_bottom"
                     android:layout_width="match_parent"

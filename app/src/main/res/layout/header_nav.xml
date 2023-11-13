@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearance="@style/roundedCorners"
-        tools:srcCompat="@drawable/vd_wave" />
+        tools:srcCompat="@drawable/vd_wave_simple_filled" />
 
     <TextView
         android:id="@+id/nav_name"

@@ -1114,7 +1114,7 @@ class LFMRequester(
                     }
                     if (failedTextLines.isNotEmpty()) {
                         val failedText = failedTextLines.joinToString("<br>\n")
-                        Stuff.log("failedText= $failedText")
+                        Stuff.logW("failedText= $failedText")
                         val i = if (ignored) {
                             Intent(NLService.iBAD_META_S)
                                 .setPackage(context.packageName)
@@ -1212,7 +1212,7 @@ class LFMRequester(
                 runCatching {
                     val succ = it.delete(track)
                     if (!succ)
-                        Stuff.log("Delete failed for " + it::class.java.name)
+                        Stuff.logW("Delete failed for " + it::class.java.name)
                     assert(succ)
                 }
             }

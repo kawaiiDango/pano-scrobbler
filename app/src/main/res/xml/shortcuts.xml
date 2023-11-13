@@ -11,7 +11,7 @@
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"
             android:targetClass="com.arn.scrobble.MainActivity"
-            android:data="pscrobbler://screen/settings"/>
+            android:data="pano-scrobbler://screen/settings" />
     </shortcut>
     <shortcut
         android:shortcutId="rec"
@@ -24,7 +24,7 @@
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"
             android:targetClass="com.arn.scrobble.MainActivity"
-            android:data="pscrobbler://screen/identify"/>
+            android:data="pano-scrobbler://screen/identify" />
     </shortcut>
     <shortcut
         android:shortcutId="search"
@@ -37,6 +37,6 @@
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.arn.scrobble"
             android:targetClass="com.arn.scrobble.MainActivity"
-            android:data="pscrobbler://screen/search"/>
+            android:data="pano-scrobbler://screen/search" />
     </shortcut>
 </shortcuts>

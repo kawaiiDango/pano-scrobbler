@@ -150,7 +150,7 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             }
         } catch (e: JSONException) {
             statusCode = -1
-            Stuff.log(result)
+            Stuff.logW(result)
             e.printStackTrace()
         }
 
@@ -158,7 +158,8 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
         when (statusCode) {
             0 -> {
 //                binding.recImg.setImageResource(R.drawable.vd_check_simple)
-                statusText.value = "✅ " + App.context.getString(R.string.artist_title, artist, title)
+                statusText.value =
+                    "✅ " + App.context.getString(R.string.artist_title, artist, title)
                 scrobbleEvent.value = Unit
 
                 val trackInfo = PlayingTrackInfo(
@@ -186,7 +187,7 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             2001 -> statusText.value = App.context.getString(R.string.recording_failed)
             3003, 3015 -> rateLimitedEvent.value = Unit
             else -> {
-                Stuff.log("rec error: $statusCode - $statusMsg")
+                Stuff.logW("rec error: $statusCode - $statusMsg")
                 statusText.value = App.context.getString(R.string.network_error)
             }
         }

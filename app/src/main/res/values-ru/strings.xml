@@ -67,10 +67,10 @@
         <item quantity="other">%1$d совпадения</item>
     </plurals>
     <plurals name="num_simple_edits">
-        <item quantity="one">%1$s редактирование</item>
-        <item quantity="few">%1$s редактирования</item>
-        <item quantity="many">%1$s редактирований</item>
-        <item quantity="other">%1$s редактирования</item>
+        <item quantity="one">%1$s правка</item>
+        <item quantity="few">%1$s правки</item>
+        <item quantity="many">%1$s правок</item>
+        <item quantity="other">%1$s правок</item>
     </plurals>
     <plurals name="num_regex_edits">
         <item quantity="one">%1$s шаблон редактирования</item>

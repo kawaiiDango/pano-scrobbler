@@ -147,12 +147,6 @@ class BillingRepository private constructor(private val application: Application
                 }
             } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
                 if (Tokens.PRO_PRODUCT_ID in purchase.products) {
-                    Timber.tag(LOG_TAG).d(
-                        "Received a pending purchase from " + Stuff.myRelativeTime(
-                            application,
-                            purchase.purchaseTime
-                        )
-                    )
                     proPendingSinceLd.postValue(purchase.purchaseTime)
                 }
             }

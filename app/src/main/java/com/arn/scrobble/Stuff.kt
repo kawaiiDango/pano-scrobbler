@@ -284,19 +284,21 @@ object Stuff {
         Timber.tag(TAG).i(s)
     }
 
-    fun logD(s: String) {
+    fun logD(s: () -> String) {
         if (BuildConfig.DEBUG && false)
-            Timber.tag(TAG).d(s)
+            Timber.tag(TAG).d(s())
     }
 
     fun logW(s: String) {
         Timber.tag(TAG).w(s)
     }
 
-    fun timeIt(s: String) {
-        val now = System.currentTimeMillis()
-        Timber.tag(TAG + "_time").d("[${now - timeIt}] $s")
-        timeIt = now
+    fun timeIt(s: () -> String) {
+        if (BuildConfig.DEBUG) {
+            val now = System.currentTimeMillis()
+            Timber.tag(TAG + "_time").d("[${now - timeIt}] ${s()}")
+            timeIt = now
+        }
     }
 
     fun Bundle?.dump(): String {
@@ -762,7 +764,7 @@ object Stuff {
                 value = getRating(it)?.toString()
             "$it: $value"
         }
-        logD("MediaMetadata\n$data")
+        logD { "MediaMetadata\n$data" }
     }
 
     fun Intent.putSingle(parcelable: Parcelable): Intent {

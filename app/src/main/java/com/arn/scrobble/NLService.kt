@@ -350,7 +350,7 @@ class NLService : NotificationListenerService() {
                 val notiText = n.extras.getString(notiField) ?: return
                 val trackInfo = packageTrackMap[sbn.packageName]
 
-                Stuff.logD("${this::scrobbleFromNoti.name} $notiText removed=$removed")
+                Stuff.logD { "${this::scrobbleFromNoti.name} $notiText removed=$removed" }
 
                 if (removed) {
                     scrobbleHandler.remove(trackInfo?.hash ?: return, trackInfo.packageName)
@@ -1075,7 +1075,7 @@ class NLService : NotificationListenerService() {
         fun remove(hash: Int, notificationPackageNameToRemove: String? = null) {
             if (hash == lockedHash) return
 
-            Stuff.logD("$hash from $notificationPackageNameToRemove cancelled")
+            Stuff.logD { "$hash from $notificationPackageNameToRemove cancelled" }
             tracksCopyPQ.removeAll { it.hash == hash }
             sessListener?.findTrackInfoByHash(hash)?.isPlaying = false
             if (notificationPackageNameToRemove != null)

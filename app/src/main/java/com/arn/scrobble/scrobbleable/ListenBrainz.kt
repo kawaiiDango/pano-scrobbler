@@ -191,7 +191,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             else
                 null
 
-            Stuff.logD("msid: $msid mbid: $mbid")
+            Stuff.logD { "msid: $msid mbid: $mbid" }
 
             if (msid == null && mbid == null) {
                 Stuff.logW("Track mbid not found, skipping feedback")

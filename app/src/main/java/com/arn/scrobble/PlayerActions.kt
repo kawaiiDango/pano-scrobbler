@@ -31,7 +31,7 @@ object PlayerActions {
             if (rating != null)
                 it.transportControls.setRating(rating)
 
-            Stuff.logD("Rating type for ${it.packageName}: ${it.ratingType}")
+            Stuff.logD { "Rating type for ${it.packageName}: ${it.ratingType}" }
         }
     }
 

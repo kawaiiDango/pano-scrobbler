@@ -45,7 +45,7 @@ object ListenAlong {
 
                 val spotifyLink = "https://open.spotify.com/track/$spotifyId"
 
-                Stuff.logD("spotifyLink: $spotifyLink")
+                Stuff.logD { "spotifyLink: $spotifyLink" }
 
                 val spotifyIntent = Intent(Intent.ACTION_VIEW, Uri.parse(spotifyLink))
                     .setPackage(Stuff.PACKAGE_SPOTIFY)

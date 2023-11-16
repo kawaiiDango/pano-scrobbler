@@ -28,5 +28,5 @@ data class PendingScrobble(
 data class PendingScrobbleWithSource(
     @Embedded
     val pendingScrobble: PendingScrobble,
-    val pkg: String,
+    val pkg: String?,
 )

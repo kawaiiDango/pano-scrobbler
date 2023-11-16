@@ -152,7 +152,7 @@ class PendingScrobblesWorker(
                 scrobbleResults.forEach { (scrobblable, result) ->
                     if (!result.isSuccessful) {
                         Stuff.logW(
-                            "OfflineScrobble: err for " + scrobblable.userAccount.type.ordinal +
+                            "PendingScrobblesWorker: err for " + scrobblable.userAccount.type.ordinal +
                                     ": " + result
                         )
                         done = false
@@ -160,7 +160,7 @@ class PendingScrobblesWorker(
                 }
 
             } catch (e: SAXException) {
-                Stuff.logW("OfflineScrobble: SAXException " + e.message)
+                Stuff.logW("PendingScrobblesWorker: SAXException " + e.message)
                 if (BATCH_SIZE != 1) {
                     BATCH_SIZE = 1
                     done = true //try again
@@ -170,7 +170,7 @@ class PendingScrobblesWorker(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Stuff.logW("OfflineScrobble: n/w err - ")
+                Stuff.logW("PendingScrobblesWorker: n/w err - ")
                 Timber.tag(Stuff.TAG).w(e)
                 done = false
                 return done

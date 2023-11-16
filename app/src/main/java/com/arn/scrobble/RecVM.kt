@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import timber.log.Timber
 
 class RecVM(application: Application) : AndroidViewModel(application), IACRCloudListener {
 
@@ -150,8 +151,7 @@ class RecVM(application: Application) : AndroidViewModel(application), IACRCloud
             }
         } catch (e: JSONException) {
             statusCode = -1
-            Stuff.logW(result)
-            e.printStackTrace()
+            Timber.tag(Stuff.TAG).w(e)
         }
 
 

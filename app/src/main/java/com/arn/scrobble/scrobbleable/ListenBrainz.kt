@@ -14,7 +14,6 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.friends.UserAccountSerializable
 import com.arn.scrobble.friends.UserAccountTemp
 import com.arn.scrobble.friends.UserSerializable
-import com.arn.scrobble.ui.PackageName
 import de.umass.lastfm.Album
 import de.umass.lastfm.Artist
 import de.umass.lastfm.CacheInterceptor
@@ -106,7 +105,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         val listen = ListenBrainzListen(listenType,
             scrobbleDatas.map { scrobbleData ->
 
-                val pkgName = PackageName(scrobbleData.pkgName)
+//                val pkgName = scrobbleData.pkgName?.let { PackageName(it) }
 
                 ListenBrainzPayload(
                     if (listenType != "playing_now") scrobbleData.timestamp else null,

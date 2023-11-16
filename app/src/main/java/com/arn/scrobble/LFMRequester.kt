@@ -1375,7 +1375,6 @@ class LFMRequester(
                 if (artistInfo == null && errCode != null && errCode != 6 && errCode != 7)
                     return artist
 
-                Stuff.log("artistInfo: $artistInfo")
                 //nw err throws an exception
                 if (artistInfo != null && artistInfo.name?.trim() != "") {
                     if (artistInfo.listeners == -1 || artistInfo.listeners >= Stuff.MIN_LISTENER_COUNT) {

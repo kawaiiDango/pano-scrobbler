@@ -14,14 +14,6 @@ import java.io.File
 object BugReportUtils {
 
     fun mailLogs() {
-//        val activeSessions = try {
-//            val sessManager =
-//                ContextCompat.getSystemService(App.context, MediaSessionManager::class.java)!!
-//            sessManager.getActiveSessions(ComponentName(App.context, NLService::class.java))
-//                .joinToString { it.packageName }
-//        } catch (e: SecurityException) {
-//            "SecurityException"
-//        }
         var bgRam = -1
         val manager = ContextCompat.getSystemService(App.context, ActivityManager::class.java)!!
         for (proc in manager.runningAppProcesses) {
@@ -41,24 +33,16 @@ object BugReportUtils {
         var text = ""
         text += App.context.getString(R.string.app_name) + " v" + BuildConfig.VERSION_NAME + "\n"
         text += "Android " + Build.VERSION.RELEASE + "\n"
-//        text += "ROM: " + Build.DISPLAY + "\n"
         text += "Device: " + Build.BRAND + " " + Build.MODEL + " / " + Build.DEVICE + "\n" //Build.PRODUCT is obsolete
 
         val mi = ActivityManager.MemoryInfo()
         manager.getMemoryInfo(mi)
-        val megs = mi.totalMem / 1048576L
-//        text += "RAM: " + megs + "M \n"
         text += "Background RAM usage: " + bgRam + "M \n"
-
-        val dm = App.context.resources.displayMetrics
-
-        text += "Screen: " + dm.widthPixels + " x " + dm.heightPixels + ",  " + dm.densityDpi + " DPI\n"
 
         if (!Stuff.isScrobblerRunning())
             text += "Background service isn't running\n"
         if (lastExitInfo != null)
             text += "Last exit reason: $lastExitInfo\n"
-//        text += "Active Sessions: $activeSessions\n"
 
         text += if (App.prefs.proStatus)
             "~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -76,11 +60,6 @@ object BugReportUtils {
                 "${BuildConfig.APPLICATION_ID}.fileprovider",
                 logFile
             )
-
-//        PendingScrobblesDb.destroyInstance()
-//        val dbFile = File(filesDir, PendingScrobblesDb.tableName + ".sqlite")
-//        getDatabasePath(PendingScrobblesDb.tableName).copyTo(dbFile, true)
-//        val dbUri = FileProvider.getUriForFile(this, "com.arn.scrobble.fileprovider", dbFile)
 
         val emailIntent = Intent(
             Intent.ACTION_SENDTO, Uri.fromParts(

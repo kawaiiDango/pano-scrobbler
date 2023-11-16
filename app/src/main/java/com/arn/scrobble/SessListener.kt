@@ -10,7 +10,6 @@ import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.media.MediaMetadataCompat
 import com.arn.scrobble.Stuff.dump
 import com.arn.scrobble.Stuff.isUrlOrDomain
@@ -156,7 +155,7 @@ class SessListener(
             val (token, pair) = it.next()
             val (controller, callback) = pair
             if (token !in tokensToKeep || packageNamesToKeep?.contains(pair.first.packageName) == false) {
-                callback.stop()
+                callback.pause()
                 controller.unregisterCallback(callback)
                 it.remove()
             }
@@ -176,12 +175,8 @@ class SessListener(
         private var isRemotePlayback = false
         var isMuted = false
 
-        private val syntheticStateHandler = Handler(scrobbleHandler.looper)
-
         fun scrobble() {
             Stuff.logD { "playing: timePlayed=${trackInfo.timePlayed} ${trackInfo.title}" }
-
-            scheduleSyntheticStateIfNeeded()
 
             trackInfo.playStartTime = System.currentTimeMillis()
             scrobbleHandler.remove(trackInfo.lastScrobbleHash)
@@ -198,20 +193,6 @@ class SessListener(
             // add to seen packages
             if (trackInfo.packageName !in prefs.seenPackages) {
                 prefs.seenPackages += trackInfo.packageName
-            }
-        }
-
-        private fun scheduleSyntheticStateIfNeeded() {
-            if (trackInfo.packageName in Stuff.needSyntheticStates && trackInfo.durationMillis > 0) {
-                syntheticStateHandler.removeCallbacksAndMessages(null)
-                syntheticStateHandler.postDelayed({
-                    onPlaybackStateChanged(
-                        PlaybackState.Builder()
-                            .setState(PlaybackState.STATE_PLAYING, 0, 1f)
-                            .setErrorMessage("synthetic")
-                            .build()
-                    )
-                }, trackInfo.durationMillis)
             }
         }
 
@@ -381,7 +362,6 @@ class SessListener(
             val isPossiblyAtStart = pos < Stuff.START_POS_LIMIT
 
             if (lastState == state /* bandcamp does this */ &&
-                playbackState.errorMessage != "synthetic" &&
                 !(state == PlaybackState.STATE_PLAYING && isPossiblyAtStart)
             )
                 return
@@ -416,8 +396,6 @@ class SessListener(
                             ((pos >= 0L && isPossiblyAtStart) ||
                                     trackInfo.hash != trackInfo.lastSubmittedScrobbleHash)
                         ) {
-                            if (playbackState.errorMessage == "synthetic")
-                                Stuff.logD { "synthetic" }
                             scrobble()
                         }
                     }
@@ -434,7 +412,7 @@ class SessListener(
 
         override fun onSessionDestroyed() {
             Stuff.logD { "onSessionDestroyed ${trackInfo.packageName}" }
-            stop()
+            pause()
             synchronized(this@SessListener) {
                 controllersMap.remove(token)
                     ?.first
@@ -449,16 +427,10 @@ class SessListener(
                 else
                     trackInfo.timePlayed = 0
             }
-            if (trackInfo.packageName in Stuff.needSyntheticStates)
-                syntheticStateHandler.removeCallbacksAndMessages(null)
+
             scrobbleHandler.remove(trackInfo.lastScrobbleHash, trackInfo.packageName)
             if (isMuted)
                 unmute(clearMutedHash = false)
-        }
-
-        fun stop() {
-            pause()
-            syntheticStateHandler.removeCallbacksAndMessages(null)
         }
 
         private fun unmute(clearMutedHash: Boolean) {

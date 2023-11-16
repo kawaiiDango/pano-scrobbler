@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.LFMRequester
+import com.arn.scrobble.Stuff
 import com.arn.scrobble.pref.HistoryPref
 import de.umass.lastfm.MusicEntry
 
@@ -25,8 +26,8 @@ class UserTagsVM : ViewModel() {
     fun addTag(newTags: String) {
         tags.value = tags.value?.also { it + splitTags(newTags) }
 
-        // ignore play store test string
-        if (newTags == "text") return
+        if (Stuff.isTestLab)
+            return
 
         LFMRequester(viewModelScope).addUserTagsForEntry(entry, newTags)
     }

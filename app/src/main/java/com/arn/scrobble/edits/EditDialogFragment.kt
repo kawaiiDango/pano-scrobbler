@@ -39,7 +39,6 @@ import com.arn.scrobble.scrobbleable.AccountType
 import com.arn.scrobble.scrobbleable.Lastfm
 import com.arn.scrobble.scrobbleable.ListenBrainz
 import com.arn.scrobble.scrobbleable.Scrobblables
-import com.arn.scrobble.ui.UiUtils.toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import de.umass.lastfm.Track
@@ -249,16 +248,13 @@ class EditDialogFragment : LoginFragment() {
             return true
         }
 
-        val scrobbleSourcesDao = PanoDb.db.getScrobbleSourcesDao()
-        val scrobbleSource = scrobbleSourcesDao.findPlayer((timeMillis / 1000L) * 1000)
-
         val scrobbleData = ScrobbleData().also {
             it.artist = artist
             it.track = track
             it.timestamp = (timeMillis / 1000).toInt()
             it.album = album
             it.albumArtist = albumArtist
-            it.pkgName = scrobbleSource?.pkg
+            it.pkgName = args.packageName
         }
 
         if (fetchAlbumAndAlbumArtist) {

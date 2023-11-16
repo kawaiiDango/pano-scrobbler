@@ -121,12 +121,12 @@ class LastfmUnscrobbler {
                     success = JSONObject(respStr).getBoolean("result")
 
                     if (success)
-                        Stuff.log("LastfmUnscrobbler unscrobbled: $track")
+                        Stuff.log("LastfmUnscrobbler unscrobbled")
                 } else if (resp.code == 403) {
                     clearCookies()
                     throw RuntimeException("csrf token invalidated")
                 } else {
-                    Stuff.logW("LastfmUnscrobbler: error unscrobbling: " + resp.code + " response: " + respStr)
+                    Stuff.logW("LastfmUnscrobbler: error unscrobbling: " + resp.code)
                 }
             }
 

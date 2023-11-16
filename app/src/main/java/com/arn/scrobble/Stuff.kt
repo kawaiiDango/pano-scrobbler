@@ -26,6 +26,7 @@ import android.os.Environment
 import android.os.Parcelable
 import android.os.Process
 import android.provider.MediaStore
+import android.provider.Settings
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import android.text.format.DateUtils
 import android.view.InputDevice
@@ -165,8 +166,6 @@ object Stuff {
     const val CHANNEL_SHAZAM = "auto_shazam_v2"
     const val PACKAGE_XIAMI = "fm.xiami.main"
     const val PACKAGE_PANDORA = "com.pandora.android"
-    const val PACKAGE_BLACKPLAYER = "com.musicplayer.blackplayerfree"
-    const val PACKAGE_BLACKPLAYEREX = "com.kodarkooperativet.blackplayerex"
     const val PACKAGE_SONOS = "com.sonos.acr"
     const val PACKAGE_SONOS2 = "com.sonos.acr2"
     const val PACKAGE_DIFM = "com.audioaddict.di"
@@ -214,10 +213,6 @@ object Stuff {
         "app.revanced.android.apps.youtube.music",
     )
 
-    val needSyntheticStates = setOf<String>(
-//        PACKAGE_BLACKPLAYER,
-//        PACKAGE_BLACKPLAYEREX,
-    )
     val PACKAGES_PIXEL_NP = setOf(
         PACKAGE_PIXEL_NP,
         PACKAGE_PIXEL_NP_R,
@@ -269,7 +264,14 @@ object Stuff {
             return PendingIntent.FLAG_UPDATE_CURRENT
         }
 
-    val isWindows11 = Build.BOARD == "windows"
+    val isWindows11 by lazy { Build.BOARD == "windows" }
+    
+    val isTestLab by lazy {
+        Settings.System.getString(
+            App.context.contentResolver,
+            "firebase.test.lab"
+        ) == "true"
+    }
 
     val countryCodesMap by lazy {
         val countries = hashMapOf<String, String>()

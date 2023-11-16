@@ -106,17 +106,14 @@ object Security {
             signatureAlgorithm.initVerify(publicKey)
             signatureAlgorithm.update(signedData.toByteArray())
             if (!signatureAlgorithm.verify(signatureBytes)) {
-                Timber.tag(TAG).w("Signature verification failed...")
                 return false
             }
             return true
         } catch (e: NoSuchAlgorithmException) {
             // "RSA" is guaranteed to be available.
             throw RuntimeException(e)
-        } catch (e: InvalidKeyException) {
-            Timber.tag(TAG).w("Invalid key specification.")
-        } catch (e: SignatureException) {
-            Timber.tag(TAG).w("Signature exception.")
+        } catch (_: InvalidKeyException) {
+        } catch (_: SignatureException) {
         }
         return false
     }

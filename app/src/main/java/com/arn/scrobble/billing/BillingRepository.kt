@@ -32,6 +32,7 @@ class BillingRepository private constructor(private val application: Application
     val proStatusLd by lazy { MutableLiveData(prefs.proStatus) }
     val proPendingSinceLd by lazy { MutableLiveData(0L) }
     val proProductDetailsLd by lazy { MutableLiveData<ProductDetails>() }
+    private var reconnectCount = 0
 
     fun startDataSourceConnections() {
         playStoreBillingClient = BillingClient.newBuilder(application.applicationContext)
@@ -45,14 +46,21 @@ class BillingRepository private constructor(private val application: Application
         playStoreBillingClient.endConnection()
     }
 
+    @Synchronized
     private fun retryBillingConnectionWithExponentialBackoff() {
-        handler.postDelayed(
-            { playStoreBillingClient.startConnection(this@BillingRepository) },
-            reconnectMilliseconds
-        )
+        if (reconnectCount >= RECONNECT_MAX_TIMES) {
+            return
+        }
+
         reconnectMilliseconds = min(
             reconnectMilliseconds * 2,
             RECONNECT_TIMER_MAX_TIME_MILLISECONDS
+        )
+        reconnectCount++
+
+        handler.postDelayed(
+            { playStoreBillingClient.startConnection(this@BillingRepository) },
+            reconnectMilliseconds
         )
     }
 
@@ -61,6 +69,7 @@ class BillingRepository private constructor(private val application: Application
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
                 handler.removeCallbacksAndMessages(null)
+                reconnectCount = 0
                 reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS
                 fetchProductDetails(Tokens.PRO_PRODUCT_ID)
                 queryPurchasesAsync()
@@ -268,7 +277,7 @@ class BillingRepository private constructor(private val application: Application
                 }
 
                 else -> {
-                    Timber.tag(LOG_TAG).e(billingResult.debugMessage)
+                    Timber.tag(LOG_TAG).d(billingResult.debugMessage)
                 }
             }
         }
@@ -328,7 +337,7 @@ class BillingRepository private constructor(private val application: Application
             }
 
             else -> {
-                Timber.tag(LOG_TAG).i(billingResult.debugMessage)
+                Timber.tag(LOG_TAG).d(billingResult.debugMessage)
             }
         }
     }
@@ -339,6 +348,7 @@ class BillingRepository private constructor(private val application: Application
 
         private const val RECONNECT_TIMER_START_MILLISECONDS = 1L * 1000L
         private const val RECONNECT_TIMER_MAX_TIME_MILLISECONDS = 1000L * 60L * 15L // 15 minutes
+        private const val RECONNECT_MAX_TIMES = 10
 
         @Volatile
         private var INSTANCE: BillingRepository? = null

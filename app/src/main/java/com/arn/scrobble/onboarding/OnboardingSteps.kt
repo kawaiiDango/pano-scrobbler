@@ -227,8 +227,6 @@ class OnboardingSteps(private val fragment: OnboardingFragment) {
                         intent,
                         PackageManager.MATCH_DEFAULT_ONLY
                     ) != null
-                    &&
-                    !Stuff.isWindows11 // workaround until MS fixes it
                 ) {
                     context.startActivity(intent)
                     if (Stuff.isTv)

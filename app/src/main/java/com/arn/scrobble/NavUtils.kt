@@ -334,18 +334,13 @@ object NavUtils {
                                 }
                             }
 
-                            binding.pager.addOnPageChangeListener(object : OnPageChangeListener {
-                                var first = true
+                            val onPageChangeListener = object : OnPageChangeListener {
 
                                 override fun onPageScrolled(
                                     position: Int,
                                     positionOffset: Float,
                                     positionOffsetPixels: Int
                                 ) {
-                                    if (first && positionOffset == 0f && positionOffsetPixels == 0) {
-                                        onPageSelected(position)
-                                        first = false
-                                    }
                                 }
 
                                 override fun onPageSelected(position: Int) {
@@ -365,7 +360,9 @@ object NavUtils {
 
                                 override fun onPageScrollStateChanged(state: Int) {}
                             }
-                            )
+
+                            binding.pager.addOnPageChangeListener(onPageChangeListener)
+                            onPageChangeListener.onPageSelected(binding.pager.currentItem)
 
                             arguments?.getInt(Stuff.ARG_TAB, -1)
                                 ?.coerceAtMost(adapter.count - 1)
@@ -391,7 +388,9 @@ object NavUtils {
                         activityBinding.bottomNav.slide(false)
                         activityBinding.bottomNav.visibility = View.GONE
                         source.lifecycle.removeObserver(this)
-                        activityViewModel.destroyEventPending.release()
+
+                        if (activityViewModel.destroyEventPending.availablePermits == 0)
+                            activityViewModel.destroyEventPending.release()
                     }
 
                     else -> {}

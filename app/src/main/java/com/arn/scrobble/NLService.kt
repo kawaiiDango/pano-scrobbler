@@ -1024,18 +1024,16 @@ class NLService : NotificationListenerService() {
                 val delayMillisFraction = if (trackInfo.durationMillis > 0)
                     (trackInfo.durationMillis * delayFraction).toLong()
                 else
-                    Long.MAX_VALUE // deal with negative or 0 delay
+                    Long.MAX_VALUE
 
                 finalDelay = min(delayMillisFraction, delayMillis)
+                    .coerceAtLeast(10 * 1000) // don't scrobble < 10 seconds
 
-                if (finalDelay - trackInfo.timePlayed > 1000) {
-                    finalDelay -= trackInfo.timePlayed
-                }
+                finalDelay = (finalDelay - trackInfo.timePlayed)
+                    .coerceAtLeast(1000)// deal with negative or 0 delay
             } else {
                 finalDelay = fixedDelay
             }
-
-            finalDelay = finalDelay.coerceAtLeast(10 * 1000) // don't scrobble < 10 seconds
 
             val submitTime = SystemClock.elapsedRealtime() + finalDelay
             trackInfo.scrobbleElapsedRealtime = submitTime

@@ -267,6 +267,11 @@
     <string name="edit_all" comment="All occurrences of a pattern">Tous</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Extraire</string>
     <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Nommez vos groupes de capture <i>morceau, album, artiste</i> ou <i>artiste de l\'album</i> pour les extraire d\'autres champs</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">par exemple pour échanger l\'artiste et le titre, vous définiriez l\'expression régulière de l\'artiste en tant que (?&lt;track&gt;.*) et celle de la piste en tant que (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières devraient au moins contenir ces groupes de capture : \"track\", \"artist\"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">Vos expressions régulières contiennent plus d\'un groupe de capture \"%1$s\", ce qui n\'est pas autorisé</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Expression régulière invalide : %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Modèles utilisés:</string>
     <string name="edit_continue">Si trouvé, continuer à correspondre aux autres regexes</string>
     <string name="edit_case_sensitive">Sensible à la casse</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
@@ -439,4 +444,5 @@ Vos achats sont gérés par Google Play. Ils sont liés au compte Google Play qu
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Épingler jusqu\'à %1$d amis et classer les</string>
     <string name="billing_sharing">Supprimer le nom de l\'application lors du partage</string>
     <string name="billing_scrobble_source">Enregistrer et montrer les applications depuis lesquelles vous avez scrobblé et recherchez directement depuis celles-ci</string>
+    <string name="billing_regex_extract">Écrire des règles d\'extraction de métadonnées personnalisées à l\'aide d\'expression régulières</string>
 </resources>

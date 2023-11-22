@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="yes">Kyllä</string>
+    <string name="no">Ei</string>
+    <string name="reset">Nollaa</string>
+    <string name="settings">Asetukset</string>
+    <string name="bug_report">Vikailmoitus</string>
+    <string name="network_error">Verkkovirhe</string>
+    <string name="album_optional">Albumi (valinnainen)</string>
     <!--  pro  -->
 </resources>

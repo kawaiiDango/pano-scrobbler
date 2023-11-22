@@ -103,9 +103,11 @@
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Poistetaanko tämä kohde historiasta?</string>
     <string name="library" comment="search within the library">Kirjasto</string>
     <string name="global" comment="search globally across lastfm">Maailmanlaajuinen</string>
+    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Luetteloi scrobblauksesi</string>
     <string name="take_long_time">Tämä voi kestää kauan</string>
     <string name="full_index_desc">Käytä tätä vain, jos olet muokannut tai poistanut scrobblauksia sivustolta.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Haettiin suosituimmat %1$s kohdetta jokaisesta kategoriasta.</string>
+    <string name="last_indexed" formatted="true" comment="%1= date">Viimeksi luetteloitu %1$s.</string>
     <string name="profile">Profiili</string>
     <string name="profile_pic">Profiilikuva</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Tämän kohteen valinnat</string>
@@ -143,7 +145,7 @@
     <string name="swap" comment="(Swap title and artist)">Vaihda</string>
     <string name="rate_msg">Pidätkö sovelluksesta?</string>
     <string name="time_just_now">juuri äsken</string>
-    <string name="no_mail_apps">Sähköpostisovellusta ei ole asennettu</string>
+    <string name="no_mail_apps">Ei asennettua sähköpostisovellusta</string>
     <string name="loved" comment="Its a noun">Tykätyt</string>
     <string name="unloved" comment="Its a noun">Tykkäys poistettu</string>
     <string name="simple_edits">Muokkaukset</string>
@@ -172,6 +174,7 @@
     <string name="not_found" comment="Shown in search">Ei löytynyt</string>
     <string name="save" comment="saves a file">Tallenna</string>
     <string name="saved_to_gallery">Tallennettu galleriaan</string>
+    <string name="reports" comment="Like last.week reports and stuff">Raportit</string>
     <string name="weekly">Viikottainen</string>
     <string name="weeks">Viikot</string>
     <string name="monthly">Kuukausittainen</string>
@@ -189,6 +192,10 @@
     <string name="loved_track">Tykätty kappale</string>
     <string name="randomize" comment="(To randomize or fetch a new random item)">Satunnaista</string>
     <string name="random_text">Satunnainen</string>
+    <string name="graph_daily">Päivittäiset scrobblausmäärät</string>
+    <string name="graph_weekly">Viikottaiset scrobblausmäärät</string>
+    <string name="graph_monthly">Kuukausittaiset scrobblausmäärät</string>
+    <string name="graph_yearly">Vuosittaiset scrobblausmäärät</string>
     <string name="original" comment="Original metadata before editing">Alkuperäinen</string>
     <string name="corrected" comment="Corrected metadata after editing">Korjattu</string>
     <string name="tag" comment="last.fm tag">Tunniste</string>
@@ -213,12 +220,17 @@
     <string name="appwidget_alpha">Taustan läpinäkyvyys</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget päivittyy %1$s välein</string>
     <string name="primary_color">Ensisijainen väri</string>
+    <string name="secondary_color">Toissijainen väri</string>
     <string name="tint_background" comment="Tint the background with the primary color">Värjää tausta</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Kentät</string>
     <string name="edit_replace">Korvaa</string>
     <string name="edit_first" comment="First occurrence of a pattern">Ensimmäinen</string>
     <string name="edit_all" comment="All occurrences of a pattern">Kaikki</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Kokeile</string>
+    <string name="edit_presets" comment="Regex presets">Esiasetukset</string>
+    <string name="edit_presets_available">Käytettävissä olevat esiasetukset</string>
+    <string name="edit_no_presets_available">Kaikki esiasetukset ovat käytössä</string>
+    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Esiasetus: %1$s</string>
     <string name="text" comment="text to test regex rules with">Teksti</string>
     <string name="blocked_metadata_info">ℹ️ Jos täytät useamman kuin yhden näistä kentistä, kenttien väliin lisätään AND-operaattori</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Napauta estääksesi ja ohittaaksesi</string>
@@ -272,7 +284,9 @@
     <string name="pref_privacy_policy">Tietosuojakäytäntö</string>
     <string name="pref_scrobble_only">(Scrobblaa vain)</string>
     <string name="pref_user_label" comment="(Like username)">Käyttäjä</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Todennustunnus</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Löydät todennustunnuksen osoitteesta: %1$s</string>
+    <string name="pref_now_playing">Lähetä nyt soiva</string>
     <string name="pref_fetch_album">Hae puuttuvat levyn tiedot lastFM:stä</string>
     <string name="pref_locale">Kielet</string>
     <string name="pref_change_locale">Vaihda kieli</string>
@@ -282,24 +296,77 @@
     <string name="pref_import">Tuo</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personointi</string>
     <string name="pref_themes" comment="Color themes">Teemat</string>
+    <string name="pref_themes_desc" comment="This is a continuation of the string: Themes">Mix and match\nVaihtaa myös ilmoituksen värin</string>
+    <string name="pref_widget_charts">Widget aloitusnäytölle - Kaaviot</string>
     <string name="pref_show_albums">Näytä albumien nimet</string>
+    <string name="pref_show_albums_desc" comment="This is a continuation of the string: Show album names">…scrobblauksille</string>
+    <string name="pref_show_scrobble_sources">Näytä kuvakkeet sovelluksille, joista on scrobblattu</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…jokaisen scrobblauksen vieressä. Tämä tieto pysyy laitteellasi</string>
+    <string name="pref_search_in_source">Hae &amp; soita sovelluksella, josta scrobblasit</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Tuetuille sovelluksille</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Listat</string>
+    <string name="pref_blocked_metadata" comment="Block things from scrobbling">Estetty metadata</string>
     <string name="pref_translate">Käännä tämä sovellus</string>
     <string name="pref_check_updates">Tarkista päivitysten varalta</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Päivitys saatavilla: %1$s</string>
     <string name="download" comment="Its a verb">Lataa</string>
+    <string name="changelog">Muutosloki</string>
+    <string name="import_hey_wtf">Tuo ei luultavasti ole Pano Scrobbler -vientitiedosto</string>
     <string name="export_failed">Vienti epäonnistui</string>
     <string name="imported">Tuotu</string>
+    <string name="import_options">Tuonnin valinnat</string>
+    <string name="import_lists_nope">Älä tuo muokkauksia ja estettyjen listaa</string>
+    <string name="import_lists_replace_all">Korvaa kaikki muokkaukset ja estettyjen lista</string>
+    <string name="import_lists_replace_existing">Yhdistä korvaten olemassaolevat muokkaukset ja estettyjen lista</string>
+    <string name="import_lists_keep">Yhdistä säilyttäen olemassaolevat muokkaukset ja estettyjen lista</string>
+    <string name="import_settings">Tuonnin asetukset</string>
+    <string name="current_track">Tämänhetkinen kappale:</string>
     <string name="copied">Kopioitu!</string>
+    <string name="lastfm_reauth">Sinun täytyy tunnistautua uudelleen muokataksesi tai poistaaksesi scrobblauksia</string>
     <string name="custom_listenbrainz">Mukautettu Listenbrainz</string>
+    <string name="failed_encode_url">URL-osoitteen koodaus epäonnistui</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Tarkista %1$s</string>
+    <string name="check_nls_tv" formatted="true" comment="%1= the name Pano Scrobbler">Erikoiskäyttö &gt; Ilmoitusten käyttö &gt; %1$s</string>
     <string name="artist_extra">Kappaleet, albumit &amp; samankaltaiset</string>
+    <string name="no_browser">Ei asennettua selainta</string>
+    <string name="no_player">Ei asennettua musiikkisoitinta</string>
+    <string name="not_running">⚠ Järjestelmäsi tappoi scrobblerin</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Järjestelmän antama tapon syy: %s</string>
     <string name="login_submit" comment="Verifies the login details">Vahvista</string>
+    <string name="add_acr_key">Lisää ACRCloud Key</string>
+    <string name="remove_acr_key">Poista ACRCloud Key</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Lisää</string>
+    <string name="add_acr_key_info" comment="Bucket as in a cloud storage bucket">"• Rekisteröidy osoitteessa https://console.acrcloud.com
+• Siirry kohtaan Projects &gt; Audio &amp; video recognition
+• Luo uusi projekti, valitse Recorded Audio ja ACRCloud Music bucket"</string>
+    <string name="shazam_scrobbling">Scrobblataksesi jatkuvasti, avaa sen sijaan <a href="https://play.google.com/store/apps/details?id=com.shazam.android">Shazam</a> ja aloita Auto Shazam. Varmista myös, että Shazam on käytössä scrobblaamista varten.</string>
+    <string name="pending_n_remaining" formatted="true" comment="For pending scrobbles">%1$d jäljellä</string>
+    <string name="submitting_loves" formatted="true">Lähetetään tykkäyksiä, %1$d jäljellä</string>
+    <string name="pending_batch" comment="For pending scrobbles">Lähetetään erää</string>
+    <string name="webview_error">Sivua ei voitu ladata (toimiiko nettisi?)</string>
+    <string name="bar_chart">Pylväsdiagrammi</string>
+    <string name="cleared_disabled_apps">Tyhjennetty käytöstä poistetut sovellukset</string>
+    <string name="fix_it_battery_title">Poista akun optimointi käytöstä</string>
     <string name="fix_it_action" comment="(To open an app)">Avaa</string>
     <string name="delete_account">Poista tili</string>
     <!--  pro  -->
+    <string name="get_pro">Tue tätä sovellusta</string>
+    <string name="help">Tuki</string>
     <string name="pro_also_get">Saat myös seuraavat ominaisuudet:</string>
     <string name="thank_you">Kiitos!</string>
+    <string name="purchase_pending">Maksuntarjoaja ei ole vielä vahvistanut ostostasi. Tarkista uudestaan muutaman minuutin kuluttua.</string>
+    <string name="billing_troubleshoot_title">Palauta ostos</string>
+    <string name="billing_troubleshoot">"Joko ostit?
+
+Ostojasi hallinnoi Google Play. Ne on yhdistetty Google Play -tiliin, joka teki ostoksen. Kun asennat sovelluksen uudelle laitteelle, jolla on monta tiliä, Google Play voi liittää laitteen väärään tiliin. Paras tapa valita juuri oston omistava tili on asentaa sovellus tietokoneella Google Playn nettisivun kautta:
+
+• Poista tämän sovelluksen asennus.
+• Avaa Google Playn nettisivu koneellasi.
+• Kirjaudu sisään oston omistavalla tilillä.
+• Asenna tämä sovellus suoraan Google Playn nettisivulta.
+"</string>
+    <string name="billing_block">Estä esittäjät/kappaleet ja ohita tai mykistä automaattisesti</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Kiinnitä enintään %1$d ystävää ja järjestele heidät uudelleen</string>
+    <string name="billing_sharing">Poista sovelluksen nimi jaettaessa</string>
     <string name="billing_scrobble_source">Muista ja näytä sovellukset, joista scrobblasit ja hae suoraan niistä</string>
 </resources>

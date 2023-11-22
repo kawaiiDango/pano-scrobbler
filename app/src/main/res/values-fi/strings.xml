@@ -1,11 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="one">%1$s scrobblaus</item>
+        <item quantity="other">%1$s scrobblausta</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="one">%1$s kuuntelija</item>
+        <item quantity="other">%1$s kuuntelijaa</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="one">%1$s päivä</item>
+        <item quantity="other">%1$s päivää</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="one">%1$s esittäjä</item>
+        <item quantity="other">%1$s esittäjää</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="one">%1$s albumi</item>
+        <item quantity="other">%1$s albumia</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$s kappale</item>
+        <item quantity="other">%1$s kappaletta</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="one">%1$d osuma</item>
+        <item quantity="other">%1$d osumaa</item>
+    </plurals>
+    <plurals name="num_minutes">
+        <item quantity="one">%1$d minuutti</item>
+        <item quantity="other">%1$d minuuttia</item>
+    </plurals>
+    <plurals name="num_friends">
+        <item quantity="one">%1$s ystävä</item>
+        <item quantity="other">%1$s ystävät</item>
+    </plurals>
+    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
+        <item quantity="one">%1$s odottaa</item>
+        <item quantity="other">%1$s odottaa</item>
+    </plurals>
     <string name="yes">Kyllä</string>
     <string name="no">Ei</string>
     <string name="reset">Nollaa</string>
     <string name="settings">Asetukset</string>
     <string name="bug_report">Vikailmoitus</string>
+    <string name="faq">FAQ</string>
+    <string name="album_art">Albumin kansi</string>
+    <string name="artist_image">Esittäjän kuva</string>
     <string name="network_error">Verkkovirhe</string>
+    <string name="disable_tls_verify">Älä huomioi TLS-virheitä</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobblaus ohitettu</string>
+    <string name="artist">Esittäjä</string>
+    <string name="artists">Esittäjät</string>
+    <string name="top_artists" comment="Top artists the user has listened to">Kuunnelluimmat artistit</string>
+    <string name="album_artist">Albumin esittäjä</string>
+    <string name="artist_channel" comment="Artist or youtube channel">Esittäjä / kanava</string>
+    <string name="similar_artists">Samankaltaisia artisteja</string>
     <string name="album_optional">Albumi (valinnainen)</string>
+    <string name="album">Albumi</string>
+    <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Kuunnelluimmat albumit</string>
+    <string name="track">Kappale</string>
+    <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Kuunnelluimmat kappaleet</string>
+    <string name="similar_tracks">Samankaltaiset kappaleet</string>
+    <string name="similar" comment="Similar tracks but in short">Samankaltaiset</string>
+    <string name="state_scrobbling">Nyt scrobblaa…</string>
+    <string name="state_scrobbled">Scrobblattu</string>
+    <string name="unscrobble">Poista scrobblaus</string>
+    <string name="state_unscrobbled">Scrobblaus poistettu</string>
+    <string name="state_unrecognised_artist">Tunnistamaton esittäjä</string>
+    <string name="tap_to_edit">(Muokkaa napauttamalla)</string>
+    <string name="recently_scrobbled">Äskettäin Scrobblattu</string>
+    <string name="recents" comment="Short for recently scrobbled">Viimeaikaiset</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Scrobblattu ensimmäistä kertaa: %1$s</string>
+    <string name="auto" comment="automatic or default setting">Automaattinen</string>
+    <string name="almost_there" comment="Shown on the first screen after install, asking the user to complete the setup">Melkein valmista…</string>
+    <string name="music_players">Soittimet</string>
+    <string name="other_apps" comment="Apps which are not music players or video streaming apps">Muut sovellukset</string>
+    <string name="choose_apps">Valitse sovellukset</string>
+    <string name="choose_an_app">Valitse sovellus</string>
+    <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Sovellukset</string>
+    <string name="offline">Offline-tilassa. Näytetyt tiedot eivät ole tuoreita</string>
+    <string name="unavailable_offline">Ei käytettävissä offline-tilassa</string>
+    <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Kuuntelin\n%1$s %2$s</string>
+    <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s kuunteli\n%1$s %2$s</string>
+    <string name="share_sig">(Pano Scrobblerin kautta)</string>
+    <string name="share">Jaa</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">Selite</string>
+    <string name="grid_size">Muuta ruudukon kokoa</string>
+    <string name="pinch_to_zoom">Nipistä suurentaaksesi</string>
+    <string name="more_info">Lisätietoa</string>
+    <string name="more" comment="More options menu in short">Lisää</string>
+    <string name="learn" comment="(Learn java regex syntax)">Opi</string>
+    <string name="hide">Piilota</string>
+    <string name="rank_change" comment="%1= delta change">Sijoituksen muutos: %s</string>
+    <string name="rank_change_no_change">Ei muutosta</string>
+    <string name="rank_change_new">Ei scrobblattu edellisessä jaksossa</string>
+    <string name="search">Hae</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Tyhjennä koko historia</string>
+    <string name="clear_history_specific" comment="(talking about search history, tag history)">Poistetaanko tämä kohde historiasta?</string>
+    <string name="library" comment="search within the library">Kirjasto</string>
+    <string name="global" comment="search globally across lastfm">Maailmanlaajuinen</string>
+    <string name="take_long_time">Tämä voi kestää kauan</string>
+    <string name="full_index_desc">Käytä tätä vain, jos olet muokannut tai poistanut scrobblauksia sivustolta.</string>
+    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Haettiin suosituimmat %1$s kohdetta jokaisesta kategoriasta.</string>
+    <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s havaittu</string>
+    <string name="show_all">Näytä kaikki</string>
+    <string name="love" comment="Love/like a song">Tykkää</string>
+    <string name="swap" comment="(Swap title and artist)">Vaihda</string>
+    <string name="listeners">Kuuntelijat</string>
+    <string name="scrobbles">Scrobblaukset</string>
+    <string name="save" comment="saves a file">Tallenna</string>
+    <string name="weekly">Viikottainen</string>
+    <string name="weeks">Viikot</string>
+    <string name="years" comment="For the charts menu which displays year by year">Vuodet</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Mukautettu</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Perustuu %1$s</string>
+    <string name="tag" comment="last.fm tag">Tunniste</string>
+    <string name="digest_weekly">Viime viikon eniten scrobblattuni</string>
+    <string name="close" comment="To close a dialog or something">Sulje</string>
+    <string name="appwidget_show">Näytä</string>
+    <string name="light">Vaalea</string>
+    <string name="dark">Tumma</string>
+    <string name="system_colors">Järjestelmän värit</string>
+    <string name="appwidget_alpha">Taustan läpinäkyvyys</string>
+    <string name="primary_color">Ensisijainen väri</string>
+    <string name="tint_background" comment="Tint the background with the primary color">Värjää tausta</string>
+    <string name="edit_field" comment="Fields like artist/album/track etc">Kentät</string>
+    <string name="edit_replace">Korvaa</string>
+    <string name="skip" comment="skip to next track">Ohita</string>
+    <string name="mute" comment="mute the music">Mykistä</string>
+    <string name="block" comment="block the track from scrobbling">Estä</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">Piilotetut tunnisteet</string>
+    <string name="pin" comment="pin a friend to the top">Kiinnitä</string>
+    <string name="unpin" comment="unpin a friend to the top">Poista kiinnitys</string>
+    <string name="pin_help">Paina kiinnitettyjä kohteita pitkään järjestääksesi ne uudelleen</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Käytä kanavan nimeä</string>
+    <string name="scrobbler_off">Scrobblaaja pois päältä</string>
+    <string name="scrobbler_on">Scrobblaaja päällä</string>
+    <string name="acoustic" comment="(Acoustic music)">Akustinen</string>
+    <string name="energetic" comment="(Energetic music)">Energinen</string>
+    <string name="danceable">Tanssittava</string>
+    <string name="valence" comment="(Musical positivity)">Positiivisuus</string>
+    <string name="popularity" formatted="true" comment="popularity of a track">Suosio: %1$d%%</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Koko</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">Ohita puuttuvat kuvat</string>
+    <string name="create_collage">Luo kollaasi</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Kuvateksti</string>
+    <string name="username" comment="last.fm Username">Käyttäjänimi</string>
+    <string name="pref_enabled_apps_summary">ℹ️ Tukee musiikin metadatan paljastavia sovelluksia. Välttääksesi kaksoiscrobblauksia Spotifysta, ota scrobblaus käyttöön vain yhdessä paikassa.</string>
+    <string name="pref_logout">Kirjaudu ulos</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Löydät todennustunnuksen osoitteesta: %1$s</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personointi</string>
+    <string name="pref_themes" comment="Color themes">Teemat</string>
+    <string name="pref_show_albums">Näytä albumien nimet</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Tuetuille sovelluksille</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">Listat</string>
+    <string name="pref_translate">Käännä tämä sovellus</string>
+    <string name="imported">Tuotu</string>
+    <string name="copied">Kopioitu!</string>
+    <string name="custom_listenbrainz">Mukautettu Listenbrainz</string>
+    <string name="artist_extra">Kappaleet, albumit &amp; samankaltaiset</string>
+    <string name="login_submit" comment="Verifies the login details">Vahvista</string>
+    <string name="add" comment="Add a new item such as an edit, a tag, etc">Lisää</string>
+    <string name="fix_it_action" comment="(To open an app)">Avaa</string>
+    <string name="delete_account">Poista tili</string>
     <!--  pro  -->
+    <string name="pro_also_get">Saat myös seuraavat ominaisuudet:</string>
+    <string name="thank_you">Kiitos!</string>
+    <string name="billing_scrobble_source">Muista ja näytä sovellukset, joista scrobblasit ja hae suoraan niistä</string>
 </resources>

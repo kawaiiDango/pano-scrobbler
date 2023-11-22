@@ -271,11 +271,19 @@ class InfoExtraFragment : BottomSheetDialogFragment(), MusicEntryItemClickListen
         )
 
         chart.yAxis.apply {
+            xOffset = 0f
+            yOffset = 0f
+            axisMinimum = 0f
+            axisMaximum = 1f
+
             setLabelCount(entries.size, false)
             setDrawLabels(false)
         }
 
         chart.xAxis.apply {
+            xOffset = 0f
+            yOffset = 0f
+
             textSize = 11f
             valueFormatter = object : ValueFormatter() {
                 override fun getAxisLabel(value: Float, axis: AxisBase?) =

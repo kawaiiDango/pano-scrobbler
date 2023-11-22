@@ -48,9 +48,12 @@
     <string name="faq">FAQ</string>
     <string name="album_art">Albumin kansi</string>
     <string name="artist_image">Esittäjän kuva</string>
+    <string name="parse_error" comment="Title parsing error for Youtube etc">Nimeä ei voitu jäsentää</string>
     <string name="network_error">Verkkovirhe</string>
     <string name="disable_tls_verify">Älä huomioi TLS-virheitä</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobblaus ohitettu</string>
+    <string name="scrobble_ignored_save_edit">Lastfm ohitti muokkauksen todennäköisesti koska scrobblaus on liian vanha. Haluatko sen sijaan tallentaa tämän muokkauksen tulevia scrobblauksia varten?</string>
+    <string name="required_fields_empty" comment="Shown on filling a form">Pakollisia kenttiä tyhjänä</string>
     <string name="artist">Esittäjä</string>
     <string name="artists">Esittäjät</string>
     <string name="top_artists" comment="Top artists the user has listened to">Kuunnelluimmat artistit</string>
@@ -84,6 +87,7 @@
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Sovellukset</string>
     <string name="offline">Offline-tilassa. Näytetyt tiedot eivät ole tuoreita</string>
     <string name="unavailable_offline">Ei käytettävissä offline-tilassa</string>
+    <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Palvelut</string>
     <string name="recents_share" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9)">Kuuntelin\n%1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s kuunteli\n%1$s %2$s</string>
     <string name="share_sig">(Pano Scrobblerin kautta)</string>
@@ -103,7 +107,9 @@
     <string name="clear_history_specific" comment="(talking about search history, tag history)">Poistetaanko tämä kohde historiasta?</string>
     <string name="library" comment="search within the library">Kirjasto</string>
     <string name="global" comment="search globally across lastfm">Maailmanlaajuinen</string>
+    <string name="reindex">Pikaluettelo</string>
     <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Luetteloi scrobblauksesi</string>
+    <string name="full_index">Täysi luettelo</string>
     <string name="take_long_time">Tämä voi kestää kauan</string>
     <string name="full_index_desc">Käytä tätä vain, jos olet muokannut tai poistanut scrobblauksia sivustolta.</string>
     <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Haettiin suosituimmat %1$s kohdetta jokaisesta kategoriasta.</string>
@@ -124,6 +130,8 @@
     <string name="delete">Poista</string>
     <string name="delete_all">Poista kaikki</string>
     <string name="love" comment="Love/like a song">Tykkää</string>
+    <string name="hate" comment="Hate or dislike a song">En tykkää</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Poista \'en tykkää\'</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Poista tykkäys</string>
     <string name="pending_scrobbles">Odottavat scrobblaukset</string>
     <string name="pending_scrobble">Odottava scrobblaus</string>
@@ -222,15 +230,19 @@
     <string name="primary_color">Ensisijainen väri</string>
     <string name="secondary_color">Toissijainen väri</string>
     <string name="tint_background" comment="Tint the background with the primary color">Värjää tausta</string>
+    <string name="random_theme">Satunnaista aina avatessa</string>
     <string name="edit_field" comment="Fields like artist/album/track etc">Kentät</string>
     <string name="edit_replace">Korvaa</string>
     <string name="edit_first" comment="First occurrence of a pattern">Ensimmäinen</string>
     <string name="edit_all" comment="All occurrences of a pattern">Kaikki</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Poimi</string>
+    <string name="edit_case_sensitive">Huomioi kirjainkoko</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Kokeile</string>
     <string name="edit_presets" comment="Regex presets">Esiasetukset</string>
     <string name="edit_presets_available">Käytettävissä olevat esiasetukset</string>
     <string name="edit_no_presets_available">Kaikki esiasetukset ovat käytössä</string>
     <string name="edit_preset_name" formatted="true" comment="%1= preset name">Esiasetus: %1$s</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Järjestä vetämällä</string>
     <string name="text" comment="text to test regex rules with">Teksti</string>
     <string name="blocked_metadata_info">ℹ️ Jos täytät useamman kuin yhden näistä kentistä, kenttien väliin lisätään AND-operaattori</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Napauta estääksesi ja ohittaaksesi</string>
@@ -264,8 +276,12 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Kuvateksti</string>
     <string name="username" comment="last.fm Username">Käyttäjänimi</string>
     <string name="pref_master">Scrobblaa musiikkia</string>
+    <string name="pref_master_qs_hint">Voidaan laittaa päälle myös painikeruudukosta</string>
+    <string name="pref_master_qs_add">Lisää painikeruudukkoon</string>
+    <string name="pref_master_qs_already_addded">Painike on jo lisätty painikeruudukkoon</string>
     <string name="pref_noti">Ilmoitukset</string>
     <string name="pref_noti_categories">Ilmoituskategoriat</string>
+    <string name="pref_scrobble_noti">Scrobblausilmoitukset</string>
     <string name="pref_lockscreen_noti">Lukitusnäytön ilmoitukset</string>
     <string name="pref_offline_info">ℹ️ Offline-tilan scrobblaukset &amp; tykkäykset tallennetaan myöhemmin lähetettäväksi.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblaa</string>
@@ -285,14 +301,18 @@
     <string name="pref_scrobble_only">(Scrobblaa vain)</string>
     <string name="pref_user_label" comment="(Like username)">Käyttäjä</string>
     <string name="pref_token_label" comment="For Listenbrainz">Todennustunnus</string>
+    <string name="api_url" comment="For Listenbrainz">API-osoite</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Löydät todennustunnuksen osoitteesta: %1$s</string>
     <string name="pref_now_playing">Lähetä nyt soiva</string>
     <string name="pref_fetch_album">Hae puuttuvat levyn tiedot lastFM:stä</string>
     <string name="pref_locale">Kielet</string>
     <string name="pref_change_locale">Vaihda kieli</string>
     <string name="pref_crashlytics_enabled">Ilmoita virheistä automaattisesti</string>
+    <string name="pref_misc">Sekalaista</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Vikko alkaa</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Tuonti &amp; vienti</string>
     <string name="pref_export">Vie</string>
+    <string name="pref_export_desc">Varmuuskopioi asetukset, muokkaukset ja estettyjen listan. Ei tallenna kirjautumistietoja turvallisuussyistä. Hyödyllinen laitteiden välillä siirtymisessä tai kavereille jaettaessa.</string>
     <string name="pref_import">Tuo</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personointi</string>
     <string name="pref_themes" comment="Color themes">Teemat</string>
@@ -307,6 +327,8 @@
     <string name="pref_lists" comment="Such as edits list and block lists">Listat</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Estetty metadata</string>
     <string name="pref_translate">Käännä tämä sovellus</string>
+    <string name="pref_translate_credits">Käännösten tekijät</string>
+    <string name="pref_oss_credits">Avoimen lähdekoodin tekijät</string>
     <string name="pref_check_updates">Tarkista päivitysten varalta</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Päivitys saatavilla: %1$s</string>
     <string name="download" comment="Its a verb">Lataa</string>
@@ -332,7 +354,10 @@
     <string name="no_player">Ei asennettua musiikkisoitinta</string>
     <string name="not_running">⚠ Järjestelmäsi tappoi scrobblerin</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Järjestelmän antama tapon syy: %s</string>
+    <string name="not_running_fix_action">Korjaa</string>
     <string name="login_submit" comment="Verifies the login details">Vahvista</string>
+    <string name="acr_host" comment="Web hostname">Isäntä</string>
+    <string name="acr_key" comment="API key">Salasana</string>
     <string name="add_acr_key">Lisää ACRCloud Key</string>
     <string name="remove_acr_key">Poista ACRCloud Key</string>
     <string name="add" comment="Add a new item such as an edit, a tag, etc">Lisää</string>
@@ -346,12 +371,16 @@
     <string name="webview_error">Sivua ei voitu ladata (toimiiko nettisi?)</string>
     <string name="bar_chart">Pylväsdiagrammi</string>
     <string name="cleared_disabled_apps">Tyhjennetty käytöstä poistetut sovellukset</string>
+    <string name="fix_it_title">Mahdolliset korjaukset</string>
+    <string name="fix_it_startup_title">Virransäästäjät / startup-managerit</string>
     <string name="fix_it_battery_title">Poista akun optimointi käytöstä</string>
     <string name="fix_it_action" comment="(To open an app)">Avaa</string>
     <string name="delete_account">Poista tili</string>
+    <string name="delete_account_custom_servers">Tarkista omia palvelimia varten niitä koskevat asiakirjat.</string>
     <!--  pro  -->
     <string name="get_pro">Tue tätä sovellusta</string>
     <string name="help">Tuki</string>
+    <string name="pro_support">Tämä on sinun kaltaisillesi mahtaville käyttäjille helppo ja nopea tapa näyttää tukesi ja tunnistaa tämän sovelluksen tuoma arvo.</string>
     <string name="pro_also_get">Saat myös seuraavat ominaisuudet:</string>
     <string name="thank_you">Kiitos!</string>
     <string name="purchase_pending">Maksuntarjoaja ei ole vielä vahvistanut ostostasi. Tarkista uudestaan muutaman minuutin kuluttua.</string>

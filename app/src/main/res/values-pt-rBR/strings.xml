@@ -65,7 +65,6 @@
     <string name="reset">Redefinir</string>
     <string name="settings">Configurar</string>
     <string name="bug_report">Relatório de erros</string>
-    <string name="faq"></string>
     <string name="album_art">Capa do álbum</string>
     <string name="artist_image">Imagem do artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Não foi possível ler o título</string>
